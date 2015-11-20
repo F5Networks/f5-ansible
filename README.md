@@ -25,3 +25,6 @@ parties from unassumingly downloading outdated code.
 ### License
 
 Ansible requests that all modules contributed upstream carry the GPLv3 license.
+
+If a module is never contributed upstream, it is expected that it still carry
+a license preamble to inform users.
