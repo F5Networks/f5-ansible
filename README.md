@@ -21,3 +21,7 @@ I would suggest creating an "unsupported" sub directory and moving them to
 there. A README should be included in that directory pointing to the upstream
 Ansible repo that includes the modules. This should prevent any interested
 parties from unassumingly downloading outdated code.
+
+### License
+
+Ansible requests that all modules contributed upstream carry the GPLv3 license.
