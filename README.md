@@ -1,30 +1,45 @@
-## f5-ansible-modules
+# Ansible BIG-IP Role
 
-This repository is a stop-gap place where we will be dropping Ansible
-modules relevant to F5 products while we work with the Ansible community
-to get them upstreamed.
+## Overview
 
-Some modules, by their nature, may never make their way upstream, so this
-will be where they live.
+The F5 role provides the foundation for working with F5 BIG-IP devices
+and Ansible. The F5 role for Ansible provides the ability to manage
+configuration resources in BIG-IP. The architecture of the roles makes inherent
+use of the BIG-IP SOAP and REST APIs as well as the tmsh API where required.
 
-### Phase out policy
+The Ansible F5 role is freely provided to the open source community for automating
+BIG-IP device configurations using Ansible. Support for the modules is provided
+on a best effort basis by the F5 community. Please file any bugs, questions or
+enhancement requests using [Github Issues](https://github.com/F5Networks/ansible-f5/issues)
 
-When a module in this repository is officially accepted into the upstream
-Ansible project, it should be **removed** from this repository so as not
-to confuse users.
+### Requirements
 
-From that point forward, development, bug fixes, etc should take place on
-the Ansible github repository and follow their development workflow.
+* BIG-IP 11.6.0 or later
+* Advanced shell for user account enabled
+* [bigsuds Python Client 1.0.3 or later] [bigsuds]
 
-Should there be a desire, for any reason, to keep the modules in this repo,
-I would suggest creating an "unsupported" sub directory and moving them to
-there. A README should be included in that directory pointing to the upstream
-Ansible repo that includes the modules. This should prevent any interested
-parties from unassumingly downloading outdated code.
+## License
 
-### License
+The MIT License (MIT)
 
-Ansible requests that all modules contributed upstream carry the GPLv3 license.
+Copyright (c) 2015 F5 Networks
 
-If a module is never contributed upstream, it is expected that it still carry
-a license preamble to inform users.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+[bigsuds]: https://pypi.python.org/pypi/bigsuds/

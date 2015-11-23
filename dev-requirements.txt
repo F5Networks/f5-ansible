@@ -1,0 +1,7 @@
+pep8
+pyflakes
+flake8
+nose
+paramiko
+bigsuds
+requests
