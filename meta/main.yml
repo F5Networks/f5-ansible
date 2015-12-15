@@ -1,5 +1,6 @@
 ---
 
+role_name: bigip
 galaxy_info:
     author: F5 Networks
     description: Role for managing F5 BIG-IP devices
@@ -8,5 +9,9 @@ galaxy_info:
     min_ansible_version: 1.9
     categories:
         - networking
+    galaxy_tags:
+        - networking
+    platforms:
+        - 
 
 dependencies: []
