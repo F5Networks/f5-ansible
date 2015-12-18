@@ -234,7 +234,9 @@ def test_icontrol(username, password, hostname):
         return False
 
 class BigIpCommon(object):
-    def __init__(self, module):
+    def __init__(self, user, password, server, software=None, hotfix=None,
+        volume=None, force=False, validate_certs=True):
+
         # This regex supports filenames like the following
         #
         # - BIGIP-11.6.0.0.0.401.iso"
@@ -246,14 +248,14 @@ class BigIpCommon(object):
         # Size of chunks of data to read and send via the iControl API
         self.chunk_size = 512 * 1024
 
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
-        self._software = module.params.get('software')
-        self._hotfix = module.params.get('hotfix')
-        self._volume = module.params.get('volume')
-        self._force = module.params.get('force')
-        self._validate_certs = module.params.get('validate_certs')
+        self._username = user
+        self._password = password
+        self._hostname = server
+        self._software = software
+        self._hotfix = hotfix
+        self._volume = volume
+        self._force = force
+        self._validate_certs = validate_certs
 
         if self._hotfix:
             self._pvb_hotfix = self._parse_pvb(self._hotfix)
@@ -268,8 +270,11 @@ class BigIpCommon(object):
         sock.close()
 
 class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
+    def __init__(self, user, password, server, software=None, hotfix=None,
+        volume=None, force=False, validate_certs=True):
+
+        super(BigIpIControl, self).__init__(user, password, server, software,
+            hotfix, volume, force, validate_certs)
 
         self.api = bigsuds.BIGIP(
             hostname=self._hostname,
@@ -611,34 +616,38 @@ def main():
     module = AnsibleModule(
         argument_spec = dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest']),
+            force=dict(required=False, type='bool', default='no'),
+            hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
+            password=dict(required=True),
             server=dict(required=True),
             software=dict(required=False, aliases=['base_image']),
-            hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
-            volume=dict(required=False),
-            force=dict(required=False, type='bool', default='no'),
-            password=dict(required=True),
             state=dict(default='activated', choices=['absent', 'activated', 'installed', 'present']),
             user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool')
+            validate_certs=dict(default='yes', type='bool'),
+            volume=dict(required=False)
         )
     )
 
     connection = module.params.get('connection')
-    hostname = module.params.get('server')
+    force = module.params.get('force')
+    hotfix = module.params.get('hotfix')
     password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    volume = module.params.get('volume')
+    server = module.params.get('server')
     software = module.params.get('software')
+    state = module.params.get('state')
+    user = module.params.get('user')
+    validate_certs = module.params.get('validate_certs')
+    volume = module.params.get('volume')
 
     try:
         if connection == 'icontrol':
             if not bigsuds_found:
                 raise Exception("The python bigsuds module is required")
 
-            icontrol = test_icontrol(username, password, hostname)
+            icontrol = test_icontrol(user, password, server)
             if icontrol:
-                obj = BigIpIControl(module)
+                obj = BigIpIControl(user, password, server, software, hotfix,
+                    volume, force, validate_certs)
         elif connection == 'rest':
             module.fail_json(msg='The REST connection is currently not supported')
 
@@ -661,7 +670,7 @@ def main():
             if obj.absent():
                 changed = True
     except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
+        module.fail_json(msg="Could not connect to BIG-IP host %s" % server)
     except socket.timeout, e:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
     except Exception, e:
@@ -669,7 +678,7 @@ def main():
 
     module.exit_json(changed=changed)
 
-from ansible.module_utils.basic import *
+#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
 
 if __name__ == '__main__':
     main()
