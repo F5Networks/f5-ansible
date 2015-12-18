@@ -500,14 +500,19 @@ class BigIpIControl(BigIpCommon):
         volumes = [ x['installation_id']['install_volume'] for x in status ]
 
         if self._volume in volumes:
-            self._install_software(self._pvb_software, reboot=False, create=False)
-            self._wait_for_software_install()
+            create_volume = False
         else:
-            self._install_software(self._pvb_software, reboot=False, create=True)
-            self._wait_for_software_install()
+            create_volume = True
 
         if self._hotfix:
+            # We do not want to reboot after installation of the base image
+            # because we can install the hotfix image right away and reboot
+            # the system after that happens instead
+            self._install_software(self._pvb_software, reboot=False, create=create_volume)
+            self._wait_for_software_install()
             self._install_software(self._pvb_hotfix, reboot=True, create=False)
+        else:
+            self._install_software(self._pvb_software, reboot=True, create=create_volume)
 
         self._wait_for_software_install()
 
