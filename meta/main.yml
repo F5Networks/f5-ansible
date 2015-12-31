@@ -4,7 +4,7 @@ galaxy_info:
     author: F5 Networks
     description: Role for managing F5 BIG-IP devices
     company: F5 Networks
-    license: MIT
+    license: Apache 2.0
     min_ansible_version: 1.9
     categories:
         - networking
