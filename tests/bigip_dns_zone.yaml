@@ -1,0 +1,116 @@
+- name: Test the bigip_dns_zone module
+  hosts: all
+  connection: local
+
+  tasks:
+      - name: Create a new zone on the BIG-IP
+        bigip_dns_zone:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            contact: "admin@root.local"
+            location: "New York"
+            description: "The New York data center"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Create a new data center on the BIG-IP - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            contact: "admin@root.local"
+            location: "New York"
+            description: "The New York data center"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Disable the datacenter
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            enabled: "no"
+            validate_certs: "no"
+
+      - name: Disable the datacenter - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            enabled: "no"
+            validate_certs: "no"
+
+      - name: Enable the datacenter
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            enabled: "yes"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Enable the datacenter - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            enabled: "yes"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter contact
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            contact: "alice@root.local"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter contact - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            contact: "alice@root.local"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter location
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            location: "Chicago"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter location - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            location: "Chicago"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter description
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            description: "New description"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Set the datacenter description - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            description: "New description"
+            validate_certs: "no"
+            state: "present"
+
+      - name: Delete the datacenter
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            validate_certs: "no"
+            state: "absent"
+
+      - name: Delete the datacenter - Idempotent check
+        bigip_gtm_datacenter:
+            server: "{{ inventory_hostname }}"
+            name: "my_datacenter"
+            validate_certs: "no"
+            state: "absent"

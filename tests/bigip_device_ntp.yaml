@@ -1,0 +1,175 @@
+- name: Test the bigip_device_ntp module
+  hosts: test
+  connection: local
+
+  vars:
+      bigip_username: "admin"
+      bigip_password: "admin"
+      validate_certs: "no"
+
+  tasks:
+      - name: Set NTP server
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_server: "pool.ntp.org"
+        register: result
+
+      - name: Assert Set NTP server
+        assert:
+            that:
+                - result|changed
+
+      - name: Set NTP server - Idempotent check
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_server: "pool.ntp.org"
+        register: result
+
+      - name: Set NTP server - Idempotent check
+        assert:
+            that:
+                - not result|changed
+
+      - name: Delete NTP server
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_server: "pool.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Assert Delete NTP server
+        assert:
+            that:
+                - result|changed
+
+      - name: Delete NTP server - Idempotent check
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_server: "pool.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Delete NTP server - Idempotent check
+        assert:
+            that:
+                - not result|changed
+
+      - name: Set NTP server list
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers:
+                - "0.pool.ntp.org"
+                - "1.pool.ntp.org"
+                - "2.pool.ntp.org"
+                - "3.pool.ntp.org"
+        register: result
+
+      - name: Assert Set NTP server list
+        assert:
+            that:
+                - result|changed
+
+      - name: Set NTP server list - Idempotent check
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers:
+                - "0.pool.ntp.org"
+                - "1.pool.ntp.org"
+                - "2.pool.ntp.org"
+                - "3.pool.ntp.org"
+        register: result
+
+      - name: Set NTP server list - Idempotent check
+        assert:
+            that:
+                - not result|changed
+
+      - name: Delete NTP server list
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers:
+                - "0.pool.ntp.org"
+                - "1.pool.ntp.org"
+                - "2.pool.ntp.org"
+                - "3.pool.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Assert Delete NTP server list
+        assert:
+            that:
+                - result|changed
+
+      - name: Delete NTP server list - Idempotent check
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers:
+                - "0.pool.ntp.org"
+                - "1.pool.ntp.org"
+                - "2.pool.ntp.org"
+                - "3.pool.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Set NTP server list - Idempotent check
+        assert:
+            that:
+                - not result|changed
+
+      - name: Delete missing NTP server
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers: "foo.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Delete missing NTP server
+        assert:
+            that:
+                - not result|changed
+
+      - name: Delete missing NTP server list
+        bigip_device_ntp:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            validate_certs: "{{ validate_certs }}"
+            ntp_servers:
+                - "0.foo.ntp.org"
+                - "1.foo.ntp.org"
+                - "2.foo.ntp.org"
+                - "3.foo.ntp.org"
+            state: "absent"
+        register: result
+
+      - name: Delete missing NTP server list
+        assert:
+            that:
+                - not result|changed
