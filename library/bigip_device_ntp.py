@@ -211,11 +211,11 @@ class BigIpRest(BigIpCommon):
                               auth=(self._username, self._password),
                               data=json.dumps(payload),
                               verify=self._validate_certs)
-        if resp.status_code != 200:
+        if resp.status_code == 200:
+            return True
+        else:
             res = resp.json()
             raise Exception(res['message'])
-
-        return changed
 
     def absent(self):
         changed = False
@@ -237,11 +237,24 @@ class BigIpRest(BigIpCommon):
                               auth=(self._username, self._password),
                               data=json.dumps(payload),
                               verify=self._validate_certs)
-        if resp.status_code != 200:
+        if resp.status_code == 200:
+            return True
+        else:
             res = resp.json()
             raise Exception(res['message'])
 
-        return changed
+    def save(self):
+        payload = dict(command='save')
+        uri = 'https://%s/mgmt/tm/sys/config' % (self._hostname)
+        resp = requests.post(uri,
+                             auth=(self._username, self._password),
+                             data=json.dumps(payload),
+                             verify=self._validate_certs)
+        if resp.status_code == 200:
+            return True
+        else:
+            res = resp.json()
+            raise Exception(res['message'])
 
 
 def main():

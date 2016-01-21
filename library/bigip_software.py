@@ -30,31 +30,6 @@ options:
     required: false
     default: icontrol
     choices: [ "rest", "icontrol" ]
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  software:
-    description:
-      - The path to the software (base image) to install. The parameter must be
-        provided if the C(state) is either C(installed) or C(activated).
-    required: false
-    aliases:
-      - base_image
-  hotfix:
-    description:
-      - The path to an optional Hotfix to install. This parameter requires that
-        the C(software) parameter be specified.
-    required: false
-    default: None
-    aliases:
-      - hotfix_image
-  volume:
-    description:
-      - The volume to install the software and, optionally, the hotfix to. This
-        parameter is only required when the C(state) is either C(activated) or
-        C(installed).
-    required: false
   force:
     description:
       - If C(yes) will upload the file every time and replace the file on the
@@ -66,9 +41,21 @@ options:
     choices:
       - yes
       - no
+  hotfix:
+    description:
+      - The path to an optional Hotfix to install. This parameter requires that
+        the C(software) parameter be specified.
+    required: false
+    default: None
+    aliases:
+      - hotfix_image
   password:
     description:
       - BIG-IP password
+    required: true
+  server:
+    description:
+      - BIG-IP host
     required: true
   state:
     description:
@@ -85,6 +72,13 @@ options:
       - activated
       - installed
       - present
+  software:
+    description:
+      - The path to the software (base image) to install. The parameter must be
+        provided if the C(state) is either C(installed) or C(activated).
+    required: false
+    aliases:
+      - base_image
   user:
     description:
       - BIG-IP username
@@ -95,6 +89,12 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
+  volume:
+    description:
+      - The volume to install the software and, optionally, the hotfix to. This
+        parameter is only required when the C(state) is either C(activated) or
+        C(installed).
+    required: false
 
 notes:
    - Requires the bigsuds Python package on the host if using the iControl

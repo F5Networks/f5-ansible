@@ -181,9 +181,7 @@ class BigIpCommon(object):
 
         self._cache = cache
         self._append = append
-
-        if ip_version:
-            self._ip_version = str(ip_version)
+        self._ip_version = str(ip_version)
 
         self._validate_certs = validate_certs
 
@@ -222,6 +220,23 @@ class BigIpRest(BigIpCommon):
         self._headers = {
             'Content-Type': 'application/json'
         }
+
+    def dhcp_enabled(self):
+        result = {}
+
+        uri = 'https://%s/mgmt/tm/sys/db/dhclient.mgmt' % (self._hostname)
+        resp = requests.get(uri,
+                            auth=(self._username, self._password),
+                            verify=self._validate_certs)
+
+        if resp.status_code == 200:
+            res = resp.json()
+            if res['value'] == 'enable':
+                return True
+            else:
+                return False
+        else:
+            raise Exception()
 
     def _read_dns(self):
         result = {}
@@ -360,10 +375,10 @@ class BigIpRest(BigIpCommon):
         if forwarders:
             payload['value'] = ' '.join(forwarders)
             uri = 'https://%s/mgmt/tm/sys/db/dns.proxy.__iter__' % (self._hostname)
-            resp = requests.patch(uri,
-                                  auth=(self._username, self._password),
-                                  data=json.dumps(payload),
-                                  verify=self._validate_certs)
+            resp = requests.put(uri,
+                                auth=(self._username, self._password),
+                                data=json.dumps(payload),
+                                verify=self._validate_certs)
             if resp.status_code == 200:
                 return True
             else:
@@ -470,6 +485,9 @@ class BigIpRest(BigIpCommon):
         if result:
             changed = True
 
+        if changed:
+            self.save()
+
         return changed
 
     def absent(self):
@@ -485,9 +503,24 @@ class BigIpRest(BigIpCommon):
         if result:
             changed = True
 
+        if changed:
+            self.save()
+
         return changed
 
-
+    def save(self):
+        payload = dict(command='save')
+        uri = 'https://%s/mgmt/tm/sys/config' % (self._hostname)
+        resp = requests.post(uri,
+                             auth=(self._username, self._password),
+                             data=json.dumps(payload),
+                             verify=self._validate_certs)
+        if resp.status_code == 200:
+            return True
+        else:
+            res = resp.json()
+            raise Exception(res['message'])
+       
 def main():
     changed = False
 
@@ -505,7 +538,7 @@ def main():
             forwarders=dict(required=False, type='list', default=[]),
             search_domain=dict(required=False, type='str', default=None),
             search_domains=dict(required=False, type='list', default=[]),
-            ip_version=dict(required=False, default='4', choices=['4','6']),
+            ip_version=dict(required=False, default=None, choices=['4','6']),
             validate_certs=dict(default='yes', type='bool')
         ),
         required_one_of = [[
@@ -551,6 +584,9 @@ def main():
 
         obj = BigIpRest(username, password, hostname, nameservers, forwarders,
             search_domains, cache, ip_version, append, validate_certs)
+
+        if obj.dhcp_enabled():
+            module.fail_json(msg="DHCP on the mgmt interface must be disabled to make use of this module")
 
         if state == "present":
             changed = obj.present()

@@ -213,9 +213,8 @@ def main():
             if not bigsuds_found:
                 raise Exception("The python bigsuds module is required")
 
-            icontrol = test_icontrol(username, password, hostname)
-            if icontrol:
-                obj = BigIpIControl(module)
+            test_icontrol(username, password, hostname)
+            obj = BigIpIControl(module)
         elif connection == 'rest':
             if not requests_found:
                 raise Exception("The python requests module is required")
