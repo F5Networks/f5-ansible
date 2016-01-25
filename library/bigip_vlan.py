@@ -288,7 +288,6 @@ class BigIpRest(BigIpCommon):
             )
             return True
 
-
         if self._vlan_id:
             if self.get_id(self._name) != int(self._vlan_id):
                 self.set_id(name=self._name, vlanid=self._vlan_id)
@@ -633,7 +632,7 @@ def main():
     changed = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             description=dict(required=False, default=None),
             interface=dict(required=False, default=None),
             interfaces=dict(required=False, default=None),
@@ -646,7 +645,7 @@ def main():
             validate_certs=dict(default='yes', type='bool'),
             vlan_id=dict(required=False, default=None, aliases=['tag']),
         ),
-        mutually_exclusive = [
+        mutually_exclusive=[
             ['interface', 'interfaces']
         ]
     )

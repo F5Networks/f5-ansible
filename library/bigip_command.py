@@ -50,9 +50,7 @@ options:
   user:
     description:
       - BIG-IP username
-    required: false
-    aliases:
-      - username
+    required: true
   validate_certs:
     description:
       - If C(no), SSL certificates will not be validated. This should only be
@@ -68,150 +66,179 @@ requirements: [ "paramiko", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
-- name: Set the hostname of the BIG-IP
+EXAMPLES = '''
+- name: Load the default system configuration
   bigip_command:
       server: "bigip.localhost.localdomain"
       user: "admin"
       password: "admin"
       command: "tmsh load sys config default"
+      validate_certs: "no"
   delegate_to: localhost
-"""
+'''
+
+RETURN = '''
+stdout:
+    description: The stdout output from running the given command
+    returned: changed
+    type: string
+    sample: ""
+stderr:
+    description: The stderr output from running the given command
+    returned: changed
+    type: string
+command:
+    description: The command specified by the user
+    returned: changed
+    type: string
+    sample: "tmsh list auth user"
+app_mode:
+    description: Whether or not Appliance mode was detected for the user
+    returned: changed
+    type: boolean
+    sample: True
+app_mode_cmd:
+    description: The command as it would have been run in Appliance mode
+    returned: changed
+    type: string
+    sample: "list auth user"
+'''
 
 import socket
 
 try:
     import paramiko
 except ImportError:
-    paramiko_found = False
+    PARAMIKO_AVAILABLE = False
 else:
-    paramiko_found = True
+    PARAMIKO_AVAILABLE = True
 
 try:
     import requests
 except ImportError:
-    requests_found = False
+    REQUESTS_AVAILABLE = False
 else:
-    requests_found = True
+    REQUESTS_AVAILABLE = True
 
 class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
-        self._command = module.params.get('command').strip()
-        self._validate_certs = module.params.get('validate_certs')
-
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
+        self.params = kwargs
 
     def appliance_mode(self):
-        self._uri = 'https://%s/mgmt/tm/auth/user/%s' % (self._hostname, self._username)
+        user = self.params['user']
+        server = self.params['server']
+        password = self.params['password']
+        validate_certs = self.params['validate_certs']
+
+        self._uri = 'https://%s/mgmt/tm/auth/user/%s' % (server, user)
         self._headers = {
             'Content-Type': 'application/json'
         }
 
         resp = requests.get(self._uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
+                            auth=(user, password),
+                            verify=validate_certs)
 
         if resp.status_code != 200:
             raise Exception('Failed to query the REST API to check appliance mode')
         else:
             result = resp.json()
-            if result['shell'] == 'tmsh':
+            if 'shell' in result and result['shell'] == 'tmsh':
                 return True
             else:
                 return False
 
 
 class BigIpSsh(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpSsh, self).__init__(module)
+    def __init__(self, *args, **kwargs):
+        super(BigIpSsh, self).__init__(*args, **kwargs)
 
         self.result = {}
         self.api = paramiko.SSHClient()
 
-        if not self._validate_certs:
+        user = self.params['user']
+        password = self.params['password']
+        server = self.params['server']
+        validate_certs = self.params['validate_certs']
+
+        if not validate_certs:
             self.api.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        self.api.connect(self._hostname, username=self._username, password=self._password)
+        self.api.connect(server, username=user, password=password)
 
-    def run(self):
+    def flush(self):
         result = {}
+
+        command = self.params['command']
 
         # Appliance mode drops the user directly into tmsh, so any leading tmsh
         # syntax can be removed from the provided command
         if self.appliance_mode():
             result['app_mode'] = True
 
-            if self._command[0:4] == 'tmsh':
-                cmd = self._command[4:].strip()
+            if command[0:4] == 'tmsh':
+                cmd = command[4:].strip()
                 result['app_mode_cmd'] = cmd
             else:
-                cmd = self._command
+                cmd = command
         else:
             # If the user has some BIG-IPs that are in Appliance Mode and some
             # that are not, then it may be necessary to add the non-app mode
             # syntax to the command before it is executed.
             result['app_mode'] = False
 
-            if self._command[0:4] != 'tmsh':
-                cmd = 'tmsh ' + self._command
+            if command[0:4] != 'tmsh':
+                cmd = 'tmsh ' + command
             else:
-                cmd = self._command
+                cmd = command
 
         stdin, stdout, stderr = self.api.exec_command(cmd)
 
-        result['stdout'] = stdout.readlines()
-        result['stderr'] = stderr.readlines()
-        result['command'] = self._command
+        result['stdout'] = ''.join(stdout.readlines())
+        result['stderr'] = ''.join(stderr.readlines())
+        result['command'] = command
         result['changed'] = True
 
-        self.result = result
-        return True
+        return result
 
 
 def main():
-    changed = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        command = dict(required=True)
+    )
+    argument_spec.update(meta_args)    
 
     module = AnsibleModule(
-        argument_spec = dict(
-            server=dict(required=True),
-            command=dict(required=True),
-            password=dict(required=True),
-            user=dict(required=True, aliases=['username']),
-            validate_certs=dict(default='yes', type='bool')
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=False
     )
 
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-
     try:
-        if not paramiko_found:
+        if not PARAMIKO_AVAILABLE:
             raise Exception("The python paramiko module is required")
 
-        if not requests_found:
+        if not REQUESTS_AVAILABLE:
             raise Exception("The python requests module is required")
 
-        obj = BigIpSsh(module)
-        if obj.run():
-            result = obj.result
-            module.exit_json(**result)
+        obj = BigIpSsh(**module.params)
+        result = obj.flush()
+
+        module.exit_json(**result)
     except socket.timeout, e:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
+    except socket.gaierror:
+        module.fail_json(msg="Unable to contact the BIG-IP")
     except paramiko.ssh_exception.SSHException, e:
         if 'No existing session' in str(e):
             module.fail_json(msg='Could not log in with provided credentials')
         else:
             module.fail_json(msg=str(e))
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
