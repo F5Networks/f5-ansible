@@ -34,15 +34,13 @@ options:
         get the original file back if you somehow clobbered it incorrectly.
     default: no
     required: False
-    choices:
-      - yes
-      - no
+    choices: ["yes", "no"]
   connection:
     description:
       - The connection used to interface with the BIG-IP
     required: false
     default: smart
-    choices: [ "rest", "icontrol", "smart" ]
+    choices: ["rest", "icontrol", "smart"]
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
@@ -95,7 +93,7 @@ notes:
      would not support appliance mode). Therefore, the best this module can
      do is check for the existence of the file on disk; no checksumming.
 
-requirements: [ "bigsuds", "requests" ]
+requirements: ["bigsuds", "requests"]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 

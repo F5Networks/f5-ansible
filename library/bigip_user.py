@@ -28,9 +28,7 @@ options:
     description:
       - If C(yes), will only add groups, not set them to just the list
         in groups.
-    choices:
-      - yes
-      - no
+    choices: ['yes', 'no']
     default: no
   full_name:
     description:
@@ -41,9 +39,7 @@ options:
       - The connection used to interface with the BIG-IP
     required: false
     default: smart
-    choices:
-      - rest
-      - soap
+    choices: ['rest', 'soap']
   server:
     description:
       - BIG-IP host
@@ -81,10 +77,7 @@ options:
       - Optionally set the user's shell.
     required: false
     default: None
-    choices:
-      - bash
-      - none
-      - tmsh
+    choices: ['bash', 'none', 'tmsh']
   partition:
     description:
       - Partition to create user. Ignored during updates.
@@ -100,10 +93,8 @@ options:
         and C(web-application-security-editor). Partition portion of tuple should
         be an existing partition or the value 'all'.
     required: false
-    default:
-      - "all:no-access"
-    choices:
-      - [partition-name:role]
+    default: "all:no-access"
+    choices: []
   state:
     description:
       - Whether the account should exist or not, taking action if the state is

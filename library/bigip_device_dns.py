@@ -29,9 +29,7 @@ options:
       - If C(yes), will only add specific servers to the device configuration,
         not set them to just the list in C(nameserver), C(nameservers),
         C(forwarder), C(forwarders), C(search_domain) or C(search_domains).
-    choices:
-      - yes
-      - no
+    choices: ['yes', 'no']
     default: no
   server:
     description:
@@ -49,9 +47,7 @@ options:
         rewrites, and authentication.
     required: false
     default: disable
-    choices
-      - enable
-      - disable
+    choices: ['enable', 'disable']
   nameserver:
     description:
       - A single name server that the system uses to validate DNS lookups, and
@@ -101,18 +97,14 @@ options:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
     required: false
     default: 4
-    choices:
-      - 4
-      - 6
+    choices: [4, 6]
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
         that an existing variable is set to C(value).
     required: false
     default: present
-    choices:
-      - absent
-      - present
+    choices: ['absent', 'present']
   user:
     description:
       - BIG-IP username
