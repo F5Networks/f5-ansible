@@ -12,6 +12,9 @@ PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
 all-tests: flake8 ansible-doc
+
+all-tests-dev: flake8 ansible-doc ansible-doc-dev
+
 pylint: pylint-modules
 
 flake8:
@@ -33,7 +36,6 @@ ansible-doc:
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_license.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_partition.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_provision.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_qkview_facts.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_selfip.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_service.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_software.py; \
@@ -43,6 +45,11 @@ ansible-doc:
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_user_facts.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_user.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_vlan.py; \
+	)
+
+ansible-doc-dev:
+	(cd library; \
+	 $(DOCTEST) -M $(MODULE_DIR) bigip_qkview_facts.py; \
 	)
 
 pylint-modules:
