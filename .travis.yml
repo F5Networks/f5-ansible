@@ -6,7 +6,10 @@ python:
 before_install:
     - git config --global user.email "OpenStack_TravisCI@f5.com"
     - git config --global user.name "Travis F5 Openstack"
+    - sudo apt-get -qq update
+    - sudo apt-get install -y python-dev
 install:
     - pip install flake8
+    - pip install markupsafe ansible==1.9.4
 script:
     - make all-tests
