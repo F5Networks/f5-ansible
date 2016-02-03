@@ -1,4 +1,4 @@
-# Ansible BIG-IP Role
+# Ansible F5 Role
 
 ## Overview
 
@@ -19,3 +19,30 @@ enhancement requests using [Github Issues](https://github.com/F5Networks/ansible
 * [bigsuds Python Client 1.0.3 or later] [bigsuds]
 
 [bigsuds]: https://pypi.python.org/pypi/bigsuds/
+
+### Purpose
+
+The purpose of this repository is to serve as a staging ground for Ansible
+modules that we would prefer to have upstreamed over the course of time.
+
+With that said, the following should be taken into consideration.
+
+  - The modules in this repository may be broken periodically due to
+    experimentation or refactoring
+
+  - Modules prefixed with underscores are considered deprecated
+
+  - When a module is deprecated, it will have been upstreamed into the core
+    Ansible product. From that point forward, the module will be maintained
+    in Ansible's github repository. Changes may still take place in the
+    deprecated modules in this repository, but it will be only for research
+    and experimentation purposes.
+
+  - This module will continue to be a place where code is tested and validated
+    when changes are made in upstream Ansible or locally here.
+
+### Your ideas
+
+I'm curious to know what sort of modules you want to see created. If you have
+a use case and can sufficiently describe the behavior you want to see, open
+an issue in this repository and we will hammer out the details.

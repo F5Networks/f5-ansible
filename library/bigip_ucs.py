@@ -308,6 +308,7 @@ class BigIpCommon(object):
             else:
                 return False
 
+
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
         super(BigIpIControl, self).__init__(module)
@@ -363,10 +364,10 @@ class BigIpIControl(BigIpCommon):
                     chain_type = 'FILE_MIDDLE'
 
             self.api.System.ConfigSync.upload_configuration(
-                config_name = self._basename,
-                file_context = dict(
-                    file_data = text,
-                    chain_type = chain_type
+                config_name=self._basename,
+                file_context=dict(
+                    file_data=text,
+                    chain_type=chain_type
                 )
             )
 
@@ -432,11 +433,11 @@ class BigIpIControl(BigIpCommon):
                 cmd = self._command
 
         # Append any options that might be specified
-        for k,v in self.options.iteritems():
+        for k, v in self.options.iteritems():
             if v is False or v is None:
                 continue
             elif k == 'passphrase':
-                cmd += ' %s %s' % (k,v)
+                cmd += ' %s %s' % (k, v)
             else:
                 cmd += ' %s' % (k)
 
@@ -509,7 +510,7 @@ def main():
     icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest', 'ssh']),
             force=dict(required=False, type='bool', default='no'),
             include_chassis_level_config=dict(required=False, type='bool', default=False),

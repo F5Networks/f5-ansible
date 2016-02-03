@@ -426,7 +426,7 @@ class BigIpCommon(object):
 
     def flush(self):
         result = dict()
-        encrypted_credential= self.params['encrypted_credential']
+        encrypted_credential = self.params['encrypted_credential']
         password_credential = self.params['password_credential']
         state = self.params['state']
         user = self.params['user']
@@ -536,7 +536,7 @@ class BigIpSoapApi(BigIpCommon):
         username_credential = self.params['username_credential']
 
         permissions = self.get_user_permission()
-        for partition,role in permissions.iteritems():
+        for partition, role in permissions.iteritems():
             permission = dict(role=role, partition=partition)
             self.api.Management.UserManagement.delete_user_permission(
                 user_names=[username_credential],
@@ -622,7 +622,7 @@ class BigIpSoapApi(BigIpCommon):
     def read(self):
         result = {}
 
-        ROLE_RMAP = dict((v,k) for k,v in self.ROLE_MAP.iteritems())
+        ROLE_RMAP = dict((v, k) for k, v in self.ROLE_MAP.iteritems())
 
         result['full_name'] = self.get_fullname()
         result['partition_access'] = []
@@ -632,7 +632,7 @@ class BigIpSoapApi(BigIpCommon):
         result['shell'] = self.SHELL_RMAP[shell]
 
         acls = self.get_user_permission()
-        for partition,role in acls.iteritems():
+        for partition, role in acls.iteritems():
             if partition == self.ALL_PARTITION:
                 partition = 'all'
             role = ROLE_RMAP[role]
@@ -789,6 +789,7 @@ class BigIpSoapApi(BigIpCommon):
             elif password_credential is None:
                 raise PasswordRequiredError
             return self.create()
+
 
 class BigIpRestApi(BigIpCommon):
     """Manipulate user accounts via REST
@@ -1022,23 +1023,23 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        append = dict(default=False, type='bool', choices=BOOLEANS),
-        full_name = dict(),
-        connection = dict(default='soap', choices=TRANSPORTS),
-        encrypted_credential = dict(required=False, default=None, no_log=True),
-        partition_access = dict(required=False, default='all:no-access'),
-        password_credential = dict(required=False, default=None, no_log=True),
-        shell = dict(default=None, choices=SHELLS),
-        state = dict(default='present', choices=STATES),
-        username_credential = dict(required=True, aliases=['name']),
-        update_password = dict(required=False, default='always', choices=['always', 'on_create'])
+        append=dict(default=False, type='bool', choices=BOOLEANS),
+        full_name=dict(),
+        connection=dict(default='soap', choices=TRANSPORTS),
+        encrypted_credential=dict(required=False, default=None, no_log=True),
+        partition_access=dict(required=False, default='all:no-access'),
+        password_credential=dict(required=False, default=None, no_log=True),
+        shell=dict(default=None, choices=SHELLS),
+        state=dict(default='present', choices=STATES),
+        username_credential=dict(required=True, aliases=['name']),
+        update_password=dict(required=False, default='always', choices=['always', 'on_create'])
     )
-    argument_spec.update(meta_args)    
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        mutually_exclusive = [
+        mutually_exclusive=[
             ['password_credential', 'encrypted_credential']
         ]
     )
@@ -1048,7 +1049,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
     except AdminRoleNoModifyError:
         module.fail_json(msg="The admin user's role cannot be changed")
@@ -1067,11 +1068,9 @@ def main():
     except InvalidRoleError:
         module.fail_json(msg='Value of role must be one of: %s' % ','.join(ROLES))
     except RestrictedToSinglePartitionError:
-        module.fail_json(msg='The specified role may not be restricted to a single partition') 
+        module.fail_json(msg='The specified role may not be restricted to a single partition')
     except requests.exceptions.SSLError:
         module.fail_json(msg='Certificate verification failed. Consider using validate_certs=no')
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *

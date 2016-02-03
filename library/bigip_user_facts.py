@@ -77,7 +77,6 @@ EXAMPLES = """
 - debug: var=bigip
 """
 
-import json
 import socket
 
 try:
@@ -93,6 +92,7 @@ except ImportError:
     requests_found = False
 else:
     requests_found = True
+
 
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
@@ -121,10 +121,6 @@ class BigIpCommon(object):
         self._name = module.params.get('name')
 
         self._validate_certs = module.params.get('validate_certs')
-
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._server,443), 60)
-        sock.close()
 
 
 class BigIpIControl(BigIpCommon):
@@ -282,7 +278,7 @@ def main():
     changed = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='rest', choices=['icontrol', 'rest']),
             server=dict(required=True),
             password=dict(require=True),

@@ -213,10 +213,6 @@ class BigIpCommon(object):
         if not self._validate_certs:
             requests.packages.urllib3.disable_warnings()
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
-
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -282,10 +278,12 @@ class BigIpRest(BigIpCommon):
             else:
                 route_domain_id = 0
 
-            self.create(name=self._name, vlanid=self._vlan_id,
-                interface=self._interface, description=self._description,
-                route_domain_id=route_domain_id
-            )
+            self.create(name=self._name,
+                        vlanid=self._vlan_id,
+                        interface=self._interface,
+                        description=self._description,
+                        route_domain_id=route_domain_id
+                        )
             return True
 
         if self._vlan_id:
@@ -558,7 +556,7 @@ class BigIpRest(BigIpCommon):
             folder=folder, route_domain_id=route_domain_id)
         if not route_domain:
             raise RouteUpdateException("Cannot get route domain %s" % route_domain_id)
-        if not name in existing_vlans:
+        if name not in existing_vlans:
             existing_vlans.append(name)
             vlans = dict()
             vlans['vlans'] = existing_vlans

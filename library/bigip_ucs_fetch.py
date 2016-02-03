@@ -24,8 +24,8 @@ description:
    - This module is used for fetching UCS files from remote machines and
      storing them locally in a file tree, organized by hostname. Note that
      this module is written to transfer UCS files that might not be present,
-     so a missing remote UCS won’t be an error unless fail_on_missing is
-     set to ‘yes’.
+     so a missing remote UCS won't be an error unless fail_on_missing is
+     set to 'yes'.
 version_added: "2.1"
 options:
   backup:
@@ -163,7 +163,6 @@ state:
 
 import socket
 import os
-import sys
 import base64
 
 try:
@@ -184,9 +183,11 @@ else:
 CHUNK_SIZE = 512 * 1024
 SAVE_FULL = "SAVE_FULL"
 
+
 def test_icontrol(username, password, hostname, validate_certs):
     api = bigip_api(hostname, username, password, validate_certs)
     api.Management.LicenseAdministration.get_license_activation_status()
+
 
 def bigip_version():
     """Check the BIG-IP version
@@ -198,39 +199,36 @@ def bigip_version():
     version = self.api.System.SystemInfo.get_version()
     return version
 
+
 class BigIpCommon(object):
     def __init__(self, username, password, hostname, validate_certs=True,
-        check_mode=False):
+                 check_mode=False):
 
         self._username = username
         self._password = password
         self._hostname = hostname
         self._validate_certs = validate_certs
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
-
 
 class BigIpIControl(BigIpCommon):
-    def __init__(self, username, password, hostname, 
-        validate_certs=True, check_mode=False):
+    def __init__(self, username, password, hostname,
+                 validate_certs=True, check_mode=False):
 
         super(BigIpIControl, self).__init__(username, password, hostname,
-            validate_certs, check_mode)
+                                            validate_certs, check_mode)
 
         self.api = bigip_api(hostname, username, password, validate_certs)
 
     def create(self, filename, encryption_password=None):
         if encryption_password:
             self.api.System.ConfigSync.save_encrypted_configuration(
-                filename = filename,
-                passphrase = encryption_password
+                filename=filename,
+                passphrase=encryption_password
             )
         else:
             self.api.System.ConfigSync.save_configuration(
-                filename = filename,
-                save_flag = SAVE_FULL
+                filename=filename,
+                save_flag=SAVE_FULL
             )
 
     def read(self):
@@ -254,14 +252,13 @@ class BigIpIControl(BigIpCommon):
     def download(self, src, dest):
         fileobj = open(dest, 'wb')
         offset = 0
-        first = True
         done = False
 
         while not done:
             data = self.api.System.ConfigSync.download_configuration(
-                config_name = src,
-                chunk_size = CHUNK_SIZE,
-                file_offset = offset
+                config_name=src,
+                chunk_size=CHUNK_SIZE,
+                file_offset=offset
             )
             fileobj.write(base64.b64decode(data['return']['file_data']))
             offset = data['file_offset']
@@ -271,11 +268,11 @@ class BigIpIControl(BigIpCommon):
 
 
 class BigIpRest(BigIpCommon):
-    def __init__(self, username, password, hostname, 
-        validate_certs=True, check_mode=False):
+    def __init__(self, username, password, hostname,
+                 validate_certs=True, check_mode=False):
 
         super(BigIpIControl, self).__init__(username, password, hostname,
-            validate_certs, check_mode)
+                                            validate_certs, check_mode)
 
     def download(self, filename):
         headers = {
@@ -284,23 +281,23 @@ class BigIpRest(BigIpCommon):
         filename = os.path.basename(fp)
         uri = 'https://%s/mgmt/cm/autodeploy/software-image-downloads/%s' % (host, filename)
         requests.packages.urllib3.disable_warnings()
- 
+
         with open(fp, 'wb') as f:
             start = 0
             end = CHUNK_SIZE - 1
             size = 0
             current_bytes = 0
- 
+
             while True:
                 content_range = "%s-%s/%s" % (start, end, size)
                 headers['Content-Range'] = content_range
- 
+
                 resp = requests.get(uri,
                                     auth=creds,
                                     headers=headers,
                                     verify=False,
                                     stream=True)
- 
+
                 if resp.status_code == 200:
                     # If the size is zero, then this is the first time through the
                     # loop and we don't want to write data because we haven't yet
@@ -309,29 +306,29 @@ class BigIpRest(BigIpCommon):
                         current_bytes += CHUNK_SIZE
                         for chunk in resp.iter_content(CHUNK_SIZE):
                             f.write(chunk)
- 
+
                     # Once we've downloaded the entire file, we can break out of
                     # the loop
                     if end == size:
                         break
- 
+
                 crange = resp.headers['Content-Range']
- 
+
                 # Determine the total number of bytes to read
                 if size == 0:
                     size = int(crange.split('/')[-1]) - 1
- 
+
                     # If the file is smaller than the chunk size, BIG-IP will
                     # return an HTTP 400. So adjust the CHUNK_SIZE down to the
                     # total file size...
                     if CHUNK_SIZE > size:
                         end = size
- 
+
                     # ...and pass on the rest of the code
                     continue
- 
+
                 start += CHUNK_SIZE
- 
+
                 if (current_bytes + CHUNK_SIZE) > size:
                     end = size
                 else:
@@ -345,7 +342,7 @@ def main():
     argument_spec = f5_argument_spec()
 
     argument_spec['backup'] = dict(required=False, default=False, type='bool', choices=BOOLEANS)
-    argument_spec['connection'] = dict(default='smart', choices=['icontrol','rest','smart'])
+    argument_spec['connection'] = dict(default='smart', choices=['icontrol', 'rest', 'smart'])
     argument_spec['create_on_missing'] = dict(required=False, default=True, type='bool', choices=BOOLEANS)
     argument_spec['encryption_password'] = dict(required=False)
     argument_spec['dest'] = dict(required=True)
@@ -403,7 +400,7 @@ def main():
                     # os.path.exists() can return false in some
                     # circumstances where the directory does not have
                     # the execute bit for the current user set, in
-                    # which case the stat() call will raise an OSError 
+                    # which case the stat() call will raise an OSError
                     os.stat(os.path.dirname(dest))
                 except OSError, e:
                     if "permission denied" in str(e).lower():
@@ -424,7 +421,9 @@ def main():
         changed = True
 
         res_args = dict(
-            dest = dest, src = src, changed = changed
+            dest=dest,
+            src=src,
+            changed=changed
         )
         if backup_file:
             res_args['backup_file'] = backup_file
