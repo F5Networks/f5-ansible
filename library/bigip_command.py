@@ -120,6 +120,7 @@ except ImportError:
 else:
     REQUESTS_AVAILABLE = True
 
+
 class BigIpCommon(object):
     def __init__(self, *args, **kwargs):
         self.result = dict(changed=False, changes=dict())
@@ -207,9 +208,9 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        command = dict(required=True)
+        command=dict(required=True)
     )
-    argument_spec.update(meta_args)    
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,

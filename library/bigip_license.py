@@ -240,10 +240,6 @@ class BigIpLicenseCommon(object):
 
         self._validate_certs = module.params.get('validate_certs')
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self.hostname,443), 60)
-        sock.close()
-
         self.client = bigsuds.BIGIP(
             hostname=self.hostname,
             username=self.username,
@@ -312,9 +308,9 @@ class BigIpLicenseCommon(object):
 
         user_data = self.read_account()
         pa = user_data['partitionAccess']
-        roles = set([ p['role'] for p in pa ])
+        roles = set([p['role'] for p in pa])
 
-        found = [ x for x in roles if x in can_have_advanced ]
+        found = [x for x in roles if x in can_have_advanced]
         if len(found) > 0:
             return True
         else:
@@ -557,11 +553,11 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
         file_name = '/%s' % self.eula_file
 
         self.client.System.ConfigSync.upload_file(
-            file_name = file_name,
-            file_context = {
-                'file_data': base64.b64encode(eula),
-                'chain_type': 'FILE_FIRST_AND_LAST'
-            }
+            file_name=file_name,
+            file_context=dict(
+                file_data=base64.b64encode(eula),
+                chain_type='FILE_FIRST_AND_LAST'
+            )
         )
 
     def present(self):
@@ -616,7 +612,7 @@ def main():
     changed = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             dossier_file=dict(),
             server=dict(required=True),
             key=dict(required=False),
@@ -663,7 +659,7 @@ def main():
                 module.fail_json(msg="License not removed")
 
         module.exit_json(changed=changed)
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
     except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
@@ -675,8 +671,6 @@ def main():
         module.fail_json(msg=str(e))
     except SSLCertVerifyError:
         module.fail_json(msg="SSL certificate verification failed. Use validate_certs=no to bypass this")
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
 

@@ -76,18 +76,18 @@ EXAMPLES = """
           ip_address: 10.1.1.1
 """
 
-import sys
 import re
 from distutils.version import StrictVersion
 
 try:
     import bigsuds
 except ImportError:
-	bigsuds_found = False
+    bigsuds_found = False
 else:
-	bigsuds_found = True
+    bigsuds_found = True
 
-VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+
 
 def get_resource_record(module):
     rtype = module.params['type']
@@ -97,11 +97,13 @@ def get_resource_record(module):
     elif rtype == 'CNAME':
         return AResourceRecord(module)
 
+
 class ResourceRecordException(Exception):
-	  pass
+    pass
+
 
 class ResourceRecord(object):
-    REQUIRED_BIGIP_VERSION='9.0.3'
+    REQUIRED_BIGIP_VERSION = '9.0.3'
 
     def __init__(self, module):
         self.module = module
@@ -118,10 +120,10 @@ class ResourceRecord(object):
         if not self.zone.endswith('.'):
             self.zone += '.'
 
-        self.view_zones = [{
-            'view_name': self.view,
-            'zone_name': self.zone
-        }]
+        self.view_zones = dict(
+            view_name=self.view,
+            zone_name=self.zone
+        )
 
         self.client = bigsuds.BIGIP(
             hostname=self.hostname,
@@ -130,10 +132,9 @@ class ResourceRecord(object):
             debug=True
         )
 
-        # Do some checking of 
         self.check_required_params()
         self.check_version()
-       
+
     def check_version(self):
         response = self.client.System.SystemInfo.get_version()
         match = re.search(VERSION_PATTERN, response)
@@ -152,26 +153,28 @@ class ResourceRecord(object):
             if param not in params:
                 raise ResourceRecordException('Required param %s not specified' % param)
 
+
 class AResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
         'domain_name', 'ip_address'
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'ip_address': self.options['ip_address'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            ip_address=self.options['ip_address'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_a(
-                view_zones=self.view_zones,
-                a_records=records,
+            self.client.Management.ResourceRecord.add_a(
+                view_zones=[self.view_zones],
+                a_records=[[records]],
                 sync_ptrs=[1]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class AaaaResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -179,20 +182,21 @@ class AaaaResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'ip_address': self.options['ip_address'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            ip_address=self.options['ip_address'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_aaaa(
-                view_zones=self.view_zones,
-                aaaa_records=records,
+            self.client.Management.ResourceRecord.add_aaaa(
+                view_zones=[self.view_zones],
+                aaaa_records=[[records]],
                 sync_ptrs=[1]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class CnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -200,19 +204,20 @@ class CnameResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'cname': self.options['cname'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            cname=self.options['cname'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_cname(
-                view_zones=self.view_zones,
-                cname_records=records
+            self.client.Management.ResourceRecord.add_cname(
+                view_zones=[self.view_zones],
+                cname_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class DnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -220,19 +225,20 @@ class DnameResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'label': self.options['label'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            label=self.options['label'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_dname(
-                view_zones=self.view_zones,
-                dname_records=records
+            self.client.Management.ResourceRecord.add_dname(
+                view_zones=[self.view_zones],
+                dname_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class DsResourceRecord(ResourceRecord):
     REQUIRED_BIGIP_VERSION = '11.4.0'
@@ -242,22 +248,23 @@ class DsResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'key_tag': self.options['label'],
-            'algorithm': self.options['algorithm'],
-            'digest_type': self.options['digest_type'],
-            'digest': self.options['digest'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            key_tag=self.options['label'],
+            algorithm=self.options['algorithm'],
+            digest_type=self.options['digest_type'],
+            digest=self.options['digest'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_ds(
-                view_zones=self.view_zones,
-                ds_records=records
+            self.client.Management.ResourceRecord.add_ds(
+                view_zones=[self.view_zones],
+                ds_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class HinfoResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -265,20 +272,21 @@ class HinfoResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'hardware': self.options['hardware'],
-            'os': self.options['os'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            hardware=self.options['hardware'],
+            os=self.options['os'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_hinfo(
-                view_zones=self.view_zones,
-                hinfo_records=records
+            self.client.Management.ResourceRecord.add_hinfo(
+                view_zones=[self.view_zones],
+                hinfo_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class MxResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -286,20 +294,21 @@ class MxResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'preference': self.options['preference'],
-            'mail': self.options['mail'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            preference=self.options['preference'],
+            mail=self.options['mail'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_mx(
-                view_zones=self.view_zones,
-                mx_records=records
+            self.client.Management.ResourceRecord.add_mx(
+                view_zones=[self.view_zones],
+                mx_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class NaptrResourceRecord(ResourceRecord):
     REQUIRED_BIGIP_VERSION = '11.4.0'
@@ -310,24 +319,25 @@ class NaptrResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'order': self.options['order'],
-            'preference': self.options['preference'],
-            'flags': self.options['flags'],
-            'service': self.options['service'],
-            'regexp': self.options['regexp'],
-            'replacement': self.options['replacement'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            order=self.options['order'],
+            preference=self.options['preference'],
+            flags=self.options['flags'],
+            service=self.options['service'],
+            regexp=self.options['regexp'],
+            replacement=self.options['replacement'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_naptr(
-                view_zones=self.view_zones,
-                naptr_records=records
+            self.client.Management.ResourceRecord.add_naptr(
+                view_zones=[self.view_zones],
+                naptr_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class NsResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -335,19 +345,20 @@ class NsResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'host_name': self.options['host_name'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            host_name=self.options['host_name'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_ns(
-                view_zones=self.view_zones,
-                ns_records=records
+            self.client.Management.ResourceRecord.add_ns(
+                view_zones=[self.view_zones],
+                ns_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class PtrResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -355,19 +366,20 @@ class PtrResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'ip_address': self.options['ip_address'],
-            'dname': self.options['dname'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            ip_address=self.options['ip_address'],
+            dname=self.options['dname'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_ptr(
-                view_zones=self.view_zones,
-                ptr_records=records
+            self.client.Management.ResourceRecord.add_ptr(
+                view_zones=[self.view_zones],
+                ptr_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class SoaResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -376,25 +388,26 @@ class SoaResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'primary': self.options['primary'],
-            'email': self.options['email'],
-            'serial': self.options['serial'],
-            'refresh': self.options['refresh'],
-            'retry': self.options['retry'],
-            'expire': self.options['expire'],
-            'neg_ttl': self.options['neg_ttl'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            primary=self.options['primary'],
+            email=self.options['email'],
+            serial=self.options['serial'],
+            refresh=self.options['refresh'],
+            retry=self.options['retry'],
+            expire=self.options['expire'],
+            neg_ttl=self.options['neg_ttl'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_soa(
-                view_zones=self.view_zones,
-                soa_records=records
+            self.client.Management.ResourceRecord.add_soa(
+                view_zones=[self.view_zones],
+                soa_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class SrvResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -402,22 +415,23 @@ class SrvResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'priority': self.options['priority'],
-            'weight': self.options['weight'],
-            'port': self.options['port'],
-            'target': self.options['target'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            priority=self.options['priority'],
+            weight=self.options['weight'],
+            port=self.options['port'],
+            target=self.options['target'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_srv(
-                view_zones=self.view_zones,
-                srv_records=records
+            self.client.Management.ResourceRecord.add_srv(
+                view_zones=[self.view_zones],
+                srv_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class TxtResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -425,19 +439,20 @@ class TxtResourceRecord(ResourceRecord):
     ]
 
     def create_record(self):
-        records = [[{
-            'domain_name': self.options['domain_name'],
-            'text': self.options['text'],
-            'ttl': self.ttl
-        }]]
+        records = dict(
+            domain_name=self.options['domain_name'],
+            text=self.options['text'],
+            ttl=self.ttl
+        )
 
         try:
-            response = self.client.Management.ResourceRecord.add_txt(
-                view_zones=self.view_zones,
-                txt_records=records
+            self.client.Management.ResourceRecord.add_txt(
+                view_zones=[self.view_zones],
+                txt_records=[[records]]
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 def main():
     rr_choices = [
@@ -447,7 +462,7 @@ def main():
     ]
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             username=dict(default='admin'),
             password=dict(default='admin'),
             hostname=dict(required=True),
@@ -479,4 +494,6 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
-main()
+
+if __name__ == '__main__':
+    main()

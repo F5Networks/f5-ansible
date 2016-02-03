@@ -118,6 +118,7 @@ def test_icontrol(username, password, hostname):
     except:
         return False
 
+
 class BigIpCommon(object):
     def __init__(self, module):
         self._username = module.params.get('user')
@@ -127,10 +128,6 @@ class BigIpCommon(object):
         self._service = module.params.get('name')
         self._timeout = module.params.get('timeout')
         self._validate_certs = module.params.get('validate_certs')
-
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 
 class BigIpIControl(BigIpCommon):
@@ -191,8 +188,8 @@ class BigIpIControl(BigIpCommon):
 
         try:
             self.api.System.Services.set_service(
-                services = [self._service],
-                service_action = 'SERVICE_ACTION_START'
+                services=[self._service],
+                service_action='SERVICE_ACTION_START'
             )
             changed = True
         except:
@@ -206,8 +203,8 @@ class BigIpIControl(BigIpCommon):
 
         try:
             self.api.System.Services.set_service(
-                services = [self._service],
-                service_action = 'SERVICE_ACTION_STOP'
+                services=[self._service],
+                service_action='SERVICE_ACTION_STOP'
             )
             changed = True
         except:
@@ -221,8 +218,8 @@ class BigIpIControl(BigIpCommon):
 
         try:
             self.api.System.Services.set_service(
-                services = [self._service],
-                service_action = 'SERVICE_ACTION_RESTART'
+                services=[self._service],
+                service_action='SERVICE_ACTION_RESTART'
             )
             changed = True
         except:
@@ -238,18 +235,18 @@ def main():
     icontrol = False
 
     service_choices = [
-        'big3d','gtmd','named','ntpd','snmpd','sshd','zrd','websso'
+        'big3d', 'gtmd', 'named', 'ntpd', 'snmpd', 'sshd', 'zrd', 'websso'
     ]
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest']),
             server=dict(required=True),
             name=dict(required=True, choices=service_choices),
             password=dict(default='admin'),
             state=dict(default=None, choices=['started', 'stopped', 'restarted']),
             user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool', choices=['yes','no']),
+            validate_certs=dict(default='yes', type='bool', choices=['yes', 'no']),
             timeout=dict(default='60')
         )
     )

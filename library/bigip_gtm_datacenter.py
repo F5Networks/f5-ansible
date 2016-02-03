@@ -122,6 +122,7 @@ except ImportError:
 else:
     requests_found = True
 
+
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
         hostname=hostname,
@@ -139,6 +140,7 @@ def test_icontrol(username, password, hostname):
     except:
         return False
 
+
 class BigIpCommon(object):
     def __init__(self, module):
         self._username = module.params.get('user')
@@ -151,9 +153,6 @@ class BigIpCommon(object):
         self._contact = module.params.get('contact')
         self._validate_certs = module.params.get('validate_certs')
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -306,12 +305,12 @@ class BigIpRest(BigIpCommon):
         self._full_name = '~Common~%s' % self._name
 
     def create(self):
-        params = {
-            'name': self._name,
-            'location': self._location,
-            'contact': self._contact,
-            'description': self._description
-        }
+        params = dict(
+            name=self._name,
+            location=self._location,
+            contact=self._contact,
+            description=self._description
+        )
 
         resp = requests.post(self._uri,
                              auth=(self._username, self._password),
@@ -325,7 +324,7 @@ class BigIpRest(BigIpCommon):
             raise Exception(res['message'])
 
     def read(self):
-        uri = '%s/%s' % ( self._uri, self._full_name)
+        uri = '%s/%s' % (self._uri, self._full_name)
         resp = requests.get(uri,
                             auth=(self._username, self._password),
                             verify=self._validate_certs)
@@ -336,7 +335,7 @@ class BigIpRest(BigIpCommon):
             raise Exception(res['message'])
 
     def update(self):
-        uri = '%s/%s' % ( self._uri, self._full_name)
+        uri = '%s/%s' % (self._uri, self._full_name)
         resp = requests.put(uri,
                             auth=(self._username, self._password),
                             data=json.dumps(self._payload),
@@ -349,10 +348,10 @@ class BigIpRest(BigIpCommon):
             raise Exception(res['message'])
 
     def delete(self):
-        uri = '%s/%s' % ( self._uri, self._full_name)
+        uri = '%s/%s' % (self._uri, self._full_name)
         resp = requests.delete(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
+                               auth=(self._username, self._password),
+                               verify=self._validate_certs)
         if resp.status_code == 200:
             return True
         else:
@@ -487,7 +486,7 @@ class BigIpRest(BigIpCommon):
         return changed
 
     def exists(self):
-        uri = '%s/%s' % ( self._uri, self._full_name)
+        uri = '%s/%s' % (self._uri, self._full_name)
         resp = requests.get(uri,
                             auth=(self._username, self._password),
                             verify=self._validate_certs)
@@ -502,7 +501,7 @@ def main():
     icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='rest', choices=['icontrol', 'rest']),
             contact=dict(required=False, default=None),
             description=dict(required=False, default=None),
@@ -554,12 +553,10 @@ def main():
         elif state == "absent":
             if obj.absent():
                 changed = True
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 

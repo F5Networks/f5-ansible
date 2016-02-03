@@ -126,6 +126,7 @@ SHARED_CONFIG_DEFAULT_TRAFFIC_GROUP = 'traffic-group-local-only'
 CONNECTION_TIMEOUT = 30
 OBJ_PREFIX = 'uuid_'
 
+
 def strip_domain_address(ip_address):
     """ Strip domain from ip address """
     mask_index = ip_address.find('/')
@@ -227,11 +228,8 @@ class BigIpCommon(object):
         if not self._self_ip:
             self._self_ip = self._address
 
-        self._formatted_name = "/Common/%s" % (self._self_ip.replace('/','_'))
+        self._formatted_name = "/Common/%s" % (self._self_ip.replace('/', '_'))
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -422,15 +420,15 @@ class BigIpRest(BigIpCommon):
         if self._address:
             if not self.get_addr(self._self_ip):
                 self.create(self._self_ip, self._address, self._netmask,
-                    self._vlan, self._floating_state, self._traffic_group
-                )
+                            self._vlan, self._floating_state, self._traffic_group
+                            )
             elif self.address != self._address:
                 # There is no set address, so we need to delete the address
                 # and then create a new one
                 self._delete(self._self_ip)
                 self.create(self._self_ip, self._address, self._netmask,
-                    self._vlan, self._floating_state, self._traffic_group
-                )
+                            self._vlan, self._floating_state, self._traffic_group
+                            )
 
                 # Creating the new address means we can skip the remaining
                 # steps because they would be redundant
@@ -521,7 +519,7 @@ class BigIpRest(BigIpCommon):
         """ Add VLANs to Domain """
         folder = str(folder).replace('/', '')
         existing_vlans = self.get_vlans_in_domain(folder=folder)
-        if not name in existing_vlans:
+        if name not in existing_vlans:
             existing_vlans.append(name)
             vlans = dict()
             vlans['vlans'] = existing_vlans
@@ -873,7 +871,7 @@ def main():
     icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             address=dict(required=True, default=None),
             connection=dict(default='rest', choices=['icontrol', 'rest']),
             floating_state=dict(required=False, default='disabled'),

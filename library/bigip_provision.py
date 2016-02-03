@@ -196,19 +196,15 @@ class BigIpIControl(BigIpCommon):
     def exists(self):
         try:
             response = self._client.Management.Provision.get_level(
-                moduless = [
-                    self._module
-                ]
+                moduless=[self._module]
             )
         except bigsuds.ServerError:
             return False
-         
+
     def read(self):
         try:
             response = self._client.Management.DBVariable.query(
-                variables = [
-                    self._key
-                ]
+                variables=[self._key]
             )
         except bigsuds.ServerError:
             return {}
@@ -222,11 +218,12 @@ class BigIpIControl(BigIpCommon):
         if current and current['name'].lower() == self._key:
             if current['value'] != self._value:
                 try:
+                    params = dict(
+                        name=self._key,
+                        value=self._value
+                    )
                     self._client.Management.DBVariable.modify(
-                        variables = [{
-                            'name': self._key,
-                            'value': self._value
-                        }]
+                        variables=[params]
                     )
                     changed = True
                 except:
@@ -282,15 +279,15 @@ def main():
     ]
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='rest', choices=['icontrol', 'rest']),
             server=dict(required=True),
             module=dict(required=True, choices=module_choices),
-            level=dict(default='nominal', choices=['nominal','dedicated','minimal']),
+            level=dict(default='nominal', choices=['nominal', 'dedicated', 'minimal']),
             password=dict(default='admin'),
             state=dict(default='present', choices=['present', 'reset']),
             user=dict(default='admin'),
-            validate_certs=dict(default='yes', type='bool', choices=['yes','no']),
+            validate_certs=dict(default='yes', type='bool', choices=['yes', 'no']),
         )
     )
 
@@ -320,9 +317,9 @@ def main():
         elif state == "absent":
             if obj.absent():
                 changed = True
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
     except bigsuds.ConnectionError, e:
         module.fail_json(msg=str(e))

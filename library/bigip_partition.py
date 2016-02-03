@@ -87,6 +87,7 @@ except ImportError:
 else:
     requests_found = True
 
+
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
         hostname=hostname,
@@ -104,6 +105,7 @@ def test_icontrol(username, password, hostname):
     except:
         return False
 
+
 class BigIpCommon(object):
     def __init__(self, module):
         self._username = module.params.get('user')
@@ -114,9 +116,6 @@ class BigIpCommon(object):
         self._value = module.params.get('value')
         self._validate_certs = module.params.get('validate_certs')
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -132,9 +131,7 @@ class BigIpIControl(BigIpCommon):
     def read(self):
         try:
             response = self.api.Management.DBVariable.query(
-                variables = [
-                    self._key
-                ]
+                variables=[self._key]
             )
         except bigsuds.ServerError:
             return {}
@@ -148,11 +145,12 @@ class BigIpIControl(BigIpCommon):
         if current and current['name'].lower() == self._key:
             if current['value'] != self._value:
                 try:
+                    params = dict(
+                        name=self._key,
+                        value=self._value
+                    )
                     self.api.Management.DBVariable.modify(
-                        variables = [{
-                            'name': self._key,
-                            'value': self._value
-                        }]
+                        variables=[params]
                     )
                     changed = True
                 except Exception, err:
@@ -165,9 +163,7 @@ class BigIpIControl(BigIpCommon):
 
         try:
             self.api.Management.DBVariable.reset(
-                variables = [
-                    self._key
-                ]
+                variables=[self._key]
             )
             changed = True
         except Exception, err:
@@ -236,16 +232,17 @@ class BigIpRest(BigIpCommon):
                     res = resp.json()
                     raise Exception(res['message'])
         else:
-           raise Exception('The given key does not exist to reset')
+            raise Exception('The given key does not exist to reset')
 
         return changed
+
 
 def main():
     changed = False
     icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='rest', choices=['icontrol', 'rest']),
             server=dict(required=True),
             key=dict(required=True),

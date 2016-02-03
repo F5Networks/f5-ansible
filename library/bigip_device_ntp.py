@@ -110,7 +110,7 @@ else:
 
 class BigIpCommon(object):
     def __init__(self, user, password, server, ntp_servers=[], timezone=None,
-        append=False, validate_certs=True):
+                 append=False, validate_certs=True):
 
         self._username = user
         self._password = password
@@ -124,10 +124,6 @@ class BigIpCommon(object):
         self._timezone = timezone
         self._append = append
         self._validate_certs = validate_certs
-
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 
 class BigIpRest(BigIpCommon):
@@ -151,10 +147,10 @@ class BigIpRest(BigIpCommon):
     """
 
     def __init__(self, user, password, server, ntp_servers=[], timezone=None,
-        append=False, validate_certs=True):
+                 append=False, validate_certs=True):
 
         super(BigIpRest, self).__init__(user, password, server, ntp_servers,
-            timezone, append, validate_certs)
+                                        timezone, append, validate_certs)
 
         self._uri = 'https://%s/mgmt/tm/sys/ntp' % (self._hostname)
         self._headers = {
@@ -261,7 +257,7 @@ def main():
     changed = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             append=dict(default='no', type='bool'),
             server=dict(required=True),
             password=dict(required=True),
@@ -272,10 +268,10 @@ def main():
             user=dict(required=True, aliases=['username']),
             validate_certs=dict(default='yes', type='bool'),
         ),
-        required_one_of = [
+        required_one_of=[
             ['ntp_server', 'ntp_servers', 'timezone']
         ],
-        mutually_exclusive = [
+        mutually_exclusive=[
             ['ntp_server', 'ntp_servers']
         ]
     )
@@ -301,7 +297,7 @@ def main():
             raise Exception("The python requests module is required")
 
         obj = BigIpRest(username, password, hostname, ntp_servers, timezone,
-            append, validate_certs)
+                        append, validate_certs)
 
         if state == "present":
             if obj.present():

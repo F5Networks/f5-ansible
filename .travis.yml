@@ -9,5 +9,4 @@ before_install:
 install:
     - pip install flake8
 script:
-    - flake8 .
-    - make doc-test
+    - make all-tests

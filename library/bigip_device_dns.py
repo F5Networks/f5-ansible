@@ -137,7 +137,6 @@ EXAMPLES = """
 
 import json
 import socket
-import sys
 
 try:
     import requests
@@ -149,8 +148,8 @@ else:
 
 class BigIpCommon(object):
     def __init__(self, user, password, server, nameservers=[], forwarders=[],
-        search_domains=[], cache=None, ip_version=None, append=False,
-        validate_certs=True):
+                 search_domains=[], cache=None, ip_version=None, append=False,
+                 validate_certs=True):
 
         self._username = user
         self._password = password
@@ -177,15 +176,11 @@ class BigIpCommon(object):
 
         self._validate_certs = validate_certs
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
-
 
 class BigIpRest(BigIpCommon):
     def __init__(self, user, password, server, nameservers=[], forwarders=[],
-        search_domains=[], cache=None, ip_version=None, append=False,
-        validate_certs=True):
+                 search_domains=[], cache=None, ip_version=None, append=False,
+                 validate_certs=True):
 
         """Handles manipulating the DNS settings on a device via REST interface
 
@@ -206,16 +201,13 @@ class BigIpRest(BigIpCommon):
         """
 
         super(BigIpRest, self).__init__(user, password, server, nameservers,
-            forwarders, search_domains, cache, ip_version, append,
-            validate_certs)
+                                        forwarders, search_domains, cache,
+                                        ip_version, append, validate_certs)
 
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
+        self._headers = dict()
+        self._headers['Content-Type'] = 'application/json'
 
     def dhcp_enabled(self):
-        result = {}
-
         uri = 'https://%s/mgmt/tm/sys/db/dhclient.mgmt' % (self._hostname)
         resp = requests.get(uri,
                             auth=(self._username, self._password),
@@ -512,12 +504,13 @@ class BigIpRest(BigIpCommon):
         else:
             res = resp.json()
             raise Exception(res['message'])
-       
+
+
 def main():
     changed = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             append=dict(default='no', type='bool'),
             cache=dict(required=False, choices=['disable', 'enable'], default=None),
             server=dict(required=True),
@@ -530,14 +523,14 @@ def main():
             forwarders=dict(required=False, type='list', default=[]),
             search_domain=dict(required=False, type='str', default=None),
             search_domains=dict(required=False, type='list', default=[]),
-            ip_version=dict(required=False, default=None, choices=['4','6']),
+            ip_version=dict(required=False, default=None, choices=['4', '6']),
             validate_certs=dict(default='yes', type='bool')
         ),
-        required_one_of = [[
+        required_one_of=[[
             'nameserver', 'nameservers', 'search_domain', 'search_domains',
             'forwarder', 'forwarders', 'ip_version', 'cache'
         ]],
-        mutually_exclusive = [
+        mutually_exclusive=[
             ['nameserver', 'nameservers'],
             ['forwarder', 'forwarders'],
             ['search_domain', 'search_domains']
@@ -575,7 +568,7 @@ def main():
             module.fail_json(msg=mesg)
 
         obj = BigIpRest(username, password, hostname, nameservers, forwarders,
-            search_domains, cache, ip_version, append, validate_certs)
+                        search_domains, cache, ip_version, append, validate_certs)
 
         if obj.dhcp_enabled():
             module.fail_json(msg="DHCP on the mgmt interface must be disabled to make use of this module")

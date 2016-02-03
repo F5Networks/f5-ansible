@@ -90,6 +90,7 @@ except ImportError:
 else:
     requests_found = True
 
+
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
         hostname=hostname,
@@ -107,6 +108,7 @@ def test_icontrol(username, password, hostname):
     except:
         return False
 
+
 class BigIpCommon(object):
     def __init__(self, module):
         self._username = module.params.get('user')
@@ -115,9 +117,6 @@ class BigIpCommon(object):
         self._name = module.params.get('name')
         self._validate_certs = module.params.get('validate_certs')
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -147,6 +146,7 @@ class BigIpIControl(BigIpCommon):
 
         self.api.System.Inet.set_hostname(hostname=self._name)
         return True
+
 
 class BigIpRest(BigIpCommon):
     def __init__(self, module):
@@ -188,12 +188,12 @@ class BigIpRest(BigIpCommon):
             raise Exception(res['message'])
         return changed
 
+
 def main():
     changed = False
-    icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest']),
             server=dict(required=True),
             name=dict(required=True),

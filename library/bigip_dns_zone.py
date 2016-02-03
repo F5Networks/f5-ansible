@@ -83,7 +83,6 @@ EXAMPLES = """
           ip_address: 10.1.1.1
 """
 
-import sys
 import re
 from distutils.version import StrictVersion
 
@@ -94,17 +93,17 @@ except ImportError:
 else:
     bigsuds_found = True
 
-VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+
 
 class ViewZoneException(Exception):
-	  pass
+    pass
+
 
 class ViewZone(object):
-    REQUIRED_BIGIP_VERSION='9.0.3'
+    REQUIRED_BIGIP_VERSION = '9.0.3'
 
     def __init__(self, module):
-        new_zones = []
-
         self.module = module
 
         self.username = module.params['username']
@@ -129,16 +128,16 @@ class ViewZone(object):
 
         # Do some checking of things
         self.check_version()
-       
+
     def get_zone_type(self):
-        zone_type_maps = {
-            'unset': 'UNSET',    # Not yet initialized
-            'master': 'MASTER',   # A master zone
-            'slave': 'SLAVE',    # A slave zone
-            'stub': 'STUB',     # A stub zone
-            'forward': 'FORWARD',  # A forward zone
-            'hint': 'HINT'      # A hint zone, "."
-        }
+        zone_type_maps = dict(
+            unset='UNSET',      # Not yet initialized
+            master='MASTER',    # A master zone
+            slave='SLAVE',      # A slave zone
+            stub='STUB',        # A stub zone
+            forward='FORWARD',  # A forward zone
+            hint='HINT'         # A hint zone, "."
+        )
 
         if self.zone_type in zone_type_maps:
             return zone_type_maps[self.zone_type]
@@ -157,55 +156,46 @@ class ViewZone(object):
             raise ViewException('The BIG-IP version %s does not support this feature' % version)
 
     def zone_exists(self):
-        view_zone = [{
-            'view_name': self.view_name,
-            'zone_name': self.zone_name,
-        }]
+        view_zone = dict(
+            view_name=self.view_name,
+            zone_name=self.zone_name,
+        )
 
         response = self.client.Management.Zone.zone_exist(
-            view_zones=view_zone
+            view_zones=[view_zone]
         )
 
         return response
 
     def create_zone(self):
-        view_zone = [{
-            'view_name': self.view_name,
-            'zone_name': self.zone_name,
-            'zone_type': self.get_zone_type(),
-            'zone_file': self.zone_file,
-            'option_seq': self.options
-        }]
+        view_zone = dict(
+            view_name=self.view_name,
+            zone_name=self.zone_name,
+            zone_type=self.get_zone_type(),
+            zone_file=self.zone_file,
+            option_seq=self.options
+        )
 
-        text = [[
-           self.text
-        ]]
-
-        #try:
-        response = self.client.Management.Zone.add_zone_text(
-            zone_records=view_zone,
-            text=text,
+        self.client.Management.Zone.add_zone_text(
+            zone_records=[view_zone],
+            text=[[self.text]],
             sync_ptrs=[1]
         )
-        #except Exception, e:
-        #    raise ViewException(str(e))
 
     def delete_zone(self):
-        view_zone = [{
-            'view_name': self.view_name,
-            'zone_name': self.zone_name
-        }]
-
-        #try:
-        response = self.client.Management.Zone.delete_zone(
-            view_zones=view_zone
+        view_zone = dict(
+            view_name=self.view_name,
+            zone_name=self.zone_name
         )
-        #except Exception, e:
-        #    raise ViewException(str(e))
+
+        self.client.Management.Zone.delete_zone(
+            view_zones=[view_zone]
+        )
+
 
 def main():
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             username=dict(default='admin'),
             password=dict(default='admin'),
             hostname=dict(default='localhost'),
@@ -225,7 +215,6 @@ def main():
     if not bigsuds_found:
         module.fail_json(msg="The python bigsuds module is required")
 
-    #try:
     view_zone = ViewZone(module)
 
     if state == "present":
@@ -240,10 +229,10 @@ def main():
     elif state == "absent":
         view_zone.delete_zone()
         changed = True
-    #except Exception, e:
-    #    module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
-main()
+
+if __name__ == '__main__':
+    main()
