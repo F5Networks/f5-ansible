@@ -2,14 +2,8 @@ sudo: false
 
 language: python
 
-addons:
-    apt:
-        packages:
-            - python-dev
-
 python:
     - "2.7"
-    - "2.6"
 
 before_install:
     - git config --global user.email "OpenStack_TravisCI@f5.com"

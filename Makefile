@@ -6,7 +6,7 @@
 # 
 #
 
-DOCTEST := ../scripts/ansible-doc-test.py
+DOCTEST := python ../scripts/ansible-doc-test.py
 MODULE_DIR := .
 PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
