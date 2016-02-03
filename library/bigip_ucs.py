@@ -235,6 +235,7 @@ except ImportError:
 else:
     paramiko_found = True
 
+
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
         hostname=hostname,
@@ -251,6 +252,7 @@ def test_icontrol(username, password, hostname):
             return False
     except:
         return False
+
 
 class BigIpCommon(object):
     def __init__(self, module):
@@ -284,10 +286,6 @@ class BigIpCommon(object):
         self._command = "tmsh load sys ucs /var/local/ucs/%s" % (self._basename)
         self._command100x = "tmsh run bigpipe config install"
         self._backup = 'cs_backup.ucs'
-
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
     def appliance_mode(self):
         self._uri = 'https://%s/mgmt/tm/auth/user/%s' % (self._hostname, self._username)

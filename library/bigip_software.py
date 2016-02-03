@@ -216,6 +216,7 @@ except ImportError:
 else:
     bigsuds_found = True
 
+
 def test_icontrol(username, password, hostname):
     api = bigsuds.BIGIP(
         hostname=hostname,
@@ -233,9 +234,10 @@ def test_icontrol(username, password, hostname):
     except:
         return False
 
+
 class BigIpCommon(object):
     def __init__(self, user, password, server, software=None, hotfix=None,
-        volume=None, force=False, validate_certs=True):
+                 volume=None, force=False, validate_certs=True):
 
         # This regex supports filenames like the following
         #
@@ -265,16 +267,13 @@ class BigIpCommon(object):
             self._pvb_software = self._parse_pvb(self._software)
             self._basename_software = os.path.basename(self._software)
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, user, password, server, software=None, hotfix=None,
-        volume=None, force=False, validate_certs=True):
+                 volume=None, force=False, validate_certs=True):
 
         super(BigIpIControl, self).__init__(user, password, server, software,
-            hotfix, volume, force, validate_certs)
+                                            hotfix, volume, force, validate_certs)
 
         self.api = bigsuds.BIGIP(
             hostname=self._hostname,
@@ -294,7 +293,7 @@ class BigIpIControl(BigIpCommon):
             for image in images:
                 info = self.api.System.SoftwareManagement.get_software_image(imageIDs=[image])
                 result['software'].append(info[0])
- 
+
             hotfixes = self.api.System.SoftwareManagement.get_software_hotfix_list()
             for hf in hotfixes:
                 info = self.api.System.SoftwareManagement.get_software_hotfix(imageIDs=[hf])
@@ -334,7 +333,7 @@ class BigIpIControl(BigIpCommon):
             'build': match.group('build')
         }
 
-        return result        
+        return result
 
     def _get_active_volume(self):
         softwares = self.api.System.SoftwareManagement.get_all_software_status()
@@ -367,10 +366,10 @@ class BigIpIControl(BigIpCommon):
                     chain_type = 'FILE_MIDDLE'
 
             self.api.System.ConfigSync.upload_file(
-                file_name = remote_path,
-                file_context = dict(
-                    file_data = text,
-                    chain_type = chain_type
+                file_name=remote_path,
+                file_context=dict(
+                    file_data=text,
+                    chain_type=chain_type
                 )
             )
 
@@ -422,14 +421,14 @@ class BigIpIControl(BigIpCommon):
                     if pvb['build'] == software['build'] and \
                        pvb['version'] == software['version'] and \
                        pvb['product'] == software['product']:
-                           result = True
+                            result = True
 
                 if self._software:
                     pvb = self._pvb_software
                     if pvb['build'] == software['base_build'] and \
                        pvb['version'] == software['version'] and \
                        pvb['product'] == software['product']:
-                           result = True
+                            result = True
 
         return result
 
@@ -437,7 +436,7 @@ class BigIpIControl(BigIpCommon):
         while True:
             time.sleep(5)
             status = self.api.System.SoftwareManagement.get_all_software_status()
-            progress = [ x['status'] for x in status if not x['active'] ]
+            progress = [x['status'] for x in status if not x['active']]
             if 'complete' in progress:
                 break
 
@@ -447,7 +446,7 @@ class BigIpIControl(BigIpCommon):
 
             try:
                 status = self.api.System.SoftwareManagement.get_all_software_status()
-                volumes = [ x['installation_id']['install_volume'] for x in status if x['active'] ]
+                volumes = [x['installation_id']['install_volume'] for x in status if x['active']]
                 if self._volume in volumes:
                     break
             except:
@@ -502,7 +501,7 @@ class BigIpIControl(BigIpCommon):
             self._upload(self._software)
 
         status = self.api.System.SoftwareManagement.get_all_software_status()
-        volumes = [ x['installation_id']['install_volume'] for x in status ]
+        volumes = [x['installation_id']['install_volume'] for x in status]
 
         if self._volume in volumes:
             create_volume = False
@@ -547,7 +546,7 @@ class BigIpIControl(BigIpCommon):
             self._upload(self._software)
 
         status = self.api.System.SoftwareManagement.get_all_software_status()
-        volumes = [ x['installation_id']['install_volume'] for x in status ]
+        volumes = [x['installation_id']['install_volume'] for x in status]
 
         if self._volume in volumes:
             self._install_software(self._pvb_software, reboot=False, create=False)
@@ -614,7 +613,7 @@ def main():
     icontrol = False
 
     module = AnsibleModule(
-        argument_spec = dict(
+        argument_spec=dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest']),
             force=dict(required=False, type='bool', default='no'),
             hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
@@ -647,7 +646,7 @@ def main():
             icontrol = test_icontrol(user, password, server)
             if icontrol:
                 obj = BigIpIControl(user, password, server, software, hotfix,
-                    volume, force, validate_certs)
+                                    volume, force, validate_certs)
         elif connection == 'rest':
             module.fail_json(msg='The REST connection is currently not supported')
 
@@ -669,16 +668,14 @@ def main():
         elif state == "absent":
             if obj.absent():
                 changed = True
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % server)
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 
-#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
+from ansible.module_utils.basic import *
 
 if __name__ == '__main__':
     main()
