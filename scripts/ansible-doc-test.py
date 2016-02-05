@@ -27,7 +27,6 @@ import textwrap
 import re
 import optparse
 import datetime
-import subprocess
 import fcntl
 import termios
 import struct

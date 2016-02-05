@@ -99,9 +99,11 @@ options:
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
+   - Requires the lxml Python package on the host. This can be installed
+     with pip install lxml
    - https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
 
-requirements: [ "bigsuds", "requests" ]
+requirements: [ "bigsuds", "lxml" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
@@ -206,160 +208,195 @@ EXAMPLES = """
 import base64
 import socket
 import os
-import re
 import time
+import tempfile
+import subprocess
+
+from lxml import etree
 
 try:
     import bigsuds
+    BIGSUDS_AVAILABLE = True
 except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
+    BIGSUDS_AVAILABLE = False
+
+TRANSPORTS = ['rest', 'soap']
+STATES = ['absent', 'activated', 'installed', 'present']
+
+# Size of chunks of data to read and send via the iControl API
+CHUNK_SIZE = 512 * 1024
 
 
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
+class ActiveVolumeError(Exception):
+    pass
 
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
+
+class NoVolumeError(Exception):
+    pass
+
+
+class NoBaseImageError(Exception):
+    pass
+
+
+class BigIpApiFactory(object):
+    def factory(module):
+        type = module.params.get('connection')
+
+        if type == "rest":
+            module.fail_json(msg='The REST connection is currently not supported')
+        elif type == "soap":
+            if not BIGSUDS_AVAILABLE:
+                raise Exception("The python bigsuds module is required")
+            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
+
+    factory = staticmethod(factory)
 
 
 class BigIpCommon(object):
-    def __init__(self, user, password, server, software=None, hotfix=None,
-                 volume=None, force=False, validate_certs=True):
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
 
-        # This regex supports filenames like the following
-        #
-        # - BIGIP-11.6.0.0.0.401.iso"
-        # - Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-        # - BIGIP-tmos-core-tunnel-geneve-12.1.0.0.0.144.iso"
-        #
-        self._regex = '^(Hotfix-)?(?P<product>[^-]+).*-(?P<version>\d+\.\d+\.\d+)\.(?P<build>\d+\.\d+\.\d+).*'
+        self.current = dict()
 
-        # Size of chunks of data to read and send via the iControl API
-        self.chunk_size = 512 * 1024
+        if kwargs['hotfix']:
+            kwargs['photfix'] = self.iso_info(kwargs['hotfix'])
 
-        self._username = user
-        self._password = password
-        self._hostname = server
-        self._software = software
-        self._hotfix = hotfix
-        self._volume = volume
-        self._force = force
-        self._validate_certs = validate_certs
+        if kwargs['software']:
+            kwargs['psoftware'] = self.iso_info(kwargs['software'])
 
-        if self._hotfix:
-            self._pvb_hotfix = self._parse_pvb(self._hotfix)
-            self._basename_hotfix = os.path.basename(self._hotfix)
+        self.params = kwargs
 
-        if self._software:
-            self._pvb_software = self._parse_pvb(self._software)
-            self._basename_software = os.path.basename(self._software)
+    def mount(self, iso, directory):
+        cmd = ['mount', '-o', 'loop', iso, directory]
+        proc = subprocess.Popen(cmd,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
 
+    def umount(self, directory):
+        cmd = ['umount', directory]
+        proc = subprocess.Popen(cmd,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        proc.communicate()
 
-class BigIpIControl(BigIpCommon):
-    def __init__(self, user, password, server, software=None, hotfix=None,
-                 volume=None, force=False, validate_certs=True):
+    def iso_info(self, iso):
+        directory = tempfile.mkdtemp()
+        self.mount(iso, directory)
 
-        super(BigIpIControl, self).__init__(user, password, server, software,
-                                            hotfix, volume, force, validate_certs)
-
-        self.api = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
+        result = dict(
+            product=None,
+            version=None,
+            build=None
         )
 
+        context = etree.iterparse(directory + '/metadata.xml')
+        for action, elem in context:
+            if elem.text:
+                text = elem.text
+
+            if elem.tag == 'productName':
+                result['product'] = text
+            elif elem.tag == 'version':
+                result['version'] = text
+            elif elem.tag == 'buildNumber':
+                result['build'] = text
+
+        self.umount(directory)
+        os.rmdir(directory)
+
+        return result
+
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+        volume = self.params['volume']
+        software = self.params['software']
+
+        if state == 'activated' or state == 'installed':
+            if not volume:
+                raise NoVolumeError
+            elif not software:
+                raise NoBaseImageError
+
+        if state == "activated":
+            changed = self.activated()
+        elif state == "installed":
+            changed = self.installed()
+        elif state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
+
+        if state in ['activated', 'installed', 'present']:
+            if not self.params['check_mode']:
+                current = self.read()
+                result.update(current)
+
+        result.update(dict(changed=changed))
+        return result
+
+
+class BigIpSoapApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpSoapApi, self).__init__(*args, **kwargs)
+
+        self.api = bigip_api(kwargs['server'],
+                             kwargs['user'],
+                             kwargs['password'],
+                             kwargs['validate_certs'])
+
     def read(self):
-        result = {
-            'software': [],
-            'hotfix': []
-        }
+        result = dict(
+            software=[],
+            hotfix=[]
+        )
 
         try:
             images = self.api.System.SoftwareManagement.get_software_image_list()
             for image in images:
-                info = self.api.System.SoftwareManagement.get_software_image(imageIDs=[image])
+                info = self.api.System.SoftwareManagement.get_software_image(
+                    imageIDs=[image]
+                )
                 result['software'].append(info[0])
 
             hotfixes = self.api.System.SoftwareManagement.get_software_hotfix_list()
-            for hf in hotfixes:
-                info = self.api.System.SoftwareManagement.get_software_hotfix(imageIDs=[hf])
+            for hotfix in hotfixes:
+                info = self.api.System.SoftwareManagement.get_software_hotfix(
+                    imageIDs=[hotfix]
+                )
                 result['hotfix'].append(info[0])
         except bigsuds.ServerError:
             pass
 
         return result
 
-    def _parse_pvb(self, filename):
-        """Parse the product, version and build from the filename
-
-        Filenames should be the original name of the hotfix to best
-        derive the product, version, and build values
-
-        Example:
-
-            software: "/root/BIGIP-11.6.0.0.0.401.iso"
-            hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-        """
-
-        if filename is None:
-            return None
-
-        filename = os.path.basename(filename)
-        match = re.match(self._regex, filename)
-
-        # The product in the filename is not necessarily what is stored in
-        # the F5 products. So we have to map those here
-        product = match.group('product')
-        if product == 'BIGIP':
-            product = 'BIG-IP'
-
-        result = {
-            'product': product,
-            'version': match.group('version'),
-            'build': match.group('build')
-        }
-
-        return result
-
-    def _get_active_volume(self):
+    def get_active_volume(self):
         softwares = self.api.System.SoftwareManagement.get_all_software_status()
         for software in softwares:
             if software['active']:
                 return software['installation_id']['install_volume']
         return None
 
-    def _upload(self, filename):
-        fileobj = open(filename, 'rb')
+    def upload(self, filename):
+        fh = open(filename, 'rb')
         done = False
         first = True
 
         remote_path = "/shared/images/%s" % os.path.basename(filename)
 
         while not done:
-            text = base64.b64encode(fileobj.read(self.chunk_size))
+            text = base64.b64encode(fh.read(CHUNK_SIZE))
 
             if first:
-                if len(text) < self.chunk_size:
+                if len(text) < CHUNK_SIZE:
                     chain_type = 'FILE_FIRST_AND_LAST'
                 else:
                     chain_type = 'FILE_FIRST'
                 first = False
             else:
-                if len(text) < self.chunk_size:
+                if len(text) < CHUNK_SIZE:
                     chain_type = 'FILE_LAST'
                     done = True
                 else:
@@ -373,66 +410,79 @@ class BigIpIControl(BigIpCommon):
                 )
             )
 
-    def _is_hotfix_available(self):
+    def is_hotfix_available(self, hotfix):
+        hotfix = os.path.basename(hotfix)
         images = self.api.System.SoftwareManagement.get_software_hotfix_list()
         for image in images:
-            if image['filename'] == self._basename_hotfix:
+            if image['filename'] == hotfix:
                 return True
         return False
 
-    def _is_software_available(self):
+    def is_software_available(self, software):
+        software = os.path.basename(software)
         images = self.api.System.SoftwareManagement.get_software_image_list()
         for image in images:
-            if image['filename'] == self._basename_software:
+            if image['filename'] == software:
                 return True
         return False
 
-    def _delete(self):
-        filenames = []
+    def delete(self, software):
+        software = os.path.basename(software)
+        self.api.System.SoftwareManagement.delete_software_image(
+            image_filenames=[software]
+        )
 
-        if self._software:
-            filenames.append(self._basename_software)
+    def is_activated(self):
+        return self.software_active(True)
 
-        if self._hotfix:
-            filenames.append(self._basename_hotfix)
-
-        self.api.System.SoftwareManagement.delete_software_image(image_filenames=filenames)
-
-    def _is_activated(self):
-        return self._software_active(True)
-
-    def _is_installed(self):
-        result = self._software_active(False)
+    def is_installed(self):
+        volume = self.params['volume']
+        result = self.software_active(False)
         if result:
             softwares = self.api.System.SoftwareManagement.get_all_software_status()
             for software in softwares:
-                if software['installation_id']['install_volume'] == self._volume:
+                if software['installation_id']['install_volume'] == volume:
                     return True
         return False
 
-    def _software_active(self, activity):
+    def software_active(self, activity):
         result = False
-        softwares = self.api.System.SoftwareManagement.get_all_software_status()
+        images = self.api.System.SoftwareManagement.get_all_software_status()
 
-        for software in softwares:
-            if software['active'] == activity:
-                if self._hotfix:
-                    pvb = self._pvb_hotfix
-                    if pvb['build'] == software['build'] and \
-                       pvb['version'] == software['version'] and \
-                       pvb['product'] == software['product']:
-                            result = True
+        hotfix = self.params['hotfix']
+        software = self.params['software']
 
-                if self._software:
-                    pvb = self._pvb_software
-                    if pvb['build'] == software['base_build'] and \
-                       pvb['version'] == software['version'] and \
-                       pvb['product'] == software['product']:
-                            result = True
+        if hotfix:
+            photfix = self.params['photfix']
+
+        if software:
+            psoftware = self.params['psoftware']
+
+        for image in images:
+            ibuild = image['base_build']
+            iver = image['version']
+            iprod = image['product']
+
+            if image['active'] == activity:
+                if hotfix:
+                    pbuild = photfix['build']
+                    pver = photfix['version']
+                    pprod = photfix['product']
+
+                    if pbuild == ibuild and pver == iver and pprod == iprod:
+                        result = True
+
+                if software:
+                    pbuild = psoftware['build']
+                    pver = psoftware['version']
+                    pprod = psoftware['product']
+
+                    if pbuild == ibuild and pver == iver and pprod == iprod:
+                        result = True
 
         return result
 
-    def _wait_for_software_install(self):
+    def wait_for_software_install(self):
         while True:
             time.sleep(5)
             status = self.api.System.SoftwareManagement.get_all_software_status()
@@ -440,23 +490,36 @@ class BigIpIControl(BigIpCommon):
             if 'complete' in progress:
                 break
 
-    def _wait_for_system_reboot(self):
+    def wait_for_reboot(self):
+        volume = self.params['volume']
+
         while True:
             time.sleep(5)
 
             try:
                 status = self.api.System.SoftwareManagement.get_all_software_status()
                 volumes = [x['installation_id']['install_volume'] for x in status if x['active']]
-                if self._volume in volumes:
+                if volume in volumes:
                     break
             except:
                 # Handle all exceptions because if the system is offline (for a
                 # reboot) the SOAP client will raise exceptions about connections
                 pass
 
-    def _install_software(self, pvb, reboot=False, create=False):
+    def wait_for_images(self, count):
+        while True:
+            # Waits for the system to settle
+            images = self.read()
+            ntotal = sum(len(v) for v in images.itervalues())
+            if ntotal == count:
+                break
+            time.sleep(1)
+
+    def install_software(self, pvb, reboot=False, create=False):
+        volume = self.params['volume']
+
         self.api.System.SoftwareManagement.install_software_image_v2(
-            volume=self._volume,
+            volume=volume,
             product=pvb['product'],
             version=pvb['version'],
             build=pvb['build'],
@@ -480,202 +543,279 @@ class BigIpIControl(BigIpCommon):
         If the image is not uploaded to the "Available Images" list, and is not
         in the active list, this method will upload the image and activate it.
         """
-        if self._is_activated() and self._volume == self._get_active_volume():
+
+        changed = False
+        force = self.params['force']
+        software = self.params['software']
+        hotfix = self.params['hotfix']
+        psoftware = self.params['psoftware']
+        volume = self.params['volume']
+
+        if self.is_activated() and volume == self.get_active_volume():
             return False
-        elif self._is_installed() and self._volume != self._get_active_volume():
-            self.api.System.SoftwareManagement.set_cluster_boot_location(self._volume)
+        elif self.is_installed() and volume != self.get_active_volume():
+            self.api.System.SoftwareManagement.set_cluster_boot_location(volume)
             self.api.System.Services.reboot_system(seconds_to_reboot=1)
-            self._wait_for_system_reboot()
+            self.wait_for_reboot()
             return True
-        elif self._volume == self._get_active_volume():
-            raise Exception('Cannot install software or hotfixes to active volumes')
+        elif volume == self.get_active_volume():
+            raise ActiveVolumeError
 
-        if self._force:
-            self._delete()
+        images = self.read()
+        total = sum(len(v) for v in images.itervalues())
 
-        if self._hotfix:
-            if not self._is_hotfix_available():
-                self._upload(self._hotfix)
+        if force:
+            if hotfix:
+                self.delete(hotfix)
+                total -= 1
+                changed = True
 
-        if not self._is_software_available():
-            self._upload(self._software)
+            if software:
+                self.delete(software)
+                total -= 1
+                changed = True
+
+        if changed:
+            self.wait_for_images(total)
+            changed = False
+
+        if hotfix:
+            if not self.is_hotfix_available(hotfix):
+                self.upload(hotfix)
+                total += 1
+                changed = True
+
+        if not self.is_software_available(software):
+            self.upload(software)
+            total += 1
+            changed = True
+
+        if changed:
+            self.wait_for_images(total)
 
         status = self.api.System.SoftwareManagement.get_all_software_status()
         volumes = [x['installation_id']['install_volume'] for x in status]
 
-        if self._volume in volumes:
+        if volume in volumes:
             create_volume = False
         else:
             create_volume = True
 
-        if self._hotfix:
+        if hotfix:
+            photfix = self.params['photfix']
+
             # We do not want to reboot after installation of the base image
             # because we can install the hotfix image right away and reboot
             # the system after that happens instead
-            self._install_software(self._pvb_software, reboot=False, create=create_volume)
-            self._wait_for_software_install()
-            self._install_software(self._pvb_hotfix, reboot=True, create=False)
+            self.install_software(psoftware, reboot=False, create=create_volume)
+            self.wait_for_software_install()
+            self.install_software(photfix, reboot=True, create=False)
         else:
-            self._install_software(self._pvb_software, reboot=True, create=create_volume)
+            self.install_software(psoftware, reboot=True, create=create_volume)
 
-        self._wait_for_software_install()
+        self.wait_for_software_install()
 
         # We need to wait for the system to reboot so that we can check the
         # active volume to ensure it is the volume that was specified to the
         # module
-        self._wait_for_system_reboot()
+        self.wait_for_reboot()
         return True
 
     def installed(self):
         """Ensures a base image and optionally a hotfix are installed
 
         """
-        if self._is_installed():
+
+        changed = False
+        force = self.params['force']
+        hotfix = self.params['hotfix']
+        psoftware = self.params['psoftware']
+        software = self.params['software']
+        volume = self.params['volume']
+
+        if self.is_installed():
             return False
-        elif self._volume == self._get_active_volume():
-            raise Exception('Cannot install software or hotfixes to active volumes')
+        elif volume == self.get_active_volume():
+            raise ActiveVolumeError
 
-        if self._force:
-            self._delete()
+        images = self.read()
+        total = sum(len(v) for v in images.itervalues())
 
-        if self._hotfix:
-            if not self._is_hotfix_available():
-                self._upload(self._hotfix)
+        if force:
+            if hotfix:
+                self.delete(hotfix)
+                total -= 1
+                changed = True
 
-        if not self._is_software_available():
-            self._upload(self._software)
+            if software:
+                self.delete(software)
+                total -= 1
+                changed = True
+
+            if changed:
+                self.wait_for_images(total)
+                changed = False
+
+        images = self.read()
+        total = sum(len(v) for v in images.itervalues())
+
+        if hotfix:
+            if not self.is_hotfix_available(hotfix):
+                self.upload(hotfix)
+                total += 1
+                changed = True
+
+        if not self.is_software_available(software):
+            self.upload(software)
+            total += 1
+            changed = True
+
+        if changed:
+            self.wait_for_images(total)
 
         status = self.api.System.SoftwareManagement.get_all_software_status()
         volumes = [x['installation_id']['install_volume'] for x in status]
 
-        if self._volume in volumes:
-            self._install_software(self._pvb_software, reboot=False, create=False)
-            self._wait_for_software_install()
+        if volume in volumes:
+            self.install_software(psoftware, reboot=False, create=False)
+            self.wait_for_software_install()
         else:
-            self._install_software(self._pvb_software, reboot=False, create=True)
-            self._wait_for_software_install()
+            self.install_software(psoftware, reboot=False, create=True)
+            self.wait_for_software_install()
 
-        if self._hotfix:
-            self._install_software(self._pvb_hotfix, reboot=False, create=False)
+        if hotfix:
+            photfix = self.params['photfix']
+            self.install_software(photfix, reboot=False, create=False)
 
-        self._wait_for_software_install()
+        self.wait_for_software_install()
 
         return True
 
     def present(self):
         changed = False
 
-        if self._force:
-            self._delete()
-            changed = True
+        force = self.params['force']
+        hotfix = self.params['hotfix']
+        software = self.params['software']
 
-        if self._hotfix:
-            if not self._is_hotfix_available():
-                self._upload(self._hotfix)
+        images = self.read()
+        total = sum(len(v) for v in images.itervalues())
+
+        if force:
+            if hotfix:
+                self.delete(hotfix)
+                total -= 1
                 changed = True
 
-        if self._software:
-            if not self._is_software_available():
-                self._upload(self._software)
+            if software:
+                self.delete(software)
+                total -= 1
                 changed = True
 
-        # Sleep a moment for the system to settle
-        time.sleep(1)
-        return changed
+            if changed:
+                self.wait_for_images(total)
+
+        # I check for existence after the 'force' check because an image can
+        # be incompletely uploaded and broken, but would be listed as "present"
+        # so forcing the deletion beforehand allows you to handle those cases.
+        #
+        # Note though that in the forced re-upload, the uploading could again
+        # fail (for some reason) and this module would still report success if
+        # it found the "broken" image.
+        #
+        # A better approach would be to compare checksums, however the checksum
+        # stored by the BIG-IP is not the actual checksum of the ISO, but
+        # instead is the checksum of the files _inside_ the ISO.
+        if hotfix and software:
+            if self.is_software_available(software) and self.is_hotfix_available(hotfix):
+                return False
+        elif hotfix:
+            if self.is_hotfix_available(hotfix):
+                return False
+        elif software:
+            if self.is_software_available(software):
+                return False
+
+        if hotfix:
+            self.upload(hotfix)
+            total += 1
+
+        if software:
+            self.upload(software)
+            total += 1
+
+        self.wait_for_images(total)
+
+        return True
 
     def absent(self):
-        """Ensures software images are deleted from the system
+        hotfix = self.params['hotfix']
+        software = self.params['software']
 
-        """
-        changed = False
-        softwares = self.read()
+        images = self.read()
+        total = sum(len(v) for v in images.itervalues())
 
-        if self._hotfix:
-            for software in softwares['hotfix']:
-                if self._basename_hotfix == software['filename']:
-                    changed = True
+        if hotfix and software:
+            if not self.is_software_available(software) and not self.is_hotfix_available(hotfix):
+                return False
+        elif hotfix:
+            if not self.is_hotfix_available(hotfix):
+                return False
+        elif software:
+            if not self.is_software_available(software):
+                return False
 
-        if self._software:
-            for software in softwares['software']:
-                if self._basename_software == software['filename']:
-                    changed = True
+        if hotfix:
+            self.delete(hotfix)
+            total -= 1
 
-        if changed:
-            self._delete()
+        if software:
+            self.delete(software)
+            total -= 1
 
-        # Sleep a moment for the system to settle
-        time.sleep(1)
-        return changed
+        self.wait_for_images(total)
+
+        return True
 
 
 def main():
-    changed = False
-    icontrol = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        connection=dict(default='soap', choices=TRANSPORTS),
+        state=dict(default='activated', choices=STATES),
+        force=dict(required=False, type='bool', default='no'),
+        hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
+        software=dict(required=False, aliases=['base_image']),
+        volume=dict(required=False)
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='icontrol', choices=['icontrol', 'rest']),
-            force=dict(required=False, type='bool', default='no'),
-            hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
-            password=dict(required=True),
-            server=dict(required=True),
-            software=dict(required=False, aliases=['base_image']),
-            state=dict(default='activated', choices=['absent', 'activated', 'installed', 'present']),
-            user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool'),
-            volume=dict(required=False)
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
-    connection = module.params.get('connection')
-    force = module.params.get('force')
-    hotfix = module.params.get('hotfix')
-    password = module.params.get('password')
-    server = module.params.get('server')
-    software = module.params.get('software')
-    state = module.params.get('state')
-    user = module.params.get('user')
-    validate_certs = module.params.get('validate_certs')
-    volume = module.params.get('volume')
-
     try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
 
-            icontrol = test_icontrol(user, password, server)
-            if icontrol:
-                obj = BigIpIControl(user, password, server, software, hotfix,
-                                    volume, force, validate_certs)
-        elif connection == 'rest':
-            module.fail_json(msg='The REST connection is currently not supported')
-
-        if state == 'activated' or state == 'installed':
-            if not volume:
-                module.fail_json(msg='You must specify a volume')
-            elif not software:
-                module.fail_json(msg='You must specify a base image')
-
-        if state == "activated":
-            if obj.activated():
-                changed = True
-        elif state == "installed":
-            if obj.installed():
-                changed = True
-        elif state == "present":
-            if obj.present():
-                changed = True
-        elif state == "absent":
-            if obj.absent():
-                changed = True
+        module.exit_json(**result)
     except bigsuds.ConnectionError:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % server)
+        module.fail_json(msg='Could not connect to BIG-IP host')
+    except ActiveVolumeError:
+        module.fail_json(msg='Cannot install software or hotfixes to active volumes')
+    except NoVolumeError:
+        module.fail_json(msg='You must specify a volume')
+    except NoBaseImageError:
+        module.fail_json(msg='You must specify a base image')
     except socket.timeout:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
+        module.fail_json(msg='Timed out connecting to the BIG-IP')
 
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

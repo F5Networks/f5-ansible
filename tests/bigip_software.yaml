@@ -20,8 +20,9 @@
 #
 
 - name: Test the bigip_software module
-  hosts: test
+  hosts: f5-test
   gather_facts: true
+  connection: local
 
   vars:
       bigip_username: "admin"
