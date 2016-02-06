@@ -239,6 +239,10 @@ class NoBaseImageError(Exception):
     pass
 
 
+class SoftwareInstallError(Exception):
+    pass
+
+
 class BigIpApiFactory(object):
     def factory(module):
         type = module.params.get('connection')
@@ -489,6 +493,8 @@ class BigIpSoapApi(BigIpCommon):
             progress = [x['status'] for x in status if not x['active']]
             if 'complete' in progress:
                 break
+            elif 'failed' in progress:
+                raise SoftwareInstallError(progress)
 
     def wait_for_reboot(self):
         volume = self.params['volume']
@@ -809,6 +815,8 @@ def main():
         module.fail_json(msg='You must specify a volume')
     except NoBaseImageError:
         module.fail_json(msg='You must specify a base image')
+    except SoftwareInstallError, e:
+        module.fail_json(msg=str(e))
     except socket.timeout:
         module.fail_json(msg='Timed out connecting to the BIG-IP')
 
