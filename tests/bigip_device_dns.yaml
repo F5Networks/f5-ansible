@@ -1,5 +1,5 @@
 - name: Test the bigip_device_dns module
-  hosts: test
+  hosts: f5-test
   connection: local
 
   vars:

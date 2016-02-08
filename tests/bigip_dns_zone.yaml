@@ -1,5 +1,5 @@
 - name: Test the bigip_dns_zone module
-  hosts: all
+  hosts: f5-test
   connection: local
 
   tasks:
