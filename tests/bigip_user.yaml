@@ -47,12 +47,10 @@
             password_credential: "{{ password_credential }}"
         register: result
 
-      # The default setting for update_password is "always", so this
-      # check should return a "changed" event
       - name: Assert Create user - Idempotent check
         assert:
             that:
-                - result|changed
+                - not result|changed
 
       - name: Create user, encrypted password - Idempotent check
         bigip_user:
@@ -64,8 +62,7 @@
             encrypted_credential: "{{ encrypted_credential }}"
         register: result
 
-      # The default setting for update_password is "always", so this
-      # check should return a "changed" event
+      # Encrypted credentials must always change the user
       - name: Assert Create user - Idempotent check
         assert:
             that:
@@ -269,12 +266,10 @@
             partition: "{{ partition }}"
         register: result
 
-      # The default setting for update_password is "always", so this
-      # check should return a "changed" event
       - name: Assert Create user on a different partition - Idempotent check
         assert:
             that:
-                - result|changed
+                - not result|changed
 
       - name: Remove user on different partition
         bigip_user:
@@ -335,12 +330,10 @@
             connection: "rest"
         register: result
 
-      # The default setting for update_password is "always", so this
-      # check should return a "changed" event
       - name: Assert Create user - REST - Idempotent check
         assert:
             that:
-                - result|changed
+                - not result|changed
 
       - name: Create user, encrypted password - REST - Idempotent check
         bigip_user:
@@ -571,12 +564,10 @@
             connection: "rest"
         register: result
 
-      # The default setting for update_password is "always", so this
-      # check should return a "changed" event
       - name: Assert Create user on a different partition - REST - Idempotent check
         assert:
             that:
-                - result|changed
+                - not result|changed
 
       - name: Remove user on different partition - REST
         bigip_user:

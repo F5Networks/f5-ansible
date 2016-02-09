@@ -352,16 +352,22 @@ class BigIpCommon(object):
 
         full_name = self.params['full_name']
         password_credential = self.params['password_credential']
+        username_credential = self.params['username_credential']
         shell = self.params['shell']
         partition_access = self.params['partition_access']
         update_password = self.params['update_password']
+        encrypted_credential = self.params['encrypted_credential']
 
         if full_name:
             if current['full_name'] != full_name:
                 result['full_name'] = True
 
-        if password_credential and update_password == 'always':
-            result['password'] = True
+        if encrypted_credential and username_credential:
+            if update_password == 'always':
+                result['password'] = True
+        elif password_credential and username_credential:
+            if update_password == 'always' and self.did_password_change():
+                result['password'] = True
 
         if shell:
             if shell == 'bash':
@@ -500,6 +506,27 @@ class BigIpSoapApi(BigIpCommon):
                              kwargs['user'],
                              kwargs['password'],
                              kwargs['validate_certs'])
+
+    def did_password_change(self):
+        server = self.params['server']
+        user = self.params['username_credential']
+        password = self.params['password_credential']
+        validate_certs = self.params['validate_certs']
+
+        try:
+            api = bigip_api(server,
+                      user,
+                      password,
+                      validate_certs)
+            api.Management.UserManagement.get_fullname(
+                user_names=[user]
+            )
+            return False
+        except bigsuds.ConnectionError, e:
+            if 'Authorization Required' in str(e):
+                return False
+
+            return True
 
     def get_fullname(self):
         username_credential = self.params['username_credential']
@@ -781,8 +808,7 @@ class BigIpSoapApi(BigIpCommon):
         password_credential = self.params['password_credential']
 
         if self.exists():
-            with bigsuds.Transaction(self.api):
-                return self.update()
+            return self.update()
         else:
             if self.params['check_mode']:
                 return True
@@ -808,6 +834,23 @@ class BigIpRestApi(BigIpCommon):
         self._headers = {
             'Content-Type': 'application/json'
         }
+
+    def did_password_change(self):
+        server = self.params['server']
+        user = self.params['username_credential']
+        password = self.params['password_credential']
+        validate_certs = self.params['validate_certs']
+
+        try:
+            url = "%s/%s" % (self._uri, user)
+            resp = requests.get(url,
+                                auth=(user, password),
+                                verify=validate_certs)
+
+            if resp.status_code == 200:
+                return False
+        except:
+            return True
 
     def read(self):
         result = {}
@@ -1051,6 +1094,11 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
+    except bigsuds.ServerError, e:
+        if 'folder not found' in str(e):
+            module.fail_json(msg="Partition not found")
+        else:
+            module.fail_json(msg=str(e))
     except AdminRoleNoModifyError:
         module.fail_json(msg="The admin user's role cannot be changed")
     except CurrentUserNoRoleModifyError:
