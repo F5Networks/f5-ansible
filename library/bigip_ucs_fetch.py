@@ -39,8 +39,8 @@ options:
     description:
       - The connection used to interface with the BIG-IP
     required: false
-    default: smart
-    choices: ["rest", "icontrol", "smart"]
+    default: soap
+    choices: ["rest", "soap"]
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
@@ -70,6 +70,11 @@ options:
     description:
       - BIG-IP password
     required: true
+  src:
+    description:
+      - The name of the UCS file to create on the remote server for downloading
+    required: false
+    default: temporary file name
   server:
     description:
       - BIG-IP host
@@ -109,75 +114,83 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
+checksum:
+    description: The SHA1 checksum of the downloaded file
+    returned: success or changed
+    type: string
+    sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-    description: destination file/path
+    description: Location on the ansible host that the UCS was saved to
     returned: success
     type: string
     sample: "/path/to/file.txt"
 src:
-    description: source file used for the copy on the target machine
+    description:
+        - Name of the UCS file on the remote BIG-IP to download. If not
+          specified, then this will be a randomly generated filename
     returned: changed
     type: string
-    sample: "/home/httpd/.ansible/tmp/ansible-tmp-1423796390.97-147729857856000/source"
+    sample: "cs_backup.ucs"
 backup_file:
-    description: name of backup file created
+    description: Name of backup file created
     returned: changed and if backup=yes
     type: string
     sample: "/path/to/file.txt.2015-02-12@22:09~"
 gid:
-    description: group id of the file, after execution
+    description: Group id of the UCS file, after execution
     returned: success
     type: int
     sample: 100
 group:
-    description: group of the file, after execution
+    description: Group of the UCS file, after execution
     returned: success
     type: string
     sample: "httpd"
 owner:
-    description: owner of the file, after execution
+    description: Owner of the UCS file, after execution
     returned: success
     type: string
     sample: "httpd"
 uid:
-    description: owner id of the file, after execution
+    description: Owner id of the UCS file, after execution
     returned: success
     type: int
     sample: 100
+md5sum:
+    description: The MD5 checksum of the downloaded file
+    returned: changed or success
+    type: string
+    sample: 96cacab4c259c4598727d7cf2ceb3b45
 mode:
-    description: permissions of the target, after execution
+    description: Permissions of the target UCS, after execution
     returned: success
     type: string
     sample: "0644"
 size:
-    description: size of the target, after execution
+    description: Size of the target UCS, after execution
     returned: success
     type: int
     sample: 1220
-state:
-    description: permissions of the target, after execution
-    returned: success
-    type: string
-    sample: "file"
 '''
 
 import socket
 import os
 import base64
+import tempfile
 
 try:
     import bigsuds
 except ImportError:
-    bigsuds_found = False
+    BIGSUDS_AVAILABLE = False
 else:
-    bigsuds_found = True
+    BIGSUDS_AVAILABLE = True
 
 try:
     import requests
 except ImportError:
-    requests_found = False
+    REQUESTS_AVAILABLE = False
 else:
-    requests_found = True
+    REQUESTS_AVAILABLE = True
 
 # Size of chunks of data to read and send via the iControl API
 CHUNK_SIZE = 512 * 1024
@@ -342,16 +355,17 @@ def main():
     argument_spec = f5_argument_spec()
 
     argument_spec['backup'] = dict(required=False, default=False, type='bool', choices=BOOLEANS)
-    argument_spec['connection'] = dict(default='smart', choices=['icontrol', 'rest', 'smart'])
+    argument_spec['connection'] = dict(default='soap', choices=['soap', 'rest'])
     argument_spec['create_on_missing'] = dict(required=False, default=True, type='bool', choices=BOOLEANS)
     argument_spec['encryption_password'] = dict(required=False)
     argument_spec['dest'] = dict(required=True)
     argument_spec['force'] = dict(required=False, default=True, type='bool', choices=BOOLEANS)
     argument_spec['fail_on_missing'] = dict(required=False, default=False, type='bool', choices=BOOLEANS)
-    argument_spec['src'] = dict(required=True)
+    argument_spec['src'] = dict()
 
     module = AnsibleModule(
         argument_spec=argument_spec,
+        add_file_common_args=True,
         supports_check_mode=True
     )
 
@@ -367,11 +381,17 @@ def main():
         fail_on_missing = module.params['fail_on_missing']
         src = module.params.get('src', None)
 
-        if connection == 'smart':
-            connection = 'icontrol'
+        # Generates a random filename if no 'src' argument was provided
+        #
+        # This random name will be supplied in the output of this module as the
+        # value of the 'src' field so that you can use it in later modules
+        if not src:
+            tf = tempfile.NamedTemporaryFile(suffix='.ucs')
+            src = os.path.basename(tf.name)
+            tf.close()
 
-        if connection == 'icontrol':
-            if not bigsuds_found:
+        if connection == 'soap':
+            if not BIGSUDS_AVAILABLE:
                 raise Exception("The python bigsuds module is required")
 
             test_icontrol(user, password, server, validate_certs)
@@ -419,11 +439,18 @@ def main():
             module.fail_json(msg="Failed to copy: %s to %s" % (src, dest))
 
         changed = True
+        checksum_dest = module.sha1(dest)
+        try:
+            md5sum_dest = module.md5(dest)
+        except ValueError:
+            md5sum_dest = None
 
         res_args = dict(
             dest=dest,
             src=src,
-            changed=changed
+            changed=changed,
+            md5sum=md5sum_dest,
+            checksum=checksum_dest
         )
         if backup_file:
             res_args['backup_file'] = backup_file
@@ -433,6 +460,9 @@ def main():
         module.fail_json(msg="Timed out connecting to the BIG-IP")
     except socket.timeout, e:
         module.fail_json(msg=str(e))
+
+    file_args = module.load_file_common_arguments(module.params)
+    res_args['changed'] = module.set_fs_attributes_if_different(file_args, res_args['changed'])
 
     module.exit_json(**res_args)
 
