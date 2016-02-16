@@ -38,7 +38,7 @@ options:
     description:
       - The connection used to interface with the BIG-IP
     required: false
-    default: smart
+    default: soap
     choices: ['rest', 'soap']
   server:
     description:
@@ -282,14 +282,17 @@ class RestrictedToSinglePartitionError(Exception):
 
 class BigIpApiFactory(object):
     def factory(module):
-        type = module.params.get('connection')
+        connection = module.params.get('connection')
         pa = module.params.get('partition_access')
 
-        if type == "rest":
+        if 'Common:' in pa:
+            connection = 'soap'
+
+        if connection == 'rest':
             if not REQUESTS_AVAILABLE:
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
-        elif type == "soap" or 'Common:' in pa:
+        elif connection == 'soap':
             if not BIGSUDS_AVAILABLE:
                 raise Exception("The python bigsuds module is required")
             # iControl REST does not support creating users on different
@@ -1070,7 +1073,7 @@ def main():
         full_name=dict(),
         connection=dict(default='soap', choices=TRANSPORTS),
         encrypted_credential=dict(required=False, default=None, no_log=True),
-        partition_access=dict(required=False, default='all:no-access'),
+        partition_access=dict(required=False, default=None),
         password_credential=dict(required=False, default=None, no_log=True),
         shell=dict(default=None, choices=SHELLS),
         state=dict(default='present', choices=STATES),
