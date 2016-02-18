@@ -1,0 +1,257 @@
+- name: Test the bigip_partition module
+  hosts: f5-test
+  connection: local
+
+  vars:
+      bigip_username: "admin"
+      bigip_password: "admin"
+      validate_certs: "no"
+      partition: "foo"
+      route_domain:
+          default: "0"
+          string: "asdf"
+          integer: "1"
+      description: "Description of foo partition"
+
+  tasks:
+      - name: Create partition
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['string'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - create
+
+      - name: Assert Create partition
+        assert:
+            that:
+                - result|changed
+        tags:
+            - create
+
+      - name: Create partition - Idempotent check
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['string'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - create
+
+      - name: Assert Create partition - Idempotent check
+        assert:
+            that:
+                - not result|changed
+        tags:
+            - create
+
+      - name: Change partition description
+        bigip_partition:
+            connection: "soap"
+            description: "{{ description }}"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change partition description
+        assert:
+            that:
+                - result|changed
+        tags:
+            - update
+
+      - name: Change partition description - Idempotent check
+        bigip_partition:
+            connection: "soap"
+            description: "{{ description }}"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change partition description - Idempotent check
+        assert:
+            that:
+                - not result|changed
+        tags:
+            - update
+
+      - name: Reset route domain
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['default'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Reset route domain
+        assert:
+            that:
+                - result|changed
+        tags:
+            - update
+
+      - name: Change route domain by string
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['string'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change route domain by string
+        assert:
+            that:
+                - result|changed
+        tags:
+            - update
+
+      - name: Change route domain by string - Idempotent check
+        bigip_partition:
+            connection: "soap"
+            description: "{{ description }}"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['string'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change route domain by string - Idempotent check
+        assert:
+            that:
+                - not result|changed
+        tags:
+            - update
+
+      - name: Reset route domain
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain: "{{ route_domain['default'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Reset route domain
+        assert:
+            that:
+                - result|changed
+        tags:
+            - update
+
+      - name: Change route domain by integer
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain_id: "{{ route_domain['integer'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change route domain by integer
+        assert:
+            that:
+                - result|changed
+        tags:
+            - update
+
+      - name: Change route domain by integer - Idempotent check
+        bigip_partition:
+            connection: "soap"
+            description: "{{ description }}"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            route_domain_id: "{{ route_domain['integer'] }}"
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - update
+
+      - name: Assert Change route domain by integer - Idempotent check
+        assert:
+            that:
+                - not result|changed
+        tags:
+            - update
+
+      - name: Delete partition
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            server: "{{ inventory_hostname }}"
+            state: "absent"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - delete
+
+      - name: Assert Delete partition
+        assert:
+            that:
+                - result|changed
+        tags:
+            - delete
+
+      - name: Delete partition - Idempotent check
+        bigip_partition:
+            connection: "soap"
+            name: "{{ partition }}"
+            password: "{{ bigip_password }}"
+            server: "{{ inventory_hostname }}"
+            state: "absent"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+        tags:
+            - delete
+
+      - name: Assert Delete partition - Idempotent check
+        assert:
+            that:
+                - not result|changed
+        tags:
+            - delete

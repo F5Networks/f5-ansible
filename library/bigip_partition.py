@@ -22,14 +22,35 @@ module: bigip_partition
 short_description: Manage BIG-IP partitions
 description:
    - Manage BIG-IP partitions
-version_added: "2.0"
+version_added: "2.1"
 options:
   connection:
     description:
       - The connection used to interface with the BIG-IP
     required: false
-    default: rest
-    choices: [ "rest", "icontrol" ]
+    default: soap
+    choices: [ "rest", "soap" ]
+  description:
+    description:
+      - The description to attach to the Partition
+    required: False
+    default: None
+  route_domain:
+    description:
+      - The default Route Domain to assign to the Partition. If no route domain
+        is specified, then the default route domain for the system (typically
+        zero) will be used only when creating a new partition. C(route_domain)
+        and C(route_domain_id) are mutually exclusive.
+    required: False
+    default: None
+  route_domain_id:
+    description:
+      - The default Route Domain ID to assign to the Partition. If you track
+        the route domains by their numeric identifier, then this argument
+        can be used to supply that ID. C(route_domain) and C(route_domain_id)
+        are mutually exclusive.
+    required: False
+    default: None
   server:
     description:
       - BIG-IP host
@@ -61,239 +82,319 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
-- name: Set the boot.quiet DB variable on the BIG-IP
-  bigip_sysdb:
-      server: "big-ip"
-      key: "boot.quiet"
-      value: "disable"
-  delegate_to: localhost
-"""
+EXAMPLES = '''
+- name: Create partition "foo" using the default route domain
+  bigip_partition:
+      name: "foo"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
 
-import json
-import socket
+- name: Delete the foo partition
+  bigip_partition:
+      name: "foo"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
+      state: "absent"
+'''
+
+RETURN = '''
+route_domain_id:
+    description: ID of the route domain associated with the partition
+    returned: changed and success
+    type: string
+    sample: "0"
+route_domain:
+    description: Name of the route domain associated with the partition
+    returned: changed and success
+    type: string
+    sample: "/Common/asdf"
+description:
+    description: The description of the partition
+    returned: changed and success
+    type: string
+    sample: "Example partition"
+name:
+    description: The name of the partition
+    returned: changed and success
+    type: string
+    sample: "/foo"
+'''
 
 try:
     import bigsuds
+    BIGSUDS_AVAILABLE = True
 except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
+    BIGSUDS_AVAILABLE = False
 
 try:
     import requests
+    REQUESTS_AVAILABLE = True
 except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    REQUESTS_AVAILABLE = False
+
+TRANSPORTS = ['rest', 'soap']
 
 
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
+class DeleteFolderError(Exception):
+    pass
 
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
+
+class BigIpApiFactory(object):
+    def factory(module):
+        connection = module.params.get('connection')
+
+        if connection == 'rest':
+            if not REQUESTS_AVAILABLE:
+                raise Exception("The python requests module is required")
+            return BigIpRestApi(check_mode=module.check_mode, **module.params)
+        elif connection == 'soap':
+            if not BIGSUDS_AVAILABLE:
+                raise Exception("The python bigsuds module is required")
+            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
+
+    factory = staticmethod(factory)
 
 
 class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
 
-        self._key = module.params.get('key')
-        self._value = module.params.get('value')
-        self._validate_certs = module.params.get('validate_certs')
+        if kwargs['name'][0:1] != '/':
+            kwargs['folder'] = '/' + kwargs['name']
+        else:
+            kwargs['folder'] = kwargs['name']
+
+        self.params = kwargs
+        self.current = dict()
+
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+
+        if state == "present":
+            changed = self.present()
+
+            if not self.params['check_mode']:
+                current = self.read()
+                result.update(current)
+        else:
+            changed = self.absent()
+
+        result.update(dict(changed=changed))
+        return result
 
 
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
+class BigIpSoapApi(BigIpCommon):
+    """Manipulate user accounts via SOAP
+    """
 
-        self.api = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
+    def __init__(self, *args, **kwargs):
+        super(BigIpSoapApi, self).__init__(*args, **kwargs)
+
+        self.api = bigip_api(kwargs['server'],
+                             kwargs['user'],
+                             kwargs['password'],
+                             kwargs['validate_certs'])
+
+    def get_route_domain_id(self, route_domain):
+        resp = self.api.Networking.RouteDomainV2.get_identifier(
+            route_domains=[route_domain]
+        )
+        return resp[0]
+
+    def create(self):
+        name = self.params['name']
+        folder = self.params['folder']
+        description = self.params['description']
+        route_domain = self.params['route_domain']
+
+        if route_domain:
+            # When setting the default route domain, you need to use the ID
+            # instead of the string name. So if the name was specified, we
+            # need to translate it
+            self.params['route_domain_id'] = self.get_route_domain_id(route_domain)
+
+        route_domain_id = self.params['route_domain_id']
+
+        self.api.System.Session.start_transaction()
+        self.api.Management.Folder.create(
+            folders=[folder]
         )
 
-    def read(self):
-        try:
-            response = self.api.Management.DBVariable.query(
-                variables=[self._key]
+        # A valid route domain is zero, so I need to specifically check
+        # for None
+        if route_domain_id is not None:
+            self.api.Management.Partition.set_default_route_domain(
+                partitions=[name],
+                route_domains=[route_domain_id]
             )
-        except bigsuds.ServerError:
-            return {}
 
-        return response[0]
+        self.api.System.Session.submit_transaction()
 
-    def present(self):
-        changed = False
+        return True
+
+    def exists(self):
+        name = self.params['name']
+        resp = self.api.Management.Partition.get_partition_list()
+        for partition in resp:
+            if partition['partition_name'] == name:
+                return True
+        return False
+
+    def update(self):
+        changed = dict()
+
+        name = self.params['name']
+        folder = self.params['folder']
+        description = self.params['description']
+        route_domain = self.params['route_domain']
+        route_domain_id = self.params['route_domain_id']
+
         current = self.read()
 
-        if current and current['name'].lower() == self._key:
-            if current['value'] != self._value:
+        if route_domain:
+            if '/' + route_domain not in current['route_domain']:
+                changed['route_domain'] = True
+
+        if route_domain_id is not None:
+            if route_domain_id != current['route_domain_id']:
+                changed['route_domain_id'] = True
+
+        if description:
+            if description != current['description']:
+                changed['description'] = True
+
+        if changed:
+            if 'route_domain' in changed:
+                # This is a special case because the route domain name needs
+                # to be translated to an ID
+                route_domain_id = self.get_route_domain_id(route_domain)
+                changed['route_domain_id'] = True
+
+            self.api.System.Session.start_transaction()
+
+            if 'route_domain_id' in changed:
+                self.api.Management.Partition.set_default_route_domain(
+                    partitions=[name],
+                    route_domains=[route_domain_id]
+                )
+
+            if 'description' in changed:
+                self.api.Management.Folder.set_description(
+                    folders=[folder],
+                    descriptions=[description]
+                )
+
                 try:
-                    params = dict(
-                        name=self._key,
-                        value=self._value
+                    # This method is only available on BIG-IP >= 11.0.0
+                    self.api.Management.Folder.set_description(
+                        folders=[folder],
+                        descriptions=[description]
                     )
-                    self.api.Management.DBVariable.modify(
-                        variables=[params]
+                except:
+                    self.api.Management.Partition.set_description(
+                        partitions=[name],
+                        descriptions=[description]
                     )
-                    changed = True
-                except Exception, err:
-                    raise Exception(err)
 
-        return changed
+            self.api.System.Session.submit_transaction()
+            return True
+        return False
 
-    def reset(self):
-        changed = False
+    def absent(self):
+        folder = self.params['folder']
 
-        try:
-            self.api.Management.DBVariable.reset(
-                variables=[self._key]
-            )
-            changed = True
-        except Exception, err:
-            raise Exception(err)
+        if not self.exists():
+            return False
 
-        return changed
+        if self.params['check_mode']:
+            return True
 
+        self.api.Management.Folder.delete_folder(
+            folders=[folder]
+        )
 
-class BigIpRest(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpRest, self).__init__(module)
-
-        self._uri = 'https://%s/mgmt/tm/sys/db/%s' % (self._hostname, self._key)
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-        self._payload = {
-            'value': self._value
-        }
+        if self.exists():
+            raise DeleteFolderError()
+        else:
+            return True
 
     def read(self):
-        resp = requests.get(self._uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
+        result = dict()
+        name = self.params['name']
+        folder = self.params['folder']
 
-        if resp.status_code != 200:
-            return {}
-        else:
-            return resp.json()
+        try:
+            # This method is only available on BIG-IP >= 11.0.0
+            resp = self.api.Management.Folder.get_description(
+                folders=[folder]
+            )
+            result['description'] = resp[0]
+        except:
+            resp = self.api.Management.Partition.get_description(
+                partitions=[name]
+            )
+            result['description'] = resp[0]
+
+        resp = self.api.Management.Partition.get_default_route_domain(
+            partitions=[name]
+        )
+        result['route_domain_id'] = resp[0]
+
+        resp = self.api.Networking.RouteDomainV2.get_list()
+        for route_domain in resp:
+            id = self.get_route_domain_id(route_domain)
+            if id == result['route_domain_id']:
+                result['route_domain'] = route_domain
+
+        result['name'] = folder
+        return result
 
     def present(self):
-        changed = False
-        current = self.read()
-
-        if current and current['name'] == self._key:
-            if current['value'] != self._value:
-                resp = requests.put(self._uri,
-                                    auth=(self._username, self._password),
-                                    data=json.dumps(self._payload),
-                                    verify=self._validate_certs)
-                if resp.status_code == 200:
-                    changed = True
-                else:
-                    res = resp.json()
-                    raise Exception(res['message'])
-
-        return changed
-
-    def reset(self):
-        changed = False
-        current = self.read()
-
-        if current and current['name'] == self._key:
-            default = current['defaultValue']
-            if current['value'] != default:
-                payload = {
-                    'value': default
-                }
-                resp = requests.put(self._uri,
-                                    auth=(self._username, self._password),
-                                    data=json.dumps(payload),
-                                    verify=self._validate_certs)
-                if resp.status_code == 200:
-                    changed = True
-                else:
-                    res = resp.json()
-                    raise Exception(res['message'])
+        if self.exists():
+            return self.update()
         else:
-            raise Exception('The given key does not exist to reset')
-
-        return changed
+            if self.params['check_mode']:
+                return True
+            return self.create()
 
 
 def main():
-    changed = False
-    icontrol = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        connection=dict(default='soap', choices=TRANSPORTS),
+        description=dict(required=False, default=None),
+        name=dict(required=True),
+        route_domain=dict(required=False, default=None),
+        route_domain_id=dict(required=False, default=None)
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='rest', choices=['icontrol', 'rest']),
-            server=dict(required=True),
-            key=dict(required=True),
-            password=dict(required=True),
-            state=dict(default='present', choices=['present', 'reset']),
-            user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool'),
-            value=dict(required=False, default=None)
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[
+            ['route_domain', 'route_domain_id']
+        ]
     )
 
-    connection = module.params.get('connection')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    value = module.params.get('value')
-
     try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
 
-            icontrol = test_icontrol(username, password, hostname)
-            if icontrol:
-                obj = BigIpIControl(module)
-        elif connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-
-            obj = BigIpRest(module)
-
-        if not state == 'reset' and not value:
-            module.fail_json(msg="Neither 'state' equal to 'reset' nor 'value' set")
-
-        if state == "present":
-            if obj.present():
-                changed = True
-        elif state == "reset":
-            if obj.reset():
-                changed = True
-    except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
+        module.exit_json(**result)
+    except bigsuds.ConnectionError:
+        module.fail_json(msg="Could not connect to BIG-IP host")
+    except bigsuds.ServerError, e:
         module.fail_json(msg=str(e))
-
-    module.exit_json(changed=changed)
+    except DeleteFolderError:
+        module.fail_json(msg='Failed to delete the specified partition')
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
