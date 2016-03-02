@@ -148,10 +148,14 @@ EXAMPLES = """
 import base64
 import socket
 import suds
+import ssl
 import re
 import time
+import urllib2
+import sys
 
 from xml.sax._exceptions import SAXParseException
+from suds.transport.https import HttpAuthenticated
 
 try:
     import bigsuds
@@ -184,33 +188,6 @@ def is_production_key(key):
         return False
     else:
         return True
-
-
-def test_license_server(server, wsdl=None):
-    if wsdl:
-        url = 'file://%s' % wsdl
-    else:
-        url = 'https://%s/license/services/urn:com.f5.license.v5b.ActivationService?wsdl' % server
-
-    try:
-        # Specifying the location here is required because the URLs in the
-        # WSDL for activate specify http but the URL we are querying for
-        # here is https. Something is weird in suds and causes the following
-        # to be returned
-        #
-        #     <h1>/license/services/urn:com.f5.license.v5b.ActivationService</h1>
-        #     <p>Hi there, this is an AXIS service!</p>
-        #     <i>Perhaps there will be a form for invoking the service here...</i>
-        #
-        client = suds.client.Client(url=url, location=url)
-
-        result = client.service.ping()
-        if result:
-            return True
-        else:
-            return False
-    except SAXParseException:
-        return False
 
 
 class UnreachableActivationServerError(Exception):
@@ -246,6 +223,41 @@ class BigIpLicenseCommon(object):
             password=self.password,
             debug=True
         )
+
+    def test_license_server(self):
+        server = self.license_server
+        wsdl = self.wsdl
+
+        if wsdl:
+            url = 'file://%s' % wsdl
+        else:
+            url = 'https://%s/license/services/urn:com.f5.license.v5b.ActivationService?wsdl' % server
+
+        try:
+            if server == LIC_INTERNAL:
+                ssl._create_default_https_context = ssl._create_unverified_context
+
+            # Specifying the location here is required because the URLs in the
+            # WSDL for activate specify http but the URL we are querying for
+            # here is https. Something is weird in suds and causes the following
+            # to be returned
+            #
+            #     <h1>/license/services/urn:com.f5.license.v5b.ActivationService</h1>
+            #     <p>Hi there, this is an AXIS service!</p>
+            #     <i>Perhaps there will be a form for invoking the service here...</i>
+            #
+            if self._validate_certs:
+                client = suds.client.Client(url=url, location=url, timeout=10)
+            else:
+                client = suds.client.Client(url, timeout=10)
+
+            result = client.service.ping()
+            if result:
+                return True
+            else:
+                return False
+        except SAXParseException:
+            return False
 
     def get_license_activation_status(self):
         """Returns the license status
@@ -578,7 +590,7 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             self.dossier = fh.read()
             fh.close()
 
-        lic_server = test_license_server(license_server, self.wsdl)
+        lic_server = self.test_license_server()
         if not lic_server and lic_status == 'STATE_DISABLED':
             raise UnreachableActivationServerError
 
