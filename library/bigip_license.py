@@ -235,7 +235,8 @@ class BigIpLicenseCommon(object):
 
         try:
             if server == LIC_INTERNAL:
-                ssl._create_default_https_context = ssl._create_unverified_context
+                if hasattr(ssl, 'SSLContext'):
+                    ssl._create_default_https_context = ssl._create_unverified_context()
 
             # Specifying the location here is required because the URLs in the
             # WSDL for activate specify http but the URL we are querying for

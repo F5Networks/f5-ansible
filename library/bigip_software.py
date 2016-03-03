@@ -227,6 +227,14 @@ STATES = ['absent', 'activated', 'installed', 'present']
 CHUNK_SIZE = 512 * 1024
 
 
+class MountError(Exception):
+    pass
+
+
+class UnmountError(Exception):
+    pass
+
+
 class ActiveVolumeError(Exception):
     pass
 
@@ -277,6 +285,8 @@ class BigIpCommon(object):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         proc.communicate()
+        if proc.returncode > 0:
+            raise MountError()
 
     def umount(self, directory):
         cmd = ['umount', directory]
@@ -284,6 +294,8 @@ class BigIpCommon(object):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE)
         proc.communicate()
+        if proc.returncode > 0:
+            raise UnmountError()
 
     def iso_info(self, iso):
         directory = tempfile.mkdtemp()
@@ -817,6 +829,10 @@ def main():
         module.fail_json(msg='You must specify a base image')
     except SoftwareInstallError, e:
         module.fail_json(msg=str(e))
+    except MountError:
+        module.fail_json(msg='Failed to mount the ISO image')
+    except UnmountError:
+        module.fail_json(msg='Failed to unmount the ISO image')
     except socket.timeout:
         module.fail_json(msg='Timed out connecting to the BIG-IP')
 
