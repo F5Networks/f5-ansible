@@ -550,6 +550,8 @@ class BigIpCommon(object):
             elif elem.tag == 'buildNumber':
                 result['build'] = text
 
+        return result
+
     def flush(self):
         result = dict()
         state = self.params['state']
