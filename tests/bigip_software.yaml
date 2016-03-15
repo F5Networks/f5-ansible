@@ -300,6 +300,22 @@
             that:
                 - result|changed
 
+      - name: Activate (upload, install, reboot, reuse_inactive_volume) base image
+        bigip_software:
+            server: "{{ inventory_hostname }}"
+            user: "{{ bigip_username }}"
+            password: "{{ bigip_password }}"
+            software: "{{ iso_base }}"
+            reuse_inactive_volume: True
+            state: "activated"
+            validate_certs: "{{ validate_certs }}"
+        register: result
+
+      - name: Assert Activate (upload, install, reboot) base image
+        assert:
+            that:
+                - result|changed
+
       - name: Activate (upload, install, reboot) base image - Idempotent check
         bigip_software:
             server: "{{ inventory_hostname }}"
