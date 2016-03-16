@@ -36,6 +36,9 @@ options:
         device. If C(no), the file will only be uploaded if it does not already
         exist. Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
+      - If C(yes) with C(reuse_inactive_volume) is specified and C(volume) is 
+        not specified, Software will be installed / activated regardless of current
+        running version to a new or an existing volume.
     required: false
     default: no
     choices:
@@ -53,6 +56,15 @@ options:
     description:
       - BIG-IP password
     required: true
+  reuse_inactive_volume:
+    description:
+      - Automatically chooses the first inactive volume in alphanumeric order. If there
+        is no inactive volume, new volume with incremented volume name will be created.
+        For example, if HD1.1 is currently active and no other volume exists, then the 
+        module will create HD1.2 and install the software. If volume name does not end with
+        numeric character, then add '.1' to the current active volume name. When C(volume) 
+        is specified, this option will be ignored.
+    required: false
   server:
     description:
       - BIG-IP host
@@ -93,7 +105,7 @@ options:
     description:
       - The volume to install the software and, optionally, the hotfix to. This
         parameter is only required when the C(state) is either C(activated) or
-        C(installed).
+        C(installed). 
     required: false
 
 notes:
@@ -202,6 +214,16 @@ EXAMPLES = """
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       volume: "HD1.1"
+      state: "activated"
+
+- name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
+  bigip_software:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      software: "/root/BIGIP-11.6.0.0.0.401.iso"
+      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
+      reuse_inactive_volume: 
       state: "activated"
 """
 
@@ -557,10 +579,12 @@ class BigIpCommon(object):
         state = self.params['state']
         volume = self.params['volume']
         software = self.params['software']
+        reuse_inactive_volume = self.params['reuse_inactive_volume']
 
         if state == 'activated' or state == 'installed':
             if not volume:
-                raise NoVolumeError
+                if not reuse_inactive_volume:
+                    raise NoVolumeError
             elif not software:
                 raise NoBaseImageError
 
@@ -578,6 +602,7 @@ class BigIpCommon(object):
                 current = self.read()
                 result.update(current)
 
+        changed = True
         result.update(dict(changed=changed))
         return result
 
@@ -622,6 +647,52 @@ class BigIpSoapApi(BigIpCommon):
             if software['active']:
                 return software['installation_id']['install_volume']
         return None
+
+    def get_inactive_volumes(self):
+        status = self.api.System.SoftwareManagement.get_all_software_status()
+        volumes = [x['installation_id']['install_volume'] for x in status if not x['active']]
+        volumes.sort()
+        return volumes
+
+    def get_next_available_volume(self, delete_target=False):
+        target_volume = None
+        active_volume = self.get_active_volume()
+
+        for volume in self.get_inactive_volumes():
+            if volume == active_volume:
+                continue
+            else:
+                target_volume = volume
+                break
+
+        if target_volume == None:
+            try:
+                _active_volume = active_volume.split('.')
+                _active_volume[-1] = str(int(_active_volume[-1]) + 1)
+                target_volume = '.'.join(_active_volume)
+            except:
+                target_volume = active_volume + '.1'
+
+        if delete_target:
+            self.delete_volume(target_volume)
+    
+        return target_volume
+
+    def delete_volume(self, volume):
+        sleep_interval = 0.25
+
+        # Check the target volume exists and inactive
+        if not volume in self.get_inactive_volumes():
+            return False
+
+        self.api.System.SoftwareManagement.delete_volume(volume)
+
+        while True:
+            time.sleep(sleep_interval)
+            if not volume in self.get_inactive_volumes():
+                break
+
+        return True
 
     def upload(self, filename):
         done = False
@@ -794,8 +865,16 @@ class BigIpSoapApi(BigIpCommon):
         force = self.params['force']
         software = self.params['software']
         hotfix = self.params['hotfix']
-        psoftware = self.params['psoftware']
+        psoftware = self.params['psoftware']        
         volume = self.params['volume']
+        reuse_inactive_volume = self.params['reuse_inactive_volume']
+        
+        if reuse_inactive_volume:
+            if volume == None:
+                self.params['volume'] = self.get_next_available_volume(True)
+
+            if self.is_activated() and not force:
+                volume = self.get_active_volume()
 
         if self.is_activated() and volume == self.get_active_volume():
             return False
@@ -840,7 +919,7 @@ class BigIpSoapApi(BigIpCommon):
             self.wait_for_images(total)
 
         status = self.api.System.SoftwareManagement.get_all_software_status()
-        volumes = [x['installation_id']['install_volume'] for x in status]
+        volumes = [x['installation_id']['install_volume'] for x in status if x['active']]
 
         if volume in volumes:
             create_volume = False
@@ -849,7 +928,6 @@ class BigIpSoapApi(BigIpCommon):
 
         if hotfix:
             photfix = self.params['photfix']
-
             # We do not want to reboot after installation of the base image
             # because we can install the hotfix image right away and reboot
             # the system after that happens instead
@@ -878,6 +956,10 @@ class BigIpSoapApi(BigIpCommon):
         psoftware = self.params['psoftware']
         software = self.params['software']
         volume = self.params['volume']
+        reuse_inactive_volume = self.params['reuse_inactive_volume']
+
+        if volume == None and reuse_inactive_volume:
+            self.params['volume'] = self.get_next_available_volume(True)
 
         if self.is_installed():
             return False
@@ -1033,7 +1115,8 @@ def main():
         force=dict(required=False, type='bool', default='no'),
         hotfix=dict(required=False, aliases=['hotfix_image'], default=None),
         software=dict(required=False, aliases=['base_image']),
-        volume=dict(required=False)
+        volume=dict(required=False),
+        reuse_inactive_volume=dict(reqiored=False, type='bool', default='no')
     )
     argument_spec.update(meta_args)
 
@@ -1045,7 +1128,6 @@ def main():
     try:
         obj = BigIpApiFactory.factory(module)
         result = obj.flush()
-
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg='Could not connect to BIG-IP host')
