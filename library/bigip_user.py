@@ -285,7 +285,7 @@ class BigIpApiFactory(object):
         connection = module.params.get('connection')
         pa = module.params.get('partition_access')
 
-        if 'Common:' in pa:
+        if pa is None or 'Common:' in pa:
             connection = 'soap'
 
         if connection == 'rest':
@@ -330,7 +330,9 @@ class BigIpCommon(object):
 
         self.params = kwargs
 
-        if not isinstance(self.params['partition_access'], list):
+        if self.params['partition_access'] is None:
+            pass
+        elif not isinstance(self.params['partition_access'], list):
             self.params['partition_access'] = [kwargs['partition_access']]
 
         self.current = dict()
@@ -349,7 +351,8 @@ class BigIpCommon(object):
         result = dict(
             full_name=False,
             password=False,
-            shell=False
+            shell=False,
+            partition_access=False
         )
         current = self.read()
 
@@ -393,6 +396,9 @@ class BigIpCommon(object):
     def _determine_partition_access(self):
         result = []
         has_all = False
+
+        if self.params['partition_access'] is None:
+            return result
 
         for permission in self.params['partition_access']:
             acl = permission.split(':')
@@ -577,6 +583,7 @@ class BigIpSoapApi(BigIpCommon):
         username_credential = self.params['username_credential']
 
         permission = dict(role=role, partition=partition)
+
         self.api.Management.UserManagement.set_user_permission(
             user_names=[username_credential],
             permissions=[[permission]]
@@ -590,6 +597,7 @@ class BigIpSoapApi(BigIpCommon):
             user_names=[username_credential],
             fullnames=[full_name]
         )
+
         return True
 
     def set_login_shell(self):
@@ -601,7 +609,30 @@ class BigIpSoapApi(BigIpCommon):
             user_names=[username_credential],
             shells=[shell]
         )
+
         return True
+
+    def start_transaction(self):
+        self.api.System.Session.start_transaction()
+
+        # need to switch to root, set recursive query state
+        self.current_folder = self.api.System.Session.get_active_folder()
+        if self.current_folder != '/' + self.params['partition']:
+            self.api.System.Session.set_active_folder(folder='/' + self.params['partition'])
+
+        self.current_query_state = self.api.System.Session.get_recursive_query_state()
+        if self.current_query_state == 'STATE_DISABLED':
+            self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
+
+    def submit_transaction(self):
+        # set everything back
+        if self.current_query_state == 'STATE_DISABLED':
+            self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
+
+        if self.current_folder != '/' + self.params['partition']:
+            self.api.System.Session.set_active_folder(folder=self.current_folder)
+
+        self.api.System.Session.submit_transaction()
 
     def set_password(self):
         is_encrypted = self.params['is_encrypted']
@@ -612,6 +643,7 @@ class BigIpSoapApi(BigIpCommon):
             is_encrypted=is_encrypted,
             password=password_credential
         )
+
         self.api.Management.UserManagement.change_password_2(
             user_names=[username_credential],
             passwords=[passwords]
@@ -623,30 +655,15 @@ class BigIpSoapApi(BigIpCommon):
         result = False
         username_credential = self.params['username_credential']
 
-        self.api.System.Session.start_transaction()
-
-        # need to switch to root, set recursive query state
-        current_folder = self.api.System.Session.get_active_folder()
-        if current_folder != '/':
-            self.api.System.Session.set_active_folder(folder='/')
-
-        current_query_state = self.api.System.Session.get_recursive_query_state()
-        if current_query_state == 'STATE_DISABLED':
-            self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
+        self.start_transaction()
 
         users = self.api.Management.UserManagement.get_list()
         for user in users:
             if user['name'] == username_credential:
                 result = True
 
-        # set everything back
-        if current_query_state == 'STATE_DISABLED':
-            self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
+        self.submit_transaction()
 
-        if current_folder != '/':
-            self.api.System.Session.set_active_folder(folder=current_folder)
-
-        self.api.System.Session.submit_transaction()
         return result
 
     def read(self):
@@ -683,9 +700,13 @@ class BigIpSoapApi(BigIpCommon):
         if self.params['check_mode']:
             return True
 
+        self.start_transaction()
+
         self.api.Management.UserManagement.delete_user(
             user_names=[username_credential]
         )
+
+        self.submit_transaction()
 
         if self.exists():
             raise DeleteUserError()
@@ -697,6 +718,8 @@ class BigIpSoapApi(BigIpCommon):
         updates = self._determine_updates()
 
         shell = self.params['shell']
+
+        self.start_transaction()
 
         if updates['full_name']:
             if self.params['check_mode']:
@@ -732,6 +755,8 @@ class BigIpSoapApi(BigIpCommon):
                 for permission in permissions:
                     self.set_permission(permission['role'], permission['partition'])
                 changed = True
+
+        self.submit_transaction()
 
         return changed
 
@@ -771,12 +796,20 @@ class BigIpSoapApi(BigIpCommon):
             password=password_credential
         )
 
-        user_permission = self.determine_partition_access()
         users = dict(
             user=user_id,
             password=password_info,
-            permissions=user_permission
         )
+
+        user_permission = self.determine_partition_access()
+        if user_permission:
+            users['permissions'] = user_permission
+        else:
+            users['permissions'] = [dict(
+                role=self.ROLE_DEFAULT,
+                partition=self.ALL_PARTITION
+            )]
+
 
         if shell and shell != self.SHELL_NONE:
             for x in user_permission:
@@ -788,19 +821,13 @@ class BigIpSoapApi(BigIpCommon):
             else:
                 users['login_shell'] = self.SHELL_MAP[shell]
 
-        self.api.System.Session.start_transaction()
-
-        current_folder = self.api.System.Session.get_active_folder()
-        if current_folder != '/' + partition:
-            self.api.System.Session.set_active_folder(folder='/' + partition)
+        self.start_transaction()
 
         self.api.Management.UserManagement.create_user_3(
             users=[users]
         )
 
-        if current_folder != '/' + partition:
-            self.api.System.Session.set_active_folder(folder=current_folder)
-        self.api.System.Session.submit_transaction()
+        self.submit_transaction()
 
         if self.exists():
             return True
