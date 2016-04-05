@@ -645,6 +645,19 @@ class BigIPiControlClient(BigIPiControlCommon):
         self.apiPath.set_ssl_option([name],
                         [ProfileSSLOption])
 
+    def param_remapper(self, params):
+        if 'chain' in params:
+            if params['chain'] == 'None' or params['chain'] == '':
+                params['chain'] = ''
+            elif params['chain'] != None and not params['chain'].startswith('/'):
+                params['chain'] = '/%s/%s' % (params['partition'],
+                                              params['chain'])
+        for x in ['name', 'cert', 'key', 'parent']:
+            if params[x] and not params[x].startswith('/'):
+                params[x] = '/%s/%s' % (params['partition'],
+                                        params[x])
+        return params
+
 
 def main():
     module = AnsibleModule(
@@ -678,35 +691,30 @@ def main():
         )
     )
     result = {'changed' : False}
-    for x in ['name', 'cert', 'key', 'chain', 'parent']:
-        if (module.params[x] != 'default' and
-                module.params[x] and not module.params[x].startswith('/')):
-            module.params[x] = '/%s/%s' % (module.params['partition'],
-                                           module.params[x])
     if module.params['connection'] == 'icontrol':
         if found_bigsuds:
             if module.params['profile_type'] == 'clientssl':
                 api = BigIPiControlClient(**module.params)
-                #api.profile_type(module.params['profile_type'])
+                params = api.param_remapper(module.params)
             else:
                 module.fail_json(msg="serverssl not implemented")
         else:
             module.fail_json(msg="bigsuds is required for icontrol connections")
     elif module.params['connection'] == 'rest':
         module.fail_json(msg='rest not implemented')
-    if module.params['state'] == 'present':
+    if params['state'] == 'present':
         try:
-            if api.profile_exists(module.params['name']):
-                result['changed'] = api.modify_profile(module.params)
+            if api.profile_exists(params['name']):
+                result['changed'] = api.modify_profile(params)
             else:
                 #Add check that certificate and key are present
-                result['changed'] = api.create_profile(module.params)
+                result['changed'] = api.create_profile(params)
         except APIError as e:
             module.fail_json(msg="APIError: %s" % e)
         except ConnectionError as e:
             module.fail_json(msg="Connection Error: %s" % e)
     else:
-        api.delete_profile(module.params['name'])
+        api.delete_profile(params['name'])
         result['changed'] = True
 
     module.exit_json(**result)
