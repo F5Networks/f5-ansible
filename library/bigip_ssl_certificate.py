@@ -1,20 +1,29 @@
 #!/usr/bin/python
 #
-# Ansible module to upload and install certificates in F5 BIG-IP
+# This file is part of Ansible
 #
-# (c) 2016 Kevin Coming <kevcom@gmail.com> (@waffie1)
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
 short_description: Import/Delete certificates from BIG-IP
 description:
-    - This module will allow you to import an SSL certificates onto a BIG-IP
-      system from certificate files on the filesystem where the playbook
+    - This module will import/delete SSL certificates on BIG-IP LTM
+      systems from a certificate file on the filesystem where the playbook
       is run from.  Currently this only supports certificates to be used
-      for SSL Profiles.  PEM format with certificate and key in seperate
+      within SSL Profiles.  PEM format with certificate and key in seperate
       files, or PKCS12 format are supported.
 options:
     state:
@@ -55,8 +64,8 @@ options:
         aliases: []
     connection:
         description:
-            - Connection API.  REST Interface is experimental as well
-            - as incomplete, and does not use the supported f5-sdk.
+            - Connection API.  Only iControl SOAP is supported at this time
+            - REST will be added when f5-sdk implements needed functionality
         required: False
         default: icontrol
         choices: [icontrol]
@@ -64,35 +73,39 @@ options:
     cert_format:
         description:
             - The format that the certificate file you want to import is in.
-            - P12(PCKS12) and PEM format are supported.
+            - PCKS12 and PEM formats are supported.
         required: false
         default: pem
         choices: [pem, pcks12]
         aliases: []
     cert_pem_file:
         description:
-            - If the format is PEM, this is the filename of the certificate
+            - Required if the format is PEM.
+            - This is the filename of the certificate.
         required: False
         default: none
         choices: []
         aliases: []
     key_pem_file:
         description:
-            - If the format is PEM, this is the filename of the private key
+            - Require if the format is PEM.
+            - This is the filename of the private key,
         required: False
         default: none
         choices: []
         aliases: []
     pkcs12_file:
         description:
-            - If the format is pkcs12, this is the filename of the pkcs12 file
+            - Required if the format is pkcs12.
+            - This is the filename of the pkcs12 file
         required: False
         default: none
         choices: []
         aliases: []
     pkcs12_password:
         description:
-            - If the format is pkcs12, this is the password for the pkcs12 file
+            - Required if the format is pkcs12.
+            - This is the password for the pkcs12 file
         required: False
         default: none
         choices: []
@@ -121,7 +134,7 @@ notes:
     - SSL operations require OpenSSL module
 requirements:
     - bigsuds
-    - requests
+    - pyOpenSSL
 author:
     - Kevin Coming <kevcom@gmail.com> (@waffie1)
 
@@ -239,10 +252,10 @@ class BigIPCommon:
 class BigIPiControl(BigIPCommon):
     def connection(self):
         api = bigsuds.BIGIP(hostname=self.hostname,
-                                 username=self.username,
-                                 password=self.password,
-                                 verify=self.verify
-                                )
+                            username=self.username,
+                            password=self.password,
+                            verify=self.verify
+                           )
         try:
             api.with_session_id()
         except bigsuds.ConnectionError as e:
@@ -365,7 +378,8 @@ def main():
             if not found_OpenSSL:
                 module.fail_json(msg='P12 certificate format requires OpenSSL')
             if not module.params['pkcs12_password']:
-                module.fail_json(msg='pkcs12_password required for pkcs12 certs')
+                module.fail_json(
+                        msg='pkcs12_password required for pkcs12 certs')
             if not module.params['pkcs12_file']:
                 module.fail_json(msg='pkcs12_file required for pkcs12 certs')
             try:
