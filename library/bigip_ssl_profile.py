@@ -141,13 +141,13 @@ options:
         default: none
         choices: []
         aliases: []
-    certificate:
+    cert:
         description:
             - SSL certificate filename to be used in the ssl profile
         required: False
         default: none
         choices: []
-        aliases: [cert]
+        aliases: []
     key:
         description:
             - SSL key to be used in the ssl profile
@@ -225,7 +225,6 @@ except:
 else:
     found_bigsuds = True
 
-
 class ConnectionError(Exception):
     pass
 
@@ -238,8 +237,10 @@ class BigIPCommon:
         self.username = kwargs['username']
         self.password = kwargs['password']
         self.verify = kwargs['validate_cert']
+        self.profile_type = kwargs['profile_type']
         self.api = self.client()
-        self.profile_type(kwargs['profile_type'])
+        self.apiPath = self.set_apiPath()
+
 
 
 class BigIPiControlCommon(BigIPCommon):
@@ -258,10 +259,13 @@ class BigIPiControlCommon(BigIPCommon):
 
 class BigIPiControlClient(BigIPiControlCommon):
 
+    def set_apiPath(self):
+        return self.api.LocalLB.ProfileClientSSL
+
     def add_certificate_key_chain(self, name, cert, key):
         key_chain_obj = cert.split('.')[0]
         self.apiPath.add_certificate_key_chain([name], [[key_chain_obj]],
-            [[{'certificate' : cert, 'key' : key}]])
+            [[{'cert' : cert, 'key' : key}]])
 
     def create(self, name, cert, key):
         self.apiPath.create_v2(
@@ -275,7 +279,7 @@ class BigIPiControlClient(BigIPiControlCommon):
     def create_profile(self, params):
         try:
             with bigsuds.Transaction(self.api):
-                self.create(params['name'], params['certificate'], params['key'])
+                self.create(params['name'], params['cert'], params['key'])
                 if params['cipher_list']:
                     self.set_cipher_list(params['name'], params['cipher_list'])
                 if params['parent']:
@@ -410,31 +414,31 @@ class BigIPiControlClient(BigIPiControlCommon):
         changed = False
         try:
             with bigsuds.Transaction(self.api):
-                if params['certificate'] or params['key']:
+                if params['cert'] or params['key']:
                     keychain = self.get_certificate_key_chain_name(
                             params['name'])
                     current_cert = self.get_certificate_file(params['name'],
                             keychain)
                     current_key = self.get_key_file(params['name'],
                             keychain)
-                    if not (params['certificate'] == current_cert and
+                    if not (params['cert'] == current_cert and
                         params['key'] == current_key):
                         if not keychain:
                             self.add_certificate_key_chain(params['name'],
-                                    params['certificate'],
+                                    params['cert'],
                                     params['key'])
                             self.remove_certificate_key_chain(params['name'],'')
                             changed = True
                         else:
                             self.set_certificate_key(params['name'],
-                                    params['certificate'],
+                                    params['cert'],
                                     params['key'],
                                     keychain)
                             changed = True
 
-                    elif params['certificate'] != current_cert:
+                    elif params['cert'] != current_cert:
                         self.set_certificate_file(params['name'],
-                                params['certificate'],
+                                params['cert'],
                                 keychain)
                         changed = True
 
@@ -535,18 +539,12 @@ class BigIPiControlClient(BigIPiControlCommon):
         if name in profile_list:
             return True
 
-    def profile_type(self, ptype):
-        if ptype == 'clientssl':
-            self.apiPath = self.api.LocalLB.ProfileClientSSL
-        if ptype == 'serverssl':
-            self.apiPath = self.api.LocalLB.ProfileServerSSL
-
     def remove_certificate_key_chain(self, name, keychain):
         self.apiPath.remove_certificate_key_chain([name], [[keychain]])
 
     def set_certificate_key(self, profile, cert, key, keychain):
         self.apiPath.set_certificate_key_chain_members([profile], [[keychain]],
-                        [[{'certificate' : cert, 'key' : key}]])
+                        [[{'cert' : cert, 'key' : key}]])
 
     def set_chain_file(self, name, value):
         if value:
@@ -648,10 +646,6 @@ class BigIPiControlClient(BigIPiControlCommon):
                         [ProfileSSLOption])
 
 
-class BigIPRestCommon(BigIPCommon):
-    pass
-
-
 def main():
     module = AnsibleModule(
         argument_spec=dict(
@@ -675,7 +669,7 @@ def main():
             renegotiation_period=dict(type='str'),
             renegotiation_size=dict(type='str'),
             renegotiation_max_record_delay=dict(type='str'),
-            certificate = dict(type='str', required=False, aliases=['cert']),
+            cert = dict(type='str', required=False,),
             key = dict(type='str', required=False),
             passphrase = dict(type='str'),
             cipher_list = dict(type='list', aliases=['ciphers']),
@@ -684,21 +678,22 @@ def main():
         )
     )
     result = {'changed' : False}
-    for x in ['name', 'certificate', 'key', 'chain', 'parent']:
-        if module.params[x] and not module.params[x].startswith('/'):
+    for x in ['name', 'cert', 'key', 'chain', 'parent']:
+        if (module.params[x] != 'default' and
+                module.params[x] and not module.params[x].startswith('/')):
             module.params[x] = '/%s/%s' % (module.params['partition'],
                                            module.params[x])
     if module.params['connection'] == 'icontrol':
         if found_bigsuds:
             if module.params['profile_type'] == 'clientssl':
                 api = BigIPiControlClient(**module.params)
-                api.profile_type(module.params['profile_type'])
+                #api.profile_type(module.params['profile_type'])
             else:
                 module.fail_json(msg="serverssl not implemented")
         else:
             module.fail_json(msg="bigsuds is required for icontrol connections")
-    else:
-        module.fail_json(msg="REST not implemented yet")
+    elif module.params['connection'] == 'rest':
+        module.fail_json(msg='rest not implemented')
     if module.params['state'] == 'present':
         try:
             if api.profile_exists(module.params['name']):
