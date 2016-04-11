@@ -99,7 +99,7 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Provision PEM at "nominal" level
   bigip_provision:
       server: "big-ip"
@@ -113,7 +113,7 @@ EXAMPLES = """
       module: "swg"
       level: "dedicated"
   delegate_to: localhost
-"""
+'''
 
 import json
 import socket
@@ -132,22 +132,6 @@ except ImportError:
 else:
     requests_found = True
 
-def test_icontrol(username, password, hostname):
-    client = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = client.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 class BigIpCommon(object):
     def __init__(self, module):
@@ -159,9 +143,6 @@ class BigIpCommon(object):
         self._module = module.params.get('module')
         self._validate_certs = module.params.get('validate_certs')
 
-        # Check if we can connect to the device
-        sock = socket.create_connection((self._hostname,443), 60)
-        sock.close()
 
 class BigIpIControl(BigIpCommon):
     def __init__(self, module):
@@ -195,7 +176,7 @@ class BigIpIControl(BigIpCommon):
 
     def exists(self):
         try:
-            response = self._client.Management.Provision.get_level(
+            self._client.Management.Provision.get_level(
                 moduless=[self._module]
             )
         except bigsuds.ServerError:

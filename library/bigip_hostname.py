@@ -63,7 +63,7 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Set the hostname of the BIG-IP
   bigip_hostname:
       server: "bigip.localhost.localdomain"
@@ -71,7 +71,7 @@ EXAMPLES = """
       password: "admin"
       name: "bigip.localhost.localdomain"
   delegate_to: localhost
-"""
+'''
 
 import socket
 

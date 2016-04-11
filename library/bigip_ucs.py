@@ -150,7 +150,7 @@ requirements: [ "bigsuds", "requests", "paramiko" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Upload UCS
   bigip_software:
       server: "bigip.localhost.localdomain"
@@ -208,7 +208,7 @@ EXAMPLES = """
       ucs: "/root/bigip.localhost.localdomain.ucs"
       state: "absent"
   delegate_to: localhost
-"""
+'''
 
 import base64
 import socket
@@ -505,8 +505,6 @@ class BigIpIControl(BigIpCommon):
 
 
 def main():
-    icontrol = False
-
     module = AnsibleModule(
         argument_spec=dict(
             connection=dict(default='icontrol', choices=['icontrol', 'rest', 'ssh']),

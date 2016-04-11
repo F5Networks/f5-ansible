@@ -96,8 +96,8 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
-"""
+EXAMPLES = '''
+'''
 
 import json
 import socket

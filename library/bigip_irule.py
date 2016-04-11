@@ -320,8 +320,6 @@ class BigIpSoapApi(BigIpCommon):
             return True
 
     def update(self):
-        changed = False
-
         module = self.params['module']
         name = self.params['name']
         content = self.params['content'].strip()
@@ -448,7 +446,6 @@ class BigIpRestApi(BigIpCommon):
 
     def read(self):
         result = {}
-        tmp = []
 
         user = self.params['user']
         password = self.params['password']
@@ -567,7 +564,7 @@ class BigIpRestApi(BigIpCommon):
         if self.params['check_mode']:
             return True
 
-        url = "%s/~%s~%s" % (self._uri, partition, name)
+        uri = "%s/~%s~%s" % (self._uri, partition, name)
         resp = requests.delete(uri,
                                auth=(user, password),
                                verify=validate_certs)

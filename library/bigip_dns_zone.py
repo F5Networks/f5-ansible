@@ -23,7 +23,7 @@ short_description: Manages DNS zones on a BIG-IP
 description:
    - This module manages DNS zones described in the iControl Management
      documentation
-version_added: "2.0"
+version_added: "2.1"
 options:
   server:
     description:
@@ -67,8 +67,7 @@ requirements: [ "bigsuds", "distutils" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
-
+EXAMPLES = '''
 - name: Add a view, named "internal", to organization.com zone
   local_action:
       module: bigip_view
@@ -81,7 +80,7 @@ EXAMPLES = """
       options:
           - domain_name: elliot.organization.com
           ip_address: 10.1.1.1
-"""
+'''
 
 import re
 from distutils.version import StrictVersion

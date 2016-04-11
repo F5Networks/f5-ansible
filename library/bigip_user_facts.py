@@ -66,7 +66,7 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Gather facts about user 'johnd'
   bigip_user_facts:
       server: "big-ip"
@@ -75,7 +75,7 @@ EXAMPLES = """
       name: "johnd"
   delegate_to: localhost
 - debug: var=bigip
-"""
+'''
 
 import socket
 
@@ -92,24 +92,6 @@ except ImportError:
     requests_found = False
 else:
     requests_found = True
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):

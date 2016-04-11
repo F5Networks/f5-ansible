@@ -126,14 +126,14 @@ requirements: [ "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sysdb:
       server: "big-ip"
       key: "boot.quiet"
       value: "disable"
   delegate_to: localhost
-"""
+'''
 
 import json
 import socket

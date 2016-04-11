@@ -137,7 +137,7 @@ author:
   - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Add the user 'johnd' as an admin
   bigip_user:
       server: "lb.mydomain.com"
@@ -189,7 +189,7 @@ EXAMPLES = """
       state: "present"
       username_credential: "johnd"
       password_credential: "newsupersecretpassword"
-"""
+'''
 
 RETURN = '''
 full_name:

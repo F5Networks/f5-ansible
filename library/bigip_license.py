@@ -98,7 +98,7 @@ requirements:
 author: Tim Rupp <caphrim007@gmail.com> @caphrim007
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: License BIG-IP using default license options
   bigip_license:
       server: "big-ip.domain.org"
@@ -143,7 +143,7 @@ EXAMPLES = """
       key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
       state: "latest"
   delegate_to: localhost
-"""
+'''
 
 import base64
 import socket
@@ -151,11 +151,8 @@ import suds
 import ssl
 import re
 import time
-import urllib2
-import sys
 
 from xml.sax._exceptions import SAXParseException
-from suds.transport.https import HttpAuthenticated
 
 try:
     import bigsuds
@@ -203,6 +200,10 @@ class NoLicenseReturnedError(Exception):
 
 
 class SSLCertVerifyError(Exception):
+    pass
+
+
+class UnprivilegedAccountError(Exception):
     pass
 
 
@@ -684,6 +685,8 @@ def main():
         module.fail_json(msg=str(e))
     except SSLCertVerifyError:
         module.fail_json(msg="SSL certificate verification failed. Use validate_certs=no to bypass this")
+    except UnprivilegedAccountError, e:
+        module.fail_json(msg="You account does not have permission to reload the license!")
 
 from ansible.module_utils.basic import *
 

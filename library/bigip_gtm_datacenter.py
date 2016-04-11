@@ -96,14 +96,14 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Create data center "New York"
   bigip_gtm_datacenter:
       server: "big-ip"
       name: "New York"
       location: "New York"
   delegate_to: localhost
-"""
+'''
 
 import json
 import socket

@@ -76,7 +76,7 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sysdb:
       server: "big-ip"
@@ -97,7 +97,7 @@ EXAMPLES = """
       key: "setup.run"
       state: "reset"
   delegate_to: localhost
-"""
+'''
 
 import json
 import socket
@@ -115,24 +115,6 @@ except ImportError:
     requests_found = False
 else:
     requests_found = True
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):
@@ -188,8 +170,6 @@ class BigIpIControl(BigIpCommon):
         return changed
 
     def reset(self):
-        changed = False
-
         try:
             self.api.Management.DBVariable.reset(
                 variables=[self._key]
@@ -268,7 +248,6 @@ class BigIpRest(BigIpCommon):
 
 def main():
     changed = False
-    icontrol = False
 
     module = AnsibleModule(
         argument_spec=dict(

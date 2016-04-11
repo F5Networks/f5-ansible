@@ -197,11 +197,6 @@ CHUNK_SIZE = 512 * 1024
 SAVE_FULL = "SAVE_FULL"
 
 
-def test_icontrol(username, password, hostname, validate_certs):
-    api = bigip_api(hostname, username, password, validate_certs)
-    api.Management.LicenseAdministration.get_license_activation_status()
-
-
 def bigip_version():
     """Check the BIG-IP version
 
@@ -284,7 +279,7 @@ class BigIpRest(BigIpCommon):
     def __init__(self, username, password, hostname,
                  validate_certs=True, check_mode=False):
 
-        super(BigIpIControl, self).__init__(username, password, hostname,
+        super(BigIpRest, self).__init__(username, password, hostname,
                                             validate_certs, check_mode)
 
     def download(self, filename):
@@ -349,7 +344,6 @@ class BigIpRest(BigIpCommon):
 
 
 def main():
-    changed = False
     backup_file = None
 
     argument_spec = f5_argument_spec()

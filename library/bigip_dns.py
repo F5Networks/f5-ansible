@@ -48,7 +48,7 @@ requirements: [ "bigsuds", "distutils" ]
 author: Tim Rupp <t.rupp@f5.com>
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Add an A record to organization.com zone
   bigip_rr: username='admin'
             password='admin'
@@ -74,7 +74,7 @@ EXAMPLES = """
       options:
           domain_name: elliot.organization.com
           ip_address: 10.1.1.1
-"""
+'''
 
 import re
 from distutils.version import StrictVersion

@@ -79,7 +79,7 @@ requirements: [ "bigsuds" ]
 author: Tim Rupp <t.rupp@f5.com>
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Restart the BIG-IP sshd service
   bigip_service:
       server: "big-ip"
@@ -88,7 +88,7 @@ EXAMPLES = """
       password: "admin"
       state: "restarted"
   delegate_to: localhost
-"""
+'''
 
 import socket
 import time
@@ -99,24 +99,6 @@ except ImportError:
     bigsuds_found = False
 else:
     bigsuds_found = True
-
-
-def test_icontrol(username, password, hostname):
-    client = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = client.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):
@@ -184,8 +166,6 @@ class BigIpIControl(BigIpCommon):
                 time.sleep(1)
 
     def started(self):
-        changed = False
-
         try:
             self.api.System.Services.set_service(
                 services=[self._service],
@@ -199,8 +179,6 @@ class BigIpIControl(BigIpCommon):
         return changed
 
     def stopped(self):
-        changed = False
-
         try:
             self.api.System.Services.set_service(
                 services=[self._service],
@@ -214,8 +192,6 @@ class BigIpIControl(BigIpCommon):
         return changed
 
     def restarted(self):
-        changed = False
-
         try:
             self.api.System.Services.set_service(
                 services=[self._service],
@@ -232,7 +208,6 @@ class BigIpIControl(BigIpCommon):
 
 def main():
     changed = False
-    icontrol = False
 
     service_choices = [
         'big3d', 'gtmd', 'named', 'ntpd', 'snmpd', 'sshd', 'zrd', 'websso'

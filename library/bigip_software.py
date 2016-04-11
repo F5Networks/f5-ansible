@@ -119,7 +119,7 @@ requirements: [ "bigsuds", "lxml" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Remove uploaded hotfix
   bigip_software:
       server: "bigip.localhost.localdomain"
@@ -225,15 +225,13 @@ EXAMPLES = """
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       reuse_inactive_volume: 
       state: "activated"
-"""
+'''
 
 import base64
 import socket
 import os
 import time
-import subprocess
 import io
-import urllib
 import struct
 import datetime
 
