@@ -83,9 +83,9 @@ from distutils.version import StrictVersion
 try:
     import bigsuds
 except ImportError:
-	bigsuds_found = False
+    bigsuds_found = False
 else:
-	bigsuds_found = True
+    bigsuds_found = True
 
 VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
@@ -98,7 +98,7 @@ def get_resource_record(module):
         return AResourceRecord(module)
 
 class ResourceRecordException(Exception):
-	  pass
+    pass
 
 class ResourceRecord(object):
     REQUIRED_BIGIP_VERSION='9.0.3'

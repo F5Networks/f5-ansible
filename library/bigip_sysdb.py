@@ -76,38 +76,36 @@ requirements: [ "bigsuds", "requests" ]
 author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = """
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sysdb:
-      server: "big-ip"
+      user: "admin"
+      password: "admin"
+      server: "big-ip01.internal"
       key: "boot.quiet"
       value: "disable"
   delegate_to: localhost
 
 - name: Disable the initial setup screen
   bigip_sysdb:
-      server: "big-ip"
+      user: "admin"
+      password: "admin"
+      server: "big-ip01.internal"
       key: "setup.run"
       value: "false"
   delegate_to: localhost
 
 - name: Reset the initial setup screen
   bigip_sysdb:
-      server: "big-ip"
+      user: "admin"
+      password: "admin"
+      server: "big-ip01.internal"
       key: "setup.run"
       state: "reset"
   delegate_to: localhost
-'''
+"""
 
 import json
-import socket
-
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
 
 try:
     import requests
@@ -116,28 +114,70 @@ except ImportError:
 else:
     requests_found = True
 
+TRANSPORTS = ['rest', 'soap']
+
+class NoResetNoValueError(Exception):
+    pass
+
+
+class BigIpApiFactory(object):
+    def factory(module):
+        connection = module.params.get('connection')
+
+        if connection == 'rest':
+            if not requests_found:
+                raise Exception("The python requests module is required")
+            return BigIpRestApi(check_mode=module.check_mode, **module.params)
+        elif connection == 'soap':
+            if not bigsuds_found:
+                raise Exception("The python bigsuds module is required")
+            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
+
+    factory = staticmethod(factory)
+
 
 class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
 
-        self._key = module.params.get('key')
-        self._value = module.params.get('value')
-        self._validate_certs = module.params.get('validate_certs')
+        self.params = kwargs
+        self.current = dict()
+
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+        value = self.params['value']
+
+        if not state == 'reset' and not value:
+            raise NoResetNoValueError
+
+        current = self.read()
+
+        if self.params['check_mode']:
+            if value == current:
+                changed = False
+            else:
+                changed = True
+        else:
+            if state == "present":
+                changed = self.present()
+            elif state == "reset":
+                changed = self.reset()
+            current = self.read()
+            result.update(current)
+
+        result.update(dict(changed=changed))
+        return result
 
 
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
+class BigIpSoapApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpSoapApi, self).__init__(*args, **kwargs)
 
-        self.api = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
-        )
+        self.api = bigip_api(kwargs['server'],
+                             kwargs['user'],
+                             kwargs['password'],
+                             kwargs['validate_certs'])
 
     def read(self):
         try:
@@ -170,6 +210,8 @@ class BigIpIControl(BigIpCommon):
         return changed
 
     def reset(self):
+        changed = False
+
         try:
             self.api.Management.DBVariable.reset(
                 variables=[self._key]
@@ -181,9 +223,9 @@ class BigIpIControl(BigIpCommon):
         return changed
 
 
-class BigIpRest(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpRest, self).__init__(module)
+class BigIpRestApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpRestApi, self).__init__(*args, **kwargs)
 
         self._uri = 'https://%s/mgmt/tm/sys/db/%s' % (self._hostname, self._key)
         self._headers = {
@@ -247,61 +289,38 @@ class BigIpRest(BigIpCommon):
 
 
 def main():
-    changed = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        connection=dict(default='soap', choices=TRANSPORTS),
+        key=dict(required=True),
+        state=dict(default='present', choices=['present', 'reset']),
+        value=dict(required=False, default=None)
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='rest', choices=['icontrol', 'rest']),
-            server=dict(required=True),
-            key=dict(required=True),
-            password=dict(required=True),
-            state=dict(default='present', choices=['present', 'reset']),
-            user=dict(required=True, aliases=['username']),
-            validate_certs=dict(default='yes', type='bool'),
-            value=dict(required=False, default=None)
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
-    connection = module.params.get('connection')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    value = module.params.get('value')
-
     try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
 
-            icontrol = test_icontrol(username, password, hostname)
-            if icontrol:
-                obj = BigIpIControl(module)
-        elif connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-
-            obj = BigIpRest(module)
-
-        if not state == 'reset' and not value:
-            module.fail_json(msg="Neither 'state' equal to 'reset' nor 'value' set")
-
-        if state == "present":
-            if obj.present():
-                changed = True
-        elif state == "reset":
-            if obj.reset():
-                changed = True
-    except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
-        module.fail_json(msg=str(e))
-
-    module.exit_json(changed=changed)
+        module.exit_json(**result)
+    except bigsuds.ConnectionError:
+        module.fail_json(msg="Could not connect to BIG-IP host")
+    except bigsuds.ServerError, e:
+        if 'folder not found' in str(e):
+            module.fail_json(msg="Partition not found")
+        else:
+            module.fail_json(msg=str(e))
+    except NoResetNoValueError:
+        module.fail_json(msg="Neither 'state' equal to 'reset' nor 'value' set")
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
