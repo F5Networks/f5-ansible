@@ -80,8 +80,8 @@ EXAMPLES = """
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sysdb:
       user: "admin"
-      password: "admin"
-      server: "big-ip01.internal"
+      password: "secret"
+      server: "lb.mydomain.com"
       key: "boot.quiet"
       value: "disable"
   delegate_to: localhost
@@ -89,8 +89,8 @@ EXAMPLES = """
 - name: Disable the initial setup screen
   bigip_sysdb:
       user: "admin"
-      password: "admin"
-      server: "big-ip01.internal"
+      password: "secret"
+      server: "lb.mydomain.com"
       key: "setup.run"
       value: "false"
   delegate_to: localhost
@@ -98,8 +98,8 @@ EXAMPLES = """
 - name: Reset the initial setup screen
   bigip_sysdb:
       user: "admin"
-      password: "admin"
-      server: "big-ip01.internal"
+      password: "secret"
+      server: "lb.mydomain.com"
       key: "setup.run"
       state: "reset"
   delegate_to: localhost

@@ -12,25 +12,23 @@
 
 DOCUMENTATION = '''
 ---
-module: bigip_rr
-short_description: Manage resource records on a BIG-IP
+module: bigip_dns_record
+short_description: Manage DNS resource records on a BIG-IP
 description:
-   - Manage resource records on a BIG-IP
-version_added: "1.8"
+   - Manage DNS resource records on a BIG-IP
+version_added: "2.1"
 options:
-  username:
+  user:
     description:
-      - The username used to authenticate with
+      - BIG-IP username
     required: true
-    default: admin
   password:
     description:
-      - The password used to authenticate with
+      - BIG-IP password
     required: true
-    default: admin
-  hostname:
+  server:
     description:
-      - BIG-IP host to connect to
+      - BIG-IP host
     required: true
     default: localhost
   state:
@@ -48,46 +46,65 @@ requirements: [ "bigsuds", "distutils" ]
 author: Tim Rupp <t.rupp@f5.com>
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Add an A record to organization.com zone
-  bigip_rr: username='admin'
-            password='admin'
-            hostname='bigip.organization.com'
-            type='A'
-            zone='organization.com'
-            state='present'
-  args:
+  bigip_dns_record:
+      user="admin"
+      password="secret"
+      hostname="lb.mydomain.com"
+      type="A"
+      zone="organization.com"
+      state="present"
       options:
-          hostname: elliot.organization.com
-          ip_address: 10.1.1.1
+          hostname: "elliot.organization.com"
+          ip_address: "10.1.1.1"
+  delegate_to: localhost
 
 - name: Add an A record to organization.com zone
   local_action:
-      module: bigip_rr
-      username: 'admin'
-      password: 'admin'
-      hostname: 'bigip.organization.com'
-      type: 'A'
-      zone: 'organization.com'
-      state: 'present'
-      ttl: 10
+      module: bigip_dns_record
+      user: "admin"
+      password: "admin"
+      hostname: "lb.mydomain.com"
+      type: "A"
+      zone: "organization.com"
+      state: "present"
+      ttl: "10"
       options:
-          domain_name: elliot.organization.com
-          ip_address: 10.1.1.1
-"""
+          domain_name: "elliot.organization.com"
+          ip_address: "10.1.1.1"
+'''
 
-import sys
 import re
 from distutils.version import StrictVersion
 
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
 VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+RECORDS = [
+    'A', 'AAAA', 'CNAME', 'DNAME', 'DS',
+    'HINFO', 'MX', 'NAPTR', 'NS', 'PTR',
+    'SOA', 'SRV', 'TXT'
+]
+
+class BigIpCommon(object):
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
+        self.params = kwargs
+
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+
+        if state == "present":
+            changed = self.present()
+
+            if not self.params['check_mode']:
+                current = self.read()
+                result.update(current)
+        else:
+            changed = self.absent()
+
+        result.update(dict(changed=changed))
+        return result
 
 def get_resource_record(module):
     rtype = module.params['type']
@@ -165,7 +182,7 @@ class AResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_a(
+            self.client.Management.ResourceRecord.add_a(
                 view_zones=self.view_zones,
                 a_records=records,
                 sync_ptrs=[1]
@@ -185,14 +202,11 @@ class AaaaResourceRecord(ResourceRecord):
             'ttl': self.ttl
         }]]
 
-        try:
-            response = self.client.Management.ResourceRecord.add_aaaa(
-                view_zones=self.view_zones,
-                aaaa_records=records,
-                sync_ptrs=[1]
-            )
-        except Exception, e:
-            raise ResourceRecordException(str(e))
+        self.client.Management.ResourceRecord.add_aaaa(
+            view_zones=self.view_zones,
+            aaaa_records=records,
+            sync_ptrs=[1]
+        )
 
 class CnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -206,13 +220,10 @@ class CnameResourceRecord(ResourceRecord):
             'ttl': self.ttl
         }]]
 
-        try:
-            response = self.client.Management.ResourceRecord.add_cname(
-                view_zones=self.view_zones,
-                cname_records=records
-            )
-        except Exception, e:
-            raise ResourceRecordException(str(e))
+        self.client.Management.ResourceRecord.add_cname(
+            view_zones=self.view_zones,
+            cname_records=records
+        )
 
 class DnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -440,30 +451,41 @@ class TxtResourceRecord(ResourceRecord):
             raise ResourceRecordException(str(e))
 
 def main():
-    rr_choices = [
-        'A', 'AAAA', 'CNAME', 'DNAME', 'DS',
-        'HINFO', 'MX', 'NAPTR', 'NS', 'PTR',
-        'SOA', 'SRV', 'TXT'
-    ]
+    argument_spec = f5_argument_spec()
 
-    module = AnsibleModule(
-        argument_spec = dict(
+    meta_args = dict(
             username=dict(default='admin'),
             password=dict(default='admin'),
             hostname=dict(required=True),
-            type=dict(default=None, required=True, choices=rr_choices),
+            type=dict(default=None, required=True, choices=RECORDS),
             ttl=dict(default=60),
             view=dict(default='external'),
             zone=dict(required=True),
             options=dict(required=True, type='dict'),
             state=dict(default="present", choices=["absent", "present"]),
-        )
     )
 
-    state = module.params["state"]
+    argument_spec.update(meta_args)
 
-    if not bigsuds_found:
-        module.fail_json(msg="The python bigsuds module is required")
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True
+    )
+
+    try:
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
+
+        module.exit_json(**result)
+    except bigsuds.ConnectionError:
+        module.fail_json(msg="Could not connect to BIG-IP host")
+    except bigsuds.ServerError, e:
+        if 'folder not found' in str(e):
+            module.fail_json(msg="Partition not found")
+        else:
+
+
+    state = module.params["state"]
 
     try:
         record = get_resource_record(module)
@@ -479,4 +501,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
-main()
+from ansible.module_utils.f5 import *
+
+if __name__ == '__main__':
+    main()

@@ -130,14 +130,7 @@ full_name:
     sample: "John Doe"
 '''
 
-import sys
 import json
-
-try:
-    import bigsuds
-    BIGSUDS_AVAILABLE = True
-except ImportError:
-    BIGSUDS_AVAILABLE = False
 
 try:
     import requests
@@ -172,7 +165,7 @@ class BigIpApiFactory(object):
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
         elif type == "soap":
-            if not BIGSUDS_AVAILABLE:
+            if not bigsuds_found:
                 raise Exception("The python bigsuds module is required")
             return BigIpSoapApi(check_mode=module.check_mode, **module.params)
 
@@ -200,9 +193,11 @@ class BigIpCommon(object):
         state = self.params['state']
 
         if state == "present":
-            changed = self.present()
+            if self.params['check_mode']:
+                current = self.read()
 
-            if not self.params['check_mode']:
+            else:
+                changed = self.present()
                 current = self.read()
                 result.update(current)
         else:
@@ -226,7 +221,6 @@ class BigIpSoapApi(BigIpCommon):
         self.irule = "/%s/%s" % (kwargs['partition'], kwargs['name'])
 
     def exists(self):
-        result = False
         module = self.params['module']
         partition = self.params['partition']
 
