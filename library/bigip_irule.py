@@ -93,12 +93,14 @@ notes:
    - Requires the requests Python package on the host. This is as easy as
      pip install requests
 
-requirements: [ "bigsuds", "requests" ]
+requirements:
+    - bigsuds
+    - requests
 author:
-  - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Add the iRule contained in templated irule.tcl to the LTM module
   bigip_irule:
       content: "{{ lookup('template', 'irule-template.tcl') }}"
@@ -120,7 +122,7 @@ EXAMPLES = """
       state: "present"
       user: "admin"
   delegate_to: localhost
-"""
+'''
 
 RETURN = '''
 full_name:
@@ -132,17 +134,8 @@ full_name:
 
 import json
 
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-
-TRANSPORTS = ['rest', 'soap']
-
 STATES = ['absent', 'present']
 MODULES = ['gtm', 'ltm', 'pem']
-
 
 class CreateRuleError(Exception):
     pass
@@ -161,7 +154,7 @@ class BigIpApiFactory(object):
         type = module.params.get('connection')
 
         if type == "rest":
-            if not REQUESTS_AVAILABLE:
+            if not requests_found:
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
         elif type == "soap":
@@ -573,7 +566,6 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        connection = dict(default='soap', choices=TRANSPORTS),
         content = dict(required=False),
         src = dict(required=False),
         name = dict(required=True),
