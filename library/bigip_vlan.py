@@ -15,8 +15,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Based on work by Kevin Maloney and Rick Masters
 
 DOCUMENTATION = '''
 ---
@@ -89,11 +87,13 @@ options:
     aliases:
       - tag
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+  - requests
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -102,20 +102,6 @@ EXAMPLES = '''
 import json
 import socket
 import os
-
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
 
 CONNECTION_TIMEOUT = 30
 OBJ_PREFIX = 'uuid_'
@@ -176,24 +162,6 @@ def strip_folder_and_prefix(path):
             return str(path).replace(OBJ_PREFIX, '')
         else:
             return os.path.basename(str(path)).replace(OBJ_PREFIX, '')
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):
@@ -676,6 +644,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
