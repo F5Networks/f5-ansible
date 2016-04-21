@@ -1,3 +1,6 @@
+Vagrantfile
+**.retry
+
 # Byte-compiled files
 __pycache__/
 *.py[cod]
