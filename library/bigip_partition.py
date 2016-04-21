@@ -79,7 +79,8 @@ notes:
      interface. This is as easy as pip install bigsuds
 
 requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -122,18 +123,6 @@ name:
     sample: "/foo"
 '''
 
-try:
-    import bigsuds
-    BIGSUDS_AVAILABLE = True
-except ImportError:
-    BIGSUDS_AVAILABLE = False
-
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-
 TRANSPORTS = ['rest', 'soap']
 
 
@@ -146,11 +135,11 @@ class BigIpApiFactory(object):
         connection = module.params.get('connection')
 
         if connection == 'rest':
-            if not REQUESTS_AVAILABLE:
+            if not requests_found:
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
         elif connection == 'soap':
-            if not BIGSUDS_AVAILABLE:
+            if not bigsuds_found:
                 raise Exception("The python bigsuds module is required")
             return BigIpSoapApi(check_mode=module.check_mode, **module.params)
 
