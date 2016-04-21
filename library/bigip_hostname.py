@@ -22,14 +22,14 @@ module: bigip_hostname
 short_description: Manage the hostname of a BIG-IP
 description:
    - Manage the hostname of a BIG-IP
-version_added: "2.0"
+version_added: "2.1"
 options:
   connection:
     description:
       - The connection used to interface with the BIG-IP
     required: false
     default: rest
-    choices: [ "rest", "icontrol" ]
+    choices: [ "rest", "soap" ]
   server:
     description:
       - BIG-IP host
@@ -60,7 +60,8 @@ notes:
      interface. This is as easy as pip install bigsuds
 
 requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -76,37 +77,12 @@ EXAMPLES = '''
 import socket
 
 try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
     import json
     import requests
 except ImportError:
     requests_found = False
 else:
     requests_found = True
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):
@@ -233,6 +209,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
