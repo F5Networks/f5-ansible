@@ -95,7 +95,8 @@ requirements:
   - requests
   - suds
   - paramiko
-author: Tim Rupp <caphrim007@gmail.com> @caphrim007
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -155,25 +156,12 @@ import time
 from xml.sax._exceptions import SAXParseException
 
 try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
     import paramiko
 except ImportError:
     paramiko_found = False
 else:
     paramiko_found = True
 
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
 
 LIC_EXTERNAL = 'activate.f5.com'
 LIC_INTERNAL = 'authem.f5net.com'
@@ -689,6 +677,7 @@ def main():
         module.fail_json(msg="You account does not have permission to reload the license!")
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
