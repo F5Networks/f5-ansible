@@ -1,3 +1,28 @@
+---
+
+# Test the bigip_dns_zone module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_dns_zone module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, tests/bigip_dns_zone.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_software module
+#
+#    ansible-playbook -i notahost, tests/bigip_dns_zone.yaml
+#
+# Tested platforms:
+#
+#    - NA
+#
+
 - name: Test the bigip_dns_zone module
   hosts: f5-test
   connection: local
