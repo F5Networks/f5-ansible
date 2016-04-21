@@ -73,7 +73,8 @@ notes:
      interface. This is as easy as pip install bigsuds
 
 requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = """
