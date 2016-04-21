@@ -64,7 +64,8 @@ notes:
    - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
 
 requirements: [ "bigsuds", "distutils" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -84,13 +85,6 @@ EXAMPLES = '''
 
 import re
 from distutils.version import StrictVersion
-
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
 
 VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
@@ -232,6 +226,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
