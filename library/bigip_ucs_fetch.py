@@ -99,7 +99,8 @@ notes:
      do is check for the existence of the file on disk; no checksumming.
 
 requirements: ["bigsuds", "requests"]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''

@@ -147,7 +147,8 @@ notes:
      iControl API to load the default backup UCS file (cs_backup.ucs)
 
 requirements: [ "bigsuds", "requests", "paramiko" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -564,6 +565,7 @@ def main():
     module.exit_json(**obj.result)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
