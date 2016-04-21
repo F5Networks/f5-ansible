@@ -127,11 +127,13 @@ author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
-- name: Set the boot.quiet DB variable on the BIG-IP
-  bigip_sysdb:
+- name: Set the DNS settings on the BIG-IP
+  bigip_device_dns:
       server: "big-ip"
-      key: "boot.quiet"
-      value: "disable"
+      nameservers: [208.67.222.222, 208.67.220.220]
+      forwarders: []
+      search_domains: [localdomain, lab.local]
+      state: present
   delegate_to: localhost
 '''
 
