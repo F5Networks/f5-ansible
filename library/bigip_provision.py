@@ -96,7 +96,8 @@ notes:
      interface. This is as easy as pip install bigsuds
 
 requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -177,7 +178,7 @@ class BigIpIControl(BigIpCommon):
     def exists(self):
         try:
             self._client.Management.Provision.get_level(
-                moduless=[self._module]
+                modules=[self._module]
             )
         except bigsuds.ServerError:
             return False
@@ -308,6 +309,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
