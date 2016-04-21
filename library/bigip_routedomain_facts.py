@@ -121,8 +121,8 @@ class BigIpCommon(object):
         self.params = kwargs
 
     def flush(self):
-        if obj.exists():
-            return dict(bigip=obj.facts())
+        if self.exists():
+            return dict(bigip=self.facts())
         else:
             raise F5ModuleError("The route domain was not found")
 
@@ -137,11 +137,13 @@ class BigIpSoapApi(BigIpCommon):
                              kwargs['user'],
                              kwargs['password'],
                              kwargs['validate_certs'],
-                             kwargs['port'])
+                             kwargs['server_port'])
         self.proper_name = '/%s/%s' % (kwargs['partition'], kwargs['id'])
 
     def exists(self):
         exists = False
+        partition = self.params['partition']
+
         with bigsuds.Transaction(self.api):
             # need to switch to root, set recursive query state
             current_folder = self.api.System.Session.get_active_folder()
@@ -206,7 +208,7 @@ class BigIpSoapApi(BigIpCommon):
             route_domains=[self.proper_name]
         )
 
-    def read(self):
+    def facts(self):
         result = {}
 
         result['bandwidth_controller'] = self.get_bw_controller_policy()
@@ -304,8 +306,6 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError, e:
         module.fail_json(msg="Could not connect to BIG-IP host")
-    except requests.exceptions.SSLError:
-        module.fail_json(msg='Certificate verification failed. Consider using validate_certs=no')
     except F5ModuleError, e:
         module.fail_json(msg=str(e))
 

@@ -1,33 +1,48 @@
 ---
 
-- name: Create route domain
-  bigip_routedomain:
+- name: Get route domain facts for existing domain
+  bigip_routedomain_facts:
+      id: "{{ found_rd }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[1] }}"
   register: result
 
-- name: Assert Create route domain
+- name: Assert Get route domain facts for existing domain
   assert:
       that:
           - result|changed
 
-- name: Create route domain - Idempotent check
-  bigip_routedomain:
+- name: Get route domain facts for non-existing domain
+  bigip_routedomain_facts:
+      id: "{{ notfound_rd }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[1] }}"
   register: result
 
-- name: Assert Create route domain - Idempotent check
+- name: Assert Get route domain facts for non-existing domain
+  assert:
+      that:
+          - not result|changed
+
+- name: Get route domain facts for invalid domains
+  bigip_routedomain_facts:
+      id: "{{ item }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+  with_items: invalid_rd
+
+- name: Assert Get route domain facts for invalid domain
   assert:
       that:
           - not result|changed

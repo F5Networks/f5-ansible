@@ -28,8 +28,8 @@
 #
 
 - name: Test the bigip_routedomain_facts module
-hosts: f5-test
-connection: local
+  hosts: f5-test
+  connection: local
 
-roles:
-- __bigip_routedomain_facts
+  roles:
+      - __bigip_routedomain_facts

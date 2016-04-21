@@ -5,8 +5,11 @@ bigip_password: "admin"
 bigip_port: "10443"
 validate_certs: "no"
 view_name: "foo"
-view_order:
-    - 0
-    - 1
-    - 2
-    - 3
+found_rd: "1234"
+notfound_rd: "5678"
+invalid_rd:
+    - "abcd"
+    - "123nfds"
+    - " #$%^#^@^?8/"
+    - "234.,755"
+    - "+fsd4$^>"
