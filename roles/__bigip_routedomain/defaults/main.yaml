@@ -1,0 +1,12 @@
+---
+
+bigip_username: "admin"
+bigip_password: "admin"
+bigip_port: "10443"
+validate_certs: "no"
+view_name: "foo"
+view_order:
+    - 0
+    - 1
+    - 2
+    - 3
