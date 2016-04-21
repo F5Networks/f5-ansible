@@ -1,0 +1,33 @@
+---
+
+- name: Create route domain
+  bigip_routedomain:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[1] }}"
+  register: result
+
+- name: Assert Create route domain
+  assert:
+      that:
+          - result|changed
+
+- name: Create route domain - Idempotent check
+  bigip_routedomain:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[1] }}"
+  register: result
+
+- name: Assert Create route domain - Idempotent check
+  assert:
+      that:
+          - not result|changed
