@@ -1,12 +1,12 @@
 ---
 
-# Test the bigip_routedomainfacts module
+# Test the bigip_routedomain_facts module
 #
 # This playbook can be used to test the bigip_routedomain_facts module.
 #
 # Usage:
 #
-#    ansible-playbook -i inventory/hosts tests/bigip_user.yaml [OPTIONS]:
+#    ansible-playbook -i inventory/hosts tests/bigip_routedomain_facts.yaml [OPTIONS]:
 #
 # Examples:
 #
