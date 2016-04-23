@@ -24,14 +24,6 @@ description:
    - Retrieve route domain attributes from a BIG-IP
 version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: smart
-    choices:
-      - rest
-      - soap
   server:
     description:
       - BIG-IP host
@@ -46,7 +38,7 @@ options:
     required: true
   partition:
     description:
-      - The partition to create the route domain on
+      - The partition the route domain resides on
     required: false
     default: Common
   user:
@@ -60,13 +52,10 @@ options:
     required: false
     default: true
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - Requires the requests Python package on the host. This is as easy as
-     pip install requests
+   - Requires the f5-sdk Python package on the host. This is as easy as pip
+     install bigsuds
 requirements:
-    - bigsuds
-    - requests
+    - f5-sdk
 author:
     - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
@@ -82,215 +71,98 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-full_name:
-    description: Full name of the user
-    returned: changed and success
+bwc_policy:
+    description: Bandwidth controller for the route domain
+    returned: changed
     type: string
-    sample: "John Doe"
+    sample: "/Common/foo"
+connection_limit:
+    description: >
+        Maximum number of concurrent connections allowed for the
+        route domain
+    returned: changed
+    type: integer
+    sample: 0
+description:
+    description: Descriptive text that identifies the route domain
+    returned: changed
+    type: string
+    sample: "The foo route domain
+evict_policy:
+    description: Eviction policy to use with this route domain
+    returned: changed
+    type: string
+    sample: "/Common/default-eviction-policy"
+id:
+    description: ID of the route domain
+    returned: changed
+    type: integer
+    sample: 1234
+service_policy:
+    description: Service policy to associate with the route domain
+    returned: changed
+    type: string
+    sample: "/Common/abc"
+strict:
+    description: Whether the system enforces cross-routing restrictions
+    returned: changed
+    type: string
+    sample: "enabled"
+routing_protocol:
+    description: >
+        Dynamic routing protocols for the system to use in the route
+        domain
+    returned: changed
+    type: list
+    sample: ["BGP", "OSPFv2"]
+vlans:
+    description: VLANs for the system to use in the route domain
+    returned: changed
+    type: list
+    sample: ["/Common/abc", "/Common/xyz"]
 '''
 
-import json
+from f5.bigip import BigIP
+from icontrol.session import iControlUnexpectedHTTPError
 
-PROTOCOLS=[
-    'bfd','bgp','is-is','ospfv2','ospfv3','pim','rip','ripng'
-]
+def facts(**kwargs):
+    result = dict()
+    b = BigIP(kwargs['server'],
+              kwargs['user'],
+              kwargs['password'],
+              kwargs['server_port'])
 
-class F5ModuleError(Exception):
-    pass
+    r = b.net.route_domains.route_domain.load(name=kwargs['id'],
+                                              partition=kwargs['partition'])
 
+    result['id'] = r.id
+    result['name'] = r.name
+    result['parent'] = r.parent
 
-class BigIpApiFactory(object):
-    def factory(module):
-        type = module.params.get('connection')
-
-        if type == "rest":
-            if not requests_found:
-                raise Exception("The python requests module is required")
-            return BigIpRestApi(check_mode=module.check_mode, **module.params)
-        elif type == "soap":
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
-            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
-
-    factory = staticmethod(factory)
-
-
-class BigIpCommon(object):
-    def __init__(self, *args, **kwargs):
-        self.result = dict(changed=False, changes=dict())
-        self.params = kwargs
-
-    def flush(self):
-        if self.exists():
-            return dict(bigip=self.facts())
-        else:
-            raise F5ModuleError("The route domain was not found")
-
-class BigIpSoapApi(BigIpCommon):
-    """Manipulate user accounts via SOAP
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(BigIpSoapApi, self).__init__(*args, **kwargs)
-
-        self.api = bigip_api(kwargs['server'],
-                             kwargs['user'],
-                             kwargs['password'],
-                             kwargs['validate_certs'],
-                             kwargs['server_port'])
-        self.proper_name = '/%s/%s' % (kwargs['partition'], kwargs['id'])
-
-    def exists(self):
-        exists = False
-        partition = self.params['partition']
-
-        with bigsuds.Transaction(self.api):
-            # need to switch to root, set recursive query state
-            current_folder = self.api.System.Session.get_active_folder()
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder='/' + partition)
-
-            current_query_state = self.api.System.Session.get_recursive_query_state()
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
-
-            domains = self.api.Networking.RouteDomainV2.get_list()
-            if self.proper_name in domains:
-                exists = True
-
-            # set everything back
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
-
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder=current_folder)
-        return exists
-
-    def get_bw_controller_policy(self):
-        return self.api.Networking.RouteDomainV2.get_bw_controller_policy(
-            route_domains=[self.proper_name]
-        )
-
-    def get_connection_limit(self):
-        return self.api.Networking.RouteDomainV2.get_connection_limit(
-            route_domains=[self.proper_name]
-        )
-
-    def get_description(self):
-        return self.api.Networking.RouteDomainV2.get_description(
-            route_domains=[self.proper_name]
-        )
-
-    def get_eviction_policy(self):
-        return self.api.Networking.RouteDomainV2.get_eviction_policy(
-            route_domains=[self.proper_name]
-        )
-
-    def get_parent(self):
-        return self.api.Networking.RouteDomainV2.get_parent(
-            route_domains=[self.proper_name]
-        )
-
-    def get_route_domains(self):
-        return self.api.Networking.RouteDomainV2.get_list()
-
-    def get_routing_protocols(self):
-        return self.api.Networking.RouteDomainV2.get_routing_protocols(
-            route_domains=[self.proper_name]
-        )
-
-    def get_strict_isolation(self):
-        return self.api.Networking.RouteDomainV2.get_strict_state(
-            route_domains=[self.proper_name]
-        )
-    def get_vlan(self):
-        return self.api.Networking.RouteDomainV2.get_vlan(
-            route_domains=[self.proper_name]
-        )
-
-    def facts(self):
-        result = {}
-
-        result['bandwidth_controller'] = self.get_bw_controller_policy()
-        result['connection_limit'] = self.get_connection_limit()
-        result['eviction_policy'] = self.get_eviction_policy()
-        result['routing_protocols'] = self.get_routing_protocols()
-        result['vlans'] = self.get_vlan()
-        result['parent'] = self.get_parent()
-        result['strict_isolation'] = self.get_strict_isolation()
-        result['description'] = self.get_description()
-
-        return result
-
-
-class BigIpRestApi(BigIpCommon):
-    """Get Route Domain facts via REST
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(BigIpRestApi, self).__init__(*args, **kwargs)
-
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-
-    def read(self):
-        result = {}
-
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
-
-        url = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.get(url,
-                            auth=(user, password),
-                            verify=validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-
-            result['name'] = res['name']
-
-            if 'apiAnonymous' in res:
-                result['definition'] = res['apiAnonymous'].strip()
-            else:
-                result['definition'] = ''
-
-        return result
-
-    def exists(self):
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
-
-        url = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.get(url,
-                            auth=(user, password),
-                            verify=validate_certs)
-
-        if resp.status_code != 200:
-            return False
-        else:
-            return True
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            if self.params['check_mode']:
-                return True
-            return self.create()
+    if hasattr(r, 'bwcPolicy'):
+        result['bwc_policy'] = r.bwcPolicy
+    if hasattr(r, 'connectionLimit'):
+        result['connection_limit'] = r.connectionLimit
+    if hasattr(r, 'description'):
+        result['description'] = r.description
+    if hasattr(r, 'flowEvictionPolicy'):
+        result['evict_policy'] = r.flowEvictionPolicy
+    if hasattr(r, 'servicePolicy'):
+        result['service_policy'] = r.servicePolicy
+    if hasattr(r, 'strict'):
+        result['strict'] = r.strict
+    if hasattr(r, 'routingProtocol'):
+        result['routing_protocol'] = r.routingProtocol
+    if hasattr(r, 'vlans'):
+        result['vlans'] = r.vlans
+    return result
 
 
 def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        id = dict(required=True, type='int'),
+        id = dict(required=True),
     )
     argument_spec.update(meta_args)
 
@@ -300,14 +172,11 @@ def main():
     )
 
     try:
-        obj = BigIpApiFactory.factory(module)
-        result = obj.flush()
+        result = facts(**module.params)
 
-        module.exit_json(**result)
-    except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host")
-    except F5ModuleError, e:
-        module.fail_json(msg=str(e))
+        module.exit_json(changed=True, bigip=result)
+    except iControlUnexpectedHTTPError, e:
+        module.fail_json(msg=e.message)
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
