@@ -1,0 +1,20 @@
+---
+
+- name: Create pool
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+      name: "foo.pool"
+      partition: "Common"
+      lb_method: "least_connection_member"
+      slow_ramp_time: "120
+  register: result
+
+- name: Assert Create pool
+  assert:
+      that:
+          - result|changed
