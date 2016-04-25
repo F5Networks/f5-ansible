@@ -116,7 +116,8 @@ notes:
    - https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
 
 requirements: [ "bigsuds", "lxml" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -236,12 +237,6 @@ import struct
 import datetime
 
 from lxml import etree
-
-try:
-    import bigsuds
-    BIGSUDS_AVAILABLE = True
-except ImportError:
-    BIGSUDS_AVAILABLE = False
 
 try:
     from cStringIO import StringIO
