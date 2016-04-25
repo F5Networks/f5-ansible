@@ -60,21 +60,21 @@ options:
       - user
   password_credential:
     description:
-      - Optionally set the user's password to this unencrypted value. One of
+      - Optionally set the users password to this unencrypted value. One of
         either C(password_credential) or C(encrypted_credential) is required
         when creating a new account.
     default: None
     required: false
   encrypted_credential:
     description:
-      - Optionally set the user's password to this crypted value. One of either
+      - Optionally set the users password to this crypted value. One of either
         C(password_credential) or C(encrypted_credential) is required when
         creating a new account. The password should be encrypted using crypt(3).
     default: None
     required: false
   shell:
     description:
-      - Optionally set the user's shell.
+      - Optionally set the users shell.
     required: false
     default: None
     choices: ['bash', 'none', 'tmsh']
@@ -213,20 +213,6 @@ shell:
 
 import json
 
-try:
-    import bigsuds
-    BIGSUDS_AVAILABLE = True
-except ImportError:
-    BIGSUDS_AVAILABLE = False
-
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-
-TRANSPORTS = ['rest', 'soap']
-
 # These are the roles that are available to be set in the BIG-IP
 ROLES = [
     'acceleration-policy-editor', 'application-editor', 'auditor',
@@ -289,14 +275,12 @@ class BigIpApiFactory(object):
             connection = 'soap'
 
         if connection == 'rest':
-            if not REQUESTS_AVAILABLE:
+            if not requests_found:
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
         elif connection == 'soap':
-            if not BIGSUDS_AVAILABLE:
+            if not bigsuds_found:
                 raise Exception("The python bigsuds module is required")
-            # iControl REST does not support creating users on different
-            # partitions, so we need to use SOAP
             return BigIpSoapApi(check_mode=module.check_mode, **module.params)
 
     factory = staticmethod(factory)
@@ -785,7 +769,6 @@ class BigIpSoapApi(BigIpCommon):
         password_credential = self.params['password_credential']
         shell = self.params['shell']
         username_credential = self.params['username_credential']
-        partition = self.params['partition']
 
         user_id = dict(
             name=username_credential,
@@ -866,7 +849,6 @@ class BigIpRestApi(BigIpCommon):
         }
 
     def did_password_change(self):
-        server = self.params['server']
         user = self.params['username_credential']
         password = self.params['password_credential']
         validate_certs = self.params['validate_certs']
@@ -1098,7 +1080,6 @@ def main():
     meta_args = dict(
         append=dict(default=False, type='bool', choices=BOOLEANS),
         full_name=dict(),
-        connection=dict(default='soap', choices=TRANSPORTS),
         encrypted_credential=dict(required=False, default=None, no_log=True),
         partition_access=dict(required=False, default=None),
         password_credential=dict(required=False, default=None, no_log=True),
