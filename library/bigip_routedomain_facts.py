@@ -53,7 +53,7 @@ options:
     default: true
 notes:
    - Requires the f5-sdk Python package on the host. This is as easy as pip
-     install bigsuds
+     install f5-sdk
 requirements:
     - f5-sdk
 author:
