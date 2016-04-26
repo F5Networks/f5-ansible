@@ -1,0 +1,31 @@
+---
+
+# Test the bigip_ucs module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_ucs module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, tests/bigip_ucs.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_ucs module
+#
+#    ansible-playbook -i notahost, tests/bigip_ucs.yaml
+#
+# Tested platforms:
+#
+#    - NA
+#
+
+- name: Test the bigip_ucs module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - __bigip_ucs
