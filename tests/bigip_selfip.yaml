@@ -1,0 +1,23 @@
+---
+
+# Test the bigip_selfip module
+#
+# This playbook can be used to test the bigip_selfip module.
+#
+# Usage:
+#
+#    ansible-playbook -i inventory/hosts tests/bigip_selfip.yaml [OPTIONS]:
+#
+# Examples:
+#
+#    Run all of the tests
+#
+#    ansible-playbook -i inventory/hosts test/bigip_selfip.yaml
+#
+
+- name: Test the bigip_selfip module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - __bigip_selfip
