@@ -1,14 +1,14 @@
 ---
 
-- name: Create route domain
+- name: Create route domain, ID only
   bigip_routedomain:
+      id: "{{ found_rd }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[1] }}"
+      connection: "soap"
   register: result
   tags:
       - create
@@ -18,8 +18,9 @@
       that:
           - result|changed
 
-- name: Create route domain - Idempotent check
+- name: Create route domain, ID only - Idempotent check
   bigip_routedomain:
+      id: "{{ found_rd }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
@@ -27,9 +28,20 @@
       validate_certs: "{{ validate_certs }}"
       view_name: "{{ view_name }}"
       view_order: "{{ view_order[1] }}"
+      connection: "soap"
   register: result
 
-- name: Assert Create route domain - Idempotent check
+- name: Assert Create route domain, ID only - Idempotent check
   assert:
       that:
           - not result|changed
+
+
+                  #description = dict(required=False, default=None),
+                  #strict_isolation = dict(required=False, default=None, choices=BOOLEANS),
+                  #parent = dict(required=False, type='int', default=None),
+                  #vlans = dict(required=False, default=None),
+                  #routing_protocols = dict(required=False, default=None),
+                  #bandwidth_controller = dict(required=False, type='str', default=None),
+                  #connection_limit = dict(required=False, type='int', default=None),
+                  #eviction_policy = dict(required=False, type='str', default=None)

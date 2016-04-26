@@ -1,9 +1,5 @@
 ---
 
-bigip_username: "admin"
-bigip_password: "admin"
-bigip_port: "10443"
-validate_certs: "no"
 found_rd: "1234"
 notfound_rd: "5678"
 invalid_rd:
