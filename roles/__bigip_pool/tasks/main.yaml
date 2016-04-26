@@ -11,7 +11,7 @@
       name: "foo.pool"
       partition: "Common"
       lb_method: "least_connection_member"
-      slow_ramp_time: "120
+      slow_ramp_time: "120"
   register: result
 
 - name: Assert Create pool
