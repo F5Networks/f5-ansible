@@ -270,7 +270,7 @@ def main():
         name = dict(type='str', required=True),
         host = dict(type='str', aliases=['address', 'ip']),
         description = dict(type='str')
-    )
+        )
     )
 
     module = AnsibleModule(
@@ -340,13 +340,13 @@ def main():
                 if session_state is not None:
                     session_status = get_node_session_status(api, address)
                     if session_state == 'enabled' and \
-                                    session_status == 'forced_disabled':
+                       session_status == 'forced_disabled':
                         if not module.check_mode:
                             set_node_session_enabled_state(api, address,
                                                            session_state)
                         result = {'changed': True}
                     elif session_state == 'disabled' and \
-                                    session_status != 'force_disabled':
+                         session_status != 'force_disabled':
                         if not module.check_mode:
                             set_node_session_enabled_state(api, address,
                                                            session_state)
@@ -354,13 +354,13 @@ def main():
                 if monitor_state is not None:
                     monitor_status = get_node_monitor_status(api, address)
                     if monitor_state == 'enabled' and \
-                                    monitor_status == 'forced_down':
+                       monitor_status == 'forced_down':
                         if not module.check_mode:
                             set_node_monitor_state(api, address,
                                                    monitor_state)
                         result = {'changed': True}
                     elif monitor_state == 'disabled' and \
-                                    monitor_status != 'forced_down':
+                         monitor_status != 'forced_down':
                         if not module.check_mode:
                             set_node_monitor_state(api, address,
                                                    monitor_state)
@@ -379,4 +379,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
-main()
+
+if __name__ == '__main__':
+    main()

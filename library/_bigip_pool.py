@@ -350,16 +350,16 @@ def main():
 
     argument_spec=f5_argument_spec();
     argument_spec.update(dict(
-        name = dict(type='str', required=True, aliases=['pool']),
-        lb_method = dict(type='str', choices=lb_method_choices),
-        monitor_type = dict(type='str', choices=monitor_type_choices),
-        quorum = dict(type='int'),
-        monitors = dict(type='list'),
-        slow_ramp_time = dict(type='int'),
-        service_down_action = dict(type='str', choices=service_down_choices),
-        host = dict(type='str', aliases=['address']),
-        port = dict(type='int')
-    )
+            name = dict(type='str', required=True, aliases=['pool']),
+            lb_method = dict(type='str', choices=lb_method_choices),
+            monitor_type = dict(type='str', choices=monitor_type_choices),
+            quorum = dict(type='int'),
+            monitors = dict(type='list'),
+            slow_ramp_time = dict(type='int'),
+            service_down_action = dict(type='str', choices=service_down_choices),
+            host = dict(type='str', aliases=['address']),
+            port = dict(type='int')
+        )
     )
 
     module = AnsibleModule(
@@ -382,7 +382,7 @@ def main():
     if monitors:
         monitors = []
         for monitor in module.params['monitors']:
-            monitors.append(fq_name(partition, monitor))
+                monitors.append(fq_name(partition, monitor))
     slow_ramp_time = module.params['slow_ramp_time']
     service_down_action = module.params['service_down_action']
     if service_down_action:
@@ -521,4 +521,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
-main()
+
+if __name__ == '__main__':
+    main()

@@ -316,17 +316,17 @@ def get_member_monitor_status(api, pool, address, port):
 def main():
     argument_spec = f5_argument_spec();
     argument_spec.update(dict(
-        session_state = dict(type='str', choices=['enabled', 'disabled']),
-        monitor_state = dict(type='str', choices=['enabled', 'disabled']),
-        pool = dict(type='str', required=True),
-        host = dict(type='str', required=True, aliases=['address', 'name']),
-        port = dict(type='int', required=True),
-        connection_limit = dict(type='int'),
-        description = dict(type='str'),
-        rate_limit = dict(type='int'),
-        ratio = dict(type='int'),
-        preserve_node = dict(type='bool', default=False)
-    )
+            session_state = dict(type='str', choices=['enabled', 'disabled']),
+            monitor_state = dict(type='str', choices=['enabled', 'disabled']),
+            pool = dict(type='str', required=True),
+            host = dict(type='str', required=True, aliases=['address', 'name']),
+            port = dict(type='int', required=True),
+            connection_limit = dict(type='int'),
+            description = dict(type='str'),
+            rate_limit = dict(type='int'),
+            ratio = dict(type='int'),
+            preserve_node = dict(type='bool', default=False)
+        )
     )
 
     module = AnsibleModule(
@@ -438,4 +438,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
-main()
+
+if __name__ == '__main__':
+    main()

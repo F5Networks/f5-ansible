@@ -360,17 +360,17 @@ def set_default_persistence_profiles(api,name,persistence_profile):
 def main():
     argument_spec = f5_argument_spec()
     argument_spec.update( dict(
-        state = dict(type='str', default='present',
-                     choices=['present', 'absent', 'disabled', 'enabled']),
-        name = dict(type='str', required=True,aliases=['vs']),
-        destination = dict(type='str', aliases=['address', 'ip']),
-        port = dict(type='int'),
-        all_profiles = dict(type='list'),
-        pool=dict(type='str'),
-        description = dict(type='str'),
-        snat=dict(type='str'),
-        default_persistence_profile=dict(type='str')
-    )
+            state = dict(type='str', default='present',
+                         choices=['present', 'absent', 'disabled', 'enabled']),
+            name = dict(type='str', required=True,aliases=['vs']),
+            destination = dict(type='str', aliases=['address', 'ip']),
+            port = dict(type='int'),
+            all_profiles = dict(type='list'),
+            pool=dict(type='str'),
+            description = dict(type='str'),
+            snat=dict(type='str'),
+            default_persistence_profile=dict(type='str')
+        )
     )
 
     module = AnsibleModule(
@@ -390,7 +390,7 @@ def main():
 
     if 1 > port > 65535:
         module.fail_json(msg="valid ports must be in range 1 - 65535")
-
+  
     try:
         api = bigip_api(server, user, password, validate_certs)
         result = {'changed': False}  # default

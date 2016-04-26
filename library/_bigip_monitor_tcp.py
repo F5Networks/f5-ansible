@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # (c) 2013, serge van Ginderachter <serge@vanginderachter.be>
-# based on Matt Hite's bigip_pool module
-# (c) 2013, Matt Hite <mhite@hotmail.com>
 #
 # This file is part of Ansible
 #
@@ -22,10 +20,10 @@
 
 DOCUMENTATION = '''
 ---
-module: bigip_monitor_http
-short_description: "Manages F5 BIG-IP LTM http monitors"
+module: bigip_monitor_tcp
+short_description: "Manages F5 BIG-IP LTM tcp monitors"
 description:
-    - "Manages F5 BIG-IP LTM monitors via iControl SOAP API"
+    - "Manages F5 BIG-IP LTM tcp monitors via iControl SOAP API"
 version_added: "1.4"
 author: "Serge van Ginderachter (@srvg)"
 notes:
@@ -77,11 +75,18 @@ options:
             - Partition for the monitor
         required: false
         default: 'Common'
+    type:
+        description:
+            - The template type of this monitor template
+        required: false
+        default: 'tcp'
+        choices: [ 'TTYPE_TCP', 'TTYPE_TCP_ECHO', 'TTYPE_TCP_HALF_OPEN']
     parent:
         description:
             - The parent template of this monitor template
         required: false
-        default: 'http'
+        default: 'tcp'
+        choices: [ 'tcp', 'tcp_echo', 'tcp_half_open']
     parent_partition:
         description:
             - Partition for the parent monitor
@@ -97,25 +102,20 @@ options:
             - The receive string for the monitor call
         required: true
         default: none
-    receive_disable:
-        description:
-            - The receive disable string for the monitor call
-        required: true
-        default: none
     ip:
-        description:
+        description: 
             - IP address part of the ipport definition. The default API setting
               is "0.0.0.0".
         required: false
         default: none
     port:
-        description:
+        description: 
             - port address part op the ipport definition. The default API
               setting is 0.
         required: false
         default: none
     interval:
-        description:
+        description: 
             - The interval specifying how frequently the monitor instance
               of this template will run. By default, this interval is used for up and
               down states. The default API setting is 5.
@@ -143,30 +143,48 @@ options:
 '''
 
 EXAMPLES = '''
-- name: BIGIP F5 | Create HTTP Monitor
+
+- name: BIGIP F5 | Create TCP Monitor
   local_action:
-    module:             bigip_monitor_http
+    module:             bigip_monitor_tcp
     state:              present
     server:             "{{ f5server }}"
     user:               "{{ f5user }}"
     password:           "{{ f5password }}"
     name:               "{{ item.monitorname }}"
+    type:               tcp
     send:               "{{ item.send }}"
     receive:            "{{ item.receive }}"
-  with_items: f5monitors
-- name: BIGIP F5 | Remove HTTP Monitor
+  with_items: f5monitors-tcp
+- name: BIGIP F5 | Create TCP half open Monitor
   local_action:
-    module:             bigip_monitor_http
+    module:             bigip_monitor_tcp
+    state:              present
+    server:             "{{ f5server }}"
+    user:               "{{ f5user }}"
+    password:           "{{ f5password }}"
+    name:               "{{ item.monitorname }}"
+    type:               tcp
+    send:               "{{ item.send }}"
+    receive:            "{{ item.receive }}"
+  with_items: f5monitors-halftcp
+- name: BIGIP F5 | Remove TCP Monitor
+  local_action:
+    module:             bigip_monitor_tcp
     state:              absent
     server:             "{{ f5server }}"
     user:               "{{ f5user }}"
     password:           "{{ f5password }}"
     name:               "{{ monitorname }}"
+  with_flattened:
+  - f5monitors-tcp
+  - f5monitors-halftcp
+
 '''
 
-TEMPLATE_TYPE = 'TTYPE_HTTP'
-DEFAULT_PARENT_TYPE = 'http'
-
+TEMPLATE_TYPE = DEFAULT_TEMPLATE_TYPE = 'TTYPE_TCP'
+TEMPLATE_TYPE_CHOICES = ['tcp', 'tcp_echo', 'tcp_half_open']
+DEFAULT_PARENT = DEFAULT_TEMPLATE_TYPE_CHOICE = DEFAULT_TEMPLATE_TYPE.replace('TTYPE_', '').lower()
 
 
 def check_monitor_exists(module, api, monitor, parent):
@@ -227,6 +245,7 @@ def check_string_property(api, monitor, str_property):
         else:
             # genuine exception
             raise
+    return True
 
 
 def set_string_property(api, monitor, str_property):
@@ -245,7 +264,7 @@ def check_integer_property(api, monitor, int_property):
         else:
             # genuine exception
             raise
-
+    return True
 
 
 def set_integer_property(api, monitor, int_property):
@@ -290,26 +309,26 @@ def set_ipport(api, monitor, ipport):
 # ===========================================
 # main loop
 #
-# writing a module for other monitor types should
+# writing a module for other monitor types should 
 # only need an updated main() (and monitor specific functions)
 
 def main():
 
     # begin monitor specific stuff
     argument_spec=f5_argument_spec();
-    argument_spec.update( dict(
-        name      = dict(required=True),
-        parent    = dict(default=DEFAULT_PARENT_TYPE),
-        parent_partition = dict(default='Common'),
-        send      = dict(required=False),
-        receive   = dict(required=False),
-        receive_disable   = dict(required=False),
-        ip        = dict(required=False),
-        port      = dict(required=False, type='int'),
-        interval  = dict(required=False, type='int'),
-        timeout   = dict(required=False, type='int'),
-        time_until_up = dict(required=False, type='int', default=0)
-    )
+    argument_spec.update(dict(
+            name      = dict(required=True),
+            type      = dict(default=DEFAULT_TEMPLATE_TYPE_CHOICE, choices=TEMPLATE_TYPE_CHOICES),
+            parent    = dict(default=DEFAULT_PARENT),
+            parent_partition = dict(default='Common'),
+            send      = dict(required=False),
+            receive   = dict(required=False),
+            ip        = dict(required=False),
+            port      = dict(required=False, type='int'),
+            interval  = dict(required=False, type='int'),
+            timeout   = dict(required=False, type='int'),
+            time_until_up = dict(required=False, type='int', default=0)
+        )
     )
 
     module = AnsibleModule(
@@ -321,16 +340,20 @@ def main():
 
     parent_partition = module.params['parent_partition']
     name = module.params['name']
+    type = 'TTYPE_' + module.params['type'].upper()
     parent = fq_name(parent_partition, module.params['parent'])
     monitor = fq_name(partition, name)
     send = module.params['send']
     receive = module.params['receive']
-    receive_disable = module.params['receive_disable']
     ip = module.params['ip']
     port = module.params['port']
     interval = module.params['interval']
     timeout = module.params['timeout']
     time_until_up = module.params['time_until_up']
+
+    # tcp monitor has multiple types, so overrule
+    global TEMPLATE_TYPE
+    TEMPLATE_TYPE = type
 
     # end monitor specific stuff
 
@@ -346,20 +369,18 @@ def main():
         if port is None:
             port = cur_ipport['ipport']['port']
     else: # use API defaults if not defined to create it
-        if interval is None:
+        if interval is None:        
             interval = 5
-        if timeout is None:
+        if timeout is None:         
             timeout = 16
-        if ip is None:
+        if ip is None:              
             ip = '0.0.0.0'
-        if port is None:
+        if port is None:            
             port = 0
-        if send is None:
+        if send is None:            
             send = ''
-        if receive is None:
+        if receive is None:         
             receive = ''
-        if receive_disable is None:
-            receive_disable = ''
 
     # define and set address type
     if ip == '0.0.0.0' and port == 0:
@@ -383,19 +404,20 @@ def main():
                            'is_directly_usable': True}
 
     # monitor specific stuff
-    template_string_properties = [{'type': 'STYPE_SEND',
-                                   'value': send},
-                                  {'type': 'STYPE_RECEIVE',
-                                   'value': receive},
-                                  {'type': 'STYPE_RECEIVE_DRAIN',
-                                   'value': receive_disable}]
+    if type == 'TTYPE_TCP':
+        template_string_properties = [{'type': 'STYPE_SEND',
+                                       'value': send},
+                                      {'type': 'STYPE_RECEIVE',
+                                       'value': receive}]
+    else:
+        template_string_properties = []
 
     template_integer_properties = [{'type': 'ITYPE_INTERVAL',
-                                    'value': interval},
+                                     'value': interval},
                                    {'type': 'ITYPE_TIMEOUT',
                                     'value': timeout},
                                    {'type': 'ITYPE_TIME_UNTIL_UP',
-                                    'value': time_until_up}]
+                                    'value': interval}]
 
     # main logic, monitor generic
 
@@ -406,7 +428,7 @@ def main():
         if state == 'absent':
             if monitor_exists:
                 if not module.check_mode:
-                    # possible race condition if same task
+                    # possible race condition if same task 
                     # on other node deleted it first
                     result['changed'] |= delete_monitor(api, monitor)
                 else:
@@ -415,26 +437,28 @@ def main():
         else: # state present
             ## check for monitor itself
             if not monitor_exists: # create it
-                if not module.check_mode:
+                if not module.check_mode: 
                     # again, check changed status here b/c race conditions
                     # if other task already created it
                     result['changed'] |= create_monitor(api, monitor, template_attributes)
-                else:
+                else: 
                     result['changed'] |= True
 
             ## check for monitor parameters
             # whether it already existed, or was just created, now update
             # the update functions need to check for check mode but
             # cannot update settings if it doesn't exist which happens in check mode
-            result['changed'] |= update_monitor_properties(api, module, monitor,
-                                                           template_string_properties,
-                                                           template_integer_properties)
+            if monitor_exists and not module.check_mode:
+                result['changed'] |= update_monitor_properties(api, module, monitor,
+                                                               template_string_properties,
+                                                               template_integer_properties)
+            # else assume nothing changed
 
             # we just have to update the ipport if monitor already exists and it's different
             if monitor_exists and cur_ipport != ipport:
-                set_ipport(api, monitor, ipport)
+                set_ipport(api, monitor, ipport)    
                 result['changed'] |= True
-                #else: monitor doesn't exist (check mode) or ipport is already ok
+            #else: monitor doesn't exist (check mode) or ipport is already ok
 
 
     except Exception, e:
@@ -445,4 +469,6 @@ def main():
 # import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
-main()
+
+if __name__ == '__main__':
+    main()
