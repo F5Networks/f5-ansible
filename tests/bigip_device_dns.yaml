@@ -14,7 +14,7 @@
 #
 # Examples:
 #
-#    Run all tests on the bigip_software module
+#    Run all tests on the bigip_device_dns module
 #
 #    ansible-playbook -i notahost, tests/bigip_device_dns.yaml
 #
