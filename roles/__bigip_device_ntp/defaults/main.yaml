@@ -1,0 +1,14 @@
+---
+
+missing_server: "foo.ntp.org"
+missing_servers:
+    - "0.foo.ntp.org"
+    - "1.foo.ntp.org"
+    - "2.foo.ntp.org"
+    - "3.foo.ntp.org"
+ntp_server: "pool.ntp.org"
+ntp_servers:
+    - "0.pool.ntp.org"
+    - "1.pool.ntp.org"
+    - "2.pool.ntp.org"
+    - "3.pool.ntp.org"
