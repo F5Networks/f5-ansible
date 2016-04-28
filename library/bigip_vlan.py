@@ -97,7 +97,11 @@ author:
 EXAMPLES = '''
 '''
 
-from f5.bigip import BigIP
+try:
+    from f5.bigip import BigIP
+    f5sdk_found = True
+except:
+    f5sdk_found = False
 
 
 class F5ModuleError(Exception):
