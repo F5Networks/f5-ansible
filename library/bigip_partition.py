@@ -21,15 +21,9 @@ DOCUMENTATION = '''
 module: bigip_partition
 short_description: Manage BIG-IP partitions
 description:
-   - Manage BIG-IP partitions
-version_added: "2.1"
+  - Manage BIG-IP partitions
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: soap
-    choices: [ "rest", "soap" ]
   description:
     description:
       - The description to attach to the Partition
@@ -73,14 +67,14 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+  - requests
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -196,7 +190,7 @@ class BigIpSoapApi(BigIpCommon):
     def create(self):
         name = self.params['name']
         folder = self.params['folder']
-        description = self.params['description']
+        # description = self.params['description']
         route_domain = self.params['route_domain']
 
         if route_domain:

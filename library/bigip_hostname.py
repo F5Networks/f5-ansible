@@ -69,10 +69,9 @@ EXAMPLES = '''
 
 try:
     from f5-sdk import BigIP
+    f5sdk_found = True
 except ImportError:
     f5sdk_found = False
-else:
-    f5sdk_found = True
 
 
 class BigIpHostname(object):

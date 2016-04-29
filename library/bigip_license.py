@@ -21,8 +21,8 @@ DOCUMENTATION = '''
 module: bigip_license
 short_description: Manage license installation and activation on BIG-IP devices
 description:
-   - Manage license installation and activation on BIG-IP devices
-version_added: "2.0"
+  - Manage license installation and activation on BIG-IP devices
+version_added: "2.2"
 options:
   dossier_file:
     description:
@@ -96,7 +96,7 @@ requirements:
   - suds
   - paramiko
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
