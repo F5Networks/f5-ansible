@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# (c) 2015, Michael Perzel
-#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -23,48 +21,64 @@ DOCUMENTATION = '''
 module: bigip_gtm_wide_ip
 short_description: "Manages F5 BIG-IP GTM wide ip"
 description:
-    - "Manages F5 BIG-IP GTM wide ip"
+  - "Manages F5 BIG-IP GTM wide ip"
 version_added: "2.0"
-author: 'Michael Perzel'
+author:
+  - Michael Perzel (@perzizzle)
 notes:
-    - "Requires BIG-IP software version >= 11.4"
-    - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-    - "Best run as a local_action in your playbook"
-    - "Tested with manager and above account privilege level"
-
+  - "Requires BIG-IP software version >= 11.4"
+  - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
+  - "Best run as a local_action in your playbook"
+  - "Tested with manager and above account privilege level"
 requirements:
-    - bigsuds
+  - bigsuds
 options:
-    server:
-        description:
-            - BIG-IP host
-        required: true
-    user:
-        description:
-            - BIG-IP username
-        required: true
-    password:
-        description:
-            - BIG-IP password
-        required: true
-    lb_method:
-        description:
-            - LB method of wide ip
-        required: true
-        choices: ['return_to_dns', 'null', 'round_robin',
-                      'ratio', 'topology', 'static_persist', 'global_availability',
-                      'vs_capacity', 'least_conn', 'lowest_rtt', 'lowest_hops',
-                      'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps',
-                      'drop_packet', 'explicit_ip', 'connection_rate', 'vs_score']
-    wide_ip:
-        description:
-            - Wide IP name
-        required: true
+  server:
+    description:
+      - BIG-IP host
+    required: true
+  user:
+    description:
+      - BIG-IP username
+    required: true
+  password:
+    description:
+      - BIG-IP password
+    required: true
+  lb_method:
+    description:
+      - LB method of wide ip
+    required: true
+    choices:
+      - return_to_dns
+      - null
+      - round_robin
+      - ratio
+      - topology
+      - static_persist
+      - global_availability
+      - vs_capacity
+      - least_conn
+      - lowest_rtt
+      - lowest_hops
+      - packet_rate
+      - cpu
+      - hit_ratio
+      - qos
+      - bps
+      - drop_packet
+      - explicit_ip
+      - connection_rate
+      - vs_score
+  wide_ip:
+    description:
+      - Wide IP name
+    required: true
 '''
 
 EXAMPLES = '''
-  - name: Set lb method
-    local_action: >
+- name: Set lb method
+  local_action: >
       bigip_gtm_wide_ip
       server=192.168.0.1
       user=admin
@@ -75,19 +89,21 @@ EXAMPLES = '''
 
 try:
     import bigsuds
+    bigsuds_found = True
 except ImportError:
     bigsuds_found = False
-else:
-    bigsuds_found = True
+
 
 def bigip_api(server, user, password):
     api = bigsuds.BIGIP(hostname=server, username=user, password=password)
     return api
 
+
 def get_wide_ip_lb_method(api, wide_ip):
     lb_method = api.GlobalLB.WideIP.get_lb_method(wide_ips=[wide_ip])[0]
     lb_method = lb_method.strip().replace('LB_METHOD_', '').lower()
     return lb_method
+
 
 def get_wide_ip_pools(api, wide_ip):
     try:
@@ -95,11 +111,13 @@ def get_wide_ip_pools(api, wide_ip):
     except Exception, e:
         print e
 
+
 def wide_ip_exists(api, wide_ip):
     # hack to determine if wide_ip exists
-    result = False
     try:
-        api.GlobalLB.WideIP.get_object_status(wide_ips=[wide_ip])
+        api.GlobalLB.WideIP.get_object_status(
+            wide_ips=[wide_ip]
+        )
         result = True
     except bigsuds.OperationFailed, e:
         if "was not found" in str(e):

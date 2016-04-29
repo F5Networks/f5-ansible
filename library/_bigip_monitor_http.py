@@ -1,9 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-# (c) 2013, serge van Ginderachter <serge@vanginderachter.be>
-# based on Matt Hite's bigip_pool module
-# (c) 2013, Matt Hite <mhite@hotmail.com>
 #
 # This file is part of Ansible
 #
@@ -25,16 +21,17 @@ DOCUMENTATION = '''
 module: bigip_monitor_http
 short_description: "Manages F5 BIG-IP LTM http monitors"
 description:
-    - "Manages F5 BIG-IP LTM monitors via iControl SOAP API"
+  - "Manages F5 BIG-IP LTM monitors via iControl SOAP API"
 version_added: "1.4"
-author: "Serge van Ginderachter (@srvg)"
+author:
+  - Serge van Ginderachter (@srvg)
 notes:
-    - "Requires BIG-IP software version >= 11"
-    - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-    - "Best run as a local_action in your playbook"
-    - "Monitor API documentation: https://devcentral.f5.com/wiki/iControl.LocalLB__Monitor.ashx"
+  - "Requires BIG-IP software version >= 11"
+  - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
+  - "Best run as a local_action in your playbook"
+  - "Monitor API documentation: https://devcentral.f5.com/wiki/iControl.LocalLB__Monitor.ashx"
 requirements:
-    - bigsuds
+  - bigsuds
 options:
     server:
         description:
