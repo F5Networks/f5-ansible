@@ -21,15 +21,17 @@ DOCUMENTATION = '''
 module: bigip_device_dns
 short_description: Manage BIG-IP device DNS settings
 description:
-   - Manage BIG-IP device DNS settings
-version_added: "2.1"
+  - Manage BIG-IP device DNS settings
+version_added: "2.2"
 options:
   append:
     description:
       - If C(yes), will only add specific servers to the device configuration,
         not set them to just the list in C(nameserver), C(nameservers),
         C(forwarder), C(forwarders), C(search_domain) or C(search_domains).
-    choices: ['yes', 'no']
+    choices:
+      - yes
+      - no
     default: no
   server:
     description:
@@ -47,7 +49,9 @@ options:
         rewrites, and authentication.
     required: false
     default: disable
-    choices: ['enable', 'disable']
+    choices:
+       - enable
+       - disable
   nameserver:
     description:
       - A single name server that the system uses to validate DNS lookups, and
@@ -97,14 +101,18 @@ options:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
     required: false
     default: 4
-    choices: [4, 6]
+    choices:
+      - 4
+      - 6
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
         that an existing variable is set to C(value).
     required: false
     default: present
-    choices: ['absent', 'present']
+    choices:
+      - absent
+      - present
   user:
     description:
       - BIG-IP username
@@ -117,14 +125,13 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the requests Python package on the host. This is as easy as pip
-     install requests
-
-requirements: [ "requests" ]
+  - Requires the requests Python package on the host. This is as easy as pip
+    install requests
+requirements:
+  - f5-sdk
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -133,34 +140,28 @@ EXAMPLES = '''
       server: "big-ip"
       nameservers: [208.67.222.222, 208.67.220.220]
       forwarders: []
-      search_domains: [localdomain, lab.local]
+      search_domains:
+          - localdomain
+          - lab.local
       state: present
   delegate_to: localhost
 '''
 
-import json
-import socket
-
 try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    from f5.bigip import BigIP
+    f5sdk_found = True
+except:
+    f5sdk_found = False
 
 
-class BigIpCommon(object):
-    def __init__(self, user, password, server, nameservers=[], forwarders=[],
-                 search_domains=[], cache=None, ip_version=None, append=False,
-                 validate_certs=True):
+class BigIpDeviceDns():
+    def __init__(self, *args, **kwargs):
+        if not f5sdk_found:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        self._username = user
-        self._password = password
-        self._hostname = server
+        kwargs['ip_version'] = str(kwargs['ip_version'])
 
-        if isinstance(nameservers, list):
-            self._nameservers = nameservers
-        else:
+        if type(kwargs['nameservers']) is str:
             self._nameservers = [nameservers]
 
         if isinstance(forwarders, list):
@@ -173,57 +174,25 @@ class BigIpCommon(object):
         else:
             self._search_domains = [search_domains]
 
-        self._cache = cache
-        self._append = append
-        self._ip_version = str(ip_version)
+        self.params = kwargs
+        self.api = BigIP(kwargs['server'],
+                         kwargs['user'],
+                         kwargs['password'],
+                         port=kwargs['server_port'])
 
-        self._validate_certs = validate_certs
-
-
-class BigIpRest(BigIpCommon):
-    def __init__(self, user, password, server, nameservers=[], forwarders=[],
-                 search_domains=[], cache=None, ip_version=None, append=False,
-                 validate_certs=True):
-
-        """Handles manipulating the DNS settings on a device via REST interface
-
-        The REST data structure looks like this
-
-        {
-          "kind": "tm:sys:dns:dnsstate",
-          "selfLink": "https://localhost/mgmt/tm/sys/dns?ver=12.0.0",
-          "description": "configured-by-dhcp",
-          "include": "options inet6",
-          "nameServers": [
-            "10.2.1.254"
-          ],
-          "search": [
-            "hype.f5net.com"
-          ]
-        }
-        """
-
-        super(BigIpRest, self).__init__(user, password, server, nameservers,
-                                        forwarders, search_domains, cache,
-                                        ip_version, append, validate_certs)
-
-        self._headers = dict()
-        self._headers['Content-Type'] = 'application/json'
+    def flush(self):
+        if self.dhcp_enabled():
+            raise F5ModuleError(
+                "DHCP on the mgmt interface must be disabled to make use of" +
+                "this module"
+            )
 
     def dhcp_enabled(self):
-        uri = 'https://%s/mgmt/tm/sys/db/dhclient.mgmt' % (self._hostname)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-            if res['value'] == 'enable':
-                return True
-            else:
-                return False
+        r = self.api.sys.dbs.db.load(name='dhclient.mgmt')
+        if r['value'] == 'enable':
+            return True
         else:
-            raise Exception()
+            return False
 
     def _read_dns(self):
         result = {}
@@ -457,7 +426,6 @@ class BigIpRest(BigIpCommon):
 
     def present(self):
         changed = False
-        result = False
         current = self.read()
 
         result = self._present_dns(current)
@@ -479,7 +447,6 @@ class BigIpRest(BigIpCommon):
 
     def absent(self):
         changed = False
-        result = False
         current = self.read()
 
         result = self._absent_dns(current)
@@ -510,86 +477,26 @@ class BigIpRest(BigIpCommon):
 
 
 def main():
-    changed = False
-
     module = AnsibleModule(
         argument_spec=dict(
-            append=dict(default='no', type='bool'),
             cache=dict(required=False, choices=['disable', 'enable'], default=None),
-            server=dict(required=True),
-            password=dict(required=True),
-            state=dict(default='present', choices=['absent', 'present']),
-            user=dict(required=True, aliases=['username']),
-            nameserver=dict(required=False, type='str', default=None),
-            nameservers=dict(required=False, type='list', default=[]),
-            forwarder=dict(required=False, type='str', default=None),
-            forwarders=dict(required=False, type='list', default=[]),
-            search_domain=dict(required=False, type='str', default=None),
-            search_domains=dict(required=False, type='list', default=[]),
-            ip_version=dict(required=False, default=None, choices=['4', '6']),
-            validate_certs=dict(default='yes', type='bool')
+            nameserver=dict(required=False, default=[]),
+            forwarder=dict(required=False, default=[]),
+            search_domain=dict(required=False, default=[]),
+            ip_version=dict(required=False, default=None, choices=['4', '6'])
         ),
         required_one_of=[[
-            'nameserver', 'nameservers', 'search_domain', 'search_domains',
-            'forwarder', 'forwarders', 'ip_version', 'cache'
-        ]],
-        mutually_exclusive=[
-            ['nameserver', 'nameservers'],
-            ['forwarder', 'forwarders'],
-            ['search_domain', 'search_domains']
-        ]
+            'nameserver', 'search_domain', 'forwarder', 'ip_version', 'cache'
+        ]]
     )
 
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    append = module.params.get('append')
-    cache = module.params.get('cache')
-    nameserver = module.params.get('nameserver')
-    nameservers = module.params.get('nameservers')
-    forwarder = module.params.get('forwarder')
-    forwarders = module.params.get('forwarders')
-    search_domain = module.params.get('search_domain')
-    search_domains = module.params.get('search_domains')
-    ip_version = module.params.get('ip_version')
-    validate_certs = module.params.get('validate_certs')
-
     try:
-        if not requests_found:
-            raise Exception("The python requests module is required")
+        obj = BigIpDeviceDns(**module.params)
+        result = obj.flush()
 
-        if nameserver:
-            nameservers = nameserver
-        if forwarder:
-            forwarders = forwarder
-        if search_domain:
-            search_domains = search_domain
-
-        if append and not (nameservers or forwarders or search_domains):
-            mesg = "The 'append' parameter requires at least one of 'nameservers', 'forwarders', or 'search_domains'"
-            module.fail_json(msg=mesg)
-
-        obj = BigIpRest(username, password, hostname, nameservers, forwarders,
-                        search_domains, cache, ip_version, append, validate_certs)
-
-        if obj.dhcp_enabled():
-            module.fail_json(msg="DHCP on the mgmt interface must be disabled to make use of this module")
-
-        if state == "present":
-            changed = obj.present()
-        elif state == "absent":
-            if not (nameservers or forwarders or search_domains):
-                mesg = "State 'absent' requires at least one of 'nameservers', 'forwarders', or 'search_domains'"
-                module.fail_json(msg=mesg)
-
-            changed = obj.absent()
-    except socket.timeout, e:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except socket.timeout, e:
+        module.exit_json(**result)
+    except F5ModuleError, e:
         module.fail_json(msg=str(e))
-
-    module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
