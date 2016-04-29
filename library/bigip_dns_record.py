@@ -21,8 +21,8 @@ DOCUMENTATION = '''
 module: bigip_dns_record
 short_description: Manage DNS resource records on a BIG-IP
 description:
-   - Manage DNS resource records on a BIG-IP
-version_added: "2.1"
+  - Manage DNS resource records on a BIG-IP
+version_added: "2.2"
 options:
   user:
     description:
@@ -45,12 +45,13 @@ options:
     default: present
     choices: [ "present", "absent" ]
 notes:
-   - Requires the bigsuds Python package on the remote host. This is as easy as
-     pip install bigsuds
-
-requirements: [ "bigsuds", "distutils" ]
+  - Requires the bigsuds Python package on the remote host. This is as easy as
+    pip install bigsuds
+requirements:
+  - bigsuds
+  - distutils
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -85,12 +86,13 @@ EXAMPLES = '''
 import re
 from distutils.version import StrictVersion
 
-VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 RECORDS = [
     'A', 'AAAA', 'CNAME', 'DNAME', 'DS',
     'HINFO', 'MX', 'NAPTR', 'NS', 'PTR',
     'SOA', 'SRV', 'TXT'
 ]
+
 
 class BigIpCommon(object):
     def __init__(self, *args, **kwargs):
@@ -113,6 +115,7 @@ class BigIpCommon(object):
         result.update(dict(changed=changed))
         return result
 
+
 def get_resource_record(module):
     rtype = module.params['type']
 
@@ -121,11 +124,13 @@ def get_resource_record(module):
     elif rtype == 'CNAME':
         return AResourceRecord(module)
 
+
 class ResourceRecordException(Exception):
     pass
 
+
 class ResourceRecord(object):
-    REQUIRED_BIGIP_VERSION='9.0.3'
+    REQUIRED_BIGIP_VERSION = '9.0.3'
 
     def __init__(self, module):
         self.module = module
@@ -154,10 +159,9 @@ class ResourceRecord(object):
             debug=True
         )
 
-        # Do some checking of 
         self.check_required_params()
         self.check_version()
-       
+
     def check_version(self):
         response = self.client.System.SystemInfo.get_version()
         match = re.search(VERSION_PATTERN, response)
@@ -175,6 +179,7 @@ class ResourceRecord(object):
         for param in self.REQUIRED_PARAMS:
             if param not in params:
                 raise ResourceRecordException('Required param %s not specified' % param)
+
 
 class AResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -197,6 +202,7 @@ class AResourceRecord(ResourceRecord):
         except Exception, e:
             raise ResourceRecordException(str(e))
 
+
 class AaaaResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
         'domain_name', 'ip_address'
@@ -215,6 +221,7 @@ class AaaaResourceRecord(ResourceRecord):
             sync_ptrs=[1]
         )
 
+
 class CnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
         'domain_name', 'cname'
@@ -232,6 +239,7 @@ class CnameResourceRecord(ResourceRecord):
             cname_records=records
         )
 
+
 class DnameResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
         'domain_name', 'label'
@@ -245,12 +253,13 @@ class DnameResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_dname(
+            self.client.Management.ResourceRecord.add_dname(
                 view_zones=self.view_zones,
                 dname_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class DsResourceRecord(ResourceRecord):
     REQUIRED_BIGIP_VERSION = '11.4.0'
@@ -270,12 +279,13 @@ class DsResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_ds(
+            self.client.Management.ResourceRecord.add_ds(
                 view_zones=self.view_zones,
                 ds_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class HinfoResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -291,12 +301,13 @@ class HinfoResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_hinfo(
+            self.client.Management.ResourceRecord.add_hinfo(
                 view_zones=self.view_zones,
                 hinfo_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class MxResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -312,12 +323,13 @@ class MxResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_mx(
+            self.client.Management.ResourceRecord.add_mx(
                 view_zones=self.view_zones,
                 mx_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class NaptrResourceRecord(ResourceRecord):
     REQUIRED_BIGIP_VERSION = '11.4.0'
@@ -340,12 +352,13 @@ class NaptrResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_naptr(
+            self.client.Management.ResourceRecord.add_naptr(
                 view_zones=self.view_zones,
                 naptr_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class NsResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -360,12 +373,13 @@ class NsResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_ns(
+            self.client.Management.ResourceRecord.add_ns(
                 view_zones=self.view_zones,
                 ns_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class PtrResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -380,12 +394,13 @@ class PtrResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_ptr(
+            self.client.Management.ResourceRecord.add_ptr(
                 view_zones=self.view_zones,
                 ptr_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class SoaResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -407,12 +422,13 @@ class SoaResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_soa(
+            self.client.Management.ResourceRecord.add_soa(
                 view_zones=self.view_zones,
                 soa_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class SrvResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -430,12 +446,13 @@ class SrvResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_srv(
+            self.client.Management.ResourceRecord.add_srv(
                 view_zones=self.view_zones,
                 srv_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
+
 
 class TxtResourceRecord(ResourceRecord):
     REQUIRED_PARAMS = [
@@ -450,28 +467,24 @@ class TxtResourceRecord(ResourceRecord):
         }]]
 
         try:
-            response = self.client.Management.ResourceRecord.add_txt(
+            self.client.Management.ResourceRecord.add_txt(
                 view_zones=self.view_zones,
                 txt_records=records
             )
         except Exception, e:
             raise ResourceRecordException(str(e))
 
+
 def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-            username=dict(default='admin'),
-            password=dict(default='admin'),
-            hostname=dict(required=True),
-            type=dict(default=None, required=True, choices=RECORDS),
-            ttl=dict(default=60),
-            view=dict(default='external'),
-            zone=dict(required=True),
-            options=dict(required=True, type='dict'),
-            state=dict(default="present", choices=["absent", "present"]),
+        type=dict(default=None, required=True, choices=RECORDS),
+        ttl=dict(default=60),
+        view=dict(default='external'),
+        zone=dict(required=True),
+        options=dict(required=True, type='dict')
     )
-
     argument_spec.update(meta_args)
 
     module = AnsibleModule(
@@ -490,7 +503,7 @@ def main():
         if 'folder not found' in str(e):
             module.fail_json(msg="Partition not found")
         else:
-
+            pass
 
     state = module.params["state"]
 

@@ -18,12 +18,12 @@
 
 DOCUMENTATION = '''
 ---
-module: bigip_zone
+module: bigip_dns_zone
 short_description: Manages DNS zones on a BIG-IP
 description:
-   - This module manages DNS zones described in the iControl Management
-     documentation
-version_added: "2.1"
+  - This module manages DNS zones described in the iControl Management
+    documentation
+version_added: "2.2"
 options:
   server:
     description:
@@ -57,15 +57,18 @@ options:
         the record.
     required: false
     default: present
-    choices: [ "present", "absent" ]
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the remote host. This is as easy as
-     pip install bigsuds
-   - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
-
-requirements: [ "bigsuds", "distutils" ]
+  - Requires the bigsuds Python package on the remote host. This is as easy as
+    pip install bigsuds
+  - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
+requirements:
+  - bigsuds
+  - distutils
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''

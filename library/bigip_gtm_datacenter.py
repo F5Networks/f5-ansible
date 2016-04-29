@@ -21,18 +21,12 @@ DOCUMENTATION = '''
 module: bigip_gtm_datacenter
 short_description: Manage Datacenter configuration in BIG-IP
 description:
-   - Manage BIG-IP data center configuration. A data center defines the location
-     where the physical network components reside, such as the server and link
-     objects that share the same subnet on the network. This module is able to
-     manipulate the data center definitions in a BIG-IP
-version_added: "2.0"
+  - Manage BIG-IP data center configuration. A data center defines the location
+    where the physical network components reside, such as the server and link
+    objects that share the same subnet on the network. This module is able to
+    manipulate the data center definitions in a BIG-IP
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: rest
-    choices: [ "rest", "icontrol" ]
   contact:
     description:
       - The name of the contact for the data center
@@ -77,7 +71,9 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: yes
-    choices: [ "yes", "no" ]
+    choices:
+      - yes
+      - no
   state:
     description:
       - The state of the datacenter on the BIG-IP. When C(present), guarantees
@@ -86,15 +82,17 @@ options:
         will ensure the data center is disabled. At least one of state and enabled are required.
     required: false
     default: None
-    choices: [ "present", "absent" ]
-
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+  - requests
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
