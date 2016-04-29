@@ -1,0 +1,29 @@
+---
+
+- name: Create Self IP
+  bigip_selfip:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create Self IP
+  assert:
+      that:
+          - result|changed
+
+- name: Create Self IP - Idempotent check
+  bigip_selfip:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create Self IP - Idempotent check
+  assert:
+      that:
+          - not result|changed

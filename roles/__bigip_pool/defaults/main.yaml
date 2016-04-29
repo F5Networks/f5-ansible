@@ -1,1 +1,3 @@
 ---
+
+bigip_pool: "foo.pool"
