@@ -1,0 +1,112 @@
+---
+
+- name: Create VLAN
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create VLAN
+  assert:
+      that:
+          - result|changed
+
+- name: Create VLAN - Idempotent check
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create VLAN - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove VLAN
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove VLAN
+  assert:
+      that:
+          - result|changed
+
+- name: Remove VLAN - Idempotent check
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove VLAN - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Create VLAN on a different partition
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Create VLAN on a different partition
+  assert:
+      that:
+          - result|changed
+
+- name: Create VLAN on a different partition - Idempotent check
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Create VLAN on a different partition -  Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove VLAN on different partition
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Remove VLAN on different partition
+  assert:
+      that:
+          - result|changed
+
+- name: Remove VLAN on different partition - Idempotent check
+  bigip_vlan:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Remove VLAN on different partition - Idempotent check
+  assert:
+      that:
+          - not result|changed
