@@ -21,14 +21,16 @@ DOCUMENTATION = '''
 module: bigip_user
 short_description: Manage user accounts and user attributes on a BIG-IP
 description:
-   - Manage user accounts and user attributes on a BIG-IP
+  - Manage user accounts and user attributes on a BIG-IP
 version_added: "2.1"
 options:
   append:
     description:
       - If C(yes), will only add groups, not set them to just the list
         in groups.
-    choices: ['yes', 'no']
+    choices:
+      - yes
+      - no
     default: no
   full_name:
     description:
@@ -39,7 +41,9 @@ options:
       - The connection used to interface with the BIG-IP
     required: false
     default: soap
-    choices: ['rest', 'soap']
+    choices:
+      - rest
+      - soap
   server:
     description:
       - BIG-IP host
@@ -77,7 +81,10 @@ options:
       - Optionally set the users shell.
     required: false
     default: None
-    choices: ['bash', 'none', 'tmsh']
+    choices:
+      - bash
+      - none
+      - tmsh
   partition:
     description:
       - Partition to create user. Ignored during updates.
@@ -119,7 +126,6 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
@@ -130,11 +136,12 @@ notes:
    - Specifying a C(partition) to create the account on is only supported
      via the C(soap) connection type (the default) due to missing
      functionality in BIG-IP versions <= 12.1.0
-
-requirements: [ "bigsuds", "requests" ]
+requirements:
+  - bigsuds
+  - requests
 author:
-  - Matt Hite <mhite@hotmail.com> (@mhite)
-  - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Matt Hite (@mhite)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -226,43 +233,7 @@ SHELLS = ['bash', 'none', 'tmsh']
 STATES = ['absent', 'present']
 
 
-class AdminRoleNoModifyError(Exception):
-    pass
-
-
-class CurrentUserNoRoleModifyError(Exception):
-    pass
-
-
-class CreateUserError(Exception):
-    pass
-
-
-class DeleteUserError(Exception):
-    pass
-
-
-class CustomShellError(Exception):
-    pass
-
-
-class InvalidRoleError(Exception):
-    pass
-
-
-class PartitionAccessMalformedError(Exception):
-    pass
-
-
-class RestrictiveAclForShellError(Exception):
-    pass
-
-
-class PasswordRequiredError(Exception):
-    pass
-
-
-class RestrictedToSinglePartitionError(Exception):
+class F5ModuleError(Exception):
     pass
 
 
@@ -508,9 +479,9 @@ class BigIpSoapApi(BigIpCommon):
 
         try:
             api = bigip_api(server,
-                      user,
-                      password,
-                      validate_certs)
+                            user,
+                            password,
+                            validate_certs)
             api.Management.UserManagement.get_fullname(
                 user_names=[user]
             )
@@ -792,7 +763,6 @@ class BigIpSoapApi(BigIpCommon):
                 role=self.ROLE_DEFAULT,
                 partition=self.ALL_PARTITION
             )]
-
 
         if shell and shell != self.SHELL_NONE:
             for x in user_permission:
