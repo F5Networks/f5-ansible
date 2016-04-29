@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_vlan
 short_description: Manage VLANs on a BIG-IP system
 description:
-   - Manage VLANs on a BIG-IP system
+  - Manage VLANs on a BIG-IP system
 version_added: "2.2"
 options:
   description:
@@ -91,7 +91,7 @@ notes:
 requirements:
   - f5-sdk
 author:
-  - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -108,7 +108,7 @@ class F5ModuleError(Exception):
     pass
 
 
-class BigIpVlan(BigIpCommon):
+class BigIpVlan():
     def __init__(self, *args, **kwargs):
         if not f5sdk_found:
             raise F5ModuleError("The python f5-sdk module is required")
