@@ -13,11 +13,11 @@ enhancement requests using [Github Issues](https://github.com/F5Networks/f5-ansi
 
 ### Requirements
 
-* See the [Support and Versions](#Support and Versions) section below
 * Advanced shell for user account enabled
-* [bigsuds Python Client 1.0.3 or later] [bigsuds]
+* [bigsuds Python Client 1.0.4 or later] [bigsuds]
 
 [bigsuds]: https://pypi.python.org/pypi/bigsuds/
+
 
 ### Purpose
 
@@ -33,26 +33,11 @@ I'm curious to know what sort of modules you want to see created. If you have
 a use case and can sufficiently describe the behavior you want to see, open
 an issue in this repository and we will hammer out the details.
 
-### Support and Versions
+### Support
 
 The code provided in this repository should be considered F5 contributed, and
 not F5 supported. If you are familiar with similar verbiage on DevCentral, then
 you are familiar with what it means here.
-
-#### Versions
-
-BIG-IP versions that *should* work with these modules match the versions of
-software documented on [this page] [eol] under the "End of Technical Support"
-date.
-
-As End of Technical Support dates are reached, I reserve the right to remove
-code from these modules that previously supported those old versions.
-
-My reasoning for this, is to support internal F5 efforts related to training,
-testing, etc of older releases. Once those versions are no longer supported
-by F5, I cannot provide support for them either.
-
-[eol]: https://support.f5.com/kb/en-us/solutions/public/5000/900/sol5903.html
 
 #### Deprecated modules
 
