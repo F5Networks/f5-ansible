@@ -78,83 +78,85 @@ options:
     aliases: ['vs']
   destination:
     description:
-      - "Destination IP of the virtual server (only host is currently supported) . Required when state=present and vs does not exist."
-        required: true
-        aliases: ['address', 'ip']
-    port:
-        description:
-            - "Port of the virtual server . Required when state=present and vs does not exist"
-        required: false
-        default: None
-    all_profiles:
-        description:
-            - "List of all Profiles (HTTP,ClientSSL,ServerSSL,etc) that must be used by the virtual server"
-        required: false
-        default: None
-    pool:
-        description:
-            - "Default pool for the virtual server"
-        required: false
-        default: None
-    snat:
-        description:
-            - "Source network address policy"
-        required: false
-        default: None
-    default_persistence_profile:
-        description:
-            - "Default Profile which manages the session persistence"
-        required: false
-        default: None
+      - Destination IP of the virtual server (only host is currently supported).
+        Required when state=present and vs does not exist."
+    required: true
+    aliases:
+      - address
+      - ip
+  port:
     description:
-        description:
-            - "Virtual server description."
-        required: false
-        default: None
+      - Port of the virtual server . Required when state=present and vs
+        does not exist
+    required: false
+    default: None
+  all_profiles:
+    description:
+      - List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be
+        used by the virtual server
+    required: false
+    default: None
+  pool:
+    description:
+      - Default pool for the virtual server
+    required: false
+    default: None
+  snat:
+    description:
+      - Source network address policy
+    required: false
+    default: None
+  default_persistence_profile:
+    description:
+      - Default Profile which manages the session persistence
+    required: false
+    default: None
+  description:
+    description:
+      - Virtual server description.
+    required: false
+    default: None
 '''
 
 EXAMPLES = '''
----
-# file bigip-test.yml
-# ...
-  - name: Add VS
-    local_action:
-        module: bigip_virtual_server
-        server: lb.mydomain.net
-        user: admin
-        password: secret
-        state: present
-        partition: MyPartition
-        name: myvirtualserver
-        destination: "{{ ansible_default_ipv4['address'] }}"
-        port: 443
-        pool: "{{ mypool }}"
-        snat: Automap
-        description: Test Virtual Server
-        all_profiles:
-            - http
-            - clientssl
+- name: Add VS
+  local_action:
+      module: bigip_virtual_server
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+      state: present
+      partition: MyPartition
+      name: myvirtualserver
+      destination: "{{ ansible_default_ipv4['address'] }}"
+      port: 443
+      pool: "{{ mypool }}"
+      snat: Automap
+      description: Test Virtual Server
+      all_profiles:
+          - http
+          - clientssl
 
-  - name: Modify Port of the Virtual Server
-    local_action:
-        module: bigip_virtual_server
-        server: lb.mydomain.net
-        user: admin
-        password: secret
-        state: present
-        partition: MyPartition
-        name: myvirtualserver
-        port: 8080
+- name: Modify Port of the Virtual Server
+  local_action:
+      module: bigip_virtual_server
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+      state: present
+      partition: MyPartition
+      name: myvirtualserver
+      port: 8080
 
-  - name: Delete pool
-    local_action:
-        module: bigip_virtual_server
-        server: lb.mydomain.net
-        user: admin
-        password: secret
-        state: absent
-        partition: MyPartition
-        name: myvirtualserver
+- name: Delete pool
+  local_action:
+      module: bigip_virtual_server
+      server: lb.mydomain.net
+      user: admin
+      password: secret
+      state: absent
+      partition: MyPartition
+      name: myvirtualserver
 '''
 
 RETURN = '''
@@ -166,11 +168,16 @@ deleted:
 '''
 
 # map of state values
-STATES={'enabled': 'STATE_ENABLED',
-        'disabled': 'STATE_DISABLED'}
-STATUSES={'enabled': 'SESSION_STATUS_ENABLED',
-          'disabled': 'SESSION_STATUS_DISABLED',
-          'offline': 'SESSION_STATUS_FORCED_DISABLED'}
+STATES = dict(
+    enabled='STATE_ENABLED',
+    disabled='STATE_DISABLED'
+)
+STATUSES = dict(
+    enabled='SESSION_STATUS_ENABLED',
+    disabled='SESSION_STATUS_DISABLED',
+    offline='SESSION_STATUS_FORCED_DISABLED'
+)
+
 
 def vs_exists(api, vs):
     # hack to determine if pool exists
@@ -189,7 +196,7 @@ def vs_exists(api, vs):
 
 
 def vs_create(api, name, destination, port, pool):
-    _profiles=[[{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]]
+    _profiles = [[{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]]
 
     # a bit of a hack to handle concurrent runs of this module.
     # even though we've checked the vs doesn't exist,
@@ -222,14 +229,13 @@ def get_profiles(api, name):
     ).pop(0)
 
 
-
 def set_profiles(api, name, profiles_list):
     updated = False
     try:
         if profiles_list is None:
             return False
-        current_profiles = map(lambda x:x['profile_name'], get_profiles(api, name))
-        to_add_profiles=[]
+        current_profiles = map(lambda x: x['profile_name'], get_profiles(api, name))
+        to_add_profiles = []
         for x in profiles_list:
             if x not in current_profiles:
                 profiles = dict(
@@ -265,7 +271,7 @@ def set_profiles(api, name, profiles_list):
 def set_snat(api, name, snat):
     updated = False
     try:
-        current_state=get_snat_type(api, name)
+        current_state = get_snat_type(api, name)
         if snat is None:
             return updated
         elif snat == 'None' and current_state != 'SRC_TRANS_NONE':
@@ -298,7 +304,7 @@ def get_pool(api, name):
 def set_pool(api, name, pool):
     updated = False
     try:
-        current_pool = get_pool (api, name)
+        current_pool = get_pool(api, name)
         if pool is not None and (pool != current_pool):
             api.LocalLB.VirtualServer.set_default_pool_name(
                 virtual_servers=[name],
@@ -319,7 +325,7 @@ def get_destination(api, name):
 def set_destination(api, name, destination):
     updated = False
     try:
-        current_destination = get_destination(api,name)
+        current_destination = get_destination(api, name)
         if destination is not None and destination != current_destination['address']:
             params = dict(
                 address=destination,
@@ -362,7 +368,7 @@ def get_state(api, name):
 def set_state(api, name, state):
     updated = False
     try:
-        current_state=get_state(api, name)
+        current_state = get_state(api, name)
         # We consider that being present is equivalent to enabled
         if state == 'present':
             state = 'enabled'

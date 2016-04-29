@@ -127,25 +127,30 @@ def wide_ip_exists(api, wide_ip):
             raise
     return result
 
+
 def set_wide_ip_lb_method(api, wide_ip, lb_method):
     lb_method = "LB_METHOD_%s" % lb_method.strip().upper()
-    api.GlobalLB.WideIP.set_lb_method(wide_ips=[wide_ip], lb_methods=[lb_method])
+    api.GlobalLB.WideIP.set_lb_method(
+        wide_ips=[wide_ip],
+        lb_methods=[lb_method]
+    )
+
 
 def main():
-
-    lb_method_choices = ['return_to_dns', 'null', 'round_robin',
-                                    'ratio', 'topology', 'static_persist', 'global_availability',
-                                    'vs_capacity', 'least_conn', 'lowest_rtt', 'lowest_hops',
-                                    'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps',
-                                    'drop_packet', 'explicit_ip', 'connection_rate', 'vs_score']
+    lb_method_choices = ['return_to_dns', 'null', 'round_robin', 'ratio',
+                         'topology', 'static_persist', 'global_availability',
+                         'vs_capacity', 'least_conn', 'lowest_rtt',
+                         'lowest_hops', 'packet_rate', 'cpu', 'hit_ratio',
+                         'qos', 'bps', 'drop_packet', 'explicit_ip',
+                         'connection_rate', 'vs_score']
 
     module = AnsibleModule(
-        argument_spec = dict(
-            server = dict(type='str', required=True),
-            user = dict(type='str', required=True),
-            password = dict(type='str', required=True),
-            lb_method = dict(type='str', required=True, choices=lb_method_choices),
-            wide_ip = dict(type='str', required=True)
+        argument_spec=dict(
+            server=dict(type='str', required=True),
+            user=dict(type='str', required=True),
+            password=dict(type='str', required=True),
+            lb_method=dict(type='str', required=True, choices=lb_method_choices),
+            wide_ip=dict(type='str', required=True)
         ),
         supports_check_mode=True
     )

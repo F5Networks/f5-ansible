@@ -1,7 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
-# (c) 2013, Matt Hite <mhite@hotmail.com>
 #
 # This file is part of Ansible
 #
