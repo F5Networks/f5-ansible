@@ -22,7 +22,7 @@ module: bigip_user_facts
 short_description: Retrieve user account attributes from a BIG-IP
 description:
    - Retrieve user account attributes from a BIG-IP
-version_added: "2.0"
+version_added: "2.2"
 options:
   connection:
     description:
@@ -56,15 +56,15 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - Facts are placed in the C(bigip) variable
-
-requirements: [ "bigsuds", "requests" ]
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+  - Facts are placed in the C(bigip) variable
+requirements:
+  - bigsuds
+  - requests
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -261,11 +261,9 @@ def main():
         obj = BigIpApiFactory.factory(module)
         result = obj.flush()
 
-        module.exit_json(changed=True, ansible_facts=**result)
-    except bigsuds.ConnectionError:
-        module.fail_json(msg='Could not connect to BIG-IP host')
-    except UserNotFoundError:
-        module.fail_json(msg='The specified username was not found')
+        module.exit_json(changed=True, ansible_facts=result)
+    except F5ModuleError, e:
+        module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 
