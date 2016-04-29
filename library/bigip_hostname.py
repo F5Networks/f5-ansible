@@ -68,7 +68,7 @@ EXAMPLES = '''
 '''
 
 try:
-    from f5-sdk import BigIP
+    from f5.bigip import BigIP
     f5sdk_found = True
 except ImportError:
     f5sdk_found = False
