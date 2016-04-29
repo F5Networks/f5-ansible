@@ -18,13 +18,13 @@ all-tests-dev: flake8 ansible-doc ansible-doc-dev
 pylint: pylint-modules
 
 flake8:
-	flake8 . --exclude ansible-doc-test.py,bigip_qkview_facts.py,bigip_provision.py
+	flake8 library
 
 ansible-doc:
 	(cd library; \
-         $(DOCTEST) -M $(MODULE_DIR) bigip_command.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_device_dns.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_device_ntp.py; \
+		$(DOCTEST) -M $(MODULE_DIR) bigip_command.py; \
+		$(DOCTEST) -M $(MODULE_DIR) bigip_device_dns.py; \
+$(DOCTEST) -M $(MODULE_DIR) bigip_device_ntp.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns_facts.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns.py; \
 	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns_zone.py; \
@@ -54,5 +54,15 @@ ansible-doc-dev:
 
 pylint-modules:
 	(cd library; \
-         $(PYLINT) f5/bigiq/bigiq.py; \
-        )
+		$(PYLINT) f5/bigiq/bigiq.py; \
+	)
+
+fetch-upstream:
+	curl -o library/bigip_facts.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_facts.py
+	curl -o library/bigip_gtm_wide_ip.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_gtm_wide_ip.py
+	curl -o library/bigip_monitor_http.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_monitor_http.py
+	curl -o library/bigip_monitor_tcp.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_monitor_tcp.py
+	curl -o library/bigip_node.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_node.py
+	curl -o library/bigip_pool.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool.py
+	curl -o library/bigip_pool_member.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool_member.py
+	curl -o library/bigip_virtual_server.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_virtual_server.py
