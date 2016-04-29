@@ -24,12 +24,6 @@ description:
    - Manage UCS files
 version_added: "2.0"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: icontrol
-    choices: [ "rest", "icontrol", "ssh" ]
   include_chassis_level_config:
     description:
       - During restore of the UCS file, include chassis level configuration
@@ -110,7 +104,6 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
@@ -121,7 +114,7 @@ notes:
      https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
    - This module requires SSH access to the remote BIG-IP and will use the
      C(user) and C(password) values specified by default. The web UI
-     credentials typically differ from the SSH credentials so it is strongly
+     credentials typically differ from the SSH credentials so it is
      recommended that you use the bigip_user module to enable terminal access
      for the Web UI user
    - This module does not handle devices with the FIPS 140 HSM
@@ -145,10 +138,12 @@ notes:
      RMA units.
    - This module will attempt to auto-recover a failed UCS load by using the
      iControl API to load the default backup UCS file (cs_backup.ucs)
-
-requirements: [ "bigsuds", "requests", "paramiko" ]
+requirements:
+  - bigsuds
+  - requests
+  - paramiko
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -216,43 +211,11 @@ import socket
 import os
 
 try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
-
-try:
     import paramiko
 except ImportError:
     paramiko_found = False
 else:
     paramiko_found = True
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):
@@ -506,22 +469,25 @@ class BigIpIControl(BigIpCommon):
 
 
 def main():
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        force=dict(required=False, type='bool', default='no'),
+        include_chassis_level_config=dict(required=False, type='bool', default=False),
+        no_license=dict(required=False, type='bool', default=False),
+        no_platform_check=dict(required=False, type='bool', default=False),
+        passphrase=dict(required=False, default=False),
+        reset_trust=dict(required=False, type='bool', default=False),
+        server=dict(required=True),
+        state=dict(default='installed', choices=['absent', 'installed', 'present']),
+        ucs=dict(required=True)
+    )
+
+    argument_spec.update(meta_args)
+
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='icontrol', choices=['icontrol', 'rest', 'ssh']),
-            force=dict(required=False, type='bool', default='no'),
-            include_chassis_level_config=dict(required=False, type='bool', default=False),
-            no_license=dict(required=False, type='bool', default=False),
-            no_platform_check=dict(required=False, type='bool', default=False),
-            passphrase=dict(required=False, default=False),
-            password=dict(required=True),
-            reset_trust=dict(required=False, type='bool', default=False),
-            server=dict(required=True),
-            state=dict(default='installed', choices=['absent', 'installed', 'present']),
-            ucs=dict(required=True),
-            user=dict(required=True),
-            validate_certs=dict(default='yes', type='bool')
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
     connection = module.params.get('connection')
