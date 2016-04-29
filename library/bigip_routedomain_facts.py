@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_routedomain_facts
 short_description: Retrieve route domain attributes from a BIG-IP
 description:
-   - Retrieve route domain attributes from a BIG-IP
+  - Retrieve route domain attributes from a BIG-IP
 version_added: "2.2"
 options:
   server:
@@ -52,12 +52,12 @@ options:
     required: false
     default: true
 notes:
-   - Requires the f5-sdk Python package on the host. This is as easy as pip
-     install f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk
 requirements:
-    - f5-sdk
+  - f5-sdk
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -122,47 +122,60 @@ vlans:
     sample: ["/Common/abc", "/Common/xyz"]
 '''
 
-from f5.bigip import BigIP
-from icontrol.session import iControlUnexpectedHTTPError
+try:
+    from f5.bigip import BigIP
+    from icontrol.session import iControlUnexpectedHTTPError
+    f5sdk_found = True
+except:
+    f5sdk_found = False
 
-def facts(**kwargs):
-    result = dict()
-    b = BigIP(kwargs['server'],
-              kwargs['user'],
-              kwargs['password'],
-              kwargs['server_port'])
 
-    r = b.net.route_domains.route_domain.load(name=kwargs['id'],
-                                              partition=kwargs['partition'])
+class BigIpRouteDomainFacts(object):
+    def __init__(self, *args, **kwargs):
+        if not f5sdk_found:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-    result['id'] = r.id
-    result['name'] = r.name
-    result['parent'] = r.parent
+        self.params = kwargs
+        self.api = BigIP(kwargs['server'],
+                         kwargs['user'],
+                         kwargs['password'],
+                         port=kwargs['server_port'])
 
-    if hasattr(r, 'bwcPolicy'):
-        result['bwc_policy'] = r.bwcPolicy
-    if hasattr(r, 'connectionLimit'):
-        result['connection_limit'] = r.connectionLimit
-    if hasattr(r, 'description'):
-        result['description'] = r.description
-    if hasattr(r, 'flowEvictionPolicy'):
-        result['evict_policy'] = r.flowEvictionPolicy
-    if hasattr(r, 'servicePolicy'):
-        result['service_policy'] = r.servicePolicy
-    if hasattr(r, 'strict'):
-        result['strict'] = r.strict
-    if hasattr(r, 'routingProtocol'):
-        result['routing_protocol'] = r.routingProtocol
-    if hasattr(r, 'vlans'):
-        result['vlans'] = r.vlans
-    return result
+    def flush(self):
+        result = dict()
+
+        rds = self.api.net.route_domains
+        rd = rds.route_domain.load(name=kwargs['id'],
+                                   partition=kwargs['partition'])
+
+        result['id'] = rd.id
+        result['name'] = rd.name
+        result['parent'] = rd.parent
+
+        if hasattr(r, 'bwcPolicy'):
+            result['bwc_policy'] = rd.bwcPolicy
+        if hasattr(r, 'connectionLimit'):
+            result['connection_limit'] = rd.connectionLimit
+        if hasattr(r, 'description'):
+            result['description'] = rd.description
+        if hasattr(r, 'flowEvictionPolicy'):
+            result['evict_policy'] = rd.flowEvictionPolicy
+        if hasattr(r, 'servicePolicy'):
+            result['service_policy'] = rd.servicePolicy
+        if hasattr(r, 'strict'):
+            result['strict'] = rd.strict
+        if hasattr(r, 'routingProtocol'):
+            result['routing_protocol'] = rd.routingProtocol
+        if hasattr(r, 'vlans'):
+            result['vlans'] = rd.vlans
+        return result
 
 
 def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        id = dict(required=True),
+        id=dict(required=True),
     )
     argument_spec.update(meta_args)
 
@@ -172,7 +185,8 @@ def main():
     )
 
     try:
-        result = facts(**module.params)
+        obj = BigIpRouteDomainFacts(**module.params)
+        result = obj.flush()
 
         module.exit_json(changed=True, bigip=result)
     except iControlUnexpectedHTTPError, e:
