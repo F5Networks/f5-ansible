@@ -19,5 +19,4 @@ galaxy_info:
         - name: Debian
           versions:
               - wheezy
-
 dependencies: []
