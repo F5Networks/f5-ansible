@@ -1,0 +1,10 @@
+---
+
+node_name: "foo"
+node_partition: "foo"
+node_host: ""
+node_name: ""
+node_description: "foo node"
+node_monitor_type: ""
+node_monitors: ""
+node_quorum: ""
