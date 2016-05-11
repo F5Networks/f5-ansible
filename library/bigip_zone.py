@@ -1,54 +1,44 @@
 #!/usr/bin/python
-
-# Ansible module to manage BIG-IP devices
+# -*- coding: utf-8 -*-
 #
-# This module covers the ResourceRecord interfaces described in the iControl
-# Management documentation.
+# This file is part of Ansible
 #
-# More information can be found here
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#    https://devcentral.f5.com/wiki/iControl.Management.ashx
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 DOCUMENTATION = '''
 ---
 module: bigip_zone
-short_description: Manage resource records on a BIG-IP
+short_description: Manage ZoneRunner Zones on a BIG-IP
 description:
-   - Manage resource records on a BIG-IP
-version_added: "1.8"
+  - Manage resource records on a BIG-IP
+version_added: "2.2"
 options:
-  username:
+  user:
     description:
       - The username used to authenticate with
     required: true
-    default: admin
   password:
     description:
       - The password used to authenticate with
     required: true
-    default: admin
-  hostname:
+  server:
     description:
-      - BIG-IP host to connect to
+      - BIG-IP host
     required: true
-    default: localhost
-  view_name:
+  name:
     description:
       - The name of the view
-    required: true
-  view_order:
-    description:
-      - The order of the view within the named.conf file. 0 = first in zone.
-      0xffffffff means to move the view to last. Any other number will move the
-      view to that position, and bump up any view(s) by one (if necessary).
-    default: 0
-  options:
-    description:
-      - A sequence of options for the view
-  zone_names:
-    description:
-      - A sequence of zones in this view
     required: true
   state:
     description:
@@ -56,17 +46,19 @@ options:
         the record.
     required: false
     default: present
-    choices: [ "present", "absent" ]
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the remote host. This is as easy as
-     pip install bigsuds
-
-requirements: [ "bigsuds", "distutils" ]
-author: Tim Rupp <t.rupp@f5.com>
+  - Requires the bigsuds Python package on the remote host. This is as easy as
+    pip install bigsuds
+requirements:
+  - bigsuds
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = """
-
+EXAMPLES = '''
 - name: Add a view, named "internal", to organization.com zone
   local_action:
       module: bigip_view
@@ -78,31 +70,16 @@ EXAMPLES = """
       state: 'present'
       options:
           - domain_name: elliot.organization.com
-          ip_address: 10.1.1.1
-"""
+            ip_address: 10.1.1.1
+'''
 
-import sys
-import re
-from distutils.version import StrictVersion
-
-try:
-    import bigsuds
-except ImportError:
-	bigsuds_found = False
-else:
-	bigsuds_found = True
-
-VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
 class ViewZoneException(Exception):
-	  pass
+    pass
+
 
 class ViewZone(object):
-    REQUIRED_BIGIP_VERSION='9.0.3'
-
     def __init__(self, module):
-        new_zones = []
-
         self.module = module
 
         self.username = module.params['username']
@@ -118,41 +95,20 @@ class ViewZone(object):
         if not self.zone_name.endswith('.'):
             self.zone_name += '.'
 
-        self.client = bigsuds.BIGIP(
-            hostname=self.hostname,
-            username=self.username,
-            password=self.password,
-            debug=True
-        )
-
-        # Do some checking of things
-        self.check_version()
-       
     def get_zone_type(self):
         zone_type_maps = {
-            'unset': 'UNSET',    # Not yet initialized
-            'master': 'MASTER',   # A master zone
-            'slave': 'SLAVE',    # A slave zone
-            'stub': 'STUB',     # A stub zone
-            'forward': 'FORWARD',  # A forward zone
-            'hint': 'HINT'      # A hint zone, "."
+            'unset': 'UNSET',
+            'master': 'MASTER',
+            'slave': 'SLAVE',
+            'stub': 'STUB',
+            'forward': 'FORWARD',
+            'hint': 'HINT'
         }
 
         if self.zone_type in zone_type_maps:
             return zone_type_maps[self.zone_type]
         else:
             raise ViewZoneException('Specified zone_type does not exist')
-
-    def check_version(self):
-        response = self.client.System.SystemInfo.get_version()
-        match = re.search(VERSION_PATTERN, response)
-        version = match.group('version')
-
-        v1 = StrictVersion(version)
-        v2 = StrictVersion(self.REQUIRED_BIGIP_VERSION)
-
-        if v1 < v2:
-            raise ViewException('The BIG-IP version %s does not support this feature' % version)
 
     def zone_exists(self):
         view_zone = [{
@@ -175,18 +131,11 @@ class ViewZone(object):
             'option_seq': self.options
         }]
 
-        text = [[
-           self.text
-        ]]
-
-        #try:
-        response = self.client.Management.Zone.add_zone_text(
+        self.client.Management.Zone.add_zone_text(
             zone_records=view_zone,
-            text=text,
+            text=[[self.text]],
             sync_ptrs=[1]
         )
-        #except Exception, e:
-        #    raise ViewException(str(e))
 
     def delete_zone(self):
         view_zone = [{
@@ -194,36 +143,26 @@ class ViewZone(object):
             'zone_name': self.zone_name
         }]
 
-        #try:
-        response = self.client.Management.Zone.delete_zone(
+        self.client.Management.Zone.delete_zone(
             view_zones=view_zone
         )
-        #except Exception, e:
-        #    raise ViewException(str(e))
+
 
 def main():
     module = AnsibleModule(
-        argument_spec = dict(
-            username=dict(default='admin'),
-            password=dict(default='admin'),
-            hostname=dict(default='localhost'),
+        argument_spec=dict(
             view_name=dict(default='external'),
             zone_name=dict(required=True),
             zone_type=dict(default='master'),
             options=dict(required=False, type='list'),
             zone_file=dict(default=None),
-            text=dict(default=None),
-            state=dict(default="present", choices=["absent", "present"]),
+            text=dict(default=None)
         )
     )
 
     state = module.params["state"]
     zone_file = module.params['zone_file']
 
-    if not bigsuds_found:
-        module.fail_json(msg="The python bigsuds module is required")
-
-    #try:
     view_zone = ViewZone(module)
 
     if state == "present":
@@ -238,10 +177,11 @@ def main():
     elif state == "absent":
         view_zone.delete_zone()
         changed = True
-    #except Exception, e:
-    #    module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
-main()
+from ansible.module_utils.f5 import *
+
+if __name__ == '__main__':
+    main()

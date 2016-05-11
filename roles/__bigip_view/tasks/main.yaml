@@ -1,0 +1,9 @@
+---
+
+- include: test-interface-soap.yaml
+  tags:
+      - soap
+
+- include: test-interface-rest.yaml
+  tags:
+      - rest

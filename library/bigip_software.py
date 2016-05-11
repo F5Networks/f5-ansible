@@ -22,21 +22,15 @@ module: bigip_software
 short_description: Manage BIG-IP software versions and hotfixes
 description:
    - Manage BIG-IP software versions and hotfixes
-version_added: "2.0"
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: icontrol
-    choices: [ "rest", "icontrol" ]
   force:
     description:
       - If C(yes) will upload the file every time and replace the file on the
         device. If C(no), the file will only be uploaded if it does not already
         exist. Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
-      - If C(yes) with C(reuse_inactive_volume) is specified and C(volume) is 
+      - If C(yes) with C(reuse_inactive_volume) is specified and C(volume) is
         not specified, Software will be installed / activated regardless of current
         running version to a new or an existing volume.
     required: false
@@ -60,9 +54,9 @@ options:
     description:
       - Automatically chooses the first inactive volume in alphanumeric order. If there
         is no inactive volume, new volume with incremented volume name will be created.
-        For example, if HD1.1 is currently active and no other volume exists, then the 
+        For example, if HD1.1 is currently active and no other volume exists, then the
         module will create HD1.2 and install the software. If volume name does not end with
-        numeric character, then add '.1' to the current active volume name. When C(volume) 
+        numeric character, then add .1 to the current active volume name. When C(volume)
         is specified, this option will be ignored.
     required: false
   server:
@@ -105,18 +99,18 @@ options:
     description:
       - The volume to install the software and, optionally, the hotfix to. This
         parameter is only required when the C(state) is either C(activated) or
-        C(installed). 
+        C(installed).
     required: false
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - Requires the lxml Python package on the host. This can be installed
-     with pip install lxml
-   - https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
-
-requirements: [ "bigsuds", "lxml" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+  - Requires the lxml Python package on the host. This can be installed
+    with pip install lxml
+  - https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
+requirements:
+  - bigsuds
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -223,7 +217,7 @@ EXAMPLES = '''
       password: "admin"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      reuse_inactive_volume: 
+      reuse_inactive_volume: yes
       state: "activated"
 '''
 
@@ -238,12 +232,6 @@ import datetime
 from lxml import etree
 
 try:
-    import bigsuds
-    BIGSUDS_AVAILABLE = True
-except ImportError:
-    BIGSUDS_AVAILABLE = False
-
-try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
@@ -254,18 +242,6 @@ STATES = ['absent', 'activated', 'installed', 'present']
 
 # Size of chunks of data to read and send via the iControl API
 CHUNK_SIZE = 512 * 1024
-
-
-class ActiveVolumeError(Exception):
-    pass
-
-
-class NoVolumeError(Exception):
-    pass
-
-
-class NoBaseImageError(Exception):
-    pass
 
 
 class SoftwareInstallError(Exception):
@@ -282,16 +258,24 @@ class ISO9660IOError(IOError):
 
 class ISO9660(object):
     def __init__(self, url):
-        self._buff  = None #input buffer
-        self._root  = None #root node
-        self._pvd   = {}   #primary volume descriptor
-        self._paths = []   #path table
+        # input buffer
+        self._buff = None
 
-        self._url   = url
-        if not hasattr(self, '_get_sector'): #it might have been set by a subclass
+        # root node
+        self._root = None
+
+        # primary volume descriptor
+        self._pvd = {}
+
+        # path table
+        self._paths = []
+        self._url = url
+
+        if not hasattr(self, '_get_sector'):
+            # it might have been set by a subclass
             self._get_sector = self._get_sector_file
 
-        ### Volume Descriptors
+        # Volume Descriptors
         sector = 0x10
         while True:
             self._get_sector(sector, SECTOR_SIZE)
@@ -305,21 +289,21 @@ class ISO9660(object):
             else:
                 continue
 
-        ### Path table
+        # Path table
         l0 = self._pvd['path_table_size']
         self._get_sector(self._pvd['path_table_l_loc'], l0)
 
         while l0 > 0:
             p = {}
             l1 = self._unpack('B')
-            l2 = self._unpack('B')
+            self._unpack('B')
             p['ex_loc'] = self._unpack('<I')
             p['parent'] = self._unpack('<H')
-            p['name']   = self._unpack_string(l1)
+            p['name'] = self._unpack_string(l1)
             if p['name'] == '\x00':
                 p['name'] = ''
 
-            if l1%2 == 1:
+            if l1 % 2 == 1:
                 self._unpack('B')
 
             self._paths.append(p)
@@ -328,14 +312,12 @@ class ISO9660(object):
 
         assert l0 == 0
 
-    ##
-    ## Retrieve file contents as a string
-    ##
+    # Retrieve file contents as a string
     def get_file(self, path):
         path = path.upper().strip('/').split('/')
         path, filename = path[:-1], path[-1]
 
-        if len(path)==0:
+        if len(path) == 0:
             parent_dir = self._root
         else:
             try:
@@ -350,21 +332,19 @@ class ISO9660(object):
 
     def _get_sector_file(self, sector, length):
         with open(self._url, 'rb') as f:
-            f.seek(sector*SECTOR_SIZE)
+            f.seek(sector * SECTOR_SIZE)
             self._buff = StringIO(f.read(length))
 
-    ##
-    ## Return the record for final directory in a path
-    ##
+    # Return the record for final directory in a path
     def _dir_record_by_table(self, path):
         for e in self._paths[::-1]:
             search = list(path)
             f = e
             while f['name'] == search[-1]:
                 search.pop()
-                f = self._paths[f['parent']-1]
+                f = self._paths[f['parent'] - 1]
                 if f['parent'] == 1:
-                    e['ex_len'] = SECTOR_SIZE #TODO
+                    e['ex_len'] = SECTOR_SIZE
                     return e
         raise ISO9660IOError(path)
 
@@ -379,59 +359,61 @@ class ISO9660(object):
 
         return current
 
-    ##
-    ## Unpack the Primary Volume Descriptor
-    ##
+    # Unpack the Primary Volume Descriptor
     def _unpack_pvd(self):
-        self._pvd['type_code']                     = self._unpack_string(5)
-        self._pvd['standard_identifier']           = self._unpack('B')
-        self._unpack_raw(1)                        #discard 1 byte
-        self._pvd['system_identifier']             = self._unpack_string(32)
-        self._pvd['volume_identifier']             = self._unpack_string(32)
-        self._unpack_raw(8)                        #discard 8 bytes
-        self._pvd['volume_space_size']             = self._unpack_both('i')
-        self._unpack_raw(32)                       #discard 32 bytes
-        self._pvd['volume_set_size']               = self._unpack_both('h')
-        self._pvd['volume_seq_num']                = self._unpack_both('h')
-        self._pvd['logical_block_size']            = self._unpack_both('h')
-        self._pvd['path_table_size']               = self._unpack_both('i')
-        self._pvd['path_table_l_loc']              = self._unpack('<i')
-        self._pvd['path_table_opt_l_loc']          = self._unpack('<i')
-        self._pvd['path_table_m_loc']              = self._unpack('>i')
-        self._pvd['path_table_opt_m_loc']          = self._unpack('>i')
-        _, self._root = self._unpack_record()      #root directory record
-        self._pvd['volume_set_identifer']          = self._unpack_string(128)
-        self._pvd['publisher_identifier']          = self._unpack_string(128)
-        self._pvd['data_preparer_identifier']      = self._unpack_string(128)
-        self._pvd['application_identifier']        = self._unpack_string(128)
-        self._pvd['copyright_file_identifier']     = self._unpack_string(38)
-        self._pvd['abstract_file_identifier']      = self._unpack_string(36)
-        self._pvd['bibliographic_file_identifier'] = self._unpack_string(37)
-        self._pvd['volume_datetime_created']       = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_modified']      = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_expires']       = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_effective']     = self._unpack_vd_datetime()
-        self._pvd['file_structure_version']        = self._unpack('B')
+        self._pvd['type_code'] = self._unpack_string(5)
+        self._pvd['standard_identifier'] = self._unpack('B')
 
-    ##
-    ## Unpack a directory record (a listing of a file or folder)
-    ##
+        # discard 1 byte
+        self._unpack_raw(1)
+        self._pvd['system_identifier'] = self._unpack_string(32)
+        self._pvd['volume_identifier'] = self._unpack_string(32)
+
+        # discard 8 bytes
+        self._unpack_raw(8)
+
+        self._pvd['volume_space_size'] = self._unpack_both('i')
+
+        # discard 32 bytes
+        self._unpack_raw(32)
+        self._pvd['volume_set_size'] = self._unpack_both('h')
+        self._pvd['volume_seq_num'] = self._unpack_both('h')
+        self._pvd['logical_block_size'] = self._unpack_both('h')
+        self._pvd['path_table_size'] = self._unpack_both('i')
+        self._pvd['path_table_l_loc'] = self._unpack('<i')
+        self._pvd['path_table_opt_l_loc'] = self._unpack('<i')
+        self._pvd['path_table_m_loc'] = self._unpack('>i')
+        self._pvd['path_table_opt_m_loc'] = self._unpack('>i')
+
+        # root directory record
+        _, self._root = self._unpack_record()
+        self._pvd['volume_set_identifer'] = self._unpack_string(128)
+        self._pvd['publisher_identifier'] = self._unpack_string(128)
+        self._pvd['data_preparer_identifier'] = self._unpack_string(128)
+        self._pvd['application_identifier'] = self._unpack_string(128)
+        self._pvd['copyright_file_identifier'] = self._unpack_string(38)
+        self._pvd['abstract_file_identifier'] = self._unpack_string(36)
+        self._pvd['bibliographic_file_identifier'] = self._unpack_string(37)
+        self._pvd['volume_datetime_created'] = self._unpack_vd_datetime()
+        self._pvd['volume_datetime_modified'] = self._unpack_vd_datetime()
+        self._pvd['volume_datetime_expires'] = self._unpack_vd_datetime()
+        self._pvd['volume_datetime_effective'] = self._unpack_vd_datetime()
+        self._pvd['file_structure_version'] = self._unpack('B')
+
     def _unpack_record(self, read=0):
         l0 = self._unpack('B')
 
         if l0 == 0:
-            return read+1, None
-
-        l1 = self._unpack('B')
+            return read + 1, None
 
         d = dict()
-        d['ex_loc']               = self._unpack_both('I')
-        d['ex_len']               = self._unpack_both('I')
-        d['datetime']             = self._unpack_dir_datetime()
-        d['flags']                = self._unpack('B')
+        d['ex_loc'] = self._unpack_both('I')
+        d['ex_len'] = self._unpack_both('I')
+        d['datetime'] = self._unpack_dir_datetime()
+        d['flags'] = self._unpack('B')
         d['interleave_unit_size'] = self._unpack('B')
-        d['interleave_gap_size']  = self._unpack('B')
-        d['volume_sequence']      = self._unpack_both('h')
+        d['interleave_gap_size'] = self._unpack('B')
+        d['volume_sequence'] = self._unpack_both('h')
 
         l2 = self._unpack('B')
         d['name'] = self._unpack_string(l2).split(';')[0]
@@ -443,13 +425,12 @@ class ISO9660(object):
 
         t = 34 + l2 - (l2 % 2)
 
-        e = l0-t
-        if e>0:
-            extra = self._unpack_raw(e)
+        e = l0 - t
+        if e > 0:
+            pass
 
-        return read+l0, d
+        return read + l0, d
 
-    #Assuming d is a directory record, this generator yields its children
     def _unpack_dir_children(self, d):
         sector = d['ex_loc']
         read = 0
@@ -458,36 +439,32 @@ class ISO9660(object):
         read, r_self = self._unpack_record(read)
         read, r_parent = self._unpack_record(read)
 
-        while read < r_self['ex_len']: #Iterate over files in the directory
+        while read < r_self['ex_len']:
             if read % 2048 == 0:
                 sector += 1
                 self._get_sector(sector, 2048)
             read, data = self._unpack_record(read)
 
-            if data == None: #end of directory listing
+            if data is None:
                 to_read = 2048 - (read % 2048)
                 self._unpack_raw(to_read)
                 read += to_read
             else:
                 yield data
 
-    #Search for one child amongst the children
     def _search_dir_children(self, d, term):
         for e in self._unpack_dir_children(d):
             if e['name'] == term:
                 return e
 
         raise ISO9660IOError(term)
-    ##
-    ## Datatypes
-    ##
+
     def _unpack_raw(self, l):
         return self._buff.read(l)
 
-    #both-endian
     def _unpack_both(self, st):
-        a = self._unpack('<'+st)
-        b = self._unpack('>'+st)
+        a = self._unpack('<' + st)
+        b = self._unpack('>' + st)
         assert a == b
         return a
 
@@ -495,7 +472,7 @@ class ISO9660(object):
         return self._buff.read(l).rstrip(' ')
 
     def _unpack(self, st):
-        if st[0] not in ('<','>'):
+        if st[0] not in ('<', '>'):
             st = '<' + st
         d = struct.unpack(st, self._buff.read(struct.calcsize(st)))
         if len(st) == 2:
@@ -504,7 +481,7 @@ class ISO9660(object):
             return d
 
     def _unpack_vd_datetime(self):
-        return self._unpack_raw(17) #TODO
+        return self._unpack_raw(17)
 
     def _unpack_dir_datetime(self):
         epoch = datetime.datetime(1970, 1, 1)
@@ -663,7 +640,7 @@ class BigIpSoapApi(BigIpCommon):
                 target_volume = volume
                 break
 
-        if target_volume == None:
+        if target_volume is None:
             try:
                 _active_volume = active_volume.split('.')
                 _active_volume[-1] = str(int(_active_volume[-1]) + 1)
@@ -673,21 +650,21 @@ class BigIpSoapApi(BigIpCommon):
 
         if delete_target:
             self.delete_volume(target_volume)
-    
+
         return target_volume
 
     def delete_volume(self, volume):
         sleep_interval = 0.25
 
         # Check the target volume exists and inactive
-        if not volume in self.get_inactive_volumes():
+        if volume not in self.get_inactive_volumes():
             return False
 
         self.api.System.SoftwareManagement.delete_volume(volume)
 
         while True:
             time.sleep(sleep_interval)
-            if not volume in self.get_inactive_volumes():
+            if volume not in self.get_inactive_volumes():
                 break
 
         return True
@@ -863,12 +840,12 @@ class BigIpSoapApi(BigIpCommon):
         force = self.params['force']
         software = self.params['software']
         hotfix = self.params['hotfix']
-        psoftware = self.params['psoftware']        
+        psoftware = self.params['psoftware']
         volume = self.params['volume']
         reuse_inactive_volume = self.params['reuse_inactive_volume']
-        
+
         if reuse_inactive_volume:
-            if volume == None:
+            if volume is None:
                 self.params['volume'] = self.get_next_available_volume(True)
 
             if self.is_activated() and not force:
@@ -956,7 +933,7 @@ class BigIpSoapApi(BigIpCommon):
         volume = self.params['volume']
         reuse_inactive_volume = self.params['reuse_inactive_volume']
 
-        if volume == None and reuse_inactive_volume:
+        if volume is None and reuse_inactive_volume:
             self.params['volume'] = self.get_next_available_volume(True)
 
         if self.is_installed():

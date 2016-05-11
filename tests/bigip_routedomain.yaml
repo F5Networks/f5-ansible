@@ -1,0 +1,35 @@
+---
+
+# Test the bigip_routedomain module
+#
+# This playbook can be used to test the bigip_routedomain module.
+#
+# Usage:
+#
+#    ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml [OPTIONS]:
+#
+# Examples:
+#
+#    Run all of the tests
+#
+#    ansible-playbook -i inventory/hosts test/bigip_routedomain.yaml
+#
+#
+#    Only run the REST related tests
+#
+#    ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml \
+#        --tags rest
+#
+#
+#    Only run the SOAP related tests
+#
+#    ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml \
+#        --tags soap
+#
+
+- name: Test the bigip_routedomain module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - __bigip_routedomain

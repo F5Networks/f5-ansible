@@ -26,7 +26,7 @@ description:
      this module is written to transfer UCS files that might not be present,
      so a missing remote UCS won't be an error unless fail_on_missing is
      set to 'yes'.
-version_added: "2.1"
+version_added: "2.2"
 options:
   backup:
     description:
@@ -34,13 +34,9 @@ options:
         get the original file back if you somehow clobbered it incorrectly.
     default: no
     required: False
-    choices: ["yes", "no"]
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: soap
-    choices: ["rest", "soap"]
+    choices:
+      - yes
+      - no
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
@@ -89,17 +85,18 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - BIG-IP provides no way to get a checksum of the UCS files on the system
-     via any interface except, perhaps, logging in directly to the box (which
-     would not support appliance mode). Therefore, the best this module can
-     do is check for the existence of the file on disk; no checksumming.
-
-requirements: ["bigsuds", "requests"]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+  - BIG-IP provides no way to get a checksum of the UCS files on the system
+    via any interface except, perhaps, logging in directly to the box (which
+    would not support appliance mode). Therefore, the best this module can
+    do is check for the existence of the file on disk; no checksumming.
+requirements:
+  - bigsuds
+  - requests
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -115,82 +112,68 @@ EXAMPLES = '''
 
 RETURN = '''
 checksum:
-    description: The SHA1 checksum of the downloaded file
-    returned: success or changed
-    type: string
-    sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
+  description: The SHA1 checksum of the downloaded file
+  returned: success or changed
+  type: string
+  sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-    description: Location on the ansible host that the UCS was saved to
-    returned: success
-    type: string
-    sample: "/path/to/file.txt"
+  description: Location on the ansible host that the UCS was saved to
+  returned: success
+  type: string
+  sample: "/path/to/file.txt"
 src:
-    description:
-        - Name of the UCS file on the remote BIG-IP to download. If not
-          specified, then this will be a randomly generated filename
-    returned: changed
-    type: string
-    sample: "cs_backup.ucs"
+  description:
+    - Name of the UCS file on the remote BIG-IP to download. If not
+      specified, then this will be a randomly generated filename
+  returned: changed
+  type: string
+  sample: "cs_backup.ucs"
 backup_file:
-    description: Name of backup file created
-    returned: changed and if backup=yes
-    type: string
-    sample: "/path/to/file.txt.2015-02-12@22:09~"
+  description: Name of backup file created
+  returned: changed and if backup=yes
+  type: string
+  sample: "/path/to/file.txt.2015-02-12@22:09~"
 gid:
-    description: Group id of the UCS file, after execution
-    returned: success
-    type: int
-    sample: 100
+  description: Group id of the UCS file, after execution
+  returned: success
+  type: int
+  sample: 100
 group:
-    description: Group of the UCS file, after execution
-    returned: success
-    type: string
-    sample: "httpd"
+  description: Group of the UCS file, after execution
+  returned: success
+  type: string
+  sample: "httpd"
 owner:
-    description: Owner of the UCS file, after execution
-    returned: success
-    type: string
-    sample: "httpd"
+  description: Owner of the UCS file, after execution
+  returned: success
+  type: string
+  sample: "httpd"
 uid:
-    description: Owner id of the UCS file, after execution
-    returned: success
-    type: int
-    sample: 100
+  description: Owner id of the UCS file, after execution
+  returned: success
+  type: int
+  sample: 100
 md5sum:
-    description: The MD5 checksum of the downloaded file
-    returned: changed or success
-    type: string
-    sample: 96cacab4c259c4598727d7cf2ceb3b45
+  description: The MD5 checksum of the downloaded file
+  returned: changed or success
+  type: string
+  sample: 96cacab4c259c4598727d7cf2ceb3b45
 mode:
-    description: Permissions of the target UCS, after execution
-    returned: success
-    type: string
-    sample: "0644"
+  description: Permissions of the target UCS, after execution
+  returned: success
+  type: string
+  sample: "0644"
 size:
-    description: Size of the target UCS, after execution
-    returned: success
-    type: int
-    sample: 1220
+  description: Size of the target UCS, after execution
+  returned: success
+  type: int
+  sample: 1220
 '''
 
 import socket
 import os
 import base64
 import tempfile
-
-try:
-    import bigsuds
-except ImportError:
-    BIGSUDS_AVAILABLE = False
-else:
-    BIGSUDS_AVAILABLE = True
-
-try:
-    import requests
-except ImportError:
-    REQUESTS_AVAILABLE = False
-else:
-    REQUESTS_AVAILABLE = True
 
 # Size of chunks of data to read and send via the iControl API
 CHUNK_SIZE = 512 * 1024
@@ -280,7 +263,7 @@ class BigIpRest(BigIpCommon):
                  validate_certs=True, check_mode=False):
 
         super(BigIpRest, self).__init__(username, password, hostname,
-                                            validate_certs, check_mode)
+                                        validate_certs, check_mode)
 
     def download(self, filename):
         headers = {
@@ -348,14 +331,16 @@ def main():
 
     argument_spec = f5_argument_spec()
 
-    argument_spec['backup'] = dict(required=False, default=False, type='bool', choices=BOOLEANS)
-    argument_spec['connection'] = dict(default='soap', choices=['soap', 'rest'])
-    argument_spec['create_on_missing'] = dict(required=False, default=True, type='bool', choices=BOOLEANS)
-    argument_spec['encryption_password'] = dict(required=False)
-    argument_spec['dest'] = dict(required=True)
-    argument_spec['force'] = dict(required=False, default=True, type='bool', choices=BOOLEANS)
-    argument_spec['fail_on_missing'] = dict(required=False, default=False, type='bool', choices=BOOLEANS)
-    argument_spec['src'] = dict()
+    meta_args = dict(
+        backup=dict(required=False, default=False, type='bool', choices=BOOLEANS),
+        create_on_missing=dict(required=False, default=True, type='bool', choices=BOOLEANS),
+        encryption_password=dict(required=False, default=None),
+        dest=dict(required=True),
+        force=dict(required=False, default=True, type='bool', choices=BOOLEANS),
+        fail_on_missing=dict(required=False, default=False, type='bool', choices=BOOLEANS),
+        src=dict(required=False, default=None)
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
@@ -370,10 +355,10 @@ def main():
         connection = module.params['connection']
         create_on_missing = module.params['create_on_missing']
         dest = os.path.expanduser(module.params['dest'])
-        encryption_password = module.params.get('encryption_password', None)
+        encryption_password = module.params.get('encryption_password')
         force = module.params.get('force')
         fail_on_missing = module.params['fail_on_missing']
-        src = module.params.get('src', None)
+        src = module.params.get('src')
 
         # Generates a random filename if no 'src' argument was provided
         #

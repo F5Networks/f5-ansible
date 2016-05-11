@@ -1,0 +1,65 @@
+---
+
+- name: Create view
+  bigip_view:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[1] }}"
+  register: result
+
+- name: Assert Create view
+  assert:
+      that:
+          - result|changed
+
+- name: Create view - Idempotent check
+  bigip_view:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[1] }}"
+  register: result
+
+- name: Assert Create view - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Update view order, existing
+  bigip_view:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[0] }}"
+  register: result
+
+- name: Assert Update view order, existing
+  assert:
+      that:
+          - result|changed
+
+- name: Update view order, existing - Idempotent check
+  bigip_view:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      view_name: "{{ view_name }}"
+      view_order: "{{ view_order[0] }}"
+  register: result
+
+- name: Assert Update view order, existing - Idempotent check
+  assert:
+      that:
+          - not result|changed

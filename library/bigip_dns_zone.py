@@ -18,12 +18,12 @@
 
 DOCUMENTATION = '''
 ---
-module: bigip_zone
+module: bigip_dns_zone
 short_description: Manages DNS zones on a BIG-IP
 description:
-   - This module manages DNS zones described in the iControl Management
-     documentation
-version_added: "2.1"
+  - This module manages DNS zones described in the iControl Management
+    documentation
+version_added: "2.2"
 options:
   server:
     description:
@@ -57,14 +57,18 @@ options:
         the record.
     required: false
     default: present
-    choices: [ "present", "absent" ]
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the remote host. This is as easy as
-     pip install bigsuds
-   - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
-
-requirements: [ "bigsuds", "distutils" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the remote host. This is as easy as
+    pip install bigsuds
+  - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
+requirements:
+  - bigsuds
+  - distutils
+author:
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -84,13 +88,6 @@ EXAMPLES = '''
 
 import re
 from distutils.version import StrictVersion
-
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
 
 VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
@@ -232,6 +229,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

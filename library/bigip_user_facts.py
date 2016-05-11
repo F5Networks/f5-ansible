@@ -22,7 +22,7 @@ module: bigip_user_facts
 short_description: Retrieve user account attributes from a BIG-IP
 description:
    - Retrieve user account attributes from a BIG-IP
-version_added: "2.0"
+version_added: "2.2"
 options:
   connection:
     description:
@@ -56,14 +56,15 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - Facts are placed in the C(bigip) variable
-
-requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+  - Facts are placed in the C(bigip) variable
+requirements:
+  - bigsuds
+  - requests
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -77,44 +78,28 @@ EXAMPLES = '''
 - debug: var=bigip
 '''
 
-import socket
-
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
-
 
 class BigIpCommon(object):
-    def __init__(self, module):
-        self._user = module.params.get('user')
-        self._password = module.params.get('password')
-        self._server = module.params.get('server')
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
+        self.params = kwargs
 
-        self._name = module.params.get('name')
+    def flush(self):
+        if obj.exists():
+            return dict(bigip=obj.facts())
+        else:
+            raise UserNotFoundError
 
-        self._validate_certs = module.params.get('validate_certs')
 
+class BigIpSoapApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpSoapApi, self).__init__(*args, **kwargs)
 
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
+        self.api = bigip_api(kwargs['server'],
+                             kwargs['user'],
+                             kwargs['password'],
+                             kwargs['validate_certs'])
 
-        self.api = bigsuds.BIGIP(
-            hostname=self._server,
-            username=self._user,
-            password=self._password,
-            debug=True
-        )
         self._all_partition = '[All]'
         self._admin_role = 'USER_ROLE_ADMINISTRATOR'
 
@@ -194,14 +179,17 @@ class BigIpIControl(BigIpCommon):
         return result
 
 
-class BigIpRest(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpRest, self).__init__(module)
+class BigIpRestApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpRestApi, self).__init__(*args, **kwargs)
 
-        self._uri = 'https://%s/mgmt/tm/auth/user' % (self._server)
+        server = self.params['server']
+
+        self._uri = 'https://%s/mgmt/tm/auth/user' % (server)
         self._headers = {
             'Content-Type': 'application/json'
         }
+
         self._all_partition = 'all-partitions'
 
     def facts(self):
@@ -257,53 +245,30 @@ class BigIpRest(BigIpCommon):
 
 
 def main():
-    changed = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        username_credential=dict(required=True, aliases=['name'])
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='rest', choices=['icontrol', 'rest']),
-            server=dict(required=True),
-            password=dict(require=True),
-            user=dict(required=True, aliases=['username']),
-            name=dict(required=True),
-            validate_certs=dict(default='yes', type='bool', choices=BOOLEANS)
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
-    connection = module.params.get('connection')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-
     try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
 
-            icontrol = test_icontrol(username, password, hostname)
-            if icontrol:
-                obj = BigIpIControl(module)
-        elif connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-
-            obj = BigIpRest(module)
-
-        if obj.exists():
-            uservars = dict(bigip=obj.facts())
-            module.exit_json(changed=changed, ansible_facts=uservars)
-        else:
-            module.fail_json(msg='The specified username was not found')
-    except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except bigsuds.ConnectionError, e:
+        module.exit_json(changed=True, ansible_facts=result)
+    except F5ModuleError, e:
         module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

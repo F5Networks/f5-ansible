@@ -14,16 +14,6 @@
 #
 #    ansible-playbook -i inventory/hosts test/bigip_user.yaml
 #
-#
-#    Only run the REST related tests
-#
-#    ansible-playbook -i inventory/hosts tests/bigip_user.yaml --tags rest
-#
-#
-#    Only run the SOAP related tests
-#
-#    ansible-playbook -i inventory/hosts tests/bigip_user.yaml --tags soap
-#
 
 - name: Test the bigip_user module
   hosts: f5-test

@@ -63,7 +63,8 @@ notes:
      as pip install paramiko
 
 requirements: [ "paramiko", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -109,16 +110,16 @@ import socket
 try:
     import paramiko
 except ImportError:
-    PARAMIKO_AVAILABLE = False
+    paramiko_found = False
 else:
-    PARAMIKO_AVAILABLE = True
+    paramiko_found = True
 
 try:
     import requests
 except ImportError:
-    REQUESTS_AVAILABLE = False
+    requests_found = False
 else:
-    REQUESTS_AVAILABLE = True
+    requests_found = True
 
 
 class BigIpCommon(object):
@@ -132,14 +133,15 @@ class BigIpCommon(object):
         password = self.params['password']
         validate_certs = self.params['validate_certs']
 
-        self._uri = 'https://%s/mgmt/tm/auth/user/%s' % (server, user)
-        self._headers = {
+        uri = 'https://%s/mgmt/tm/auth/user/%s' % (server, user)
+        headers = {
             'Content-Type': 'application/json'
         }
 
-        resp = requests.get(self._uri,
+        resp = requests.get(uri,
                             auth=(user, password),
-                            verify=validate_certs)
+                            verify=validate_certs,
+                            headers=headers)
 
         if resp.status_code != 200:
             raise Exception('Failed to query the REST API to check appliance mode')
@@ -218,10 +220,10 @@ def main():
     )
 
     try:
-        if not PARAMIKO_AVAILABLE:
+        if not paramiko_found:
             raise Exception("The python paramiko module is required")
 
-        if not REQUESTS_AVAILABLE:
+        if not requests_found:
             raise Exception("The python requests module is required")
 
         obj = BigIpSsh(**module.params)

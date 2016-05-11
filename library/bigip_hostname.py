@@ -22,21 +22,15 @@ module: bigip_hostname
 short_description: Manage the hostname of a BIG-IP
 description:
    - Manage the hostname of a BIG-IP
-version_added: "2.0"
+version_added: "2.2"
 options:
-  connection:
+  hostname:
     description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: rest
-    choices: [ "rest", "icontrol" ]
+      - Hostname of the BIG-IP host
+    required: true
   server:
     description:
       - BIG-IP host
-    required: true
-  name:
-    description:
-      - Name of the host
     required: true
   password:
     description:
@@ -54,13 +48,13 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the f5-sdk Python package on the host This is as easy as pip
+    install f5-sdk
+requirements:
+  - f5-sdk
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -73,166 +67,91 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-import socket
-
 try:
-    import bigsuds
+    from f5.bigip import BigIP
+    f5sdk_found = True
 except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
-    import json
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    f5sdk_found = False
 
 
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
+class BigIpHostname(object):
+    def __init__(self, *args, **kwargs):
+        if not f5sdk_found:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
+        self.params = kwargs
+        self.api = BigIP(kwargs['server'],
+                         kwargs['user'],
+                         kwargs['password'],
+                         port=kwargs['server_port'])
+
+    def update(self):
+        if not self.exists():
+            return False
+
+        r = self.api.sys.global_settings.load()
+        r.update(hostname=self.params['hostname'])
+
+        if self.exists():
+            return True
+        else:
+            raise F5ModuleError("Failed to set the hostname")
+
+    def exists(self):
+        current = self.read()
+        if self.params['hostname'] == current:
             return True
         else:
             return False
-    except:
-        return False
 
-
-class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
-        self._name = module.params.get('name')
-        self._validate_certs = module.params.get('validate_certs')
-
-
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
-
-        self.api = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
-        )
+    def present(self):
+        return self.update()
 
     def read(self):
-        result = None
+        r = self.api.sys.global_settings.load()
+        return r['hostname']
 
-        try:
-            result = self.api.System.Inet.get_hostname()
-        except bigsuds.ServerError:
-            pass
+    def flush(self):
+        current = self.read()
 
+        if self.params['check_mode']:
+            if self.params['hostname'] == current:
+                changed = False
+            else:
+                changed = True
+        else:
+            changed = self.present()
+            current = self.read()
+            result.update(hostname=current)
+
+        result.update(dict(changed=changed))
         return result
-
-    def run(self):
-        current = self.read()
-        if current == self._name:
-            return False
-
-        self.api.System.Inet.set_hostname(hostname=self._name)
-        return True
-
-
-class BigIpRest(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpRest, self).__init__(module)
-
-        self._uri = 'https://%s/mgmt/tm/sys/global-settings' % (self._hostname)
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-        self._payload = {
-            'hostname': self._name
-        }
-
-    def read(self):
-        resp = requests.get(self._uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code != 200:
-            return {}
-        else:
-            return resp.json()['hostname']
-
-    def run(self):
-        changed = False
-        current = self.read()
-
-        if current == self._name:
-            return False
-
-        resp = requests.put(self._uri,
-                            auth=(self._username, self._password),
-                            data=json.dumps(self._payload),
-                            verify=self._validate_certs)
-        if resp.status_code == 200:
-            changed = True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-        return changed
 
 
 def main():
-    changed = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        hostname=dict(required=True, default=None),
+        state=dict(required=False, choices=['present'])
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='icontrol', choices=['icontrol', 'rest']),
-            server=dict(required=True),
-            name=dict(required=True),
-            password=dict(required=True),
-            user=dict(required=True, aliases=['username']),
-            validate_certs=dict(default='yes', type='bool')
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
-    connection = module.params.get('connection')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-
     try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
+        obj = BigIpHostname(**module.params)
+        result = obj.flush()
 
-            test_icontrol(username, password, hostname)
-            obj = BigIpIControl(module)
-        elif connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-
-            obj = BigIpRest(module)
-
-        if obj.run():
-            changed = True
-    except bigsuds.ConnectionError, e:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
+        module.exit_json(**result)
+    except F5ModuleError, e:
         module.fail_json(msg=str(e))
 
-    module.exit_json(changed=changed)
-
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

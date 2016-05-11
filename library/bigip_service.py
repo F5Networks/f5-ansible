@@ -21,15 +21,9 @@ DOCUMENTATION = '''
 module: bigip_service
 short_description: Manage BIG-IP service states
 description:
-   - Manage BIG-IP service states
-version_added: "2.0"
+  - Manage BIG-IP service states
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: icontrol
-    choices: [ "icontrol" ]
   server:
     description:
       - BIG-IP host
@@ -58,7 +52,10 @@ options:
         unless necessary. C(restarted) will always bounce the service.
     required: false
     default: None
-    choices: [ "started", "stopped", "restarted" ]
+    choices:
+      - started
+      - stopped
+      - restarted
   user:
     description:
       - BIG-IP username
@@ -69,14 +66,16 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: yes
-    choices: [ "yes", "no" ]
-
+    choices:
+      - yes
+      - no
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds" ]
-author: Tim Rupp <t.rupp@f5.com>
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+author:
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -268,6 +267,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

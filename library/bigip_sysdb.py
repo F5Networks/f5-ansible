@@ -22,14 +22,8 @@ module: bigip_sysdb
 short_description: Manage BIG-IP system database variables
 description:
    - Manage BIG-IP system database variables
-version_added: "2.0"
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: rest
-    choices: [ "rest", "icontrol" ]
   server:
     description:
       - BIG-IP host
@@ -50,7 +44,9 @@ options:
         C(reset) are required.
     required: false
     default: present
-    choices: [ "present", "reset" ]
+    choices:
+      - present
+      - reset
   user:
     description:
       - BIG-IP username
@@ -67,16 +63,17 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+  - requests
+author:
+    - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sysdb:
       user: "admin"
@@ -103,45 +100,32 @@ EXAMPLES = """
       key: "setup.run"
       state: "reset"
   delegate_to: localhost
-"""
+'''
 
-import json
+RETURN = '''
+'''
 
 try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    from f5.bigip import BigIP
+    f5sdk_found = True
+except:
+    f5sdk_found = False
 
-TRANSPORTS = ['rest', 'soap']
 
-class NoResetNoValueError(Exception):
+class F5ModuleError(Exception):
     pass
 
 
-class BigIpApiFactory(object):
-    def factory(module):
-        connection = module.params.get('connection')
-
-        if connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-            return BigIpRestApi(check_mode=module.check_mode, **module.params)
-        elif connection == 'soap':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
-            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
-
-    factory = staticmethod(factory)
-
-
-class BigIpCommon(object):
+class BigIpSysDb():
     def __init__(self, *args, **kwargs):
-        self.result = dict(changed=False, changes=dict())
+        if not f5sdk_found:
+            raise F5ModuleError("The python f5-sdk module is required")
 
         self.params = kwargs
-        self.current = dict()
+        self.api = BigIP(kwargs['server'],
+                         kwargs['user'],
+                         kwargs['password'],
+                         port=kwargs['server_port'])
 
     def flush(self):
         result = dict()
@@ -149,7 +133,9 @@ class BigIpCommon(object):
         value = self.params['value']
 
         if not state == 'reset' and not value:
-            raise NoResetNoValueError
+            raise F5ModuleError(
+                "When resetting a key, a value is not supported"
+            )
 
         current = self.read()
 
@@ -169,130 +155,41 @@ class BigIpCommon(object):
         result.update(dict(changed=changed))
         return result
 
-
-class BigIpSoapApi(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpSoapApi, self).__init__(*args, **kwargs)
-
-        self.api = bigip_api(kwargs['server'],
-                             kwargs['user'],
-                             kwargs['password'],
-                             kwargs['validate_certs'])
-
     def read(self):
-        try:
-            response = self.api.Management.DBVariable.query(
-                variables=[self._key]
-            )
-        except bigsuds.ServerError:
-            return {}
-
-        return response[0]
+        dbs = self.api.sys.dbs.db.load(name=self.params['key'])
+        return dbs
 
     def present(self):
-        changed = False
         current = self.read()
 
-        if current and current['name'].lower() == self._key:
-            if current['value'] != self._value:
-                try:
-                    params = dict(
-                        name=self._key,
-                        value=self._value
-                    )
-                    self.api.Management.DBVariable.modify(
-                        variables=[params]
-                    )
-                    changed = True
-                except Exception, err:
-                    raise Exception(err)
+        if current['value'] == self.params['value']:
+            return False
 
-        return changed
+        current.update(self.params['value'])
+        current.refresh()
 
-    def reset(self):
-        changed = False
-
-        try:
-            self.api.Management.DBVariable.reset(
-                variables=[self._key]
+        if current['value'] == self.params['value']:
+            raise F5ModuleError(
+                "Failed to set the DB variable"
             )
-            changed = True
-        except Exception, err:
-            raise Exception(err)
-
-        return changed
-
-
-class BigIpRestApi(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpRestApi, self).__init__(*args, **kwargs)
-
-        self._uri = 'https://%s/mgmt/tm/sys/db/%s' % (self._hostname, self._key)
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-        self._payload = {
-            'value': self._value
-        }
-
-    def read(self):
-        resp = requests.get(self._uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code != 200:
-            return {}
-        else:
-            return resp.json()
-
-    def present(self):
-        changed = False
-        current = self.read()
-
-        if current and current['name'] == self._key:
-            if current['value'] != self._value:
-                resp = requests.put(self._uri,
-                                    auth=(self._username, self._password),
-                                    data=json.dumps(self._payload),
-                                    verify=self._validate_certs)
-                if resp.status_code == 200:
-                    changed = True
-                else:
-                    res = resp.json()
-                    raise Exception(res['message'])
-
-        return changed
+        return True
 
     def reset(self):
-        changed = False
         current = self.read()
 
-        if current and current['name'] == self._key:
-            default = current['defaultValue']
-            if current['value'] != default:
-                payload = {
-                    'value': default
-                }
-                resp = requests.put(self._uri,
-                                    auth=(self._username, self._password),
-                                    data=json.dumps(payload),
-                                    verify=self._validate_certs)
-                if resp.status_code == 200:
-                    changed = True
-                else:
-                    res = resp.json()
-                    raise Exception(res['message'])
-        else:
-            raise Exception('The given key does not exist to reset')
+        default = current['defaultValue']
+        if current['value'] == default:
+            return False
 
-        return changed
+        current['value'] = default
+        current.update()
+        return True
 
 
 def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        connection=dict(default='soap', choices=TRANSPORTS),
         key=dict(required=True),
         state=dict(default='present', choices=['present', 'reset']),
         value=dict(required=False, default=None)
@@ -305,19 +202,12 @@ def main():
     )
 
     try:
-        obj = BigIpApiFactory.factory(module)
+        obj = BigIpSysDb(**module.params)
         result = obj.flush()
 
         module.exit_json(**result)
-    except bigsuds.ConnectionError:
-        module.fail_json(msg="Could not connect to BIG-IP host")
-    except bigsuds.ServerError, e:
-        if 'folder not found' in str(e):
-            module.fail_json(msg="Partition not found")
-        else:
-            module.fail_json(msg=str(e))
-    except NoResetNoValueError:
-        module.fail_json(msg="Neither 'state' equal to 'reset' nor 'value' set")
+    except F5ModuleError, e:
+        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *

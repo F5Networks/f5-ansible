@@ -1,0 +1,16 @@
+---
+
+- name: Run a command
+  bigip_command:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      command: "tmsh list sys auth"
+  register: result
+
+- name: Assert Run a command
+  assert:
+      that:
+          - result|changed

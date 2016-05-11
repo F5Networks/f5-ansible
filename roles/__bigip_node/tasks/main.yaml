@@ -1,0 +1,126 @@
+---
+
+- name: Create node
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: present
+      host: "{{ node_host }}"
+      name: "{{ node_name }}"
+      description: "{{ node_description }}"
+      partition: "{{ node_partition }}"
+      monitor_type: "{{ node_monitor_type }}"
+      monitors: "{{ node_monitors }}"
+      quorum: "{{ node_quorum }}"
+
+  register: result
+  tags:
+      - create
+
+- name: Assert create node
+  assert:
+      that:
+          - result|changed
+  tags:
+      - create
+
+- name: Create node - idempotent check
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: present
+      host: "{{ node_host }}"
+      name: "{{ node_name }}"
+      description: "{{ node_description }}"
+      partition: "{{ node_partition }}"
+      monitor_type: "{{ node_monitor_type }}"
+      monitors: "{{ node_monitors }}"
+      quorum: "{{ node_quorum }}"
+  register: result
+  tags:
+      - create
+
+- name: Assert create node - idempotent check
+  assert:
+      that:
+        - not result|changed
+  tags:
+      - create
+
+- name: Change node description
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "{{ node_name  }}"
+      description: "new {{ node_description }}"
+      partition: "{{ node_partition }}"
+  register: result
+  tags:
+      - update
+
+- name: Assert change node description
+  assert:
+      that:
+          - result|changed
+  tags:
+      - update
+
+- name: Change session state
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "{{ node_name  }}"
+      session_state: disabled
+      partition: "{{ node_partition }}"
+  register: result
+  tags:
+      - update
+
+- name: Assert change node session state
+  assert:
+      that:
+        - result|changed
+  tags:
+      - update
+
+- name: Delete node
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: absent
+      name: "{{ node_name }}"
+      partition: "{{ node_partition }}"
+  register: result
+  tags:
+      - delete
+
+- name: Assert delete node
+  assert:
+      that:
+          - result|changed
+  tags:
+      - delete
+
+- name: Delete node - idempotent check
+  bigip_node:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: absent
+      name: "{{ node_name }}"
+      partition: "{{ node_partition }}"
+  register: result
+  tags:
+      - delete
+
+- name: Assert delete node - idempotent check
+  assert:
+      that:
+          - not result|changed
+  tags:
+      - delete

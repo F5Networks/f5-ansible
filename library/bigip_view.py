@@ -1,38 +1,49 @@
 #!/usr/bin/python
-
-# Ansible module to manage BIG-IP devices
+# -*- coding: utf-8 -*-
 #
-# This module covers the ResourceRecord interfaces described in the iControl
-# Management documentation.
+# This file is part of Ansible
 #
-# More information can be found here
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 #
-#    https://devcentral.f5.com/wiki/iControl.Management.ashx
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 DOCUMENTATION = '''
 ---
 module: bigip_view
-short_description: Manage resource records on a BIG-IP
+short_description: Manage ZoneRunner Views on a BIG-IP
 description:
-   - Manage resource records on a BIG-IP
-version_added: "1.8"
+  - Manage ZoneRunner Views on a BIG-IP. ZoneRunner is a feature of the GTM
+    module. Therefore, this module should only be used on BIG-IP systems that
+    have the GTM module enabled. The SOAP connection has a number of known
+    limitations when it comes to updating Views. It is only possible to
+version_added: "2.2"
 options:
-  username:
+  user:
     description:
-      - The username used to authenticate with
+      - BIG-IP username
     required: true
-    default: admin
   password:
     description:
-      - The password used to authenticate with
+      - BIG-IP password
     required: true
-    default: admin
-  hostname:
+  port:
     description:
-      - BIG-IP host to connect to
+      - BIG-IP web API port
+    required: false
+    default: 443
+  server:
+    description:
+      - BIG-IP host
     required: true
-    default: localhost
   view_name:
     description:
       - The name of the view
@@ -40,154 +51,293 @@ options:
   view_order:
     description:
       - The order of the view within the named.conf file. 0 = first in zone.
-      0xffffffff means to move the view to last. Any other number will move the
-      view to that position, and bump up any view(s) by one (if necessary).
+        0xffffffff means to move the view to last. Any other number will move the
+        view to that position, and bump up any view(s) by one (if necessary).
     default: 0
   options:
     description:
       - A sequence of options for the view
-  zone_names:
+  zones:
     description:
       - A sequence of zones in this view
-    required: true
+    required: false
+    default: None
   state:
     description:
-      - Whether the record should exist.  When C(absent), removes
-        the record.
+      - When C(present), will ensure that the View exists with the correct
+      zones in it. When C(absent), removes the View.
     required: false
     default: present
-    choices: [ "present", "absent" ]
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the remote host. This is as easy as
-     pip install bigsuds
-
-requirements: [ "bigsuds", "distutils" ]
-author: Tim Rupp <t.rupp@f5.com>
+  - Requires the bigsuds Python package on the remote host. This is as easy as
+    pip install bigsuds
+requirements:
+  - bigsuds
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = """
-
-- name: Add a view, named "internal", to organization.com zone
+EXAMPLES = '''
+- name: Create a view "foo.local"
   local_action:
-      module: bigip_view
-      username: 'admin'
-      password: 'admin'
-      hostname: 'bigip.organization.com'
-      zone_names:
-          - 'organization.com'
-      state: 'present'
-      options:
-          - domain_name: elliot.organization.com
-          ip_address: 10.1.1.1
-"""
+      module: "bigip_view"
+      user: "admin"
+      password: "admin"
+      name: "foo.local"
 
-import sys
-import re
-from distutils.version import StrictVersion
+- name: Assign zone "bar" to view "foo.local"
+  local_action:
+      module: "bigip_view"
+      user: "admin"
+      password: "admin"
+      name: "foo.local"
+      zones:
+          - "bar"
+'''
 
-try:
-    import bigsuds
-except ImportError:
-	bigsuds_found = False
-else:
-	bigsuds_found = True
+RETURN = '''
+'''
 
-VERSION_PATTERN='BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
 class ViewInfoException(Exception):
-	  pass
+    pass
 
-class ViewInfo(object):
-    REQUIRED_BIGIP_VERSION='9.0.3'
 
-    def __init__(self, module):
+class BigIpApiFactory(object):
+    def factory(module):
+        connection = module.params.get('connection')
+
+        if connection == 'rest':
+            if not requests_found:
+                raise Exception("The python requests module is required")
+            return BigIpRestApi(check_mode=module.check_mode, **module.params)
+        elif connection == 'soap':
+            if not bigsuds_found:
+                raise Exception("The python bigsuds module is required")
+            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
+    factory = staticmethod(factory)
+
+
+class BigIpCommon(object):
+    def __init__(self, *args, **kwargs):
+        self.result = dict(changed=False, changes=dict())
+        self.params = kwargs
+        self.current = dict()
+
+        self.zones = []
+
+    def correct_zone_name_format(self):
         new_zones = []
-
-        self.module = module
-
-        self.username = module.params['username']
-        self.password = module.params['password']
-        self.hostname = module.params['hostname']
-        self.view = module.params['view_name']
-        self.order = module.params['view_order']
-        self.options = module.params['options']
-        self.zones = module.params['zone_names']
-
         # Ensure that the zone names are correctly formatted. Note that they
         # need to have a dot at the end of the name
-        for zone in self.zone_names:
+        for zone in self.params['view_zones']:
             if not zone.endswith('.'):
                 zone += '.'
             new_zones.append(zone)
+
         self.zones = new_zones
 
-        self.client = bigsuds.BIGIP(
-            hostname=self.hostname,
-            username=self.username,
-            password=self.password,
-            debug=True
+    def has_gtm(self):
+        try:
+            self.api.Management.Provision.get_level(
+                modules=['TMOS_MODULE_GTM']
+            )
+            return True
+        except bigsuds.ServerError:
+            return False
+
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+
+        if not self.has_gtm():
+            raise Exception('This module only works with GTM enabled')
+
+        current = self.read()
+
+        if state == "present":
+            if self.params['check_mode']:
+                if current['view_name'] != self.params['view_name']:
+                    changed = True
+                elif current['view_zones'] != self.params['view_zones']:
+                    changed = True
+            else:
+                changed = self.present()
+                current = self.read()
+                result.update(current)
+        else:
+            changed = self.absent()
+
+        result.update(dict(changed=changed))
+        return result
+
+
+class BigIpSoapApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpSoapApi, self).__init__(*args, **kwargs)
+
+        self.api = bigip_api(kwargs['server'],
+                             kwargs['user'],
+                             kwargs['password'],
+                             kwargs['validate_certs'],
+                             kwargs['port'])
+
+    def read(self):
+        try:
+            response = self.api.Management.View.get_view([self.params['view_name']])[0]
+        except:
+            response = {}
+
+        return response
+
+    def create(self):
+        view_info = {
+            'view_name': self.params['view_name']
+        }
+
+        if self.params['view_order'] == 'first':
+            view_info['view_order'] = '0'
+        elif self.params['view_order'] == 'last':
+            view_info['view_order'] = '0xffffffff'
+        elif self.params['view_order']:
+            view_info['view_order'] = self.params['view_order']
+
+        if self.params['options']:
+            view_info['option_seq'] = self.params['options']
+        if self.params['zones']:
+            view_info['zone_names'] = self.params['zones']
+
+        self.set_active_folder()
+        self.api.Management.View.add_view(
+            views=[view_info]
         )
+        self.reset_active_folder()
 
-        # Do some checking of things
-        self.check_version()
-       
-    def check_version(self):
-        response = self.client.System.SystemInfo.get_version()
-        match = re.search(VERSION_PATTERN, response)
-        version = match.group('version')
+        if self.read():
+            return True
+        else:
+            raise Exception('Failed to add the view')
 
-        v1 = StrictVersion(version)
-        v2 = StrictVersion(self.REQUIRED_BIGIP_VERSION)
+    def exists(self):
+        if self.read():
+            return True
+        else:
+            return False
 
-        if v1 < v2:
-            raise ViewException('The BIG-IP version %s does not support this feature' % version)
+    def update(self):
+        """Updates a view if parameters have changed
 
-    def create_view(self):
-        view_info = [{
-            'view_name': self.view,
-            'view_order': self.view_order,
-            'option_seq': self.options,
-            'zone_names': self.zone_names
-        }]
+        The SOAP View API does not support transactions, so we cannot
+        guarantee that atomic operations can take place.
 
-        #try:
-        response = self.client.Management.View.add_view(
-            views=view_info
+        There exists the possibility that if you lose connectivity to
+        your BIG-IP during these operations, your configuration may be
+        left in an inconsistent state.
+        """
+        current = self.read()
+
+        if self.params['view_order'] != current['view_order']:
+            current['view_order'] = self.params['view_order']
+            self.set_active_folder()
+            self.api.Management.View.move_view(
+                views=[current]
+            )
+            self.reset_active_folder()
+        if params['zones'] != current['zones']:
+            current['view_order'] = self.params['view_order']
+            self.set_active_folder()
+            self.api.Management.View.move_view(
+                views=[current]
+            )
+            self.reset_active_folder()
+
+    def delete(self):
+        view_info = self.read()
+
+        self.set_active_folder()
+        self.api.Management.View.delete_view(
+            views=[view_info]
         )
-        #except Exception, e:
-        #    raise ViewException(str(e))
+        self.reset_active_folder()
+
+        if self.exists():
+            return True
+        else:
+            raise Exception('Failed to add the view')
+
+    def set_active_folder(self):
+        # need to switch to root, set recursive query state
+        self.current_folder = self.api.System.Session.get_active_folder()
+        if self.current_folder != '/' + self.params['partition']:
+            self.api.System.Session.set_active_folder(folder='/' + self.params['partition'])
+
+        self.current_query_state = self.api.System.Session.get_recursive_query_state()
+        if self.current_query_state == 'STATE_DISABLED':
+            self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
+
+    def reset_active_folder(self):
+        # set everything back
+        if self.current_query_state == 'STATE_DISABLED':
+            self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
+
+        if self.current_folder != '/' + self.params['partition']:
+            self.api.System.Session.set_active_folder(folder=self.current_folder)
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def absent(self):
+        if self.exists():
+            return self.delete()
+        else:
+            return False
+
+
+class BigIpRestApi(BigIpCommon):
+    def __init__(self, *args, **kwargs):
+        super(BigIpRestApi, self).__init__(*args, **kwargs)
+
+        server = self.params['server']
+
+        self._uri = 'https://%s/mgmt/tm/auth/user' % (server)
+        self._headers = {
+            'Content-Type': 'application/json'
+        }
+
 
 def main():
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        view_name=dict(default='external'),
+        view_order=dict(required=False, type='int', default=None),
+        options=dict(required=False, type='list', default=None),
+        zones=dict(required=False, default=None)
+    )
+    argument_spec.update(meta_args)
+
     module = AnsibleModule(
-        argument_spec = dict(
-            username=dict(default='admin'),
-            password=dict(default='admin'),
-            hostname=dict(default='localhost'),
-            view_name=dict(default='external'),
-            view_order=dict(default=0),
-            options=dict(required=False, type='list'),
-            zone_names=dict(required=True, type='list'),
-            state=dict(default="present", choices=["absent", "present"]),
-        )
+        argument_spec=argument_spec,
+        supports_check_mode=True
     )
 
-    state = module.params["state"]
+    try:
+        obj = BigIpApiFactory.factory(module)
+        result = obj.flush()
 
-    if not bigsuds_found:
-        module.fail_json(msg="The python bigsuds module is required")
+        module.exit_json(**result)
+    except F5ModuleError, e:
+        module.fail_json(msg=str(e))
 
-    #try:
-    view_info = ViewInfo(module)
-
-    if state == "present":
-        view_info.create_view()
-        changed = True
-    elif state == "absent":
-        record.delete_record()
-    #except Exception, e:
-    #    module.fail_json(msg=str(e))
-
-    module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
-main()
+from ansible.module_utils.f5 import *
+
+if __name__ == '__main__':
+    main()

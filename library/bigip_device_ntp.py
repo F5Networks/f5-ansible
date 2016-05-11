@@ -85,7 +85,8 @@ notes:
      install requests
 
 requirements: [ "requests", "bigsuds" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+author:
+    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -316,6 +317,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

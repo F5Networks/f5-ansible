@@ -21,18 +21,12 @@ DOCUMENTATION = '''
 module: bigip_provision
 short_description: Manage BIG-IP module provisioning
 description:
-   - Manage BIG-IP module provisioning. This module will only provision at the
-     standard levels of Dedicated, Nominal, and Minimum. While iControl SOAP
-     additionally supports a Custom level, this level is not supported by this
-     module.
-version_added: "2.0"
+  - Manage BIG-IP module provisioning. This module will only provision at the
+    standard levels of Dedicated, Nominal, and Minimum. While iControl SOAP
+    additionally supports a Custom level, this level is not supported by this
+    module.
+version_added: "2.2"
 options:
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: rest
-    choices: [ "rest", "icontrol" ]
   server:
     description:
       - BIG-IP host
@@ -67,7 +61,10 @@ options:
         the module is not run.
     required: false
     default: nominal
-    choices: [ "dedicated", "nominal", "minimum" ]
+    choices:
+      - dedicated
+      - nominal
+      - minimum
   user:
     description:
       - BIG-IP username
@@ -79,7 +76,9 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: yes
-    choices: [ "yes", "no" ]
+    choices:
+      - yes
+      - no
   state:
     description:
       - The state of the provisioned module on the system. When C(present),
@@ -89,14 +88,17 @@ options:
         unprovisions the module.
     required: false
     default: present
-    choices: [ "present", "absent" ]
-
+    choices:
+      - present
+      - absent
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-
-requirements: [ "bigsuds", "requests" ]
-author: Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+requirements:
+  - bigsuds
+  - requests
+author:
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -154,7 +156,9 @@ class BigIpIControl(BigIpCommon):
             password=self._password,
             debug=True
         )
-        module_map = {
+        # TODO: Make the REST interface to this work
+        """
+         module_map = {
             'afm': 'TMOS_MODULE_AFM',
             'am': 'TMOS_MODULE_AM',
             'sam': 'TMOS_MODULE_SAM',
@@ -167,17 +171,18 @@ class BigIpIControl(BigIpCommon):
             'pem': 'TMOS_MODULE_PEM',
             'swg': 'TMOS_MODULE_SWG'
         }
-        level_map = {
+         level_map = {
             'PROVISION_LEVEL_NONE',
             'PROVISION_LEVEL_NOMINAL',
             'PROVISION_LEVEL_MINIMAL',
             'PROVISION_LEVEL_DEDICATED'
         }
+        """
 
     def exists(self):
         try:
             self._client.Management.Provision.get_level(
-                moduless=[self._module]
+                modules=[self._module]
             )
         except bigsuds.ServerError:
             return False
@@ -252,7 +257,6 @@ class BigIpRest(BigIpCommon):
 
 def main():
     changed = False
-    icontrol = False
 
     module_choices = [
         'afm', 'am', 'sam', 'asm', 'avr', 'fps',
@@ -308,6 +312,7 @@ def main():
     module.exit_json(changed=changed)
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

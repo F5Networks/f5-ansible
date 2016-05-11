@@ -21,8 +21,8 @@ DOCUMENTATION = '''
 module: bigip_irule
 short_description: Manage iRules across different modules on a BIG-IP
 description:
-   - Manage iRules across different modules on a BIG-IP
-version_added: "2.1"
+  - Manage iRules across different modules on a BIG-IP
+version_added: "2.2"
 options:
   content:
     description:
@@ -86,19 +86,19 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
-   - Requires the requests Python package on the host. This is as easy as
-     pip install requests
-
-requirements: [ "bigsuds", "requests" ]
+  - Requires the bigsuds Python package on the host if using the iControl
+    interface. This is as easy as pip install bigsuds
+  - Requires the requests Python package on the host. This is as easy as
+    pip install requests
+requirements:
+    - bigsuds
+    - requests
 author:
-  - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = """
+EXAMPLES = '''
 - name: Add the iRule contained in templated irule.tcl to the LTM module
   bigip_irule:
       content: "{{ lookup('template', 'irule-template.tcl') }}"
@@ -120,7 +120,7 @@ EXAMPLES = """
       state: "present"
       user: "admin"
   delegate_to: localhost
-"""
+'''
 
 RETURN = '''
 full_name:
@@ -131,14 +131,6 @@ full_name:
 '''
 
 import json
-
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    REQUESTS_AVAILABLE = False
-
-TRANSPORTS = ['rest', 'soap']
 
 STATES = ['absent', 'present']
 MODULES = ['gtm', 'ltm', 'pem']
@@ -161,7 +153,7 @@ class BigIpApiFactory(object):
         type = module.params.get('connection')
 
         if type == "rest":
-            if not REQUESTS_AVAILABLE:
+            if not requests_found:
                 raise Exception("The python requests module is required")
             return BigIpRestApi(check_mode=module.check_mode, **module.params)
         elif type == "soap":
@@ -400,6 +392,7 @@ class BigIpSoapApi(BigIpCommon):
 
             return self.create()
 
+
 class BigIpRestApi(BigIpCommon):
     """Manipulate iRules via REST
 
@@ -573,19 +566,18 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        connection = dict(default='soap', choices=TRANSPORTS),
-        content = dict(required=False),
-        src = dict(required=False),
-        name = dict(required=True),
-        module = dict(required=True, choices=MODULES),
-        state = dict(default='present', choices=STATES),
+        content=dict(required=False),
+        src=dict(required=False),
+        name=dict(required=True),
+        module=dict(required=True, choices=MODULES),
+        state=dict(default='present', choices=STATES),
     )
-    argument_spec.update(meta_args)    
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
-        mutually_exclusive = [
+        mutually_exclusive=[
             ['content', 'src']
         ]
     )
@@ -595,7 +587,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
     except requests.exceptions.SSLError:
         module.fail_json(msg='Certificate verification failed. Consider using validate_certs=no')
