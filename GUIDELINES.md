@@ -31,37 +31,38 @@ but the new functionality requires ``f5-sdk``, you may add it using ``f5-sdk``.
 
 ## Naming your module
 
-Base the name of the module on the part of BIG-IP that
-the modules manipulates. (A good rule of thumb is to
-refer to the API being used in the ``f5-sdk``).
+Base the name of the module on the part of BIG-IP that the modules
+manipulates. (A good rule of thumb is to refer to the API being used in the
+``f5-sdk``).
 
-Don't further abbreviate names - if something is a well
-known abbreviation due to it being a major component of
-BIG-IP, that's fine, but don't create new ones independently
-(e.g. LTM, GTM, ASM, etc. are fine)
+Don't further abbreviate names - if something is a well known abbreviation
+due to it being a major component of BIG-IP, that's fine, but don't create
+new ones independently (e.g. LTM, GTM, ASM, etc. are fine)
 
 ## Adding new features
 
-If a module that you need does not yet exist, it is equally likely that the REST API in
-the f5-sdk has also not yet been developed. Please refer to the following github project
+If a module that you need does not yet exist, it is equally likely that the
+REST API in the f5-sdk has also not yet been developed. Please refer to the
+following github project
 
   * https://github.com/F5Networks/f5-common-python
 
-Open an Issue with that project to add the necessary APIs so that a proper Ansible module can
-be written to use them.
+Open an Issue with that project to add the necessary APIs so that a proper
+Ansible module can be written to use them.
 
 ## Using f5-sdk
 
 ### Importing
 
-Wrap import statements in a try block and fail the module later if the import fails
+Wrap import statements in a try block and fail the module later if the import
+fails
 
 #### f5-sdk
 
 ```python
 try:
     from f5.bigip import ManagementRoot
-    from f5.bigip.contexts import TransactionContext
+    from f5.bigip.contexts import TransactionContextManager
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
@@ -90,7 +91,7 @@ mr = ManagementRoot("localhost", "admin", "admin", port='10443')
 tx = mr.tm.transactions.transaction
 
 with TransactionContextManager(tx) as api:
-    virt = api.ltm.virtuals.virtual.load(name='asdf')
+    virt = api.tm.ltm.virtuals.virtual.load(name='asdf')
     tcp = virt.profiles_s.profiles.load(name='tcp')
     tcp.delete()
     virt.profiles_s.profiles.create(name='wom-tcp-wan-optimized')
@@ -124,14 +125,31 @@ except F5SDKError, e:
 
 ### Code compatibility
 
-The python code underlying the Ansible modules should be written to be compatible with both
-Python 2.7 and 3.
+The python code underlying the Ansible modules should be written to be
+compatible with both Python 2.7 and 3.
 
-The travis configuration contained in this repo will verify that your modules are compatible
-with both versions. Use the following cheat-sheet to write compatible code
+The travis configuration contained in this repo will verify that your modules
+are compatible with both versions. Use the following cheat-sheet to write
+compatible code.
 
   * http://python-future.org/compatible_idioms.html
 
 ### Helper functions
 
-The helper functions available to you are included in the Ansible f5.py module_utils.
+The helper functions available to you are included in the Ansible f5.py
+module_utils.
+
+### Automated testing
+
+It is recommended that you use the testing facilities that we have paired with
+this repository. When you open PR's, our testing tools will run the PR against
+supported BIG-IP versions in our testing facilities.
+
+By doing using our test harnesses, you do not need to have your own devices or
+VE instances to do your testing (although if you do that's fine).
+
+We currently have the following devices in our test harness
+
+  * BIG-IP VE 11.6.0
+  * BIG-IP VE 12.0.0
+  * BIG-IP VE 12.1.0
