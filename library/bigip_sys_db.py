@@ -18,7 +18,7 @@
 
 DOCUMENTATION = '''
 ---
-module: bigip_sysdb
+module: bigip_sys_db
 short_description: Manage BIG-IP system database variables
 description:
    - Manage BIG-IP system database variables
@@ -28,6 +28,11 @@ options:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP host port
+    required: false
+    default: 443
   key:
     description:
       - The database variable to manipulate
@@ -55,7 +60,8 @@ options:
       - username
   value:
     description:
-      - The value to set the key to. At least one of value and state C(reset) are required.
+      - The value to set the key to. At least one of value and state C(reset)
+        are required.
     required: false
   validate_certs:
     description:
@@ -67,15 +73,14 @@ notes:
   - Requires the bigsuds Python package on the host if using the iControl
     interface. This is as easy as pip install bigsuds
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk
 author:
     - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
 - name: Set the boot.quiet DB variable on the BIG-IP
-  bigip_sysdb:
+  bigip_sys_db:
       user: "admin"
       password: "secret"
       server: "lb.mydomain.com"
@@ -84,7 +89,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Disable the initial setup screen
-  bigip_sysdb:
+  bigip_sys_db:
       user: "admin"
       password: "secret"
       server: "lb.mydomain.com"
@@ -93,7 +98,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Reset the initial setup screen
-  bigip_sysdb:
+  bigip_sys_db:
       user: "admin"
       password: "secret"
       server: "lb.mydomain.com"
@@ -106,26 +111,23 @@ RETURN = '''
 '''
 
 try:
-    from f5.bigip import BigIP
-    f5sdk_found = True
+    from f5.bigip import ManagementRoot
+    from f5.sdk_exception import F5SDKError
+    HAS_F5SDK = True
 except:
-    f5sdk_found = False
-
-
-class F5ModuleError(Exception):
-    pass
+    HAS_F5SDK = False
 
 
 class BigIpSysDb():
     def __init__(self, *args, **kwargs):
-        if not f5sdk_found:
-            raise F5ModuleError("The python f5-sdk module is required")
+        if not HAS_F5SDK:
+            raise F5SDKError("The python f5-sdk module is required")
 
         self.params = kwargs
-        self.api = BigIP(kwargs['server'],
-                         kwargs['user'],
-                         kwargs['password'],
-                         port=kwargs['server_port'])
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def flush(self):
         result = dict()
@@ -133,7 +135,7 @@ class BigIpSysDb():
         value = self.params['value']
 
         if not state == 'reset' and not value:
-            raise F5ModuleError(
+            raise F5SDKError(
                 "When resetting a key, a value is not supported"
             )
 
@@ -156,7 +158,9 @@ class BigIpSysDb():
         return result
 
     def read(self):
-        dbs = self.api.sys.dbs.db.load(name=self.params['key'])
+        dbs = self.api.tm.sys.dbs.db.load(
+            name=self.params['key']
+        )
         return dbs
 
     def present(self):
@@ -169,7 +173,7 @@ class BigIpSysDb():
         current.refresh()
 
         if current['value'] == self.params['value']:
-            raise F5ModuleError(
+            raise F5SDKError(
                 "Failed to set the DB variable"
             )
         return True
@@ -206,7 +210,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5SDKError, e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
