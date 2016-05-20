@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_hostname
 short_description: Manage the hostname of a BIG-IP
 description:
-   - Manage the hostname of a BIG-IP
+  - Manage the hostname of a BIG-IP
 version_added: "2.2"
 options:
   hostname:
@@ -68,34 +68,35 @@ EXAMPLES = '''
 '''
 
 try:
-    from f5.bigip import BigIP
-    f5sdk_found = True
-except ImportError:
-    f5sdk_found = False
+    from f5.bigip import ManagementRoot
+    from f5.sdk_exception import F5SDKError
+    HAS_F5SDK = True
+except:
+    HAS_F5SDK = False
 
 
 class BigIpHostname(object):
     def __init__(self, *args, **kwargs):
-        if not f5sdk_found:
-            raise F5ModuleError("The python f5-sdk module is required")
+        if not HAS_F5SDK:
+            raise F5SDKError("The python f5-sdk module is required")
 
         self.params = kwargs
-        self.api = BigIP(kwargs['server'],
-                         kwargs['user'],
-                         kwargs['password'],
-                         port=kwargs['server_port'])
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def update(self):
         if not self.exists():
             return False
 
-        r = self.api.sys.global_settings.load()
+        r = self.api.tm.sys.global_settings.load()
         r.update(hostname=self.params['hostname'])
 
         if self.exists():
             return True
         else:
-            raise F5ModuleError("Failed to set the hostname")
+            raise F5SDKError("Failed to set the hostname")
 
     def exists(self):
         current = self.read()
@@ -147,7 +148,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5SDKError, e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
