@@ -25,9 +25,9 @@ The main documentation for the modules is organized into a couple sections:
    :maxdepth: 2
    :caption: User Documentation
 
-   getting_started
-   versions
-   support
+   usage/getting_started
+   usage/versions
+   usage/support
    guides/index
 
 
@@ -48,10 +48,10 @@ The main documentation for the modules is organized into a couple sections:
    :maxdepth: 2
    :caption: Developer Documentation
 
-   install
-   contribute
-   tests
-   architecture
+   development/install
+   development/contribute
+   development/tests
+   development/architecture
    development/standards
    development/buildenvironments
-   upstreaming
+   development/upstreaming
