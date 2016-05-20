@@ -28,7 +28,7 @@ description:
      via C(tmsh). The Ansible C(command) module should be able to perform this,
      however, older releases of BIG-IP do not have sufficient python versions
      to support Ansible. By using this module, there is no need for python to
-     exist on the remote BIG-IP. Additionally, this module can detect the prescence
+     exist on the remote BIG-IP. Additionally, this module can detect the presence
      of Appliance Mode on a BIG-IP and adjust the provided command to take this
      feature into account. Finally, the output of this module provides more
      Ansible-friendly data formats than could be accomplished by the C(command)
