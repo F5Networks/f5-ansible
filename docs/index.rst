@@ -11,7 +11,7 @@ have been promoted to the `Ansible core product`_ and `Ansible extras`_.
 
 .. _available on github: https://github.com/F5Networks/f5-ansible
 .. _Ansible core product: https://github.com/ansible/ansible-modules-core
-.. _Ansible extras https://github.com/ansible/ansible-modules-extras
+.. _Ansible extras: https://github.com/ansible/ansible-modules-extras
 
 The main documentation for the modules is organized into a couple sections:
 
