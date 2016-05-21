@@ -1,0 +1,9 @@
+---
+
+- name: Get pool facts
+  bigip_gtm_facts:
+      server: "{{ bigip_host }}"
+      user: "admin"
+      password: "mysecret"
+      include: "pool"
+      fact_filter: "my_pool"
