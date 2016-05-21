@@ -39,7 +39,7 @@ The main documentation for the modules is organized into a couple sections:
    :caption: Module Documentation
 
    general
-   modules/*
+   modules/modules_by_category
 
 
 .. _dev-docs:
