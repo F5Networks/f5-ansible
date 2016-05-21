@@ -221,7 +221,9 @@ so it must be included.
 
 **BAD**
 
-  Missing DOCUMENTATION field
+.. code-block:: python
+
+   Missing DOCUMENTATION field
 
 
 The author field must be a list
@@ -255,12 +257,18 @@ email address may change over time.
 
 **GOOD**
 
-  - Tim Rupp (@caphrim007)
+.. code-block:: yaml
+
+   author:
+     - Tim Rupp (@caphrim007)
 
 
 **BAD**
 
-  - Tim Rupp <caphrim007@gmail.com>
+.. code-block:: yaml
+
+   author:
+     - Tim Rupp <caphrim007@gmail.com>
 
 
 Use 2 spaces in the DOCUMENTATION, EXAMPLES, and RETURN
@@ -271,12 +279,28 @@ spaced over.
 
 **GOOD**
 
-  - "foo"
+.. code-block:: yaml
+
+   options:
+     server:
+       description:
+         - BIG-IP host
+       required: true
+     user:
+   ^^
 
 
 **BAD**
 
-    - "foo"
+.. code-block:: yaml
+
+   options:
+       server:
+           description:
+               - BIG-IP host
+           required: true
+       user:
+   ^^^^
 
 All modules must support check mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
