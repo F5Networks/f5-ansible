@@ -36,7 +36,8 @@ continue to use ``bigsuds`` to maintain backward compatibility.
 If you are adding new functionality to an existing module that uses ``bigsuds``
 but the new functionality requires ``f5-sdk``, you may add it using ``f5-sdk``.
 
-## Naming your module
+Naming your module
+^^^^^^^^^^^^^^^^^^
 
 Base the name of the module on the part of BIG-IP that the modules
 manipulates. (A good rule of thumb is to refer to the API being used in the
@@ -74,19 +75,19 @@ import fails.
 f5-sdk
 """"""
 
-```python
-try:
-    from f5.bigip import ManagementRoot
-    from f5.bigip.contexts import TransactionContextManager
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+.. code-block:: python
 
-def main():
+   try:
+       from f5.bigip import ManagementRoot
+       from f5.bigip.contexts import TransactionContextManager
+       HAS_F5SDK = True
+   except ImportError:
+       HAS_F5SDK = False
 
-    if not HAS_F5SDK:
-        module.fail_json(msg='f5-sdk required for this module')
-```
+   def main():
+
+      if not HAS_F5SDK:
+         module.fail_json(msg='f5-sdk required for this module')
 
 Connecting to a BIG-IP
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -94,24 +95,24 @@ Connecting to a BIG-IP
 To connect to a BIG-IP, you should use the instantiate a `ManagementRoot`
 object, providing the credentials and options you wish to use for connecting.
 
-#### REST
+REST
+""""
 
 An example of connecting to big-ip01.internal is shown below.
 
-```python
+.. code-block:: python
 
-from f5.bigip import ManagementRoot
-from f5.bigip.contexts import TransactionContextManager
+   from f5.bigip import ManagementRoot
+   from f5.bigip.contexts import TransactionContextManager
 
-mr = ManagementRoot("localhost", "admin", "admin", port='10443')
-tx = mr.tm.transactions.transaction
+   mr = ManagementRoot("localhost", "admin", "admin", port='10443')
+   tx = mr.tm.transactions.transaction
 
-with TransactionContextManager(tx) as api:
-    virt = api.tm.ltm.virtuals.virtual.load(name='asdf')
-    tcp = virt.profiles_s.profiles.load(name='tcp')
-    tcp.delete()
-    virt.profiles_s.profiles.create(name='wom-tcp-wan-optimized')
-```
+   with TransactionContextManager(tx) as api:
+       virt = api.tm.ltm.virtuals.virtual.load(name='asdf')
+       tcp = virt.profiles_s.profiles.load(name='tcp')
+       tcp.delete()
+       virt.profiles_s.profiles.create(name='wom-tcp-wan-optimized')
 
 Exception Handling
 ^^^^^^^^^^^^^^^^^^
@@ -123,22 +124,22 @@ with the error message will suffice.
 For raising exceptions you can include the exception class provided with
 the f5-sdk. It can be used as such.
 
-```python
-try:
-    from f5.sdk_exception import F5SDKError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+.. code-block:: python
 
-# Connect to BIG-IP
-...
+   try:
+       from f5.sdk_exception import F5SDKError
+       HAS_F5SDK = True
+   except ImportError:
+       HAS_F5SDK = False
 
-# Make a call to BIG-IP
-try:
-    result = api.tm.ltm.pools.pool.create(foo='bar')
-except F5SDKError, e:
-    module.fail_json(msg=e.message)
-```
+   # Connect to BIG-IP
+   ...
+
+   # Make a call to BIG-IP
+   try:
+       result = api.tm.ltm.pools.pool.create(foo='bar')
+   except F5SDKError, e:
+       module.fail_json(msg=e.message)
 
 Helper functions
 ^^^^^^^^^^^^^^^^

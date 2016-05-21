@@ -65,6 +65,7 @@ The parameters to your modules in the Roles and Playbooks that are developed
 here must be in alphabetic order.
 
 **GOOD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -73,7 +74,9 @@ here must be in alphabetic order.
          beta: "bar"
          gamma: "baz"
 
+
 **BAD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -93,6 +96,7 @@ a value that is a string, it should be represented as a string using double
 quotes.
 
 **GOOD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -100,7 +104,9 @@ quotes.
          alpha: "foo"
          beta: "bar"
 
+
 **BAD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -114,6 +120,7 @@ provide it with a number wrapped in quotes
 
 
 **GOOD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -121,7 +128,9 @@ provide it with a number wrapped in quotes
          alpha: 1
          beta: 100
 
+
 **BAD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -137,6 +146,7 @@ be a part of your own YAML files.
 
 
 **GOOD**
+
 .. code-block:: yaml
 
    ---
@@ -146,7 +156,9 @@ be a part of your own YAML files.
          alpha: 1
          beta: 100
 
+
 **BAD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -164,6 +176,7 @@ name for you using the module call itself.
 Naming your tasks allows you to quickly reference where a failure occurred.
 
 **GOOD**
+
 .. code-block:: yaml
 
    - name: My task
@@ -171,7 +184,9 @@ Naming your tasks allows you to quickly reference where a failure occurred.
          alpha: 1
          beta: 100
 
+
 **BAD**
+
 .. code-block:: yaml
 
    - bigip_module:
@@ -189,6 +204,7 @@ Good documentation is essential to people being able to use the module
 so it must be included.
 
 **GOOD**
+
 .. code-block:: python
 
    DOCUMENTATION = '''
@@ -202,7 +218,9 @@ so it must be included.
    ...
    '''
 
+
 **BAD**
+
   Missing DOCUMENTATION field
 
 
@@ -214,12 +232,15 @@ the module over time, so it is a good idea to make the ``author`` keyword
 in your module a list.
 
 **GOOD**
+
 .. code-block:: yaml
 
    author:
      - Tim Rupp (@caphrim007)
 
+
 **BAD**
+
 .. code-block:: yaml
 
    author: Tim Rupp (@caphrim007)
@@ -233,9 +254,12 @@ maintenance reasons we require your Github handle. Additionally, your
 email address may change over time.
 
 **GOOD**
+
   - Tim Rupp (@caphrim007)
 
+
 **BAD**
+
   - Tim Rupp <caphrim007@gmail.com>
 
 
@@ -246,9 +270,12 @@ This is a simple spacing standard to ensure that everything is properly
 spaced over.
 
 **GOOD**
+
   - "foo"
 
+
 **BAD**
+
     - "foo"
 
 All modules must support check mode
