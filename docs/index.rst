@@ -49,7 +49,7 @@ The main documentation for the modules is organized into a couple sections:
    :caption: Developer Documentation
 
    development/install
-   development/contribute
+   development/guidelines
    development/tests
    development/architecture
    development/standards
