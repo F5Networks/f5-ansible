@@ -2,17 +2,25 @@
 
 # Test the bigip_user module
 #
-# This playbook can be used to test the bigip_user module.
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_user module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i inventory/hosts tests/bigip_user.yaml [OPTIONS]:
+#    ansible-playbook -i notahost, tests/bigip_user.yaml
 #
 # Examples:
 #
-#    Run all of the tests
+#    Run all tests on the bigip_user module
 #
-#    ansible-playbook -i inventory/hosts test/bigip_user.yaml
+#    ansible-playbook -i notahost, tests/bigip_user.yaml
+#
+# Tested platforms:
+#
+#    - NA
 #
 
 - name: Test the bigip_user module
