@@ -65,7 +65,7 @@ options:
   state:
     description:
       - When C(present), will ensure that the View exists with the correct
-      zones in it. When C(absent), removes the View.
+        zones in it. When C(absent), removes the View.
     required: false
     default: present
     choices:
@@ -81,7 +81,7 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Create a view "foo.local"
+- name: Create a view foo.local
   local_action:
       module: "bigip_view"
       user: "admin"
@@ -96,9 +96,6 @@ EXAMPLES = '''
       name: "foo.local"
       zones:
           - "bar"
-'''
-
-RETURN = '''
 '''
 
 
