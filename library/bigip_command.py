@@ -21,18 +21,18 @@ DOCUMENTATION = '''
 module: bigip_command
 short_description: Run commands on a BIG-IP via tmsh
 description:
-   - Run commands on a BIG-IP via tmsh. This module is similar to the ansible
-     C(command) module, but specifically supports all BIG-IPs via the paramiko
-     python extension. For some operations on the BIG-IP, there is not a SOAP
-     or REST endpoint that is available and the operation can only be accomplished
-     via C(tmsh). The Ansible C(command) module should be able to perform this,
-     however, older releases of BIG-IP do not have sufficient python versions
-     to support Ansible. By using this module, there is no need for python to
-     exist on the remote BIG-IP. Additionally, this module can detect the presence
-     of Appliance Mode on a BIG-IP and adjust the provided command to take this
-     feature into account. Finally, the output of this module provides more
-     Ansible-friendly data formats than could be accomplished by the C(command)
-     module alone.
+  - Run commands on a BIG-IP via tmsh. This module is similar to the ansible
+    C(command) module, but specifically supports all BIG-IPs via the paramiko
+    python extension. For some operations on the BIG-IP, there is not a SOAP
+    or REST endpoint that is available and the operation can only be accomplished
+    via C(tmsh). The Ansible C(command) module should be able to perform this,
+    however, older releases of BIG-IP do not have sufficient python versions
+    to support Ansible. By using this module, there is no need for python to
+    exist on the remote BIG-IP. Additionally, this module can detect the presence
+    of Appliance Mode on a BIG-IP and adjust the provided command to take this
+    feature into account. Finally, the output of this module provides more
+    Ansible-friendly data formats than could be accomplished by the C(command)
+    module alone.
 version_added: "2.0"
 options:
   server:
@@ -57,14 +57,14 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-   - Requires the paramiko Python package on the ansible host. This is as easy
-     as pip install paramiko
-
-requirements: [ "paramiko", "requests" ]
+  - Requires the paramiko Python package on the ansible host. This is as easy
+    as pip install paramiko
+requirements:
+  - paramiko
+  - requests
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
