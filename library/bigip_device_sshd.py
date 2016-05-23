@@ -127,18 +127,23 @@ EXAMPLES = '''
 
 try:
     from f5.bigip import ManagementRoot
-    from f5.sdk_exception import F5SDKError
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
 
 CHOICES = ['enabled', 'disabled']
+LEVELS = ['debug', 'debug1', 'debug2', 'debug3', 'error', 'fatal', 'info',
+          'quiet', 'verbose']
+
+
+class F5ModuleError(Exception):
+    pass
 
 
 class BigIpDeviceSshd(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
-            raise F5SDKError("The python f5-sdk module is required")
+            raise F5ModuleError("The python f5-sdk module is required")
 
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
@@ -195,16 +200,15 @@ class BigIpDeviceSshd(object):
         if self.params['check_mode']:
             return changed
 
+        print self.params
+        import sys; sys.exit()
         r = self.api.tm.sys.sshd.load()
         r.update(**self.params)
 
-        if self.exists():
-            return True
-        else:
-            raise F5SDKError("Failed to set the hostname")
+        return True
 
     def read(self):
-        r = self.api.sys.sshd.load()
+        r = self.api.tm.sys.sshd.load()
         return r
 
     def flush(self):
@@ -240,7 +244,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5SDKError as e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
