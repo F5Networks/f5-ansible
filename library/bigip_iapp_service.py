@@ -16,6 +16,36 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+DOCUMENTATION = '''
+---
+module: bigip_dns_record_facts
+short_description: foo
+description:
+  - foo
+version_added: "2.2"
+options:
+  server:
+    description:
+      - BIG-IP host
+    required: true
+  user:
+    description:
+      - BIG-IP username
+    required: true
+    aliases:
+      - username
+  password:
+    description:
+      - BIG-IP password
+    required: true
+notes:
+  - Requires the f5-sdk Python package on the remote host. This is as easy as
+    pip install f5-sdk
+requirements:
+  - f5-sdk
+author:
+    - Tim Rupp (@caphrim007)
+'''
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
