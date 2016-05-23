@@ -87,7 +87,7 @@ description:
     description: Descriptive text that identifies the route domain
     returned: changed
     type: string
-    sample: "The foo route domain
+    sample: "The foo route domain"
 evict_policy:
     description: Eviction policy to use with this route domain
     returned: changed
