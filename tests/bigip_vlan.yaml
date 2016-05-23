@@ -14,7 +14,7 @@
 #
 # Examples:
 #
-#    Run all tests on the bigip_software module
+#    Run all tests on the bigip_vlan module
 #
 #    ansible-playbook -i notahost, tests/bigip_vlan.yaml
 #
@@ -27,39 +27,5 @@
   hosts: f5-test
   connection: local
 
-  vars:
-      bigip_username: "admin"
-      bigip_password: "admin"
-      validate_certs: "no"
-      vlan_name: "foo"
-      vlan_name_2: "foo2"
-      route_domain: "foo-route"
-
-  tasks:
-      - name: Create VLAN
-        bigip_vlan:
-            server: "{{ inventory_hostname }}"
-            user: "{{ bigip_username }}"
-            password: "{{ bigip_password }}"
-            validate_certs: "{{ validate_certs }}"
-            name: "{{ vlan_name }}"
-        register: result
-
-      - name: Assert Create VLAN
-        assert:
-            that:
-                - result|changed
-
-      - name: Create VLAN - Idempotent check
-        bigip_vlan:
-            server: "{{ inventory_hostname }}"
-            user: "{{ bigip_username }}"
-            password: "{{ bigip_password }}"
-            validate_certs: "{{ validate_certs }}"
-            name: "{{ vlan_name }}"
-        register: result
-
-      - name: Assert Create VLAN - Idempotent check
-        assert:
-            that:
-                - not result|changed
+  roles:
+      - __bigip_vlan
