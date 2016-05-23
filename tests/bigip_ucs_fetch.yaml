@@ -1,170 +1,31 @@
-# Test the bigip_software module
+---
+
+# Test the bigip_ucs_fetch module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
-# This playbook additionally defines a number of variables in its vars:
-# section that may need to be changed to be relevant to your environment.
-# These changes can be made either at runtime with the -e argument, or
-# statically specified in the playbook itself.
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_ucs_fetch module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_software.yaml
+#    ansible-playbook -i notahost, tests/bigip_ucs_fetch.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_software module with the default parameters
+#    Run all tests on the bigip_ucs_fetch module
 #
-#    ansible-playbook -i notahost, tests/bigip_software.yaml
+#    ansible-playbook -i notahost, tests/bigip_ucs_fetch.yaml
 #
-# Ansible arguments:
+# Tested platforms:
 #
-#    bigip_username      The name of the user to authenticate to the BIG-IP as
-#                        (default: admin)
-#
-#    bigip_password      The password of the user used to authenticate to the
-#                        BIG-IP
-#                        (default: admin)
-#
-#    validate_certs      Sets or unsets the option to the BIG-IP modules to
-#                        validate certificates when speaking to the BIG-IP APIs
-#                        (default: no)
-#
-#    ucs_name            The name of the UCS file to create when downloading
-#                        (default: foo.ucs)
-#
-#    ucs_missing         The name of a UCS file that should not exist on the
-#                        BIG-IP
-#                        (default: foo2.ucs)
+#    - NA
 #
 
 - name: Test the bigip_ucs_fetch module
   hosts: f5-test
-  gather_facts: true
   connection: local
 
-  vars:
-      bigip_username: "admin"
-      bigip_password: "admin"
-      validate_certs: "no"
-      ucs_name: foo.ucs
-      ucs_missing: foo2.ucs
-
-  tasks:
-      - name: Create a UCS
-        bigip_ucs_fetch:
-            dest: "/tmp/{{ ucs_name }}"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_name }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Create a UCS
-        assert:
-            that:
-                - result|changed
-
-      - name: Create the same UCS, default force
-        bigip_ucs_fetch:
-            dest: "/tmp/{{ ucs_name }}"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_name }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Create the same UCS, default force
-        assert:
-            that:
-                - result|changed
-
-      - name: Create a UCS, do not force
-        bigip_ucs_fetch:
-            dest: "/tmp/{{ ucs_name }}"
-            force: "no"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_name }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Create a UCS, do not force
-        assert:
-            that:
-                - not result|changed
-
-      - name: Create a UCS, leave a backup
-        bigip_ucs_fetch:
-            backup: "yes"
-            dest: "/tmp/{{ ucs_name }}"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_name }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Create a UCS, leave a backup
-        assert:
-            that:
-                - result|changed
-                - "'backup_file' in result"
-
-      - name: Remove backup UCS
-        file:
-            path: "{{ result['backup_file'] }}"
-            state: "absent"
-
-      - name: Fetch a missing UCS
-        bigip_ucs_fetch:
-            create_on_missing: "no"
-            dest: "/tmp/{{ ucs_missing }}"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_missing }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Fetch a missing UCS
-        assert:
-            that:
-                - not result|changed
-
-      - name: Error on fetching a missing UCS
-        bigip_ucs_fetch:
-            fail_on_missing: "yes"
-            dest: "/tmp/{{ ucs_missing }}"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_missing }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        ignore_errors: true
-        register: result
-
-      - name: Assert Error on fetching a missing UCS
-        assert:
-            that:
-                - not result|changed
-
-      - name: Create a UCS with encryption password
-        bigip_ucs_fetch:
-            dest: "/tmp/{{ ucs_missing }}"
-            encryption_password: "admin"
-            password: "{{ bigip_password }}"
-            server: "{{ inventory_hostname }}"
-            src: "{{ ucs_missing }}"
-            user: "{{ bigip_username }}"
-            validate_certs: "{{ validate_certs }}"
-        register: result
-
-      - name: Assert Create a UCS with encryption password
-        assert:
-            that:
-                - result|changed
+  roles:
+      - __bigip_ucs_fetch
