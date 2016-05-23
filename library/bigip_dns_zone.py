@@ -37,11 +37,6 @@ options:
       - username
   password:
     description:
-      - The password used to authenticate with
-    required: true
-    default: admin
-  password:
-    description:
       - BIG-IP password
     required: true
   zone:
