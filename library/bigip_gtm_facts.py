@@ -31,7 +31,6 @@ notes:
     - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
     - "Best run as a local_action in your playbook"
     - "Tested with manager and above account privilege level"
-
 requirements:
     - bigsuds
     - re
