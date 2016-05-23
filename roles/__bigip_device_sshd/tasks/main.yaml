@@ -1,9 +1,46 @@
 ---
 
-- name: Set the SSHD allow string
+- name: Set the SSHD allow string to a specific IP
   bigip_device_sshd:
+      allow: "{{ allow[0] }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to a specific IP
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD allow string to deny all
+  bigip_device_sshd:
+      allow: "{{ allow[1] }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to deny all
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD allow string to allow all
+  bigip_device_sshd:
+      allow: "{{ allow[2] }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to allow all
+  assert:
+      that:
+          - result|changed

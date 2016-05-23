@@ -1,10 +1,25 @@
 ---
 
-allow: "ALL"
+allow:
+    - "192.168.10.10"
+    - "::"
+    - "ALL"
 banner_file: "banner.txt"
 banner_string: "banner foo"
-inactivity_timeout: 10
-log_level: "debug"
+inactivity_timeout_good: 10
+inactivity_timeout_bad:
+    - "ASDASD"
+    - 999999999999999999999
+log_level:
+    - "debug"
+    - "debug1"
+    - "debug2"
+    - "debug3"
+    - "error"
+    - "fatal"
+    - "info"
+    - "quiet"
+    - "verbose"
 login:
     - "disabled"
     - "enabled"
