@@ -73,7 +73,7 @@ notes:
 requirements:
     - f5-sdk
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+    - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -120,10 +120,6 @@ PROTOCOL_MAP = {
 STRICTS = ['enabled', 'disabled']
 
 
-class F5ModuleError(Exception):
-    pass
-
-
 class BigIpRouteDomain(object):
     def __init__(self, *args, **kwargs):
         if not f5sdk_found:
@@ -168,36 +164,43 @@ class BigIpRouteDomain(object):
     def create(self):
         config = dict()
         config['id'] = self.params['id']
+
         if self.params['description'] is not None:
             config['description'] = self.params['description']
+
         if self.params['strict'] is not None:
             config['strict'] = self.params['strict']
+
         if self.params['parent'] is not None:
             parent = '%s/%s' % (self.params['partition'],
                                 self.params['parent'])
             config['parent'] = parent
+
         if self.params['bwc_policy'] is not None:
             policy = '%s/%s' % (self.params['partition'],
                                 self.params['bwc_policy'])
             config['bwcPolicy'] = policy
+
         if self.params['vlans'] is not None:
             configs['vlans'] = []
             for vlan in self.params['vlans']:
-                vname = '%s/%s' % (self.params['partition'],
-                                   vlan)
+                vname = '%s/%s' % (self.params['partition'], vlan)
                 configs['vlans'].append(vname)
+
         if self.params['routing_protocol'] is not None:
             configs['routingProtocol'] = []
             for rp in self.params['routing_protocol']:
-                rp_name = '%s/%s' % (self.params['partition'],
-                                     rp)
+                rp_name = '%s/%s' % (self.params['partition'], rp)
                 configs['routingProtocol'].append(rp_name)
+
         if self.params['connection_limit'] is not None:
             config['connectionLimit'] = self.params['connection_limit']
+
         if self.params['flow_eviction_policy'] is not None:
             policy = '%s/%s' % (self.params['partition'],
                                 self.params['flow_eviction_policy'])
             config['flowEvictionPolicy'] = policy
+
         if self.params['service_policy'] is not None:
             policy = '%s/%s' % (self.params['partition'],
                                 self.params['service_policy'])
@@ -207,6 +210,7 @@ class BigIpRouteDomain(object):
         exists = self.api.net.route_domains.route_domain.exists(
             name=self.params['name']
         )
+
         if exists:
             return True
         else:
