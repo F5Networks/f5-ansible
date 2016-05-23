@@ -14,10 +14,15 @@ enhancement requests using [Github Issues](https://github.com/F5Networks/f5-ansi
 ### Requirements
 
 * Advanced shell for user account enabled
-* [bigsuds Python Client 1.0.4 or later] [bigsuds]
+* [bigsuds Python Client 1.0.4 or later][bigsuds]
+* [f5-sdk Python Client, latest available][f5-sdk]
 
-[bigsuds]: https://pypi.python.org/pypi/bigsuds/
+### Documentation
 
+All documentation is hosted on [ReadTheDocs][readthedocs].
+
+When [writing new modules][writingnew], please refer to the
+[Guidelines][guidelines] document.
 
 ### Purpose
 
@@ -29,9 +34,9 @@ or refactoring
 
 ### Your ideas
 
-I'm curious to know what sort of modules you want to see created. If you have
+We are curious to know what sort of modules you want to see created. If you have
 a use case and can sufficiently describe the behavior you want to see, open
-an issue in this repository and we will hammer out the details.
+an issue here and we will hammer out the details.
 
 ### Support
 
@@ -39,46 +44,9 @@ The code provided in this repository should be considered F5 contributed, and
 not F5 supported. If you are familiar with similar verbiage on DevCentral, then
 you are familiar with what it means here.
 
-#### Deprecated modules
 
-Modules incubating in this repository will, over time, be considered for inclusion
-in Ansible itself (where interest to have them exists). When a module is merged
-upstream, the associated module in this repository will be renamed to an
-underscore module.
-
-  * bigip_user.py
-
-becomes
-
-  * _bigip_user.py
-
-This is inline with Ansible's documentation [here] [deprecation].
-
-When a module is deprecated, it will have been upstreamed into the core
-Ansible product. From that point forward, the module will be maintained
-in Ansible's github repository.
-
-At that time, please open bugs and other issues by visiting Ansible's github
-issue tracker.
-
-Changes may still take place in the deprecated modules in this repository,
-but it will be only for research and experimentation purposes.
-
-[deprecation]: http://docs.ansible.com/ansible/developing_modules.html#deprecating-and-making-module-aliases
-
-#### Support
-
-I provide best effort support through this forum, but if you are interested in
-more eyes capable of addressing your problem, I recommend asking on the 
-[Ansible mailing list] [mlist]. There are F5'ers and DevCentral community
-members who are subscribed to that list who can assist you with questions and
-bugs.
-
-Feel free to open bugs on this issue tracker for non-deprecated modules.
-
-[mlist]: https://groups.google.com/forum/#!forum/Ansible-project
-
-#### Testing
-
-This repository will continue to be a place where code is tested and validated
-when changes are made in upstream Ansible or locally here.
+[bigsuds]: https://pypi.python.org/pypi/bigsuds/
+[f5-sdk]: https://pypi.python.org/pypi/f5-sdk/
+[readthedocs]: https://f5-ansible.readthedocs.io/en/latest/
+[guidelines]: https://f5-ansible.readthedocs.io/en/latest/development/guidelines.html
+[writingnew]: https://f5-ansible.readthedocs.io/en/latest/development/writing-a-module.html
