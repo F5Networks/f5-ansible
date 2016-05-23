@@ -55,3 +55,4 @@ The main documentation for the modules is organized into a couple sections:
    development/standards
    development/buildenvironments
    development/upstreaming
+   development/writing-a-module
