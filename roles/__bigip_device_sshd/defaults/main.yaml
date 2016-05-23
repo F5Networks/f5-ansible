@@ -1,0 +1,16 @@
+---
+
+allow: "ALL"
+banner_file: "banner.txt"
+banner_string: "banner foo"
+inactivity_timeout: 10
+log_level: "debug"
+login:
+    - "disabled"
+    - "enabled"
+port_good:
+    - 22
+    - 1234
+port_bad:
+    - 70000
+    - "Aasdad"

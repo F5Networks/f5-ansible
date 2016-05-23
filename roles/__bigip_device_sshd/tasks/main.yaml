@@ -1,0 +1,9 @@
+---
+
+- name: Set the SSHD allow string
+  bigip_device_sshd:
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
