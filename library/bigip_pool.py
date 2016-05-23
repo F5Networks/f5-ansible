@@ -35,8 +35,8 @@ options:
   server:
     description:
       - BIG-IP host
-  required: true
-  default: null
+    required: true
+    default: null
   user:
     description:
       - BIG-IP username
@@ -58,7 +58,7 @@ options:
     choices:
       - yes
       - no
-    version_added: 2.0
+    version_added: "2.0"
   state:
     description:
       - Pool/pool member state
