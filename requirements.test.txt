@@ -1,3 +1,6 @@
 paramiko
 bigsuds
 requests
+f5-sdk
+pytest
+flake8
