@@ -193,10 +193,10 @@ Naming your tasks allows you to quickly reference where a failure occurred.
          alpha: "1"
          beta: "100"
 
-All modules must have a DOCUMENTATION preamble
+All modules must have a DOCUMENTATION variable
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The DOCUMENTATION preamble is also required by Ansible upstream as it
+The DOCUMENTATION variable is also required by Ansible upstream as it
 serves as the source of the module documentation that is generated
 on their site.
 
@@ -223,8 +223,80 @@ so it must be included.
 
 .. code-block:: python
 
-   Missing DOCUMENTATION field
+   Missing DOCUMENTATION variable
 
+
+All modules must have an EXAMPLES variable
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Useful and valid examples are crucial for people new to Ansible and to
+the module itself.
+
+When providing examples, be mindful of what you provide. If you developed
+the module with a specific use case in mind, be sure to include that use
+case. It may be applicable to a large majority of users and, therefore, may
+eliminate a significant portion of their time that they would otherwise
+spend figuring out what is or is not needed.
+
+**GOOD**
+
+.. code-block:: python
+
+   EXAMPLES = '''
+   - name: Set the banner for the SSHD service from a string
+     bigip_device_sshd:
+         banner: "enabled"
+         banner_text: "banner text goes here"
+         password: "admin"
+         server: "bigip.localhost.localdomain"
+         user: "admin"
+     delegate_to: localhost
+   '''
+
+
+**BAD**
+
+.. code-block:: python
+
+   Missing EXAMPLES variable
+
+All modules must have a RETURN variable
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The RETURN variable provides documentation essential to determining what, if
+any, information is returned by the operation of the module.
+
+End users of the module will reference this documentation when they want to
+use the ``register`` keyword.
+
+**GOOD**
+
+.. code-block:: python
+
+   RETURN = '''
+   full_name:
+       description: Full name of the user
+       returned: changed and success
+       type: string
+       sample: "John Doe"
+   '''
+
+
+**BAD**
+
+.. code-block:: python
+
+   Missing RETURN variable
+
+
+If your module does not return any information, then an empty YAML string
+is sufficient
+
+**GOOD**
+
+..code-block:: python
+
+  RETURN = '''# '''
 
 The author field must be a list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -301,6 +373,71 @@ spaced over.
            required: true
        user:
    ^^^^
+
+Use ansible lookup plugins where appropriate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ansible provides existing facilities that can be used to read in file contents
+to a module's parameters.
+
+If your module can accept a string or a file containing a string, then assume
+that users will be using the lookup plugins.
+
+For example, SSL files are typically strings. SSH keys are also strings even
+if they are contained in a file. Therefore, you would delegate the fetching
+of the string data to a lookup plugin.
+
+There should be no need to use the python ``open`` facility to read in the
+file.
+
+**GOOD**
+
+.. code-block:: yaml
+
+   some_module:
+       string_param: "{{ lookup('file', '/path/to/file') }}"
+
+
+**BAD**
+
+.. code-block:: yaml
+
+    some_module:
+        param: "/path/to/file"
+
+
+Always expand lists in the various documentation variables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When listing examples or documentation in any of the following variables,
+
+  * DOCUMENTATION
+  * RETURN
+  * EXAMPLES
+
+be sure to always expand lists of values if that key takes a list value.
+
+**GOOD**
+
+.. code-block:: yaml
+
+   options:
+     state:
+       description:
+         - The state of things
+       choices:
+         - present
+         - absent
+
+
+**BAD**
+
+   options:
+     state:
+       description:
+         - The state of things
+       choices: ['enabled', 'disabled']
+
 
 All modules must support check mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
