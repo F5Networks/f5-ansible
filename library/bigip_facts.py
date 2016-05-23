@@ -34,61 +34,50 @@ requirements:
   - bigsuds
 options:
   server:
-        description:
-            - BIG-IP host
-        required: true
-        default: null
-        choices: []
-        aliases: []
-    user:
-        description:
-            - BIG-IP username
-        required: true
-        default: null
-        choices: []
-        aliases: []
-    password:
-        description:
-            - BIG-IP password
-        required: true
-        default: null
-        choices: []
-        aliases: []
-    validate_certs:
-        description:
-            - If C(no), SSL certificates will not be validated. This should only be used
-              on personally controlled sites.  Prior to 2.0, this module would always
-              validate on python >= 2.7.9 and never validate on python <= 2.7.8
-        required: false
-        default: 'yes'
-        choices: ['yes', 'no']
-        version_added: 2.0
-    session:
-        description:
-            - BIG-IP session support; may be useful to avoid concurrency
-              issues in certain circumstances.
-        required: false
-        default: true
-        choices: []
-        aliases: []
-    include:
-        description:
-            - Fact category or list of categories to collect
-        required: true
-        default: null
-        choices: ['address_class', 'certificate', 'client_ssl_profile',
-                  'device', 'device_group', 'interface', 'key', 'node', 'pool',
-                  'rule', 'self_ip', 'software', 'system_info', 'traffic_group',
-                  'trunk', 'virtual_address', 'virtual_server', 'vlan']
-        aliases: []
-    filter:
-        description:
-            - Shell-style glob matching string used to filter fact keys. Not
-              applicable for software and system_info fact categories.
-        required: false
-        default: null
-        choices: []
-        aliases: []
+    description:
+      - BIG-IP host
+    required: true
+    default: null
+  user:
+    description:
+      - BIG-IP username
+    required: true
+    default: null
+  password:
+    description:
+      - BIG-IP password
+    required: true
+    default: null
+  validate_certs:
+    description:
+      - If C(no), SSL certificates will not be validated. This should only be used
+        on personally controlled sites.  Prior to 2.0, this module would always
+        validate on python >= 2.7.9 and never validate on python <= 2.7.8
+    required: false
+    default: 'yes'
+    choices: ['yes', 'no']
+    version_added: 2.0
+  session:
+    description:
+      - BIG-IP session support; may be useful to avoid concurrency
+        issues in certain circumstances.
+    required: false
+    default: true
+  include:
+    description:
+      - Fact category or list of categories to collect
+    required: true
+    default: null
+    choices: ['address_class', 'certificate', 'client_ssl_profile',
+              'device', 'device_group', 'interface', 'key', 'node', 'pool',
+              'rule', 'self_ip', 'software', 'system_info', 'traffic_group',
+              'trunk', 'virtual_address', 'virtual_server', 'vlan']
+  filter:
+    description:
+      - Shell-style glob matching string used to filter fact keys. Not
+        applicable for software and system_info fact categories.
+    required: false
+    default: null
 '''
 
 EXAMPLES = '''
