@@ -150,30 +150,53 @@ class BigIpDeviceSshd(object):
         changed = False
         current = self.read()
 
+        if self.params['allow']:
+            if self.params['allow'] != current['allow']:
+                changed = True
+        else:
+            del self.params['allow']
+
         if self.params['banner']:
             if self.params['banner'] != current['banner']:
                 changed = True
+        else:
+            del self.params['banner']
+
         if self.params['banner_text']:
             if self.params['banner_text'] != current['banner_text']:
                 changed = True
+        else:
+            del self.params['banner_text']
+
         if self.params['inactivity_timeout']:
             if self.params['inactivity_timeout'] != current['inactivity_timeout']:
                 changed = True
+        else:
+            del self.params['inactivity_timeout']
+
         if self.params['log_level']:
             if self.params['log_level'] != current['log_level']:
                 changed = True
+        else:
+            del self.params['log_level']
+
         if self.params['login']:
             if self.params['login'] != current['login']:
                 changed = True
+        else:
+            del self.params['login']
+
         if self.params['port']:
             if self.params['port'] != current['port']:
                 changed = True
+        else:
+            del self.params['port']
 
         if self.params['check_mode']:
             return changed
 
         r = self.api.tm.sys.sshd.load()
-        r.update(hostname=self.params['hostname'])
+        r.update(**self.params)
 
         if self.exists():
             return True
@@ -197,6 +220,7 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
+        allow=dict(required=False, default=None),
         banner=dict(required=False, default=None, choices=CHOICES),
         banner_text=dict(required=False, default=None),
         inactivity_timeout=dict(required=False, default=None, type='int'),
