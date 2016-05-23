@@ -1,15 +1,10 @@
-# NOTE:
-# 
-# You need to install these packages on Ubunutu 12.04 to make this work:
-# 
-#     sudo apt-get install -y make python-stdeb fakeroot python-all rpm pep8 pylint
-# 
-#
+#vim: set tabstop=8:softtabstop=8:shiftwidth=8:noexpandtab
 
 DOCTEST := python ../scripts/ansible-doc-test.py
-MODULE_DIR := .
 PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
+
+.PHONY: docs flake8
 
 all-tests: flake8 ansible-doc
 
@@ -17,39 +12,43 @@ all-tests-dev: flake8 ansible-doc ansible-doc-dev
 
 pylint: pylint-modules
 
+docs:
+	rm docs/modules/*
+	python scripts/module_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/
+
 flake8:
 	flake8 library
 
 ansible-doc:
 	(cd library; \
-		$(DOCTEST) -M $(MODULE_DIR) bigip_command.py; \
-		$(DOCTEST) -M $(MODULE_DIR) bigip_device_dns.py; \
-$(DOCTEST) -M $(MODULE_DIR) bigip_device_ntp.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns_facts.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_dns_zone.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_gtm_datacenter.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_hostname.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_iapp_service.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_iapp_template.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_irule.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_license.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_partition.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_provision.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_selfip.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_service.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_software.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_sysdb.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_ucs_fetch.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_ucs.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_user_facts.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_user.py; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_vlan.py; \
+		$(DOCTEST) -M . bigip_command.py; \
+		$(DOCTEST) -M . bigip_device_dns.py; \
+		$(DOCTEST) -M . bigip_device_ntp.py; \
+		$(DOCTEST) -M . bigip_dns_facts.py; \
+		$(DOCTEST) -M . bigip_dns.py; \
+		$(DOCTEST) -M . bigip_dns_zone.py; \
+		$(DOCTEST) -M . bigip_gtm_datacenter.py; \
+		$(DOCTEST) -M . bigip_hostname.py; \
+		$(DOCTEST) -M . bigip_iapp_service.py; \
+		$(DOCTEST) -M . bigip_iapp_template.py; \
+		$(DOCTEST) -M . bigip_irule.py; \
+		$(DOCTEST) -M . bigip_license.py; \
+		$(DOCTEST) -M . bigip_partition.py; \
+		$(DOCTEST) -M . bigip_provision.py; \
+		$(DOCTEST) -M . bigip_selfip.py; \
+		$(DOCTEST) -M . bigip_service.py; \
+		$(DOCTEST) -M . bigip_software.py; \
+		$(DOCTEST) -M . bigip_sysdb.py; \
+		$(DOCTEST) -M . bigip_ucs_fetch.py; \
+		$(DOCTEST) -M . bigip_ucs.py; \
+		$(DOCTEST) -M . bigip_user_facts.py; \
+		$(DOCTEST) -M . bigip_user.py; \
+		$(DOCTEST) -M . bigip_vlan.py; \
 	)
 
 ansible-doc-dev:
 	(cd library; \
-	 $(DOCTEST) -M $(MODULE_DIR) bigip_qkview_facts.py; \
+		$(DOCTEST) -M . bigip_qkview_facts.py; \
 	)
 
 pylint-modules:
