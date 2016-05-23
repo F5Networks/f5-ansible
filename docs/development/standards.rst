@@ -432,6 +432,8 @@ be sure to always expand lists of values if that key takes a list value.
 
 **BAD**
 
+.. code-block:: yaml
+
    options:
      state:
        description:
