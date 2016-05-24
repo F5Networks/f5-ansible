@@ -43,7 +43,9 @@ options:
         the record.
     required: false
     default: present
-    choices: [ "present", "absent" ]
+    choices:
+      - present
+      - absent
 notes:
   - Requires the bigsuds Python package on the remote host. This is as easy as
     pip install bigsuds
@@ -83,8 +85,9 @@ EXAMPLES = '''
           ip_address: "10.1.1.1"
 '''
 
-import re
 from distutils.version import StrictVersion
+import re
+
 
 VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 RECORDS = [
@@ -199,7 +202,7 @@ class AResourceRecord(ResourceRecord):
                 a_records=records,
                 sync_ptrs=[1]
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -257,7 +260,7 @@ class DnameResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 dname_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -283,7 +286,7 @@ class DsResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 ds_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -305,7 +308,7 @@ class HinfoResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 hinfo_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -327,7 +330,7 @@ class MxResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 mx_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -356,7 +359,7 @@ class NaptrResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 naptr_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -377,7 +380,7 @@ class NsResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 ns_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -398,7 +401,7 @@ class PtrResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 ptr_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -426,7 +429,7 @@ class SoaResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 soa_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -450,7 +453,7 @@ class SrvResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 srv_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -471,7 +474,7 @@ class TxtResourceRecord(ResourceRecord):
                 view_zones=self.view_zones,
                 txt_records=records
             )
-        except Exception, e:
+        except Exception as e:
             raise ResourceRecordException(str(e))
 
 
@@ -499,7 +502,7 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
-    except bigsuds.ServerError, e:
+    except bigsuds.ServerError as e:
         if 'folder not found' in str(e):
             module.fail_json(msg="Partition not found")
         else:
@@ -515,7 +518,7 @@ def main():
             changed = True
         elif state == "absent":
             record.delete_record()
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)

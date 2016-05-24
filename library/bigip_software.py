@@ -31,8 +31,8 @@ options:
         exist. Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
       - If C(yes) with C(reuse_inactive_volume) is specified and C(volume) is
-        not specified, Software will be installed / activated regardless of current
-        running version to a new or an existing volume.
+        not specified, Software will be installed / activated regardless of
+        current running version to a new or an existing volume.
     required: false
     default: no
     choices:
@@ -222,12 +222,12 @@ EXAMPLES = '''
 '''
 
 import base64
-import socket
-import os
-import time
-import io
-import struct
 import datetime
+import io
+import os
+import socket
+import struct
+import time
 
 from lxml import etree
 
@@ -645,7 +645,7 @@ class BigIpSoapApi(BigIpCommon):
                 _active_volume = active_volume.split('.')
                 _active_volume[-1] = str(int(_active_volume[-1]) + 1)
                 target_volume = '.'.join(_active_volume)
-            except:
+            except Exception:
                 target_volume = active_volume + '.1'
 
         if delete_target:
@@ -793,7 +793,7 @@ class BigIpSoapApi(BigIpCommon):
                 volumes = [x['installation_id']['install_volume'] for x in status if x['active']]
                 if volume in volumes:
                     break
-            except:
+            except Exception:
                 # Handle all exceptions because if the system is offline (for a
                 # reboot) the SOAP client will raise exceptions about connections
                 pass
@@ -1112,7 +1112,7 @@ def main():
         module.fail_json(msg='You must specify a volume')
     except NoBaseImageError:
         module.fail_json(msg='You must specify a base image')
-    except SoftwareInstallError, e:
+    except SoftwareInstallError as e:
         module.fail_json(msg=str(e))
     except ISO9660IOError:
         module.fail_json(msg='Failed checking the version metadata in the ISO')

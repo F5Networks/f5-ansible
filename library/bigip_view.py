@@ -185,7 +185,7 @@ class BigIpSoapApi(BigIpCommon):
     def read(self):
         try:
             response = self.api.Management.View.get_view([self.params['view_name']])[0]
-        except:
+        except Exception:
             response = {}
 
         return response
@@ -329,7 +329,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 

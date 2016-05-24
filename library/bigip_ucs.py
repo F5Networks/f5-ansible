@@ -207,15 +207,14 @@ EXAMPLES = '''
 '''
 
 import base64
-import socket
 import os
+import socket
 
 try:
     import paramiko
+    HAS_PARAMIKO = True
 except ImportError:
-    paramiko_found = False
-else:
-    paramiko_found = True
+    HAS_PARAMIKO = False
 
 
 class BigIpCommon(object):
@@ -516,16 +515,16 @@ def main():
             obj.present()
         elif state == "absent":
             obj.absent()
-    except (bigsuds.ConnectionError, bigsuds.ParseError), e:
+    except (bigsuds.ConnectionError, bigsuds.ParseError) as e:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except paramiko.ssh_exception.SSHException, e:
+    except paramiko.ssh_exception.SSHException as e:
         if 'No existing session' in str(e):
             module.fail_json(msg='Could not log in with provided credentials')
         else:
             module.fail_json(msg=str(e))
-    except socket.timeout, e:
+    except socket.timeout as e:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg=str(e))
 
     module.exit_json(**obj.result)

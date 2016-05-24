@@ -92,7 +92,7 @@ requirements:
   - bigsuds
   - requests
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -113,24 +113,6 @@ except ImportError:
     requests_found = False
 else:
     requests_found = True
-
-
-def test_icontrol(username, password, hostname):
-    api = bigsuds.BIGIP(
-        hostname=hostname,
-        username=username,
-        password=password,
-        debug=True
-    )
-
-    try:
-        response = api.Management.LicenseAdministration.get_license_activation_status()
-        if 'STATE' in response:
-            return True
-        else:
-            return False
-    except:
-        return False
 
 
 class BigIpCommon(object):

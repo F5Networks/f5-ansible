@@ -98,7 +98,7 @@ requirements:
   - bigsuds
   - requests
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -156,7 +156,7 @@ class BigIpIControl(BigIpCommon):
             password=self._password,
             debug=True
         )
-        # TODO: Make the REST interface to this work
+        # TODO(Make the REST interface to this work)
         """
          module_map = {
             'afm': 'TMOS_MODULE_AFM',
@@ -212,7 +212,7 @@ class BigIpIControl(BigIpCommon):
                         variables=[params]
                     )
                     changed = True
-                except:
+                except Exception:
                     raise Exception('Failed to set the provided key')
 
         return changed
@@ -306,7 +306,7 @@ def main():
         module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
     except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError as e:
         module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)

@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_device_ntp
 short_description: Manage NTP servers on a BIG-IP
 description:
-   - Manage NTP servers on a BIG-IP
+  - Manage NTP servers on a BIG-IP
 version_added: "2.1"
 options:
   append:
@@ -81,12 +81,13 @@ options:
     default: true
 
 notes:
-   - Requires the requests Python package on the host. This is as easy as pip
-     install requests
-
-requirements: [ "requests", "bigsuds" ]
+  - Requires the requests Python package on the host. This is as easy as pip
+    install requests
+requirements:
+  - requests
+  - bigsuds
 author:
-    - Tim Rupp <caphrim007@gmail.com> (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -128,25 +129,6 @@ class BigIpCommon(object):
 
 
 class BigIpRest(BigIpCommon):
-    """Handles talking to the REST API
-
-    The data structure that is returned by the API looks like this
-
-    {
-      "kind": "tm:sys:ntp:ntpstate",
-      "selfLink": "https://localhost/mgmt/tm/sys/ntp?ver=12.0.0",
-      "servers": [
-        "pool.ntp.org",
-        "time.ntp.org"
-      ],
-      "timezone": "America/Los_Angeles",
-      "restrictReference": {
-        "link": "https://localhost/mgmt/tm/sys/ntp/restrict?ver=12.0.0",
-        "isSubcollection": true
-      }
-    }
-    """
-
     def __init__(self, user, password, server, ntp_servers=[], timezone=None,
                  append=False, validate_certs=True):
 
@@ -309,9 +291,9 @@ def main():
 
             if obj.absent():
                 changed = True
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)

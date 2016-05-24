@@ -147,10 +147,10 @@ EXAMPLES = '''
 '''
 
 import base64
-import socket
-import suds
-import ssl
 import re
+import socket
+import ssl
+import suds
 import time
 
 from xml.sax._exceptions import SAXParseException
@@ -669,11 +669,11 @@ def main():
         module.fail_json(changed=False, msg="Could not reach the specified activation server to license BIG-IP")
     except DossierNotGeneratedError:
         module.fail_json(changed=False, msg="Dossier not generated")
-    except NoLicenseReturnedError, e:
+    except NoLicenseReturnedError as e:
         module.fail_json(msg=str(e))
     except SSLCertVerifyError:
         module.fail_json(msg="SSL certificate verification failed. Use validate_certs=no to bypass this")
-    except UnprivilegedAccountError, e:
+    except UnprivilegedAccountError:
         module.fail_json(msg="You account does not have permission to reload the license!")
 
 from ansible.module_utils.basic import *

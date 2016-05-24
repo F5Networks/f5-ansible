@@ -123,28 +123,27 @@ vlans:
 '''
 
 try:
-    from f5.bigip import BigIP
-    from icontrol.session import iControlUnexpectedHTTPError
-    f5sdk_found = True
-except:
-    f5sdk_found = False
+    from f5.bigip import ManagementRoot
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
 
 
 class BigIpRouteDomainFacts(object):
     def __init__(self, *args, **kwargs):
-        if not f5sdk_found:
+        if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
         self.params = kwargs
-        self.api = BigIP(kwargs['server'],
-                         kwargs['user'],
-                         kwargs['password'],
-                         port=kwargs['server_port'])
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def flush(self):
         result = dict()
 
-        rds = self.api.net.route_domains
+        rds = self.api.tm.net.route_domains
         rd = rds.route_domain.load(name=kwargs['id'],
                                    partition=kwargs['partition'])
 
@@ -189,7 +188,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(changed=True, bigip=result)
-    except iControlUnexpectedHTTPError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=e.message)
 
 from ansible.module_utils.basic import *

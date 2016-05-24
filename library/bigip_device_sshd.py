@@ -200,8 +200,6 @@ class BigIpDeviceSshd(object):
         if self.params['check_mode']:
             return changed
 
-        print self.params
-        import sys; sys.exit()
         r = self.api.tm.sys.sshd.load()
         r.update(**self.params)
 
@@ -230,7 +228,8 @@ def main():
         inactivity_timeout=dict(required=False, default=None, type='int'),
         log_level=dict(required=False, default=None, choices=LEVELS),
         login=dict(required=False, default=None, choices=CHOICES),
-        port=dict(required=False, default=None, type='int')
+        port=dict(required=False, default=None, type='int'),
+        state=dict(default='present', choices=['present'])
     )
     argument_spec.update(meta_args)
 

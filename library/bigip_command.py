@@ -230,11 +230,11 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
     except socket.gaierror:
         module.fail_json(msg="Unable to contact the BIG-IP")
-    except paramiko.ssh_exception.SSHException, e:
+    except paramiko.ssh_exception.SSHException as e:
         if 'No existing session' in str(e):
             module.fail_json(msg='Could not log in with provided credentials')
         else:

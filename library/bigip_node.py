@@ -187,7 +187,7 @@ def node_exists(api, address):
             nodes=[address]
         )
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -205,7 +205,7 @@ def create_node_address(api, address, name):
         )
         result = True
         desc = ""
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "already exists" in str(e):
             result = False
             desc = "referenced name or IP already in use"
@@ -228,7 +228,7 @@ def delete_node_address(api, address):
         )
         result = True
         desc = ""
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "is referenced by a member of pool" in str(e):
             result = False
             desc = "node referenced by pool"
@@ -385,7 +385,7 @@ def main():
                             set_node_description(api, address, description)
                         result = {'changed': True}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

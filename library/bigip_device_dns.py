@@ -131,7 +131,7 @@ notes:
 requirements:
   - f5-sdk
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -148,13 +148,13 @@ EXAMPLES = '''
 '''
 
 try:
-    from f5.bigip import BigIP
-    f5sdk_found = True
-except:
-    f5sdk_found = False
+    from f5.bigip import ManagementRoot
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
 
 
-class BigIpDeviceDns():
+class BigIpDeviceDns(object):
     def __init__(self, *args, **kwargs):
         if not f5sdk_found:
             raise F5ModuleError("The python f5-sdk module is required")
@@ -175,10 +175,10 @@ class BigIpDeviceDns():
             self._search_domains = [search_domains]
 
         self.params = kwargs
-        self.api = BigIP(kwargs['server'],
-                         kwargs['user'],
-                         kwargs['password'],
-                         port=kwargs['server_port'])
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def flush(self):
         if self.dhcp_enabled():
@@ -495,7 +495,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *

@@ -98,26 +98,26 @@ EXAMPLES = '''
 '''
 
 try:
-    from f5.bigip import BigIP
-    f5sdk_found = True
-except:
-    f5sdk_found = False
+    from f5.bigip import ManagementRoot
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
 
 
 class F5ModuleError(Exception):
     pass
 
 
-class BigIpVlan():
+class BigIpVlan(object):
     def __init__(self, *args, **kwargs):
-        if not f5sdk_found:
+        if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
         self.params = kwargs
-        self.api = BigIP(kwargs['server'],
-                         kwargs['user'],
-                         kwargs['password'],
-                         port=kwargs['server_port'])
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def absent(self):
         if not self.exists():
@@ -145,12 +145,12 @@ class BigIpVlan():
         pass
 
     def delete(self):
-        self.api.net.vlans.vlan.delete(
+        self.api.tm.net.vlans.vlan.delete(
             name=self.params['name']
         )
 
     def exists(self):
-        return self.api.net.vlans.vlan.exists(
+        return self.api.tm.net.vlans.vlan.exists(
             name=self.params['name']
         )
 
@@ -200,7 +200,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *

@@ -95,14 +95,13 @@ EXAMPLES = '''
 
 try:
     from suds import MethodNotFound, WebFault
+    bigsuds_found = True
 except ImportError:
     bigsuds_found = False
-else:
-    bigsuds_found = True
 
 import fnmatch
-import traceback
 import re
+import traceback
 
 
 class F5(object):
@@ -1673,7 +1672,7 @@ def main():
 
         result = {'ansible_facts': facts}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s\ntraceback: %s" % (e, traceback.format_exc()))
 
     module.exit_json(**result)

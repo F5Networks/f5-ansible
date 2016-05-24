@@ -170,9 +170,9 @@ size:
   sample: 1220
 '''
 
-import socket
-import os
 import base64
+import os
+import socket
 import tempfile
 
 # Size of chunks of data to read and send via the iControl API
@@ -401,7 +401,7 @@ def main():
                     # the execute bit for the current user set, in
                     # which case the stat() call will raise an OSError
                     os.stat(os.path.dirname(dest))
-                except OSError, e:
+                except OSError as e:
                     if "permission denied" in str(e).lower():
                         module.fail_json(msg="Destination directory %s is not accessible" % (os.path.dirname(dest)))
                 module.fail_json(msg="Destination directory %s does not exist" % (os.path.dirname(dest)))
@@ -433,11 +433,11 @@ def main():
         )
         if backup_file:
             res_args['backup_file'] = backup_file
-    except (bigsuds.ConnectionError, bigsuds.ParseError), e:
+    except (bigsuds.ConnectionError, bigsuds.ParseError) as e:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % server)
-    except socket.timeout, e:
+    except socket.timeout as e:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except socket.timeout, e:
+    except socket.timeout as e:
         module.fail_json(msg=str(e))
 
     file_args = module.load_file_common_arguments(module.params)

@@ -213,7 +213,7 @@ def pool_exists(api, pool):
     try:
         api.LocalLB.Pool.get_object_status(pool_names=[pool])
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -232,7 +232,7 @@ def member_exists(api, pool, address, port):
             members=[members]
         )
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -246,7 +246,7 @@ def delete_node_address(api, address):
     try:
         api.LocalLB.NodeAddressV2.delete_node_address(nodes=[address])
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "is referenced by a member of pool" in str(e):
             result = False
         else:
@@ -498,7 +498,7 @@ def main():
                             set_member_monitor_state(api, pool, address, port, monitor_state)
                         result = {'changed': True}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

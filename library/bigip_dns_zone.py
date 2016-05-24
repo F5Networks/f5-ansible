@@ -81,8 +81,8 @@ EXAMPLES = '''
           ip_address: 10.1.1.1
 '''
 
-import re
 from distutils.version import StrictVersion
+import re
 
 VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 

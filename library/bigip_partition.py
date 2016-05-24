@@ -74,7 +74,7 @@ requirements:
   - bigsuds
   - requests
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -170,9 +170,6 @@ class BigIpCommon(object):
 
 
 class BigIpSoapApi(BigIpCommon):
-    """Manipulate user accounts via SOAP
-    """
-
     def __init__(self, *args, **kwargs):
         super(BigIpSoapApi, self).__init__(*args, **kwargs)
 
@@ -276,7 +273,7 @@ class BigIpSoapApi(BigIpCommon):
                         folders=[folder],
                         descriptions=[description]
                     )
-                except:
+                except Exception:
                     self.api.Management.Partition.set_description(
                         partitions=[name],
                         descriptions=[description]
@@ -315,7 +312,7 @@ class BigIpSoapApi(BigIpCommon):
                 folders=[folder]
             )
             result['description'] = resp[0]
-        except:
+        except Exception:
             resp = self.api.Management.Partition.get_description(
                 partitions=[name]
             )
@@ -371,7 +368,7 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
-    except bigsuds.ServerError, e:
+    except bigsuds.ServerError as e:
         module.fail_json(msg=str(e))
     except DeleteFolderError:
         module.fail_json(msg='Failed to delete the specified partition')

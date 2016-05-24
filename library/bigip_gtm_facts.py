@@ -104,13 +104,6 @@ EXAMPLES = '''
       fact_filter=my_pool
 '''
 
-try:
-    import bigsuds
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
 import re
 
 
@@ -119,6 +112,7 @@ class F5(object):
         self.api = bigip_api(host, user, password, validate_certs)
         if session:
             self.start_session()
+
     def get_api(self):
         return self.api
 
@@ -148,19 +142,18 @@ class VirtualServers(object):
     def __init__(self, api, regex=None):
         self.api = api
         self.virtual_servers = api.GlobalLB.VirtualServerV2.get_list()
-        #Look to support as many fields in dict as available not just name, server
         if regex:
             self.virtual_servers = [d for d in self.virtual_servers if regex in d['server'] or regex in d['name']]
+
     def get_list(self):
         return self.virtual_servers
+
     def get_enabled_state(self):
         return self.api.GlobalLB.VirtualServerV2.get_enabled_state(self.virtual_servers)
+
     def get_object_status(self):
         return self.api.GlobalLB.VirtualServerV2.get_object_status(self.virtual_servers)
-    #def get_ltm_virtual_server(self):
-    #    return self.api.GlobalLB.VirtualServerV2.get_ltm_virtual_server(self.virtual_servers)
-    #def get_statistics(self):
-    #   return self.api.GlobalLB.VirtualServerV2.get_statistics(self.virtual_servers)
+
     def get_address(self):
         return self.api.GlobalLB.VirtualServerV2.get_address(self.virtual_servers)
 
@@ -194,6 +187,7 @@ def generate_wide_ip_dict(f5, regex):
     fields = ['lb_method', 'pool']
     return generate_dict(wide_ips, fields)
 
+
 def generate_virtual_server_dict(f5, regex):
     virtual_servers = VirtualServers(f5.get_api(), regex)
     fields = ['enabled_state', 'object_status',
@@ -215,13 +209,14 @@ def generate_virtual_server_dict(f5, regex):
         temp.update([(item[0], item[1][i]) for item in zip(supported_fields, lists)])
         attributes = temp
         if j['server'] not in servers:
-            names = { j['name'] : attributes }
-            servers.update({j['server']:names})
+            names = {j['name']: attributes}
+            servers.update({j['server']: names})
         else:
             names = servers[j['server']]
-            names.update({ j['name'] : attributes })
-            servers.update({j['server']:names})
+            names.update({j['name']: attributes})
+            servers.update({j['server']: names})
     return servers
+
 
 def generate_dict(api_obj, fields):
     result_dict = {}
@@ -249,8 +244,8 @@ def main():
     valid_includes = ['pool', 'wide_ip', 'virtual_server']
 
     meta_args = dict(
-        include = dict(type='list', required=True),
-        fact_filter = dict(type='str', required=False)
+        include=dict(type='list', required=True),
+        fact_filter=dict(type='str', required=False)
     )
     argument_spec.update(meta_args)
 
@@ -291,7 +286,7 @@ def main():
             if 'wide_ip' in include:
                 facts['wide_ip'] = generate_wide_ip_dict(f5, regex)
             result = {'ansible_facts': facts}
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

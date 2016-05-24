@@ -108,8 +108,8 @@ def get_wide_ip_lb_method(api, wide_ip):
 def get_wide_ip_pools(api, wide_ip):
     try:
         return api.GlobalLB.WideIP.get_wideip_pool([wide_ip])
-    except Exception, e:
-        print e
+    except Exception:
+        pass
 
 
 def wide_ip_exists(api, wide_ip):
@@ -119,7 +119,7 @@ def wide_ip_exists(api, wide_ip):
             wide_ips=[wide_ip]
         )
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -179,7 +179,7 @@ def main():
             else:
                 result = {'changed': True}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

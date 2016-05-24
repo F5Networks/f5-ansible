@@ -92,10 +92,10 @@ notes:
   - Requires the requests Python package on the host. This is as easy as
     pip install requests
 requirements:
-    - bigsuds
-    - requests
+  - bigsuds
+  - requests
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -200,9 +200,6 @@ class BigIpCommon(object):
 
 
 class BigIpSoapApi(BigIpCommon):
-    """Manipulate user accounts via SOAP
-    """
-
     def __init__(self, *args, **kwargs):
         super(BigIpSoapApi, self).__init__(*args, **kwargs)
 
@@ -394,22 +391,6 @@ class BigIpSoapApi(BigIpCommon):
 
 
 class BigIpRestApi(BigIpCommon):
-    """Manipulate iRules via REST
-
-    {
-      "kind": "tm:ltm:rule:rulestate",
-      "name": "foobar",
-      "partition": "Common",
-      "fullPath": "/Common/foobar",
-      "generation": 1,
-      "selfLink": "https://localhost/mgmt/tm/ltm/rule/~Common~foobar",
-      "apiAnonymous": "nodelete nowrite \nwhen HTTP_REQUEST {\n",
-      "apiRawValues": {
-        "verificationStatus": "signature-verified"
-      }
-    }
-    """
-
     def __init__(self, *args, **kwargs):
         super(BigIpRestApi, self).__init__(*args, **kwargs)
 

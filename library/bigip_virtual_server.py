@@ -186,7 +186,7 @@ def vs_exists(api, vs):
             virtual_servers=[vs]
         )
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -212,7 +212,7 @@ def vs_create(api, name, destination, port, pool):
         )
         created = True
         return created
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "already exists" not in str(e):
             raise Exception('Error on creating Virtual Server : %s' % e)
 
@@ -264,7 +264,7 @@ def set_profiles(api, name, profiles_list):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting profiles : %s' % e)
 
 
@@ -285,7 +285,7 @@ def set_snat(api, name, snat):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting snat : %s' % e)
 
 
@@ -312,7 +312,7 @@ def set_pool(api, name, pool):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting pool : %s' % e)
 
 
@@ -337,7 +337,7 @@ def set_destination(api, name, destination):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting destination : %s' % e)
 
 
@@ -355,7 +355,7 @@ def set_port(api, name, port):
                 destinations=[params])
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting port : %s' % e)
 
 
@@ -379,7 +379,7 @@ def set_state(api, name, state):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting state : %s' % e)
 
 
@@ -400,7 +400,7 @@ def set_description(api, name, description):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting description : %s' % e)
 
 
@@ -441,7 +441,7 @@ def set_default_persistence_profiles(api, name, persistence_profile):
             )
             updated = True
         return updated
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         raise Exception('Error on setting default persistence profile : %s' % e)
 
 
@@ -490,7 +490,7 @@ def main():
                     try:
                         vs_remove(api, name)
                         result = {'changed': True, 'deleted': name}
-                    except bigsuds.OperationFailed, e:
+                    except bigsuds.OperationFailed as e:
                         if "was not found" in str(e):
                             result['changed'] = False
                         else:
@@ -518,7 +518,7 @@ def main():
                         set_default_persistence_profiles(api, name, default_persistence_profile)
                         set_state(api, name, state)
                         result = {'changed': True}
-                    except bigsuds.OperationFailed, e:
+                    except bigsuds.OperationFailed as e:
                         raise Exception('Error on creating Virtual Server : %s' % e)
                 else:
                     # check-mode return value
@@ -540,13 +540,13 @@ def main():
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
                         result['changed'] |= set_state(api, name, state)
                         api.System.Session.submit_transaction()
-                    except Exception, e:
+                    except Exception as e:
                         raise Exception("Error on updating Virtual Server : %s" % e)
                 else:
                     # check-mode return value
                     result = {'changed': True}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

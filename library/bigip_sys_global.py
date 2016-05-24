@@ -77,16 +77,15 @@ RETURN = '''
 
 try:
     from f5.bigip import ManagementRoot
-    from f5.sdk_exception import F5SDKError
     HAS_F5SDK = True
-except:
+except ImportError:
     HAS_F5SDK = False
 
 
 CHOICES = ['enabled', 'disabled']
 
 
-class BigIpSysDb():
+class BigIpSysDb(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
             raise F5SDKError("The python f5-sdk module is required")
@@ -98,37 +97,9 @@ class BigIpSysDb():
                                   port=kwargs['server_port'])
 
     def flush(self):
-        changed = False
-        result = dict()
-        security_banner = self.params['security_banner']
-
-        banner_text=dict(required=False, default=None),
-        gui_setup=dict(required=false, choices=CHOICES, default=None),
-        lcd_display=dict(required=False, choices=CHOICES, default=None),
-        mgmt_dhcp=dict(required=False, choices=CHOICES, default=None),
-        net_reboot=dict(required=False, choices=CHOICES, default=None),
-        quiet_boot=dict(required=False, choices=CHOICES, default=None),
-        console_timeout=dict(required=False, type='int', default=None),
-
+        changed = self.update()
         current = self.read()
-
-        if self.params['check_mode']:
-            if security_banner:
-                if security_banner != current['guiSecurityBanner']:
-                    changed = True
-
-            if banner_text is not None:
-                # Comparing to 'None' because an empty string is valid
-                if banner_text != current['guiSecurityBannerText']:
-                    changed = True
-
-        else:
-            if state == "present":
-                changed = self.present()
-
-            if not self.params['check_mode']:
-                current = self.read()
-                result.update(current)
+        result.update(**current)
 
         result.update(dict(changed=changed))
         return result
@@ -137,19 +108,64 @@ class BigIpSysDb():
         settings = self.api.tm.sys.global_settings.load()
         return settings
 
-    def present(self):
+    def update(self):
+        changed = False
         current = self.read()
 
-        if current['value'] == self.params['value']:
-            return False
+        if self.params['security_banner']:
+            if self.params['security_banner'] != current['guiSecurityBanner']:
+                changed = True
+        else:
+            del self.params['security_banner']
 
-        current.update(self.params['value'])
-        current.refresh()
+        if self.params['banner_text']:
+            if self.params['banner_text'] != current['guiSecurityBannerText']:
+                changed = True
+        else:
+            del self.params['banner_text']
 
-        if current['value'] == self.params['value']:
-            raise F5ModuleError(
-                "Failed to set the DB variable"
-            )
+        if self.params['gui_setup']:
+            if self.params['gui_setup'] != current['guiSetup']:
+                changed = True
+        else:
+            del self.params['guiSetup']
+
+        if self.params['lcd_display']:
+            if self.params['lcd_display'] != current['lcdDisplay']:
+                changed = True
+        else:
+            del self.params['lcd_display']
+
+        if self.params['mgmt_dhcp']:
+            if self.params['mgmt_dhcp'] != current['mgmtDhcp']:
+                changed = True
+        else:
+            del self.params['mgmt_dhcp']
+
+        if self.params['net_reboot']:
+            if self.params['net_reboot'] != current['netReboot']:
+                changed = True
+        else:
+            del self.params['net_reboot']
+
+        if self.params['quiet_boot']:
+            if self.params['quiet_boot'] != current['quietBoot']:
+                changed = True
+        else:
+            del self.params['quiet_boot']
+
+        if self.params['console_timeout']:
+            if self.params['console_timeout'] != current['consoleInactivityTimeout']:
+                changed = True
+        else:
+            del self.params['console_timeout']
+
+        if self.params['check_mode']:
+            return changed
+
+        r = self.api.tm.sys.sshd.load()
+        r.update(**self.params)
+
         return True
 
 
@@ -179,7 +195,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5SDKError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *

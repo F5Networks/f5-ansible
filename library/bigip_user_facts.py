@@ -262,7 +262,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(changed=True, ansible_facts=result)
-    except F5ModuleError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)

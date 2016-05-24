@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
 description:
-   - Manage route domains on a BIG-IP
+  - Manage route domains on a BIG-IP
 version_added: "2.2"
 options:
   connection:
@@ -68,12 +68,12 @@ options:
     required: false
     default: true
 notes:
-   - Requires the f5-sdk Python package on the host. This is as easy as
-     pip install f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
 requirements:
-    - f5-sdk
+  - f5-sdk
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -275,7 +275,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5ModuleError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *

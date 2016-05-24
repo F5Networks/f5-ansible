@@ -75,7 +75,7 @@ notes:
 requirements:
   - bigsuds
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -171,7 +171,7 @@ class BigIpIControl(BigIpCommon):
                 service_action='SERVICE_ACTION_START'
             )
             changed = True
-        except:
+        except Exception:
             raise Exception('Failed to start the service')
         self._wait_for_service('started')
 
@@ -184,7 +184,7 @@ class BigIpIControl(BigIpCommon):
                 service_action='SERVICE_ACTION_STOP'
             )
             changed = True
-        except:
+        except Exception:
             raise Exception('Failed to stop the service')
         self._wait_for_service('stopped')
 
@@ -197,7 +197,7 @@ class BigIpIControl(BigIpCommon):
                 service_action='SERVICE_ACTION_RESTART'
             )
             changed = True
-        except:
+        except Exception:
             raise Exception('Failed to restart the service')
 
         self._wait_for_service('started')
@@ -257,12 +257,10 @@ def main():
         elif state == "restarted":
             if obj.restarted():
                 changed = True
-    except bigsuds.ConnectionError, e:
+    except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout, e:
+    except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception, e:
-        module.fail_json(msg=str(e))
 
     module.exit_json(changed=changed)
 

@@ -24,7 +24,7 @@ description:
   - Manages F5 BIG-IP LTM pools via iControl SOAP API
 version_added: "1.2"
 author:
-  Matt Hite (@mhite)
+  - Matt Hite (@mhite)
 notes:
   - "Requires BIG-IP software version >= 11"
   - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
@@ -227,7 +227,7 @@ def pool_exists(api, pool):
     try:
         api.LocalLB.Pool.get_object_status(pool_names=[pool])
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -310,7 +310,7 @@ def member_exists(api, pool, address, port):
             members=[members]
         )
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -324,7 +324,7 @@ def delete_node_address(api, address):
     try:
         api.LocalLB.NodeAddressV2.delete_node_address(nodes=[address])
         result = True
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "is referenced by a member of pool" in str(e):
             result = False
         else:
@@ -452,7 +452,7 @@ def main():
                     try:
                         remove_pool(api, pool)
                         result = {'changed': True}
-                    except bigsuds.OperationFailed, e:
+                    except bigsuds.OperationFailed as e:
                         if "was not found" in str(e):
                             result = {'changed': False}
                         else:
@@ -475,7 +475,7 @@ def main():
                     try:
                         create_pool(api, pool, lb_method)
                         result = {'changed': True}
-                    except bigsuds.OperationFailed, e:
+                    except bigsuds.OperationFailed as e:
                         if "already exists" in str(e):
                             update = True
                         else:
@@ -525,7 +525,7 @@ def main():
                         add_pool_member(api, pool, address, port)
                     result = {'changed': True}
 
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

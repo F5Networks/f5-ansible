@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_sys_db
 short_description: Manage BIG-IP system database variables
 description:
-   - Manage BIG-IP system database variables
+  - Manage BIG-IP system database variables
 version_added: "2.2"
 options:
   server:
@@ -75,7 +75,7 @@ notes:
 requirements:
   - f5-sdk
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -112,16 +112,15 @@ RETURN = '''
 
 try:
     from f5.bigip import ManagementRoot
-    from f5.sdk_exception import F5SDKError
     HAS_F5SDK = True
-except:
+except ImportError:
     HAS_F5SDK = False
 
 
-class BigIpSysDb():
+class BigIpSysDb(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
-            raise F5SDKError("The python f5-sdk module is required")
+            raise F5ModuleError("The python f5-sdk module is required")
 
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
@@ -210,7 +209,7 @@ def main():
         result = obj.flush()
 
         module.exit_json(**result)
-    except F5SDKError, e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *

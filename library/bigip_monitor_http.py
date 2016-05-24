@@ -185,7 +185,7 @@ def check_monitor_exists(module, api, monitor, parent):
         else:
             module.fail_json(msg='Monitor already exists, but has a different'
                                  'type (%s) or parent(%s)' % (ttype, parent))
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
         else:
@@ -200,7 +200,7 @@ def create_monitor(api, monitor, template_attributes):
             templates=[{'template_name': monitor, 'template_type': TEMPLATE_TYPE}],
             template_attributes=[template_attributes]
         )
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "already exists" in str(e):
             return False
         else:
@@ -214,7 +214,7 @@ def delete_monitor(api, monitor):
         api.LocalLB.Monitor.delete_template(
             template_names=[monitor]
         )
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         # maybe it was deleted since we checked
         if "was not found" in str(e):
             return False
@@ -227,7 +227,7 @@ def delete_monitor(api, monitor):
 def check_string_property(api, monitor, str_property):
     try:
         return str_property == api.LocalLB.Monitor.get_template_string_property([monitor], [str_property['type']])[0]
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         # happens in check mode if not created yet
         if "was not found" in str(e):
             return True
@@ -246,7 +246,7 @@ def set_string_property(api, monitor, str_property):
 def check_integer_property(api, monitor, int_property):
     try:
         return int_property == api.LocalLB.Monitor.get_template_integer_property([monitor], [int_property['type']])[0]
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         # happens in check mode if not created yet
         if "was not found" in str(e):
             return True
@@ -292,7 +292,7 @@ def set_ipport(api, monitor, ipport):
         )
         return True, ""
 
-    except bigsuds.OperationFailed, e:
+    except bigsuds.OperationFailed as e:
         if "Cannot modify the address type of monitor" in str(e):
             return False, "Cannot modify the address type of monitor if already assigned to a pool."
         else:
@@ -437,7 +437,7 @@ def main():
                 set_ipport(api, monitor, ipport)
                 result['changed'] |= True
             # else: monitor doesn't exist (check mode) or ipport is already ok
-    except Exception, e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
