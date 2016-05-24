@@ -21,7 +21,7 @@ DOCUMENTATION = '''
 module: bigip_sys_global
 short_description: Manage BIG-IP global settings
 description:
-   - Manage BIG-IP global settings
+  - Manage BIG-IP global settings
 version_added: "2.2"
 options:
   server:
@@ -66,7 +66,7 @@ notes:
 requirements:
   - f5-sdk
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
