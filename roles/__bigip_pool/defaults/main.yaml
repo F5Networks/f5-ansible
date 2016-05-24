@@ -1,3 +1,8 @@
 ---
 
-bigip_pool: "foo.pool"
+pool_name: "foo.pool"
+pool_partition: "foo"
+pool_monitor_type: ""
+pool_monitors: ""
+pool_quorum: ""
+pool_lb_method: ""

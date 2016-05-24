@@ -37,3 +37,127 @@
   assert:
       that:
           - not result|changed
+
+- name: Create pool 2
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: present
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+      monitor_type: "{{ pool_monitor_type }}"
+      monitors: "{{ pool_monitors }}"
+      quorum: "{{ pool_quorum }}"
+      lb_method: "{{ pool_lb_method }}"
+  register: result
+  tags:
+      - create
+
+- name: Assert Create pool 2
+  assert:
+      that:
+          - result|changed
+  tags:
+      - create
+
+- name: Create pool 2 - idempotent check
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: "present"
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+      monitor_type: "{{ pool_monitor_type }}"
+      monitors: "{{ pool_monitors }}"
+      quorum: "{{ pool_quorum }}"
+      lb_method: "{{ pool_lb_method }}"
+  register: result
+  tags:
+      - create
+
+- name: Assert Create pool 2 - idempotent check
+  assert:
+      that:
+          - not result|changed
+  tags:
+      - create
+
+- name: Change pool lb_method
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: present
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+      lb_method: "{{ pool_lb_method_alt }}"
+  register: result
+  tags:
+      - update
+
+- name: Assert Change pool lb_method
+  assert:
+      that:
+          - result|changed
+  tags:
+      - update
+
+- name: Change pool reselect_tries
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: present
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+      reselect_tries: "{{ pool_reselect_tries }}"
+  register: result
+  tags:
+      - update
+
+- name: Assert change pool reselect_tries
+  assert:
+      that:
+          - result|changed
+  tags:
+      - update
+
+- name: Delete pool 2
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: absent
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+  register: result
+  tags:
+      - delete
+
+- name: Assert delete pool
+  assert:
+      that:
+          - result|changed
+  tags:
+      - delete
+
+- name: Delete pool 2 - idempotent check
+  bigip_pool:
+      server: "{{ inventory_hostname }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: absent
+      name: "{{ pool_name }}"
+      partition: "{{ pool_partition }}"
+  register: result
+  tags:
+      - delete
+
+- name: Assert delete pool 2 - idempotent check
+  assert:
+      that:
+          - not result|changed
+  tags:
+      - delete
