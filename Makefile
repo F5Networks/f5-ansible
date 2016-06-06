@@ -56,6 +56,10 @@ pylint-modules:
 		$(PYLINT) f5/bigiq/bigiq.py; \
 	)
 
+bigip-sys-db:
+	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
+	flake8 library/bigip_sys_db.py
+
 fetch-upstream:
 	curl -o library/bigip_facts.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_facts.py
 	curl -o library/bigip_gtm_wide_ip.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_gtm_wide_ip.py

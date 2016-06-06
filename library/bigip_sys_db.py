@@ -70,8 +70,8 @@ options:
     required: false
     default: true
 notes:
-  - Requires the bigsuds Python package on the host if using the iControl
-    interface. This is as easy as pip install bigsuds
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk
 requirements:
   - f5-sdk
 author:
@@ -108,6 +108,21 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
+name:
+    description: The key in the system database that was specified
+    returned: changed and success
+    type: string
+    sample: "setup.run"
+defaultValue:
+    description: The default value of the key
+    returned: changed and success
+    type: string
+    sample: "true"
+value:
+    description: The value that you set the key to
+    returned: changed and success
+    type: string
+    sample: "false"
 '''
 
 try:
@@ -134,7 +149,7 @@ class BigIpSysDb(object):
         value = self.params['value']
 
         if not state == 'reset' and not value:
-            raise F5SDKError(
+            raise F5Module(
                 "When resetting a key, a value is not supported"
             )
 
@@ -151,7 +166,11 @@ class BigIpSysDb(object):
             elif state == "reset":
                 changed = self.reset()
             current = self.read()
-            result.update(current)
+            result.update(
+                name=current.name,
+                defaultValue=current.defaultValue,
+                value=current.value
+            )
 
         result.update(dict(changed=changed))
         return result
@@ -165,14 +184,14 @@ class BigIpSysDb(object):
     def present(self):
         current = self.read()
 
-        if current['value'] == self.params['value']:
+        if current.value == self.params['value']:
             return False
 
-        current.update(self.params['value'])
+        current.update(value=self.params['value'])
         current.refresh()
 
-        if current['value'] == self.params['value']:
-            raise F5SDKError(
+        if current.value != self.params['value']:
+            raise F5ModuleError(
                 "Failed to set the DB variable"
             )
         return True
@@ -180,12 +199,18 @@ class BigIpSysDb(object):
     def reset(self):
         current = self.read()
 
-        default = current['defaultValue']
-        if current['value'] == default:
+        default = current.defaultValue
+        if current.value == default:
             return False
 
-        current['value'] = default
-        current.update()
+        current.update(value=default)
+        current.refresh()
+
+        if current.value != current.defaultValue:
+            raise F5ModuleError(
+                "Failed to reset the DB variable"
+            )
+
         return True
 
 
@@ -205,7 +230,7 @@ def main():
     )
 
     try:
-        obj = BigIpSysDb(**module.params)
+        obj = BigIpSysDb(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
         module.exit_json(**result)
