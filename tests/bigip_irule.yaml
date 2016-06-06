@@ -2,17 +2,25 @@
 
 # Test the bigip_irule module
 #
-# This playbook can be used to test the bigip_irule module.
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_irule module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i inventory/hosts tests/bigip_irule.yaml [OPTIONS]:
+#    ansible-playbook -i notahost, tests/bigip_irule.yaml
 #
 # Examples:
 #
-#    Run all of the tests
+#    Run all tests on the bigip_irule module
 #
-#    ansible-playbook -i inventory/hosts test/bigip_irule.yaml
+#    ansible-playbook -i notahost, tests/bigip_irule.yaml
+#
+# Tested platforms:
+#
+#    - NA
 #
 
 - name: Test the bigip_irule module
