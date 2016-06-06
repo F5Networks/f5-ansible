@@ -1,0 +1,8 @@
+---
+
+partition: "foo"
+route_domain:
+    default: "0"
+    string: "asdf"
+    integer: "1"
+description: "Description of foo partition"

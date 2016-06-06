@@ -1,0 +1,6 @@
+---
+
+iso_base: "BIGIP-12.0.0.0.0.606.iso"
+iso_hotfix: "Hotfix-BIGIP-12.0.0.1.0.628-HF1.iso"
+volume_new: "HD1.2"
+volume_existing: "HD1.1"
