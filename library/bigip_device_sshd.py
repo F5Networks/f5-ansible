@@ -138,25 +138,53 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-name:
-    description: The key in the system database that was specified
-    returned: changed and success
-    type: string
-    sample: "setup.run"
-defaultValue:
-    description: The default value of the key
-    returned: changed and success
+allow:
+    description: |
+        Specifies, if you have enabled SSH access, the IP address or address
+        range for other systems that can use SSH to communicate with this
+        system
+    returned: changed
+    type: list
+    sample: "192.168.*.*"
+banner:
+    description: Whether the banner is enabled or not
+    returned: changed
     type: string
     sample: "true"
-value:
-    description: The value that you set the key to
+banner_text:
+    description: |
+        Specifies the text included on the pre-login banner that
+        displays when a user attempts to login to the system using SSH
     returned: changed and success
     type: string
-    sample: "false"
+    sample: "This is a corporate device. Connecting to it without..."
+inactivity_timeout:
+    description: |
+        The number of seconds before inactivity causes an SSH
+        session to log out
+    returned: changed
+    type: int
+    sample: "10"
+log_level:
+    description: The minimum SSHD message level to include in the system log
+    returned: changed
+    type: string
+    sample: "debug"
+login:
+    description: Specifies that the system accepts SSH communications or not
+    return: changed
+    type: bool
+    sample: true
+port:
+    description: Port that you want the SSH daemon to run on
+    return: changed
+    type: int
+    sample: 22
 '''
 
 try:
     from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
@@ -166,12 +194,32 @@ LEVELS = ['debug', 'debug1', 'debug2', 'debug3', 'error', 'fatal', 'info',
           'quiet', 'verbose']
 
 
+def to_snake(params):
+    """Converts camelcase to snake case
+
+    This is required because the values in the BIG-IP REST are camelcase,
+    but the values we return to the user, to comply with ansible-isms, are
+    snake case.
+
+    @see http://stackoverflow.com/a/1176023
+    """
+    result = dict()
+    for k,v in params.iteritems():
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', k)
+        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+        result[name] = v
+    return result
+
+
 class BigIpDeviceSshd(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
-        self.changed_params = dict()
+        # The params that change in the module
+        self.cparams = dict()
+
+        # Stores the params that are sent to the module
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
                                   kwargs['user'],
@@ -244,7 +292,7 @@ class BigIpDeviceSshd(object):
 
         if params:
             changed = True
-            self.changed_params = params
+            self.cparams = to_snake(params)
 
         if check_mode:
             return changed
@@ -295,7 +343,8 @@ class BigIpDeviceSshd(object):
             raise F5ModuleError(str(e))
 
         current = self.read()
-        result.update(**self.changed_params)
+
+        result.update(**self.cparams)
         result.update(dict(changed=changed))
         return result
 
