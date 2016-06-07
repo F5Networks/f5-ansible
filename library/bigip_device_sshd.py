@@ -194,23 +194,6 @@ LEVELS = ['debug', 'debug1', 'debug2', 'debug3', 'error', 'fatal', 'info',
           'quiet', 'verbose']
 
 
-def to_snake(params):
-    """Converts camelcase to snake case
-
-    This is required because the values in the BIG-IP REST are camelcase,
-    but the values we return to the user, to comply with ansible-isms, are
-    snake case.
-
-    @see http://stackoverflow.com/a/1176023
-    """
-    result = dict()
-    for k,v in params.iteritems():
-        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', k)
-        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-        result[name] = v
-    return result
-
-
 class BigIpDeviceSshd(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
@@ -292,7 +275,7 @@ class BigIpDeviceSshd(object):
 
         if params:
             changed = True
-            self.cparams = to_snake(params)
+            self.cparams = camel_dict_to_snake_dict(params)
 
         if check_mode:
             return changed
@@ -378,6 +361,7 @@ def main():
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
