@@ -2,7 +2,8 @@
 
 - name: Set the SSHD allow string to a specific IP
   bigip_device_sshd:
-      allow: "{{ allow[0] }}"
+      allow:
+          - "{{ allow[0] }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -15,9 +16,26 @@
       that:
           - result|changed
 
+- name: Set the SSHD allow string to a specific IP - Idempotent check
+  bigip_device_sshd:
+      allow:
+          - "{{ allow[0] }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to a specific IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Set the SSHD allow string to deny all
   bigip_device_sshd:
-      allow: "{{ allow[1] }}"
+      allow:
+          - "{{ allow[1] }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -30,9 +48,26 @@
       that:
           - result|changed
 
+- name: Set the SSHD allow string to deny all - Idempotent check
+  bigip_device_sshd:
+      allow:
+          - "{{ allow[1] }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to deny all - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Set the SSHD allow string to allow all
   bigip_device_sshd:
-      allow: "{{ allow[2] }}"
+      allow:
+          - "{{ allow[2] }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -44,3 +79,329 @@
   assert:
       that:
           - result|changed
+
+- name: Set the SSHD allow string to allow all - Idempotent check
+  bigip_device_sshd:
+      allow:
+          - "{{ allow[2] }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD allow string to allow all - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Turn off the SSHD banner
+  bigip_device_sshd:
+      banner: "disabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn off the SSHD banner
+  assert:
+      that:
+          - result|changed
+
+- name: Turn off the SSHD banner - Idempotent check
+  bigip_device_sshd:
+      banner: "disabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn off the SSHD banner - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Turn on the SSHD banner
+  bigip_device_sshd:
+      banner: "enabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn on the SSHD banner
+  assert:
+      that:
+          - result|changed
+
+- name: Turn on the SSHD banner - Idempotent check
+  bigip_device_sshd:
+      banner: "enabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn on the SSHD banner - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD banner from a template
+  bigip_device_sshd:
+      banner_text: "{{ lookup('template', 'banner.txt') }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD banner from a template
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD banner from a template - Idempotent check
+  bigip_device_sshd:
+      banner_text: "{{ lookup('template', 'banner.txt') }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD banner from a template - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD banner from a file
+  bigip_device_sshd:
+      banner_text: "{{ lookup('file', 'banner.txt') }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD banner from a file
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD banner from a file - Idempotent check
+  bigip_device_sshd:
+      banner_text: "{{ lookup('file', 'banner.txt') }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD banner from a file - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD inactivity timeout (Good)
+  bigip_device_sshd:
+      inactivity_timeout: "{{ item }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  with_items: inactivity_timeout_good
+
+- name: Assert Set the SSHD inactivity timeout (Good)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD inactivity timeout (Bad)
+  bigip_device_sshd:
+      inactivity_timeout: "{{ item }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  ignore_errors: true
+  with_items: inactivity_timeout_bad
+
+- name: Assert Set the SSHD inactivity timeout (Bad)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD log level (Good)
+  bigip_device_sshd:
+      log_level: "{{ item }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  with_items: log_level_good
+
+- name: Assert Set the SSHD log level (Good)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD log level (Bad)
+  bigip_device_sshd:
+      log_level: "{{ item }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  ignore_errors: true
+  with_items: log_level_bad
+
+- name: Assert Set the SSHD log level (Bad)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD login
+  bigip_device_sshd:
+      login: "{{ item }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  with_items: login
+
+- name: Assert Set the SSHD login
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD port (int)
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_good[0]|int }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD port (int)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD port (int) - Idempotent check
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_good[0]|int }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD port (int) - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (string)
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_good[1] }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD port (string)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD port (string) - Idempotent check
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_good[1] }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Set the SSHD port (string) - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad int)
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_bad[0] }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad int)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad string)
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_bad[1] }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad string)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad special chars)
+  bigip_device_sshd:
+      password: "{{ bigip_password }}"
+      port: "{{ port_bad[2] }}"
+      user: "{{ bigip_username }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad special chars)
+  assert:
+      that:
+          - not result|changed

@@ -24,6 +24,17 @@ description:
   - Manage the SSHD settings of a BIG-IP
 version_added: "2.2"
 options:
+  allow:
+    description:
+      - Specifies, if you have enabled SSH access, the IP address or address
+        range for other systems that can use SSH to communicate with this
+        system
+    required: false
+    default: None
+    choices:
+      - all
+      - IP address, such as 172.27.1.10
+      - IP range, such as 172.27.*.* or 172.27.0.0/255.255.0.0
   banner:
     description:
       - Whether to enable the banner or not
@@ -91,6 +102,7 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host This is as easy as pip
     install f5-sdk
+  - Requires BIG-IP version 12.0.0 or greater
 requirements:
   - f5-sdk
 author:
@@ -125,6 +137,24 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+RETURN = '''
+name:
+    description: The key in the system database that was specified
+    returned: changed and success
+    type: string
+    sample: "setup.run"
+defaultValue:
+    description: The default value of the key
+    returned: changed and success
+    type: string
+    sample: "true"
+value:
+    description: The value that you set the key to
+    returned: changed and success
+    type: string
+    sample: "false"
+'''
+
 try:
     from f5.bigip import ManagementRoot
     HAS_F5SDK = True
@@ -136,15 +166,12 @@ LEVELS = ['debug', 'debug1', 'debug2', 'debug3', 'error', 'fatal', 'info',
           'quiet', 'verbose']
 
 
-class F5ModuleError(Exception):
-    pass
-
-
 class BigIpDeviceSshd(object):
     def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
+        self.changed_params = dict()
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
                                   kwargs['user'],
@@ -154,66 +181,121 @@ class BigIpDeviceSshd(object):
     def update(self):
         changed = False
         current = self.read()
+        params = dict()
 
-        if self.params['allow']:
-            if self.params['allow'] != current['allow']:
-                changed = True
-        else:
-            del self.params['allow']
+        allow = self.params['allow']
+        banner = self.params['banner']
+        banner_text = self.params['banner_text']
+        timeout = self.params['inactivity_timeout']
+        log_level = self.params['log_level']
+        login = self.params['login']
+        port = self.params['port']
+        check_mode = self.params['check_mode']
 
-        if self.params['banner']:
-            if self.params['banner'] != current['banner']:
-                changed = True
-        else:
-            del self.params['banner']
+        if allow:
+            if 'allow' in current:
+                items = set(allow)
+                if items != current['allow']:
+                    params['allow'] = list(items)
+            else:
+                params['allow'] = list(items)
 
-        if self.params['banner_text']:
-            if self.params['banner_text'] != current['banner_text']:
-                changed = True
-        else:
-            del self.params['banner_text']
+        if banner:
+            if 'banner' in current:
+                if banner != current['banner']:
+                    params['banner'] = banner
+            else:
+                params['banner'] = banner
 
-        if self.params['inactivity_timeout']:
-            if self.params['inactivity_timeout'] != current['inactivity_timeout']:
-                changed = True
-        else:
-            del self.params['inactivity_timeout']
+        if banner_text:
+            if 'banner_text' in current:
+                if banner_text != current['banner_text']:
+                    params['bannerText'] = banner_text
+            else:
+                params['bannerText'] = banner_text
 
-        if self.params['log_level']:
-            if self.params['log_level'] != current['log_level']:
-                changed = True
-        else:
-            del self.params['log_level']
+        if timeout:
+            if 'inactivity_timeout' in current:
+                if timeout != current['inactivity_timeout']:
+                    params['inactivityTimeout'] = timeout
+            else:
+                params['inactivityTimeout'] = timeout
 
-        if self.params['login']:
-            if self.params['login'] != current['login']:
-                changed = True
-        else:
-            del self.params['login']
+        if log_level:
+            if 'log_level' in current:
+                if log_level != current['log_level']:
+                    params['logLevel'] = log_level
+            else:
+                params['logLevel'] = log_level
 
-        if self.params['port']:
-            if self.params['port'] != current['port']:
-                changed = True
-        else:
-            del self.params['port']
+        if login:
+            if 'login' in current:
+                if login != current['login']:
+                    params['login'] = login
+            else:
+                params['login'] = login
 
-        if self.params['check_mode']:
+        if port:
+            if 'port' in current:
+                if port != current['port']:
+                    params['port'] = port
+            else:
+                params['port'] = port
+
+        if params:
+            changed = True
+            self.changed_params = params
+
+        if check_mode:
             return changed
 
         r = self.api.tm.sys.sshd.load()
-        r.update(**self.params)
+        r.update(**params)
+        r.refresh()
 
-        return True
+        return changed
 
     def read(self):
+        """Read information and transform it
+
+        The values that are returned by BIG-IP in the f5-sdk can have encoding
+        attached to them as well as be completely missing in some cases.
+
+        Therefore, this method will transform the data from the BIG-IP into a
+        format that is more easily consumable by the rest of the class and the
+        parameters that are supported by the module.
+        """
+        p = dict()
         r = self.api.tm.sys.sshd.load()
-        return r
+
+        if hasattr(r, 'allow'):
+            # Deliberately using sets to supress duplicates
+            p['allow'] = set([str(x) for x in r.allow])
+        if hasattr(r, 'banner'):
+            p['banner'] = str(r.banner)
+        if hasattr(r, 'bannerText'):
+            p['banner_text'] = str(r.bannerText)
+        if hasattr(r, 'inactivityTimeout'):
+            p['inactivity_timeout'] = str(r.inactivityTimeout)
+        if hasattr(r, 'logLevel'):
+            p['log_level'] = str(r.logLevel)
+        if hasattr(r, 'login'):
+            p['login'] = str(r.login)
+        if hasattr(r, 'port'):
+            p['port'] = int(r.port)
+
+        return p
 
     def flush(self):
-        changed = self.update()
-        current = self.read()
-        result.update(**current)
+        result = dict()
 
+        try:
+            changed = self.update()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        current = self.read()
+        result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
 
@@ -222,7 +304,7 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        allow=dict(required=False, default=None),
+        allow=dict(required=False, default=None, type='list'),
         banner=dict(required=False, default=None, choices=CHOICES),
         banner_text=dict(required=False, default=None),
         inactivity_timeout=dict(required=False, default=None, type='int'),
@@ -239,7 +321,7 @@ def main():
     )
 
     try:
-        obj = BigIpDeviceSshd(**module.params)
+        obj = BigIpDeviceSshd(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
         module.exit_json(**result)

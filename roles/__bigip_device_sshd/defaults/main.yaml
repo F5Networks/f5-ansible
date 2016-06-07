@@ -3,14 +3,18 @@
 allow:
     - "192.168.10.10"
     - "::"
-    - "ALL"
+    - "all"
+allow2: "all"
 banner_file: "banner.txt"
 banner_string: "banner foo"
-inactivity_timeout_good: 10
+inactivity_timeout_good:
+    - 10
+    - "20"
 inactivity_timeout_bad:
     - "ASDASD"
     - 999999999999999999999
-log_level:
+    - "@#$*@#$TGOfg0jr"
+log_level_good:
     - "debug"
     - "debug1"
     - "debug2"
@@ -20,12 +24,18 @@ log_level:
     - "info"
     - "quiet"
     - "verbose"
+log_level_bad:
+    - "dassdds"
+    - 12345
+    - #$^*^%
+    - ""
 login:
     - "disabled"
     - "enabled"
 port_good:
-    - 22
-    - 1234
+    - 223
+    - "1234"
 port_bad:
     - 70000
     - "Aasdad"
+    - "#^$#%*$^&$"
