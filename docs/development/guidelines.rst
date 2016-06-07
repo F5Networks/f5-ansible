@@ -127,7 +127,7 @@ the f5-sdk. It can be used as such.
 .. code-block:: python
 
    try:
-       from f5.sdk_exception import F5SDKError
+       from f5.bigip import ManagementRoot
        HAS_F5SDK = True
    except ImportError:
        HAS_F5SDK = False
@@ -138,7 +138,7 @@ the f5-sdk. It can be used as such.
    # Make a call to BIG-IP
    try:
        result = api.tm.ltm.pools.pool.create(foo='bar')
-   except F5SDKError, e:
+   except F5ModuleError, e:
        module.fail_json(msg=e.message)
 
 Helper functions
