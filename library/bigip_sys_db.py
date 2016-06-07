@@ -113,7 +113,7 @@ name:
     returned: changed and success
     type: string
     sample: "setup.run"
-defaultValue:
+default_value:
     description: The default value of the key
     returned: changed and success
     type: string
@@ -168,7 +168,7 @@ class BigIpSysDb(object):
             current = self.read()
             result.update(
                 name=current.name,
-                defaultValue=current.defaultValue,
+                default_value=current.defaultValue,
                 value=current.value
             )
 
