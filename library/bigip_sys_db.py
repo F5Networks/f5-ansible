@@ -72,6 +72,7 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk
+  - Requires BIG-IP version 12.0.0 or greater
 requirements:
   - f5-sdk
 author:
