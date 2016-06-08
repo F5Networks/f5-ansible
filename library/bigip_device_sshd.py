@@ -319,13 +319,12 @@ class BigIpDeviceSshd(object):
 
     def flush(self):
         result = dict()
+        changed = False
 
         try:
             changed = self.update()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
-
-        current = self.read()
 
         result.update(**self.cparams)
         result.update(dict(changed=changed))
