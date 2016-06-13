@@ -68,7 +68,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-name:
+hostname:
     description: The new hostname of the device
     returned: changed
     type: string
