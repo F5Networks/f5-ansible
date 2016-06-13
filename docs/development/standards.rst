@@ -440,6 +440,31 @@ be sure to always expand lists of values if that key takes a list value.
          - The state of things
        choices: ['enabled', 'disabled']
 
+Support for 12.0.0 or greater at this time
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the ``DOCUMENTATION`` section notes, you should specify what version of BIG-IP
+the module requires.
+
+At this time, that version is 12.0.0, so your ``DOCUMENTATION`` string should
+reflect that.
+
+**GOOD**
+
+.. code-block:: yaml
+
+   notes:
+     - Requires BIG-IP version 12.0.0 or greater
+
+
+**BAD**
+
+.. code-block:: yaml
+
+   Any version less than 12.0.0.
+
+If your module requires functionality greater than 12.0.0 it is also
+acceptable to specify that in the ``DOCUMENTATION`` block.
 
 All modules must support check mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

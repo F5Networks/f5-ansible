@@ -96,36 +96,6 @@
       that:
           - not result|changed
 
-- name: Turn off the SSHD banner
-  bigip_device_sshd:
-      banner: "disabled"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "no"
-  register: result
-
-- name: Assert Turn off the SSHD banner
-  assert:
-      that:
-          - result|changed
-
-- name: Turn off the SSHD banner - Idempotent check
-  bigip_device_sshd:
-      banner: "disabled"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "no"
-  register: result
-
-- name: Assert Turn off the SSHD banner - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
 - name: Turn on the SSHD banner
   bigip_device_sshd:
       banner: "enabled"
@@ -152,6 +122,36 @@
   register: result
 
 - name: Assert Turn on the SSHD banner - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Turn off the SSHD banner
+  bigip_device_sshd:
+      banner: "disabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn off the SSHD banner
+  assert:
+      that:
+          - result|changed
+
+- name: Turn off the SSHD banner - Idempotent check
+  bigip_device_sshd:
+      banner: "disabled"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "no"
+  register: result
+
+- name: Assert Turn off the SSHD banner - Idempotent check
   assert:
       that:
           - not result|changed

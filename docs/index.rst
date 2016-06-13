@@ -28,7 +28,6 @@ The main documentation for the modules is organized into a couple sections:
    usage/getting_started
    usage/versions
    usage/support
-   guides/index
 
 
 .. _module-docs:
