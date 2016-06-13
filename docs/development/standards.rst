@@ -269,6 +269,9 @@ any, information is returned by the operation of the module.
 End users of the module will reference this documentation when they want to
 use the ``register`` keyword.
 
+The ``RETURN`` field should include the parameters that have been changed by
+your module. If nothing has been changed, then no values need be returned.
+
 **GOOD**
 
 .. code-block:: python
@@ -276,7 +279,7 @@ use the ``register`` keyword.
    RETURN = '''
    full_name:
        description: Full name of the user
-       returned: changed and success
+       returned: changed
        type: string
        sample: "John Doe"
    '''
@@ -287,7 +290,6 @@ use the ``register`` keyword.
 .. code-block:: python
 
    Missing RETURN variable
-
 
 If your module does not return any information, then an empty YAML string
 is sufficient

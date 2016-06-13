@@ -280,7 +280,6 @@ For this module our import block is the following
 
    try:
        from f5.bigip import ManagementRoot
-       from f5.sdk_exception import F5SDKError
        HAS_F5SDK = True
    except ImportError:
        HAS_F5SDK = False
@@ -305,7 +304,7 @@ specific to the module to your interpretation.
    class BigIpDeviceSshd(object):
        def __init__(self, *args, **kwargs):
            if not HAS_F5SDK:
-               raise F5SDKError("The python f5-sdk module is required")
+               raise F5ModuleError("The python f5-sdk module is required")
 
            self.params = kwargs
            self.api = ManagementRoot(kwargs['server'],
@@ -418,11 +417,11 @@ exception.
 .. code-block:: python
 
    try:
-       obj = BigIpDeviceSshd(**module.params)
+       obj = BigIpDeviceSshd(check_mode=module.check_mode, **module.params)
        result = obj.flush()
 
        module.exit_json(**result)
-   except F5SDKError as e:
+   except F5ModuleError as e:
        module.fail_json(msg=str(e))
 
 Common imports
@@ -459,26 +458,14 @@ You would import the module if you were using it outside of Ansible, or
 in some sort of test environment where you do not want the module to
 actually run.
 
-Conclusion
-----------
-
-At this point we've written all of the code that is necessary to re-create
-the ``bigip_device_sshd`` module.
-
-You may be interested in testing the module to see if it passes the tests
-that will be run on it automatically.
-
-If you are, continue reading. Otherwise, feel free to go off and create
-more modules that meet your needs. We consider all Issues that are opened
-and will comment on them accordingly.
-
 Testing
 -------
 
-There are a number of tools that are provided to test with. Some of them may
-require that extra libraries be installed to make use of them locally.
+Providing tests with your module is a crucial step for having it merged and
+subsequently pushed upstream. We rely heavily on testing.
 
-I'll touch upon them briefly here.
+In this section I will go in to detail on how our tests are organized and
+how you can write your own to ensure that your modules works as designed.
 
 flake8
 ~~~~~~
@@ -492,16 +479,21 @@ You can run the flake8 tests via the ``make`` command
 
    make flake8
 
+Before submiting your own module, it is recommended that your module pass
+the `flake8` tests we ship with the repository. We will ask you to update
+your code to meet these requirements if it does not.
+
 Functional tests
 ~~~~~~~~~~~~~~~~
 
-When your PR is submitted, we will automatically take your test and run it
-against a number of currently supported BIG-IP versions to verify that it
-supports them.
+This is probably the most important part of testing, so let's go in to
+detail on this part.
 
-In general the oldest release that we support will be 11.6.0 because that
-is when the REST API became available.
+Functional tests are required during module submission so that we (F5)
+and you, the developer, can agree that a module works on a particular
+platform.
 
-Also, we want to promote people to upgrade their devices as time goes on,
-so as an incentive, we try to bake new functionality into these modules
-while not attempting to backport those features to old releases.
+We will test your module on a variety of platforms automatically when
+a new PR is submitted, and from there provide feedback if something does
+not fly.
+
