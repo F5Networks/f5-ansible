@@ -73,10 +73,12 @@ options:
     cert_format:
         description:
             - The format that the certificate file you want to import is in.
-            - PCKS12 and PEM formats are supported.
+            - PEM is currently the only supported format.
+            - PKCS12 will be implamented
+            - when f5-sdk supports it.
         required: false
         default: pem
-        choices: [pem, pcks12]
+        choices: [pem]
     cert_pem_file:
         description:
             - Required if the format is PEM.
@@ -91,14 +93,12 @@ options:
         default: none
     pkcs12_file:
         description:
-            - Required if the format is pkcs12.
-            - This is the filename of the pkcs12 file
+            - Current unused
         required: False
         default: none
     pkcs12_password:
         description:
-            - Required if the format is pkcs12.
-            - This is the password for the pkcs12 file
+            - Currently unused
         required: False
         default: none
     validata_cert:
@@ -114,7 +114,7 @@ requirements:
     - bigsuds
     - f5-sdk
 author:
-    - Kevin Coming <kevcom@gmail.com> (@waffie1)
+    - Kevin Coming <kevcom@gmail.com>
 
 '''
 
@@ -375,7 +375,7 @@ def main():
                             choices=['icontrol', 'rest'],
                             aliases=['transport']),
             cert_format=dict(type='str', default='pem',
-                             choices=['pem', 'pkcs12']),
+                             choices=['pem']),
             cert_pem_file=dict(type='str'),
             key_pem_file=dict(type='str'),
             pkcs12_file=dict(type='str'),
@@ -421,8 +421,6 @@ def main():
             if certargs:
                 certargs['name'] = module.params['name']
                 certargs['cert_format'] = 'pem'
-        else:
-            module.fail_json(msg="PKCS12 not implemented yet")
         if certargs:
             try:
                 r = api.import_cert(**certargs)
