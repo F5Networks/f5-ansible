@@ -31,7 +31,7 @@ description:
     is run from.  Currently this only supports certificates to be used
     within SSL Profiles.  PEM format with certificate and key in seperate
     files is icurrently the only supported format.
-version_added: 2.2
+version_added: "2.2"
 options:
   state:
     description:
