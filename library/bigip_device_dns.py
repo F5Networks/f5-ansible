@@ -48,7 +48,7 @@ options:
     choices:
        - enable
        - disable
-  nameservers:
+  name_servers:
     description:
       - A list of name serverz that the system uses to validate DNS lookups
     required: false
@@ -58,7 +58,7 @@ options:
       - A list of BIND servers that the system can use to perform DNS lookups
     required: false
     default: None
-  search_domains:
+  search:
     description:
       - A list of domains that the system searches for local domain lookups,
         to resolve local host names.
@@ -106,10 +106,10 @@ EXAMPLES = '''
 - name: Set the DNS settings on the BIG-IP
   bigip_device_dns:
       server: "big-ip"
-      nameservers:
+      name_servers:
           - 208.67.222.222
           - 208.67.220.220
-      search_domains:
+      search:
           - localdomain
           - lab.local
       state: present
@@ -128,7 +128,7 @@ except ImportError:
     HAS_F5SDK = False
 
 
-REQUIRED=['nameservers', 'search_domains', 'forwarders', 'ip_version', 'cache']
+REQUIRED=['name_servers', 'search', 'forwarders', 'ip_version', 'cache']
 CACHE=['disable', 'enable']
 IP=[4,6]
 
@@ -185,9 +185,9 @@ class BigIpDeviceDns(object):
         result['forwarders'] = str(proxy.value).split(' ')
 
         if hasattr(dns, 'nameServers'):
-            result['nameservers'] = dns.nameServers
+            result['name_servers'] = dns.nameServers
         if hasattr(dns, 'search'):
-            result['search_domains'] = dns.search
+            result['search'] = dns.search
         if hasattr(dns, 'include') and 'options inet6' in dns.include:
             result['ip_version'] = 6
         else:
@@ -205,23 +205,23 @@ class BigIpDeviceDns(object):
             cache=None
         )
 
-        nameservers = self.params['nameservers']
-        search_domains = self.params['search_domains']
+        nameservers = self.params['name_servers']
+        search_domains = self.params['search']
         ip_version = self.params['ip_version']
         forwarders = self.params['forwarders']
         cache = self.params['cache']
         check_mode = self.params['check_mode']
 
         if nameservers:
-            if 'nameservers' in current:
-                if nameservers != current['nameservers']:
+            if 'name_servers' in current:
+                if nameservers != current['name_servers']:
                     params['nameServers'] = nameservers
             else:
                 params['nameServers'] = nameservers
 
         if search_domains:
-            if 'search_domains' in current:
-                if search_domains != current['search_domains']:
+            if 'search' in current:
+                if search_domains != current['search']:
                     params['search'] = search_domains
             else:
                 params['search'] = search_domains
@@ -242,6 +242,14 @@ class BigIpDeviceDns(object):
         if params:
             changed = True
             self.cparams.update(camel_dict_to_snake_dict(params))
+
+            if 'include' in params:
+                del self.cparams['include']
+                if params['include'] == '':
+                    self.cparams['ip_version'] = 4
+                else:
+                    self.cparams['ip_version'] = 6
+
             update['dns'] = params.copy()
             params = dict()
 
@@ -301,8 +309,8 @@ class BigIpDeviceDns(object):
             forwarders=None
         )
 
-        nameservers = self.params['nameservers']
-        search_domains = self.params['search_domains']
+        nameservers = self.params['name_servers']
+        search_domains = self.params['search']
         forwarders = self.params['forwarders']
         check_mode = self.params['check_mode']
 
@@ -321,16 +329,16 @@ class BigIpDeviceDns(object):
             update['forwarders'] = params['forwarders']
             params = dict()
 
-        if nameservers and 'nameservers' in current:
-            set_current = set(current['nameservers'])
+        if nameservers and 'name_servers' in current:
+            set_current = set(current['name_servers'])
             set_new = set(nameservers)
 
             nameservers = set_current - set_new
             if nameservers != set_current:
                 params['nameServers'] = list(nameservers)
 
-        if search_domains and 'search_domains' in current:
-            set_current = set(current['search_domains'])
+        if search_domains and 'search' in current:
+            set_current = set(current['search'])
             set_new = set(search_domains)
 
             search_domains = set_current - set_new
@@ -366,9 +374,9 @@ def main():
 
     meta_args = dict(
         cache=dict(required=False, choices=CACHE, default=None),
-        nameservers=dict(required=False, default=None, type='list'),
+        name_servers=dict(required=False, default=None, type='list'),
         forwarders=dict(required=False, default=None, type='list'),
-        search_domains=dict(required=False, default=None, type='list'),
+        search=dict(required=False, default=None, type='list'),
         ip_version=dict(required=False, default=None, choices=IP, type='int')
     )
     argument_spec.update(meta_args)
