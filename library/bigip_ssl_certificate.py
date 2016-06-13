@@ -21,105 +21,105 @@
 #       cert/key import, then we could convert in memory and import
 # TODO: Exception Handling
 
-from ansible.module_utils.basic import *
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
 short_description: Import/Delete certificates from BIG-IP
 description:
-    - This module will import/delete SSL certificates on BIG-IP LTM
-      systems from a certificate file on the filesystem where the playbook
-      is run from.  Currently this only supports certificates to be used
-      within SSL Profiles.  PEM format with certificate and key in seperate
-      files is icurrently the only supported format.
+  - This module will import/delete SSL certificates on BIG-IP LTM
+    systems from a certificate file on the filesystem where the playbook
+    is run from.  Currently this only supports certificates to be used
+    within SSL Profiles.  PEM format with certificate and key in seperate
+    files is icurrently the only supported format.
+version_added: 2.2
 options:
-    state:
-        description:
-            - Certificate state
-        required: true
-        default: present
-        choices: ['present', 'absent']
-    server:
-        description:
-            - BIG-IP host
-        required: true
-        default: null
-    user:
-        description:
-            - BIG-IP Username
-        required: true
-        default: null
-        aliases: [username]
-
-    password:
-        description:
-            - BIG-IP Password
-        required: true
-        default: null
-    name:
-        description:
-            - SSL Certificate Name.  This is the cert/key pair name used
-            - when importing a certificate/key into the F5
-        required: True
-        default: none
-    connection:
-        description:
-            - Connection API.  Only iControl SOAP is supported at this time
-            - REST will be added when f5-sdk implements needed functionality
-        required: False
-        default: rest
-        choices: [icontrol, rest]
-        aliases: transport
-    cert_format:
-        description:
-            - The format that the certificate file you want to import is in.
-            - PEM is currently the only supported format.
-            - PKCS12 will be implamented
-            - when f5-sdk supports it.
-        required: false
-        default: pem
-        choices: [pem]
-    cert_pem_file:
-        description:
-            - Required if the format is PEM.
-            - This is the filename of the certificate.
-        required: False
-        default: none
-    key_pem_file:
-        description:
-            - Require if the format is PEM.
-            - This is the filename of the private key,
-        required: False
-        default: none
-    pkcs12_file:
-        description:
-            - Current unused
-        required: False
-        default: none
-    pkcs12_password:
-        description:
-            - Currently unused
-        required: False
-        default: none
-    validata_cert:
-        description:
-            - Validate the certificate on the remote Big-IP is valid.
-            - Currently f5-sdk appears to hardcode this to False
-        required: False
-        default: True
-        choices: [true. false]
+  state:
+    description:
+      - Certificate state
+    required: true
+    default: present
+    choices: ['present', 'absent']
+  server:
+    description:
+      - BIG-IP host
+    required: true
+    default: null
+  user:
+    description:
+      - BIG-IP Username
+    required: true
+    default: null
+    aliases: [username]
+  password:
+    description:
+      - BIG-IP Password
+    required: true
+    default: null
+  name:
+    description:
+      - SSL Certificate Name.  This is the cert/key pair name used
+        when importing a certificate/key into the F5.  It also
+        determines the filenames of the objects on the LTM
+        (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1)
+    required: True
+    default: none
+  connection:
+    description:
+        - All connections expcet REST removed by request
+    required: False
+    default: rest
+    choices: [rest]
+    aliases: transport
+  cert_format:
+    description:
+      - The format that the certificate file you want to import is in.
+      - PEM is currently the only supported format.
+      - PKCS12 will be implamented
+      - when f5-sdk supports it.
+    required: false
+    default: pem
+    choices: [pem]
+  cert_pem_file:
+    description:
+      - Required if the format is PEM.
+      - This is the local filename of the certificate.
+    required: False
+    default: none
+  key_pem_file:
+    description:
+      - Require if the format is PEM.
+      - This is the local filename of the private key,
+    required: False
+    default: none
+  pkcs12_file:
+    description:
+      - Currently unused
+    required: False
+    default: none
+  pkcs12_password:
+    description:
+      - Currently unused
+    required: False
+    default: none
+  validate_cert:
+    description:
+      - Validate the certificate on the remote Big-IP is valid.
+        Currently f5-sdk appears to hardcode this to True
+        And thus this does nothing
+    required: False
+    default: True
+    choices: [true, false]
 notes:
     - bigsuds required for icontrol connection
     - f5-sdk version 0.1.7 required for rest connection
     - PKCS12 will be supported when f5-sdk adds support.
 requirements:
-    - bigsuds
     - f5-sdk
+    - BigIP v12
 author:
-    - Kevin Coming <kevcom@gmail.com>
+    - Kevin Coming (@waffie1)
 
 '''
-
 EXAMPLES = '''
     - name: "Import PEM Certificate"
       local_action:
@@ -148,45 +148,11 @@ EXAMPLES = '''
 
 
 try:
-    from OpenSSL import crypto
-
-except:
-    found_OpenSSL = False
-else:
-    found_OpenSSL = True
-
-try:
-    import bigsuds
-except:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
 except:
-    f5sdk_found = False
-else:
-    f5sdk_found = True
-
-
-def read_file(filename):
-    with open(filename) as f:
-        data = f.read()
-    return data
-
-
-def pkcs12_to_pem(pkcs12data, password=''):
-    pkcs12 = crypto.load_pkcs12(pkcs12data, password)
-    key = crypto.dump_privatekey(crypto.FILETYPE_PEM, pkcs12.get_privatekey())
-    cert = crypto.dump_certificate(crypto.FILETYPE_PEM,
-                                   pkcs12.get_certificate())
-    return (cert, key)
-
-
-class F5ModuleError(Exception):
-    pass
+    HAS_F5SDK = False
 
 
 class BigIPCommon:
@@ -196,89 +162,6 @@ class BigIPCommon:
         self.password = password
         self.verify = verify
         self.api = self.connection(hostname, username, password, verify)
-
-
-class BigIPiControl(BigIPCommon):
-    def connection(self, hostname, username, password, verify):
-        api = bigsuds.BIGIP(hostname=hostname,
-                            username=username,
-                            password=password,
-                            verify=verify
-                            )
-        return api.with_session_id()
-
-    def delete(self, name):
-        changed = False
-        if self.exists_cert(name + '.crt'):
-            self.delete_cert(name + '.crt')
-            changed = True
-        if self.exists_key(name + '.key'):
-            self.delete_key(name + '.key')
-            changed = True
-        return changed
-
-    def delete_cert(self, name):
-        self.api.Management.KeyCertificate.certificate_delete(
-                mode='MANAGEMENT_MODE_DEFAULT',
-                cert_ids=[name])
-        return True
-
-    def delete_key(self, name):
-        self.api.Management.KeyCertificate.key_delete(
-                mode='MANAGEMENT_MODE_DEFAULT',
-                key_ids=[name])
-        return True
-
-    def exists_cert(self, name):
-        result = self.api.Management.KeyCertificate.get_certificate_list_v2(
-                    mode='MANAGEMENT_MODE_DEFAULT')
-        for r in result:
-            if r['file_name'].split('/')[-1] == name:
-                return True
-
-    def exists_key(self, name):
-        result = self.api.Management.KeyCertificate.get_key_list(
-                    mode='MANAGEMENT_MODE_DEFAULT')
-        for r in result:
-            if r['file_name'].split('/')[-1] == name:
-                return True
-
-    def import_cert(self, **kwargs):
-        cert_format = kwargs['cert_format']
-        if cert_format == 'pem':
-            try:
-                certname = kwargs['name']
-            except KeyError:
-                certname = os.path.basename(certfilename[:-4])
-            try:
-                certfilename = kwargs['certfilename']
-            except KeyError:
-                pass
-            else:
-                cert_data = read_file(certfilename)
-                self.install_cert(certname, cert_data)
-            try:
-                keyfilename = kwargs['keyfilename']
-            except KeyError:
-                pass
-            else:
-                key_data = read_file(keyfilename)
-                self.install_key(certname, key_data)
-            return True
-
-    def install_cert(self, name, data):
-        self.api.Management.KeyCertificate.certificate_import_from_pem(
-                    mode='MANAGEMENT_MODE_DEFAULT',
-                    cert_ids=[name],
-                    pem_data=[data],
-                    overwrite=False)
-
-    def install_key(self, name, data):
-        self.api.Management.KeyCertificate.key_import_from_pem(
-                    mode='MANAGEMENT_MODE_DEFAULT',
-                    key_ids=[name],
-                    pem_data=[data],
-                    overwrite=False)
 
 
 class BigIPRest(BigIPCommon):
@@ -374,7 +257,7 @@ def main():
             name=dict(type='str', required=True),
             partition=dict(type='str', default='Common'),
             connection=dict(type='str', default='rest',
-                            choices=['icontrol', 'rest'],
+                            choices=['rest'],
                             aliases=['transport']),
             cert_format=dict(type='str', default='pem',
                              choices=['pem']),
@@ -387,27 +270,14 @@ def main():
         )
     )
     result = {'changed': False}
-    if module.params['connection'] == 'icontrol':
-        if not bigsuds_found:
-            module.fail_json(msg='connection type icontrol requires bigsuds')
-        try:
-            api = BigIPiControl(module.params['server'],
-                                module.params['user'],
-                                module.params['password'],
-                                module.params['validate_cert'])
-        except F5ModuleError as e:
-            module.fail_json(msg='Connection Error: %s' % e)
-    elif module.params['connection'] == 'rest':
-        if not f5sdk_found:
+    if module.params['connection'] == 'rest':
+        if not HAS_F5SDK:
             module.fail_json(msg='connection type rest requires '
                              'f5-common-python')
         api = BigIPRest(module.params['server'],
                         module.params['user'],
                         module.params['password'],
                         module.params['validate_cert'])
-    else:
-        module.fail_json(msg='connection type %s is unsupported' %
-                         module.params['connection'])
 
     if module.params['state'] == 'present':
         if module.params['cert_format'] == 'pem':
@@ -444,6 +314,9 @@ def main():
                 result['changed'] = True
 
     module.exit_json(**result)
+
+from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()
