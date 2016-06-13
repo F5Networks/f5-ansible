@@ -24,19 +24,15 @@ description:
   - Manage BIG-IP device DNS settings
 version_added: "2.2"
 options:
-  append:
-    description:
-      - If C(yes), will only add specific servers to the device configuration,
-        not set them to just the list in C(nameserver), C(nameservers),
-        C(forwarder), C(forwarders), C(search_domain) or C(search_domains).
-    choices:
-      - yes
-      - no
-    default: no
   server:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
   password:
     description:
       - BIG-IP password
@@ -52,55 +48,27 @@ options:
     choices:
        - enable
        - disable
-  nameserver:
-    description:
-      - A single name server that the system uses to validate DNS lookups, and
-        resolve host names. At least one of C(nameservers) or C(nameserver) are
-        required.
-    required: false
-    default: None
   nameservers:
     description:
-      - A list of name servers that the system uses to validate DNS lookups,
-        and resolve host names. At least one of C(nameservers) or C(nameserver)
-        are required.
-    required: false
-    default: []
-  forwarder:
-    description:
-      - A single BIND servers that the system can use to perform DNS lookups.
-        BIND allows you to cache and store DNS requests and responses on a
-        local server and minimize DNS server requests, and bandwidth. At least
-        one of C(forwarders) or C(forwarder) are required.
+      - A list of name serverz that the system uses to validate DNS lookups
     required: false
     default: None
   forwarders:
     description:
-      - A list of BIND servers that the system can use to perform DNS lookups.
-        BIND allows you to cache and store DNS requests and responses on a
-        local server and minimize DNS server requests, and bandwidth. At least
-        one of C(forwarders) or C(forwarder) are required.
-    required: false
-    default: []
-  search_domain:
-    description:
-      - A single domain that the system searches for local domain lookups, to
-        resolve local host names. At least one of C(search_domains) or
-        C(search_domain) are required.
+      - A list of BIND servers that the system can use to perform DNS lookups
     required: false
     default: None
   search_domains:
     description:
-      - A list of domains that the system searches for local domain lookups, to
-        resolve local host names. At least one of C(search_domains) or
-        C(search_domain) are required.
+      - A list of domains that the system searches for local domain lookups,
+        to resolve local host names.
     required: false
-    default: []
+    default: None
   ip_version:
     description:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
     required: false
-    default: 4
+    default: None
     choices:
       - 4
       - 6
@@ -126,7 +94,7 @@ options:
     required: false
     default: true
 notes:
-  - Requires the requests Python package on the host. This is as easy as pip
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
     install requests
 requirements:
   - f5-sdk
@@ -138,8 +106,9 @@ EXAMPLES = '''
 - name: Set the DNS settings on the BIG-IP
   bigip_device_dns:
       server: "big-ip"
-      nameservers: [208.67.222.222, 208.67.220.220]
-      forwarders: []
+      nameservers:
+          - 208.67.222.222
+          - 208.67.220.220
       search_domains:
           - localdomain
           - lab.local
@@ -147,33 +116,31 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+RETURN = '''
+
+'''
+
 try:
     from f5.bigip import ManagementRoot
+    from f5.bigip.contexts import TransactionContextManager
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
 
 
+REQUIRED=['nameservers', 'search_domains', 'forwarders', 'ip_version', 'cache']
+CACHE=['disable', 'enable']
+IP=[4,6]
+
 class BigIpDeviceDns(object):
     def __init__(self, *args, **kwargs):
-        if not f5sdk_found:
+        if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
-        kwargs['ip_version'] = str(kwargs['ip_version'])
+        # The params that change in the module
+        self.cparams = dict()
 
-        if type(kwargs['nameservers']) is str:
-            self._nameservers = [nameservers]
-
-        if isinstance(forwarders, list):
-            self._forwarders = forwarders
-        else:
-            self._forwarders = [forwarders]
-
-        if isinstance(search_domains, list):
-            self._search_domains = search_domains
-        else:
-            self._search_domains = [search_domains]
-
+        # Stores the params that are sent to the module
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
                                   kwargs['user'],
@@ -181,317 +148,238 @@ class BigIpDeviceDns(object):
                                   port=kwargs['server_port'])
 
     def flush(self):
+        result = dict()
+        changed = False
+        state = self.params['state']
+
         if self.dhcp_enabled():
             raise F5ModuleError(
-                "DHCP on the mgmt interface must be disabled to make use of" +
+                "DHCP on the mgmt interface must be disabled to make use of " +
                 "this module"
             )
 
+        if state == 'absent':
+            changed = self.absent()
+        else:
+            changed = self.present()
+
+        result.update(**self.cparams)
+        result.update(dict(changed=changed))
+        return result
+
     def dhcp_enabled(self):
-        r = self.api.sys.dbs.db.load(name='dhclient.mgmt')
-        if r['value'] == 'enable':
+        r = self.api.tm.sys.dbs.db.load(name='dhclient.mgmt')
+        if r.value == 'enable':
             return True
         else:
             return False
-
-    def _read_dns(self):
-        result = {}
-
-        uri = 'https://%s/mgmt/tm/sys/dns' % (self._hostname)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-            if 'nameServers' in res:
-                result['nameservers'] = res['nameServers']
-            else:
-                result['nameservers'] = []
-
-            if 'search' in res:
-                result['search_domains'] = res['search']
-            else:
-                result['search_domains'] = []
-
-            if 'include' in res and 'options inet6' in res['include']:
-                result['ip_version'] = '6'
-            else:
-                result['ip_version'] = '4'
-
-        return result
-
-    def _read_cache(self):
-        uri = 'https://%s/mgmt/tm/sys/db/dns.cache' % (self._hostname)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-            return res['value']
-
-    def _read_forwarders(self):
-        uri = 'https://%s/mgmt/tm/sys/db/dns.proxy.__iter__' % (self._hostname)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-            return res['value'].split(' ')
 
     def read(self):
         result = dict()
 
-        cache = self._read_cache()
-        forwarders = self._read_forwarders()
-        dns = self._read_dns()
+        cache = self.api.tm.sys.dbs.db.load(name='dns.cache')
+        proxy = self.api.tm.sys.dbs.db.load(name='dns.proxy.__iter__')
+        dns = self.api.tm.sys.dns.load()
 
-        result.update({'cache': cache})
-        result.update({'forwarders': forwarders})
-        result.update(dns)
+        result['cache'] = str(cache.value)
+        result['forwarders'] = str(proxy.value).split(' ')
 
+        if hasattr(dns, 'nameServers'):
+            result['nameservers'] = dns.nameServers
+        if hasattr(dns, 'search'):
+            result['search_domains'] = dns.search
+        if hasattr(dns, 'include') and 'options inet6' in dns.include:
+            result['ip_version'] = 6
+        else:
+            result['ip_version'] = 4
         return result
 
-    def _present_dns(self, current):
-        payload = dict()
+    def present(self):
+        params = dict()
+        current = self.read()
 
-        # DNS servers can be set independently
-        if self._nameservers and self._append:
+        # Temporary locations to hold the changed params
+        update = dict(
+            dns=None,
+            forwarders=None,
+            cache=None
+        )
+
+        nameservers = self.params['nameservers']
+        search_domains = self.params['search_domains']
+        ip_version = self.params['ip_version']
+        forwarders = self.params['forwarders']
+        cache = self.params['cache']
+        check_mode = self.params['check_mode']
+
+        if nameservers:
             if 'nameservers' in current:
-                current_servers = current['nameservers']
-                if not set(self._nameservers).issubset(set(current_servers)):
-                    current_servers += self._nameservers
-                    payload['nameServers'] = list(set(current_servers))
+                if nameservers != current['nameservers']:
+                    params['nameServers'] = nameservers
             else:
-                payload['nameServers'] = self._nameservers
-        elif self._nameservers:
-            if 'nameservers' in current and current['nameservers'] != self._nameservers:
-                payload['nameServers'] = self._nameservers
-            elif 'nameservers' not in current:
-                payload['nameServers'] = self._nameservers
+                params['nameServers'] = nameservers
 
-        # Search domains can be set independently
-        if self._search_domains and self._append:
+        if search_domains:
             if 'search_domains' in current:
-                current_servers = current['search_domains']
-                if not set(self._search_domains).issubset(set(current_servers)):
-                    current_servers += self._search_domains
-                    payload['search'] = list(set(current_servers))
+                if search_domains != current['search_domains']:
+                    params['search'] = search_domains
             else:
-                payload['search'] = self._search_domains
-        elif self._search_domains:
-            if 'search_domains' in current and current['search_domains'] != self._search_domains:
-                payload['search'] = self._search_domains
-            elif 'search_domains' not in current:
-                payload['search'] = self._search_domains
+                params['search'] = search_domains
 
-        # IP version can be set independently
-        if self._ip_version:
-            if 'ip_version' in current and current['ip_version'] != self._ip_version:
-                if self._ip_version == '6':
-                    payload['include'] = 'options inet6'
-                elif self._ip_version == '4':
-                    payload['include'] = ''
-
-        if payload:
-            uri = 'https://%s/mgmt/tm/sys/dns' % (self._hostname)
-            resp = requests.patch(uri,
-                                  auth=(self._username, self._password),
-                                  data=json.dumps(payload),
-                                  verify=self._validate_certs)
-            if resp.status_code == 200:
-                return True
+        if ip_version:
+            if 'ip_version' in current:
+                if ip_version != int(current['ip_version']):
+                    if ip_version == 6:
+                        params['include'] = 'options inet6'
+                    elif ip_version == 4:
+                        params['include'] = ''
             else:
-                res = resp.json()
-                raise Exception(res['message'])
-        else:
-            return False
+                if ip_version == 6:
+                    params['include'] = 'options inet6'
+                elif ip_version == 4:
+                    params['include'] = ''
 
-    def _present_forwarders(self, current):
-        payload = dict()
-        forwarders = list()
-
-        # Forwarders can be set independently
-        if self._forwarders and self._append:
-            if 'forwarders' in current:
-                current_servers = current['forwarders']
-                if not set(self._forwarders).issubset(set(current_servers)):
-                    current_servers += self._forwarders
-                    forwarders = list(set(current_servers))
-            else:
-                forwarders = self._forwarders
-        elif self._forwarders:
-            if 'forwarders' in current and current['forwarders'] != self._forwarders:
-                forwarders = self._forwarders
-            elif 'forwarders' not in current:
-                forwarders = self._forwarders
+        if params:
+            changed = True
+            self.cparams.update(camel_dict_to_snake_dict(params))
+            update['dns'] = params.copy()
+            params = dict()
 
         if forwarders:
-            payload['value'] = ' '.join(forwarders)
-            uri = 'https://%s/mgmt/tm/sys/db/dns.proxy.__iter__' % (self._hostname)
-            resp = requests.put(uri,
-                                auth=(self._username, self._password),
-                                data=json.dumps(payload),
-                                verify=self._validate_certs)
-            if resp.status_code == 200:
-                return True
+            if 'forwarders' in current:
+                if forwarders != current['forwarders']:
+                    params['forwarders'] = forwarders
             else:
-                res = resp.json()
-                raise Exception(res['message'])
-        else:
+                params['forwarders'] = forwarders
+
+        if params:
+            changed = True
+            self.cparams.update(camel_dict_to_snake_dict(params))
+            update['forwarders'] = ' '.join(params['forwarders'])
+            params = dict()
+
+        if cache:
+            if 'cache' in current:
+                if cache != current['cache']:
+                    params['cache'] = cache
+
+        if params:
+            changed = True
+            self.cparams.update(camel_dict_to_snake_dict(params))
+            update['cache'] = params['cache']
+            params = dict()
+
+        if not self.cparams:
             return False
 
-    def _present_cache(self, current):
-        payload = dict()
+        if check_mode:
+            return changed
 
-        if self._cache:
-            if 'cache' in current and current['cache'] != self._cache:
-                payload['value'] = self._cache
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            cache = api.tm.sys.dbs.db.load(name='dns.cache')
+            proxy = api.tm.sys.dbs.db.load(name='dns.proxy.__iter__')
+            dns = api.tm.sys.dns.load()
 
-        if payload:
-            uri = 'https://%s/mgmt/tm/sys/db/dns.cache' % (self._hostname)
-            resp = requests.patch(uri,
-                                  auth=(self._username, self._password),
-                                  data=json.dumps(payload),
-                                  verify=self._validate_certs)
-            if resp.status_code == 200:
-                return True
-            else:
-                res = resp.json()
-                raise Exception(res['message'])
-        else:
-            return False
+            # Empty values can be supplied, but you cannot supply the
+            # None value, so we check for that specifically
+            if update['cache'] is not None:
+                cache.update(value=update['cache'])
+            if update['forwarders'] is not None:
+                proxy.update(value=update['forwarders'])
+            if update['dns'] is not None:
+                dns.update(**update['dns'])
+        return changed
 
-    def _absent_forwarders(self, current):
-        payload = dict()
-        forwarders = list()
+    def absent(self):
+        params = dict()
+        current = self.read()
 
-        if self._forwarders and 'forwarders' in current:
+        # Temporary locations to hold the changed params
+        update = dict(
+            dns=None,
+            forwarders=None
+        )
+
+        nameservers = self.params['nameservers']
+        search_domains = self.params['search_domains']
+        forwarders = self.params['forwarders']
+        check_mode = self.params['check_mode']
+
+        if forwarders and 'forwarders' in current:
             set_current = set(current['forwarders'])
-            set_new = set(self._forwarders)
+            set_new = set(forwarders)
 
             forwarders = set_current - set_new
             if forwarders != set_current:
                 forwarders = list(forwarders)
-                payload['value'] = ' '.join(forwarders)
+                params['forwarders'] = ' '.join(forwarders)
 
-        if payload:
-            uri = 'https://%s/mgmt/tm/sys/db/dns.proxy.__iter__' % (self._hostname)
-            resp = requests.patch(uri,
-                                  auth=(self._username, self._password),
-                                  data=json.dumps(payload),
-                                  verify=self._validate_certs)
-            if resp.status_code == 200:
-                return True
-            else:
-                res = resp.json()
-                raise Exception(res['message'])
-        else:
-            return False
+        if params:
+            changed = True
+            self.cparams.update(camel_dict_to_snake_dict(params))
+            update['forwarders'] = params['forwarders']
+            params = dict()
 
-    def _absent_dns(self, current):
-        payload = dict()
-
-        if self._nameservers and 'nameservers' in current:
+        if nameservers and 'nameservers' in current:
             set_current = set(current['nameservers'])
-            set_new = set(self._nameservers)
+            set_new = set(nameservers)
 
             nameservers = set_current - set_new
             if nameservers != set_current:
-                payload['nameServers'] = list(nameservers)
+                params['nameServers'] = list(nameservers)
 
-        if self._search_domains and 'search_domains' in current:
+        if search_domains and 'search_domains' in current:
             set_current = set(current['search_domains'])
-            set_new = set(self._search_domains)
+            set_new = set(search_domains)
 
             search_domains = set_current - set_new
             if search_domains != set_current:
-                payload['search'] = list(search_domains)
+                params['search'] = list(search_domains)
 
-        if payload:
-            uri = 'https://%s/mgmt/tm/sys/dns' % (self._hostname)
-            resp = requests.patch(uri,
-                                  auth=(self._username, self._password),
-                                  data=json.dumps(payload),
-                                  verify=self._validate_certs)
-            if resp.status_code == 200:
-                return True
-            else:
-                res = resp.json()
-                raise Exception(res['message'])
-        else:
+        if params:
+            changed = True
+            self.cparams.update(camel_dict_to_snake_dict(params))
+            update['dns'] = params.copy()
+            params = dict()
+
+        if not self.cparams:
             return False
 
-    def present(self):
-        changed = False
-        current = self.read()
+        if check_mode:
+            return changed
 
-        result = self._present_dns(current)
-        if result:
-            changed = True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            proxy = api.tm.sys.dbs.db.load(name='dns.proxy.__iter__')
+            dns = api.tm.sys.dns.load()
 
-        result = self._present_forwarders(current)
-        if result:
-            changed = True
-
-        result = self._present_cache(current)
-        if result:
-            changed = True
-
-        if changed:
-            self.save()
-
+            if update['forwarders'] is not None:
+                proxy.update(value=update['forwarders'])
+            if update['dns'] is not None:
+                dns.update(**update['dns'])
         return changed
-
-    def absent(self):
-        changed = False
-        current = self.read()
-
-        result = self._absent_dns(current)
-        if result:
-            changed = True
-
-        result = self._absent_forwarders(current)
-        if result:
-            changed = True
-
-        if changed:
-            self.save()
-
-        return changed
-
-    def save(self):
-        payload = dict(command='save')
-        uri = 'https://%s/mgmt/tm/sys/config' % (self._hostname)
-        resp = requests.post(uri,
-                             auth=(self._username, self._password),
-                             data=json.dumps(payload),
-                             verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
 
 
 def main():
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        cache=dict(required=False, choices=CACHE, default=None),
+        nameservers=dict(required=False, default=None, type='list'),
+        forwarders=dict(required=False, default=None, type='list'),
+        search_domains=dict(required=False, default=None, type='list'),
+        ip_version=dict(required=False, default=None, choices=IP, type='int')
+    )
+    argument_spec.update(meta_args)
     module = AnsibleModule(
-        argument_spec=dict(
-            cache=dict(required=False, choices=['disable', 'enable'], default=None),
-            nameserver=dict(required=False, default=[]),
-            forwarder=dict(required=False, default=[]),
-            search_domain=dict(required=False, default=[]),
-            ip_version=dict(required=False, default=None, choices=['4', '6'])
-        ),
-        required_one_of=[[
-            'nameserver', 'search_domain', 'forwarder', 'ip_version', 'cache'
-        ]]
+        argument_spec=argument_spec,
+        required_one_of=[REQUIRED],
+        supports_check_mode=True
     )
 
     try:
-        obj = BigIpDeviceDns(**module.params)
+        obj = BigIpDeviceDns(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
         module.exit_json(**result)
@@ -499,6 +387,7 @@ def main():
         module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
