@@ -117,7 +117,31 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+cache:
+    description: The new value of the DNS caching
+    returned: changed
+    type: string
+    sample: "enabled"
+name_servers:
+    description: List of name servers that were added or removed
+    returned: changed
+    type: list
+    sample: "['192.168.1.10', '172.17.12.10']"
+forwarders:
+    description: List of forwarders that were added or removed
+    returned: changed
+    type: list
+    sample: "['192.168.1.10', '172.17.12.10']"
+search:
+    description: List of search domains that were added or removed
+    returned: changed
+    type: list
+    sample: "['192.168.1.10', '172.17.12.10']"
+ip_version:
+    description: IP version that was set that DNS will specify IP addresses in
+    returned: changed
+    type: int
+    sample: 4
 '''
 
 try:
