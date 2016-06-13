@@ -497,3 +497,205 @@ We will test your module on a variety of platforms automatically when
 a new PR is submitted, and from there provide feedback if something does
 not fly.
 
+Structure of tests
+------------------
+
+To best show you how testing works, we will reference an existing module
+that provides complete tests; `bigip_device_sshd`.
+
+First, let's look at the layout of a set of tests. A test is composed of
+a role whose name matches the name of the module that is being tested,
+and includes a double underscore prefix.
+
+This role is placed in the `roles/` directory.
+
+So, for our example, our test role looks like this.
+
+.. code-block:: bash
+
+   $> mkdir roles/__bigip_device_sshd/
+
+Inside of this role is everything that you would associate with a normal
+role in ansible.
+
+Consider the following examples.
+
+  * if your test requires static files be used, then a `files/` directory
+    should be in your role.
+  * if your test requires templated data (for example iRules) for its
+    input, then a `templates/` directory should be in your role.
+  * all roles will perform some work to test the module, so a `tasks/`
+    directory should be in your role.
+
+At a minimum, a `tasks/` directory should exist because it is where all
+your tests will be run from.
+
+.. code-block:: bash
+
+   $> mkdir roles/__bigip_device_sshd/
+   $> touch roles/__bigip_device_sshd/main.yaml
+
+Now let's dig in to what a test should look like.
+
+Test content
+------------
+
+The test itself will follow the pattern below.
+
+  - perform some operation with the module
+  - assert a value
+
+All of the tests work like this, and it is a decent smoke test for all modules
+until such time as we take the testing further.
+
+Here is an example of a test from the `bigip_device_sshd` module.
+
+.. code-block:: yaml
+
+   ---
+
+   - name: Set the SSHD allow string to a specific IP
+     bigip_device_sshd:
+         allow:
+             - "{{ allow[0] }}"
+         user: "{{ bigip_username }}"
+         password: "{{ bigip_password }}"
+         server: "{{ inventory_hostname }}"
+         server_port: "{{ bigip_port }}"
+         validate_certs: "no"
+     register: result
+
+   - name: Assert Set the SSHD allow string to a specific IP
+     assert:
+         that:
+             - result|changed
+
+As you can see, pretty straightforward.
+
+We use the module and then we check that the result we `register` was
+changed.
+
+Test variables
+--------------
+
+All of the tests have access to the following variables by default.
+
+  * `{{ bigip_password }}`
+  * `{{ bigip_port }}`
+  * `{{ bigip_username }}`
+  * `{{ inventory_hostname }}`
+
+All other information specific to the tests that you need to run should be
+put in the `defaults/main.yaml` file of your test role.
+
+By putting them there, you allow individuals to override values in your test
+by providing arguments to the CLI at runtime.
+
+The idempotent test
+-------------------
+
+All tests that change data should also include a test right after it that
+tries to perform the same test, but whose result is expected to *not* change.
+
+These are called idempotent tests because they ensure that the module only
+changes settings if the setting needs to be changed.
+
+Here is an example of the previous test as an idempotent test
+
+.. code-block:: yaml
+
+   - name: Set the SSHD allow string to a specific IP - Idempotent check
+     bigip_device_sshd:
+         allow:
+             - "{{ allow[0] }}"
+         user: "{{ bigip_username }}"
+         password: "{{ bigip_password }}"
+         server: "{{ inventory_hostname }}"
+         server_port: "{{ bigip_port }}"
+         validate_certs: "no"
+     register: result
+
+   - name: Assert Set the SSHD allow string to a specific IP - Idempotent check
+     assert:
+         that:
+             - not result|changed
+
+There are two things to note here.
+
+First, the test code itself is identical to the previous test.
+
+Second, note that we changed the name of the test to include the string
+``"- Idempotent check"`. This gives reviewers the ability to visually note
+that this is an idempotent test.
+
+Third, note that in our assertion, we are check that the result has *not*
+changed. This is the important part because it is what ensures that the
+test itself was idempotent.
+
+Now lets look at how you call the test.
+
+Calling the test
+----------------
+
+Once the role has been created, it is a simple matter of creating a playbook
+to run it.
+
+The playbooks that run the module tests are located in the `tests/` directory.
+Each playbook in that directory is named after the module that it tests. So,
+for our example, we will have the following file.
+
+.. code-block:: bash
+
+   $> touch tests/bigip_device_sshd.yaml
+
+The contents of this file are boilerplate. For reference, it is best that you
+refer to an existing one. In this case, the contents of
+`tests/bigip_device_dns.yaml` would be a good reference.
+
+.. code-block:: bash
+
+   $> cp tests/bigip_device_dns.yaml tests/bigip_device_sshd.yaml
+
+After copying the file, you only need to change the references from the former
+module to your own module.
+
+An excerpt of that is shown below.
+
+.. code-block:: yaml
+
+   ---
+
+   ...
+
+   - name: Test the bigip_device_dns module
+     hosts: f5-test
+     connection: local
+
+     roles:
+         - __bigip_device_dns
+
+Becomes
+
+.. code-block:: yaml
+
+   ---
+
+   ...
+
+   - name: Test the bigip_device_sshd module
+     hosts: f5-test
+     connection: local
+
+     roles:
+         - __bigip_device_sshd
+
+Be sure to also change the comments section to reflect your module.
+
+Other testing notes
+-------------------
+
+When writing your tests, there is no need to be concerned about "undoing"
+what you previously have done to the test environment.
+
+Between the running of the tests, we destroy the VMs that ran the test
+so for each running of the test you can assume a pristine environment.
