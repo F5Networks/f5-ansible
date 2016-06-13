@@ -31,11 +31,11 @@ description:
       systems from a certificate file on the filesystem where the playbook
       is run from.  Currently this only supports certificates to be used
       within SSL Profiles.  PEM format with certificate and key in seperate
-      files, or PKCS12 format are supported.
+      files is icurrently the only supported format.
 options:
     state:
         description:
-            - Node member state
+            - Certificate state
         required: true
         default: present
         choices: ['present', 'absent']
@@ -103,13 +103,15 @@ options:
         default: none
     validata_cert:
         description:
-            - Validate the SSL certificate on the API connection
+            - Validate the certificate on the remote Big-IP is valid.
+            - Currently f5-sdk appears to hardcode this to False
         required: False
         default: True
         choices: [true. false]
 notes:
-    - icontrol interface requires bigsuds module
-    - SSL operations require OpenSSL module
+    - bigsuds required for icontrol connection
+    - f5-sdk version 0.1.7 required for rest connection
+    - PKCS12 will be supported when f5-sdk adds support.
 requirements:
     - bigsuds
     - f5-sdk
