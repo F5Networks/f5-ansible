@@ -33,7 +33,7 @@ description:
     feature into account. Finally, the output of this module provides more
     Ansible-friendly data formats than could be accomplished by the C(command)
     module alone.
-version_added: "2.0"
+version_added: "2.2"
 options:
   server:
     description:
