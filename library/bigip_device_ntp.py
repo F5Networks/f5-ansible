@@ -22,7 +22,7 @@ module: bigip_device_ntp
 short_description: Manage NTP servers on a BIG-IP
 description:
   - Manage NTP servers on a BIG-IP
-version_added: "2.1"
+version_added: "2.2"
 options:
   append:
     description:
@@ -79,20 +79,18 @@ options:
         used on personally controlled sites using self-signed certificates.
     required: false
     default: true
-
 notes:
-  - Requires the requests Python package on the host. This is as easy as pip
-    install requests
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk
 requirements:
-  - requests
-  - bigsuds
+  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
 - name: Set the boot.quiet DB variable on the BIG-IP
-  bigip_sysdb:
+  bigip_device_ntp:
       server: "big-ip"
       key: "boot.quiet"
       value: "disable"
