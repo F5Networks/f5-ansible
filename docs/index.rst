@@ -47,6 +47,7 @@ The main documentation for the modules is organized into a couple sections:
    :maxdepth: 2
    :caption: Developer Documentation
 
+   development/getting-involved
    development/install
    development/guidelines
    development/tests
