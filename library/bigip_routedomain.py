@@ -243,9 +243,10 @@ class BigIpRouteDomain(object):
         if self.params['check_mode']:
             return True
 
-        self.api.tm.net.route_domains.route_domain.delete(
+        rd = self.api.tm.net.route_domains.route_domain.load(
             name=self.params['name']
         )
+        rd.delete()
 
         if self.exists():
             raise F5ModuleError("Failed to delete the route domain")
@@ -500,10 +501,10 @@ class BigIpRouteDomain(object):
         else:
             if state == "present":
                 changed = self.present()
+                current = self.read()
+                result.update(current)
             elif state == "absent":
                 changed = self.absent()
-            current = self.read()
-            result.update(current)
 
         result.update(dict(changed=changed))
         return result

@@ -3,7 +3,11 @@
 valid_description: "foo"
 default_parent: 0
 new_routedomain: 1024
-new_routedomain2: 2048
+invalid_route_domains:
+    - "abcd"
+    - 99999999999999999999999999999999999999999999999999999999999999999999999999
+    - "@%$&$#%&@#"
+unknown_route_domain: 1000
 valid_vlan:
     - "http-tunnel"
 valid_vlans:

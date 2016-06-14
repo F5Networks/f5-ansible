@@ -592,3 +592,69 @@
   assert:
       that:
           - not result|changed
+
+- name: Delete a route domain
+  bigip_routedomain:
+      id: "{{ new_routedomain }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete a route domain
+  assert:
+      that:
+          - result|changed
+
+- name: Delete a route domain - Idempotent check
+  bigip_routedomain:
+      id: "{{ new_routedomain }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete a route domain - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete an unknown route domain
+  bigip_routedomain:
+      id: "{{ unknown_route_domain }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete an unknown route domain
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete a route domain, invalid
+  bigip_routedomain:
+      id: "{{ item }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+  with_items: invalid_route_domains
+
+- name: Assert Delete a route domain, invalid
+  assert:
+      that:
+          - not result|changed
