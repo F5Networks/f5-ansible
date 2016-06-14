@@ -3,6 +3,7 @@
 - name: Create VLAN
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -16,6 +17,7 @@
 - name: Create VLAN - Idempotent check
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -29,6 +31,7 @@
 - name: Remove VLAN
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       state: "absent"
@@ -42,6 +45,7 @@
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -56,6 +60,7 @@
 - name: Create VLAN on a different partition
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -70,6 +75,7 @@
 - name: Create VLAN on a different partition - Idempotent check
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -84,6 +90,7 @@
 - name: Remove VLAN on different partition
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
@@ -99,6 +106,7 @@
 - name: Remove VLAN on different partition - Idempotent check
   bigip_vlan:
       server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
