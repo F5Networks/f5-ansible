@@ -1,10 +1,56 @@
 ---
 
+valid_description: "foo"
+default_parent: 0
+new_routedomain: 1024
+new_routedomain2: 2048
+valid_vlan:
+    - "http-tunnel"
+valid_vlans:
+    - "http-tunnel"
+    - "socks-tunnel"
+invalid_vlan:
+    - "abcd"
+invalid_vlans:
+    - "abcd"
+    - "1234"
+    - "@%$&$#%&@#"
+valid_routing_protocol:
+    - "BFD"
+valid_routing_protocols:
+    - "OSPFv3"
+    - "OSPFv2"
+invalid_routing_protocol:
+    - "abcd"
+invalid_routing_protocols:
+    - "abcd"
+    - "1234"
+    - "@%$&$#%&@#"
 found_rd: "1234"
 notfound_rd: "5678"
 invalid_rd:
     - "abcd"
     - "123nfds"
-    - " #$%^#^@^?8/"
+    - "@%$&$#%&@#"
     - "234.,755"
     - "+fsd4$^>"
+valid_connection_limit: 100
+invalid_connection_limit:
+    - "abcd"
+    - 99999999999999999999999999999999999999999999999999999999999999999999999999
+    - "!@$#%$^%&%$^#%"
+valid_flow_eviction_policy: "default-eviction-policy"
+invalid_flow_eviction_policy:
+    - "abcd"
+    - 1234
+    - "@%$&$#%&@#"
+valid_service_policy: "foo"
+invalid_service_policy:
+    - "abcd"
+    - 1234
+    - "@%$&$#%&@#"
+valid_bwc_policy: "foo"
+invalid_bwc_policy:
+    - "abcd"
+    - 1234
+    - "@%$&$#%&@#"
