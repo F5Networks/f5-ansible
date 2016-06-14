@@ -264,7 +264,6 @@ class BigIpDeviceDns(object):
                     params['include'] = ''
 
         if params:
-            changed = True
             self.cparams.update(camel_dict_to_snake_dict(params))
 
             if 'include' in params:
@@ -285,7 +284,6 @@ class BigIpDeviceDns(object):
                 params['forwarders'] = forwarders
 
         if params:
-            changed = True
             self.cparams.update(camel_dict_to_snake_dict(params))
             update['forwarders'] = ' '.join(params['forwarders'])
             params = dict()
@@ -296,16 +294,16 @@ class BigIpDeviceDns(object):
                     params['cache'] = cache
 
         if params:
-            changed = True
             self.cparams.update(camel_dict_to_snake_dict(params))
             update['cache'] = params['cache']
             params = dict()
 
-        if not self.cparams:
+        if self.cparams:
+            changed = True
+            if check_mode:
+                return changed
+        else:
             return False
-
-        if check_mode:
-            return changed
 
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:

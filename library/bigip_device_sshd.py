@@ -275,9 +275,10 @@ class BigIpDeviceSshd(object):
 
         if params:
             changed = True
+            if check_mode:
+                return changed
             self.cparams = camel_dict_to_snake_dict(params)
-
-        if check_mode:
+        else:
             return changed
 
         r = self.api.tm.sys.sshd.load()
