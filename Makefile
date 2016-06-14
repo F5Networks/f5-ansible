@@ -24,6 +24,7 @@ ansible-doc:
 		$(DOCTEST) -M . bigip_command.py; \
 		$(DOCTEST) -M . bigip_device_dns.py; \
 		$(DOCTEST) -M . bigip_device_ntp.py; \
+		$(DOCTEST) -M . bigip_device_sshd.py; \
 		$(DOCTEST) -M . bigip_dns_facts.py; \
 		$(DOCTEST) -M . bigip_dns.py; \
 		$(DOCTEST) -M . bigip_dns_zone.py; \
@@ -59,6 +60,14 @@ pylint-modules:
 bigip-sys-db:
 	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
 	flake8 library/bigip_sys_db.py
+
+bigip-device-sshd:
+	ansible-playbook -i inventory/hosts tests/bigip_device_sshd.yaml -vvvv
+	flake8 library/bigip_device_sshd.py
+
+bigip-routedomain:
+	ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml -vvvv
+	flake8 library/bigip_routedomain.py
 
 fetch-upstream:
 	curl -o library/bigip_facts.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_facts.py
