@@ -1,0 +1,69 @@
+---
+
+- name: Create HTTP Monitor
+  bigip_monitor_http:
+      name: "{{ monitor_name }}"
+      password: "{{ bigip_password }}"
+      receive: "{{ receive_string }}"
+      send: "{{ send_string }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create HTTP Monitor
+  assert:
+      that:
+          - result|changed
+
+- name: Create HTTP Monitor - Idempotent check
+  bigip_monitor_http:
+      name: "{{ monitor_name }}"
+      password: "{{ bigip_password }}"
+      receive: "{{ receive_string }}"
+      send: "{{ send_string }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create HTTP Monitor - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove HTTP Monitor
+  bigip_monitor_http:
+      name: "{{ monitor_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove HTTP Monitor
+  assert:
+      that:
+          - result|changed
+
+- name: Remove HTTP Monitor - Idempotent check
+  bigip_monitor_http:
+      name: "{{ monitor_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove HTTP Monitor - Idempotent check
+  assert:
+      that:
+          - not result|changed
