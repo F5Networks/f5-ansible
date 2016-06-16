@@ -2,16 +2,14 @@
 
 - name: Create pool
   bigip_pool:
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "present"
-      name: "{{ bigip_pool }}"
-      partition: "Common"
-      lb_method: "least_connection_member"
-      slow_ramp_time: "120"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool
@@ -19,145 +17,714 @@
       that:
           - result|changed
 
-- name: Create pool - Idempotent check
+- name: Create pool - idempotent check
   bigip_pool:
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
+      state: "present"
       user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
-      state: "present"
-      name: "{{ bigip_pool }}"
-      partition: "Common"
-      lb_method: "least_connection_member"
-      slow_ramp_time: "120"
   register: result
 
-- name: Assert Create pool - Idempotent check
+- name: Assert Create pool - idempotent check
   assert:
       that:
           - not result|changed
 
-- name: Create pool 2
+- name: Change pool lb_method, ratio_member
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: present
+      lb_method: "{{ pool_lb_method_alt[0] }}"
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
-      monitor_type: "{{ pool_monitor_type }}"
-      monitors: "{{ pool_monitors }}"
-      quorum: "{{ pool_quorum }}"
-      lb_method: "{{ pool_lb_method }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - create
 
-- name: Assert Create pool 2
+- name: Assert Change pool lb_method, ratio_member
   assert:
       that:
           - result|changed
-  tags:
-      - create
 
-- name: Create pool 2 - idempotent check
+- name: Change pool lb_method, ratio_member - Idempotent check
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: "present"
+      lb_method: "{{ pool_lb_method_alt[0] }}"
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
-      monitor_type: "{{ pool_monitor_type }}"
-      monitors: "{{ pool_monitors }}"
-      quorum: "{{ pool_quorum }}"
-      lb_method: "{{ pool_lb_method }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - create
 
-- name: Assert Create pool 2 - idempotent check
+- name: Assert Change pool lb_method, ratio_member - Idempotent check
   assert:
       that:
           - not result|changed
-  tags:
-      - create
 
-- name: Change pool lb_method
+- name: Change pool lb_method, least_connection_member
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: present
+      lb_method: "{{ pool_lb_method_alt[1] }}"
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
-      lb_method: "{{ pool_lb_method_alt }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - update
 
-- name: Assert Change pool lb_method
+- name: Assert Change pool lb_method, least_connection_member
   assert:
       that:
           - result|changed
-  tags:
-      - update
+
+- name: Change pool lb_method, least_connection_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[1] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, least_connection_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, observed_member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[2] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, observed_member
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, observed_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[2] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, observed_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, predictive_member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[3] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, predictive_member
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, predictive_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[3] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, predictive_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, ratio_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[4] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, ratio_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[4] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, least_connection_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[5] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, least_connection_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, least_connection_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[5] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, least_connection_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, fastest_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[6] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, fastest_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, fastest_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[6] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, fastest_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, observed_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[7] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, observed_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, observed_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[7] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, observed_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, predictive_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[8] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, predictive_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, predictive_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[8] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, predictive_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, dynamic_ratio
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[9] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, dynamic_ratio
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, dynamic_ratio - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[9] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, dynamic_ratio - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, fastest_app_response
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[10] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, fastest_app_response
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, fastest_app_response - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[10] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, fastest_app_response - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, least_sessions
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[11] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, least_sessions
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, least_sessions - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[11] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, least_sessions - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, dynamic_ratio_member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[12] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, dynamic_ratio_member
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, dynamic_ratio_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[12] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, dynamic_ratio_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, l3_addr
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[13] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, l3_addr
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, l3_addr - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[13] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, l3_addr - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, weighted_least_connection_member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[14] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, weighted_least_connection_member
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, weighted_least_connection_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[14] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, weighted_least_connection_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, weighted_least_connection_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[15] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, weighted_least_connection_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, weighted_least_connection_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[15] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, weighted_least_connection_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, ratio_session
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[16] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_session
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, ratio_session - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[16] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_session - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, ratio_least_connection_member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[17] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_least_connection_member
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, ratio_least_connection_member - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[17] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_least_connection_member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool lb_method, ratio_least_connection_node_address
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[18] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_least_connection_node_address
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool lb_method, ratio_least_connection_node_address - Idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method_alt[18] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool lb_method, ratio_least_connection_node_address - Idempotent check
+  assert:
+      that:
+          - not result|changed
 
 - name: Change pool reselect_tries
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: present
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
+      password: "{{ bigip_password }}"
       reselect_tries: "{{ pool_reselect_tries }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - update
 
 - name: Assert change pool reselect_tries
   assert:
       that:
           - result|changed
-  tags:
-      - update
 
-- name: Delete pool 2
+- name: Delete pool
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: absent
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - delete
 
 - name: Assert delete pool
   assert:
       that:
           - result|changed
-  tags:
-      - delete
 
-- name: Delete pool 2 - idempotent check
+- name: Delete pool - idempotent check
   bigip_pool:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      state: absent
       name: "{{ pool_name }}"
-      partition: "{{ pool_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
   register: result
-  tags:
-      - delete
 
-- name: Assert delete pool 2 - idempotent check
+- name: Assert delete pool - idempotent check
   assert:
       that:
           - not result|changed
-  tags:
-      - delete
