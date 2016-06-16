@@ -1,0 +1,4 @@
+---
+
+lb_method1: "round_robin"
+wide_ip1: "my-wide-ip.example.com"

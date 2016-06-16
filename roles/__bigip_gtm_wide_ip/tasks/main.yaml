@@ -1,0 +1,12 @@
+---
+
+- name: Create wide IP
+  bigip_gtm_wide_ip:
+      lb_method: "{{ lb_method1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      state: "present"
+      validate_certs: "{{ validate_certs }}"
+      wide_ip: "{{ wide_ip1 }}"
