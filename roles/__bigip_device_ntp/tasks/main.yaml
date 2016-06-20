@@ -2,7 +2,8 @@
 
 - name: Set NTP server
   bigip_device_ntp:
-      ntp_server: "{{ ntp_server }}"
+      ntp_servers:
+          - "{{ ntp_server }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -17,7 +18,8 @@
 
 - name: Set NTP server - Idempotent check
   bigip_device_ntp:
-      ntp_server: "{{ ntp_server }}"
+      ntp_servers:
+          - "{{ ntp_server }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -32,7 +34,8 @@
 
 - name: Delete NTP server
   bigip_device_ntp:
-      ntp_server: "{{ ntp_server }}"
+      ntp_servers:
+          - "{{ ntp_server }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -48,7 +51,8 @@
 
 - name: Delete NTP server - Idempotent check
   bigip_device_ntp:
-      ntp_server: "{{ ntp_server }}"
+      ntp_servers:
+          - "{{ ntp_server }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
