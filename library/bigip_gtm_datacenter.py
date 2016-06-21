@@ -60,6 +60,23 @@ options:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
+  state:
+    description:
+      - The state of the datacenter on the BIG-IP. When C(present), guarantees
+        that the data center exists. When C(absent) removes the data center
+        from the BIG-IP. C(enabled) will enable the data center and C(disabled)
+        will ensure the data center is disabled. At least one of state and
+        enabled are required.
+    required: false
+    default: None
+    choices:
+      - present
+      - absent
   user:
     description:
       - BIG-IP username
@@ -74,23 +91,11 @@ options:
     choices:
       - yes
       - no
-  state:
-    description:
-      - The state of the datacenter on the BIG-IP. When C(present), guarantees
-        that the data center exists. When C(absent) removes the data center
-        from the BIG-IP. C(enabled) will enable the data center and C(disabled)
-        will ensure the data center is disabled. At least one of state and enabled are required.
-    required: false
-    default: None
-    choices:
-      - present
-      - absent
 notes:
-  - Requires the bigsuds Python package on the host if using the iControl
-    interface. This is as easy as pip install bigsuds
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -104,328 +109,192 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-import json
-import socket
+RETURN = '''
+
+'''
 
 try:
-    import requests
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
 except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    HAS_F5SDK = False
 
 
-class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
+class BigIpGtmDatacenter(object):
+    def __init__(self, *args, **kwargs):
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        self._name = module.params.get('name')
-        self._description = module.params.get('description')
-        self._location = module.params.get('location')
-        self._contact = module.params.get('contact')
-        self._validate_certs = module.params.get('validate_certs')
+        # The params that change in the module
+        self.cparams = dict()
 
-
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
-
-        self.api = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
-        )
+        # Stores the params that are sent to the module
+        self.params = kwargs
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def create(self):
-        params = {
-            'name': self._name,
-            'location': self._location,
-            'contact': self._contact
-        }
+        params = dict()
 
-        self.api.GlobalLB.DataCenter.create(params)
-        self.set_description()
+        check_mode = self.params['check_mode']
+        contact = self.params['contact']
+        description = self.params['description']
+        location = self.params['location']
+        name = self.params['name']
+        partition = self.params['partition']
+        enabled = self.params['enabled']
+
+        if check_mode:
+            return True
+
+        # Specifically check for None because a person could supply empty
+        # values which would technically still be valid
+        if contact is not None:
+            params['contact'] = contact
+
+        if description is not None:
+            params['description'] = description
+
+        if location is not None:
+            params['location'] = location
+
+        if enabled is not None:
+            params['enabled'] = True
+        else:
+            params['disabled'] = False
+
+        params['name'] = name
+        params['partition'] = partition
+
+        d = self.api.tm.gtm.datacenters.datacenter
+        d.create(**params)
+
+        if not self.exists():
+            raise F5ModuleError("Failed to create the datacenter")
+        return True
+
+    def read(self):
+        """Read information and transform it
+
+        The values that are returned by BIG-IP in the f5-sdk can have encoding
+        attached to them as well as be completely missing in some cases.
+
+        Therefore, this method will transform the data from the BIG-IP into a
+        format that is more easily consumable by the rest of the class and the
+        parameters that are supported by the module.
+        """
+        p = dict()
+        name = self.params['name']
+        partition = self.params['partition']
+        r = self.api.tm.gtm.datacenters.datacenter.load(
+            name=name,
+            partition=partition
+        )
+
+        if hasattr(r, 'servers'):
+            # Deliberately using sets to supress duplicates
+            p['servers'] = set([str(x) for x in r.servers])
+        if hasattr(r, 'contact'):
+            p['contact'] = str(r.contact)
+        if hasattr(r, 'location'):
+            p['location'] = str(r.location)
+        if hasattr(r, 'description'):
+            p['description'] = str(r.description)
+        if r.enabled:
+            p['enabled'] = True
+        else:
+            p['enabled'] = False
+        p['name'] = name
+        return p
+
+    def update(self):
+        changed = False
+        params = dict()
+        current = self.read()
+
+        check_mode = self.params['check_mode']
+        contact = self.params['contact']
+        description = self.params['description']
+        location = self.params['location']
+        name = self.params['name']
+        partition = self.params['partition']
+        enabled = self.params['enabled']
+
+        if contact is not None:
+            if 'contact' in current:
+                if contact != current['contact']:
+                    params['contact'] = contact
+            else:
+                params['contact'] = contact
+
+        if description is not None:
+            if 'description' in current:
+                if description != current['description']:
+                    params['description'] = description
+            else:
+                params['description'] = description
+
+        if location is not None:
+            if 'location' in current:
+                if location != current['location']:
+                    params['location'] = location
+            else:
+                params['location'] = location
+
+        if enabled is not None:
+            if current['enabled'] != enabled:
+                if enabled is True:
+                    params['enabled'] = True
+                    params['disabled'] = False
+                else:
+                    params['disabled'] = True
+                    params['enabled'] = False
+
+        if params:
+            changed = True
+            if check_mode:
+                return changed
+            self.cparams = camel_dict_to_snake_dict(params)
+        else:
+            return changed
+
+        r = self.api.tm.gtm.datacenters.datacenter.load(
+            name=name,
+            partition=partition
+        )
+        r.update(**params)
+        r.refresh()
+
+        if not self.exists():
+            raise F5ModuleError("Failed to create the datacenter")
         return True
 
     def delete(self):
-        self.api.GlobalLB.DataCenter.delete_data_center([self._name])
+        check_mode = self.params['check_mode']
+        name = self.params['name']
+        partition = self.params['partition']
 
-    def get_enabled(self):
-        return self.api.GlobalLB.DataCenter.get_enabled_state([self._name])[0]
-
-    def get_contact(self):
-        return self.api.GlobalLB.DataCenter.get_contact_information([self._name])[0]
-
-    def get_location(self):
-        return self.api.GlobalLB.DataCenter.get_location_information([self._name])[0]
-
-    def get_description(self):
-        return self.api.GlobalLB.DataCenter.get_description([self._name])[0]
-
-    def set_enabled(self):
-        status = self.get_enabled()
-        if status == 'STATE_ENABLED':
-            return False
-        else:
-            self.api.GlobalLB.DataCenter.set_enabled_state([self._name], ['STATE_ENABLED'])
+        if check_mode:
             return True
 
-    def set_disabled(self):
-        status = self.get_enabled()
-
-        if status == 'STATE_DISABLED':
-            return False
-        else:
-            self.api.GlobalLB.DataCenter.set_enabled_state([self._name], ['STATE_DISABLED'])
-            return True
-
-    def set_contact(self):
-        current = self.get_contact()
-
-        if current != self._contact:
-            self.api.GlobalLB.DataCenter.set_contact_information([self._name], [self._contact])
-            return True
-        else:
-            return False
-
-    def set_location(self):
-        current = self.get_location()
-
-        if current != self._location:
-            self.api.GlobalLB.DataCenter.set_location_information([self._name], [self._location])
-            return True
-        else:
-            return False
-
-    def set_description(self):
-        current = self.get_description()
-
-        if current != self._description:
-            self.api.GlobalLB.DataCenter.set_description([self._name], [self._description])
-            return True
-        else:
-            return False
-
-    def exists(self):
-        tmp_name = '/Common/%s' % self._name
-
-        try:
-            response = self.api.GlobalLB.DataCenter.get_list()
-
-            if tmp_name in response:
-                return True
-            else:
-                return False
-        except bigsuds.ServerError:
-            return False
-
-    def absent(self):
-        changed = False
-
-        if self.exists():
-            changed = self.delete()
-
-        return changed
-
-    def present(self):
-        changed = False
-
-        if self.exists():
-            if self._contact is not None:
-                changed = self.set_contact()
-
-            if self._location is not None:
-                changed = self.set_location()
-
-            if self._description is not None:
-                changed = self.set_description()
-        else:
-            changed = self.create()
-
-        return changed
-
-    def enable(self):
-        changed = False
-        current = self.get_enabled()
-
-        if not current:
-            self.set_enabled()
-            changed = True
-
-        return changed
-
-    def disable(self):
-        changed = False
-        current = self.get_enabled()
-
-        if current:
-            self.set_disabled()
-            changed = True
-
-        return changed
-
-
-class BigIpRest(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpRest, self).__init__(module)
-
-        self._uri = 'https://%s/mgmt/tm/gtm/datacenter' % (self._hostname)
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-        self._full_name = '~Common~%s' % self._name
-
-    def create(self):
-        params = dict(
-            name=self._name,
-            location=self._location,
-            contact=self._contact,
-            description=self._description
+        dc = self.api.tm.gtm.datacenters.datacenter.load(
+            name=name,
+            partition=partition
         )
+        dc.delete()
 
-        resp = requests.post(self._uri,
-                             auth=(self._username, self._password),
-                             data=json.dumps(params),
-                             verify=self._validate_certs,
-                             headers=self._headers)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-
-    def read(self):
-        uri = '%s/%s' % (self._uri, self._full_name)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-        if resp.status_code == 200:
-            return resp.json()
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-
-    def update(self):
-        uri = '%s/%s' % (self._uri, self._full_name)
-        resp = requests.put(uri,
-                            auth=(self._username, self._password),
-                            data=json.dumps(self._payload),
-                            verify=self._validate_certs,
-                            headers=self._headers)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-
-    def delete(self):
-        uri = '%s/%s' % (self._uri, self._full_name)
-        resp = requests.delete(uri,
-                               auth=(self._username, self._password),
-                               verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-
-    def get_enabled(self):
-        info = self.read()
-
-        # If a data center is disabled, it will not have an enabled field.
-        # Instead it will have a disabled field
-        if 'enabled' in info:
-            return True
-        return False
-
-    def get_contact(self):
-        info = self.read()
-        if 'contact' in info:
-            return info['contact']
-        return None
-
-    def get_location(self):
-        info = self.read()
-        if 'location' in info:
-            return info['location']
-        return None
-
-    def get_description(self):
-        info = self.read()
-        if 'description' in info:
-            return info['description']
-        return None
-
-    def set_enabled(self):
-        status = self.get_enabled()
-
-        if status:
-            return False
-        else:
-            self._payload = {
-                'enabled': True
-            }
-            return self.update()
-
-    def set_disabled(self):
-        status = self.get_enabled()
-
-        if not status:
-            return False
-        else:
-            self._payload = {
-                'disabled': True
-            }
-            return self.update()
-
-    def set_contact(self):
-        current = self.get_contact()
-
-        if current != self._contact:
-            self._payload = {
-                'contact': self._contact
-            }
-            return self.update()
-        else:
-            return False
-
-    def set_location(self):
-        current = self.get_location()
-
-        if current != self._location:
-            self._payload = {
-                'location': self._location
-            }
-            return self.update()
-        else:
-            return False
-
-    def set_description(self):
-        current = self.get_description()
-
-        if current != self._description:
-            self._payload = {
-                'description': self._description
-            }
-            return self.update()
-        else:
-            return False
+        if self.exists():
+            raise F5ModuleError("Failed to delete the datacenter")
+        return True
 
     def present(self):
         changed = False
 
         if self.exists():
-            if self._contact is not None:
-                changed = self.set_contact()
-
-            if self._location is not None:
-                changed = self.set_location()
-
-            if self._description is not None:
-                changed = self.set_description()
+            changed = self.update()
         else:
             changed = self.create()
 
@@ -439,102 +308,63 @@ class BigIpRest(BigIpCommon):
 
         return changed
 
-    def enable(self):
-        changed = False
-        current = self.get_enabled()
-
-        if not current:
-            self.set_enabled()
-            changed = True
-
-        return changed
-
-    def disable(self):
-        changed = False
-        current = self.get_enabled()
-
-        if current:
-            self.set_disabled()
-            changed = True
-
-        return changed
-
     def exists(self):
-        uri = '%s/%s' % (self._uri, self._full_name)
-        resp = requests.get(uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            return False
+        name = self.params['name']
+        partition = self.params['partition']
 
-
-def main():
-    changed = False
-    icontrol = False
-
-    module = AnsibleModule(
-        argument_spec=dict(
-            connection=dict(default='rest', choices=['icontrol', 'rest']),
-            contact=dict(required=False, default=None),
-            description=dict(required=False, default=None),
-            enabled=dict(type='bool'),
-            location=dict(required=False, default=None),
-            name=dict(require=True),
-            password=dict(default='admin'),
-            server=dict(required=True),
-            state=dict(choices=['present', 'absent']),
-            user=dict(default='admin'),
-            validate_certs=dict(default=True, type='bool')
+        return self.api.tm.gtm.datacenters.datacenter.exists(
+            name=name,
+            partition=partition
         )
-    )
 
-    connection = module.params.get('connection')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    enabled = module.params.get('enabled')
-
-    try:
-        if connection == 'icontrol':
-            if not bigsuds_found:
-                pass
-
-            icontrol = test_icontrol(username, password, hostname)
-            if icontrol:
-                obj = BigIpIControl(module)
-
-        if not icontrol:
-            obj = BigIpRest(module)
+    def flush(self):
+        result = dict()
+        state = self.params['state']
+        enabled = self.params['enabled']
 
         if state is None and enabled is None:
             module.fail_json(msg="Neither 'state' nor 'enabled' set")
 
-        if enabled is not None:
-            if enabled:
-                changed = obj.set_enabled()
-            else:
-                changed = obj.set_disabled()
+        try:
+            if state == "present":
+                changed = self.present()
+                result.update(**self.cparams)
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
 
-        if state is None:
-            module.exit_json(changed=changed)
+        result.update(dict(changed=changed))
+        return result
 
-        if state == "present":
-            if obj.present():
-                changed = True
-        elif state == "absent":
-            if obj.absent():
-                changed = True
-    except bigsuds.ConnectionError:
-        module.fail_json(msg="Could not connect to BIG-IP host %s" % hostname)
-    except socket.timeout:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
 
-    module.exit_json(changed=changed)
+def main():
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        contact=dict(required=False, default=None),
+        description=dict(required=False, default=None),
+        enabled=dict(required=False, type='bool', default=None),
+        location=dict(required=False, default=None),
+        name=dict(required=True)
+    )
+    argument_spec.update(meta_args)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True
+    )
+
+    try:
+        obj = BigIpGtmDatacenter(check_mode=module.check_mode, **module.params)
+        result = obj.flush()
+
+        module.exit_json(**result)
+    except F5ModuleError as e:
+        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
