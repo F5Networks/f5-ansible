@@ -229,7 +229,7 @@ class BigIpDeviceSshd(object):
                 if items != current['allow']:
                     params['allow'] = list(items)
             else:
-                params['allow'] = list(items)
+                params['allow'] = allow
 
         if banner:
             if 'banner' in current:
@@ -315,7 +315,6 @@ class BigIpDeviceSshd(object):
             p['login'] = str(r.login)
         if hasattr(r, 'port'):
             p['port'] = int(r.port)
-
         return p
 
     def flush(self):
