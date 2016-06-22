@@ -30,18 +30,6 @@ options:
         the specified value. This is for simple values, but can be used with
         lookup plugins for anything complex or with formatting. Either one
         of C(src) or C(content) must be provided.
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: smart
-    choices:
-      - rest
-      - soap
-  server:
-    description:
-      - BIG-IP host
-    required: true
   password:
     description:
       - BIG-IP password
@@ -53,7 +41,6 @@ options:
     choices:
       - ltm
       - gtm
-      - pem
   partition:
     description:
       - The partition to create the iRule on
@@ -67,6 +54,15 @@ options:
     description:
       - BIG-IP username
     required: true
+  server:
+    description:
+      - BIG-IP host
+    required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
   src:
     description:
       - The iRule file to interpret and upload to the BIG-IP. Either one
@@ -87,13 +83,10 @@ options:
     required: false
     default: true
 notes:
-  - Requires the bigsuds Python package on the host if using the iControl
-    interface. This is as easy as pip install bigsuds
-  - Requires the requests Python package on the host. This is as easy as
-    pip install requests
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -130,428 +123,233 @@ full_name:
     sample: "John Doe"
 '''
 
-import json
+try:
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
 
-STATES = ['absent', 'present']
-MODULES = ['gtm', 'ltm', 'pem']
-
-
-class CreateRuleError(Exception):
-    pass
-
-
-class DeleteRuleError(Exception):
-    pass
+MODULES = ['gtm', 'ltm']
 
 
-class ContentOrSrcRequiredError(Exception):
-    pass
-
-
-class BigIpApiFactory(object):
-    def factory(module):
-        type = module.params.get('connection')
-
-        if type == "rest":
-            if not requests_found:
-                raise Exception("The python requests module is required")
-            return BigIpRestApi(check_mode=module.check_mode, **module.params)
-        elif type == "soap":
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
-            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
-
-    factory = staticmethod(factory)
-
-
-class BigIpCommon(object):
+class BigIpiRule(object):
     def __init__(self, *args, **kwargs):
-        self.result = dict(changed=False, changes=dict())
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        self.params = kwargs
+        if kwargs['state'] != 'absent':
+            if not kwargs['content'] and not kwargs['src']:
+                raise F5ModuleError(
+                    "Either 'content' or 'src' must be provided"
+                )
 
-        if self.params['state'] != 'absent':
-            if not self.params['content'] and not self.params['src']:
-                raise ContentOrSrcRequiredError()
-
-        source = self.params['src']
+        source = kwargs['src']
         if source:
-            fh = open(source)
-            self.params['content'] = fh.read()
-            fh.close()
+            with open(source) as f:
+                kwargs['content'] = f.read()
+
+        # The params that change in the module
+        self.cparams = dict()
+
+        # Stores the params that are sent to the module
+        self.params = kwargs
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
     def flush(self):
         result = dict()
         state = self.params['state']
 
-        if state == "present":
-            if self.params['check_mode']:
-                current = self.read()
-
-            else:
+        try:
+            if state == "present":
                 changed = self.present()
-                current = self.read()
-                result.update(current)
-        else:
-            changed = self.absent()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
 
+        result.update(**self.cparams)
         result.update(dict(changed=changed))
         return result
 
-
-class BigIpSoapApi(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpSoapApi, self).__init__(*args, **kwargs)
-
-        self.api = bigip_api(kwargs['server'],
-                             kwargs['user'],
-                             kwargs['password'],
-                             kwargs['validate_certs'])
-        self.irule = "/%s/%s" % (kwargs['partition'], kwargs['name'])
-
-    def exists(self):
-        module = self.params['module']
-        partition = self.params['partition']
-
-        with bigsuds.Transaction(self.api):
-            # need to switch to root, set recursive query state
-            current_folder = self.api.System.Session.get_active_folder()
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder='/' + partition)
-
-            current_query_state = self.api.System.Session.get_recursive_query_state()
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
-
-            if module == 'ltm':
-                rules = self.api.LocalLB.Rule.get_list()
-            elif module == 'gtm':
-                rules = self.api.GlobalLB.Rule.get_list()
-            else:
-                rules = self.api.PEM.Policy.get_list()
-
-            # set everything back
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
-
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder=current_folder)
-
-        if self.irule in rules:
-            return True
-        else:
-            return False
-
     def read(self):
-        result = {}
+        """Read information and transform it
 
+        The values that are returned by BIG-IP in the f5-sdk can have encoding
+        attached to them as well as be completely missing in some cases.
+
+        Therefore, this method will transform the data from the BIG-IP into a
+        format that is more easily consumable by the rest of the class and the
+        parameters that are supported by the module.
+        """
+        p = dict()
+        name = self.params['name']
+        partition = self.params['partition']
         module = self.params['module']
 
         if module == 'ltm':
-            irule = self.api.LocalLB.Rule.query_rule(rule_names=[self.irule])
+            r = self.api.tm.ltm.rules.rule.load(
+                name=name,
+                partition=partition
+            )
         elif module == 'gtm':
-            irule = self.api.GlobalLB.Rule.query_rule(rule_names=[self.irule])
-        else:
-            irule = self.api.PEM.Policy.query_rule(rule_names=[self.irule])
+            r = self.api.tm.gtm.rules.rule.load(
+                name=name,
+                partition=partition
+            )
 
-        result['name'] = irule[0]['rule_name']
+        if hasattr(r, 'apiAnonymous'):
+            p['content'] = str(r.apiAnonymous)
+        p['name'] = name
+        return p
 
-        if 'rule_definition' in irule[0]:
-            result['definition'] = irule[0]['rule_definition'].strip()
-        else:
-            result['definition'] = ''
-
-        return result
-
-    def absent(self):
+    def delete(self):
+        params = dict()
+        check_mode = self.params['check_mode']
         module = self.params['module']
-        partition = self.params['partition']
 
-        if not self.exists():
-            return False
+        params['name'] = self.params['name']
+        params['partition'] = self.params['partition']
 
-        if self.params['check_mode']:
+        self.cparams = camel_dict_to_snake_dict(params)
+        if check_mode:
             return True
 
-        with bigsuds.Transaction(self.api):
-            # need to switch to root, set recursive query state
-            current_folder = self.api.System.Session.get_active_folder()
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder='/' + partition)
-
-            current_query_state = self.api.System.Session.get_recursive_query_state()
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
-
-            if module == 'ltm':
-                self.api.LocalLB.Rule.delete_rule(rule_names=[self.irule])
-            elif module == 'gtm':
-                self.api.GlobalLB.Rule.delete_rule(rule_names=[self.irule])
-            else:
-                self.api.PEM.Policy.delete_policy(policies=[self.irule])
-
-            # set everything back
-            if current_query_state == 'STATE_DISABLED':
-                self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
-
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder=current_folder)
+        if module == 'ltm':
+            r = self.api.tm.ltm.rules.rule.load(**params)
+            r.delete()
+        elif module == 'gtm':
+            r = self.api.tm.gtm.rules.rule.load(**params)
+            r.delete()
 
         if self.exists():
-            raise DeleteRuleError()
-        else:
-            return True
+            raise F5ModuleError("Failed to delete the iRule")
+        return True
 
-    def update(self):
-        module = self.params['module']
+    def exists(self):
         name = self.params['name']
-        content = self.params['content'].strip()
         partition = self.params['partition']
+        module = self.params['module']
 
-        current = self.read()
-        if current['definition'] == content:
-            return False
+        if module == 'ltm':
+            return self.api.tm.ltm.rules.rule.exists(
+                name=name,
+                partition=partition
+            )
+        elif module == 'gtm':
+            return self.api.tm.gtm.rules.rule.exists(
+                name=name,
+                partition=partition
+            )
 
-        rules = dict(
-            rule_name=name,
-            rule_definition=content
-        )
+    def present(self):
+        changed = False
 
-        if self.params['check_mode']:
-            changed = True
+        if self.exists():
+            changed = self.update()
         else:
-            with bigsuds.Transaction(self.api):
-                # need to switch to root, set recursive query state
-                current_folder = self.api.System.Session.get_active_folder()
-                if current_folder != '/' + partition:
-                    self.api.System.Session.set_active_folder(folder='/' + partition)
-
-                current_query_state = self.api.System.Session.get_recursive_query_state()
-                if current_query_state == 'STATE_DISABLED':
-                    self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
-
-                if module == 'ltm':
-                    self.api.LocalLB.Rule.modify_rule(rules=[rules])
-                elif module == 'gtm':
-                    self.api.GlobalLB.Rule.modify_rule(rules=[rules])
-                else:
-                    # The PEM SOAP API provides no way to modify a policy.
-                    # So to "modify" it we need to delete it and re-create it.
-                    self.api.PEM.Policy.delete_policy(policies=[rules])
-
-                # set everything back
-                if current_query_state == 'STATE_DISABLED':
-                    self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
-
-                if current_folder != '/' + partition:
-                    self.api.System.Session.set_active_folder(folder=current_folder)
-            changed = True
+            changed = self.create()
 
         return changed
 
-    def create(self):
+    def update(self):
+        params = dict()
+        current = self.read()
+        changed = False
+
+        check_mode = self.params['check_mode']
+        content = self.params['content']
+        name = self.params['name']
         partition = self.params['partition']
         module = self.params['module']
-        name = self.params['name']
-        content = self.params['content'].strip()
 
-        rules = dict(
-            rule_name=name,
-            rule_definition=content
-        )
-
-        with bigsuds.Transaction(self.api):
-            current_folder = self.api.System.Session.get_active_folder()
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder='/' + partition)
-
-            if module == 'ltm':
-                self.api.LocalLB.Rule.create(rules=[rules])
-            elif module == 'gtm':
-                self.api.GlobalLB.Rule.create(rules=[rules])
+        if content is not None:
+            if 'content' in current:
+                if content != current['content']:
+                    params['apiAnonymous'] = content
             else:
-                self.api.PEM.Policy.create(rules=[rules])
+                params['apiAnonymous'] = content
 
-            if current_folder != '/' + partition:
-                self.api.System.Session.set_active_folder(folder=current_folder)
-
-        if self.exists():
-            return True
+        if params:
+            changed = True
+            params['name'] = name
+            params['partition'] = partition
+            if check_mode:
+                return changed
+            self.cparams = camel_dict_to_snake_dict(params)
         else:
-            raise CreateRuleError()
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            if self.params['check_mode']:
-                return True
-
-            return self.create()
-
-
-class BigIpRestApi(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpRestApi, self).__init__(*args, **kwargs)
-
-        server = self.params['server']
-        module = self.params['module']
-
-        # REST endpoints look like this
-        #
-        #    https://localhost/mgmt/tm/ltm/rule/~Common~irule_name?ver=11.6.0"
+            return changed
 
         if module == 'ltm':
-            self._uri = 'https://%s/mgmt/tm/ltm/rule' % (server)
-        elif module == 'gtm':
-            self._uri = 'https://%s/mgmt/tm/gtm/rule' % (server)
-        else:
-            self._uri = 'https://%s/mgmt/tm/pem/rules' % (server)
-
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
-
-    def read(self):
-        result = {}
-
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
-
-        url = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.get(url,
-                            auth=(user, password),
-                            verify=validate_certs)
-
-        if resp.status_code == 200:
-            res = resp.json()
-
-            result['name'] = res['name']
-
-            if 'apiAnonymous' in res:
-                result['definition'] = res['apiAnonymous'].strip()
-            else:
-                result['definition'] = ''
-
-        return result
-
-    def exists(self):
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
-
-        url = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.get(url,
-                            auth=(user, password),
-                            verify=validate_certs)
-
-        if resp.status_code != 200:
-            return False
-        else:
-            return True
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            if self.params['check_mode']:
-                return True
-            return self.create()
-
-    def update(self):
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
-        content = self.params['content'].strip()
-
-        current = self.read()
-        if current['definition'] == content:
-            return False
-        else:
-            payload = dict(
-                apiAnonymous=content
+            d = self.api.tm.ltm.rules.rule.load(
+                name=name,
+                partition=partition
             )
+            d.update(**params)
+            d.refresh()
+        elif module == 'gtm':
+            d = self.api.tm.gtm.rules.rule.load(
+                name=name,
+                partition=partition
+            )
+            d.update(**params)
+            d.refresh()
 
-        if self.params['check_mode']:
-            return True
-
-        url = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.patch(url,
-                              auth=(user, password),
-                              data=json.dumps(payload),
-                              verify=validate_certs,
-                              headers=self._headers)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
+        return True
 
     def create(self):
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
+        params = dict()
+
+        check_mode = self.params['check_mode']
+        content = self.params['content']
         name = self.params['name']
-        content = self.params['content'].strip()
+        partition = self.params['partition']
+        module = self.params['module']
 
-        payload = dict(
-            name=name,
-            apiAnonymous=content,
-            partition=partition
-        )
-
-        resp = requests.post(self._uri,
-                             auth=(user, password),
-                             data=json.dumps(payload),
-                             verify=validate_certs,
-                             headers=self._headers)
-        if resp.status_code == 200:
+        if check_mode:
             return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
 
-    def absent(self):
-        user = self.params['user']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
-        partition = self.params['partition']
-        name = self.params['name']
+        if content is not None:
+            params['apiAnonymous'] = content
+
+        params['name'] = name
+        params['partition'] = partition
+
+        self.cparams = camel_dict_to_snake_dict(params)
+        if check_mode:
+            return True
+
+        if module == 'ltm':
+            d = self.api.tm.ltm.rules.rule
+            d.create(**params)
+        elif module == 'gtm':
+            d = self.api.tm.gtm.rules.rule
+            d.create(**params)
 
         if not self.exists():
-            return False
+            raise F5ModuleError("Failed to create the iRule")
+        return True
 
-        if self.params['check_mode']:
-            return True
+    def absent(self):
+        changed = False
 
-        uri = "%s/~%s~%s" % (self._uri, partition, name)
-        resp = requests.delete(uri,
-                               auth=(user, password),
-                               verify=validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
+        if self.exists():
+            changed = self.delete()
+
+        return changed
 
 
 def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        content=dict(required=False),
-        src=dict(required=False),
+        content=dict(required=False, default=None),
+        src=dict(required=False, default=None),
         name=dict(required=True),
-        module=dict(required=True, choices=MODULES),
-        state=dict(default='present', choices=STATES),
+        module=dict(required=True, choices=MODULES)
     )
     argument_spec.update(meta_args)
 
@@ -564,16 +362,15 @@ def main():
     )
 
     try:
-        obj = BigIpApiFactory.factory(module)
+        obj = BigIpiRule(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
         module.exit_json(**result)
-    except bigsuds.ConnectionError:
-        module.fail_json(msg="Could not connect to BIG-IP host")
-    except requests.exceptions.SSLError:
-        module.fail_json(msg='Certificate verification failed. Consider using validate_certs=no')
+    except F5ModuleError as e:
+        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':

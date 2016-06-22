@@ -1,5 +1,5 @@
 when LB_SELECTED {
-   # {{ inventory_hostname }}
+   # Capture IP address chosen by WIP load balancing
    set wipHost [LB::server addr]
 }
 
