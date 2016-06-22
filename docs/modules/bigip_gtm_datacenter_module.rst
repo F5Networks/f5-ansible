@@ -21,8 +21,7 @@ Manage BIG-IP data center configuration. A data center defines the location wher
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk
 
 
 Options
@@ -81,6 +80,12 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
@@ -112,14 +117,68 @@ Examples
       bigip_gtm_datacenter:
           server: "big-ip"
           name: "New York"
-          location: "New York"
+          location: "222 West 23rd"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> location </td>
+        <td> The location that is set for the datacenter </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 222 West 23rd </td>
+    </tr>
+            <tr>
+        <td> contact </td>
+        <td> The contact that was set on the datacenter </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> admin@root.local </td>
+    </tr>
+            <tr>
+        <td> enabled </td>
+        <td> Whether the datacenter is enabled or not </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> The description that was set for the datacenter </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Datacenter in NYC </td>
+    </tr>
+            <tr>
+        <td> name </td>
+        <td> Name of the datacenter being manipulated </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> foo </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
     

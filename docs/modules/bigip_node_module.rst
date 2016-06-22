@@ -57,6 +57,18 @@ Options
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Set monitor availability status for node</div></td></tr>
             <tr>
+    <td>monitor_type<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>and_list</li><li>m_of_n</li></ul></td>
+        <td><div>Monitor rule type when monitors &gt; 1</div></td></tr>
+            <tr>
+    <td>monitors<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Monitor template name list. Always use the full path to the monitor.</div></td></tr>
+            <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -75,11 +87,23 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP password</div></td></tr>
             <tr>
+    <td>quorum<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Monitor quorum value when monitor_type is m_of_n</div></td></tr>
+            <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>session_state<br/><div style="font-size: small;"> (added in 1.9)</div></td>
     <td>no</td>
@@ -102,8 +126,8 @@ Options
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>yes</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites. Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
         </table>
     </br>
 
@@ -114,9 +138,16 @@ Examples
 
  ::
 
+    
+    ## playbook task examples:
+    
     ---
-    - name: Add node
-      local_action: >
+    # file bigip-test.yml
+    # ...
+    - hosts: bigip-test
+      tasks:
+      - name: Add node
+        local_action: >
           bigip_node
           server=lb.mydomain.com
           user=admin
@@ -132,6 +163,18 @@ Examples
     # parameter but instead use the name parameter.
     # Alternatively, you could have specified a name with the
     # name parameter when state=present.
+    
+      - name: Add node with a single 'ping' monitor    
+        bigip_node:
+          server: lb.mydomain.com
+          user: admin
+          password: mysecret
+          state: present
+          partition: Common
+          host: "{{ ansible_default_ipv4["address"] }}"
+          name: mytestserver
+          monitors:
+            - /Common/icmp
     
       - name: Modify node description
         local_action: >

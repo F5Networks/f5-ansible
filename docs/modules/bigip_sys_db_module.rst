@@ -123,11 +123,52 @@ Examples
           state: "reset"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> default_value </td>
+        <td> The default value of the key </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> name </td>
+        <td> The key in the system database that was specified </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> setup.run </td>
+    </tr>
+            <tr>
+        <td> value </td>
+        <td> The value that you set the key to </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> false </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires BIG-IP version 12.0.0 or greater
 
 
     

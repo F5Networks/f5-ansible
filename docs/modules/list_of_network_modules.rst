@@ -12,13 +12,14 @@ F5
   bigip_command (E) - Run commands on a BIG-IP via tmsh <bigip_command_module>
   bigip_device_dns (E) - Manage BIG-IP device DNS settings <bigip_device_dns_module>
   bigip_device_ntp (E) - Manage NTP servers on a BIG-IP <bigip_device_ntp_module>
-  bigip_device_sshd (E) - foo <bigip_device_sshd_module>
+  bigip_device_sshd (E) - Manage the SSHD settings of a BIG-IP <bigip_device_sshd_module>
   bigip_dns_record (E) - Manage DNS resource records on a BIG-IP <bigip_dns_record_module>
   bigip_dns_record_facts (E) - foo <bigip_dns_record_facts_module>
   bigip_dns_zone (E) - Manages DNS zones on a BIG-IP <bigip_dns_zone_module>
   bigip_facts (E) - Collect facts from F5 BIG-IP devices <bigip_facts_module>
   bigip_gtm_datacenter (E) - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts (E) - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
+  bigip_gtm_virtual_server (E) - Manages F5 BIG-IP GTM virtual servers <bigip_gtm_virtual_server_module>
   bigip_gtm_wide_ip (E) - Manages F5 BIG-IP GTM wide ip <bigip_gtm_wide_ip_module>
   bigip_hostname (E) - Manage the hostname of a BIG-IP <bigip_hostname_module>
   bigip_iapp_service (E) - foo <bigip_iapp_service_module>
@@ -38,7 +39,7 @@ F5
   bigip_service (E) - Manage BIG-IP service states <bigip_service_module>
   bigip_snmp (E) - foo <bigip_snmp_module>
   bigip_software (E) - Manage BIG-IP software versions and hotfixes <bigip_software_module>
-  bigip_software_update (E) - foo <bigip_software_update_module>
+  bigip_software_update (E) - Manage the software update settings of a BIG-IP <bigip_software_update_module>
   bigip_sys_db (E) - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global (E) - Manage BIG-IP global settings <bigip_sys_global_module>
   bigip_ucs (E) - Manage UCS files <bigip_ucs_module>

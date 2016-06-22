@@ -85,7 +85,7 @@ Options
     <td>no</td>
     <td>none</td>
         <td><ul></ul></td>
-        <td><div>Port address part op the ipport definition. The default API setting is 0.</div></td></tr>
+        <td><div>port address part op the ipport definition. The default API setting is 0.</div></td></tr>
             <tr>
     <td>receive<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -104,6 +104,12 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -138,7 +144,7 @@ Options
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>yes</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
         </table>
     </br>
@@ -151,43 +157,42 @@ Examples
  ::
 
     
-    - name: Create TCP Monitor
+    - name: BIGIP F5 | Create TCP Monitor
       local_action:
-          module: bigip_monitor_tcp
-          state: present
-          server: "{{ f5server }}"
-          user: "{{ f5user }}"
-          password: "{{ f5password }}"
-          name: "{{ item.monitorname }}"
-          type: tcp
-          send: "{{ item.send }}"
-          receive: "{{ item.receive }}"
+        module:             bigip_monitor_tcp
+        state:              present
+        server:             "{{ f5server }}"
+        user:               "{{ f5user }}"
+        password:           "{{ f5password }}"
+        name:               "{{ item.monitorname }}"
+        type:               tcp
+        send:               "{{ item.send }}"
+        receive:            "{{ item.receive }}"
       with_items: f5monitors-tcp
-    
-    - name: Create TCP half open Monitor
+    - name: BIGIP F5 | Create TCP half open Monitor
       local_action:
-          module: bigip_monitor_tcp
-          state: present
-          server: "{{ f5server }}"
-          user: "{{ f5user }}"
-          password: "{{ f5password }}"
-          name: "{{ item.monitorname }}"
-          type: tcp
-          send: "{{ item.send }}"
-          receive: "{{ item.receive }}"
+        module:             bigip_monitor_tcp
+        state:              present
+        server:             "{{ f5server }}"
+        user:               "{{ f5user }}"
+        password:           "{{ f5password }}"
+        name:               "{{ item.monitorname }}"
+        type:               tcp
+        send:               "{{ item.send }}"
+        receive:            "{{ item.receive }}"
       with_items: f5monitors-halftcp
-    
-    - name: Remove TCP Monitor
+    - name: BIGIP F5 | Remove TCP Monitor
       local_action:
-          module: bigip_monitor_tcp
-          state: absent
-          server: "{{ f5server }}"
-          user: "{{ f5user }}"
-          password: "{{ f5password }}"
-          name: "{{ monitorname }}"
+        module:             bigip_monitor_tcp
+        state:              absent
+        server:             "{{ f5server }}"
+        user:               "{{ f5user }}"
+        password:           "{{ f5password }}"
+        name:               "{{ monitorname }}"
       with_flattened:
-          - f5monitors-tcp
-          - f5monitors-halftcp
+      - f5monitors-tcp
+      - f5monitors-halftcp
+    
 
 
 Notes

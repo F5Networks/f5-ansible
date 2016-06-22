@@ -38,47 +38,29 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>yes</code>, will only add specific servers to the device configuration, not set them to just the list in <code>nameserver</code>, <code>nameservers</code>, <code>forwarder</code>, <code>forwarders</code>, <code>search_domain</code> or <code>search_domains</code>.</div></td></tr>
-            <tr>
     <td>cache<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>disable</td>
         <td><ul><li>enable</li><li>disable</li></ul></td>
         <td><div>Specifies whether the system caches DNS lookups or performs the operation each time a lookup is needed. Please note that this applies only to Access Policy Manager features, such as ACLs, web application rewrites, and authentication.</div></td></tr>
             <tr>
-    <td>forwarder<br/><div style="font-size: small;"></div></td>
+    <td>forwarders<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>A single BIND servers that the system can use to perform DNS lookups. BIND allows you to cache and store DNS requests and responses on a local server and minimize DNS server requests, and bandwidth. At least one of <code>forwarders</code> or <code>forwarder</code> are required.</div></td></tr>
-            <tr>
-    <td>forwarders<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of BIND servers that the system can use to perform DNS lookups. BIND allows you to cache and store DNS requests and responses on a local server and minimize DNS server requests, and bandwidth. At least one of <code>forwarders</code> or <code>forwarder</code> are required.</div></td></tr>
+        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div></td></tr>
             <tr>
     <td>ip_version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>4</td>
+    <td>None</td>
         <td><ul><li>4</li><li>6</li></ul></td>
         <td><div>Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.</div></td></tr>
             <tr>
-    <td>nameserver<br/><div style="font-size: small;"></div></td>
+    <td>name_servers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>A single name server that the system uses to validate DNS lookups, and resolve host names. At least one of <code>nameservers</code> or <code>nameserver</code> are required.</div></td></tr>
-            <tr>
-    <td>nameservers<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of name servers that the system uses to validate DNS lookups, and resolve host names. At least one of <code>nameservers</code> or <code>nameserver</code> are required.</div></td></tr>
+        <td><div>A list of name serverz that the system uses to validate DNS lookups</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -86,23 +68,23 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP password</div></td></tr>
             <tr>
-    <td>search_domain<br/><div style="font-size: small;"></div></td>
+    <td>search<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>A single domain that the system searches for local domain lookups, to resolve local host names. At least one of <code>search_domains</code> or <code>search_domain</code> are required.</div></td></tr>
-            <tr>
-    <td>search_domains<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of domains that the system searches for local domain lookups, to resolve local host names. At least one of <code>search_domains</code> or <code>search_domain</code> are required.</div></td></tr>
+        <td><div>A list of domains that the system searches for local domain lookups, to resolve local host names.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -135,19 +117,74 @@ Examples
     - name: Set the DNS settings on the BIG-IP
       bigip_device_dns:
           server: "big-ip"
-          nameservers: [208.67.222.222, 208.67.220.220]
-          forwarders: []
-          search_domains:
+          name_servers:
+              - 208.67.222.222
+              - 208.67.220.220
+          search:
               - localdomain
               - lab.local
           state: present
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> name_servers </td>
+        <td> List of name servers that were added or removed </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+    </tr>
+            <tr>
+        <td> ip_version </td>
+        <td> IP version that was set that DNS will specify IP addresses in </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 4 </td>
+    </tr>
+            <tr>
+        <td> search </td>
+        <td> List of search domains that were added or removed </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+    </tr>
+            <tr>
+        <td> cache </td>
+        <td> The new value of the DNS caching </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
+    </tr>
+            <tr>
+        <td> forwarders </td>
+        <td> List of forwarders that were added or removed </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the requests Python package on the host. This is as easy as pip install requests
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install requests
 
 
     

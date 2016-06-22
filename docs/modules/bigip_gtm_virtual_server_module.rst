@@ -1,10 +1,10 @@
-.. _bigip_gtm_wide_ip:
+.. _bigip_gtm_virtual_server:
 
 
-bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_virtual_server - Manages F5 BIG-IP GTM virtual servers
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.0
+.. versionadded:: 2.2
 
 
 .. contents::
@@ -15,7 +15,7 @@ bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
 Synopsis
 --------
 
-Manages F5 BIG-IP GTM wide ip
+Manages F5 BIG-IP GTM virtual servers
 
 
 Requirements (on host that executes module)
@@ -38,11 +38,12 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>lb_method<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul><li>return_to_dns</li><li>null</li><li>round_robin</li><li>ratio</li><li>topology</li><li>static_persist</li><li>global_availability</li><li>vs_capacity</li><li>least_conn</li><li>lowest_rtt</li><li>lowest_hops</li><li>packet_rate</li><li>cpu</li><li>hit_ratio</li><li>qos</li><li>bps</li><li>drop_packet</li><li>explicit_ip</li><li>connection_rate</li><li>vs_score</li></ul></td>
-        <td><div>LB method of wide ip</div></td></tr>
+    <td>host<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Virtual server host</div></br>
+        <div style="font-size: small;">aliases: address<div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -50,17 +51,29 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP password</div></td></tr>
             <tr>
+    <td>port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Virtual server port</div></td></tr>
+            <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
         <td><div>BIG-IP server port</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>Virtual server state</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -68,17 +81,17 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP username</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
-            <tr>
-    <td>wide_ip<br/><div style="font-size: small;"></div></td>
+    <td>virtual_server_name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Wide IP name</div></td></tr>
+        <td><div>Virtual server name</div></td></tr>
+            <tr>
+    <td>virtual_server_server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Virtual server server</div></td></tr>
         </table>
     </br>
 
@@ -89,14 +102,15 @@ Examples
 
  ::
 
-      - name: Set lb method
+      - name: Enable virtual server
         local_action: >
-          bigip_gtm_wide_ip
+          bigip_gtm_virtual_server
           server=192.168.0.1
           user=admin
           password=mysecret
-          lb_method=round_robin
-          wide_ip=my-wide-ip.example.com
+          virtual_server_name=myname
+          virtual_server_server=myserver
+          state=enabled
 
 
 Notes

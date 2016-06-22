@@ -4,7 +4,7 @@
 bigip_device_ntp - Manage NTP servers on a BIG-IP
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.1
+.. versionadded:: 2.2
 
 
 .. contents::
@@ -21,8 +21,7 @@ Manage NTP servers on a BIG-IP
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * requests
-  * bigsuds
+  * f5-sdk
 
 
 Options
@@ -38,12 +37,6 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>yes</code>, will only add NTP servers, not set them to just the list in <code>ntp_servers</code> or the value of <code>ntp_server</code>.</div></td></tr>
             <tr>
     <td>ntp_server<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -68,6 +61,12 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -104,7 +103,7 @@ Examples
  ::
 
     - name: Set the boot.quiet DB variable on the BIG-IP
-      bigip_sysdb:
+      bigip_device_ntp:
           server: "big-ip"
           key: "boot.quiet"
           value: "disable"
@@ -114,7 +113,7 @@ Examples
 Notes
 -----
 
-.. note:: Requires the requests Python package on the host. This is as easy as pip install requests
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
     

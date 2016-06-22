@@ -62,6 +62,12 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>session<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
@@ -89,7 +95,12 @@ Examples
 
  ::
 
+    
+    ## playbook task examples:
+    
     ---
+    # file bigip-test.yml
+    # ...
     - hosts: bigip-test
       tasks:
       - name: Collect BIG-IP facts
@@ -99,6 +110,7 @@ Examples
           user=admin
           password=mysecret
           include=interface,vlan
+    
 
 
 Notes

@@ -1,8 +1,8 @@
-.. _bigip_dns_record_facts:
+.. _bigip_device_sshd:
 
 
-bigip_dns_record_facts - foo
-++++++++++++++++++++++++++++
+bigip_device_sshd - Manage the SSHD settings of a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_dns_record_facts - foo
 Synopsis
 --------
 
-foo
+Manage the SSHD settings of a BIG-IP
 
 
 Requirements (on host that executes module)
@@ -38,11 +38,53 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
+    <td>allow<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul><li>all</li><li>IP address, such as 172.27.1.10</li><li>IP range, such as 172.27.*.* or 172.27.0.0/255.255.0.0</li></ul></td>
+        <td><div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system</div></td></tr>
+            <tr>
+    <td>banner<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>Whether to enable the banner or not</div></td></tr>
+            <tr>
+    <td>banner_text<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH</div></td></tr>
+            <tr>
+    <td>inactivity_timeout<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies the number of seconds before inactivity causes an SSH session to log out</div></td></tr>
+            <tr>
+    <td>log_level<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>debug</li><li>debug1</li><li>debug2</li><li>debug3</li><li>error</li><li>fatal</li><li>info</li><li>quiet</li><li>verbose</li></ul></td>
+        <td><div>Specifies the minimum SSHD message level to include in the system log</div></td></tr>
+            <tr>
+    <td>login<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications</div></td></tr>
+            <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP password</div></td></tr>
+            <tr>
+    <td>port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Port that you want the SSH daemon to run on</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -50,24 +92,141 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP username</div></br>
         <div style="font-size: small;">aliases: username<div></td></tr>
+            <tr>
+    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
 
 
+Examples
+--------
 
+ ::
 
+    - name: Set the banner for the SSHD service from a string
+      bigip_device_sshd:
+          banner: "enabled"
+          banner_text: "banner text goes here"
+          password: "admin"
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Set the banner for the SSHD service from a file
+      bigip_device_sshd:
+          banner: "enabled"
+          banner_text: "{{ lookup('file', '/path/to/file') }}"
+          password: "admin"
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Set the SSHD service to run on port 2222
+      bigip_device_sshd:
+          password: "admin"
+          port: 2222
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+      delegate_to: localhost
+
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> log_level </td>
+        <td> The minimum SSHD message level to include in the system log </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> debug </td>
+    </tr>
+            <tr>
+        <td> allow </td>
+        <td> Specifies, if you have enabled SSH access, the IP address or address
+range for other systems that can use SSH to communicate with this
+system
+ </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> 192.168.*.* </td>
+    </tr>
+            <tr>
+        <td> banner_text </td>
+        <td> Specifies the text included on the pre-login banner that
+displays when a user attempts to login to the system using SSH
+ </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> This is a corporate device. Connecting to it without... </td>
+    </tr>
+            <tr>
+        <td> inactivity_timeout </td>
+        <td> The number of seconds before inactivity causes an SSH
+session to log out
+ </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10 </td>
+    </tr>
+            <tr>
+        <td> login </td>
+        <td> Specifies that the system accepts SSH communications or not </td>
+        <td align=center>  </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> banner </td>
+        <td> Whether the banner is enabled or not </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> port </td>
+        <td> Port that you want the SSH daemon to run on </td>
+        <td align=center>  </td>
+        <td align=center> int </td>
+        <td align=center> 22 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the remote host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk
+.. note:: Requires BIG-IP version 12.0.0 or greater
 
 
     

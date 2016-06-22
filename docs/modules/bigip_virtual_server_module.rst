@@ -42,7 +42,13 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be used by the virtual server</div></td></tr>
+        <td><div>List of all Profiles (HTTP,ClientSSL,ServerSSL,etc) that must be used by the virtual server</div></td></tr>
+            <tr>
+    <td>all_rules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>List of rules to be applied in priority order</div></td></tr>
             <tr>
     <td>default_persistence_profile<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -60,7 +66,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Destination IP of the virtual server (only host is currently supported). Required when state=present and vs does not exist."</div></br>
+        <td><div>Destination IP of the virtual server (only host is currently supported) . Required when state=present and vs does not exist.</div></br>
         <div style="font-size: small;">aliases: address, ip<div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
@@ -100,6 +106,12 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
@@ -109,8 +121,8 @@ Options
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
-        <td><ul><li>absent</li><li>disabled</li><li>enabled</li><li>present</li></ul></td>
-        <td><div>Virtual Server state. If <code>absent</code>, delete the VS if <code>present</code>, or <code>enabled</code>, create the VS if needed and set state to enabled. If <code>disabled</code>, create the VS if needed and set state to disabled.</div></td></tr>
+        <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>Virtual Server state</div><div>Absent, delete the VS if present</div><div>present (and its synonym enabled), create if needed the VS and set state to enabled</div><div>disabled, create if needed the VS and set state to disabled</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -121,7 +133,7 @@ Options
     <td>validate_certs<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>yes</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -133,44 +145,50 @@ Examples
 
  ::
 
-    - name: Add VS
-      local_action:
-          module: bigip_virtual_server
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: present
-          partition: MyPartition
-          name: myvirtualserver
-          destination: "{{ ansible_default_ipv4['address'] }}"
-          port: 443
-          pool: "{{ mypool }}"
-          snat: Automap
-          description: Test Virtual Server
-          all_profiles:
-              - http
-              - clientssl
     
-    - name: Modify Port of the Virtual Server
-      local_action:
-          module: bigip_virtual_server
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: present
-          partition: MyPartition
-          name: myvirtualserver
-          port: 8080
+    ## playbook task examples:
     
-    - name: Delete pool
-      local_action:
-          module: bigip_virtual_server
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: absent
-          partition: MyPartition
-          name: myvirtualserver
+    ---
+    # file bigip-test.yml
+    # ...
+      - name: Add VS
+        local_action:
+            module: bigip_virtual_server
+            server: lb.mydomain.net
+            user: admin
+            password: secret
+            state: present
+            partition: MyPartition
+            name: myvirtualserver
+            destination: "{{ ansible_default_ipv4['address'] }}"
+            port: 443
+            pool: "{{ mypool }}"
+            snat: Automap
+            description: Test Virtual Server
+            all_profiles:
+                - http
+                - clientssl
+    
+      - name: Modify Port of the Virtual Server
+        local_action:
+            module: bigip_virtual_server
+            server: lb.mydomain.net
+            user: admin
+            password: secret
+            state: present
+            partition: MyPartition
+            name: myvirtualserver
+            port: 8080
+    
+      - name: Delete virtual server
+        local_action:
+            module: bigip_virtual_server
+            server: lb.mydomain.net
+            user: admin
+            password: secret
+            state: absent
+            partition: MyPartition
+            name: myvirtualserver
 
 Return Values
 -------------
