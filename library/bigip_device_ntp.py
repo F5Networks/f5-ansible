@@ -24,18 +24,15 @@ description:
   - Manage NTP servers on a BIG-IP
 version_added: "2.2"
 options:
-  append:
-    description:
-      - If C(yes), will only add NTP servers, not set them to just the list
-        in C(ntp_servers) or the value of C(ntp_server).
-    choices:
-      - yes
-      - no
-    default: no
   server:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
   password:
     description:
       - BIG-IP password
@@ -97,206 +94,173 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-import json
-import socket
+RETURN = '''
+
+'''
 
 try:
-    import requests
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
 except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    HAS_F5SDK = False
 
 
-class BigIpCommon(object):
-    def __init__(self, user, password, server, ntp_servers=[], timezone=None,
-                 append=False, validate_certs=True):
+class BigIpDeviceNtp(object):
+    def __init__(self, *args, **kwargs):
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        self._username = user
-        self._password = password
-        self._hostname = server
+        # The params that change in the module
+        self.cparams = dict()
 
-        if isinstance(ntp_servers, list):
-            self._ntp_servers = ntp_servers
-        else:
-            self._ntp_servers = [ntp_servers]
+        # Stores the params that are sent to the module
+        self.params = kwargs
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
 
-        self._timezone = timezone
-        self._append = append
-        self._validate_certs = validate_certs
+    def flush(self):
+        result = dict()
+        changed = False
+        state = self.params['state']
 
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
 
-class BigIpRest(BigIpCommon):
-    def __init__(self, user, password, server, ntp_servers=[], timezone=None,
-                 append=False, validate_certs=True):
-
-        super(BigIpRest, self).__init__(user, password, server, ntp_servers,
-                                        timezone, append, validate_certs)
-
-        self._uri = 'https://%s/mgmt/tm/sys/ntp' % (self._hostname)
-        self._headers = {
-            'Content-Type': 'application/json'
-        }
+        result.update(**self.cparams)
+        result.update(dict(changed=changed))
+        return result
 
     def read(self):
-        resp = requests.get(self._uri,
-                            auth=(self._username, self._password),
-                            verify=self._validate_certs)
+        """Read information and transform it
 
-        if resp.status_code != 200:
-            return {}
-        else:
-            return resp.json()
+        The values that are returned by BIG-IP in the f5-sdk can have encoding
+        attached to them as well as be completely missing in some cases.
+
+        Therefore, this method will transform the data from the BIG-IP into a
+        format that is more easily consumable by the rest of the class and the
+        parameters that are supported by the module.
+        """
+        p = dict()
+        r = self.api.tm.sys.ntp.load()
+
+        if hasattr(r, 'servers'):
+            # Deliberately using sets to supress duplicates
+            p['servers'] = set([str(x) for x in r.servers])
+        if hasattr(r, 'timezone'):
+            p['timezone'] = str(r.timezone)
+        return p
 
     def present(self):
         changed = False
-        payload = dict()
+        params = dict()
         current = self.read()
 
-        # NTP servers can be set independently
-        if self._ntp_servers and self._append:
-            if 'servers' in current:
-                current_servers = current['servers']
-                if not set(self._ntp_servers).issubset(set(current_servers)):
-                    current_servers += self._ntp_servers
-                    ntp_servers = list(set(current_servers))
-                    changed = True
-            else:
-                ntp_servers = self._ntp_servers
-                changed = True
-        elif self._ntp_servers:
-            if 'servers' in current and current['servers'] != self._ntp_servers:
-                ntp_servers = self._ntp_servers
-                changed = True
-            elif 'servers' not in current:
-                ntp_servers = self._ntp_servers
-                changed = True
+        check_mode = self.params['check_mode']
+        ntp_servers = self.params['ntp_servers']
+        timezone = self.params['timezone']
 
-        if changed:
-            payload['servers'] = ntp_servers
+        # NTP servers can be set independently
+        if ntp_servers is not None:
+            if 'servers' in current:
+                items = set(ntp_servers)
+                if items != current['servers']:
+                    params['servers'] = list(ntp_servers)
+            else:
+                params['servers'] = ntp_servers
 
         # Timezone can be set independently
-        if self._timezone:
-            if 'timezone' in current and current['timezone'] != self._timezone:
-                payload['timezone'] = self._timezone
-                changed = True
+        if timezone is not None:
+            if 'timezone' in current and current['timezone'] != timezone:
+                params['timezone'] = timezone
 
-        if not changed:
+        if params:
+            changed = True
+            if check_mode:
+                return changed
+            self.cparams = camel_dict_to_snake_dict(params)
+        else:
             return changed
 
-        resp = requests.patch(self._uri,
-                              auth=(self._username, self._password),
-                              data=json.dumps(payload),
-                              verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
+        r = self.api.tm.sys.ntp.load()
+        r.update(**params)
+        r.refresh()
+
+        return changed
 
     def absent(self):
         changed = False
-        payload = dict()
+        params = dict()
         current = self.read()
 
-        if self._ntp_servers and 'servers' in current:
+        check_mode = self.params['check_mode']
+        ntp_servers = self.params['ntp_servers']
+
+        if not ntp_servers:
+            raise F5ModuleError(
+                "Absent can only be used when removing NTP servers"
+            )
+
+        if ntp_servers and 'servers' in current:
             servers = current['servers']
-            new_servers = [x for x in servers if x not in self._ntp_servers]
+            new_servers = [x for x in servers if x not in ntp_servers]
 
             if servers != new_servers:
-                payload['servers'] = new_servers
-                changed = True
+                params['servers'] = new_servers
 
-        if not changed:
+        if params:
+            changed = True
+            if check_mode:
+                return changed
+            self.cparams = camel_dict_to_snake_dict(params)
+        else:
             return changed
 
-        resp = requests.patch(self._uri,
-                              auth=(self._username, self._password),
-                              data=json.dumps(payload),
-                              verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
-
-    def save(self):
-        payload = dict(command='save')
-        uri = 'https://%s/mgmt/tm/sys/config' % (self._hostname)
-        resp = requests.post(uri,
-                             auth=(self._username, self._password),
-                             data=json.dumps(payload),
-                             verify=self._validate_certs)
-        if resp.status_code == 200:
-            return True
-        else:
-            res = resp.json()
-            raise Exception(res['message'])
+        r = self.api.tm.sys.ntp.load()
+        r.update(**params)
+        r.refresh()
+        return changed
 
 
 def main():
-    changed = False
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        server=dict(required=True),
+        password=dict(required=True),
+        ntp_servers=dict(required=False, type='list', default=None),
+        state=dict(default='present', choices=['absent', 'present']),
+        timezone=dict(default=None, required=False),
+        user=dict(required=True, aliases=['username']),
+        validate_certs=dict(default='yes', type='bool'),
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
-        argument_spec=dict(
-            append=dict(default='no', type='bool'),
-            server=dict(required=True),
-            password=dict(required=True),
-            ntp_server=dict(required=False, type='str', default=None),
-            ntp_servers=dict(required=False, type='list', default=[]),
-            state=dict(default='present', choices=['absent', 'present']),
-            timezone=dict(default='UTC', required=False),
-            user=dict(required=True, aliases=['username']),
-            validate_certs=dict(default='yes', type='bool'),
-        ),
+        argument_spec=argument_spec,
         required_one_of=[
-            ['ntp_server', 'ntp_servers', 'timezone']
+            ['ntp_servers', 'timezone']
         ],
-        mutually_exclusive=[
-            ['ntp_server', 'ntp_servers']
-        ]
+        supports_check_mode=True
     )
 
-    append = module.params.get('append')
-    hostname = module.params.get('server')
-    password = module.params.get('password')
-    username = module.params.get('user')
-    state = module.params.get('state')
-    timezone = module.params.get('timezone')
-    ntp_server = module.params.get('ntp_server')
-    ntp_servers = module.params.get('ntp_servers')
-    validate_certs = module.params.get('validate_certs')
-
     try:
-        if ntp_server:
-            ntp_servers = ntp_server
+        obj = BigIpDeviceNtp(check_mode=module.check_mode, **module.params)
+        result = obj.flush()
 
-        if append and not ntp_servers:
-            module.fail_json(msg='The append parameter requires at least one NTP server')
-
-        if not requests_found:
-            raise Exception("The python requests module is required")
-
-        obj = BigIpRest(username, password, hostname, ntp_servers, timezone,
-                        append, validate_certs)
-
-        if state == "present":
-            if obj.present():
-                changed = True
-        elif state == "absent":
-            if not ntp_servers:
-                module.fail_json(msg='State absent is only relevant when removing NTP servers')
-
-            if obj.absent():
-                changed = True
-    except socket.timeout:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except Exception as e:
+        module.exit_json(**result)
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
-    module.exit_json(changed=changed)
-
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
