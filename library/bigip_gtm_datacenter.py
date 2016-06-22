@@ -297,8 +297,6 @@ class BigIpGtmDatacenter(object):
         r.update(**params)
         r.refresh()
 
-        if not self.exists():
-            raise F5ModuleError("Failed to create the datacenter")
         return True
 
     def delete(self):
