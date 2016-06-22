@@ -39,7 +39,8 @@ options:
     default: None
   enabled:
     description:
-      - Whether the data center should be enabled. At least one of state and enabled are required.
+      - Whether the data center should be enabled. At least one of state and
+        enabled are required.
     required: false
     default: None
   location:
@@ -105,12 +106,36 @@ EXAMPLES = '''
   bigip_gtm_datacenter:
       server: "big-ip"
       name: "New York"
-      location: "New York"
+      location: "222 West 23rd"
   delegate_to: localhost
 '''
 
 RETURN = '''
-
+contact:
+    description: The contact that was set on the datacenter
+    returned: changed
+    type: string
+    sample: "admin@root.local"
+description:
+    description: The description that was set for the datacenter
+    returned: changed
+    type: string
+    sample: "Datacenter in NYC"
+enabled:
+    description: Whether the datacenter is enabled or not
+    returned: changed
+    type: bool
+    sample: true
+location:
+    description: The location that is set for the datacenter
+    returned: changed
+    type: string
+    sample: "222 West 23rd"
+name:
+    description: Name of the datacenter being manipulated
+    returned: changed
+    type: string
+    sample: "foo"
 '''
 
 try:
@@ -168,6 +193,10 @@ class BigIpGtmDatacenter(object):
 
         params['name'] = name
         params['partition'] = partition
+
+        self.cparams = camel_dict_to_snake_dict(params)
+        if check_mode:
+            return True
 
         d = self.api.tm.gtm.datacenters.datacenter
         d.create(**params)
@@ -273,17 +302,17 @@ class BigIpGtmDatacenter(object):
         return True
 
     def delete(self):
+        params = dict()
         check_mode = self.params['check_mode']
-        name = self.params['name']
-        partition = self.params['partition']
 
+        params['name'] = self.params['name']
+        params['partition'] = self.params['partition']
+
+        self.cparams = camel_dict_to_snake_dict(params)
         if check_mode:
             return True
 
-        dc = self.api.tm.gtm.datacenters.datacenter.load(
-            name=name,
-            partition=partition
-        )
+        dc = self.api.tm.gtm.datacenters.datacenter.load(**params)
         dc.delete()
 
         if self.exists():
@@ -328,12 +357,17 @@ class BigIpGtmDatacenter(object):
         try:
             if state == "present":
                 changed = self.present()
-                result.update(**self.cparams)
+
+                # Ensure that this field is not returned to the user since it
+                # is not a valid parameter to the module.
+                if 'disabled' in self.cparams:
+                    del self.cparams['disabled']
             elif state == "absent":
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
+        result.update(**self.cparams)
         result.update(dict(changed=changed))
         return result
 
