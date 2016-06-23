@@ -182,7 +182,7 @@ deleted:
     description: Name of a virtual server that was deleted
     returned: changed
     type: string
-    sample
+    sample: "my-virtual-server"
 '''
 
 
