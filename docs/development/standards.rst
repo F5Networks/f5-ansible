@@ -468,6 +468,54 @@ reflect that.
 If your module requires functionality greater than 12.0.0 it is also
 acceptable to specify that in the ``DOCUMENTATION`` block.
 
+Never raise a general Exception
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+General Exceptions are bad because they hide unknown errors from you, the
+developer. If a bug report comes in and is being caused by an exception
+that you do not handle, it will be exceedingly difficult to debug it.
+
+Instead, only catch the `F5ModuleError` exception that is provided by the
+`f5-sdk`. Specifically raise this module and handle those errors. If an
+unknown error occurs, a full traceback will be produced that will more easily
+allow you to debug the problem.
+
+**GOOD**
+
+.. code-block:: python
+
+   try:
+       // do some things here that can cause an Exception
+   except bigsuds.OperationFailed as e:
+       raise F5ModuleError('Error on setting profiles : %s' % e)
+
+**GOOD**
+
+.. code-block:: python
+
+   if foo:
+       // assume something successful happens here
+   else:
+       raise F5ModuleError('Error on baz')
+
+**BAD**
+
+.. code-block:: python
+
+   try:
+       // do some things here that can cause an Exception
+   except bigsuds.OperationFailed as e:
+       raise Exception('Error on setting profiles : %s' % e)
+
+**BAD**
+
+.. code-block:: python
+
+   if foo:
+       // assume something successful happens here
+   else:
+       raise Exception('Error on baz')
+
 All modules must support check mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

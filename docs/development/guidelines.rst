@@ -117,12 +117,11 @@ An example of connecting to big-ip01.internal is shown below.
 Exception Handling
 ^^^^^^^^^^^^^^^^^^
 
-You should wrap any f5-sdk call in a try block. If an exception is thrown,
-it is up to you decide how to handle it but usually calling fail_json
-with the error message will suffice.
+If an exception is thrown, it is up to you decide how to handle it but
+usually calling `fail_json` with the error message will suffice.
 
-For raising exceptions you can include the exception class provided with
-the f5-sdk. It can be used as such.
+For raising exceptions you can use the exception class, `F5ModuleError`,
+provided with the `f5-sdk`. It can be used as such.
 
 .. code-block:: python
 
@@ -138,7 +137,7 @@ the f5-sdk. It can be used as such.
    # Make a call to BIG-IP
    try:
        result = api.tm.ltm.pools.pool.create(foo='bar')
-   except F5ModuleError, e:
+   except F5ModuleError as e:
        module.fail_json(msg=e.message)
 
 Helper functions
