@@ -172,9 +172,6 @@ class BigIpGtmDatacenter(object):
         partition = self.params['partition']
         enabled = self.params['enabled']
 
-        if check_mode:
-            return True
-
         # Specifically check for None because a person could supply empty
         # values which would technically still be valid
         if contact is not None:
