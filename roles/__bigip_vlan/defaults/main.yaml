@@ -4,3 +4,4 @@ vlan_name: "vlan1"
 vlan_description: "foo vlan"
 vlan_interfaces:
     - "1.1"
+vlan_tag: 4000

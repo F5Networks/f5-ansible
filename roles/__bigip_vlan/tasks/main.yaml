@@ -153,3 +153,55 @@
   assert:
       that:
           - result|changed
+
+
+
+
+
+
+
+
+- name: Create VLAN, tag
+  bigip_vlan:
+      name: "{{ vlan_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      tag: "{{ vlan_tag }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+  register: result
+
+- name: Assert Create VLAN, tag
+  assert:
+      that:
+          - result|changed
+
+- name: Create VLAN, tag - Idempotent check
+  bigip_vlan:
+      name: "{{ vlan_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      tag: "{{ vlan_tag }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+  register: result
+
+- name: Assert Create VLAN, tag - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove VLAN, tag
+  bigip_vlan:
+      name: "{{ vlan_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove VLAN, tag
+  assert:
+      that:
+          - result|changed
