@@ -52,10 +52,9 @@ ansible-doc-dev:
 		$(DOCTEST) -M . bigip_qkview_facts.py; \
 	)
 
-pylint-modules:
-	(cd library; \
-		$(PYLINT) f5/bigiq/bigiq.py; \
-	)
+bigip-device-dns:
+	ansible-playbook -i inventory/hosts tests/bigip_device_dns.yaml -vvvv
+	flake8 library/bigip_device_dns.py
 
 bigip-device-ntp:
 	ansible-playbook -i inventory/hosts tests/bigip_device_ntp.yaml -vvvv
@@ -76,6 +75,10 @@ bigip-gtm-virtual-server:
 bigip-gtm-wide-ip:
 	ansible-playbook -i inventory/hosts tests/bigip_gtm_wide_ip.yaml -vvvv
 	flake8 library/bigip_gtm_wide_ip.py
+
+bigip-hostname:
+	ansible-playbook -i inventory/hosts tests/bigip_hostname.yaml -vvvv
+	flake8 library/bigip_hostname.py
 
 bigip-irule:
 	ansible-playbook -i inventory/hosts tests/bigip_irule.yaml -vvvv
@@ -105,6 +108,10 @@ bigip-routedomain:
 	ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml -vvvv
 	flake8 library/bigip_routedomain.py
 
+bigip-selfip:
+	ansible-playbook -i inventory/hosts tests/bigip_selfip.yaml -vvvv
+	flake8 library/bigip_selfip.py
+
 bigip-sys-db:
 	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
 	flake8 library/bigip_sys_db.py
@@ -112,6 +119,10 @@ bigip-sys-db:
 bigip-virtual-server:
 	ansible-playbook -i inventory/hosts tests/bigip_virtual_server.yaml -vvvv
 	flake8 library/bigip_virtual_server.py
+
+bigip-vlan:
+	ansible-playbook -i inventory/hosts tests/bigip_vlan.yaml -vvvv
+	flake8 library/bigip_vlan.py
 
 fetch-upstream:
 	curl -o library/bigip_facts.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_facts.py
