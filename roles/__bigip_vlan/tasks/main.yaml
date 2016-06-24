@@ -2,6 +2,7 @@
 
 - name: Create VLAN
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
@@ -16,6 +17,7 @@
 
 - name: Create VLAN - Idempotent check
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
@@ -30,6 +32,7 @@
 
 - name: Remove VLAN
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
@@ -44,6 +47,7 @@
 
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
@@ -57,64 +61,95 @@
       that:
           - not result|changed
 
-- name: Create VLAN on a different partition
+# VE has a limitation that you can only have one interface per VLAN
+# To test with more than one interface, you need to use a hardware
+# device
+- name: Create VLAN, interfaces
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      partition: "{{ partition }}"
+      interfaces: vlan_interfaces
   register: result
 
-- name: Assert Create VLAN on a different partition
+- name: Assert Create VLAN, interfaces
   assert:
       that:
           - result|changed
 
-- name: Create VLAN on a different partition - Idempotent check
+- name: Create VLAN, interfaces - Idempotent check
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      partition: "{{ partition }}"
+      interfaces: vlan_interfaces
   register: result
 
-- name: Assert Create VLAN on a different partition -  Idempotent check
+- name: Assert Create VLAN, interfaces - Idempotent check
   assert:
       that:
           - not result|changed
 
-- name: Remove VLAN on different partition
+- name: Remove VLAN, interfaces
   bigip_vlan:
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
-      partition: "{{ partition }}"
   register: result
 
-- name: Assert Remove VLAN on different partition
+- name: Assert Remove VLAN, interfaces
   assert:
       that:
           - result|changed
 
-- name: Remove VLAN on different partition - Idempotent check
+- name: Create VLAN, description
   bigip_vlan:
+      description: "{{ vlan_description }}"
+      name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      state: "absent"
-      partition: "{{ partition }}"
   register: result
 
-- name: Assert Remove VLAN on different partition - Idempotent check
+- name: Assert Create VLAN, description
+  assert:
+      that:
+          - result|changed
+
+- name: Create VLAN, description - Idempotent check
+  bigip_vlan:
+      description: "{{ vlan_description }}"
+      name: "{{ vlan_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+  register: result
+
+- name: Assert Create VLAN, description - Idempotent check
   assert:
       that:
           - not result|changed
+
+- name: Remove VLAN, description
+  bigip_vlan:
+      name: "{{ vlan_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove VLAN, description
+  assert:
+      that:
+          - result|changed
