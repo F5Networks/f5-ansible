@@ -41,7 +41,7 @@ Options
     <td>lb_method<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul><li>return_to_dns</li><li>None</li><li>round_robin</li><li>ratio</li><li>topology</li><li>static_persist</li><li>global_availability</li><li>vs_capacity</li><li>least_conn</li><li>lowest_rtt</li><li>lowest_hops</li><li>packet_rate</li><li>cpu</li><li>hit_ratio</li><li>qos</li><li>bps</li><li>drop_packet</li><li>explicit_ip</li><li>connection_rate</li><li>vs_score</li></ul></td>
+        <td><ul><li>return_to_dns</li><li>null</li><li>round_robin</li><li>ratio</li><li>topology</li><li>static_persist</li><li>global_availability</li><li>vs_capacity</li><li>least_conn</li><li>lowest_rtt</li><li>lowest_hops</li><li>packet_rate</li><li>cpu</li><li>hit_ratio</li><li>qos</li><li>bps</li><li>drop_packet</li><li>explicit_ip</li><li>connection_rate</li><li>vs_score</li></ul></td>
         <td><div>LB method of wide ip</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
@@ -56,11 +56,23 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP username</div></td></tr>
+            <tr>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
             <tr>
     <td>wide_ip<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -77,8 +89,8 @@ Examples
 
  ::
 
-    - name: Set lb method
-      local_action: >
+      - name: Set lb method
+        local_action: >
           bigip_gtm_wide_ip
           server=192.168.0.1
           user=admin

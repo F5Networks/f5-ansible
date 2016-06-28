@@ -44,12 +44,6 @@ Options
         <td><ul></ul></td>
         <td><div>The description to give to the VLAN</div></td></tr>
             <tr>
-    <td>interface<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>The interface to create the VLAN on when <code>state</code> is <code>present</code></div></td></tr>
-            <tr>
     <td>interfaces<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -116,7 +110,7 @@ Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
-.. note:: Requires BIG-IP versions >= 11.6.0
+.. note:: Requires BIG-IP versions >= 12.0.0
 
 
     

@@ -1,0 +1,5 @@
+---
+
+monitor_name: "my_tcp_monitor"
+send_string: "tcp string to send"
+receive_string: "tcp string to receive"

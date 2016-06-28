@@ -2,11 +2,15 @@
 
 - name: Create Self IP
   bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
   register: result
 
 - name: Assert Create Self IP
@@ -16,6 +20,60 @@
 
 - name: Create Self IP - Idempotent check
   bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
+  register: result
+
+- name: Assert Create Self IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set Self IP VLAN
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan2 }}"
+  register: result
+
+- name: Assert Set Self IP VLAN
+  assert:
+      that:
+          - result|changed
+
+- name: Set Self IP VLAN - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan2 }}"
+  register: result
+
+- name: Assert Set Self IP VLAN - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set Self IP netmask
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -23,7 +81,55 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create Self IP - Idempotent check
+- name: Assert Set Self IP netmask
+  assert:
+      that:
+          - result|changed
+
+- name: Set Self IP netmask - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set Self IP netmask - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete Self IP
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete Self IP
+  assert:
+      that:
+          - result|changed
+
+- name: Delete Self IP - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete Self IP - Idempotent check
   assert:
       that:
           - not result|changed

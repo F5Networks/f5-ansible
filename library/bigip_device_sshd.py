@@ -229,7 +229,7 @@ class BigIpDeviceSshd(object):
                 if items != current['allow']:
                     params['allow'] = list(items)
             else:
-                params['allow'] = list(items)
+                params['allow'] = allow
 
         if banner:
             if 'banner' in current:
@@ -275,9 +275,10 @@ class BigIpDeviceSshd(object):
 
         if params:
             changed = True
+            if check_mode:
+                return changed
             self.cparams = camel_dict_to_snake_dict(params)
-
-        if check_mode:
+        else:
             return changed
 
         r = self.api.tm.sys.sshd.load()
@@ -314,7 +315,6 @@ class BigIpDeviceSshd(object):
             p['login'] = str(r.login)
         if hasattr(r, 'port'):
             p['port'] = int(r.port)
-
         return p
 
     def flush(self):

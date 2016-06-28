@@ -1,0 +1,240 @@
+---
+
+# TODO (Raise error when trying to delete a node that is still a member of a pool)
+- name: Create pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool
+  assert:
+      that:
+          - result|changed
+
+- name: Add pool member
+  bigip_pool_member:
+      connection_limit: "{{ connection_limit }}"
+      description: "{{ node_description }}"
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      rate_limit: "{{ rate_limit }}"
+      ratio: "{{ ratio }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add pool member
+  assert:
+      that:
+          - result|changed
+
+- name: Add pool member - Idempotent check
+  bigip_pool_member:
+      connection_limit: "{{ connection_limit }}"
+      description: "{{ node_description }}"
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      rate_limit: "{{ rate_limit }}"
+      ratio: "{{ ratio }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add pool member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Modify pool member ratio and description
+  bigip_pool_member:
+      description: "{{ new_description }}"
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      ratio: "{{ new_ratio }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Modify pool member ratio and description
+  assert:
+      that:
+          - result|changed
+
+- name: Modify pool member ratio and description - Idempotent check
+  bigip_pool_member:
+      description: "{{ new_description }}"
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      ratio: "{{ new_ratio }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Modify pool member ratio and description - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Force pool member offline
+  bigip_pool_member:
+      host: "{{ node_host }}"
+      monitor_state: "disabled"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      session_state: "disabled"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Force pool member offline
+  assert:
+      that:
+          - result|changed
+
+# TODO (Make this work. Currently this behavior is not idempotent)
+#- name: Force pool member offline - Idempotent check
+#  bigip_pool_member:
+#      host: "{{ node_host }}"
+#      monitor_state: "disabled"
+#      partition: "{{ bigip_partition }}"
+#      password: "{{ bigip_password }}"
+#      pool: "{{ pool_name }}"
+#      port: "{{ node_port }}"
+#      server: "{{ inventory_hostname }}"
+#      server_port: "{{ bigip_port }}"
+#      session_state: "disabled"
+#      state: "present"
+#      user: "{{ bigip_username }}"
+#      validate_certs: "{{ validate_certs }}"
+#  register: result
+
+#- name: Assert Force pool member offline - Idempotent check
+#  assert:
+#      that:
+#          - not result|changed
+
+- name: Remove pool member from pool, preserve node
+  bigip_pool_member:
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      preserve_node: "yes"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove pool member from pool, preserve node
+  assert:
+      that:
+          - result|changed
+
+- name: Remove pool member from pool, preserve node - Idempotent check
+  bigip_pool_member:
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      preserve_node: "yes"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove pool member from pool, preserve node - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Add pool member
+  bigip_pool_member:
+      connection_limit: "{{ connection_limit }}"
+      description: "{{ node_description }}"
+      host: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      pool: "{{ pool_name }}"
+      port: "{{ node_port }}"
+      rate_limit: "{{ rate_limit }}"
+      ratio: "{{ ratio }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Delete pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert delete pool
+  assert:
+      that:
+          - result|changed
+
+- name: Delete node
+  bigip_node:
+      name: "{{ node_host }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert delete node
+  assert:
+      that:
+          - result|changed

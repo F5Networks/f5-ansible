@@ -1,0 +1,29 @@
+---
+
+lb_method1: "round_robin"
+wide_ip1: "my-wide-ip.example.com"
+valid_lb_methods:
+    - "return_to_dns"
+    - "null"
+    - "round_robin"
+    - "ratio"
+    - "topology"
+    - "static_persist"
+    - "global_availability"
+    - "vs_capacity"
+    - "least_conn"
+    - "lowest_rtt"
+    - "lowest_hops"
+    - "packet_rate"
+    - "cpu"
+    - "hit_ratio"
+    - "qos"
+    - "bps"
+    - "drop_packet"
+    - "explicit_ip"
+    - "connection_rate"
+    - "vs_score"
+invalid_lb_methods:
+    - "foo"
+    - 1234
+    - "@#$$#$^@#"

@@ -1,10 +1,9 @@
 ---
 
-node_name: "foo"
-node_partition: "foo"
-node_host: ""
-node_name: ""
+node_host: "10.10.10.10"
+node_name: "foo.example"
 node_description: "foo node"
-node_monitor_type: ""
-node_monitors: ""
-node_quorum: ""
+node_monitor_type: "and_list"
+node_monitors:
+    - "icmp"
+node_quorum: 1

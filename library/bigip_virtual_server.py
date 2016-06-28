@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+# (c) 2015, Etienne Carriere <etienne.carriere@gmail.com>
 #
 # This file is part of Ansible
 #
@@ -37,6 +39,12 @@ options:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
+    version_added: "2.2"
   user:
     description:
       - BIG-IP username
@@ -47,8 +55,8 @@ options:
     required: true
   validate_certs:
     description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
+      - If C(no), SSL certificates will not be validated. This should only be used
+        on personally controlled sites using self-signed certificates.
     required: false
     default: 'yes'
     choices:
@@ -56,16 +64,19 @@ options:
       - no
   state:
     description:
-      - Virtual Server state. If C(absent), delete the VS if C(present),
-        or C(enabled), create the VS if needed and set state to enabled.
-        If C(disabled), create the VS if needed and set state to disabled.
+      - Virtual Server state
+      - Absent, delete the VS if present
+      - C(present) (and its synonym enabled), create if needed the VS and set
+        state to enabled
+      - C(disabled), create if needed the VS and set state to disabled
     required: false
     default: present
     choices:
-      - absent
-      - disabled
-      - enabled
       - present
+      - absent
+      - enabled
+      - disabled
+    aliases: []
   partition:
     description:
       - Partition
@@ -73,27 +84,33 @@ options:
     default: 'Common'
   name:
     description:
-      - Virtual server name.
+      - Virtual server name
     required: true
-    aliases: ['vs']
+    aliases:
+      - vs
   destination:
     description:
       - Destination IP of the virtual server (only host is currently supported).
-        Required when state=present and vs does not exist."
+        Required when state=present and vs does not exist.
     required: true
     aliases:
       - address
       - ip
   port:
     description:
-      - Port of the virtual server . Required when state=present and vs
-        does not exist
+      - Port of the virtual server . Required when state=present and vs does not exist
     required: false
     default: None
   all_profiles:
     description:
-      - List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be
-        used by the virtual server
+      - List of all Profiles (HTTP,ClientSSL,ServerSSL,etc) that must be used
+        by the virtual server
+    required: false
+    default: None
+  all_rules:
+    version_added: "2.2"
+    description:
+      - List of rules to be applied in priority order
     required: false
     default: None
   pool:
@@ -113,15 +130,14 @@ options:
     default: None
   description:
     description:
-      - Virtual server description.
+      - Virtual server description
     required: false
     default: None
 '''
 
 EXAMPLES = '''
-- name: Add VS
-  local_action:
-      module: bigip_virtual_server
+- name: Add virtual server
+  bigip_virtual_server:
       server: lb.mydomain.net
       user: admin
       password: secret
@@ -136,10 +152,10 @@ EXAMPLES = '''
       all_profiles:
           - http
           - clientssl
+  delegate_to: localhost
 
 - name: Modify Port of the Virtual Server
-  local_action:
-      module: bigip_virtual_server
+  bigip_virtual_server:
       server: lb.mydomain.net
       user: admin
       password: secret
@@ -147,44 +163,47 @@ EXAMPLES = '''
       partition: MyPartition
       name: myvirtualserver
       port: 8080
+  delegate_to: localhost
 
-- name: Delete pool
-  local_action:
-      module: bigip_virtual_server
+- name: Delete virtual server
+  bigip_virtual_server:
       server: lb.mydomain.net
       user: admin
       password: secret
       state: absent
       partition: MyPartition
       name: myvirtualserver
+  delegate_to: localhost
 '''
 
 RETURN = '''
 ---
 deleted:
-  description: Name of a virtual server that was deleted
-  returned: virtual server was successfully deleted on state=absent
-  type: string
+    description: Name of a virtual server that was deleted
+    returned: changed
+    type: string
+    sample: "my-virtual-server"
 '''
 
+
 # map of state values
-STATES = dict(
-    enabled='STATE_ENABLED',
-    disabled='STATE_DISABLED'
-)
-STATUSES = dict(
-    enabled='SESSION_STATUS_ENABLED',
-    disabled='SESSION_STATUS_DISABLED',
-    offline='SESSION_STATUS_FORCED_DISABLED'
-)
+STATES = {
+    'enabled': 'STATE_ENABLED',
+    'disabled': 'STATE_DISABLED'
+}
+
+STATUSES = {
+    'enabled': 'SESSION_STATUS_ENABLED',
+    'disabled': 'SESSION_STATUS_DISABLED',
+    'offline': 'SESSION_STATUS_FORCED_DISABLED'
+}
 
 
 def vs_exists(api, vs):
     # hack to determine if pool exists
+    result = False
     try:
-        api.LocalLB.VirtualServer.get_object_status(
-            virtual_servers=[vs]
-        )
+        api.LocalLB.VirtualServer.get_object_status(virtual_servers=[vs])
         result = True
     except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
@@ -197,7 +216,7 @@ def vs_exists(api, vs):
 
 def vs_create(api, name, destination, port, pool):
     _profiles = [[{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]]
-
+    created = False
     # a bit of a hack to handle concurrent runs of this module.
     # even though we've checked the vs doesn't exist,
     # it may exist by the time we run create_vs().
@@ -208,8 +227,7 @@ def vs_create(api, name, destination, port, pool):
             definitions=[{'name': [name], 'address': [destination], 'port': port, 'protocol': 'PROTOCOL_TCP'}],
             wildmasks=['255.255.255.255'],
             resources=[{'type': 'RESOURCE_TYPE_POOL', 'default_pool_name': pool}],
-            profiles=_profiles
-        )
+            profiles=_profiles)
         created = True
         return created
     except bigsuds.OperationFailed as e:
@@ -223,10 +241,48 @@ def vs_remove(api, name):
     )
 
 
+def get_rules(api, name):
+    return api.LocalLB.VirtualServer.get_rule(
+        virtual_servers=[name]
+    )[0]
+
+
+def set_rules(api, name, rules_list):
+    updated = False
+    if rules_list is None:
+        return False
+    rules_list = list(enumerate(rules_list))
+    try:
+        current_rules = map(lambda x: (x['priority'], x['rule_name']), get_rules(api, name))
+        to_add_rules = []
+        for i, x in rules_list:
+            if (i, x) not in current_rules:
+                to_add_rules.append({'priority': i, 'rule_name': x})
+        to_del_rules = []
+        for i, x in current_rules:
+            if (i, x) not in rules_list:
+                to_del_rules.append({'priority': i, 'rule_name': x})
+        if len(to_del_rules) > 0:
+            api.LocalLB.VirtualServer.remove_rule(
+                virtual_servers=[name],
+                rules=[to_del_rules]
+            )
+            updated = True
+        if len(to_add_rules) > 0:
+            api.LocalLB.VirtualServer.add_rule(
+                virtual_servers=[name],
+                rules=[to_add_rules]
+            )
+            updated = True
+        return updated
+    except bigsuds.OperationFailed as e:
+        raise Exception('Error on setting profiles : %s' % e)
+
+
 def get_profiles(api, name):
     return api.LocalLB.VirtualServer.get_profile(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_profiles(api, name, profiles_list):
@@ -238,19 +294,11 @@ def set_profiles(api, name, profiles_list):
         to_add_profiles = []
         for x in profiles_list:
             if x not in current_profiles:
-                profiles = dict(
-                    profile_context='PROFILE_CONTEXT_TYPE_ALL',
-                    profile_name=x
-                )
-                to_add_profiles.append(profiles)
+                to_add_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
         to_del_profiles = []
         for x in current_profiles:
             if (x not in profiles_list) and (x != "/Common/tcp"):
-                profiles = dict(
-                    profile_context='PROFILE_CONTEXT_TYPE_ALL',
-                    profile_name=x
-                )
-                to_del_profiles.append(profiles)
+                to_del_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
         if len(to_del_profiles) > 0:
             api.LocalLB.VirtualServer.remove_profile(
                 virtual_servers=[name],
@@ -292,13 +340,13 @@ def set_snat(api, name, snat):
 def get_snat_type(api, name):
     return api.LocalLB.VirtualServer.get_source_address_translation_type(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def get_pool(api, name):
     return api.LocalLB.VirtualServer.get_default_pool_name(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_pool(api, name, pool):
@@ -319,7 +367,7 @@ def set_pool(api, name, pool):
 def get_destination(api, name):
     return api.LocalLB.VirtualServer.get_destination_v2(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_destination(api, name, destination):
@@ -327,13 +375,9 @@ def set_destination(api, name, destination):
     try:
         current_destination = get_destination(api, name)
         if destination is not None and destination != current_destination['address']:
-            params = dict(
-                address=destination,
-                port=current_destination['port']
-            )
             api.LocalLB.VirtualServer.set_destination_v2(
                 virtual_servers=[name],
-                destinations=[params]
+                destinations=[{'address': destination, 'port': current_destination['port']}]
             )
             updated = True
         return updated
@@ -346,13 +390,10 @@ def set_port(api, name, port):
     try:
         current_destination = get_destination(api, name)
         if port is not None and port != current_destination['port']:
-            params = dict(
-                address=current_destination['address'],
-                port=port
-            )
             api.LocalLB.VirtualServer.set_destination_v2(
                 virtual_servers=[name],
-                destinations=[params])
+                destinations=[{'address': current_destination['address'], 'port': port}]
+            )
             updated = True
         return updated
     except bigsuds.OperationFailed as e:
@@ -362,7 +403,7 @@ def set_port(api, name, port):
 def get_state(api, name):
     return api.LocalLB.VirtualServer.get_enabled_state(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_state(api, name, state):
@@ -386,7 +427,7 @@ def set_state(api, name, state):
 def get_description(api, name):
     return api.LocalLB.VirtualServer.get_description(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_description(api, name, description):
@@ -401,13 +442,13 @@ def set_description(api, name, description):
             updated = True
         return updated
     except bigsuds.OperationFailed as e:
-        raise Exception('Error on setting description : %s' % e)
+        raise Exception('Error on setting description : %s ' % e)
 
 
 def get_persistence_profiles(api, name):
     return api.LocalLB.VirtualServer.get_persistence_profile(
         virtual_servers=[name]
-    ).pop(0)
+    )[0]
 
 
 def set_default_persistence_profiles(api, name, persistence_profile):
@@ -422,22 +463,14 @@ def set_default_persistence_profiles(api, name, persistence_profile):
                 default = profile['profile_name']
                 break
         if default is not None and default != persistence_profile:
-            params = dict(
-                profile_name=default,
-                default_profile=True
-            )
             api.LocalLB.VirtualServer.remove_persistence_profile(
                 virtual_servers=[name],
-                profiles=[[params]]
+                profiles=[[{'profile_name': default, 'default_profile': True}]]
             )
         if default != persistence_profile:
-            params = dict(
-                profile_name=persistence_profile,
-                default_profile=True
-            )
             api.LocalLB.VirtualServer.add_persistence_profile(
                 virtual_servers=[name],
-                profiles=[[params]]
+                profiles=[[{'profile_name': persistence_profile, 'default_profile': True}]]
             )
             updated = True
         return updated
@@ -454,22 +487,39 @@ def main():
         destination=dict(type='str', aliases=['address', 'ip']),
         port=dict(type='int'),
         all_profiles=dict(type='list'),
+        all_rules=dict(type='list'),
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
-        default_persistence_profile=dict(type='str'))
-    )
+        default_persistence_profile=dict(type='str')
+    ))
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True
     )
 
-    (server, user, password, state, partition, validate_certs) = f5_parse_arguments(module)
+    if not bigsuds_found:
+        module.fail_json(msg="the python bigsuds module is required")
+
+    if module.params['validate_certs']:
+        import ssl
+        if not hasattr(ssl, 'SSLContext'):
+            module.fail_json(msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task')
+
+    server = module.params['server']
+    server_port = module.params['server_port']
+    user = module.params['user']
+    password = module.params['password']
+    state = module.params['state']
+    partition = module.params['partition']
+    validate_certs = module.params['validate_certs']
+
     name = fq_name(partition, module.params['name'])
     destination = module.params['destination']
     port = module.params['port']
     all_profiles = fq_list_names(partition, module.params['all_profiles'])
+    all_rules = fq_list_names(partition, module.params['all_rules'])
     pool = fq_name(partition, module.params['pool'])
     description = module.params['description']
     snat = module.params['snat']
@@ -479,7 +529,7 @@ def main():
         module.fail_json(msg="valid ports must be in range 1 - 65535")
 
     try:
-        api = bigip_api(server, user, password, validate_certs)
+        api = bigip_api(server, user, password, validate_certs, port=server_port)
         result = {'changed': False}  # default
 
         if state == 'absent':
@@ -513,6 +563,7 @@ def main():
                     try:
                         vs_create(api, name, destination, port, pool)
                         set_profiles(api, name, all_profiles)
+                        set_rules(api, name, all_rules)
                         set_snat(api, name, snat)
                         set_description(api, name, description)
                         set_default_persistence_profiles(api, name, default_persistence_profile)
@@ -537,6 +588,7 @@ def main():
                         result['changed'] |= set_description(api, name, description)
                         result['changed'] |= set_snat(api, name, snat)
                         result['changed'] |= set_profiles(api, name, all_profiles)
+                        result['changed'] |= set_rules(api, name, all_rules)
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
                         result['changed'] |= set_state(api, name, state)
                         api.System.Session.submit_transaction()
@@ -550,7 +602,7 @@ def main():
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
-
+# import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
 

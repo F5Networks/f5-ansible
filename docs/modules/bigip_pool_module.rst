@@ -47,7 +47,7 @@ Options
     <td>lb_method<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td>round_robin</td>
-        <td><ul><li>round_robin</li><li>ratio_member</li><li>least_connection_member</li><li>observed_member</li><li>predictive_member</li><li>ratio_node_address</li><li>least_connection_node_address</li><li>fastest_node_address</li><li>observed_node_address</li><li>predictive_node_address</li><li>dynamic_ratio</li><li>fastest_app_response</li><li>least_sessions</li><li>dynamic_ratio_member</li><li>l3_addr</li><li>unknown</li><li>weighted_least_connection_member</li><li>weighted_least_connection_node_address</li><li>ratio_session</li><li>ratio_least_connection_member</li><li>ratio_least_connection_node_address</li></ul></td>
+        <td><ul><li>round_robin</li><li>ratio_member</li><li>least_connection_member</li><li>observed_member</li><li>predictive_member</li><li>ratio_node_address</li><li>least_connection_node_address</li><li>fastest_node_address</li><li>observed_node_address</li><li>predictive_node_address</li><li>dynamic_ratio</li><li>fastest_app_response</li><li>least_sessions</li><li>dynamic_ratio_member</li><li>l3_addr</li><li>weighted_least_connection_member</li><li>weighted_least_connection_node_address</li><li>ratio_session</li><li>ratio_least_connection_member</li><li>ratio_least_connection_node_address</li></ul></td>
         <td><div>Load balancing method</div></td></tr>
             <tr>
     <td>monitor_type<br/><div style="font-size: small;"> (added in 1.3)</div></td>
@@ -93,11 +93,23 @@ Options
         <td><ul></ul></td>
         <td><div>Monitor quorum value when monitor_type is m_of_n</div></td></tr>
             <tr>
+    <td>reselect_tries<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Sets the number of times the system tries to contact a pool member after a passive failure</div></td></tr>
+            <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
@@ -126,7 +138,7 @@ Options
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>yes</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
         </table>
     </br>
@@ -138,9 +150,16 @@ Examples
 
  ::
 
+    
+    ## playbook task examples:
+    
     ---
-    - name: Create pool
-      local_action: >
+    # file bigip-test.yml
+    # ...
+    - hosts: localhost
+      tasks:
+      - name: Create pool
+        local_action: >
           bigip_pool
           server=lb.mydomain.com
           user=admin
@@ -151,8 +170,8 @@ Examples
           lb_method=least_connection_member
           slow_ramp_time=120
     
-    - name: Modify load balancer method
-      local_action: >
+      - name: Modify load balancer method
+        local_action: >
           bigip_pool
           server=lb.mydomain.com
           user=admin
@@ -162,8 +181,10 @@ Examples
           partition=matthite
           lb_method=round_robin
     
-    - name: Add pool member
-      local_action: >
+    - hosts: bigip-test
+      tasks:
+      - name: Add pool member
+        local_action: >
           bigip_pool
           server=lb.mydomain.com
           user=admin
@@ -174,8 +195,8 @@ Examples
           host="{{ ansible_default_ipv4["address"] }}"
           port=80
     
-    - name: Remove pool member from pool
-      local_action: >
+      - name: Remove pool member from pool
+        local_action: >
           bigip_pool
           server=lb.mydomain.com
           user=admin
@@ -186,8 +207,10 @@ Examples
           host="{{ ansible_default_ipv4["address"] }}"
           port=80
     
-    - name: Delete pool
-      local_action: >
+    - hosts: localhost
+      tasks:
+      - name: Delete pool
+        local_action: >
           bigip_pool
           server=lb.mydomain.com
           user=admin
@@ -195,6 +218,7 @@ Examples
           state=absent
           name=matthite-pool
           partition=matthite
+    
 
 
 Notes

@@ -4,7 +4,7 @@
 bigip_command - Run commands on a BIG-IP via tmsh
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.0
+.. versionadded:: 2.2
 
 
 .. contents::

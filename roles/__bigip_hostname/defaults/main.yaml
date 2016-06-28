@@ -1,0 +1,4 @@
+---
+
+valid_hostname: "foo.internal.com"
+invalid_hostname: "foo"

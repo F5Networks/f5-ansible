@@ -1,6 +1,6 @@
 paramiko
 bigsuds
 requests
-f5-sdk
+git+https://github.com/F5Networks/f5-common-python.git@development
 pytest
 flake8

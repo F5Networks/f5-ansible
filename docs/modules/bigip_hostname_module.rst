@@ -80,12 +80,38 @@ Examples
 
     - name: Set the hostname of the BIG-IP
       bigip_hostname:
+          hostname: "bigip.localhost.localdomain"
+          password: "admin"
           server: "bigip.localhost.localdomain"
           user: "admin"
-          password: "admin"
-          name: "bigip.localhost.localdomain"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> hostname </td>
+        <td> The new hostname of the device </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> big-ip01.internal </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

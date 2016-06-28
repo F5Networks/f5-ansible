@@ -111,6 +111,12 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>session_state<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td></td>
@@ -132,7 +138,7 @@ Options
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>yes</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
         </table>
     </br>
@@ -144,8 +150,16 @@ Examples
 
  ::
 
-    - name: Add pool member
-      local_action: >
+    
+    ## playbook task examples:
+    
+    ---
+    # file bigip-test.yml
+    # ...
+    - hosts: bigip-test
+      tasks:
+      - name: Add pool member
+        local_action: >
           bigip_pool_member
           server=lb.mydomain.com
           user=admin
@@ -160,8 +174,8 @@ Examples
           rate_limit=50
           ratio=2
     
-    - name: Modify pool member ratio and description
-      local_action: >
+      - name: Modify pool member ratio and description
+        local_action: >
           bigip_pool_member
           server=lb.mydomain.com
           user=admin
@@ -174,8 +188,8 @@ Examples
           ratio=1
           description="nginx server"
     
-    - name: Remove pool member from pool
-      local_action: >
+      - name: Remove pool member from pool
+        local_action: >
           bigip_pool_member
           server=lb.mydomain.com
           user=admin
@@ -187,21 +201,21 @@ Examples
           port=80
     
     
-    # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
-    # Members -> State". The following states map to API monitor
-    # and session states.
-    #
-    # Enabled (all traffic allowed):
-    # monitor_state=enabled, session_state=enabled
-    # Disabled (only persistent or active connections allowed):
-    # monitor_state=enabled, session_state=disabled
-    # Forced offline (only active connections allowed):
-    # monitor_state=disabled, session_state=disabled
-    #
-    # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
+      # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
+      # Members -> State". The following states map to API monitor
+      # and session states.
+      #
+      # Enabled (all traffic allowed):
+      # monitor_state=enabled, session_state=enabled
+      # Disabled (only persistent or active connections allowed):
+      # monitor_state=enabled, session_state=disabled
+      # Forced offline (only active connections allowed):
+      # monitor_state=disabled, session_state=disabled
+      #
+      # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
     
-    - name: Force pool member offline
-      local_action: >
+      - name: Force pool member offline
+        local_action: >
           bigip_pool_member
           server=lb.mydomain.com
           user=admin
@@ -213,6 +227,7 @@ Examples
           partition=matthite
           host="{{ ansible_default_ipv4["address"] }}"
           port=80
+    
 
 
 Notes

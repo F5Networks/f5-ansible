@@ -60,11 +60,19 @@ author:
 EXAMPLES = '''
 - name: Set the hostname of the BIG-IP
   bigip_hostname:
+      hostname: "bigip.localhost.localdomain"
+      password: "admin"
       server: "bigip.localhost.localdomain"
       user: "admin"
-      password: "admin"
-      name: "bigip.localhost.localdomain"
   delegate_to: localhost
+'''
+
+RETURN = '''
+hostname:
+    description: The new hostname of the device
+    returned: changed
+    type: string
+    sample: "big-ip01.internal"
 '''
 
 try:
@@ -86,7 +94,7 @@ class BigIpHostname(object):
                                   port=kwargs['server_port'])
 
     def update(self):
-        if not self.exists():
+        if self.exists():
             return False
 
         r = self.api.tm.sys.global_settings.load()
@@ -95,7 +103,7 @@ class BigIpHostname(object):
         if self.exists():
             return True
         else:
-            raise F5SDKError("Failed to set the hostname")
+            raise F5ModuelError("Failed to set the hostname")
 
     def exists(self):
         current = self.read()
@@ -108,10 +116,11 @@ class BigIpHostname(object):
         return self.update()
 
     def read(self):
-        r = self.api.sys.global_settings.load()
-        return r['hostname']
+        r = self.api.tm.sys.global_settings.load()
+        return r.hostname
 
     def flush(self):
+        result = dict()
         current = self.read()
 
         if self.params['check_mode']:
@@ -143,7 +152,7 @@ def main():
     )
 
     try:
-        obj = BigIpHostname(**module.params)
+        obj = BigIpHostname(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
         module.exit_json(**result)

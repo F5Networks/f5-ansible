@@ -21,8 +21,7 @@ Manage iRules across different modules on a BIG-IP
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk
 
 
 Options
@@ -39,12 +38,6 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>connection<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>smart</td>
-        <td><ul><li>rest</li><li>soap</li></ul></td>
-        <td><div>The connection used to interface with the BIG-IP</div></td></tr>
-            <tr>
     <td>content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -54,7 +47,7 @@ Options
     <td>module<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul><li>ltm</li><li>gtm</li><li>pem</li></ul></td>
+        <td><ul><li>ltm</li><li>gtm</li></ul></td>
         <td><div>The BIG-IP module to add the iRule to</div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
@@ -80,6 +73,12 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
             <tr>
     <td>src<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -166,8 +165,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
-.. note:: Requires the requests Python package on the host. This is as easy as pip install requests
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
     

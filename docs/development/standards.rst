@@ -269,6 +269,9 @@ any, information is returned by the operation of the module.
 End users of the module will reference this documentation when they want to
 use the ``register`` keyword.
 
+The ``RETURN`` field should include the parameters that have been changed by
+your module. If nothing has been changed, then no values need be returned.
+
 **GOOD**
 
 .. code-block:: python
@@ -276,7 +279,7 @@ use the ``register`` keyword.
    RETURN = '''
    full_name:
        description: Full name of the user
-       returned: changed and success
+       returned: changed
        type: string
        sample: "John Doe"
    '''
@@ -287,7 +290,6 @@ use the ``register`` keyword.
 .. code-block:: python
 
    Missing RETURN variable
-
 
 If your module does not return any information, then an empty YAML string
 is sufficient
@@ -465,6 +467,54 @@ reflect that.
 
 If your module requires functionality greater than 12.0.0 it is also
 acceptable to specify that in the ``DOCUMENTATION`` block.
+
+Never raise a general Exception
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+General Exceptions are bad because they hide unknown errors from you, the
+developer. If a bug report comes in and is being caused by an exception
+that you do not handle, it will be exceedingly difficult to debug it.
+
+Instead, only catch the `F5ModuleError` exception that is provided by the
+`f5-sdk`. Specifically raise this module and handle those errors. If an
+unknown error occurs, a full traceback will be produced that will more easily
+allow you to debug the problem.
+
+**GOOD**
+
+.. code-block:: python
+
+   try:
+       // do some things here that can cause an Exception
+   except bigsuds.OperationFailed as e:
+       raise F5ModuleError('Error on setting profiles : %s' % e)
+
+**GOOD**
+
+.. code-block:: python
+
+   if foo:
+       // assume something successful happens here
+   else:
+       raise F5ModuleError('Error on baz')
+
+**BAD**
+
+.. code-block:: python
+
+   try:
+       // do some things here that can cause an Exception
+   except bigsuds.OperationFailed as e:
+       raise Exception('Error on setting profiles : %s' % e)
+
+**BAD**
+
+.. code-block:: python
+
+   if foo:
+       // assume something successful happens here
+   else:
+       raise Exception('Error on baz')
 
 All modules must support check mode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
