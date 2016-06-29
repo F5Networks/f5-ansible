@@ -15,27 +15,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-#
-# TODO: pkcs12 support when f5-sdk adds it, or convert locally to pem?
-#       Would be nice if f5-sdk file upload could take a string like soap
-#       cert/key import, then we could convert in memory and import
-# TODO: Exception Handling
 
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
 short_description: Import/Delete certificates from BIG-IP
 description:
-  - This module will import/delete SSL certificates on BIG-IP LTM
-    systems from a certificate file on the filesystem where the playbook
-    is run from.  Currently this only supports certificates to be used
-    within SSL Profiles.  PEM format with certificate and key in seperate
-    files is icurrently the only supported format.
+  - This module will import/delete SSL certificates on BIG-IP LTM.
+    Certificates can be imported from certificate and key files on the local
+    disk, in PEM format.
+    Currently lacking the ability to compare/modify, import will exit
+    unchanged if a certificate with the same name already exists and state is
+    present.
 version_added: "2.2"
 options:
   state:
     description:
-      - Certificate state
+      - Certificate state, determines if certificate is imported or deleted
     required: true
     default: present
     choices: ['present', 'absent']
@@ -43,79 +39,58 @@ options:
     description:
       - BIG-IP host
     required: true
-    default: null
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
   user:
     description:
       - BIG-IP Username
     required: true
-    default: null
-    aliases: [username]
   password:
     description:
       - BIG-IP Password
     required: true
-    default: null
+  partition:
+    description:
+      - BIG-IP partition to use when adding/deleting certificate
+    required: false
+    default: Common
+  validate_certs:
+    description:
+      - Assuming this should not validate the SSL certificate of the BIG-IP
+        for self signed certs, but f5-sdk does not appear to support this.
+    required: false
+    default: true
+    choices: [true, false]
   name:
     description:
       - SSL Certificate Name.  This is the cert/key pair name used
         when importing a certificate/key into the F5.  It also
         determines the filenames of the objects on the LTM
         (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1)
-    required: True
+    required: true
     default: none
-  connection:
-    description:
-        - All connections expcet REST removed by request
-    required: False
-    default: rest
-    choices: [rest]
-    aliases: transport
-  cert_format:
-    description:
-      - The format that the certificate file you want to import is in.
-      - PEM is currently the only supported format.
-      - PKCS12 will be implamented
-      - when f5-sdk supports it.
-    required: false
-    default: pem
-    choices: [pem]
   cert_pem_file:
     description:
-      - Required if the format is PEM.
+      - Required if state is present
       - This is the local filename of the certificate.
-    required: False
+    required: false
     default: none
   key_pem_file:
     description:
-      - Require if the format is PEM.
+      - Require if state is present
       - This is the local filename of the private key,
-    required: False
+    required: false
     default: none
-  pkcs12_file:
+  passphrase:
     description:
-      - Currently unused
-    required: False
-    default: none
-  pkcs12_password:
-    description:
-      - Currently unused
-    required: False
-    default: none
-  validate_cert:
-    description:
-      - Validate the certificate on the remote Big-IP is valid.
-        Currently f5-sdk appears to hardcode this to True
-        And thus this does nothing
-    required: False
-    default: True
-    choices: [true, false]
-notes:
-    - bigsuds required for icontrol connection
-    - f5-sdk version 0.1.7 required for rest connection
-    - PKCS12 will be supported when f5-sdk adds support.
+      - Passphrase on certificate private key
+    required: false
 requirements:
-    - f5-sdk
-    - BigIP v12
+    - f5-sdk  >= 0.1.7
+    - BigIP v12 (11.6 may or may not work due to missing directory on LTM)
 author:
     - Kevin Coming (@waffie1)
 
@@ -126,9 +101,8 @@ EXAMPLES = '''
         name: certificate-name
         module: bigip_ssl_certificate
         server: bigip-addr
-        username: username
+        user: username
         password: password
-        connection: rest
         state: present
         cert_format: pem
         cert_pem_file: /path/to/cert.crt
@@ -139,10 +113,9 @@ EXAMPLES = '''
         name: certificate-name
         module: bigip_ssl_certificate
         server: bigip-addr
-        username: username
+        user: username
         password: password
         state: absent
-        connection: rest
 
 '''
 
@@ -151,38 +124,25 @@ try:
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
     HAS_F5SDK = True
-except:
+except ImportError:
     HAS_F5SDK = False
 
 
-class BigIPCommon:
-    def __init__(self, hostname, username, password, verify=True):
-        self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.verify = verify
-        self.api = self.connection(hostname, username, password, verify)
-
-
-class BigIPRest(BigIPCommon):
-    def connection(self, hostname, username, password, verify):
-        return ManagementRoot(hostname=hostname,
-                              username=username,
-                              password=password)
-
-    def delete(self, name):
-        result = False
-        r = self.delete_cert(name + '.crt')
-        if r:
-            result = True
-        r = self.delete_key(name + '.key')
-        if r:
-            result = True
-        return result
+class BigIpSslCertificate(object):
+    def __init__(self, **kwargs):
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+        self.api = ManagementRoot(kwargs['server'],
+                                  kwargs['user'],
+                                  kwargs['password'],
+                                  port=kwargs['server_port'])
+        self.params = kwargs
 
     def delete_cert(self, name):
         try:
-            c = self.api.tm.sys.crypto.certs.cert.load(name=name)
+            c = self.api.tm.sys.crypto.certs.cert.load(
+                    name=name,
+                    partition=self.params['partition'])
             c.delete()
         except iControlUnexpectedHTTPError as e:
             if e.response.status_code == 404:
@@ -194,7 +154,9 @@ class BigIPRest(BigIPCommon):
 
     def delete_key(self, name):
         try:
-            k = self.api.tm.sys.crypto.keys.key.load(name=name)
+            k = self.api.tm.sys.crypto.keys.key.load(
+                    name=name,
+                    partition=self.params['partition'])
             k.delete()
         except iControlUnexpectedHTTPError as e:
             if e.response.status_code == 404:
@@ -205,41 +167,67 @@ class BigIPRest(BigIPCommon):
             return True
 
     def exists_cert(self, name):
-        return self.api.tm.sys.crypto.certs.cert.exists(name=name)
+        return self.api.tm.sys.crypto.certs.cert.exists(
+                    name=name,
+                    partition=self.params['partition'])
 
     def exists_key(self, name):
-        return self.api.tm.sys.crypto.keys.key.exists(name=name)
+        return self.api.tm.sys.crypto.keys.key.exists(
+                    name=name,
+                    partition=self.params['partition'])
 
-    def import_cert(self, **kwargs):
-        name = kwargs['name']
-        cert_format = kwargs['cert_format']
-        if cert_format == 'pem':
+    def flush(self):
+        result = {'changed': False}
+        if self.params['state'] == 'present':
+            if 'cert_pem_file' not in self.params:
+                raise F5ModuleError('cert_pem_file required when state '
+                                    'is present')
+            if 'key_pem_file' not in self.params:
+                raise F5ModuleError('key_pem_file required when state '
+                                    'is present')
             try:
-                certfilename = kwargs['certfilename']
-            except KeyError:
-                certfilename = kwargs['name'] + '.crt'
-            else:
-                self.upload(certfilename)
-                self.install_cert(name, os.path.basename(certfilename))
+                if self.exists_cert('%s.crt' % self.params['name']):
+                    return result
+                if self.exists_key('%s.key' % self.params['name']):
+                    return result
+                self.import_cert()
+                result['changed'] = True
+            except iControlUnexpectedHTTPError as e:
+                raise F5ModuleError(str(e))
+        else:
             try:
-                keyfilename = kwargs['keyfilename']
-            except KeyError:
-                pass
-            else:
-                self.upload(keyfilename)
-                self.install_key(name, os.path.basename(keyfilename))
-            return True
-        elif cert_format == 'pkcs12':
-            raise F5ModuleError("pkcs12 not supported by f5-sdk")
+                if self.exists_cert('%s.crt' % self.params['name']):
+                    r = self.delete_cert('%s.crt' % self.params['name'])
+                    if r:
+                        result['changed'] = True
+                if self.exists_key('%s.key' % self.params['name']):
+                    r = self.delete_key('%s.key' % self.params['name'])
+                    if r:
+                        result['changed'] = True
+            except iControlUnexpectedHTTPError as e:
+                raise F5ModuleError(str(e))
+        return result
 
-    def install_cert(self, name, certfilename):
+    def import_cert(self):
+        self.upload(self.params['cert_pem_file'])
+        self.install_cert(os.path.basename(self.params['cert_pem_file']))
+        self.upload(self.params['key_pem_file'])
+        self.install_key(os.path.basename(self.params['key_pem_file']))
+
+    def install_cert(self, certfilename):
         filename = os.path.join('/var/config/rest/downloads', certfilename)
-        params = {'from-local-file': filename, 'name': name}
+        params = {'from-local-file': filename,
+                  'name': self.params['name'],
+                  'partition': self.params['partition']}
         self.api.tm.sys.crypto.certs.exec_cmd('install', **params)
 
-    def install_key(self, name, keyfilename):
+    def install_key(self, keyfilename):
         filename = os.path.join('/var/config/rest/downloads', keyfilename)
-        params = {'from-local-file': filename, 'name': name}
+        params = {'from-local-file': filename,
+                  'name': self.params['name'],
+                  'partition': self.params['partition']}
+        if self.params['passphrase']:
+            params['passphrase'] = self.params['passphrase']
         self.api.tm.sys.crypto.keys.exec_cmd('install', **params)
 
     def upload(self, filename):
@@ -247,72 +235,21 @@ class BigIPRest(BigIPCommon):
 
 
 def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            state=dict(type='str', default='present',
-                       choices=['absent', 'present']),
-            user=dict(type='str', required=True, aliases=['username']),
-            password=dict(type='str', required=True, no_log=True),
-            server=dict(type='str', required=True),
-            name=dict(type='str', required=True),
-            partition=dict(type='str', default='Common'),
-            connection=dict(type='str', default='rest',
-                            choices=['rest'],
-                            aliases=['transport']),
-            cert_format=dict(type='str', default='pem',
-                             choices=['pem']),
-            cert_pem_file=dict(type='str'),
-            key_pem_file=dict(type='str'),
-            pkcs12_file=dict(type='str'),
-            pkcs12_password=dict(type='str', no_log=True),
-            validate_cert=dict(type='bool', default=True),
-            # overwrite=dict(type='bool', default=False)
-        )
+    argument_spec = f5_argument_spec()
+    meta_args = dict(
+        name=dict(type='str', required=True),
+        cert_pem_file=dict(type='str'),
+        key_pem_file=dict(type='str'),
+        passphrase=dict(type='str'),
     )
-    result = {'changed': False}
-    if module.params['connection'] == 'rest':
-        if not HAS_F5SDK:
-            module.fail_json(msg='connection type rest requires '
-                             'f5-common-python')
-        api = BigIPRest(module.params['server'],
-                        module.params['user'],
-                        module.params['password'],
-                        module.params['validate_cert'])
+    argument_spec.update(meta_args)
+    module = AnsibleModule(argument_spec=argument_spec)
 
-    if module.params['state'] == 'present':
-        if module.params['cert_format'] == 'pem':
-            if not (module.params['key_pem_file'] and
-                    module.params['cert_pem_file']):
-                module.fail_json(msg='pem format requires cert_pem_file '
-                                 'and key_pem_file')
-            certargs = {}
-            if not api.exists_cert('%s.crt' % module.params['name']):
-                certargs['certfilename'] = module.params['cert_pem_file']
-            if not api.exists_key('%s.key' % module.params['name']):
-                certargs['keyfilename'] = module.params['key_pem_file']
-            if certargs:
-                certargs['name'] = module.params['name']
-                certargs['cert_format'] = 'pem'
-        if certargs:
-            try:
-                r = api.import_cert(**certargs)
-            except F5ModuleError as e:
-                module.fail_json(msg="F5ModuleError: %s" % e)
-            else:
-                if r:
-                    result['changed'] = True
-    elif module.params['state'] == 'absent':
-        # TODO Delete cert and key separately???
-        try:
-            r = api.delete(module.params['name'])
-        except F5ModuleError as e:
-            module.fail_json(msg="F5ModuleError: %s" % e)
-        except ConnectioError as e:
-            module.fail_json(msg="F5ModuleError: %s" % e)
-        else:
-            if r is True:
-                result['changed'] = True
-
+    try:
+        obj = BigIpSslCertificate(**module.params)
+        result = obj.flush()
+    except F5ModuleError as e:
+        module.fail_json(msg=str(e))
     module.exit_json(**result)
 
 from ansible.module_utils.basic import *
