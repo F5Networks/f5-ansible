@@ -691,6 +691,24 @@ Becomes
 
 Be sure to also change the comments section to reflect your module.
 
+Including supplementary information
+-----------------------------------
+
+If you include files inside of the `files/`, `templates`, or other directories
+in which the content of that file was auto-generated or pulled from a third
+party source, you should include a `README.md` file in your role's directory.
+
+Inside of this file, you can include steps to repreoduce any of the input
+items that you include in the role subdirectories.
+
+In addition, this place is also a good location to include references to third
+party file locations if you have included them in the tests. For example, if
+you were to include iRules or other things that you downloaded and included
+from DevCentral or similar.
+
+The `README.md` is there for future developers to reference the information
+needed to re-create any of the inputs to your tests in case they need to.
+
 Other testing notes
 -------------------
 
