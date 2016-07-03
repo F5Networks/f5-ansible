@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# (c) 2013, Matt Hite <mhite@hotmail.com>
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -22,9 +24,10 @@ module: bigip_facts
 short_description: Collect facts from F5 BIG-IP devices
 description:
   - Collect facts from F5 BIG-IP devices via iControl SOAP API
-version_added: 1.6
+version_added: "1.6"
 author:
   - Matt Hite (@mhite)
+  - Tim Rupp (@caphrim007)
 notes:
   - Requires BIG-IP software version >= 11.4
   - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
@@ -38,24 +41,38 @@ options:
       - BIG-IP host
     required: true
     default: null
+    choices: []
+    aliases: []
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
+    version_added: "2.2"
   user:
     description:
       - BIG-IP username
     required: true
     default: null
+    choices: []
+    aliases: []
   password:
     description:
       - BIG-IP password
     required: true
     default: null
+    choices: []
+    aliases: []
   validate_certs:
     description:
       - If C(no), SSL certificates will not be validated. This should only be used
         on personally controlled sites.  Prior to 2.0, this module would always
         validate on python >= 2.7.9 and never validate on python <= 2.7.8
     required: false
-    default: 'yes'
-    choices: ['yes', 'no']
+    default: yes
+    choices:
+      - yes
+      - no
     version_added: 2.0
   session:
     description:
@@ -63,41 +80,59 @@ options:
         issues in certain circumstances.
     required: false
     default: true
+    choices: []
+    aliases: []
   include:
     description:
       - Fact category or list of categories to collect
     required: true
     default: null
-    choices: ['address_class', 'certificate', 'client_ssl_profile',
-              'device', 'device_group', 'interface', 'key', 'node', 'pool',
-              'rule', 'self_ip', 'software', 'system_info', 'traffic_group',
-              'trunk', 'virtual_address', 'virtual_server', 'vlan']
+    choices:
+      - address_class
+      - certificate
+      - client_ssl_profile
+      - device
+      - device_group
+      - interface
+      - key
+      - node
+      - pool
+      - rule
+      - self_ip
+      - software
+      - system_info
+      - traffic_group
+      - trunk
+      - virtual_address
+      - virtual_server
+      - vlan
+    aliases: []
   filter:
     description:
       - Shell-style glob matching string used to filter fact keys. Not
         applicable for software and system_info fact categories.
     required: false
     default: null
+    choices: []
+    aliases: []
 '''
 
 EXAMPLES = '''
----
-- hosts: bigip-test
-  tasks:
-  - name: Collect BIG-IP facts
-    local_action: >
-      bigip_facts
-      server=lb.mydomain.com
-      user=admin
-      password=mysecret
-      include=interface,vlan
+- name: Collect BIG-IP facts
+  bigip_facts:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      include: "interface,vlan"
+  delegate_to: localhost
 '''
 
 try:
     from suds import MethodNotFound, WebFault
-    bigsuds_found = True
 except ImportError:
     bigsuds_found = False
+else:
+    bigsuds_found = True
 
 import fnmatch
 import re
@@ -113,8 +148,8 @@ class F5(object):
         api: iControl API instance.
     """
 
-    def __init__(self, host, user, password, session=False, validate_certs=True):
-        self.api = bigip_api(host, user, password, validate_certs)
+    def __init__(self, host, user, password, session=False, validate_certs=True, port=443):
+        self.api = bigip_api(host, user, password, validate_certs, port)
         if session:
             self.start_session()
 
@@ -1573,22 +1608,24 @@ def generate_software_list(f5):
 
 
 def main():
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        session=dict(type='bool', default=False),
+        include=dict(type='list', required=True),
+        filter=dict(type='str', required=False),
+    )
+    argument_spec.update(meta_args)
+
     module = AnsibleModule(
-        argument_spec=dict(
-            server=dict(type='str', required=True),
-            user=dict(type='str', required=True),
-            password=dict(type='str', required=True),
-            validate_certs=dict(default='yes', type='bool'),
-            session=dict(type='bool', default=False),
-            include=dict(type='list', required=True),
-            filter=dict(type='str', required=False),
-        )
+        argument_spec=argument_spec
     )
 
     if not bigsuds_found:
         module.fail_json(msg="the python suds and bigsuds modules are required")
 
     server = module.params['server']
+    server_port = module.params['server_port']
     user = module.params['user']
     password = module.params['password']
     validate_certs = module.params['validate_certs']
@@ -1618,7 +1655,7 @@ def main():
         facts = {}
 
         if len(include) > 0:
-            f5 = F5(server, user, password, session, validate_certs)
+            f5 = F5(server, user, password, session, validate_certs, server_port)
             saved_active_folder = f5.get_active_folder()
             saved_recursive_query_state = f5.get_recursive_query_state()
             if saved_active_folder != "/":
