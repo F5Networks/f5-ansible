@@ -123,7 +123,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Set NTP server list - Idempotent check
+- name: Delete NTP server list - Idempotent check
   assert:
       that:
           - not result|changed
@@ -159,3 +159,43 @@
   assert:
       that:
           - not result|changed
+
+- name: Set timezone
+  bigip_device_ntp:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      timezone: "{{ timezone }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set timezone
+  assert:
+      that:
+          - result|changed
+
+- name: Set timezone - Idempotent check
+  bigip_device_ntp:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      timezone: "{{ timezone }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Set timezone - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set timezone, all timezones
+  bigip_device_ntp:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      timezone: "{{ item }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items: "{{ all_timezones }}"
