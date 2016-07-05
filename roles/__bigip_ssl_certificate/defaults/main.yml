@@ -1,0 +1,8 @@
+---
+
+partition:
+    - "Common"
+    - "Partition2"
+
+bigip_port: 443
+

@@ -1,0 +1,155 @@
+- name: Import a certificate and key, no passphrase on private key
+  local_action:
+    name: cert1
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert1.crt"
+    key_pem_file: "{{ role_path }}//files/cert1.key"
+  register: result
+
+- name: Assert import worked
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate and key, no passphrase on private key - Idempotent check
+  local_action:
+    name: cert1
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert1.crt"
+    key_pem_file: "{{ role_path }}//files/cert1.key"
+  register: result
+
+- name: Assert import worked
+  assert:
+    that:
+        - not result|changed
+
+
+- name: Delete a certificate and key
+  local_action:
+    name: cert1
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: absent
+    partition: "{{ partition[0] }}"
+  register: result
+
+- name: Assert delete worked
+  assert:
+    that:
+        - result|changed
+
+- name: Delete a certificate and key - Idempotent check
+  local_action:
+    name: cert1
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: absent
+    partition: "{{ partition[0] }}"
+  register: result
+
+- name: Assert delete worked
+  assert:
+    that:
+        - not result| changed
+
+
+- name: Import a certificate and key, password protected key
+  local_action:
+    name: cert2
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert2.crt"
+    key_pem_file: "{{ role_path }}//files/cert2.key"
+    passphrase: keypass
+  register: result
+
+- name: Assert import worked
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate and key, password protected key - Idempotent check
+  local_action:
+    name: cert2
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert2.crt"
+    key_pem_file: "{{ role_path }}//files/cert2.key"
+    passphrase: keypass
+  register: result
+
+- name: Assert import worked
+  assert:
+    that:
+        - not result|changed
+
+- name: Import a certificate and key, password protected key, bad passphrase
+  local_action:
+    name: cert2
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert2.crt"
+    key_pem_file: "{{ role_path }}//files/cert2.key"
+    passphrase: wrongpass
+  register: result
+  ignore_errors: true
+
+- name: Assert import failed
+  assert:
+    that:
+        - not result|changed
+
+- name: Import with missing files
+  local_action:
+    name: cert3
+    module: bigip_ssl_certificate
+    server:  "{{ inventory_hostname }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    server_port: "{{ bigip_port }}"
+    state: present
+    partition: "{{ partition[0] }}"
+    cert_pem_file: "{{ role_path }}/files/cert3.crt"
+    key_pem_file: "{{ role_path }}//files/cert3.key"
+    passphrase: wrongpass
+  register: result
+  ignore_errors: true
+
+- name: Assert import failed
+  assert:
+    that:
+        - not result|changed
