@@ -64,6 +64,10 @@ bigip-device-sshd:
 	ansible-playbook -i inventory/hosts tests/bigip_device_sshd.yaml -vvvv
 	flake8 library/bigip_device_sshd.py
 
+bigip-facts:
+	ansible-playbook -i inventory/hosts tests/bigip_facts.yaml -vvvv
+	flake8 library/bigip_facts.py
+
 bigip-gtm-datacenter:
 	ansible-playbook -i inventory/hosts tests/bigip_gtm_datacenter.yaml -vvvv
 	flake8 library/bigip_gtm_datacenter.py
@@ -111,6 +115,10 @@ bigip-routedomain:
 bigip-selfip:
 	ansible-playbook -i inventory/hosts tests/bigip_selfip.yaml -vvvv
 	flake8 library/bigip_selfip.py
+
+bigip-ssl-certificate:
+	ansible-playbook -i inventory/hosts tests/bigip_ssl_certificate.yaml -vvvv
+	flake8 library/bigip_ssl_certificate.py
 
 bigip-sys-db:
 	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
