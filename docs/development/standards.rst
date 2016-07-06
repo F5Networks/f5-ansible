@@ -527,3 +527,76 @@ Since BIG-IPs are usually considered a sensitive device to handle, there
 should always be a check-mode implemented in your module.
 
 .. _here: http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks
+
+Do not use local_action in your EXAMPLES
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some folks like local_action and some folks like delegation. Delegation
+is more applicable to general-purpose Ansible, so for that reason I want
+to get people in the habit of using and understanding it.
+
+Therefore, do not use `local_action` when defining examples. Instead,
+use `delegate_to`.
+
+**GOOD**
+
+.. code-block:: python
+
+   - name: Reset the initial setup screen
+     bigip_sys_db:
+         user: "admin"
+         password: "secret"
+         server: "lb.mydomain.com"
+         key: "setup.run"
+         state: "reset"
+     delegate_to: localhost
+
+**BAD**
+
+.. code-block:: python
+
+   - name: Reset the initial setup screen
+     local_action:
+         module: "bigip_sys_db"
+         user: "admin"
+         password: "secret"
+         server: "lb.mydomain.com"
+         key: "setup.run"
+         state: "reset"
+
+Default EXAMPLE parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For consistency, always using the following values for the given parameters
+
+  * user: "admin"
+  * password: "secret"
+  * server: "lb.mydomain.com"
+
+This allows you to not have to overthink the inclusion of your example.
+
+**GOOD**
+
+.. code-block:: python
+
+- name: Reset the initial setup screen
+  bigip_sys_db:
+      user: "admin"
+      password: "secret"
+      server: "lb.mydomain.com"
+      key: "setup.run"
+      state: "reset"
+  delegate_to: localhost
+
+**BAD**
+
+.. code-block:: python
+
+- name: Reset the initial setup screen
+  bigip_sys_db:
+      user: "joe_user"
+      password: "admin"
+      server: "bigip.host"
+      key: "setup.run"
+      state: "reset"
+  delegate_to: localhost
