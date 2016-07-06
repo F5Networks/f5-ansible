@@ -1,6 +1,7 @@
 #!/usr/bin/python
-
-
+#
+# (c) 2016, Kevin Coming (@waffie1)
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -15,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
@@ -63,7 +63,9 @@ options:
         for self signed certs, but f5-sdk does not appear to support this.
     required: false
     default: true
-    choices: [true, false]
+    choices:
+      - true
+      - false
   name:
     description:
       - SSL Certificate Name.  This is the cert/key pair name used
@@ -89,35 +91,37 @@ options:
       - Passphrase on certificate private key
     required: false
 requirements:
-    - f5-sdk  >= 0.1.7
-    - BigIP v12 (11.6 may or may not work due to missing directory on LTM)
+    - f5-sdk >= 0.1.7
+    - BigIP >= v12
 author:
     - Kevin Coming (@waffie1)
-
+    - Tim Rupp (@caphrim007)
 '''
+
 EXAMPLES = '''
-    - name: "Import PEM Certificate"
-      local_action:
-        name: certificate-name
-        module: bigip_ssl_certificate
-        server: bigip-addr
-        user: username
-        password: password
-        state: present
-        cert_format: pem
-        cert_pem_file: /path/to/cert.crt
-        key_pem_file: /path/to/key.key
+- name: "Import PEM Certificate"
+    local_action:
+    name: certificate-name
+    module: bigip_ssl_certificate
+    server: bigip-addr
+    user: username
+    password: password
+    state: present
+    cert_format: pem
+    cert_pem_file: /path/to/cert.crt
+    key_pem_file: /path/to/key.key
 
-    - name: "Delete Certificate"
-      local_action:
-        name: certificate-name
-        module: bigip_ssl_certificate
-        server: bigip-addr
-        user: username
-        password: password
-        state: absent
-
+- name: "Delete Certificate"
+  bigip_ssl_certificate
+    name: "certificate-name"
+    server: "bigip-addr"
+    user: username
+    password: password
+    state: absent
 '''
+
+RETURN = """
+"""
 
 
 try:
@@ -141,8 +145,9 @@ class BigIpSslCertificate(object):
     def delete_cert(self, name):
         try:
             c = self.api.tm.sys.crypto.certs.cert.load(
-                    name=name,
-                    partition=self.params['partition'])
+                name=name,
+                partition=self.params['partition']
+            )
             c.delete()
         except iControlUnexpectedHTTPError as e:
             if e.response.status_code == 404:
@@ -155,8 +160,9 @@ class BigIpSslCertificate(object):
     def delete_key(self, name):
         try:
             k = self.api.tm.sys.crypto.keys.key.load(
-                    name=name,
-                    partition=self.params['partition'])
+                name=name,
+                partition=self.params['partition']
+            )
             k.delete()
         except iControlUnexpectedHTTPError as e:
             if e.response.status_code == 404:
@@ -168,13 +174,15 @@ class BigIpSslCertificate(object):
 
     def exists_cert(self, name):
         return self.api.tm.sys.crypto.certs.cert.exists(
-                    name=name,
-                    partition=self.params['partition'])
+            name=name,
+            partition=self.params['partition']
+        )
 
     def exists_key(self, name):
         return self.api.tm.sys.crypto.keys.key.exists(
-                    name=name,
-                    partition=self.params['partition'])
+            name=name,
+            partition=self.params['partition']
+        )
 
     def flush(self):
         result = {'changed': False}
