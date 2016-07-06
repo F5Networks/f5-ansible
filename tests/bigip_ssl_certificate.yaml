@@ -1,0 +1,40 @@
+---
+
+# Test the bigip_device_sshd module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_device_sshd module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, tests/bigip_device_sshd.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_device_sshd module
+#
+#    ansible-playbook -i notahost, tests/bigip_device_sshd.yaml
+#
+# Tested platforms:
+#
+#    - 12.1.0
+#
+
+- name: Test the bigip_certificate_ssl module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - __bigip_ssl_certificate
+
+#  vars_prompt:
+#   - name: bigip_username
+#     prompt: "Username"
+#     private: no
+#   - name: bigip_password
+#     prompt: "Password"
+#     private: yes
+
