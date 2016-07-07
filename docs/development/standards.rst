@@ -579,24 +579,24 @@ This allows you to not have to overthink the inclusion of your example.
 
 .. code-block:: python
 
-- name: Reset the initial setup screen
-  bigip_sys_db:
-      user: "admin"
-      password: "secret"
-      server: "lb.mydomain.com"
-      key: "setup.run"
-      state: "reset"
-  delegate_to: localhost
+   - name: Reset the initial setup screen
+     bigip_sys_db:
+         user: "admin"
+         password: "secret"
+         server: "lb.mydomain.com"
+         key: "setup.run"
+         state: "reset"
+     delegate_to: localhost
 
 **BAD**
 
 .. code-block:: python
 
-- name: Reset the initial setup screen
-  bigip_sys_db:
-      user: "joe_user"
-      password: "admin"
-      server: "bigip.host"
-      key: "setup.run"
-      state: "reset"
-  delegate_to: localhost
+   - name: Reset the initial setup screen
+     bigip_sys_db:
+         user: "joe_user"
+         password: "admin"
+         server: "bigip.host"
+         key: "setup.run"
+         state: "reset"
+     delegate_to: localhost
