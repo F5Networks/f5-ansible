@@ -86,16 +86,37 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Set the boot.quiet DB variable on the BIG-IP
+- name: Set NTP server
   bigip_device_ntp:
-      server: "big-ip"
-      key: "boot.quiet"
-      value: "disable"
+      ntp_servers:
+          - "192.168.10.12"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
+
+- name: Set timezone
+  bigip_device_ntp:
+      password: "secret"
+      server: "lb.mydomain.com"
+      timezone: "America/Los_Angeles"
+      user: "admin"
+      validate_certs: "no"
   delegate_to: localhost
 '''
 
 RETURN = '''
-
+ntp_servers:
+    description: The NTP servers that were set on the device
+    returned: changed
+    type: list
+    sample: ["192.168.10.10", "172.27.10.10"]
+timezone:
+    description: The timezone that was set on the device
+    returned: changed
+    type: string
+    sample: "true"
 '''
 
 try:
@@ -133,6 +154,9 @@ class BigIpDeviceNtp(object):
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
+
+        if 'servers' in self.cparams:
+            self.cparams['ntp_servers'] = self.cparams.pop('servers')
 
         result.update(**self.cparams)
         result.update(dict(changed=changed))
@@ -183,9 +207,9 @@ class BigIpDeviceNtp(object):
 
         if params:
             changed = True
+            self.cparams = camel_dict_to_snake_dict(params)
             if check_mode:
                 return changed
-            self.cparams = camel_dict_to_snake_dict(params)
         else:
             return changed
 
@@ -217,9 +241,9 @@ class BigIpDeviceNtp(object):
 
         if params:
             changed = True
+            self.cparams = camel_dict_to_snake_dict(params)
             if check_mode:
                 return changed
-            self.cparams = camel_dict_to_snake_dict(params)
         else:
             return changed
 
@@ -233,13 +257,8 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        server=dict(required=True),
-        password=dict(required=True),
         ntp_servers=dict(required=False, type='list', default=None),
-        state=dict(default='present', choices=['absent', 'present']),
-        timezone=dict(default=None, required=False),
-        user=dict(required=True, aliases=['username']),
-        validate_certs=dict(default='yes', type='bool'),
+        timezone=dict(default=None, required=False)
     )
     argument_spec.update(meta_args)
 
