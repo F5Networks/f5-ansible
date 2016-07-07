@@ -1,27 +1,27 @@
-Standards
-=========
+Code Conventions
+================
 
-The F5 modules attempt to follow a set of coding standards that apply to
+The F5 modules attempt to follow a set of coding conventions that apply to
 all new and existing modules.
 
-These standards help new contributors quickly develop new modules.
+These conventions help new contributors quickly develop new modules.
 Additionally, they help existing contributors maintain the current modules.
 
-Standards checking
-------------------
+Style checking
+--------------
 
-Where possible, we try to automate the validation of these coding standards
+Where possible, we try to automate the validation of these coding conventions
 so that you are aware of mistakes and able to fix them yourself without
 having to have the maintainers intervene.
 
 For more information on what tools perform these checks, refer to the tests
 page.
 
-Standards
----------
+Conventions
+-----------
 
 When writing your modules and their accompanying tests and docs, please
-follow the below coding standards.
+follow the below coding conventions.
 
 Use the complex/structure map format
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -348,7 +348,7 @@ email address may change over time.
 Use 2 spaces in the DOCUMENTATION, EXAMPLES, and RETURN
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is a simple spacing standard to ensure that everything is properly
+This is a simple spacing convention to ensure that everything is properly
 spaced over.
 
 **GOOD**

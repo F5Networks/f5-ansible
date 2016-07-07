@@ -52,7 +52,7 @@ The main documentation for the modules is organized into a couple sections:
    development/guidelines
    development/tests
    development/architecture
-   development/standards
+   development/code-conventions
    development/buildenvironments
    development/upstreaming
    development/writing-a-module
