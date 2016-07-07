@@ -13,6 +13,7 @@ enhancement requests using [Github Issues](https://github.com/F5Networks/f5-ansi
 
 ### Requirements
 
+* []Ansible 2.2.0 or greater][installing]
 * Advanced shell for user account enabled
 * [bigsuds Python Client 1.0.4 or later][bigsuds]
 * [f5-sdk Python Client, latest available][f5-sdk]
@@ -26,10 +27,10 @@ When [writing new modules][writingnew], please refer to the
 
 ### Purpose
 
-The purpose of this repository is to serve as a staging ground for Ansible
+The purpose of this repository is to serve as a **staging ground** for Ansible
 modules that we would prefer to have upstreamed over the course of time.
 
-The modules in this repository may be broken periodically due to experimentation
+The modules in this repository **may be broken** due to experimentation
 or refactoring
 
 ### Your ideas
@@ -50,3 +51,4 @@ you are familiar with what it means here.
 [readthedocs]: https://f5-ansible.readthedocs.io/en/latest/
 [guidelines]: https://f5-ansible.readthedocs.io/en/latest/development/guidelines.html
 [writingnew]: https://f5-ansible.readthedocs.io/en/latest/development/writing-a-module.html
+[installing]: https://f5-ansible.readthedocs.io/en/latest/usage/getting_started.html#installing-ansible
