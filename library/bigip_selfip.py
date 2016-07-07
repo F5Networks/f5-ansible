@@ -90,26 +90,24 @@ author:
 EXAMPLES = '''
 - name: Create Self IP
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-      vlan: "{{ selfip_vlan }}"
+      address: "10.10.10.10"
+      name: "self1"
+      netmask: "255.255.255.0"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
+      validate_certs: "no"
+      vlan: "vlan1"
   delegate_to: localhost
 
 - name: Delete Self IP
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
+      name: "self1"
+      password: "secret"
+      server: "lb.mydomain.com"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
+      user: "admin"
+      validate_certs: "no"
   delegate_to: localhost
 '''
 
@@ -126,7 +124,7 @@ name:
         - changed
         - deleted
     type: string
-    sample: "selfip foo"
+    sample: "self1"
 netmask:
     description: The netmask of the Self IP
     returned:
@@ -147,7 +145,7 @@ vlan:
         - changed
         - created
     type: string
-    sample: "net1"
+    sample: "vlan1"
 '''
 
 try:
@@ -384,9 +382,10 @@ class BigIpSelfIp(object):
         d = self.api.tm.net.selfips.selfip
         d.create(**params)
 
-        if not self.exists():
+        if self.exists():
+            return True
+        else:
             raise F5ModuleError("Failed to create the self IP")
-        return True
 
     def delete(self):
         params = dict()
