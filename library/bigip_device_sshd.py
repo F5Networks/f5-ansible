@@ -114,8 +114,8 @@ EXAMPLES = '''
   bigip_device_sshd:
       banner: "enabled"
       banner_text: "banner text goes here"
-      password: "admin"
-      server: "bigip.localhost.localdomain"
+      password: "secret"
+      server: "lb.mydomain.com"
       user: "admin"
   delegate_to: localhost
 
@@ -123,16 +123,16 @@ EXAMPLES = '''
   bigip_device_sshd:
       banner: "enabled"
       banner_text: "{{ lookup('file', '/path/to/file') }}"
-      password: "admin"
-      server: "bigip.localhost.localdomain"
+      password: "secret"
+      server: "lb.mydomain.com"
       user: "admin"
   delegate_to: localhost
 
 - name: Set the SSHD service to run on port 2222
   bigip_device_sshd:
-      password: "admin"
+      password: "secret"
       port: 2222
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
   delegate_to: localhost
 '''
