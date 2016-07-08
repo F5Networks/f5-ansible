@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# (c) 2013, Matt Hite <mhite@hotmail.com>
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -19,16 +21,18 @@
 DOCUMENTATION = '''
 ---
 module: bigip_pool_member
-short_description: "Manages F5 BIG-IP LTM pool members"
+short_description: Manages F5 BIG-IP LTM pool members
 description:
-  - "Manages F5 BIG-IP LTM pool members via iControl SOAP API"
-version_added: "1.4"
-author: "Matt Hite (@mhite)"
+  - Manages F5 BIG-IP LTM pool members via iControl SOAP API
+version_added: 1.4
+author:
+  - Matt Hite (@mhite)
+  - Tim Rupp (@caphrim007)
 notes:
-  - "Requires BIG-IP software version >= 11"
-  - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-  - "Best run as a local_action in your playbook"
-  - "Supersedes bigip_pool for managing pool members"
+  - Requires BIG-IP software version >= 11
+  - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
+  - Best run as a local_action in your playbook
+  - Supersedes bigip_pool for managing pool members
 requirements:
   - bigsuds
 options:
@@ -36,6 +40,12 @@ options:
     description:
       - BIG-IP host
     required: true
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
+    version_added: "2.2"
   user:
     description:
       - BIG-IP username
@@ -66,7 +76,7 @@ options:
   session_state:
     description:
       - Set new session availability status for pool member
-    version_added: "2.0"
+    version_added: 2.0
     required: false
     default: null
     choices:
@@ -75,7 +85,7 @@ options:
   monitor_state:
     description:
       - Set monitor availability status for pool member
-    version_added: "2.0"
+    version_added: 2.0
     required: false
     default: null
     choices:
@@ -120,62 +130,65 @@ options:
   ratio:
     description:
       - Pool member ratio weight. Valid values range from 1 through 100.
-        New pool members -- unless overriden with this value -- default to 1.
+        New pool members -- unless overriden with this value -- default
+        to 1.
     required: false
     default: null
   preserve_node:
     description:
-      - When state is absent and the pool member is no longer referenced in
-        other pools, the default behavior removes the unused node object.
-        Setting this to 'yes' disables this behavior.
+      - When state is absent and the pool member is no longer referenced
+        in other pools, the default behavior removes the unused node
+        o bject. Setting this to 'yes' disables this behavior.
     required: false
     default: 'no'
-    choices: ['yes', 'no']
+    choices:
+      - yes
+      - no
     version_added: 2.1
 '''
 
 EXAMPLES = '''
 - name: Add pool member
-  local_action: >
-      bigip_pool_member
-      server=lb.mydomain.com
-      user=admin
-      password=mysecret
-      state=present
-      pool=matthite-pool
-      partition=matthite
-      host="{{ ansible_default_ipv4["address"] }}"
-      port=80
-      description="web server"
-      connection_limit=100
-      rate_limit=50
-      ratio=2
+  bigip_pool_member:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      pool: "my-pool"
+      partition: "Common"
+      host: "{{ ansible_default_ipv4["address"] }}"
+      port: 80
+      description: "web server"
+      connection_limit: 100
+      rate_limit: 50
+      ratio: 2
+  delegate_to: localhost
 
 - name: Modify pool member ratio and description
-  local_action: >
-      bigip_pool_member
-      server=lb.mydomain.com
-      user=admin
-      password=mysecret
-      state=present
-      pool=matthite-pool
-      partition=matthite
-      host="{{ ansible_default_ipv4["address"] }}"
-      port=80
-      ratio=1
-      description="nginx server"
+  bigip_pool_member:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      pool: "my-pool"
+      partition: "Common"
+      host: "{{ ansible_default_ipv4["address"] }}"
+      port: 80
+      ratio: 1
+      description: "nginx server"
+  delegate_to: localhost
 
 - name: Remove pool member from pool
-  local_action: >
-      bigip_pool_member
-      server=lb.mydomain.com
-      user=admin
-      password=mysecret
-      state=absent
-      pool=matthite-pool
-      partition=matthite
-      host="{{ ansible_default_ipv4["address"] }}"
-      port=80
+  bigip_pool_member:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "absent"
+      pool: "my-pool"
+      partition: "Common"
+      host: "{{ ansible_default_ipv4["address"] }}"
+      port: 80
+  delegate_to: localhost
 
 
 # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
@@ -192,18 +205,18 @@ EXAMPLES = '''
 # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
 
 - name: Force pool member offline
-  local_action: >
-      bigip_pool_member
-      server=lb.mydomain.com
-      user=admin
-      password=mysecret
-      state=present
-      session_state=disabled
-      monitor_state=disabled
-      pool=matthite-pool
-      partition=matthite
-      host="{{ ansible_default_ipv4["address"] }}"
-      port=80
+  bigip_pool_member:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      session_state: "disabled"
+      monitor_state: "disabled"
+      pool: "my-pool"
+      partition: "Common"
+      host: "{{ ansible_default_ipv4["address"] }}"
+      port: 80
+  delegate_to: localhost
 '''
 
 
@@ -227,10 +240,8 @@ def member_exists(api, pool, address, port):
     result = False
     try:
         members = [{'address': address, 'port': port}]
-        api.LocalLB.Pool.get_member_object_status(
-            pool_names=[pool],
-            members=[members]
-        )
+        api.LocalLB.Pool.get_member_object_status(pool_names=[pool],
+                                                  members=[members])
         result = True
     except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
@@ -385,7 +396,8 @@ def get_member_monitor_status(api, pool, address, port):
 
 def main():
     argument_spec = f5_argument_spec()
-    argument_spec.update(dict(
+
+    meta_args = dict(
         session_state=dict(type='str', choices=['enabled', 'disabled']),
         monitor_state=dict(type='str', choices=['enabled', 'disabled']),
         pool=dict(type='str', required=True),
@@ -396,14 +408,27 @@ def main():
         rate_limit=dict(type='int'),
         ratio=dict(type='int'),
         preserve_node=dict(type='bool', default=False)
-    ))
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True
     )
 
-    (server, user, password, state, partition, validate_certs) = f5_parse_arguments(module)
+    if module.params['validate_certs']:
+        import ssl
+        if not hasattr(ssl, 'SSLContext'):
+            module.fail_json(msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task')
+
+    server = module.params['server']
+    server_port = module.params['server_port']
+    user = module.params['user']
+    password = module.params['password']
+    state = module.params['state']
+    partition = module.params['partition']
+    validate_certs = module.params['validate_certs']
+
     session_state = module.params['session_state']
     monitor_state = module.params['monitor_state']
     pool = fq_name(partition, module.params['pool'])
@@ -416,8 +441,6 @@ def main():
     port = module.params['port']
     preserve_node = module.params['preserve_node']
 
-    # sanity check user supplied values
-
     if (host and port is None) or (port is not None and not host):
         module.fail_json(msg="both host and port must be supplied")
 
@@ -425,10 +448,10 @@ def main():
         module.fail_json(msg="valid ports must be in range 0 - 65535")
 
     try:
-        api = bigip_api(server, user, password, validate_certs)
+        api = bigip_api(server, user, password, validate_certs, port=server_port)
         if not pool_exists(api, pool):
             module.fail_json(msg="pool %s does not exist" % pool)
-        result = {'changed': False}
+        result = {'changed': False}  # default
 
         if state == 'absent':
             if member_exists(api, pool, address, port):
@@ -503,7 +526,6 @@ def main():
 
     module.exit_json(**result)
 
-# import module snippets
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
 
