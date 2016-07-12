@@ -27,14 +27,16 @@ description:
     Currently lacking the ability to compare/modify, import will exit
     unchanged if a certificate with the same name already exists and state is
     present.
-version_added: "2.2"
+version_added: 2.2
 options:
   state:
     description:
       - Certificate state, determines if certificate is imported or deleted
     required: true
     default: present
-    choices: ['present', 'absent']
+    choices:
+      - present
+      - absent
   server:
     description:
       - BIG-IP host
