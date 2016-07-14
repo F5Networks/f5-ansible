@@ -128,6 +128,11 @@ options:
       - Default Profile which manages the session persistence
     required: false
     default: None
+  route_advertisement_state:
+    description:
+      - Enable route advertisement for destination
+    required: false
+    default: disabled
   description:
     description:
       - Virtual server description
@@ -477,6 +482,26 @@ def set_default_persistence_profiles(api, name, persistence_profile):
     except bigsuds.OperationFailed as e:
         raise Exception('Error on setting default persistence profile : %s' % e)
 
+def get_route_advertisement_status(api, address):
+    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(virtual_addresses=[address]).pop(0)
+    result = result.split("STATE_")[-1].lower()
+    return result
+
+
+def set_route_advertisement_state(api, destination, partition, route_advertisement_state):
+    updated = False
+    
+    try:
+        state = "STATE_%s" % route_advertisement_state.strip().upper()
+        address = fq_name(partition, destination,)
+        current_route_advertisement_state=get_route_advertisement_status(api,address)
+        if current_route_advertisement_state != route_advertisement_state:
+            api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
+            updated = True
+        return updated
+    except bigsuds.OperationFailed as e:
+        raise Exception('Error on setting profiles : %s' % e)
+
 
 def main():
     argument_spec = f5_argument_spec()
@@ -491,6 +516,7 @@ def main():
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
+        route_advertisement_state=dict(type='str', default='disabled', choices=['enabled', 'disabled']),
         default_persistence_profile=dict(type='str')
     ))
 
@@ -523,6 +549,7 @@ def main():
     pool = fq_name(partition, module.params['pool'])
     description = module.params['description']
     snat = module.params['snat']
+    route_advertisement_state = module.params['route_advertisement_state']
     default_persistence_profile = fq_name(partition, module.params['default_persistence_profile'])
 
     if 1 > port > 65535:
@@ -568,6 +595,7 @@ def main():
                         set_description(api, name, description)
                         set_default_persistence_profiles(api, name, default_persistence_profile)
                         set_state(api, name, state)
+                        set_route_advertisement_state(api, destination, partition, route_advertisement_state)
                         result = {'changed': True}
                     except bigsuds.OperationFailed as e:
                         raise Exception('Error on creating Virtual Server : %s' % e)
@@ -591,6 +619,7 @@ def main():
                         result['changed'] |= set_rules(api, name, all_rules)
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
                         result['changed'] |= set_state(api, name, state)
+                        result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
                         api.System.Session.submit_transaction()
                     except Exception as e:
                         raise Exception("Error on updating Virtual Server : %s" % e)
