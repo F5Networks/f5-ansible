@@ -145,16 +145,17 @@ ip_version:
 '''
 
 try:
-    from f5.bigip import ManagementRoot
     from f5.bigip.contexts import TransactionContextManager
+    from f5.bigip import ManagementRoot
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
 
 
-REQUIRED=['name_servers', 'search', 'forwarders', 'ip_version', 'cache']
-CACHE=['disable', 'enable']
-IP=[4,6]
+REQUIRED = ['name_servers', 'search', 'forwarders', 'ip_version', 'cache']
+CACHE = ['disable', 'enable']
+IP = [4, 6]
+
 
 class BigIpDeviceDns(object):
     def __init__(self, *args, **kwargs):
