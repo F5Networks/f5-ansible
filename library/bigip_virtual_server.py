@@ -133,6 +133,7 @@ options:
       - Enable route advertisement for destination
     required: false
     default: disabled
+    version_added: "2.2"
   description:
     description:
       - Virtual server description
@@ -482,19 +483,32 @@ def set_default_persistence_profiles(api, name, persistence_profile):
     except bigsuds.OperationFailed as e:
         raise Exception('Error on setting default persistence profile : %s' % e)
 
+
 def get_route_advertisement_status(api, address):
-    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(virtual_addresses=[address]).pop(0)
+    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(
+        virtual_addresses=[address]
+    ).pop(0)
     result = result.split("STATE_")[-1].lower()
     return result
 
 
 def set_route_advertisement_state(api, destination, partition, route_advertisement_state):
     updated = False
-    
+
     try:
+        if destination is None and route_advertisement_state is None:
+            return False
+        elif destination is not None and route_advertisement_state is None:
+            # default state
+            route_advertisement_state = 'disabled'
+        elif destination is None and route_advertisement_state is not None:
+            raise Exception(
+                "A destination must be provided with route_advertisement_state"
+            )
+
         state = "STATE_%s" % route_advertisement_state.strip().upper()
-        address = fq_name(partition, destination,)
-        current_route_advertisement_state=get_route_advertisement_status(api,address)
+        address = fq_name(partition, destination)
+        current_route_advertisement_state = get_route_advertisement_status(api, address)
         if current_route_advertisement_state != route_advertisement_state:
             api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
             updated = True
@@ -516,7 +530,7 @@ def main():
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
-        route_advertisement_state=dict(type='str', default='disabled', choices=['enabled', 'disabled']),
+        route_advertisement_state=dict(type='str', default=None, choices=['enabled', 'disabled']),
         default_persistence_profile=dict(type='str')
     ))
 
