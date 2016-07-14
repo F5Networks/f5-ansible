@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# (c) 2013, serge van Ginderachter <serge@vanginderachter.be>
+# based on Matt Hite's bigip_pool module
+# (c) 2013, Matt Hite <mhite@hotmail.com>
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -21,10 +25,11 @@ DOCUMENTATION = '''
 module: bigip_monitor_http
 short_description: "Manages F5 BIG-IP LTM http monitors"
 description:
-  - "Manages F5 BIG-IP LTM monitors via iControl SOAP API"
+  - Manages F5 BIG-IP LTM monitors via iControl SOAP API
 version_added: "1.4"
 author:
   - Serge van Ginderachter (@srvg)
+  - Tim Rupp (@caphrim007)
 notes:
   - "Requires BIG-IP software version >= 11"
   - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
@@ -38,6 +43,12 @@ options:
       - BIG-IP host
     required: true
     default: null
+  server_port:
+    description:
+      - BIG-IP server port
+    required: false
+    default: 443
+    version_added: "2.2"
   user:
     description:
       - BIG-IP username
@@ -50,13 +61,14 @@ options:
     default: null
   validate_certs:
     description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites. Prior to 2.0, this module would
-        always validate on python >= 2.7.9 and never validate on python <=
-        2.7.8
+      - If C(no), SSL certificates will not be validated. This should only be used
+        on personally controlled sites.  Prior to 2.0, this module would always
+        validate on python >= 2.7.9 and never validate on python <= 2.7.8
     required: false
     default: 'yes'
-    choices: ['yes', 'no']
+    choices:
+      - yes
+      - no
     version_added: 2.0
   state:
     description:
@@ -111,15 +123,15 @@ options:
     default: none
   port:
     description:
-      - Port address part op the ipport definition. The default API
+      - Port address part of the ip/port definition. The default API
         setting is 0.
     required: false
     default: none
   interval:
     description:
       - The interval specifying how frequently the monitor instance
-        of this template will run. By default, this interval is used for up
-        and down states. The default API setting is 5.
+        of this template will run. By default, this interval is used for up and
+        down states. The default API setting is 5.
     required: false
     default: none
   timeout:
@@ -144,26 +156,25 @@ options:
 '''
 
 EXAMPLES = '''
-- name: Create HTTP Monitor
-  local_action:
-      module: bigip_monitor_http
-      state: present
-      server: "{{ f5server }}"
-      user: "{{ f5user }}"
-      password: "{{ f5password }}"
-      name: "{{ item.monitorname }}"
-      send: "{{ item.send }}"
-      receive: "{{ item.receive }}"
-  with_items: f5monitors
+- name: BIGIP F5 | Create HTTP Monitor
+  bigip_monitor_http:
+      state: "present"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      name: "my_http_monitor"
+      send: "http string to send"
+      receive: "http string to receive"
+  delegate_to: localhost
 
-- name: Remove HTTP Monitor
-  local_action:
-      module: bigip_monitor_http
-      state: absent
-      server: "{{ f5server }}"
-      user: "{{ f5user }}"
-      password: "{{ f5password }}"
-      name: "{{ monitorname }}"
+- name: BIGIP F5 | Remove HTTP Monitor
+  bigip_monitor_http:
+    state: "absent"
+    server: "lb.mydomain.com"
+    user: "admin"
+    password: "secret"
+    name: "my_http_monitor"
+  delegate_to: localhost
 '''
 
 TEMPLATE_TYPE = 'TTYPE_HTTP'
@@ -174,17 +185,12 @@ def check_monitor_exists(module, api, monitor, parent):
     # hack to determine if monitor exists
     result = False
     try:
-        ttype = api.LocalLB.Monitor.get_template_type(
-            template_names=[monitor]
-        ).pop(0)
-        parent2 = api.LocalLB.Monitor.get_parent_template(
-            template_names=[monitor]
-        ).pop(0)
+        ttype = api.LocalLB.Monitor.get_template_type(template_names=[monitor])[0]
+        parent2 = api.LocalLB.Monitor.get_parent_template(template_names=[monitor])[0]
         if ttype == TEMPLATE_TYPE and parent == parent2:
             result = True
         else:
-            module.fail_json(msg='Monitor already exists, but has a different'
-                                 'type (%s) or parent(%s)' % (ttype, parent))
+            module.fail_json(msg='Monitor already exists, but has a different type (%s) or parent(%s)' % (ttype, parent))
     except bigsuds.OperationFailed as e:
         if "was not found" in str(e):
             result = False
@@ -197,7 +203,10 @@ def check_monitor_exists(module, api, monitor, parent):
 def create_monitor(api, monitor, template_attributes):
     try:
         api.LocalLB.Monitor.create_template(
-            templates=[{'template_name': monitor, 'template_type': TEMPLATE_TYPE}],
+            templates=[{
+                'template_name': monitor,
+                'template_type': TEMPLATE_TYPE
+            }],
             template_attributes=[template_attributes]
         )
     except bigsuds.OperationFailed as e:
@@ -211,9 +220,7 @@ def create_monitor(api, monitor, template_attributes):
 
 def delete_monitor(api, monitor):
     try:
-        api.LocalLB.Monitor.delete_template(
-            template_names=[monitor]
-        )
+        api.LocalLB.Monitor.delete_template(template_names=[monitor])
     except bigsuds.OperationFailed as e:
         # maybe it was deleted since we checked
         if "was not found" in str(e):
@@ -226,7 +233,10 @@ def delete_monitor(api, monitor):
 
 def check_string_property(api, monitor, str_property):
     try:
-        return str_property == api.LocalLB.Monitor.get_template_string_property([monitor], [str_property['type']])[0]
+        template_prop = api.LocalLB.Monitor.get_template_string_property(
+            [monitor], [str_property['type']]
+        )[0]
+        return str_property == template_prop
     except bigsuds.OperationFailed as e:
         # happens in check mode if not created yet
         if "was not found" in str(e):
@@ -245,7 +255,10 @@ def set_string_property(api, monitor, str_property):
 
 def check_integer_property(api, monitor, int_property):
     try:
-        return int_property == api.LocalLB.Monitor.get_template_integer_property([monitor], [int_property['type']])[0]
+        template_prop = api.LocalLB.Monitor.get_template_integer_property(
+            [monitor], [int_property['type']]
+        )[0]
+        return int_property == template_prop
     except bigsuds.OperationFailed as e:
         # happens in check mode if not created yet
         if "was not found" in str(e):
@@ -279,19 +292,15 @@ def update_monitor_properties(api, module, monitor, template_string_properties, 
 
 
 def get_ipport(api, monitor):
-    return api.LocalLB.Monitor.get_template_destination(
-        template_names=[monitor]
-    ).pop(0)
+    return api.LocalLB.Monitor.get_template_destination(template_names=[monitor])[0]
 
 
 def set_ipport(api, monitor, ipport):
     try:
         api.LocalLB.Monitor.set_template_destination(
-            template_names=[monitor],
-            destinations=[ipport]
+            template_names=[monitor], destinations=[ipport]
         )
         return True, ""
-
     except bigsuds.OperationFailed as e:
         if "Cannot modify the address type of monitor" in str(e):
             return False, "Cannot modify the address type of monitor if already assigned to a pool."
@@ -301,9 +310,9 @@ def set_ipport(api, monitor, ipport):
 
 
 def main():
-    # begin monitor specific stuff
     argument_spec = f5_argument_spec()
-    argument_spec.update(dict(
+
+    meta_args = dict(
         name=dict(required=True),
         parent=dict(default=DEFAULT_PARENT_TYPE),
         parent_partition=dict(default='Common'),
@@ -315,14 +324,21 @@ def main():
         interval=dict(required=False, type='int'),
         timeout=dict(required=False, type='int'),
         time_until_up=dict(required=False, type='int', default=0)
-    ))
+    )
+    argument_spec.update(meta_args)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True
     )
 
-    (server, user, password, state, partition, validate_certs) = f5_parse_arguments(module)
+    server = module.params['server']
+    server_port = module.params['server_port']
+    user = module.params['user']
+    password = module.params['password']
+    state = module.params['state']
+    partition = module.params['partition']
+    validate_certs = module.params['validate_certs']
 
     parent_partition = module.params['parent_partition']
     name = module.params['name']
@@ -339,7 +355,7 @@ def main():
 
     # end monitor specific stuff
 
-    api = bigip_api(server, user, password, validate_certs)
+    api = bigip_api(server, user, password, validate_certs, port=server_port)
     monitor_exists = check_monitor_exists(module, api, monitor, parent)
 
     # ipport is a special setting
@@ -394,16 +410,25 @@ def main():
                                   {'type': 'STYPE_RECEIVE_DRAIN',
                                    'value': receive_disable}]
 
-    template_integer_properties = [{'type': 'ITYPE_INTERVAL',
-                                    'value': interval},
-                                   {'type': 'ITYPE_TIMEOUT',
-                                    'value': timeout},
-                                   {'type': 'ITYPE_TIME_UNTIL_UP',
-                                    'value': time_until_up}]
+    template_integer_properties = [
+        {
+            'type': 'ITYPE_INTERVAL',
+            'value': interval
+        },
+        {
+            'type': 'ITYPE_TIMEOUT',
+            'value': timeout
+        },
+        {
+            'type': 'ITYPE_TIME_UNTIL_UP',
+            'value': time_until_up
+        }
+    ]
 
     # main logic, monitor generic
+
     try:
-        result = {'changed': False}
+        result = {'changed': False}  # default
 
         if state == 'absent':
             if monitor_exists:
@@ -413,7 +438,6 @@ def main():
                     result['changed'] |= delete_monitor(api, monitor)
                 else:
                     result['changed'] |= True
-
         else:
             # check for monitor itself
             if not monitor_exists:
