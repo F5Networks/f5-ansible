@@ -161,7 +161,7 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
-FLOAT=['enabled', 'disabled']
+FLOAT = ['enabled', 'disabled']
 DEFAULT_TG = 'traffic-group-local-only'
 
 
@@ -354,7 +354,7 @@ class BigIpSelfIp(object):
             )
 
         if traffic_group is None:
-            params['trafficGroup'] = "/%s/%s" %(partition, DEFAULT_TG)
+            params['trafficGroup'] = "/%s/%s" % (partition, DEFAULT_TG)
         else:
             groups = self.api.tm.cm.traffic_groups.get_collection()
             if traffic_group in groups:
