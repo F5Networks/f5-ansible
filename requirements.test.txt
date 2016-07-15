@@ -2,5 +2,6 @@ paramiko
 bigsuds
 requests
 git+https://github.com/F5Networks/f5-common-python.git@development
+git+https://github.com/sivel/ansible-testing.git#egg=ansible_testing
 pytest
 flake8
