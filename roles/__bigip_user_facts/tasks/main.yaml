@@ -1,0 +1,20 @@
+---
+
+- name: Fetch username credential
+  bigip_user_facts:
+      username_credential: "{{ username_credential }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Fetch username credential
+  assert:
+      that:
+          - result|changed
+
+- name: Print the name
+  debug:
+      var: bigip['username_credential']
