@@ -124,6 +124,10 @@ bigip-sys-db:
 	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
 	flake8 library/bigip_sys_db.py
 
+bigip-user-facts:
+	ansible-playbook -i inventory/hosts tests/bigip_user_facts.yaml -vvvv
+	flake8 library/bigip_user_facts.py
+
 bigip-virtual-server:
 	ansible-playbook -i inventory/hosts tests/bigip_virtual_server.yaml -vvvv
 	flake8 library/bigip_virtual_server.py
