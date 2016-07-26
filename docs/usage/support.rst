@@ -65,3 +65,47 @@ therefore, please be diligent and either
 We are very well equipped in terms of physical and virtual BIG-IPs to be able
 to diagnose and test your problems. Therefore we never need this information
 to provide your with assistance.
+
+How to know which modules are supported
+---------------------------------------
+
+Remember that, ultimately, this repository contains *experimental* code.
+
+However, with that said, there is a quick way to figure out if a particular
+module you are interested in has been tested to work on a particular platform
+or not.
+
+To find that out, look for your modules in the *tests/* directory.
+
+Each module has a doc block which includes a "Tested platforms" section.
+
+For example
+
+.. code-block: python
+
+   # Tested platforms:
+   #
+   #    - NA
+   #
+
+The above doc block tells you that this particular module has not yet benn
+tested on any platforms. This is a fairly safe bet that the module is not
+complete yet.
+
+Therefore, we would not recommend filing any bugs against this module.
+
+Let's take a look at another module though.
+
+.. code-block: python
+
+   # Tested platforms:
+   #
+   #    - 11.6.0
+   #    - 12.0.0
+   #
+
+This module specifies the versions of BIG-IP that it has been tested against.
+Therefore, this module can probably be considered "complete" and ready for
+use by anyone.
+
+It is these modules that we will entertain bug reports on.
