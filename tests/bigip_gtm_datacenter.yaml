@@ -20,7 +20,7 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 11.6.0
 #
 
 - name: Test the bigip_gtm_datacenter module
