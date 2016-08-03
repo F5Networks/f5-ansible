@@ -43,6 +43,9 @@ options:
         enabled are required.
     required: false
     default: None
+    choices:
+      - yes
+      - no
   location:
     description:
       - The location of the data center.
@@ -374,7 +377,7 @@ def main():
     meta_args = dict(
         contact=dict(required=False, default=None),
         description=dict(required=False, default=None),
-        enabled=dict(required=False, type='bool', default=None),
+        enabled=dict(required=False, type='bool', default=None, choices=BOOLEANS),
         location=dict(required=False, default=None),
         name=dict(required=True)
     )
