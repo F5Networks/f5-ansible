@@ -80,7 +80,8 @@ options:
       - absent
   user:
     description:
-      - The username to connect to the BIG-IP with.
+      - The username to connect to the BIG-IP with. This user must have
+        administrative privileges on the device.
     required: false
     default: admin
   validate_certs:
