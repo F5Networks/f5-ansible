@@ -39,8 +39,8 @@ options:
     default: None
   enabled:
     description:
-      - Whether the data center should be enabled. At least one of state and
-        enabled are required.
+      - Whether the data center should be enabled. At least one of C(state) and
+        C(enabled) are required.
     required: false
     default: None
     choices:
