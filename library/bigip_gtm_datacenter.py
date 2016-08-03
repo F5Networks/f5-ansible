@@ -29,12 +29,12 @@ version_added: "2.2"
 options:
   contact:
     description:
-      - The name of the contact for the data center
+      - The name of the contact for the data center.
     required: false
     default: None
   description:
     description:
-      - The description of the data center
+      - The description of the data center.
     required: false
     default: None
   enabled:
@@ -45,25 +45,25 @@ options:
     default: None
   location:
     description:
-      - The location of the data center
+      - The location of the data center.
     required: false
     default: None
   name:
     description:
-      - The name of the data center
+      - The name of the data center.
     required: true
   password:
     description:
-      - BIG-IP password
+      - The password of the BIG-IP.
     required: false
     default: admin
   server:
     description:
-      - BIG-IP host
+      - The BIG-IP host.
     required: true
   server_port:
     description:
-      - BIG-IP server port
+      - The BIG-IP server port.
     required: false
     default: 443
   state:
@@ -80,7 +80,7 @@ options:
       - absent
   user:
     description:
-      - BIG-IP username
+      - The username to connect to the BIG-IP with.
     required: false
     default: admin
   validate_certs:
@@ -94,7 +94,7 @@ options:
       - no
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
-    pip install f5-sdk
+    pip install f5-sdk.
 requirements:
   - f5-sdk
 author:
