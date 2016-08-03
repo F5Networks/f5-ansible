@@ -1,0 +1,31 @@
+---
+
+# Test the bigip_gtm_facts module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_gtm_facts module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, tests/bigip_gtm_facts.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_gtm_facts module
+#
+#    ansible-playbook -i notahost, tests/bigip_gtm_facts.yaml
+#
+# Tested platforms:
+#
+#    - 11.5.4
+#
+
+- name: Test the bigip_gtm_facts module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - __bigip_gtm_facts

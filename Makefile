@@ -72,6 +72,10 @@ bigip-gtm-datacenter:
 	ansible-playbook -i inventory/hosts tests/bigip_gtm_datacenter.yaml -vvvv
 	flake8 library/bigip_gtm_datacenter.py
 
+bigip-gtm-facts:
+	ansible-playbook -i inventory/hosts tests/bigip_gtm_facts.yaml -vvvv
+	flake8 library/bigip_gtm_facts.py
+
 bigip-gtm-virtual-server:
 	ansible-playbook -i inventory/hosts tests/bigip_gtm_virtual_server.yaml -vvvv
 	flake8 library/bigip_gtm_virtual_server.py
