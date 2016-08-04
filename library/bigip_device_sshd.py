@@ -28,7 +28,7 @@ options:
     description:
       - Specifies, if you have enabled SSH access, the IP address or address
         range for other systems that can use SSH to communicate with this
-        system
+        system.
     required: false
     default: None
     choices:
@@ -37,7 +37,7 @@ options:
       - IP range, such as 172.27.*.* or 172.27.0.0/255.255.0.0
   banner:
     description:
-      - Whether to enable the banner or not
+      - Whether to enable the banner or not.
     required: false
     choices:
       - enabled
@@ -45,16 +45,16 @@ options:
   banner_text:
     description:
       - Specifies the text to include on the pre-login banner that displays
-        when a user attempts to login to the system using SSH
+        when a user attempts to login to the system using SSH.
     required: false
   inactivity_timeout:
     description:
       - Specifies the number of seconds before inactivity causes an SSH
-        session to log out
+        session to log out.
     required: false
   log_level:
     description:
-      - Specifies the minimum SSHD message level to include in the system log
+      - Specifies the minimum SSHD message level to include in the system log.
     choices:
       - debug
       - debug1
@@ -68,31 +68,30 @@ options:
   login:
     description:
       - Specifies, when checked C(enabled), that the system accepts SSH
-        communications
+        communications.
     required: false
   password:
     description:
-      - BIG-IP password
+      - The password for the user account used to connect to the BIG-IP.
     required: true
   port:
     description:
-      - Port that you want the SSH daemon to run on
+      - Port that you want the SSH daemon to run on.
     required: false
   server:
     description:
-      - BIG-IP host
+      - The BIG-IP host.
     required: true
   server_port:
     description:
-      - BIG-IP server port
+      - The BIG-IP server port.
     required: false
     default: 443
   user:
     description:
-      - BIG-IP username
+      - The username to connect to the BIG-IP with. This user must have
+        administrative privileges on the device.
     required: true
-    aliases:
-      - username
   validate_certs:
     description:
       - If C(no), SSL certificates will not be validated. This should only be
@@ -101,7 +100,7 @@ options:
     default: true
 notes:
   - Requires the f5-sdk Python package on the host This is as easy as pip
-    install f5-sdk
+    install f5-sdk.
   - Requires BIG-IP version 12.0.0 or greater
 requirements:
   - f5-sdk
@@ -142,41 +141,41 @@ allow:
     description: |
         Specifies, if you have enabled SSH access, the IP address or address
         range for other systems that can use SSH to communicate with this
-        system
+        system.
     returned: changed
     type: list
     sample: "192.168.*.*"
 banner:
-    description: Whether the banner is enabled or not
+    description: Whether the banner is enabled or not.
     returned: changed
     type: string
     sample: "true"
 banner_text:
     description: |
         Specifies the text included on the pre-login banner that
-        displays when a user attempts to login to the system using SSH
+        displays when a user attempts to login to the system using SSH.
     returned: changed and success
     type: string
     sample: "This is a corporate device. Connecting to it without..."
 inactivity_timeout:
     description: |
-        The number of seconds before inactivity causes an SSH
+        The number of seconds before inactivity causes an SSH.
         session to log out
     returned: changed
     type: int
     sample: "10"
 log_level:
-    description: The minimum SSHD message level to include in the system log
+    description: The minimum SSHD message level to include in the system log.
     returned: changed
     type: string
     sample: "debug"
 login:
-    description: Specifies that the system accepts SSH communications or not
+    description: Specifies that the system accepts SSH communications or not.
     return: changed
     type: bool
     sample: true
 port:
-    description: Port that you want the SSH daemon to run on
+    description: Port that you want the SSH daemon to run on.
     return: changed
     type: int
     sample: 22
