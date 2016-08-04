@@ -190,10 +190,10 @@ options:
   port:
     description:
       - Pool member port
-        required: False
-        default: null
-        choices: []
-        aliases: []
+    required: False
+    default: null
+    choices: []
+    aliases: []
 '''
 
 EXAMPLES = '''
