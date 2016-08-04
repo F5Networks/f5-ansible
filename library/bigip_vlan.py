@@ -26,7 +26,7 @@ version_added: "2.2"
 options:
   description:
     description:
-      - The description to give to the VLAN
+      - The description to give to the VLAN.
     required: false
     default: None
   interfaces:
@@ -43,12 +43,17 @@ options:
     required: true
   password:
     description:
-      - BIG-IP password
+      - The password for the user account used to connect to the BIG-IP.
     required: true
   server:
     description:
-      - BIG-IP host
+      - The BIG-IP host.
     required: true
+  server_port:
+    description:
+      - The BIG-IP server port.
+    required: false
+    default: 443
   state:
     description:
       - The state of the VLAN on the system. When C(present), guarantees
@@ -61,7 +66,8 @@ options:
       - present
   user:
     description:
-      - BIG-IP username
+      - The username to connect to the BIG-IP with. This user must have
+        administrative privileges on the device.
     required: true
   validate_certs:
     description:
@@ -78,7 +84,7 @@ options:
     default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
+    install f5-sdk.
   - Requires BIG-IP versions >= 12.0.0
 requirements:
   - f5-sdk
@@ -91,20 +97,32 @@ EXAMPLES = '''
   bigip_vlan:
       name: "net1"
       password: "secret"
-      server: "big-ip01.local"
+      server: "lb.mydomain.com"
       user: "admin"
       validate_certs: "no"
-  register: result
+  delegate_to: localhost
 
 - name: Set VLAN tag
   bigip_vlan:
       name: "net1"
       password: "secret"
-      server: "big-ip01.local"
+      server: "lb.mydomain.com"
       tag: "2345"
       user: "admin"
       validate_certs: "no"
-  register: result
+  delegate_to: localhost
+
+- name: Add VLAN 2345 as tagged to interface 1.1
+  bigip_vlan:
+      interfaces:
+          - 1.1
+      name: "net1"
+      password: "secret"
+      server: "lb.mydomain.com"
+      tag: "2345"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
 '''
 
 RETURN = '''
