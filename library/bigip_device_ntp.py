@@ -26,16 +26,16 @@ version_added: "2.2"
 options:
   server:
     description:
-      - BIG-IP host
+      - The BIG-IP host.
     required: true
   server_port:
     description:
-      - BIG-IP server port
+      - The BIG-IP server port.
     required: false
     default: 443
   password:
     description:
-      - BIG-IP password
+      - The password for the user account used to connect to the BIG-IP.
     required: true
   ntp_server:
     description:
@@ -61,15 +61,14 @@ options:
       - present
   timezone:
     description:
-      - The timezone to set for NTP lookups
+      - The timezone to set for NTP lookups.
     default: UTC
     required: false
   user:
     description:
-      - BIG-IP username
+      - The username to connect to the BIG-IP with. This user must have
+        administrative privileges on the device.
     required: true
-    aliases:
-      - username
   validate_certs:
     description:
       - If C(no), SSL certificates will not be validated. This should only be
@@ -78,7 +77,7 @@ options:
     default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
+    install f5-sdk.
 requirements:
   - f5-sdk
 author:
