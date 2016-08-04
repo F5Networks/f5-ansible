@@ -26,20 +26,20 @@ version_added: "2.2"
 options:
   server:
     description:
-      - BIG-IP host
+      - The BIG-IP host.
     required: true
   server_port:
     description:
-      - BIG-IP host port
+      - The BIG-IP server port.
     required: false
     default: 443
   key:
     description:
-      - The database variable to manipulate
+      - The database variable to manipulate.
     required: true
   password:
     description:
-      - BIG-IP password
+      - The password for the user account used to connect to the BIG-IP.
     required: true
   state:
     description:
@@ -54,10 +54,9 @@ options:
       - reset
   user:
     description:
-      - BIG-IP username
+      - The username to connect to the BIG-IP with. This user must have
+        administrative privileges on the device.
     required: true
-    aliases:
-      - username
   value:
     description:
       - The value to set the key to. At least one of value and state C(reset)
@@ -71,7 +70,7 @@ options:
     default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
+    install f5-sdk.
   - Requires BIG-IP version 12.0.0 or greater
 requirements:
   - f5-sdk
