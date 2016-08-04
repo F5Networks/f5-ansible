@@ -1,6 +1,6 @@
 ---
 
-- name: Set setup.run variable
+- name: Set setup.run variable "on"
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
       password: "{{ bigip_password }}"
@@ -16,7 +16,7 @@
       that:
           - result|changed
 
-- name: Set setup.run variable - Idempotent check
+- name: Set setup.run variable "on" - Idempotent check
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
       password: "{{ bigip_password }}"
@@ -27,7 +27,39 @@
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
-- name: Assert Set setup.run variable - Idempotent checl
+- name: Assert Set setup.run variable "on" - Idempotent checl
+  assert:
+      that:
+          - not result|changed
+
+- name: Set setup.run variable "off"
+  bigip_sys_db:
+      key: "{{ bigip_sys_db_key_1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      value: "{{ bigip_sys_db_val_2 }}"
+  register: result
+
+- name: Assert Set setup.run variable "off"
+  assert:
+      that:
+          - result|changed
+
+- name: Set setup.run variable "off" - Idempotent check
+  bigip_sys_db:
+      key: "{{ bigip_sys_db_key_1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      value: "{{ bigip_sys_db_val_2 }}"
+  register: result
+
+- name: Assert Set setup.run variable "off" - Idempotent checl
   assert:
       that:
           - not result|changed
