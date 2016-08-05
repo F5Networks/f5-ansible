@@ -1,1 +1,256 @@
 ---
+
+- name: Get facts from device
+  bigip_facts:
+      include: "system_info"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  with_items: valid_includes
+
+- name: Set the banner text
+  bigip_sys_global:
+      banner_text: "{{ banner_text }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the banner text
+  assert:
+      that:
+          - result|changed
+
+- name: Set the banner text - Idempotent check
+  bigip_sys_global:
+      banner_text: "{{ banner_text }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the banner text - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the console timeout
+  bigip_sys_global:
+      console_timeout: "{{ console_timeout }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the console timeout
+  assert:
+      that:
+          - result|changed
+
+- name: Set the console timeout - Idempotent check
+  bigip_sys_global:
+      console_timeout: "{{ console_timeout }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the console timeout - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the gui setup
+  bigip_sys_global:
+      gui_setup: "{{ gui_setup }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the gui setup
+  assert:
+      that:
+          - result|changed
+
+- name: Set the gui setup - Idempotent check
+  bigip_sys_global:
+      gui_setup: "{{ gui_setup }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the gui setup - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the lcd display
+  bigip_sys_global:
+      lcd_display: "{{ lcd_display }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the lcd display
+  assert:
+      that:
+          - result|changed
+
+- name: Set the lcd display - Idempotent check
+  bigip_sys_global:
+      lcd_display: "{{ lcd_display }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the lcd display - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the mgmt dhcp
+  bigip_sys_global:
+      mgmt_dhcp: "{{ mgmt_dhcp }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the mgmt dhcp
+  assert:
+      that:
+          - result|changed
+
+- name: Set the mgmt dhcp - Idempotent check
+  bigip_sys_global:
+      mgmt_dhcp: "{{ mgmt_dhcp }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the mgmt dhcp - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the net reboot
+  bigip_sys_global:
+      net_reboot: "{{ net_reboot }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  when: "'Virtual Edition' not in system_info['marketing_name']"
+
+- name: Assert Set the net reboot
+  assert:
+      that:
+          - result|changed
+  when: "'Virtual Edition' not in system_info['marketing_name']"
+
+- name: Set the net reboot - Idempotent check
+  bigip_sys_global:
+      net_reboot: "{{ net_reboot }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  when: "'Virtual Edition' not in system_info['marketing_name']"
+
+- name: Assert the net reboot - Idempotent check
+  assert:
+      that:
+          - not result|changed
+  when: "'Virtual Edition' not in system_info['marketing_name']"
+
+- name: Set the quiet boot
+  bigip_sys_global:
+      password: "{{ bigip_password }}"
+      quiet_boot: "{{ quiet_boot }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the quiet boot
+  assert:
+      that:
+          - result|changed
+
+- name: Set the quiet boot - Idempotent check
+  bigip_sys_global:
+      password: "{{ bigip_password }}"
+      quiet_boot: "{{ quiet_boot }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the quiet boot - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the security banner
+  bigip_sys_global:
+      password: "{{ bigip_password }}"
+      security_banner: "{{ security_banner }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set the security banner
+  assert:
+      that:
+          - result|changed
+
+- name: Set the security banner - Idempotent check
+  bigip_sys_global:
+      password: "{{ bigip_password }}"
+      security_banner: "{{ security_banner }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert the security banner - Idempotent check
+  assert:
+      that:
+          - not result|changed
