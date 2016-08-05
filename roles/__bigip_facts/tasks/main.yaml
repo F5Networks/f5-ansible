@@ -2,7 +2,7 @@
 
 - name: Collect BIG-IP facts, address class
   bigip_facts:
-      include: "address_class"
+      include: "{{ item }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
