@@ -24,19 +24,6 @@ description:
   - Manage BIG-IP device DNS settings
 version_added: "2.2"
 options:
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
-  password:
-    description:
-      - BIG-IP password
-    required: true
   cache:
     description:
       - Specifies whether the system caches DNS lookups or performs the
@@ -81,21 +68,10 @@ options:
     choices:
       - absent
       - present
-  user:
-    description:
-      - BIG-IP username
-    required: true
-    aliases:
-      - username
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install requests
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:
