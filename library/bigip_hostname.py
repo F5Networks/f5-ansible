@@ -28,29 +28,10 @@ options:
     description:
       - Hostname of the BIG-IP host
     required: true
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  password:
-    description:
-      - BIG-IP password
-    required: true
-  user:
-    description:
-      - BIG-IP username
-    required: true
-    aliases:
-      - username
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the f5-sdk Python package on the host This is as easy as pip
-    install f5-sdk
+    install f5-sdk.
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:
