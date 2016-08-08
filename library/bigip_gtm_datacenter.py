@@ -55,20 +55,6 @@ options:
     description:
       - The name of the data center.
     required: true
-  password:
-    description:
-      - The password of the BIG-IP.
-    required: false
-    default: admin
-  server:
-    description:
-      - The BIG-IP host.
-    required: true
-  server_port:
-    description:
-      - The BIG-IP server port.
-    required: false
-    default: 443
   state:
     description:
       - The state of the datacenter on the BIG-IP. When C(present), guarantees
@@ -81,24 +67,10 @@ options:
     choices:
       - present
       - absent
-  user:
-    description:
-      - The username to connect to the BIG-IP with. This user must have
-        administrative privileges on the device.
-    required: false
-    default: admin
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: yes
-    choices:
-      - yes
-      - no
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
     pip install f5-sdk.
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:
