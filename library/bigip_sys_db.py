@@ -24,22 +24,9 @@ description:
   - Manage BIG-IP system database variables
 version_added: "2.2"
 options:
-  server:
-    description:
-      - The BIG-IP host.
-    required: true
-  server_port:
-    description:
-      - The BIG-IP server port.
-    required: false
-    default: 443
   key:
     description:
       - The database variable to manipulate.
-    required: true
-  password:
-    description:
-      - The password for the user account used to connect to the BIG-IP.
     required: true
   state:
     description:
@@ -52,26 +39,16 @@ options:
     choices:
       - present
       - reset
-  user:
-    description:
-      - The username to connect to the BIG-IP with. This user must have
-        administrative privileges on the device.
-    required: true
   value:
     description:
       - The value to set the key to. At least one of value and state C(reset)
         are required.
     required: false
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
   - Requires BIG-IP version 12.0.0 or greater
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:
