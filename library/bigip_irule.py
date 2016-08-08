@@ -30,10 +30,6 @@ options:
         the specified value. This is for simple values, but can be used with
         lookup plugins for anything complex or with formatting. Either one
         of C(src) or C(content) must be provided.
-  password:
-    description:
-      - BIG-IP password
-    required: true
   module:
     description:
       - The BIG-IP module to add the iRule to
@@ -50,19 +46,6 @@ options:
     description:
       - The name of the iRule
     required: true
-  user:
-    description:
-      - BIG-IP username
-    required: true
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
   src:
     description:
       - The iRule file to interpret and upload to the BIG-IP. Either one
@@ -76,15 +59,10 @@ options:
     choices:
       - present
       - absent
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
-    pip install f5-sdk
+    pip install f5-sdk.
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:
