@@ -108,8 +108,4 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
-
-- name: Assert No value and no reset
-  assert:
-      that:
-          - result|changed
+  failed_when: result|success
