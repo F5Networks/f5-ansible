@@ -126,8 +126,8 @@ class BigIpSysDb(object):
         value = self.params['value']
 
         if not state == 'reset' and not value:
-            raise F5Module(
-                "When resetting a key, a value is not supported"
+            raise F5ModuleError(
+                "When setting a key, a value must be supplied"
             )
 
         current = self.read()
