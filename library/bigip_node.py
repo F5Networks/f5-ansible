@@ -292,7 +292,7 @@ def main():
         supports_check_mode=True
     )
 
-    (server, user, password, state, partition, validate_certs) = f5_parse_arguments(module)
+    (server, user, password, state, partition, validate_certs, server_port) = f5_parse_arguments(module)
 
     session_state = module.params['session_state']
     monitor_state = module.params['monitor_state']
