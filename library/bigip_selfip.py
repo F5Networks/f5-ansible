@@ -28,8 +28,6 @@ options:
     description:
       - The IP addresses for the new self IP. This value is ignored upon update
         as addresses themselves cannot be changed after they are created.
-    required: false
-    default: None
   name:
     description:
       - The self IP to create
