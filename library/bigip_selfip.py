@@ -37,14 +37,6 @@ options:
     description:
       - The netmasks for the self IP
     required: true
-  password:
-    description:
-      - BIG-IP password
-    required: true
-  server:
-    description:
-      - BIG-IP host
-    required: true
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
@@ -60,16 +52,6 @@ options:
       - The traffic group for the self IP addresses in an active-active,
         redundant load balancer configuration
     required: false
-  user:
-    description:
-      - BIG-IP username
-    required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
   vlan:
     description:
       - The VLAN that the new self IPs will be on
@@ -78,6 +60,7 @@ notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk
   - Requires the netaddr Python package on the host
+extends_documentation_fragment: f5
 requirements:
   - netaddr
   - f5-sdk
