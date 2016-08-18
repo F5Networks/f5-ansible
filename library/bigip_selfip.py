@@ -30,12 +30,12 @@ options:
         as addresses themselves cannot be changed after they are created.
   name:
     description:
-      - The self IP to create
-    required: false
+      - The self IP to create.
+    required: true
     default: Value of C(address)
   netmask:
     description:
-      - The netmasks for the self IP
+      - The netmasks for the self IP.
     required: true
   state:
     description:
@@ -50,16 +50,16 @@ options:
   traffic_group:
     description:
       - The traffic group for the self IP addresses in an active-active,
-        redundant load balancer configuration
+        redundant load balancer configuration.
     required: false
   vlan:
     description:
-      - The VLAN that the new self IPs will be on
+      - The VLAN that the new self IPs will be on.
     required: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
-  - Requires the netaddr Python package on the host
+    install f5-sdk.
+  - Requires the netaddr Python package on the host.
 extends_documentation_fragment: f5
 requirements:
   - netaddr
@@ -137,7 +137,7 @@ except ImportError:
     HAS_F5SDK = False
 
 try:
-    from netaddr import *
+    from netaddr import IPNetwork, AddrFormatError
     HAS_NETADDR = True
 except ImportError:
     HAS_NETADDR = False
@@ -429,6 +429,11 @@ def main():
     )
 
     try:
+        if not HAS_NETADDR:
+            raise F5ModuleError(
+                "The netaddr python module is required."
+            )
+
         obj = BigIpSelfIp(check_mode=module.check_mode, **module.params)
         result = obj.flush()
 
