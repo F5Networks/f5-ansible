@@ -128,6 +128,10 @@ bigip-sys-db:
 	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
 	flake8 library/bigip_sys_db.py
 
+bigip-sys-global:
+	ansible-playbook -i inventory/hosts tests/bigip_sys_global.yaml -vvvv
+	flake8 library/bigip_sys_global.py
+
 bigip-user-facts:
 	ansible-playbook -i inventory/hosts tests/bigip_user_facts.yaml -vvvv
 	flake8 library/bigip_user_facts.py
@@ -149,3 +153,4 @@ fetch-upstream:
 	curl -o library/bigip_pool.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool.py
 	curl -o library/bigip_pool_member.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool_member.py
 	curl -o library/bigip_virtual_server.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_virtual_server.py
+	curl -o library/bigip_vlan.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_vlan.py
