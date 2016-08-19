@@ -27,26 +27,18 @@ options:
   bwc_policy:
     description:
       - The bandwidth controller for the route domain.
-    required: false
-    default: None
   connection_limit:
     description:
       - The maximum number of concurrent connections allowed for the
         route domain. Setting this to C(0) turns off connection limits.
-    required: false
-    default: None
   description:
     description:
       - Specifies descriptive text that identifies the route domain.
-    required: false
-    default: None
   flow_eviction_policy:
     description:
       - The eviction policy to use with this route domain. Apply an eviction
         policy to provide customized responses to flow overflows and slow
         flows on the route domain.
-    required: false
-    default: None
   id:
     description:
       - The unique identifying integer representing the route domain.
@@ -55,18 +47,9 @@ options:
     description: |
       Specifies the route domain the system searches when it cannot
       find a route in the configured domain.
-    default: None
-    require: False
-  partition:
-    description:
-      - The partition to create the route domain on.
-    required: false
-    default: Common
   routing_protocol:
     description:
       -  Dynamic routing protocols for the system to use in the route domain.
-    required: false
-    default: None
     choices:
       - BFD
       - BGP
@@ -79,8 +62,6 @@ options:
   service_policy:
     description:
       - Service policy to associate with the route domain.
-    required: false
-    default: None
   state:
     description:
       - Whether the route domain should exist or not.
@@ -93,16 +74,12 @@ options:
     description:
       - Specifies whether the system enforces cross-routing restrictions
         or not.
-    required: false
-    default: None
     choices:
       - enabled
       - disabled
   vlans:
     description:
       - VLANs for the system to use in the route domain
-    required: false
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
     pip install f5-sdk.
