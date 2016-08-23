@@ -29,8 +29,6 @@ options:
       - Specifies, if you have enabled SSH access, the IP address or address
         range for other systems that can use SSH to communicate with this
         system.
-    required: false
-    default: None
     choices:
       - all
       - IP address, such as 172.27.1.10

@@ -28,8 +28,6 @@ options:
     description:
       - A single NTP server to set on the device. At least one of C(ntp_servers)
         or C(ntp_server) are required.
-    required: false
-    default: None
   ntp_servers:
     description:
       - A list of NTP servers to set on the device. At least one of C(ntp_servers)

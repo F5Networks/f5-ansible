@@ -38,24 +38,17 @@ options:
   name_servers:
     description:
       - A list of name serverz that the system uses to validate DNS lookups
-    required: false
-    default: None
   forwarders:
     description:
       - A list of BIND servers that the system can use to perform DNS lookups
-    required: false
-    default: None
   search:
     description:
       - A list of domains that the system searches for local domain lookups,
         to resolve local host names.
-    required: false
-    default: None
   ip_version:
     description:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
     required: false
-    default: None
     choices:
       - 4
       - 6
