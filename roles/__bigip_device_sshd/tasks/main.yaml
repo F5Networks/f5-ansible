@@ -1,5 +1,15 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_facts:
+      include: "system_info"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
 - name: Set the SSHD allow string to a specific IP
   bigip_device_sshd:
       allow:
@@ -225,7 +235,7 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  with_items: inactivity_timeout_good
+  with_items: "{{ inactivity_timeout_good }}"
 
 - name: Assert Set the SSHD inactivity timeout (Good)
   assert:
@@ -242,7 +252,7 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
-  with_items: inactivity_timeout_bad
+  with_items: "{{ inactivity_timeout_bad }}"
 
 - name: Assert Set the SSHD inactivity timeout (Bad)
   assert:
@@ -258,7 +268,7 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  with_items: log_level_good
+  with_items: "{{ log_level_good }}"
 
 - name: Assert Set the SSHD log level (Good)
   assert:
@@ -275,7 +285,7 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
-  with_items: log_level_bad
+  with_items: "{{ log_level_bad }}"
 
 - name: Assert Set the SSHD log level (Bad)
   assert:
@@ -307,11 +317,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (int)
   assert:
       that:
           - result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (int) - Idempotent check
   bigip_device_sshd:
@@ -322,11 +334,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (int) - Idempotent check
   assert:
       that:
           - not result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (string)
   bigip_device_sshd:
@@ -337,11 +351,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (string)
   assert:
       that:
           - result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (string) - Idempotent check
   bigip_device_sshd:
@@ -352,11 +368,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (string) - Idempotent check
   assert:
       that:
           - not result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (Bad int)
   bigip_device_sshd:
@@ -368,11 +386,13 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (Bad int)
   assert:
       that:
           - not result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (Bad string)
   bigip_device_sshd:
@@ -384,11 +404,13 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (Bad string)
   assert:
       that:
           - not result|changed
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Set the SSHD port (Bad special chars)
   bigip_device_sshd:
@@ -400,8 +422,10 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
+  when: system_info.product_information.product_version > "11.6.0"
 
 - name: Assert Set the SSHD port (Bad special chars)
   assert:
       that:
           - not result|changed
+  when: system_info.product_information.product_version > "11.6.0"
