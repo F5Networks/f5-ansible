@@ -35,42 +35,6 @@ notes:
 requirements:
   - bigsuds
 options:
-  server:
-    description:
-      - BIG-IP host
-    required: true
-    default: null
-    choices: []
-    aliases: []
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
-    version_added: "2.2"
-  user:
-    description:
-      - BIG-IP username
-    required: true
-    default: null
-    choices: []
-    aliases: []
-  password:
-    description:
-      - BIG-IP password
-    required: true
-    default: null
-    choices: []
-    aliases: []
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be used
-        on personally controlled sites.  Prior to 2.0, this module would always
-        validate on python >= 2.7.9 and never validate on python <= 2.7.8
-    required: false
-    default: 'yes'
-    choices: ['yes', 'no']
-    version_added: 2.0
   state:
     description:
       - Pool member state
@@ -144,6 +108,7 @@ options:
     required: false
     default: null
     choices: []
+extends_documentation_fragment: f5
 '''
 
 EXAMPLES = '''
@@ -373,7 +338,7 @@ def main():
     if monitors:
         monitors = []
         for monitor in module.params['monitors']:
-            monitors.append(fq_name(partition, monitor))
+                monitors.append(fq_name(partition, monitor))
 
     # sanity check user supplied values
     if state == 'absent' and host is not None:
@@ -450,13 +415,13 @@ def main():
                 if session_state is not None:
                     session_status = get_node_session_status(api, address)
                     if session_state == 'enabled' and \
-                                    session_status == 'forced_disabled':
+                       session_status == 'forced_disabled':
                         if not module.check_mode:
                             set_node_session_enabled_state(api, address,
                                                            session_state)
                         result = {'changed': True}
                     elif session_state == 'disabled' and \
-                                    session_status != 'force_disabled':
+                            session_status != 'force_disabled':
                         if not module.check_mode:
                             set_node_session_enabled_state(api, address,
                                                            session_state)
@@ -464,13 +429,13 @@ def main():
                 if monitor_state is not None:
                     monitor_status = get_node_monitor_status(api, address)
                     if monitor_state == 'enabled' and \
-                                    monitor_status == 'forced_down':
+                       monitor_status == 'forced_down':
                         if not module.check_mode:
                             set_node_monitor_state(api, address,
                                                    monitor_state)
                         result = {'changed': True}
                     elif monitor_state == 'disabled' and \
-                                    monitor_status != 'forced_down':
+                            monitor_status != 'forced_down':
                         if not module.check_mode:
                             set_node_monitor_state(api, address,
                                                    monitor_state)

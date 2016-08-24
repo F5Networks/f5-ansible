@@ -35,33 +35,6 @@ notes:
 requirements:
   - bigsuds
 options:
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
-    version_added: "2.2"
-  user:
-    description:
-      - BIG-IP username
-    required: true
-  password:
-    description:
-      - BIG-IP password
-    required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be used
-        on personally controlled sites using self-signed certificates.
-    required: false
-    default: 'yes'
-    choices:
-      - yes
-      - no
   state:
     description:
       - Virtual Server state
@@ -128,17 +101,12 @@ options:
       - Default Profile which manages the session persistence
     required: false
     default: None
-  route_advertisement_state:
-    description:
-      - Enable route advertisement for destination
-    required: false
-    default: disabled
-    version_added: "2.2"
   description:
     description:
       - Virtual server description
     required: false
     default: None
+extends_documentation_fragment: f5
 '''
 
 EXAMPLES = '''
@@ -484,39 +452,6 @@ def set_default_persistence_profiles(api, name, persistence_profile):
         raise Exception('Error on setting default persistence profile : %s' % e)
 
 
-def get_route_advertisement_status(api, address):
-    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(
-        virtual_addresses=[address]
-    ).pop(0)
-    result = result.split("STATE_")[-1].lower()
-    return result
-
-
-def set_route_advertisement_state(api, destination, partition, route_advertisement_state):
-    updated = False
-
-    try:
-        if destination is None and route_advertisement_state is None:
-            return False
-        elif destination is not None and route_advertisement_state is None:
-            # default state
-            route_advertisement_state = 'disabled'
-        elif destination is None and route_advertisement_state is not None:
-            raise Exception(
-                "A destination must be provided with route_advertisement_state"
-            )
-
-        state = "STATE_%s" % route_advertisement_state.strip().upper()
-        address = fq_name(partition, destination)
-        current_route_advertisement_state = get_route_advertisement_status(api, address)
-        if current_route_advertisement_state != route_advertisement_state:
-            api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
-            updated = True
-        return updated
-    except bigsuds.OperationFailed as e:
-        raise Exception('Error on setting profiles : %s' % e)
-
-
 def main():
     argument_spec = f5_argument_spec()
     argument_spec.update(dict(
@@ -530,7 +465,6 @@ def main():
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
-        route_advertisement_state=dict(type='str', default=None, choices=['enabled', 'disabled']),
         default_persistence_profile=dict(type='str')
     ))
 
@@ -563,7 +497,6 @@ def main():
     pool = fq_name(partition, module.params['pool'])
     description = module.params['description']
     snat = module.params['snat']
-    route_advertisement_state = module.params['route_advertisement_state']
     default_persistence_profile = fq_name(partition, module.params['default_persistence_profile'])
 
     if 1 > port > 65535:
@@ -609,7 +542,6 @@ def main():
                         set_description(api, name, description)
                         set_default_persistence_profiles(api, name, default_persistence_profile)
                         set_state(api, name, state)
-                        set_route_advertisement_state(api, destination, partition, route_advertisement_state)
                         result = {'changed': True}
                     except bigsuds.OperationFailed as e:
                         raise Exception('Error on creating Virtual Server : %s' % e)
@@ -633,7 +565,6 @@ def main():
                         result['changed'] |= set_rules(api, name, all_rules)
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
                         result['changed'] |= set_state(api, name, state)
-                        result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
                         api.System.Session.submit_transaction()
                     except Exception as e:
                         raise Exception("Error on updating Virtual Server : %s" % e)
