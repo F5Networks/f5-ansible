@@ -36,14 +36,6 @@ options:
     description:
       - Full name of the user
     required: false
-  connection:
-    description:
-      - The connection used to interface with the BIG-IP
-    required: false
-    default: soap
-    choices:
-      - rest
-      - soap
   server:
     description:
       - BIG-IP host
@@ -127,20 +119,12 @@ options:
     required: false
     default: true
 notes:
-   - Requires the bigsuds Python package on the host if using the iControl
-     interface. This is as easy as pip install bigsuds
    - Requires the requests Python package on the host. This is as easy as
      pip install requests
-   - For BIG-IP versions < 11.6.0, multiple roles on different partitions
-     is not supported. Instead, the last specified role wins.
-   - Specifying a C(partition) to create the account on is only supported
-     via the C(soap) connection type (the default) due to missing
-     functionality in BIG-IP versions <= 12.1.0
+   - Requires BIG-IP versions >= 13.0.0
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk
 author:
-  - Matt Hite (@mhite)
   - Tim Rupp (@caphrim007)
 '''
 
@@ -218,7 +202,11 @@ shell:
     sample: "tmsh"
 '''
 
-import json
+try:
+    from f5.bigip import ManagementRoot
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
 
 # These are the roles that are available to be set in the BIG-IP
 ROLES = [
@@ -231,10 +219,6 @@ ROLES = [
 
 SHELLS = ['bash', 'none', 'tmsh']
 STATES = ['absent', 'present']
-
-
-class F5ModuleError(Exception):
-    pass
 
 
 class BigIpApiFactory(object):
@@ -425,385 +409,7 @@ class BigIpCommon(object):
         return result
 
 
-class BigIpSoapApi(BigIpCommon):
-    """Manipulate user accounts via SOAP
-    """
-
-    ROLE_MAP = {
-        'acceleration-policy-editor': 'USER_ROLE_ACCELERATION_POLICY_EDITOR',
-        'admin': 'USER_ROLE_ADMINISTRATOR',
-        'application-editor': 'USER_ROLE_APPLICATION_EDITOR',
-        'auditor': 'USER_ROLE_AUDITOR',
-        'certificate-manager': 'USER_ROLE_CERTIFICATE_MANAGER',
-        'guest': 'USER_ROLE_GUEST',
-        'irule-manager': 'USER_ROLE_IRULE_MANAGER',
-        'manager': 'USER_ROLE_MANAGER',
-        'no-access': 'USER_ROLE_INVALID',
-        'operator': 'USER_ROLE_TRAFFIC_MANAGER',
-        'resource-admin': 'USER_ROLE_RESOURCE_ADMINISTRATOR',
-        'user-manager': 'USER_ROLE_USER_MANAGER',
-        'web-application-security-administrator': 'USER_ROLE_ASM_POLICY_EDITOR',
-        'web-application-security-editor': 'USER_ROLE_ASM_EDITOR'
-    }
-
-    SHELL_MAP = {
-        'bash': '/bin/bash',
-        'none': '/sbin/nologin',
-        'tmsh': '/usr/bin/tmsh',
-    }
-
-    SHELL_RMAP = {
-        '/bin/bash': 'bash',
-        '/sbin/nologin': 'none',
-        '/usr/bin/tmsh': 'tmsh',
-        '/bin/false': 'none'
-    }
-
-    ALL_PARTITION = '[All]'
-    ADMIN_ROLE = 'USER_ROLE_ADMINISTRATOR'
-    ROLE_DEFAULT = 'USER_ROLE_INVALID'
-
-    def __init__(self, *args, **kwargs):
-        super(BigIpSoapApi, self).__init__(*args, **kwargs)
-
-        self.api = bigip_api(kwargs['server'],
-                             kwargs['user'],
-                             kwargs['password'],
-                             kwargs['validate_certs'])
-
-    def did_password_change(self):
-        server = self.params['server']
-        user = self.params['username_credential']
-        password = self.params['password_credential']
-        validate_certs = self.params['validate_certs']
-
-        try:
-            api = bigip_api(server,
-                            user,
-                            password,
-                            validate_certs)
-            api.Management.UserManagement.get_fullname(
-                user_names=[user]
-            )
-            return False
-        except bigsuds.ConnectionError, e:
-            if 'Authorization Required' in str(e):
-                return False
-
-            return True
-
-    def get_fullname(self):
-        username_credential = self.params['username_credential']
-
-        resp = self.api.Management.UserManagement.get_fullname(
-            user_names=[username_credential]
-        )
-        return resp[0]
-
-    def get_login_shell(self):
-        username_credential = self.params['username_credential']
-
-        resp = self.api.Management.UserManagement.get_login_shell(
-            user_names=[username_credential]
-        )
-        return resp[0]
-
-    def get_user_permission(self):
-        result = {}
-
-        username_credential = self.params['username_credential']
-
-        resp = self.api.Management.UserManagement.get_user_permission(
-            user_names=[username_credential]
-        )
-
-        for part in resp[0]:
-            partition = part['partition']
-            role = part['role']
-            result[partition] = role
-        return result
-
-    def delete_all_permissions(self):
-        username_credential = self.params['username_credential']
-
-        permissions = self.get_user_permission()
-        for partition, role in permissions.iteritems():
-            permission = dict(role=role, partition=partition)
-            self.api.Management.UserManagement.delete_user_permission(
-                user_names=[username_credential],
-                permissions=[[permission]]
-            )
-
-    def set_permission(self, role, partition):
-        username_credential = self.params['username_credential']
-
-        permission = dict(role=role, partition=partition)
-
-        self.api.Management.UserManagement.set_user_permission(
-            user_names=[username_credential],
-            permissions=[[permission]]
-        )
-
-    def set_fullname(self):
-        username_credential = self.params['username_credential']
-        full_name = self.params['full_name']
-
-        self.api.Management.UserManagement.set_fullname(
-            user_names=[username_credential],
-            fullnames=[full_name]
-        )
-
-        return True
-
-    def set_login_shell(self):
-        username_credential = self.params['username_credential']
-        shell = self.params['shell']
-        shell = self.SHELL_MAP[shell]
-
-        self.api.Management.UserManagement.set_login_shell(
-            user_names=[username_credential],
-            shells=[shell]
-        )
-
-        return True
-
-    def start_transaction(self):
-        self.api.System.Session.start_transaction()
-
-        # need to switch to root, set recursive query state
-        self.current_folder = self.api.System.Session.get_active_folder()
-        if self.current_folder != '/' + self.params['partition']:
-            self.api.System.Session.set_active_folder(folder='/' + self.params['partition'])
-
-        self.current_query_state = self.api.System.Session.get_recursive_query_state()
-        if self.current_query_state == 'STATE_DISABLED':
-            self.api.System.Session.set_recursive_query_state('STATE_ENABLED')
-
-    def submit_transaction(self):
-        # set everything back
-        if self.current_query_state == 'STATE_DISABLED':
-            self.api.System.Session.set_recursive_query_state('STATE_DISABLED')
-
-        if self.current_folder != '/' + self.params['partition']:
-            self.api.System.Session.set_active_folder(folder=self.current_folder)
-
-        self.api.System.Session.submit_transaction()
-
-    def set_password(self):
-        is_encrypted = self.params['is_encrypted']
-        password_credential = self.params['password_credential']
-        username_credential = self.params['username_credential']
-
-        passwords = dict(
-            is_encrypted=is_encrypted,
-            password=password_credential
-        )
-
-        self.api.Management.UserManagement.change_password_2(
-            user_names=[username_credential],
-            passwords=[passwords]
-        )
-
-        return True
-
-    def exists(self):
-        result = False
-        username_credential = self.params['username_credential']
-
-        self.start_transaction()
-
-        users = self.api.Management.UserManagement.get_list()
-        for user in users:
-            if user['name'] == username_credential:
-                result = True
-
-        self.submit_transaction()
-
-        return result
-
-    def read(self):
-        result = {}
-
-        ROLE_RMAP = dict((v, k) for k, v in self.ROLE_MAP.iteritems())
-
-        result['full_name'] = self.get_fullname()
-        result['partition_access'] = []
-        result['shell'] = ''
-
-        shell = self.get_login_shell()
-        result['shell'] = self.SHELL_RMAP[shell]
-
-        acls = self.get_user_permission()
-        for partition, role in acls.iteritems():
-            if partition == self.ALL_PARTITION:
-                partition = 'all'
-            role = ROLE_RMAP[role]
-
-            partition_access = '%s:%s' % (partition, role)
-            result['partition_access'].append(partition_access)
-
-        self._current = result
-
-        return result
-
-    def absent(self):
-        username_credential = self.params['username_credential']
-
-        if not self.exists():
-            return False
-
-        if self.params['check_mode']:
-            return True
-
-        self.start_transaction()
-
-        self.api.Management.UserManagement.delete_user(
-            user_names=[username_credential]
-        )
-
-        self.submit_transaction()
-
-        if self.exists():
-            raise DeleteUserError()
-        else:
-            return True
-
-    def update(self):
-        changed = False
-        updates = self._determine_updates()
-
-        shell = self.params['shell']
-
-        self.start_transaction()
-
-        if updates['full_name']:
-            if self.params['check_mode']:
-                changed = True
-            else:
-                changed = self.set_fullname()
-
-        if updates['password']:
-            if self.params['check_mode']:
-                changed = True
-            else:
-                changed = self.set_password()
-
-        if updates['shell']:
-            if shell == self.SHELL_BASH and not self.can_have_advanced_shell():
-                raise CustomShellError()
-            else:
-                if self.params['check_mode']:
-                    changed = True
-                else:
-                    changed = self.set_login_shell()
-
-        if updates['partition_access']:
-            permissions = self.determine_partition_access()
-
-            if self.params['check_mode']:
-                changed = True
-            else:
-                # Start by zeroing out the permissions
-                self.delete_all_permissions()
-
-                # Now, add all the permissions to the user account
-                for permission in permissions:
-                    self.set_permission(permission['role'], permission['partition'])
-                changed = True
-
-        self.submit_transaction()
-
-        return changed
-
-    def determine_partition_access(self):
-        result = []
-
-        access = self._determine_partition_access()
-        for permission in access:
-            role = permission['role']
-            partition = permission['partition']
-
-            if partition == 'all':
-                partition = self.ALL_PARTITION
-
-            permissions = dict(
-                role=self.ROLE_MAP[role],
-                partition=partition
-            )
-            result.append(permissions)
-        return result
-
-    def create(self):
-        advanced_allowed = False
-
-        is_encrypted = self.params['is_encrypted']
-        password_credential = self.params['password_credential']
-        shell = self.params['shell']
-        username_credential = self.params['username_credential']
-
-        user_id = dict(
-            name=username_credential,
-            full_name=''
-        )
-        password_info = dict(
-            is_encrypted=is_encrypted,
-            password=password_credential
-        )
-
-        users = dict(
-            user=user_id,
-            password=password_info,
-        )
-
-        user_permission = self.determine_partition_access()
-        if user_permission:
-            users['permissions'] = user_permission
-        else:
-            users['permissions'] = [dict(
-                role=self.ROLE_DEFAULT,
-                partition=self.ALL_PARTITION
-            )]
-
-        if shell and shell != self.SHELL_NONE:
-            for x in user_permission:
-                if x['role'] in self.ADVANCED_SHELL:
-                    advanced_allowed = True
-
-            if not advanced_allowed and shell == self.SHELL_BASH:
-                raise CustomShellError()
-            else:
-                users['login_shell'] = self.SHELL_MAP[shell]
-
-        self.start_transaction()
-
-        self.api.Management.UserManagement.create_user_3(
-            users=[users]
-        )
-
-        self.submit_transaction()
-
-        if self.exists():
-            return True
-        else:
-            raise CreateUserError()
-
-    def present(self):
-        password_credential = self.params['password_credential']
-
-        if self.exists():
-            return self.update()
-        else:
-            if self.params['check_mode']:
-                return True
-            elif password_credential is None:
-                raise PasswordRequiredError
-            return self.create()
-
-
 class BigIpRestApi(BigIpCommon):
-    """Manipulate user accounts via REST
-    """
-
     ALL_PARTITION = 'all-partitions'
     ADMIN_ROLE = 'admin'
     ROLE_DEFAULT = 'no-access'
@@ -831,7 +437,7 @@ class BigIpRestApi(BigIpCommon):
 
             if resp.status_code == 200:
                 return False
-        except:
+        except Exception:
             return True
 
     def read(self):
@@ -1075,7 +681,7 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg="Could not connect to BIG-IP host")
-    except bigsuds.ServerError, e:
+    except bigsuds.ServerError as e:
         if 'folder not found' in str(e):
             module.fail_json(msg="Partition not found")
         else:

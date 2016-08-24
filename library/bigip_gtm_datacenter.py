@@ -30,27 +30,19 @@ options:
   contact:
     description:
       - The name of the contact for the data center.
-    required: false
-    default: None
   description:
     description:
       - The description of the data center.
-    required: false
-    default: None
   enabled:
     description:
       - Whether the data center should be enabled. At least one of C(state) and
         C(enabled) are required.
-    required: false
-    default: None
     choices:
       - yes
       - no
   location:
     description:
       - The location of the data center.
-    required: false
-    default: None
   name:
     description:
       - The name of the data center.
@@ -62,8 +54,6 @@ options:
         from the BIG-IP. C(enabled) will enable the data center and C(disabled)
         will ensure the data center is disabled. At least one of state and
         enabled are required.
-    required: false
-    default: None
     choices:
       - present
       - absent

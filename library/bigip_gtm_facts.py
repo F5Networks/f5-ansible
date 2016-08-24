@@ -31,9 +31,9 @@ notes:
     - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
     - "Best run as a local_action in your playbook"
     - "Tested with manager and above account privilege level"
+
 requirements:
-    - bigsuds
-    - re
+    - bigsuds >= 11.4
 options:
     server:
         description:
@@ -104,6 +104,13 @@ EXAMPLES = '''
       fact_filter=my_pool
 '''
 
+try:
+    import bigsuds
+except ImportError:
+    bigsuds_found = False
+else:
+    bigsuds_found = True
+
 import re
 
 
@@ -121,6 +128,9 @@ class Pools(object):
     def __init__(self, api, regex=None):
         self.api = api
         self.pool_names = api.GlobalLB.Pool.get_list()
+        print "ASDASDDS"
+        import sys
+        sys.exit()
         if regex:
             re_filter = re.compile(regex)
             self.pool_names = filter(re_filter.search, self.pool_names)
@@ -142,6 +152,7 @@ class VirtualServers(object):
     def __init__(self, api, regex=None):
         self.api = api
         self.virtual_servers = api.GlobalLB.VirtualServerV2.get_list()
+        # Look to support as many fields in dict as available not just name, server
         if regex:
             self.virtual_servers = [d for d in self.virtual_servers if regex in d['server'] or regex in d['name']]
 
@@ -267,7 +278,8 @@ def main():
 
     include_test = map(lambda x: x in valid_includes, include)
     if not all(include_test):
-        module.fail_json(msg="value of include must be one or more of: %s, got: %s" % (",".join(valid_includes), ",".join(include)))
+        module.fail_json(
+            msg="value of include must be one or more of: %s, got: %s" % (",".join(valid_includes), ",".join(include)))
 
     facts = {}
 
@@ -286,10 +298,11 @@ def main():
             if 'wide_ip' in include:
                 facts['wide_ip'] = generate_wide_ip_dict(f5, regex)
             result = {'ansible_facts': facts}
-    except Exception as e:
+    except Exception, e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
+
 
 # import module snippets
 from ansible.module_utils.basic import *

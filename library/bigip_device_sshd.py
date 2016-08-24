@@ -67,6 +67,9 @@ options:
     description:
       - Specifies, when checked C(enabled), that the system accepts SSH
         communications.
+    choices:
+      - enabled
+      - disabled
     required: false
   port:
     description:
