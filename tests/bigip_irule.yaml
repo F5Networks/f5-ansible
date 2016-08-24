@@ -20,7 +20,9 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 11.6.1
+#    - 12.0.0
+#    - 12.1.0
 #
 
 - name: Test the bigip_irule module
