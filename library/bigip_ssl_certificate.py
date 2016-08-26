@@ -30,15 +30,17 @@ options:
     description:
       - When used instead of 'cert_src', sets the contents of a certificate directly
         to the specified value. This is used with lookup plugins or for anything
-        with formatting or templating. Either one of C(cert_src) or C(cert_content)
-        must be provided.
+        with formatting or templating. Either one of C(key_src),
+        C(key_content), C(cert_src) or C(cert_content) must be provided when
+        C(state) is C(present).
     required: false
   key_content:
     description:
       - When used instead of 'key_src', sets the contents of a certificate key
         directly to the specified value. This is used with lookup plugins or for
-        anything with formatting or templating. Either one of C(key_src) or
-        C(key_content) must be provided.
+        anything with formatting or templating. Either one of C(key_src),
+        C(key_content), C(cert_src) or C(cert_content) must be provided when
+        C(state) is C(present).
     required: false
   state:
     description:
@@ -63,15 +65,15 @@ options:
     required: true
   cert_src:
     description:
-      - This is the local filename of the certificate. Either one
-        of C(cert_src) or C(cert_content) must be provided when C(state)
-        is present.
+      - This is the local filename of the certificate. Either one of C(key_src),
+        C(key_content), C(cert_src) or C(cert_content) must be provided when
+        C(state) is C(present).
     required: false
   key_src:
     description:
-      - This is the local filename of the private key. Either one
-        of C(key_src) or C(key_content) must be provided when C(state) is
-        present.
+      - This is the local filename of the private key. Either one of C(key_src),
+        C(key_content), C(cert_src) or C(cert_content) must be provided when
+        C(state) is C(present).
     required: false
   passphrase:
     description:
