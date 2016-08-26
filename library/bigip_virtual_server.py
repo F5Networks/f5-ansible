@@ -177,32 +177,42 @@ STATUSES = {
     'offline': 'SESSION_STATUS_FORCED_DISABLED'
 }
 
+
 def set_active_folder(api, folder):
     api.System.Session.set_active_folder(folder=folder)
+
 
 def get_active_folder(api):
     return api.System.Session.get_active_folder()
 
+
 def set_recursive_query_state(api, state):
     api.System.Session.set_recursive_query_state(state)
+
 
 def get_recursive_query_state(api):
     return api.System.Session.get_recursive_query_state()
 
+
 def enable_recursive_query_state(api):
     set_recursive_query_state(api, 'STATE_ENABLED')
+
 
 def disable_recursive_query_state(api):
     set_recursive_query_state(api, 'STATE_DISABLED')
 
+
 def start_transaction(api):
     api.System.Session.start_transaction()
+
 
 def submit_transaction(api):
     api.System.Session.submit_transaction()
 
+
 def rollback_transaction(api):
     api.System.Session.rollback_transaction()
+
 
 def vs_exists(api, vs, partition):
     # hack to determine if pool exists
@@ -537,14 +547,17 @@ def set_route_advertisement_state(api, destination, partition, route_advertiseme
             )
 
         state = "STATE_%s" % route_advertisement_state.strip().upper()
-        address = fq_name(partition, destination,)
-        current_route_advertisement_state=get_route_advertisement_status(api,address)
+        address = fq_name(partition, destination)
+        current_route_advertisement_state = get_route_advertisement_status(api, address)
         if current_route_advertisement_state != route_advertisement_state:
-            api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
+            api.LocalLB.VirtualAddressV2.set_route_advertisement_state(
+                virtual_addresses=[address], states=[state]
+            )
             updated = True
         return updated
     except bigsuds.OperationFailed as e:
         raise Exception('Error on setting profiles : %s' % e)
+
 
 def main():
     argument_spec = f5_argument_spec()
