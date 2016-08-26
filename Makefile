@@ -14,7 +14,7 @@ pylint: pylint-modules
 
 docs:
 	rm docs/modules/*
-	python scripts/module_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/
+	python scripts/module_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
 
 flake8:
 	flake8 library

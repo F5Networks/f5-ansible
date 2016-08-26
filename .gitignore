@@ -1,5 +1,9 @@
 Vagrantfile
 **.retry
+.vagrant
+.idea
+.vscode
+*.iml
 
 # Byte-compiled files
 __pycache__/
