@@ -40,25 +40,25 @@ Options
             <tr>
     <td>bwc_policy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>The bandwidth controller for the route domain</div></td></tr>
+        <td><div>The bandwidth controller for the route domain.</div></td></tr>
             <tr>
     <td>connection_limit<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>The maximum number of concurrent connections allowed for the route domain. Setting this to <code>0</code> turns off connection limits.</div></td></tr>
             <tr>
     <td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>Specifies descriptive text that identifies the route domain.</div></td></tr>
             <tr>
     <td>flow_eviction_policy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>The eviction policy to use with this route domain. Apply an eviction policy to provide customized responses to flow overflows and slow flows on the route domain.</div></td></tr>
             <tr>
@@ -70,69 +70,69 @@ Options
             <tr>
     <td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>Specifies the route domain the system searches when it cannot
 find a route in the configured domain.
 </div></td></tr>
             <tr>
-    <td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td><ul></ul></td>
-        <td><div>The partition to create the route domain on</div></td></tr>
-            <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>routing_protocol<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>BFD</li><li>BGP</li><li>IS-IS</li><li>OSPFv2</li><li>OSPFv3</li><li>PIM</li><li>RIP</li><li>RIPng</li></ul></td>
-        <td><div>Dynamic routing protocols for the system to use in the route domain</div></td></tr>
+        <td><div>Dynamic routing protocols for the system to use in the route domain.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>service_policy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>Service policy to associate with the route domain</div></td></tr>
+        <td><div>Service policy to associate with the route domain.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the route domain should exist or not</div></td></tr>
+        <td><div>Whether the route domain should exist or not.</div></td></tr>
             <tr>
     <td>strict<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Specifies whether the system enforces cross-routing restrictions or not</div></td></tr>
+        <td><div>Specifies whether the system enforces cross-routing restrictions or not.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
             <tr>
     <td>vlans<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>VLANs for the system to use in the route domain</div></td></tr>
         </table>
@@ -259,7 +259,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

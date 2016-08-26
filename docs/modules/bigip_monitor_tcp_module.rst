@@ -79,13 +79,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>none</td>
         <td><ul></ul></td>
-        <td><div>port address part op the ipport definition. The default API setting is 0.</div></td></tr>
+        <td><div>Port address part op the ipport definition. The default API setting is 0.</div></td></tr>
             <tr>
     <td>receive<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -103,13 +103,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -139,13 +139,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>yes</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
@@ -156,43 +156,37 @@ Examples
 
  ::
 
+    - name: Create TCP Monitor
+      bigip_monitor_tcp:
+        state: "present"
+        server: "lb.mydomain.com"
+        user: "admin"
+        password: "secret"
+        name: "my_tcp_monitor"
+        type: "tcp"
+        send: "tcp string to send"
+        receive: "tcp string to receive"
+      delegate_to: localhost
     
-    - name: BIGIP F5 | Create TCP Monitor
-      local_action:
-        module:             bigip_monitor_tcp
-        state:              present
-        server:             "{{ f5server }}"
-        user:               "{{ f5user }}"
-        password:           "{{ f5password }}"
-        name:               "{{ item.monitorname }}"
-        type:               tcp
-        send:               "{{ item.send }}"
-        receive:            "{{ item.receive }}"
-      with_items: f5monitors-tcp
-    - name: BIGIP F5 | Create TCP half open Monitor
-      local_action:
-        module:             bigip_monitor_tcp
-        state:              present
-        server:             "{{ f5server }}"
-        user:               "{{ f5user }}"
-        password:           "{{ f5password }}"
-        name:               "{{ item.monitorname }}"
-        type:               tcp
-        send:               "{{ item.send }}"
-        receive:            "{{ item.receive }}"
-      with_items: f5monitors-halftcp
-    - name: BIGIP F5 | Remove TCP Monitor
-      local_action:
-        module:             bigip_monitor_tcp
-        state:              absent
-        server:             "{{ f5server }}"
-        user:               "{{ f5user }}"
-        password:           "{{ f5password }}"
-        name:               "{{ monitorname }}"
-      with_flattened:
-      - f5monitors-tcp
-      - f5monitors-halftcp
+    - name: Create TCP half open Monitor
+      bigip_monitor_tcp:
+        state: "present"
+        server: "lb.mydomain.com"
+        user: "admin"
+        password: "secret"
+        name: "my_tcp_monitor"
+        type: "tcp"
+        send: "tcp string to send"
+        receive: "http string to receive"
+      delegate_to: localhost
     
+    - name: Remove TCP Monitor
+      bigip_monitor_tcp:
+          state: "absent"
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          name: "my_tcp_monitor"
 
 
 Notes

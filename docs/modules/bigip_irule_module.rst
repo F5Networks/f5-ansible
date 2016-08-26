@@ -1,8 +1,8 @@
 .. _bigip_irule:
 
 
-bigip_irule - Manage iRules across different modules on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_irule - Manage iRules across different modules on a BIG-IP.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_irule - Manage iRules across different modules on a BIG-IP
 Synopsis
 --------
 
-Manage iRules across different modules on a BIG-IP
+Manage iRules across different modules on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -48,37 +48,37 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul><li>ltm</li><li>gtm</li></ul></td>
-        <td><div>The BIG-IP module to add the iRule to</div></td></tr>
+        <td><div>The BIG-IP module to add the iRule to.</div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The name of the iRule</div></td></tr>
+        <td><div>The name of the iRule.</div></td></tr>
             <tr>
     <td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td><ul></ul></td>
-        <td><div>The partition to create the iRule on</div></td></tr>
+        <td><div>The partition to create the iRule on.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>src<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -90,18 +90,18 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the iRule should exist or not</div></td></tr>
+        <td><div>Whether the iRule should exist or not.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -152,11 +152,39 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> full_name </td>
-        <td> Full name of the user </td>
+        <td> content </td>
+        <td> The content of the iRule that was managed </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
-        <td align=center> John Doe </td>
+        <td align=center> when LB_FAILED { set wipHost [LB::server addr] } </td>
+    </tr>
+            <tr>
+        <td> src </td>
+        <td> The filename that included the iRule source </td>
+        <td align=center> changed and success, when provided </td>
+        <td align=center> string </td>
+        <td align=center> /opt/src/irules/example1.tcl </td>
+    </tr>
+            <tr>
+        <td> partition </td>
+        <td> The partition in which the iRule was managed </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> Common </td>
+    </tr>
+            <tr>
+        <td> name </td>
+        <td> The name of the iRule that was managed </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> my-irule </td>
+    </tr>
+            <tr>
+        <td> module </td>
+        <td> The module that the iRule was added to </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> gtm </td>
     </tr>
         
     </table>
@@ -165,7 +193,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

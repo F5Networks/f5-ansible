@@ -228,10 +228,8 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
 .. note:: Requires the requests Python package on the host. This is as easy as pip install requests
-.. note:: For BIG-IP versions < 11.6.0, multiple roles on different partitions is not supported. Instead, the last specified role wins.
-.. note:: Specifying a ``partition`` to create the account on is only supported via the ``soap`` connection type (the default) due to missing functionality in BIG-IP versions <= 12.1.0
+.. note:: Requires BIG-IP versions >= 13.0.0
 
 
     

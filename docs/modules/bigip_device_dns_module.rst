@@ -46,19 +46,19 @@ Options
             <tr>
     <td>forwarders<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>A list of BIND servers that the system can use to perform DNS lookups</div></td></tr>
             <tr>
     <td>ip_version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>4</li><li>6</li></ul></td>
         <td><div>Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.</div></td></tr>
             <tr>
     <td>name_servers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>A list of name serverz that the system uses to validate DNS lookups</div></td></tr>
             <tr>
@@ -66,11 +66,11 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>search<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>A list of domains that the system searches for local domain lookups, to resolve local host names.</div></td></tr>
             <tr>
@@ -78,13 +78,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -96,13 +96,12 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></br>
-        <div style="font-size: small;">aliases: username<div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -116,7 +115,6 @@ Examples
 
     - name: Set the DNS settings on the BIG-IP
       bigip_device_dns:
-          server: "big-ip"
           name_servers:
               - 208.67.222.222
               - 208.67.220.220
@@ -124,6 +122,10 @@ Examples
               - localdomain
               - lab.local
           state: present
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+          validate_certs: "no"
       delegate_to: localhost
 
 Return Values

@@ -21,8 +21,7 @@ Collect facts from F5 BIG-IP GTM devices
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * re
+  * bigsuds >= 11.4
 
 
 Options

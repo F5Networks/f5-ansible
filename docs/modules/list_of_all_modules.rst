@@ -18,7 +18,7 @@ All Modules
   bigip_hostname (E) - Manage the hostname of a BIG-IP <bigip_hostname_module>
   bigip_iapp_service (E) - foo <bigip_iapp_service_module>
   bigip_iapp_template (E) - foo <bigip_iapp_template_module>
-  bigip_irule (E) - Manage iRules across different modules on a BIG-IP <bigip_irule_module>
+  bigip_irule (E) - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>
   bigip_license (E) - Manage license installation and activation on BIG-IP devices <bigip_license_module>
   bigip_monitor_http (E) - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
   bigip_monitor_tcp (E) - Manages F5 BIG-IP LTM tcp monitors <bigip_monitor_tcp_module>
@@ -34,6 +34,7 @@ All Modules
   bigip_snmp (E) - foo <bigip_snmp_module>
   bigip_software (E) - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_update (E) - Manage the software update settings of a BIG-IP <bigip_software_update_module>
+  bigip_ssl_certificate (E) - Import/Delete certificates from BIG-IP <bigip_ssl_certificate_module>
   bigip_sys_db (E) - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global (E) - Manage BIG-IP global settings <bigip_sys_global_module>
   bigip_ucs (E) - Manage UCS files <bigip_ucs_module>
@@ -43,7 +44,6 @@ All Modules
   bigip_view (E) - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
   bigip_virtual_server (E) - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>
   bigip_vlan (E) - Manage VLANs on a BIG-IP system <bigip_vlan_module>
-  bigip_zone (E) - Manage ZoneRunner Zones on a BIG-IP <bigip_zone_module>
 
 
 

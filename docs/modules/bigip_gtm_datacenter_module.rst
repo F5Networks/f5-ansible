@@ -40,65 +40,65 @@ Options
             <tr>
     <td>contact<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>The name of the contact for the data center</div></td></tr>
+        <td><div>The name of the contact for the data center.</div></td></tr>
             <tr>
     <td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>The description of the data center</div></td></tr>
+        <td><div>The description of the data center.</div></td></tr>
             <tr>
     <td>enabled<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Whether the data center should be enabled. At least one of state and enabled are required.</div></td></tr>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Whether the data center should be enabled. At least one of <code>state</code> and <code>enabled</code> are required.</div></td></tr>
             <tr>
     <td>location<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>The location of the data center</div></td></tr>
+        <td><div>The location of the data center.</div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The name of the data center</div></td></tr>
+        <td><div>The name of the data center.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>admin</td>
+    <td>yes</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>The state of the datacenter on the BIG-IP. When <code>present</code>, guarantees that the data center exists. When <code>absent</code> removes the data center from the BIG-IP. <code>enabled</code> will enable the data center and <code>disabled</code> will ensure the data center is disabled. At least one of state and enabled are required.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>admin</td>
+    <td>yes</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
@@ -178,7 +178,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

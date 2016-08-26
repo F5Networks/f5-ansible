@@ -85,7 +85,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>quorum<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
@@ -97,13 +97,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>session_state<br/><div style="font-size: small;"> (added in 1.9)</div></td>
     <td>no</td>
@@ -121,13 +121,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>yes</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
@@ -138,24 +138,15 @@ Examples
 
  ::
 
-    
-    ## playbook task examples:
-    
-    ---
-    # file bigip-test.yml
-    # ...
-    - hosts: bigip-test
-      tasks:
-      - name: Add node
-        local_action: >
-          bigip_node
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          name="{{ ansible_default_ipv4["address"] }}"
+    - name: Add node
+      bigip_node:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          partition: "Common"
+          host: "10.20.30.40"
+          name: "10.20.30.40"
     
     # Note that the BIG-IP automatically names the node using the
     # IP address specified in previous play's host parameter.
@@ -164,38 +155,38 @@ Examples
     # Alternatively, you could have specified a name with the
     # name parameter when state=present.
     
-      - name: Add node with a single 'ping' monitor    
-        bigip_node:
-          server: lb.mydomain.com
-          user: admin
-          password: mysecret
-          state: present
-          partition: Common
-          host: "{{ ansible_default_ipv4["address"] }}"
-          name: mytestserver
+    - name: Add node with a single 'ping' monitor
+      bigip_node:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          partition: "Common"
+          host: "10.20.30.40"
+          name: "mytestserver"
           monitors:
             - /Common/icmp
+      delegate_to: localhost
     
-      - name: Modify node description
-        local_action: >
-          bigip_node
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          partition=matthite
-          name="{{ ansible_default_ipv4["address"] }}"
-          description="Our best server yet"
+    - name: Modify node description
+      bigip_node:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          partition: "Common"
+          name: "10.20.30.40"
+          description: "Our best server yet"
+      delegate_to: localhost
     
-      - name: Delete node
-        local_action: >
-          bigip_node
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=absent
-          partition=matthite
-          name="{{ ansible_default_ipv4["address"] }}"
+    - name: Delete node
+      bigip_node:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "absent"
+          partition: "Common"
+          name: "10.20.30.40"
     
     # The BIG-IP GUI doesn't map directly to the API calls for "Node ->
     # General Properties -> State". The following states map to API monitor
@@ -210,18 +201,16 @@ Examples
     #
     # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
     
-      - name: Force node offline
-        local_action: >
-          bigip_node
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          session_state=disabled
-          monitor_state=disabled
-          partition=matthite
-          name="{{ ansible_default_ipv4["address"] }}"
-    
+    - name: Force node offline
+      bigip_node:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "mysecret"
+          state: "present"
+          session_state: "disabled"
+          monitor_state: "disabled"
+          partition: "Common"
+          name: "10.20.30.40"
 
 
 Notes

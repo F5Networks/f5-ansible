@@ -60,20 +60,20 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Virtual server description.</div></td></tr>
+        <td><div>Virtual server description</div></td></tr>
             <tr>
     <td>destination<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Destination IP of the virtual server (only host is currently supported) . Required when state=present and vs does not exist.</div></br>
+        <td><div>Destination IP of the virtual server (only host is currently supported). Required when state=present and vs does not exist.</div></br>
         <div style="font-size: small;">aliases: address, ip<div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Virtual server name.</div></br>
+        <td><div>Virtual server name</div></br>
         <div style="font-size: small;">aliases: vs<div></td></tr>
             <tr>
     <td>partition<br/><div style="font-size: small;"></div></td>
@@ -86,7 +86,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -104,13 +104,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -122,18 +122,18 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Virtual Server state</div><div>Absent, delete the VS if present</div><div>present (and its synonym enabled), create if needed the VS and set state to enabled</div><div>disabled, create if needed the VS and set state to disabled</div></td></tr>
+        <td><div>Virtual Server state</div><div>Absent, delete the VS if present</div><div><code>present</code> (and its synonym enabled), create if needed the VS and set state to enabled</div><div><code>disabled</code>, create if needed the VS and set state to disabled</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>yes</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -145,50 +145,44 @@ Examples
 
  ::
 
+    - name: Add virtual server
+      bigip_virtual_server:
+          server: lb.mydomain.net
+          user: admin
+          password: secret
+          state: present
+          partition: MyPartition
+          name: myvirtualserver
+          destination: "{{ ansible_default_ipv4['address'] }}"
+          port: 443
+          pool: "{{ mypool }}"
+          snat: Automap
+          description: Test Virtual Server
+          all_profiles:
+              - http
+              - clientssl
+      delegate_to: localhost
     
-    ## playbook task examples:
+    - name: Modify Port of the Virtual Server
+      bigip_virtual_server:
+          server: lb.mydomain.net
+          user: admin
+          password: secret
+          state: present
+          partition: MyPartition
+          name: myvirtualserver
+          port: 8080
+      delegate_to: localhost
     
-    ---
-    # file bigip-test.yml
-    # ...
-      - name: Add VS
-        local_action:
-            module: bigip_virtual_server
-            server: lb.mydomain.net
-            user: admin
-            password: secret
-            state: present
-            partition: MyPartition
-            name: myvirtualserver
-            destination: "{{ ansible_default_ipv4['address'] }}"
-            port: 443
-            pool: "{{ mypool }}"
-            snat: Automap
-            description: Test Virtual Server
-            all_profiles:
-                - http
-                - clientssl
-    
-      - name: Modify Port of the Virtual Server
-        local_action:
-            module: bigip_virtual_server
-            server: lb.mydomain.net
-            user: admin
-            password: secret
-            state: present
-            partition: MyPartition
-            name: myvirtualserver
-            port: 8080
-    
-      - name: Delete virtual server
-        local_action:
-            module: bigip_virtual_server
-            server: lb.mydomain.net
-            user: admin
-            password: secret
-            state: absent
-            partition: MyPartition
-            name: myvirtualserver
+    - name: Delete virtual server
+      bigip_virtual_server:
+          server: lb.mydomain.net
+          user: admin
+          password: secret
+          state: absent
+          partition: MyPartition
+          name: myvirtualserver
+      delegate_to: localhost
 
 Return Values
 -------------
@@ -209,9 +203,9 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> deleted </td>
         <td> Name of a virtual server that was deleted </td>
-        <td align=center> virtual server was successfully deleted on state=absent </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center>  </td>
+        <td align=center> my-virtual-server </td>
     </tr>
         
     </table>

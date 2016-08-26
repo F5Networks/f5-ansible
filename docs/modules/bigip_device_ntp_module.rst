@@ -40,7 +40,7 @@ Options
             <tr>
     <td>ntp_server<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>A single NTP server to set on the device. At least one of <code>ntp_servers</code> or <code>ntp_server</code> are required.</div></td></tr>
             <tr>
@@ -54,19 +54,19 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -78,19 +78,18 @@ Options
     <td>no</td>
     <td>UTC</td>
         <td><ul></ul></td>
-        <td><div>The timezone to set for NTP lookups</div></td></tr>
+        <td><div>The timezone to set for NTP lookups.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></br>
-        <div style="font-size: small;">aliases: username<div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -102,18 +101,63 @@ Examples
 
  ::
 
-    - name: Set the boot.quiet DB variable on the BIG-IP
+    - name: Set NTP server
       bigip_device_ntp:
-          server: "big-ip"
-          key: "boot.quiet"
-          value: "disable"
+          ntp_servers:
+              - "192.168.10.12"
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+          validate_certs: "no"
+      delegate_to: localhost
+    
+    - name: Set timezone
+      bigip_device_ntp:
+          password: "secret"
+          server: "lb.mydomain.com"
+          timezone: "America/Los_Angeles"
+          user: "admin"
+          validate_certs: "no"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> ntp_servers </td>
+        <td> The NTP servers that were set on the device </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['192.168.10.10', '172.27.10.10'] </td>
+    </tr>
+            <tr>
+        <td> timezone </td>
+        <td> The timezone that was set on the device </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

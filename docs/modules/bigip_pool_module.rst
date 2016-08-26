@@ -79,7 +79,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -103,13 +103,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
@@ -133,13 +133,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>yes</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
@@ -150,75 +150,58 @@ Examples
 
  ::
 
+    - name: Create pool
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          lb_method: "least_connection_member"
+          slow_ramp_time: 120
+      delegate_to: localhost
     
-    ## playbook task examples:
+    - name: Modify load balancer method
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          lb_method: "round_robin"
     
-    ---
-    # file bigip-test.yml
-    # ...
-    - hosts: localhost
-      tasks:
-      - name: Create pool
-        local_action: >
-          bigip_pool
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          name=matthite-pool
-          partition=matthite
-          lb_method=least_connection_member
-          slow_ramp_time=120
+    - name: Add pool member
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
     
-      - name: Modify load balancer method
-        local_action: >
-          bigip_pool
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          name=matthite-pool
-          partition=matthite
-          lb_method=round_robin
+    - name: Remove pool member from pool
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "absent"
+          name: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
     
-    - hosts: bigip-test
-      tasks:
-      - name: Add pool member
-        local_action: >
-          bigip_pool
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          name=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
-    
-      - name: Remove pool member from pool
-        local_action: >
-          bigip_pool
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=absent
-          name=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
-    
-    - hosts: localhost
-      tasks:
-      - name: Delete pool
-        local_action: >
-          bigip_pool
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=absent
-          name=matthite-pool
-          partition=matthite
-    
+    - name: Delete pool
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "absent"
+          name: "my-pool"
+          partition: "Common"
 
 
 Notes

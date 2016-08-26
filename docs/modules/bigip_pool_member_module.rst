@@ -73,7 +73,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>pool<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -90,8 +90,8 @@ Options
     <td>preserve_node<br/><div style="font-size: small;"> (added in 2.1)</div></td>
     <td>no</td>
     <td>no</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>When state is absent and the pool member is no longer referenced in other pools, the default behavior removes the unused node object. Setting this to 'yes' disables this behavior.</div></td></tr>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>When state is absent and the pool member is no longer referenced in other pools, the default behavior removes the unused node o bject. Setting this to 'yes' disables this behavior.</div></td></tr>
             <tr>
     <td>rate_limit<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -109,13 +109,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>session_state<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
@@ -133,13 +133,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>yes</td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites.  Prior to 2.0, this module would always validate on python &gt;= 2.7.9 and never validate on python &lt;= 2.7.8</div></td></tr>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
@@ -150,84 +150,75 @@ Examples
 
  ::
 
+    - name: Add pool member
+      bigip_pool_member:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          pool: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
+          description: "web server"
+          connection_limit: 100
+          rate_limit: 50
+          ratio: 2
+      delegate_to: localhost
     
-    ## playbook task examples:
+    - name: Modify pool member ratio and description
+      bigip_pool_member:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          pool: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
+          ratio: 1
+          description: "nginx server"
+      delegate_to: localhost
     
-    ---
-    # file bigip-test.yml
-    # ...
-    - hosts: bigip-test
-      tasks:
-      - name: Add pool member
-        local_action: >
-          bigip_pool_member
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          pool=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
-          description="web server"
-          connection_limit=100
-          rate_limit=50
-          ratio=2
-    
-      - name: Modify pool member ratio and description
-        local_action: >
-          bigip_pool_member
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          pool=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
-          ratio=1
-          description="nginx server"
-    
-      - name: Remove pool member from pool
-        local_action: >
-          bigip_pool_member
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=absent
-          pool=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
+    - name: Remove pool member from pool
+      bigip_pool_member:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "absent"
+          pool: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
+      delegate_to: localhost
     
     
-      # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
-      # Members -> State". The following states map to API monitor
-      # and session states.
-      #
-      # Enabled (all traffic allowed):
-      # monitor_state=enabled, session_state=enabled
-      # Disabled (only persistent or active connections allowed):
-      # monitor_state=enabled, session_state=disabled
-      # Forced offline (only active connections allowed):
-      # monitor_state=disabled, session_state=disabled
-      #
-      # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
+    # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
+    # Members -> State". The following states map to API monitor
+    # and session states.
+    #
+    # Enabled (all traffic allowed):
+    # monitor_state=enabled, session_state=enabled
+    # Disabled (only persistent or active connections allowed):
+    # monitor_state=enabled, session_state=disabled
+    # Forced offline (only active connections allowed):
+    # monitor_state=disabled, session_state=disabled
+    #
+    # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
     
-      - name: Force pool member offline
-        local_action: >
-          bigip_pool_member
-          server=lb.mydomain.com
-          user=admin
-          password=mysecret
-          state=present
-          session_state=disabled
-          monitor_state=disabled
-          pool=matthite-pool
-          partition=matthite
-          host="{{ ansible_default_ipv4["address"] }}"
-          port=80
-    
+    - name: Force pool member offline
+      bigip_pool_member:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          session_state: "disabled"
+          monitor_state: "disabled"
+          pool: "my-pool"
+          partition: "Common"
+          host: "{{ ansible_default_ipv4["address"] }}"
+          port: 80
+      delegate_to: localhost
 
 
 Notes

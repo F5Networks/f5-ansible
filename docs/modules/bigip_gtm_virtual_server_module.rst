@@ -49,7 +49,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -61,13 +61,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
             <tr>
-    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>BIG-IP server port</div></td></tr>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -79,7 +79,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
+            <tr>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
             <tr>
     <td>virtual_server_name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -103,14 +109,14 @@ Examples
  ::
 
       - name: Enable virtual server
-        local_action: >
-          bigip_gtm_virtual_server
-          server=192.168.0.1
-          user=admin
-          password=mysecret
-          virtual_server_name=myname
-          virtual_server_server=myserver
-          state=enabled
+        bigip_gtm_virtual_server:
+            server: "lb.mydomain.com"
+            user: "admin"
+            password: "secret"
+            virtual_server_name: "myname"
+            virtual_server_server: "myserver"
+            state: "enabled"
+        delegate_to: localhost
 
 
 Notes

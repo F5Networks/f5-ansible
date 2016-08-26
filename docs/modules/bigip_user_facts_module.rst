@@ -21,8 +21,7 @@ Retrieve user account attributes from a BIG-IP
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk
 
 
 Options
@@ -39,18 +38,6 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>connection<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>rest</td>
-        <td><ul><li>rest</li><li>icontrol</li></ul></td>
-        <td><div>The connection used to interface with the BIG-IP</div></td></tr>
-            <tr>
-    <td>name<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>Name of the user to retrieve facts for</div></td></tr>
-            <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -63,12 +50,24 @@ Options
         <td><ul></ul></td>
         <td><div>BIG-IP host</div></td></tr>
             <tr>
+    <td>server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>BIG-IP server port</div></td></tr>
+            <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>BIG-IP username</div></br>
         <div style="font-size: small;">aliases: username<div></td></tr>
+            <tr>
+    <td>username_credential<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Name of the user to retrieve facts for</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -87,18 +86,69 @@ Examples
 
     - name: Gather facts about user 'johnd'
       bigip_user_facts:
-          server: "big-ip"
-          user: "admin"
-          password: "my_password"
           name: "johnd"
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+          validate_certs: "no"
       delegate_to: localhost
-    - debug: var=bigip
+    
+    - name: Display the user facts
+      debug:
+        var: bigip
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> encrypted_password </td>
+        <td> The encrypted value of the password </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> $6$/cgtFz0....yzv465uAJ/ </td>
+    </tr>
+            <tr>
+        <td> username_credential </td>
+        <td> The username beign searched for </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> jdoe </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> The description of the user </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> John Doe </td>
+    </tr>
+            <tr>
+        <td> partition_access </td>
+        <td> Access permissions for the account </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> [{'role': 'admin', 'name': 'all-partitions'}] </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 .. note:: Facts are placed in the ``bigip`` variable
 
 
