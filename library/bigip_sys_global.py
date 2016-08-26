@@ -72,7 +72,7 @@ options:
       - enabled
       - disabled
     required: false
-    default None
+    default: None
   quiet_boot:
     description:
       - Specifies, when C(enabled), that the system suppresses informational
