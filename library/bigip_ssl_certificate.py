@@ -300,8 +300,6 @@ class BigIpSslCertificate(object):
                     'name': name,
                     'partition': partition
                 }
-                if self.params['passphrase']:
-                    params['passphrase'] = self.params['passphrase']
                 key = api.tm.sys.file.ssl_keys.ssl_key.load(**params)
 
                 params = dict()
