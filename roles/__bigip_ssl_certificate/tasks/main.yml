@@ -1,9 +1,11 @@
+---
+
 - name: Import a certificate and key, no passphrase on private key
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert1.crt"
-      key_pem_file: "{{ role_path }}//files/cert1.key"
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      key_content: "{{ lookup('file', 'cert1.key') }}"
       name: "cert1"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -18,10 +20,10 @@
 
 - name: Import a certificate and key, no passphrase on private key - Idempotent check
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert1.crt"
-      key_pem_file: "{{ role_path }}//files/cert1.key"
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      key_content: "{{ lookup('file', 'cert1.key') }}"
       name: "cert1"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -37,7 +39,7 @@
 - name: Delete a certificate and key
   bigip_ssl_certificate:
       name: "cert1"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -53,7 +55,7 @@
 - name: Delete a certificate and key - Idempotent check
   bigip_ssl_certificate:
       name: "cert1"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -68,10 +70,10 @@
 
 - name: Import a certificate and key, password protected key
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert2.crt"
-      key_pem_file: "{{ role_path }}//files/cert2.key"
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
       name: "cert2"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       passphrase: "keypass"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
@@ -87,10 +89,10 @@
 
 - name: Import a certificate and key, password protected key - Idempotent check
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert2.crt"
-      key_pem_file: "{{ role_path }}//files/cert2.key"
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
       name: "cert2"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       passphrase: "keypass"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
@@ -106,10 +108,10 @@
 
 - name: Import a certificate and key, password protected key, bad passphrase
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert2.crt"
-      key_pem_file: "{{ role_path }}//files/cert2.key"
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      key_content: "{{ lookup('file' ,'cert2.key') }}"
       name: "cert2"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       passphrase: "wrongpass"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
@@ -126,10 +128,10 @@
 
 - name: Import with missing files
   bigip_ssl_certificate:
-      cert_pem_file: "{{ role_path }}/files/cert3.crt"
-      key_pem_file: "{{ role_path }}//files/cert3.key"
+      cert_content: "{{ lookup('file', 'cert3.crt') }}"
+      key_content: "{{ lookup('file', 'cert3.key') }}"
       name: "cert3"
-      partition: "{{ partition[0] }}"
+      partition: "{{ bigip_partition }}"
       passphrase: "wrongpass"
       password: "{{ bigip_password }}"
       server:  "{{ inventory_hostname }}"
@@ -144,3 +146,153 @@
   assert:
       that:
           - not result|changed
+
+- name: Import a certificate
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      name: "cert4"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a certificate
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate - Idempotent check
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      name: "cert4"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a certificate - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+- name: Import a key
+  bigip_ssl_certificate:
+      key_content: "{{ lookup('file', 'cert1.key') }}"
+      name: "cert5"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a key
+  assert:
+    that:
+        - result|changed
+
+- name: Import a key - Idempotent check
+  bigip_ssl_certificate:
+      key_content: "{{ lookup('file', 'cert1.key') }}"
+      name: "cert5"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a key - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+- name: Import a key to existing certificate
+  bigip_ssl_certificate:
+      key_content: "{{ lookup('file', 'cert1.key') }}"
+      name: "cert4"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a key to existing certificate
+  assert:
+    that:
+        - result|changed
+
+- name: Import a key to existing certificate - Idempotent check
+  bigip_ssl_certificate:
+      key_content: "{{ lookup('file', 'cert1.key') }}"
+      name: "cert4"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a key to existing certificate - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+- name: Import a certificate to existing key
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      name: "cert5"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a certificate to existing key
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate to existing key - Idempotent check
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      name: "cert5"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+  register: result
+
+- name: Assert Import a certificate to existing key - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+- name: Delete a certificates and keys in list
+  bigip_ssl_certificate:
+      name: "{{ item }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server:  "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+  register: result
+  with_items:
+      - "cert4"
+      - "cert5"

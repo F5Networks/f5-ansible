@@ -24,76 +24,69 @@ description:
   - This module will import/delete SSL certificates on BIG-IP LTM.
     Certificates can be imported from certificate and key files on the local
     disk, in PEM format.
-    Currently lacking the ability to compare/modify, import will exit
-    unchanged if a certificate with the same name already exists and state is
-    present.
 version_added: 2.2
 options:
+  cert_content:
+    description:
+      - When used instead of 'cert_src', sets the contents of a certificate directly
+        to the specified value. This is used with lookup plugins or for anything
+        with formatting or templating. Either one of C(cert_src) or C(cert_content)
+        must be provided.
+    required: false
+  key_content:
+    description:
+      - When used instead of 'key_src', sets the contents of a certificate key
+        directly to the specified value. This is used with lookup plugins or for
+        anything with formatting or templating. Either one of C(key_src) or
+        C(key_content) must be provided.
+    required: false
   state:
     description:
-      - Certificate state, determines if certificate is imported or deleted
+      - Certificate and key state. This determines if the provided certificate
+        and key is to be made C(present) on the device or C(absent).
     required: true
     default: present
     choices:
       - present
       - absent
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
-  user:
-    description:
-      - BIG-IP Username
-    required: true
-  password:
-    description:
-      - BIG-IP Password
-    required: true
   partition:
     description:
-      - BIG-IP partition to use when adding/deleting certificate
+      - BIG-IP partition to use when adding/deleting certificate.
     required: false
     default: Common
-  validate_certs:
-    description:
-      - Assuming this should not validate the SSL certificate of the BIG-IP
-        for self signed certs, but f5-sdk does not appear to support this.
-    required: false
-    default: true
-    choices:
-      - true
-      - false
   name:
     description:
       - SSL Certificate Name.  This is the cert/key pair name used
-        when importing a certificate/key into the F5.  It also
+        when importing a certificate/key into the F5. It also
         determines the filenames of the objects on the LTM
-        (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1)
+        (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).
     required: true
-    default: none
-  cert_pem_file:
+  cert_src:
     description:
-      - Required if state is present
-      - This is the local filename of the certificate.
+      - This is the local filename of the certificate. Either one
+        of C(cert_src) or C(cert_content) must be provided when C(state)
+        is present.
     required: false
-    default: none
-  key_pem_file:
+  key_src:
     description:
-      - Require if state is present
-      - This is the local filename of the private key,
+      - This is the local filename of the private key. Either one
+        of C(key_src) or C(key_content) must be provided when C(state) is
+        present.
     required: false
-    default: none
   passphrase:
     description:
       - Passphrase on certificate private key
     required: false
+notes:
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+  - Requires the netaddr Python package on the host.
+  - If you use this module, you will not be able to remove the certificates
+    and keys that are managed, via the web UI. You can only remove them via
+    tmsh or these modules.
+extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 0.1.7
+    - f5-sdk >= 1.3.1
     - BigIP >= v12
 author:
     - Kevin Coming (@waffie1)
@@ -101,25 +94,36 @@ author:
 '''
 
 EXAMPLES = '''
-- name: "Import PEM Certificate"
-    local_action:
-    name: certificate-name
-    module: bigip_ssl_certificate
-    server: bigip-addr
-    user: username
-    password: password
-    state: present
-    cert_format: pem
-    cert_pem_file: /path/to/cert.crt
-    key_pem_file: /path/to/key.key
+- name: Import PEM Certificate from local disk
+  bigip_ssl_certificate:
+      name: "certificate-name"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      cert_src: "/path/to/cert.crt"
+      key_src: "/path/to/key.key"
+  delegate_to: localhost
+
+- name: Use a file lookup to import PEM Certificate
+  bigip_ssl_certificate:
+      name: "certificate-name"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
+      key_content: "{{ lookup('file', '/path/to/key.key') }}"
+  delegate_to: localhost
 
 - name: "Delete Certificate"
-  bigip_ssl_certificate
-    name: "certificate-name"
-    server: "bigip-addr"
-    user: username
-    password: password
-    state: absent
+  bigip_ssl_certificate:
+      name: "certificate-name"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "absent"
+  delegate_to: localhost
 '''
 
 RETURN = """
@@ -127,6 +131,7 @@ RETURN = """
 
 
 try:
+    from f5.bigip.contexts import TransactionContextManager
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
     HAS_F5SDK = True
@@ -134,133 +139,314 @@ except ImportError:
     HAS_F5SDK = False
 
 
+import hashlib
+import StringIO
+
+
 class BigIpSslCertificate(object):
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
+
+        required_args = ['key_content', 'key_src', 'cert_content', 'cert_src']
+
+        ksource = kwargs['key_src']
+        if ksource:
+            with open(ksource) as f:
+                kwargs['key_content'] = f.read()
+
+        csource = kwargs['cert_src']
+        if csource:
+            with open(csource) as f:
+                kwargs['cert_content'] = f.read()
+
+        if kwargs['state'] == 'present':
+            if not any (kwargs[k] is not None for k in required_args):
+                raise F5ModuleError(
+                    "Either 'key_content', 'key_src', 'cert_content' or "
+                    "'cert_src' must be provided"
+                )
+
+        # This is the remote BIG-IP path from where it will look for certs
+        # to install.
+        self.dlpath = '/var/config/rest/downloads'
+
+        # The params that change in the module
+        self.cparams = dict()
+
+        # Stores the params that are sent to the module
+        self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
                                   kwargs['user'],
                                   kwargs['password'],
                                   port=kwargs['server_port'])
-        self.params = kwargs
 
-    def delete_cert(self, name):
-        try:
-            c = self.api.tm.sys.crypto.certs.cert.load(
-                name=name,
-                partition=self.params['partition']
-            )
-            c.delete()
-        except iControlUnexpectedHTTPError as e:
-            if e.response.status_code == 404:
-                return False
-            else:
-                raise F5ModuleError(e)
-        else:
+    def exists(self):
+        """Check to see what exists
+
+        :return: boolean
+        """
+        cert = self.cert_exists()
+        key = self.key_exists()
+
+        if cert and key:
             return True
-
-    def delete_key(self, name):
-        try:
-            k = self.api.tm.sys.crypto.keys.key.load(
-                name=name,
-                partition=self.params['partition']
-            )
-            k.delete()
-        except iControlUnexpectedHTTPError as e:
-            if e.response.status_code == 404:
-                return False
-            else:
-                raise F5ModuleError(e)
         else:
-            return True
+            return False
 
-    def exists_cert(self, name):
-        return self.api.tm.sys.crypto.certs.cert.exists(
-            name=name,
+    def get_hash(self, content):
+        k = hashlib.sha1()
+        s = StringIO.StringIO(content)
+        while True:
+            data = s.read(1024)
+            if not data:
+                break
+            k.update(data)
+        return k.hexdigest()
+
+    def present(self):
+        current = self.read()
+        changed = False
+        do_key = False
+        do_cert = False
+
+        check_mode = self.params['check_mode']
+        name = self.params['name']
+        partition = self.params['partition']
+        cert_content = self.params['cert_content']
+        key_content = self.params['key_content']
+        passphrase = self.params['passphrase']
+
+        # Technically you dont need to provide us with anything in the form
+        # of content for your cert, but that's kind of illogical, so we just
+        # return saying you didn't "do" anything if you left the cert and keys
+        # empty.
+        if not cert_content and not key_content:
+            return False
+
+        if key_content is not None:
+            if 'key_checksum' in current:
+                hash = self.get_hash(key_content)
+                if hash not in current['key_checksum']:
+                    do_key = "update"
+            else:
+                do_key = "create"
+
+        if cert_content is not None:
+            if 'cert_checksum' in current:
+                hash = self.get_hash(cert_content)
+                if hash not in current['cert_checksum']:
+                    do_cert = "update"
+            else:
+                do_cert = "create"
+
+        if do_cert or do_key:
+            changed = True
+            if check_mode:
+                return changed
+
+        if not do_cert and not do_key:
+            return False
+
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            if do_cert:
+                # Upload the content of a certificate as a StringIO object
+                cstring = StringIO.StringIO(cert_content)
+                filename = "%s.crt" % (name)
+                filepath = os.path.join(self.dlpath, filename)
+                api.shared.file_transfer.uploads.upload_stringio(
+                    cstring,
+                    filename
+                )
+
+            if do_cert == "update":
+                # Install the certificate
+                params = {
+                    'name': name,
+                    'partition': partition
+                }
+                cert = api.tm.sys.file.ssl_certs.ssl_cert.load(**params)
+
+                # This works because, while the source path is the same,
+                # calling update causes the file to be re-read
+                cert.update()
+                changed = True
+            elif do_cert == "create":
+                # Install the certificate
+                params = {
+                    'sourcePath': "file://" + filepath,
+                    'name': name,
+                    'partition': partition
+                }
+                api.tm.sys.file.ssl_certs.ssl_cert.create(**params)
+                changed = True
+
+            if do_key:
+                # Upload the content of a certificate key as a StringIO object
+                kstring = StringIO.StringIO(key_content)
+                filename = "%s.key" % (name)
+                filepath = os.path.join(self.dlpath, filename)
+                api.shared.file_transfer.uploads.upload_stringio(
+                    kstring,
+                    filename
+                )
+
+            if do_key == "update":
+                # Install the key
+                params = {
+                    'name': name,
+                    'partition': partition
+                }
+                if self.params['passphrase']:
+                    params['passphrase'] = self.params['passphrase']
+                key = api.tm.sys.file.ssl_keys.ssl_key.load(**params)
+
+                params = dict()
+
+                if passphrase:
+                    params['passphrase'] = passphrase
+                key.update(**params)
+                changed = True
+            elif do_key == "create":
+                # Install the key
+                params = {
+                    'sourcePath': "file://" + filepath,
+                    'name': name,
+                    'partition': partition
+                }
+                if self.params['passphrase']:
+                    params['passphrase'] = self.params['passphrase']
+                api.tm.sys.file.ssl_keys.ssl_key.create(**params)
+                changed = True
+        return changed
+
+    def key_exists(self):
+        return self.api.tm.sys.file.ssl_keys.ssl_key.exists(
+            name=self.params['name'],
             partition=self.params['partition']
         )
 
-    def exists_key(self, name):
-        return self.api.tm.sys.crypto.keys.key.exists(
-            name=name,
+    def cert_exists(self):
+        return self.api.tm.sys.file.ssl_certs.ssl_cert.exists(
+            name=self.params['name'],
             partition=self.params['partition']
         )
+
+    def read(self):
+        p = dict()
+        name = self.params['name']
+        partition = self.params['partition']
+
+        if self.key_exists():
+            key = self.api.tm.sys.file.ssl_keys.ssl_key.load(
+                name=name,
+                partition=partition
+            )
+            if hasattr(key, 'checksum'):
+                p['key_checksum'] = str(key.checksum)
+
+        if self.cert_exists():
+            cert = self.api.tm.sys.file.ssl_certs.ssl_cert.load(
+                name=name,
+                partition=partition
+            )
+            if hasattr(cert, 'checksum'):
+                p['cert_checksum'] = str(cert.checksum)
+
+        p['name'] = name
+        return p
 
     def flush(self):
-        result = {'changed': False}
-        if self.params['state'] == 'present':
-            if 'cert_pem_file' not in self.params:
-                raise F5ModuleError('cert_pem_file required when state '
-                                    'is present')
-            if 'key_pem_file' not in self.params:
-                raise F5ModuleError('key_pem_file required when state '
-                                    'is present')
-            try:
-                if self.exists_cert('%s.crt' % self.params['name']):
-                    return result
-                if self.exists_key('%s.key' % self.params['name']):
-                    return result
-                self.import_cert()
-                result['changed'] = True
-            except iControlUnexpectedHTTPError as e:
-                raise F5ModuleError(str(e))
-        else:
-            try:
-                if self.exists_cert('%s.crt' % self.params['name']):
-                    r = self.delete_cert('%s.crt' % self.params['name'])
-                    if r:
-                        result['changed'] = True
-                if self.exists_key('%s.key' % self.params['name']):
-                    r = self.delete_key('%s.key' % self.params['name'])
-                    if r:
-                        result['changed'] = True
-            except iControlUnexpectedHTTPError as e:
-                raise F5ModuleError(str(e))
+        result = dict()
+        state = self.params['state']
+
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        result.update(**self.cparams)
+        result.update(dict(changed=changed))
         return result
 
-    def import_cert(self):
-        self.upload(self.params['cert_pem_file'])
-        self.install_cert(os.path.basename(self.params['cert_pem_file']))
-        self.upload(self.params['key_pem_file'])
-        self.install_key(os.path.basename(self.params['key_pem_file']))
+    def absent(self):
+        changed = False
 
-    def install_cert(self, certfilename):
-        filename = os.path.join('/var/config/rest/downloads', certfilename)
-        params = {'from-local-file': filename,
-                  'name': self.params['name'],
-                  'partition': self.params['partition']}
-        self.api.tm.sys.crypto.certs.exec_cmd('install', **params)
+        if self.exists():
+            changed = self.delete()
 
-    def install_key(self, keyfilename):
-        filename = os.path.join('/var/config/rest/downloads', keyfilename)
-        params = {'from-local-file': filename,
-                  'name': self.params['name'],
-                  'partition': self.params['partition']}
-        if self.params['passphrase']:
-            params['passphrase'] = self.params['passphrase']
-        self.api.tm.sys.crypto.keys.exec_cmd('install', **params)
+        return changed
 
-    def upload(self, filename):
-        self.api.shared.file_transfer.uploads.upload_file(filename)
+    def delete(self):
+        changed = False
+
+        check_mode = self.params['check_mode']
+
+        delete_cert = self.cert_exists()
+        delete_key = self.key_exists()
+
+        if not delete_cert and not delete_key:
+            return changed
+
+        if check_mode:
+            return True
+
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            if delete_cert:
+                # Delete the certificate
+                c = api.tm.sys.crypto.certs.cert.load(
+                    name=self.params['name'],
+                    partition=self.params['partition']
+                )
+                c.delete()
+                changed = True
+
+            if delete_key:
+                # Delete the certificate key
+                k = self.api.tm.sys.crypto.keys.key.load(
+                    name=self.params['name'],
+                    partition=self.params['partition']
+                )
+                k.delete()
+                changed = True
+        return changed
 
 
 def main():
     argument_spec = f5_argument_spec()
+
     meta_args = dict(
         name=dict(type='str', required=True),
-        cert_pem_file=dict(type='str'),
-        key_pem_file=dict(type='str'),
-        passphrase=dict(type='str'),
+        cert_content=dict(type='str', default=None),
+        cert_src=dict(type='str', default=None),
+        key_content=dict(type='str', default=None),
+        key_src=dict(type='str', default=None),
+        passphrase=dict(type='str', default=None)
     )
+
     argument_spec.update(meta_args)
-    module = AnsibleModule(argument_spec=argument_spec)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+        mutually_exclusive=[
+            ['key_content', 'key_src'],
+            ['cert_content', 'cert_src']
+        ]
+    )
 
     try:
-        obj = BigIpSslCertificate(**module.params)
+        obj = BigIpSslCertificate(check_mode=module.check_mode,
+                                  **module.params)
         result = obj.flush()
+        module.exit_json(**result)
     except F5ModuleError as e:
         module.fail_json(msg=str(e))
-    module.exit_json(**result)
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
