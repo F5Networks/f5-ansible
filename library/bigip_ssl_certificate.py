@@ -128,8 +128,50 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = """
-"""
+RETURN = '''
+cert_name:
+    description: >
+        The name of the SSL certificate. The C(cert_name) and
+        C(key_name) will be equal to each other.
+    returned:
+        - created
+        - changed
+        - deleted
+    type: string
+    sample: "cert1"
+key_name:
+    description: >
+        The name of the SSL certificate key. The C(key_name) and
+        C(cert_name) will be equal to each other.
+    returned:
+        - created
+        - changed
+        - deleted
+    type: string
+    sample: "key1"
+partition:
+    description: Partition in which the cert/key was created
+    returned:
+        - changed
+        - created
+        - deleted
+    type: string
+    sample: "Common"
+key_checksum:
+    description: SHA1 checksum of the key that was provided
+    return:
+        - changed
+        - created
+    type: string
+    sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
+cert_checksum:
+    description: SHA1 checksum of the cert that was provided
+    return:
+        - changed
+        - created
+    type: string
+    sample: "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
+'''
 
 
 try:
@@ -163,7 +205,7 @@ class BigIpSslCertificate(object):
                 kwargs['cert_content'] = f.read()
 
         if kwargs['state'] == 'present':
-            if not any (kwargs[k] is not None for k in required_args):
+            if not any(kwargs[k] is not None for k in required_args):
                 raise F5ModuleError(
                     "Either 'key_content', 'key_src', 'cert_content' or "
                     "'cert_src' must be provided"
@@ -184,10 +226,6 @@ class BigIpSslCertificate(object):
                                   port=kwargs['server_port'])
 
     def exists(self):
-        """Check to see what exists
-
-        :return: boolean
-        """
         cert = self.cert_exists()
         key = self.key_exists()
 
@@ -211,6 +249,8 @@ class BigIpSslCertificate(object):
         changed = False
         do_key = False
         do_cert = False
+        chash = None
+        khash = None
 
         check_mode = self.params['check_mode']
         name = self.params['name']
@@ -228,22 +268,32 @@ class BigIpSslCertificate(object):
 
         if key_content is not None:
             if 'key_checksum' in current:
-                hash = self.get_hash(key_content)
-                if hash not in current['key_checksum']:
+                khash = self.get_hash(key_content)
+                if khash not in current['key_checksum']:
                     do_key = "update"
             else:
                 do_key = "create"
 
         if cert_content is not None:
             if 'cert_checksum' in current:
-                hash = self.get_hash(cert_content)
-                if hash not in current['cert_checksum']:
+                chash = self.get_hash(cert_content)
+                if chash not in current['cert_checksum']:
                     do_cert = "update"
             else:
                 do_cert = "create"
 
         if do_cert or do_key:
             changed = True
+            params = dict()
+            params['cert_name'] = name
+            params['key_name'] = name
+            params['partition'] = partition
+            if khash:
+                params['key_checksum'] = khash
+            if chash:
+                params['cert_checksum'] = chash
+            self.cparams = params
+
             if check_mode:
                 return changed
 
@@ -306,6 +356,9 @@ class BigIpSslCertificate(object):
 
                 if passphrase:
                     params['passphrase'] = passphrase
+                else:
+                    params['passphrase'] = None
+
                 key.update(**params)
                 changed = True
             elif do_key == "create":
@@ -315,8 +368,11 @@ class BigIpSslCertificate(object):
                     'name': name,
                     'partition': partition
                 }
-                if self.params['passphrase']:
+                if passphrase:
                     params['passphrase'] = self.params['passphrase']
+                else:
+                    params['passphrase'] = None
+
                 api.tm.sys.file.ssl_keys.ssl_key.create(**params)
                 changed = True
         return changed
@@ -393,13 +449,18 @@ class BigIpSslCertificate(object):
             return changed
 
         if check_mode:
+            params = dict()
+            params['cert_name'] = name
+            params['key_name'] = name
+            params['partition'] = partition
+            self.cparams = params
             return True
 
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
             if delete_cert:
                 # Delete the certificate
-                c = api.tm.sys.crypto.certs.cert.load(
+                c = api.tm.sys.file.ssl_certs.ssl_cert.load(
                     name=self.params['name'],
                     partition=self.params['partition']
                 )
@@ -408,7 +469,7 @@ class BigIpSslCertificate(object):
 
             if delete_key:
                 # Delete the certificate key
-                k = self.api.tm.sys.crypto.keys.key.load(
+                k = self.api.tm.sys.file.ssl_keys.ssl_key.load(
                     name=self.params['name'],
                     partition=self.params['partition']
                 )

@@ -74,27 +74,6 @@
     that:
         - not result|changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Delete a certificate and key
   bigip_ssl_certificate:
       name: "cert1"
