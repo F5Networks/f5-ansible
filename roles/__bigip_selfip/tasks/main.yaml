@@ -102,6 +102,182 @@
       that:
           - not result|changed
 
+- name: Set single protocol allow service
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service: "{{ allowed_services_single }}"
+  register: result
+
+- name: Assert Set single protocol allow service
+  assert:
+      that:
+          - result|changed
+
+- name: Set single protocol allow service - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service: "{{ allowed_services_single }}"
+  register: result
+
+- name: Assert Set single protocol allow service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set multiple protocol allow all service
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service: "{{ allowed_services_multi }}"
+  register: result
+
+- name: Assert Set multiple protocol allow all service
+  assert:
+      that:
+          - result|changed
+
+- name: Set multiple protocol allow all service - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service: "{{ allowed_services_multi }}"
+  register: result
+
+- name: Assert Set multiple protocol allow all service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set keyword "all" allow service
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "all"
+  register: result
+
+- name: Assert Set keyword "all" allow service
+  assert:
+      that:
+          - result|changed
+
+- name: Set keyword "all" allow service - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "all"
+  register: result
+
+- name: Assert Set keyword "all" allow service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set keyword "default" allow service
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "default"
+  register: result
+
+- name: Assert Set keyword "default" allow service
+  assert:
+      that:
+          - result|changed
+
+- name: Set keyword "default" allow service - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "default"
+  register: result
+
+- name: Assert Set keyword "default" allow service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set keyword "none" allow service
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "none"
+  register: result
+
+- name: Assert Set keyword "none" allow service
+  assert:
+      that:
+          - result|changed
+
+- name: Set keyword "none" allow service - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      allow_service:
+          - "none"
+  register: result
+
+- name: Assert Set keyword "none" allow service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Delete Self IP
   bigip_selfip:
       name: "{{ selfip_name }}"

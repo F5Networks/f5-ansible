@@ -10,3 +10,12 @@ invalid_vlan:
     - "01767424"
     - "$T#%Q$WER"
     - "foo"
+allowed_services_single:
+    - "tcp:0"
+allowed_services_multi:
+    - "igmp:0"
+    - "gre:0"
+allowed_services3:
+    - "tcp:22"
+    - "http:443"
+    - "udp:53"
