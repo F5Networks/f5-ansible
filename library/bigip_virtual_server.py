@@ -235,7 +235,8 @@ def vs_exists(api, vs, partition):
             set_active_folder(api, current_folder)
         submit_transaction(api)
     except bigsuds.OperationFailed as e:
-        rollback_transaction(api)
+        if 'No transaction is open' not in str(e):
+            rollback_transaction(api)
         if "was not found" in str(e):
             result = False
         else:
@@ -276,7 +277,8 @@ def vs_create(api, name, destination, port, pool, partition):
 
         return created
     except bigsuds.OperationFailed as e:
-        rollback_transaction(api)
+        if 'No transaction is open' not in str(e):
+            rollback_transaction(api)
         if "already exists" not in str(e):
             raise Exception('Error on creating Virtual Server : %s' % e)
 
