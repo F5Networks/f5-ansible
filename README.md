@@ -13,7 +13,7 @@ enhancement requests using [Github Issues](https://github.com/F5Networks/f5-ansi
 
 ### Requirements
 
-* []Ansible 2.2.0 or greater][installing]
+* [Ansible 2.2.0 or greater][installing]
 * Advanced shell for user account enabled
 * [bigsuds Python Client 1.0.4 or later][bigsuds]
 * [f5-sdk Python Client, latest available][f5-sdk]
