@@ -165,7 +165,7 @@ allow_service:
     description: Services that allowed via this Self IP
     returned: changed
     type: list
-    sampel: ['igmp:0','tcp:22','udp:53']
+    sample: ['igmp:0','tcp:22','udp:53']
 address:
     description: The address for the Self IP
     returned: created
