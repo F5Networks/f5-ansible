@@ -484,10 +484,10 @@ def main():
     meta_args = dict(
         name=dict(type='str', required=True),
         cert_content=dict(type='str', default=None),
-        cert_src=dict(type='str', default=None),
+        cert_src=dict(type='path', default=None),
         key_content=dict(type='str', default=None),
-        key_src=dict(type='str', default=None),
-        passphrase=dict(type='str', default=None)
+        key_src=dict(type='path', default=None),
+        passphrase=dict(type='str', default=None, no_log=True)
     )
 
     argument_spec.update(meta_args)
