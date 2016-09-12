@@ -27,20 +27,14 @@ options:
   banner_text:
     description:
       - Specifies the text to present in the advisory banner.
-    required: false
-    default: None
   console_timeout:
     description:
       - Specifies the number of seconds of inactivity before the system logs
         off a user that is logged on.
-    required: false
-    default: None
   gui_setup:
     description:
       - C(enable) or C(disabled) the Setup utility in the browser-based
         Configuration utility
-    required: false
-    default: None
     choices:
       - enabled
       - disabled
@@ -49,8 +43,6 @@ options:
       - Specifies, when C(enabled), that the system menu displays on the
         LCD screen on the front of the unit. This setting has no effect
         when used on the VE platform.
-    required: false
-    default: None
     choices:
       - enabled
       - disabled
@@ -58,8 +50,6 @@ options:
     description:
       - Specifies whether or not to enable DHCP client on the management
         interface
-    required: false
-    default: None
     choices:
       - enabled
       - disabled
@@ -71,8 +61,6 @@ options:
     choices:
       - enabled
       - disabled
-    required: false
-    default: None
   quiet_boot:
     description:
       - Specifies, when C(enabled), that the system suppresses informational
@@ -86,8 +74,6 @@ options:
     choices:
       - enabled
       - disabled
-    required: false
-    default: None
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
