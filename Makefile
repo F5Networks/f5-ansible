@@ -145,12 +145,22 @@ bigip-vlan:
 	flake8 library/bigip_vlan.py
 
 fetch-upstream:
+	curl -o library/bigip_device_dns.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_dns.py
+	curl -o library/bigip_device_ntp.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_ntp.py
+	curl -o library/bigip_device_sshd.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_sshd.py
 	curl -o library/bigip_facts.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_facts.py
+	curl -o library/bigip_gtm_datacenter.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_gtm_datacenter.py
+	curl -o library/bigip_gtm_virtual_server.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_gtm_virtual_server.py
 	curl -o library/bigip_gtm_wide_ip.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_gtm_wide_ip.py
+	curl -o library/bigip_irule.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_irule.py
 	curl -o library/bigip_monitor_http.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_monitor_http.py
 	curl -o library/bigip_monitor_tcp.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_monitor_tcp.py
 	curl -o library/bigip_node.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_node.py
 	curl -o library/bigip_pool.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool.py
 	curl -o library/bigip_pool_member.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_pool_member.py
+	curl -o library/bigip_routedomain.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_routedomain.py
+	curl -o library/bigip_selfip.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_selfip.py
+	curl -o library/bigip_ssl_certificate.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_ssl_certificate.py
+	curl -o library/bigip_sys_db.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_sys_db.py
 	curl -o library/bigip_virtual_server.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_virtual_server.py
 	curl -o library/bigip_vlan.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_vlan.py
