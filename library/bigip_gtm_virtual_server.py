@@ -23,57 +23,58 @@ DOCUMENTATION = '''
 module: bigip_gtm_virtual_server
 short_description: "Manages F5 BIG-IP GTM virtual servers"
 description:
-  - "Manages F5 BIG-IP GTM virtual servers"
+    - "Manages F5 BIG-IP GTM virtual servers"
 version_added: "2.2"
 author:
-  - Michael Perzel (@perzizzle)
-  - Tim Rupp (@caphrim007)
+    - Michael Perzel (@perzizzle)
+    - Tim Rupp (@caphrim007)
 notes:
-  - "Requires BIG-IP software version >= 11.4"
-  - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-  - "Best run as a local_action in your playbook"
-  - "Tested with manager and above account privilege level"
+    - "Requires BIG-IP software version >= 11.4"
+    - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
+    - "Best run as a local_action in your playbook"
+    - "Tested with manager and above account privilege level"
+
 requirements:
-  - bigsuds
+    - bigsuds
 options:
-  state:
-    description:
-      - Virtual server state
-    required: false
-    default: present
-    choices: ['present', 'absent','enabled','disabled']
-  virtual_server_name:
-    description:
-      - Virtual server name
-    required: True
-  virtual_server_server:
-    description:
-      - Virtual server server
-    required: true
-  host:
-    description:
-      - Virtual server host
-    required: false
-    default: None
-    aliases: ['address']
-  port:
-    description:
-      - Virtual server port
-    required: false
-    default: None
+    state:
+        description:
+            - Virtual server state
+        required: false
+        default: present
+        choices: ['present', 'absent','enabled','disabled']
+    virtual_server_name:
+        description:
+            - Virtual server name
+        required: True
+    virtual_server_server:
+        description:
+            - Virtual server server
+        required: true
+    host:
+        description:
+            - Virtual server host
+        required: false
+        default: None
+        aliases: ['address']
+    port:
+        description:
+            - Virtual server port
+        required: false
+        default: None
 extends_documentation_fragment: f5
 '''
 
 EXAMPLES = '''
   - name: Enable virtual server
-    bigip_gtm_virtual_server:
-        server: "lb.mydomain.com"
-        user: "admin"
-        password: "secret"
-        virtual_server_name: "myname"
-        virtual_server_server: "myserver"
-        state: "enabled"
-    delegate_to: localhost
+    local_action: >
+      bigip_gtm_virtual_server
+      server=192.0.2.1
+      user=admin
+      password=mysecret
+      virtual_server_name=myname
+      virtual_server_server=myserver
+      state=enabled
 '''
 
 RETURN = '''# '''
@@ -92,7 +93,7 @@ def server_exists(api, server):
     try:
         api.GlobalLB.Server.get_object_status([server])
         result = True
-    except bigsuds.OperationFailed as e:
+    except bigsuds.OperationFailed, e:
         if "was not found" in str(e):
             result = False
         else:
@@ -108,7 +109,7 @@ def virtual_server_exists(api, name, server):
         virtual_server_id = {'name': name, 'server': server}
         api.GlobalLB.VirtualServerV2.get_object_status([virtual_server_id])
         result = True
-    except bigsuds.OperationFailed as e:
+    except bigsuds.OperationFailed, e:
         if "was not found" in str(e):
             result = False
         else:
@@ -221,7 +222,7 @@ def main():
                 else:
                     result = {'changed': True}
 
-    except IOError as e:
+    except Exception, e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)

@@ -101,11 +101,6 @@ options:
       - Default Profile which manages the session persistence
     required: false
     default: None
-  route_advertisement_state:
-    description:
-      - Enable route advertisement for destination
-    required: false
-    default: disabled
   description:
     description:
       - Virtual server description
@@ -178,65 +173,13 @@ STATUSES = {
 }
 
 
-def set_active_folder(api, folder):
-    api.System.Session.set_active_folder(folder=folder)
-
-
-def get_active_folder(api):
-    return api.System.Session.get_active_folder()
-
-
-def set_recursive_query_state(api, state):
-    api.System.Session.set_recursive_query_state(state)
-
-
-def get_recursive_query_state(api):
-    return api.System.Session.get_recursive_query_state()
-
-
-def enable_recursive_query_state(api):
-    set_recursive_query_state(api, 'STATE_ENABLED')
-
-
-def disable_recursive_query_state(api):
-    set_recursive_query_state(api, 'STATE_DISABLED')
-
-
-def start_transaction(api):
-    api.System.Session.start_transaction()
-
-
-def submit_transaction(api):
-    api.System.Session.submit_transaction()
-
-
-def rollback_transaction(api):
-    api.System.Session.rollback_transaction()
-
-
-def vs_exists(api, vs, partition):
+def vs_exists(api, vs):
     # hack to determine if pool exists
     result = False
     try:
-        start_transaction(api)
-        current_folder = get_active_folder(api)
-        if current_folder != '/':
-            set_active_folder(api, '/' + partition)
-        current_query_state = get_recursive_query_state(api)
-        if current_query_state == 'STATE_DISABLED':
-            enable_recursive_query_state(api)
-
         api.LocalLB.VirtualServer.get_object_status(virtual_servers=[vs])
         result = True
-
-        if current_query_state == 'STATE_DISABLED':
-            disable_recursive_query_state(api)
-        if current_folder != '/':
-            set_active_folder(api, current_folder)
-        submit_transaction(api)
     except bigsuds.OperationFailed as e:
-        if 'No transaction is open' not in str(e):
-            rollback_transaction(api)
         if "was not found" in str(e):
             result = False
         else:
@@ -245,7 +188,7 @@ def vs_exists(api, vs, partition):
     return result
 
 
-def vs_create(api, name, destination, port, pool, partition):
+def vs_create(api, name, destination, port, pool):
     _profiles = [[{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]]
     created = False
     # a bit of a hack to handle concurrent runs of this module.
@@ -254,31 +197,14 @@ def vs_create(api, name, destination, port, pool, partition):
     # this catches the exception and does something smart
     # about it!
     try:
-        start_transaction(api)
-        current_folder = get_active_folder(api)
-        if current_folder != '/':
-            set_active_folder(api, '/' + partition)
-        current_query_state = get_recursive_query_state(api)
-        if current_query_state == 'STATE_DISABLED':
-            enable_recursive_query_state(api)
-
         api.LocalLB.VirtualServer.create(
             definitions=[{'name': [name], 'address': [destination], 'port': port, 'protocol': 'PROTOCOL_TCP'}],
             wildmasks=['255.255.255.255'],
             resources=[{'type': 'RESOURCE_TYPE_POOL', 'default_pool_name': pool}],
             profiles=_profiles)
         created = True
-
-        if current_query_state == 'STATE_DISABLED':
-            disable_recursive_query_state(api)
-        if current_folder != '/':
-            set_active_folder(api, current_folder)
-        submit_transaction(api)
-
         return created
     except bigsuds.OperationFailed as e:
-        if 'No transaction is open' not in str(e):
-            rollback_transaction(api)
         if "already exists" not in str(e):
             raise Exception('Error on creating Virtual Server : %s' % e)
 
@@ -338,7 +264,7 @@ def set_profiles(api, name, profiles_list):
     try:
         if profiles_list is None:
             return False
-        current_profiles = [x['profile_name'] for x in get_profiles(api, name)]
+        current_profiles = map(lambda x: x['profile_name'], get_profiles(api, name))
         to_add_profiles = []
         for x in profiles_list:
             if x not in current_profiles:
@@ -526,41 +452,6 @@ def set_default_persistence_profiles(api, name, persistence_profile):
         raise Exception('Error on setting default persistence profile : %s' % e)
 
 
-def get_route_advertisement_status(api, address):
-    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(
-        virtual_addresses=[address]
-    ).pop(0)
-    result = result.split("STATE_")[-1].lower()
-    return result
-
-
-def set_route_advertisement_state(api, destination, partition, route_advertisement_state):
-    updated = False
-
-    try:
-        if destination is None and route_advertisement_state is None:
-            return False
-        elif destination is not None and route_advertisement_state is None:
-            # default state
-            route_advertisement_state = 'disabled'
-        elif destination is None and route_advertisement_state is not None:
-            raise Exception(
-                "A destination must be provided with route_advertisement_state"
-            )
-
-        state = "STATE_%s" % route_advertisement_state.strip().upper()
-        address = fq_name(partition, destination)
-        current_route_advertisement_state = get_route_advertisement_status(api, address)
-        if current_route_advertisement_state != route_advertisement_state:
-            api.LocalLB.VirtualAddressV2.set_route_advertisement_state(
-                virtual_addresses=[address], states=[state]
-            )
-            updated = True
-        return updated
-    except bigsuds.OperationFailed as e:
-        raise Exception('Error on setting profiles : %s' % e)
-
-
 def main():
     argument_spec = f5_argument_spec()
     argument_spec.update(dict(
@@ -574,7 +465,6 @@ def main():
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
-        route_advertisement_state=dict(type='str', default=None, choices=['enabled', 'disabled']),
         default_persistence_profile=dict(type='str')
     ))
 
@@ -607,7 +497,6 @@ def main():
     pool = fq_name(partition, module.params['pool'])
     description = module.params['description']
     snat = module.params['snat']
-    route_advertisement_state = module.params['route_advertisement_state']
     default_persistence_profile = fq_name(partition, module.params['default_persistence_profile'])
 
     if 1 > port > 65535:
@@ -619,7 +508,7 @@ def main():
 
         if state == 'absent':
             if not module.check_mode:
-                if vs_exists(api, name, partition):
+                if vs_exists(api, name):
                     # hack to handle concurrent runs of module
                     # pool might be gone before we actually remove
                     try:
@@ -636,7 +525,7 @@ def main():
 
         else:
             update = False
-            if not vs_exists(api, name, partition):
+            if not vs_exists(api, name):
                 if (not destination) or (not port):
                     module.fail_json(msg="both destination and port must be supplied to create a VS")
                 if not module.check_mode:
@@ -646,14 +535,13 @@ def main():
                     # this catches the exception and does something smart
                     # about it!
                     try:
-                        vs_create(api, name, destination, port, pool, partition)
+                        vs_create(api, name, destination, port, pool)
                         set_profiles(api, name, all_profiles)
                         set_rules(api, name, all_rules)
                         set_snat(api, name, snat)
                         set_description(api, name, description)
                         set_default_persistence_profiles(api, name, default_persistence_profile)
                         set_state(api, name, state)
-                        set_route_advertisement_state(api, destination, partition, route_advertisement_state)
                         result = {'changed': True}
                     except bigsuds.OperationFailed as e:
                         raise Exception('Error on creating Virtual Server : %s' % e)
@@ -667,6 +555,7 @@ def main():
                 if not module.check_mode:
                     # Have a transaction for all the changes
                     try:
+                        api.System.Session.start_transaction()
                         result['changed'] |= set_destination(api, name, fq_name(partition, destination))
                         result['changed'] |= set_port(api, name, port)
                         result['changed'] |= set_pool(api, name, pool)
@@ -676,14 +565,14 @@ def main():
                         result['changed'] |= set_rules(api, name, all_rules)
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
                         result['changed'] |= set_state(api, name, state)
-                        result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
+                        api.System.Session.submit_transaction()
                     except Exception as e:
                         raise Exception("Error on updating Virtual Server : %s" % e)
                 else:
                     # check-mode return value
                     result = {'changed': True}
 
-    except IOError as e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
