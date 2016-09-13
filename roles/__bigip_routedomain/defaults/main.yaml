@@ -3,6 +3,7 @@
 valid_description: "foo"
 default_parent: 0
 new_routedomain: 1024
+new_routedomain2: 1025
 invalid_route_domains:
     - "abcd"
     - 99999999999999999999999999999999999999999999999999999999999999999999999999

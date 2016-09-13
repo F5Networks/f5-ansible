@@ -545,13 +545,13 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set service policy, valid
   assert:
       that:
           - result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, valid - Idempotent check
   bigip_routedomain:
@@ -563,13 +563,13 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set service policy, valid - Idempotent check
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, invalid
   bigip_routedomain:
@@ -583,13 +583,13 @@
   register: result
   ignore_errors: true
   with_items: "{{ invalid_service_policy }}"
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set service policy, invalid
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, invalid - Idempotent check
   bigip_routedomain:
@@ -603,13 +603,13 @@
   register: result
   ignore_errors: true
   with_items: "{{ invalid_service_policy }}"
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set service policy, invalid - Idempotent check
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Delete a route domain
   bigip_routedomain:
@@ -676,3 +676,35 @@
   assert:
       that:
           - not result|changed
+
+- name: Create route domain - all params
+  bigip_routedomain:
+      id: "{{ new_routedomain2 }}"
+      parent: "{{ default_parent }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create route domain - all params
+  assert:
+      that:
+          - result|changed
+
+- name: Delete a route domain - all params
+  bigip_routedomain:
+      id: "{{ new_routedomain2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete a route domain - all params
+  assert:
+      that:
+          - result|changed
