@@ -224,6 +224,7 @@
 
 - name: Remove VLAN, interfaces
   bigip_vlan:
+      interfaces: "{{ vlan_interfaces }}"
       name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
