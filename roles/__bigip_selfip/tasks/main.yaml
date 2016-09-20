@@ -1,5 +1,8 @@
 ---
 
+- name: Include task to setup the remote device
+  include: setup.yaml
+
 - name: Create Self IP
   bigip_selfip:
       address: "{{ selfip }}"
