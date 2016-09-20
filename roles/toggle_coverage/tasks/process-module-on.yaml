@@ -1,0 +1,13 @@
+---
+
+- name: Specify which module we are handling
+  debug:
+      msg: "Enabling coverage for module '{{ module_current }}'"
+
+- name: Replace the name of the module in the coverage includes
+  lineinfile:
+      insertafter: "include ="
+      regexp: "(MODULE_NAME|{{ module_current }}\\*)"
+      line: "    *ansible_module_{{ module_current }}*"
+      state: "present"
+      dest: "{{ base_dir|abspath }}/.coveragerc"

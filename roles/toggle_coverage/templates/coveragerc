@@ -1,0 +1,7 @@
+[run]
+branch = True
+cover_pylib = False
+concurrency = multiprocessing
+data_file = COVERAGE_PATH
+include =
+    MODULE_NAME

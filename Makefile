@@ -4,7 +4,15 @@ DOCTEST := python ../scripts/ansible-doc-test.py
 PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
+MODULE_TARGET = $(shell echo $@ | tr '-' '_')
+
 .PHONY: docs flake8
+
+all: clean-coverage
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on" --vault-password-file ./vault.txt
+	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts tests/bigip.yaml --vault-password-file ./vault.txt
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" --vault-password-file ./vault.txt
+	flake8 library/*.py
 
 all-tests: flake8 ansible-doc
 
@@ -52,97 +60,15 @@ ansible-doc-dev:
 		$(DOCTEST) -M . bigip_qkview_facts.py; \
 	)
 
-bigip-device-dns:
-	ansible-playbook -i inventory/hosts tests/bigip_device_dns.yaml -vvvv
-	flake8 library/bigip_device_dns.py
+clean-coverage:
+	$(shell rm cache/coverage/.coverage*)
+	$(shell rm .coverage)
 
-bigip-device-ntp:
-	ansible-playbook -i inventory/hosts tests/bigip_device_ntp.yaml -vvvv
-	flake8 library/bigip_device_ntp.py
-
-bigip-device-sshd:
-	ansible-playbook -i inventory/hosts tests/bigip_device_sshd.yaml -vvvv
-	flake8 library/bigip_device_sshd.py
-
-bigip-facts:
-	ansible-playbook -i inventory/hosts tests/bigip_facts.yaml -vvvv
-	flake8 library/bigip_facts.py
-
-bigip-gtm-datacenter:
-	ansible-playbook -i inventory/hosts tests/bigip_gtm_datacenter.yaml -vvvv
-	flake8 library/bigip_gtm_datacenter.py
-
-bigip-gtm-facts:
-	ansible-playbook -i inventory/hosts tests/bigip_gtm_facts.yaml -vvvv
-	flake8 library/bigip_gtm_facts.py
-
-bigip-gtm-virtual-server:
-	ansible-playbook -i inventory/hosts tests/bigip_gtm_virtual_server.yaml -vvvv
-	flake8 library/bigip_gtm_virtual_server.py
-
-bigip-gtm-wide-ip:
-	ansible-playbook -i inventory/hosts tests/bigip_gtm_wide_ip.yaml -vvvv
-	flake8 library/bigip_gtm_wide_ip.py
-
-bigip-hostname:
-	ansible-playbook -i inventory/hosts tests/bigip_hostname.yaml -vvvv
-	flake8 library/bigip_hostname.py
-
-bigip-irule:
-	ansible-playbook -i inventory/hosts tests/bigip_irule.yaml -vvvv
-	flake8 library/bigip_irule.py
-
-bigip-monitor-http:
-	ansible-playbook -i inventory/hosts tests/bigip_monitor_http.yaml -vvvv
-	flake8 library/bigip_monitor_http.py
-
-bigip-monitor-tcp:
-	ansible-playbook -i inventory/hosts tests/bigip_monitor_tcp.yaml -vvvv
-	flake8 library/bigip_monitor_tcp.py
-
-bigip-node:
-	ansible-playbook -i inventory/hosts tests/bigip_node.yaml -vvvv
-	flake8 library/bigip_node.py
-
-bigip-pool:
-	ansible-playbook -i inventory/hosts tests/bigip_pool.yaml -vvvv
-	flake8 library/bigip_pool.py
-
-bigip-pool-member:
-	ansible-playbook -i inventory/hosts tests/bigip_pool_member.yaml -vvvv
-	flake8 library/bigip_pool_member.py
-
-bigip-routedomain:
-	ansible-playbook -i inventory/hosts tests/bigip_routedomain.yaml -vvvv
-	flake8 library/bigip_routedomain.py
-
-bigip-selfip:
-	ansible-playbook -i inventory/hosts tests/bigip_selfip.yaml -vvvv
-	flake8 library/bigip_selfip.py
-
-bigip-ssl-certificate:
-	ansible-playbook -i inventory/hosts tests/bigip_ssl_certificate.yaml -vvvv
-	flake8 library/bigip_ssl_certificate.py
-
-bigip-sys-db:
-	ansible-playbook -i inventory/hosts tests/bigip_sys_db.yaml -vvvv
-	flake8 library/bigip_sys_db.py
-
-bigip-sys-global:
-	ansible-playbook -i inventory/hosts tests/bigip_sys_global.yaml -vvvv
-	flake8 library/bigip_sys_global.py
-
-bigip-user-facts:
-	ansible-playbook -i inventory/hosts tests/bigip_user_facts.yaml -vvvv
-	flake8 library/bigip_user_facts.py
-
-bigip-virtual-server:
-	ansible-playbook -i inventory/hosts tests/bigip_virtual_server.yaml -vvvv
-	flake8 library/bigip_virtual_server.py
-
-bigip-vlan:
-	ansible-playbook -i inventory/hosts tests/bigip_vlan.yaml -vvvv
-	flake8 library/bigip_vlan.py
+bigip-%: clean-coverage
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=on" --vault-password-file ./vault.txt
+	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts tests/${MODULE_TARGET}.yaml --vault-password-file ./vault.txt
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off" --vault-password-file ./vault.txt
+	flake8 library/${MODULE_TARGET}.py
 
 fetch-upstream:
 	curl -o library/bigip_device_dns.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_dns.py

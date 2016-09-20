@@ -1,0 +1,20 @@
+---
+
+- name: Specify which module we are handling
+  debug:
+      msg: "Disabling coverage for module '{{ module_current }}'"
+
+- name: Fix module location to no longer be temporary path
+  replace:
+      dest: "{{ item|abspath }}"
+      regexp: '"([A-Za-z0-9_\./\\-]*{{ module_current }}.py)"'
+      replace: '"{{ module_full_path|abspath }}"'
+  with_fileglob:
+      - "{{ coverage_dir|abspath }}/.coverage*"
+
+- name: Replace the name of the module in .coveragerc to match original
+  lineinfile:
+      regexp: "\\*ansible_module_{{ module_current }}\\*"
+      line: "    *{{ module_current }}*"
+      state: "present"
+      dest: "{{ base_dir|abspath }}/.coveragerc"

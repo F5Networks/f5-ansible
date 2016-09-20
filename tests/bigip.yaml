@@ -1,0 +1,26 @@
+---
+
+# Test and measure coverage across all modules
+#
+# This playbook can be used to run all of the tests for the various modules.
+# Additionally, it will run the coverage tests of the modules so that that
+# can be represented on the Github page.
+#
+# Usage:
+#
+#    export COVERAGE_PROCESS_START=${CURDIR}/.coveragerc
+#    export ANSIBLE_KEEP_REMOTE_FILES=1
+#    ansible-playbook -i inventory/hosts tests/bigip.yaml [OPTIONS]
+#
+# Examples:
+#
+#    Run all tests on the modules
+#
+#    export COVERAGE_PROCESS_START=${CURDIR}/.coveragerc
+#    export ANSIBLE_KEEP_REMOTE_FILES=1
+#    ansible-playbook -i inventory/hosts tests/bigip.yaml --vaukt-password-file ./vault.txt
+#
+
+# Leave these in alphabetical order for readability
+- include: bigip_selfip.yaml
+- include: bigip_vlan.yaml
