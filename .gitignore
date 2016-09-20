@@ -4,6 +4,7 @@ Vagrantfile
 .idea
 .vscode
 *.iml
+.coveragerc
 
 # Byte-compiled files
 __pycache__/
