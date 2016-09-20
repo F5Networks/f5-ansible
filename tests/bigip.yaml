@@ -23,7 +23,7 @@
 
 # Leave these in alphabetical order for readability
 #- include: bigip_command.yaml
-- include: bigip_device_dns.yaml
+#- include: bigip_device_dns.yaml TODO: needs to turn off DHCP for it to work
 - include: bigip_device_ntp.yaml
 - include: bigip_device_sshd.yaml
 #- include: bigip_dns_record.yaml
