@@ -19,3 +19,4 @@ allowed_services3:
     - "tcp:22"
     - "http:443"
     - "udp:53"
+default_traffic_group: "traffic-group-local-only"
