@@ -190,7 +190,7 @@
       that:
           - not result|changed
 
-- name: Set timezone, all timezones
+- name: Set timezone, common timezones
   bigip_device_ntp:
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -198,4 +198,4 @@
       timezone: "{{ item }}"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-  with_items: "{{ all_timezones }}"
+  with_items: "{{ common_timezones }}"

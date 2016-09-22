@@ -301,7 +301,7 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  with_items: login
+  with_items: "{{ login }}"
 
 - name: Assert Set the SSHD login
   assert:
@@ -317,13 +317,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set the SSHD port (int)
   assert:
       that:
           - result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set the SSHD port (int) - Idempotent check
   bigip_device_sshd:
@@ -334,13 +334,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Assert Set the SSHD port (int) - Idempotent check
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Set the SSHD port (string)
   bigip_device_sshd:
@@ -351,13 +351,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Assert Set the SSHD port (string)
   assert:
       that:
           - result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Set the SSHD port (string) - Idempotent check
   bigip_device_sshd:
@@ -368,13 +368,13 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "no"
   register: result
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Assert Set the SSHD port (string) - Idempotent check
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Set the SSHD port (Bad int)
   bigip_device_sshd:
@@ -386,7 +386,7 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Assert Set the SSHD port (Bad int)
   assert:
@@ -404,13 +404,13 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Assert Set the SSHD port (Bad string)
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Set the SSHD port (Bad special chars)
   bigip_device_sshd:
@@ -422,10 +422,10 @@
       validate_certs: "no"
   register: result
   ignore_errors: true
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"
 
 - name: Assert Set the SSHD port (Bad special chars)
   assert:
       that:
           - not result|changed
-  when: system_info.product_information.product_version > "11.6.0"
+  when: system_info.product_information.product_version > "12.0.0"

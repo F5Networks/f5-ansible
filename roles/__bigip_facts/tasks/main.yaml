@@ -9,4 +9,4 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
-  with_items: valid_includes
+  with_items: "{{ valid_includes }}"
