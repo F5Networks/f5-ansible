@@ -27,11 +27,17 @@ options:
   description:
     description:
       - The description to give to the VLAN.
-  interfaces:
+  tagged_interfaces:
     description:
-      - Specifies a list of tagged or untagged interfaces and trunks that you
-        want to configure for the VLAN. Use tagged interfaces or trunks when
+      - Specifies a list of tagged interfaces and trunks that you want to
+        configure for the VLAN. Use tagged interfaces or trunks when
         you want to assign a single interface or trunk to multiple VLANs.
+    required: false
+  untagged_interfaces:
+    description:
+      - Specifies a list of untagged interfaces and trunks that you want to
+        configure for the VLAN.
+    required: false
   name:
     description:
       - The VLAN to manage. If the special VLAN C(ALL) is specified with
@@ -148,14 +154,10 @@ class BigIpVlan(object):
                                   port=kwargs['server_port'])
 
     def present(self):
-        changed = False
-
         if self.exists():
-            changed = self.update()
+            return self.update()
         else:
-            changed = self.create()
-
-        return changed
+            return self.create()
 
     def absent(self):
         changed = False
@@ -188,7 +190,17 @@ class BigIpVlan(object):
         if hasattr(r, 'description'):
             p['description'] = str(r.description)
         if len(ifcs) is not 0:
-            p['interfaces'] = list(set([str(x.name) for x in ifcs]))
+            untagged = []
+            tagged = []
+            for x in ifcs:
+                if hasattr(x, 'tagged'):
+                    tagged.append(str(x.name))
+                elif hasattr(x, 'untagged'):
+                    untagged.append(str(x.name))
+            if untagged:
+                p['untagged_interfaces'] = list(set(untagged))
+            if tagged:
+                p['tagged_interfaces'] = list(set(tagged))
         p['name'] = name
         return p
 
@@ -198,14 +210,16 @@ class BigIpVlan(object):
         check_mode = self.params['check_mode']
         description = self.params['description']
         name = self.params['name']
-        interfaces = self.params['interfaces']
+        untagged_interfaces = self.params['untagged_interfaces']
+        tagged_interfaces = self.params['tagged_interfaces']
         partition = self.params['partition']
         tag = self.params['tag']
 
         if tag is not None:
             params['tag'] = tag
 
-        if interfaces is not None:
+        if untagged_interfaces is not None or tagged_interfaces is not None:
+            tmp = []
             ifcs = self.api.tm.net.interfaces.get_collection()
             ifcs = [str(x.name) for x in ifcs]
 
@@ -215,12 +229,23 @@ class BigIpVlan(object):
                 )
 
             pinterfaces = []
+            if untagged_interfaces:
+                interfaces = untagged_interfaces
+            elif tagged_interfaces:
+                interfaces = tagged_interfaces
+
             for ifc in interfaces:
                 ifc = str(ifc)
                 if ifc in ifcs:
                     pinterfaces.append(ifc)
-            if pinterfaces:
-                params['interfaces'] = pinterfaces
+
+            if tagged_interfaces:
+                tmp = [dict(name=x, tagged=True) for x in pinterfaces]
+            elif untagged_interfaces:
+                tmp = [dict(name=x, untagged=True) for x in pinterfaces]
+
+            if tmp:
+                params['interfaces'] = tmp
 
         if description is not None:
             params['description'] = self.params['description']
@@ -250,9 +275,10 @@ class BigIpVlan(object):
         name = self.params['name']
         tag = self.params['tag']
         partition = self.params['partition']
-        interfaces = self.params['interfaces']
+        tagged_interfaces = self.params['tagged_interfaces']
+        untagged_interfaces = self.params['untagged_interfaces']
 
-        if interfaces is not None:
+        if untagged_interfaces is not None or tagged_interfaces is not None:
             ifcs = self.api.tm.net.interfaces.get_collection()
             ifcs = [str(x.name) for x in ifcs]
 
@@ -261,24 +287,35 @@ class BigIpVlan(object):
                     'No interfaces were found'
                 )
 
+            pinterfaces = []
+            if untagged_interfaces:
+                interfaces = untagged_interfaces
+            elif tagged_interfaces:
+                interfaces = tagged_interfaces
+
             for ifc in interfaces:
                 ifc = str(ifc)
                 if ifc in ifcs:
-                    try:
-                        pinterfaces.append(ifc)
-                    except UnboundLocalError:
-                        pinterfaces = []
-                        pinterfaces.append(ifc)
+                    pinterfaces.append(ifc)
                 else:
                     raise F5ModuleError(
                         'The specified interface "%s" was not found' % (ifc)
                     )
 
-            if 'interfaces' in current:
-                if pinterfaces != current['interfaces']:
-                    params['interfaces'] = pinterfaces
-            else:
-                params['interfaces'] = pinterfaces
+            if tagged_interfaces:
+                tmp = [dict(name=x, tagged=True) for x in pinterfaces]
+                if 'tagged_interfaces' in current:
+                    if pinterfaces != current['tagged_interfaces']:
+                        params['interfaces'] = tmp
+                else:
+                    params['interfaces'] = tmp
+            elif untagged_interfaces:
+                tmp = [dict(name=x, untagged=True) for x in pinterfaces]
+                if 'untagged_interfaces' in current:
+                    if pinterfaces != current['untagged_interfaces']:
+                        params['interfaces'] = tmp
+                else:
+                    params['interfaces'] = tmp
 
         if description is not None:
             if 'description' in current:
@@ -361,7 +398,8 @@ def main():
 
     meta_args = dict(
         description=dict(required=False, default=None),
-        interfaces=dict(required=False, default=None, type='list'),
+        tagged_interfaces=dict(required=False, default=None, type='list'),
+        untagged_interfaces=dict(required=False, default=None, type='list'),
         name=dict(required=True),
         tag=dict(required=False, default=None, type='int')
     )
@@ -369,7 +407,10 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=True
+        supports_check_mode=True,
+        mutually_exclusive=[
+            ['tagged_interfaces', 'untagged_interfaces']
+        ]
     )
 
     try:

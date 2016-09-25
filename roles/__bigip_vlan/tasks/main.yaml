@@ -129,9 +129,9 @@
       that:
           - not result|changed
 
-- name: Set VLAN interfaces
+- name: Set VLAN tagged interfaces
   bigip_vlan:
-      interfaces: "{{ vlan_interfaces1 }}"
+      tagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -140,14 +140,14 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set VLAN interfaces
+- name: Assert Set VLAN tagged interfaces
   assert:
       that:
           - result|changed
 
-- name: Set VLAN interfaces - Idempotent check
+- name: Set VLAN tagged interfaces - Idempotent check
   bigip_vlan:
-      interfaces: "{{ vlan_interfaces1 }}"
+      tagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -156,7 +156,39 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Set VLAN interfaces - Idempotent check
+- name: Assert Set VLAN tagged interfaces - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set VLAN untagged interfaces
+  bigip_vlan:
+      untagged_interfaces: "{{ vlan_interfaces1 }}"
+      name: "{{ vlan_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set VLAN untagged interfaces
+  assert:
+      that:
+          - result|changed
+
+- name: Set VLAN untagged interfaces - Idempotent check
+  bigip_vlan:
+      untagged_interfaces: "{{ vlan_interfaces1 }}"
+      name: "{{ vlan_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set VLAN untagged interfaces - Idempotent check
   assert:
       that:
           - not result|changed
@@ -195,39 +227,39 @@
 # VE has a limitation that you can only have one interface per VLAN
 # To test with more than one interface, you need to use a hardware
 # device
-- name: Create VLAN, interfaces
+- name: Create VLAN, tagged interfaces
   bigip_vlan:
       name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      interfaces: "{{ vlan_interfaces }}"
+      tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
-- name: Assert Create VLAN, interfaces
+- name: Assert Create VLAN, tagged interfaces
   assert:
       that:
           - result|changed
 
-- name: Create VLAN, interfaces - Idempotent check
+- name: Create VLAN, tagged interfaces - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
-      interfaces: "{{ vlan_interfaces }}"
+      tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
-- name: Assert Create VLAN, interfaces - Idempotent check
+- name: Assert Create VLAN, tagged interfaces - Idempotent check
   assert:
       that:
           - not result|changed
 
-- name: Remove VLAN, interfaces
+- name: Remove VLAN, tagged interfaces
   bigip_vlan:
-      interfaces: "{{ vlan_interfaces }}"
+      tagged_interfaces: "{{ vlan_interfaces }}"
       name: "{{ vlan_name }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -236,7 +268,7 @@
       state: "absent"
   register: result
 
-- name: Assert Remove VLAN, interfaces
+- name: Assert Remove VLAN, tagged interfaces
   assert:
       that:
           - result|changed
