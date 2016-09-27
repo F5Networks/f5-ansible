@@ -72,6 +72,7 @@ requirements:
   - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
+  - Manu Pillai (@manuadoor)
 '''
 
 EXAMPLES = '''
@@ -87,6 +88,20 @@ EXAMPLES = '''
       vlan: "vlan1"
   delegate_to: localhost
 
+ - name: Create Self IP with a Route Domain
+   bigip_selfip:
+     server: "lb.mydomain.com"
+     user: "admin"
+     password: "secret"
+     validate_certs: "no"
+     name: "self1"
+     address: "10.10.10.10"
+     netmask: "255.255.255.0"
+     vlan: "vlan1"
+     rd: "10"
+     allow_service: "default"
+   delegate_to: localhost
+
 - name: Delete Self IP
   bigip_selfip:
       name: "self1"
@@ -96,7 +111,6 @@ EXAMPLES = '''
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
-
 - name: Allow management web UI to be accessed on this Self IP
   bigip_selfip:
       name: "self1"
@@ -108,7 +122,6 @@ EXAMPLES = '''
       allow_service:
           - "tcp:443"
   delegate_to: localhost
-
 - name: Allow HTTPS and SSH access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -121,7 +134,6 @@ EXAMPLES = '''
           - "tcp:443"
           - "tpc:22"
   delegate_to: localhost
-
 - name: Allow all services access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -133,7 +145,6 @@ EXAMPLES = '''
       allow_service:
           - all
   delegate_to: localhost
-
 - name: Allow only GRE and IGMP protocols access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -146,7 +157,6 @@ EXAMPLES = '''
           - gre:0
           - igmp:0
   delegate_to: localhost
-
 - name: Allow all TCP, but no other protocols access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -256,14 +266,11 @@ class BigIpSelfIp(object):
 
     def read(self):
         """Read information and transform it
-
         The values that are returned by BIG-IP in the f5-sdk can have encoding
         attached to them as well as be completely missing in some cases.
-
         Therefore, this method will transform the data from the BIG-IP into a
         format that is more easily consumable by the rest of the class and the
         parameters that are supported by the module.
-
         :return: List of values currently stored in BIG-IP, formatted for use
         in this class.
         """
@@ -276,11 +283,18 @@ class BigIpSelfIp(object):
         )
 
         if hasattr(r, 'address'):
+            p['rd']= str(None)
+            if '%' in r.address:
+                ipaddr=[]
+                smask=[]
+                ipaddr=r.address.split('%', 1)
+                rdmask=ipaddr[1].split('/', 1)
+                r.address="%s/%s" % (ipaddr[0], rdmask[1])
+                p['rd'] = str(rdmask[0])
             ipnet = IPNetwork(r.address)
             p['address'] = str(ipnet.ip)
-        if hasattr(r, 'address'):
-            ipnet = IPNetwork(r.address)
             p['netmask'] = str(ipnet.netmask)
+
         if hasattr(r, 'trafficGroup'):
             p['traffic_group'] = str(r.trafficGroup)
         if hasattr(r, 'vlan'):
@@ -297,21 +311,16 @@ class BigIpSelfIp(object):
 
     def verify_services(self):
         """Verifies that a supplied service string has correct format
-
         The string format for port lockdown is PROTOCOL:PORT. This method
         will verify that the provided input matches the allowed protocols
         and the port ranges before submitting to BIG-IP.
-
         The only allowed exceptions to this rule are the following values
-
           * all
           * default
           * none
-
         These are special cases that are handled differently in the API.
         "all" is set as a string, "default" is set as a one item list, and
         "none" removes the key entirely from the REST API.
-
         :raises F5ModuleError:
         """
         result = []
@@ -343,19 +352,15 @@ class BigIpSelfIp(object):
 
     def fmt_services(self, services):
         """Returns services formatted for consumption by f5-sdk update
-
         The BIG-IP endpoint for services takes different values depending on
         what you want the "allowed services" to be. It can be any of the
         following
-
             - a list containing "protocol:port" values
             - the string "all"
             - a null value, or None
-
         This is a convenience function to massage the values the user has
         supplied so that they are formatted in such a way that BIG-IP will
         accept them and apply the specified policy.
-
         :param services: The services to format. This is always a Python set
         :return:
         """
@@ -366,6 +371,20 @@ class BigIpSelfIp(object):
             return None
         else:
             return list(services)
+
+    def traffic_groups(self):
+        result = []
+
+        groups = self.api.tm.cm.traffic_groups.get_collection()
+        for group in groups:
+            # Just checking for the addition of the partition here for
+            # different versions of BIG-IP
+            if '/' + self.params['partition'] + '/' in group.name:
+                result.append(group.name)
+            else:
+                full_name = '/%s/%s' % (self.params['partition'], group.name)
+                result.append(str(full_name))
+        return result
 
     def update(self):
         changed = False
@@ -381,6 +400,7 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
+        rd = self.params['rd']
 
         if address is not None and address != current['address']:
             raise F5ModuleError(
@@ -392,15 +412,21 @@ class BigIpSelfIp(object):
             # you are not allowed to change it.
             try:
                 address = IPNetwork(current['address'])
-
                 new_addr = "%s/%s" % (address.ip, netmask)
                 nipnet = IPNetwork(new_addr)
+                if rd is not None:
+                    nipnet = "%s%s%s" % (address.ip, rd, netmask)
 
                 cur_addr = "%s/%s" % (current['address'], current['netmask'])
                 cipnet = IPNetwork(cur_addr)
+                if rd is not None:
+                    cipnet = "%s%s%s" % (current['address'], current ['rd'], current['netmask'])
 
                 if nipnet != cipnet:
-                    address = "%s/%s" % (nipnet.ip, nipnet.prefixlen)
+                    if rd is not None:
+                        address = "%s%s%s/%s" % (address.ip, '%', rd, netmask)
+                    else:
+                        address = "%s/%s" % (nipnet.ip, nipnet.prefixlen)
                     params['address'] = address
             except AddrFormatError:
                 raise F5ModuleError(
@@ -408,19 +434,17 @@ class BigIpSelfIp(object):
                 )
 
         if traffic_group is not None:
-            groups = self.api.tm.cm.traffic_groups.get_collection()
-            params['trafficGroup'] = "/%s/%s" % (partition, traffic_group)
+            traffic_group = "/%s/%s" % (partition, traffic_group)
+            if traffic_group not in self.traffic_groups():
+                raise F5ModuleError(
+                    'The specified traffic group was not found'
+                )
 
             if 'traffic_group' in current:
                 if traffic_group != current['traffic_group']:
                     params['trafficGroup'] = traffic_group
             else:
                 params['trafficGroup'] = traffic_group
-
-            if traffic_group not in groups:
-                raise F5ModuleError(
-                    'The specified traffic group was not found'
-                )
 
         if vlan is not None:
             vlans = self.get_vlans()
@@ -468,22 +492,16 @@ class BigIpSelfIp(object):
 
     def get_vlans(self):
         """Returns formatted list of VLANs
-
         The VLAN values stored in BIG-IP are done so using their fully
         qualified name which includes the partition. Therefore, "correct"
         values according to BIG-IP look like this
-
             /Common/vlan1
-
         This is in contrast to the formats that most users think of VLANs
         as being stored as
-
             vlan1
-
         To provide for the consistent user experience while not turfing
         BIG-IP, we need to massage the values that are provided by the
         user so that they include the partition.
-
         :return: List of vlans formatted with preceeding partition
         """
         partition = self.params['partition']
@@ -502,6 +520,8 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
+        rd = self.params['rd']
+
 
         if address is None or netmask is None:
             raise F5ModuleError(
@@ -514,11 +534,21 @@ class BigIpSelfIp(object):
             )
         else:
             vlan = "/%s/%s" % (partition, vlan)
-
         try:
-            ipin = "%s/%s" % (address, netmask)
-            ipnet = IPNetwork(ipin)
-            params['address'] = "%s/%s" % (ipnet.ip, ipnet.prefixlen)
+            if address.find('%')!=-1:
+                rd = vlan.split ('_', 1)
+                addr = address.split('%', 1)
+                ipin = "%s/%s" % (addr[0], netmask)
+                ipnet = IPNetwork(ipin)
+                iprd  = "%s%s%s" % (ipnet.ip, '%', rd[1])
+                params['address'] = "%s/%s" % (iprd, ipnet.prefixlen)
+            else:
+                ipin = "%s/%s" % (address, netmask)
+                ipnet = IPNetwork(ipin)
+            if rd is not None:
+                params['address'] = "%s%s%s/%s" % (ipnet.ip, '%', rd, ipnet.prefixlen)
+            else:
+                params['address'] = "%s/%s" % (ipnet.ip, ipnet.prefixlen)
         except AddrFormatError:
             raise F5ModuleError(
                 'The provided address/netmask value was invalid'
@@ -527,9 +557,9 @@ class BigIpSelfIp(object):
         if traffic_group is None:
             params['trafficGroup'] = "/%s/%s" % (partition, DEFAULT_TG)
         else:
-            groups = self.api.tm.cm.traffic_groups.get_collection()
-            if traffic_group in groups:
-                params['trafficGroup'] = "/%s/%s" % (partition, traffic_group)
+            traffic_group = "/%s/%s" % (partition, traffic_group)
+            if traffic_group in self.traffic_groups():
+                params['trafficGroup'] = traffic_group
             else:
                 raise F5ModuleError(
                     'The specified traffic group was not found'
@@ -610,14 +640,14 @@ class BigIpSelfIp(object):
 
 def main():
     argument_spec = f5_argument_spec()
-
     meta_args = dict(
         address=dict(required=False, default=None),
         allow_service=dict(type='list', default=None),
         name=dict(required=True),
         netmask=dict(required=False, default=None),
         traffic_group=dict(required=False, default=None),
-        vlan=dict(required=False, default=None)
+        vlan=dict(required=False, default=None),
+        rd=dict(required=False, default=None)
     )
     argument_spec.update(meta_args)
 
