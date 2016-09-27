@@ -87,19 +87,19 @@ EXAMPLES = '''
       validate_certs: "no"
       vlan: "vlan1"
   delegate_to: localhost
-  - name: Create Self IP with a Route Domain
-   bigip_selfip:
-     server: "lb.mydomain.com"
-     user: "admin"
-     password: "secret"
-     validate_certs: "no"
-     name: "self1"
-     address: "10.10.10.10"
-     netmask: "255.255.255.0"
-     vlan: "vlan1"
-     rd: "10"
-     allow_service: "default"
-   delegate_to: localhost
+- name: Create Self IP with a Route Domain
+  bigip_selfip:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: "no"
+      name: "self1"
+      address: "10.10.10.10"
+      netmask: "255.255.255.0"
+      vlan: "vlan1"
+      rd: "10"
+      allow_service: "default"
+  delegate_to: localhost
 - name: Delete Self IP
   bigip_selfip:
       name: "self1"
@@ -420,11 +420,11 @@ class BigIpSelfIp(object):
                     cipnet = "%s%s%s" % (current['address'], current ['rd'], current['netmask'])
 
                 if nipnet != cipnet:
-                    params['address'] = address
                     if rd is not None:
                         address = "%s%s%s/%s" % (address.ip, '%', rd, netmask)
                     else:
                         address = "%s/%s" % (nipnet.ip, nipnet.prefixlen)
+                    params['address'] = address
             except AddrFormatError:
                 raise F5ModuleError(
                     'The provided address/netmask value was invalid'
@@ -517,6 +517,9 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
+        rd = self.params['rd']
+
+
 
         if address is None or netmask is None:
             raise F5ModuleError(
@@ -529,7 +532,6 @@ class BigIpSelfIp(object):
             )
         else:
             vlan = "/%s/%s" % (partition, vlan)
-
         try:
             if address.find('%')!=-1:
                 rd = vlan.split ('_', 1)
@@ -643,7 +645,7 @@ def main():
         name=dict(required=True),
         netmask=dict(required=False, default=None),
         traffic_group=dict(required=False, default=None),
-        vlan=dict(required=False, default=None)
+        vlan=dict(required=False, default=None),
         rd=dict(required=False, default=None)
     )
     argument_spec.update(meta_args)
