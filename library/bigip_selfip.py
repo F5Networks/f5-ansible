@@ -87,8 +87,7 @@ EXAMPLES = '''
       validate_certs: "no"
       vlan: "vlan1"
   delegate_to: localhost
-
- - name: Create Self IP with a Route Domain
+  - name: Create Self IP with a Route Domain
    bigip_selfip:
      server: "lb.mydomain.com"
      user: "admin"
@@ -101,7 +100,6 @@ EXAMPLES = '''
      rd: "10"
      allow_service: "default"
    delegate_to: localhost
-
 - name: Delete Self IP
   bigip_selfip:
       name: "self1"
@@ -294,7 +292,6 @@ class BigIpSelfIp(object):
             ipnet = IPNetwork(r.address)
             p['address'] = str(ipnet.ip)
             p['netmask'] = str(ipnet.netmask)
-
         if hasattr(r, 'trafficGroup'):
             p['traffic_group'] = str(r.trafficGroup)
         if hasattr(r, 'vlan'):
@@ -423,11 +420,11 @@ class BigIpSelfIp(object):
                     cipnet = "%s%s%s" % (current['address'], current ['rd'], current['netmask'])
 
                 if nipnet != cipnet:
+                    params['address'] = address
                     if rd is not None:
                         address = "%s%s%s/%s" % (address.ip, '%', rd, netmask)
                     else:
                         address = "%s/%s" % (nipnet.ip, nipnet.prefixlen)
-                    params['address'] = address
             except AddrFormatError:
                 raise F5ModuleError(
                     'The provided address/netmask value was invalid'
@@ -520,8 +517,6 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
-        rd = self.params['rd']
-
 
         if address is None or netmask is None:
             raise F5ModuleError(
@@ -534,6 +529,7 @@ class BigIpSelfIp(object):
             )
         else:
             vlan = "/%s/%s" % (partition, vlan)
+
         try:
             if address.find('%')!=-1:
                 rd = vlan.split ('_', 1)
@@ -640,13 +636,14 @@ class BigIpSelfIp(object):
 
 def main():
     argument_spec = f5_argument_spec()
+
     meta_args = dict(
         address=dict(required=False, default=None),
         allow_service=dict(type='list', default=None),
         name=dict(required=True),
         netmask=dict(required=False, default=None),
         traffic_group=dict(required=False, default=None),
-        vlan=dict(required=False, default=None),
+        vlan=dict(required=False, default=None)
         rd=dict(required=False, default=None)
     )
     argument_spec.update(meta_args)
