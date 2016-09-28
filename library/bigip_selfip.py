@@ -536,7 +536,7 @@ class BigIpSelfIp(object):
             vlan = "/%s/%s" % (partition, vlan)
         try:
             # edited by manuadoor for rd feature
-            if address.find('%')! = -1:
+            if address.find('%') != -1:
                 rd = vlan.split('_', 1)
                 addr = address.split('%', 1)
                 ipin = "%s/%s" % (addr[0], netmask)
