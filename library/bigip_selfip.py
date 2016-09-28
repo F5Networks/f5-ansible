@@ -281,13 +281,12 @@ class BigIpSelfIp(object):
 
         if hasattr(r, 'address'):
             # edited by manuadoor for rd feature
-            p['rd']= str(None)
+            p['rd'] = str(None)
             if '%' in r.address:
-                ipaddr=[]
-                smask=[]
-                ipaddr=r.address.split('%', 1)
-                rdmask=ipaddr[1].split('/', 1)
-                r.address="%s/%s" % (ipaddr[0], rdmask[1])
+                ipaddr = []
+                ipaddr = r.address.split('%', 1)
+                rdmask = ipaddr[1].split('/', 1)
+                r.address = "%s/%s" % (ipaddr[0], rdmask[1])
                 p['rd'] = str(rdmask[0])
             ipnet = IPNetwork(r.address)
             p['address'] = str(ipnet.ip)
@@ -420,7 +419,7 @@ class BigIpSelfIp(object):
                 cipnet = IPNetwork(cur_addr)
                 # edited by manuadoor for rd feature
                 if rd is not None:
-                    cipnet = "%s%s%s" % (current['address'], current ['rd'], current['netmask'])
+                    cipnet = "%s%s%s" % (current['address'], current['rd'], current['netmask'])
 
                 if nipnet != cipnet:
                     # edited by manuadoor for rd feature
@@ -524,8 +523,6 @@ class BigIpSelfIp(object):
         # edited by manuadoor for rd feature
         rd = self.params['rd']
 
-
-
         if address is None or netmask is None:
             raise F5ModuleError(
                 'An address and a netmask must be specififed'
@@ -539,12 +536,12 @@ class BigIpSelfIp(object):
             vlan = "/%s/%s" % (partition, vlan)
         try:
             # edited by manuadoor for rd feature
-            if address.find('%')!=-1:
-                rd = vlan.split ('_', 1)
+            if address.find('%')! = -1:
+                rd = vlan.split('_', 1)
                 addr = address.split('%', 1)
                 ipin = "%s/%s" % (addr[0], netmask)
                 ipnet = IPNetwork(ipin)
-                iprd  = "%s%s%s" % (ipnet.ip, '%', rd[1])
+                iprd = "%s%s%s" % (ipnet.ip, '%', rd[1])
                 params['address'] = "%s/%s" % (iprd, ipnet.prefixlen)
             else:
                 ipin = "%s/%s" % (address, netmask)
