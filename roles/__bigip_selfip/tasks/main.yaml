@@ -39,6 +39,39 @@
       that:
           - not result|changed
 
+- name: Create Self IP, specify a Route Domain
+  bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
+      rd: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Create Self IP
+  assert:
+      that:
+          - result|changed
+
+- name: Create Self IP, specify a Route Domain - Idempotent check
+  bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
+      rd: "{{ selfip_rd }}"
+  register: result
+
 - name: Set Self IP VLAN
   bigip_selfip:
       name: "{{ selfip_name }}"
@@ -312,6 +345,41 @@
   assert:
       that:
           - not result|changed
+
+- name: Delete Self IP, specify a Route Domain
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      rd: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Delete Self IP
+  assert:
+      that:
+          - result|changed
+
+- name: Delete Self IP, specify a Route Domain - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      rd: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Delete Self IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 
 - name: Create Self IP, specify a traffic group
   bigip_selfip:
