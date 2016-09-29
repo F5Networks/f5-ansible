@@ -50,10 +50,10 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
-      rd: "{{ selfip_rd }}"
+      route_domain: "{{ selfip_rd }}"
   register: result
 
-- name: Assert Create Self IP
+- name: Assert Create Self IP, specify a Route Domain
   assert:
       that:
           - result|changed
@@ -69,8 +69,13 @@
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
-      rd: "{{ selfip_rd }}"
+      route_domain: "{{ selfip_rd }}"
   register: result
+
+- name: Assert Create Self IP, specify a Route Domain - Idempotent check
+  assert:
+      that:
+          - result|changed
 
 - name: Set Self IP VLAN
   bigip_selfip:
@@ -355,10 +360,10 @@
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-      rd: "{{ selfip_rd }}"
+      route_domain: "{{ selfip_rd }}"
   register: result
 
-- name: Assert Delete Self IP
+- name: Assert Delete Self IP, specify a Route Domain
   assert:
       that:
           - result|changed
@@ -372,14 +377,13 @@
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-      rd: "{{ selfip_rd }}"
+      route_domain: "{{ selfip_rd }}"
   register: result
 
-- name: Assert Delete Self IP - Idempotent check
+- name: Assert Delete Self IP, specify a Route Domain - Idempotent check
   assert:
       that:
           - not result|changed
-
 
 - name: Create Self IP, specify a traffic group
   bigip_selfip:

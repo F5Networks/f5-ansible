@@ -96,7 +96,7 @@ EXAMPLES = '''
       address: "10.10.10.10"
       netmask: "255.255.255.0"
       vlan: "vlan1"
-      rd: "10"
+      route_domain: "10"
       allow_service: "default"
   delegate_to: localhost
 - name: Delete Self IP
@@ -280,14 +280,13 @@ class BigIpSelfIp(object):
         )
 
         if hasattr(r, 'address'):
-            # edited by manuadoor for rd feature
-            p['rd'] = str(None)
+            p['route_domain'] = str(None)
             if '%' in r.address:
                 ipaddr = []
                 ipaddr = r.address.split('%', 1)
                 rdmask = ipaddr[1].split('/', 1)
                 r.address = "%s/%s" % (ipaddr[0], rdmask[1])
-                p['rd'] = str(rdmask[0])
+                p['route_domain'] = str(rdmask[0])
             ipnet = IPNetwork(r.address)
             p['address'] = str(ipnet.ip)
             p['netmask'] = str(ipnet.netmask)
@@ -396,8 +395,7 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
-        # edited by manuadoor for rd feature
-        rd = self.params['rd']
+        route_domain = self.params['route_domain']
 
         if address is not None and address != current['address']:
             raise F5ModuleError(
@@ -411,20 +409,17 @@ class BigIpSelfIp(object):
                 address = IPNetwork(current['address'])
                 new_addr = "%s/%s" % (address.ip, netmask)
                 nipnet = IPNetwork(new_addr)
-                # edited by manuadoor for rd feature
-                if rd is not None:
-                    nipnet = "%s%s%s" % (address.ip, rd, netmask)
+                if route_domain is not None:
+                    nipnet = "%s%s%s" % (address.ip, route_domain, netmask)
 
                 cur_addr = "%s/%s" % (current['address'], current['netmask'])
                 cipnet = IPNetwork(cur_addr)
-                # edited by manuadoor for rd feature
-                if rd is not None:
-                    cipnet = "%s%s%s" % (current['address'], current['rd'], current['netmask'])
+                if route_domain is not None:
+                    cipnet = "%s%s%s" % (current['address'], current['route_domain'], current['netmask'])
 
                 if nipnet != cipnet:
-                    # edited by manuadoor for rd feature
-                    if rd is not None:
-                        address = "%s%s%s/%s" % (address.ip, '%', rd, netmask)
+                    if route_domain is not None:
+                        address = "%s%s%s/%s" % (address.ip, '%', route_domain, netmask)
                     else:
                         address = "%s/%s" % (nipnet.ip, nipnet.prefixlen)
                     params['address'] = address
@@ -520,8 +515,7 @@ class BigIpSelfIp(object):
         partition = self.params['partition']
         traffic_group = self.params['traffic_group']
         vlan = self.params['vlan']
-        # edited by manuadoor for rd feature
-        rd = self.params['rd']
+        route_domain = self.params['route_domain']
 
         if address is None or netmask is None:
             raise F5ModuleError(
@@ -535,19 +529,18 @@ class BigIpSelfIp(object):
         else:
             vlan = "/%s/%s" % (partition, vlan)
         try:
-            # edited by manuadoor for rd feature
             if address.find('%') != -1:
-                rd = vlan.split('_', 1)
+                route_domain = vlan.split('_', 1)
                 addr = address.split('%', 1)
                 ipin = "%s/%s" % (addr[0], netmask)
                 ipnet = IPNetwork(ipin)
-                iprd = "%s%s%s" % (ipnet.ip, '%', rd[1])
+                iprd = "%s%s%s" % (ipnet.ip, '%', route_domain[1])
                 params['address'] = "%s/%s" % (iprd, ipnet.prefixlen)
             else:
                 ipin = "%s/%s" % (address, netmask)
                 ipnet = IPNetwork(ipin)
-            if rd is not None:
-                params['address'] = "%s%s%s/%s" % (ipnet.ip, '%', rd, ipnet.prefixlen)
+            if route_domain is not None:
+                params['address'] = "%s%s%s/%s" % (ipnet.ip, '%', route_domain, ipnet.prefixlen)
             else:
                 params['address'] = "%s/%s" % (ipnet.ip, ipnet.prefixlen)
         except AddrFormatError:
@@ -649,8 +642,7 @@ def main():
         netmask=dict(required=False, default=None),
         traffic_group=dict(required=False, default=None),
         vlan=dict(required=False, default=None),
-        # edited by manuadoor for rd feature
-        rd=dict(required=False, default=None)
+        route_domain=dict(required=False, default=None)
     )
     argument_spec.update(meta_args)
 
