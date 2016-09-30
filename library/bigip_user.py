@@ -185,30 +185,7 @@ except ImportError:
     HAS_F5SDK = False
 
 
-# These are the roles that are available to be set in the BIG-IP
-ROLES = [
-    'acceleration-policy-editor', 'application-editor', 'auditor',
-    'certificate-manager', 'guest', 'irule-manager', 'manager',
-    'no-access', 'operator', 'resource-admin', 'user-manager',
-    'web-application-security-administrator',
-    'web-application-security-editor', 'admin'
-]
-
-
 class BigIpUserManager(object):
-    ADMIN_ROLE = 'admin'
-
-    RESERVED_ROLES = [
-        'admin'
-    ]
-    RESERVED_NAMES = [
-        'admin'
-    ]
-    ALL_PARTITIONS = [
-        'resource-admin', 'auditor', 'admin',
-        'web-application-security-administrator', 'no-access'
-    ]
-
     def __init__(self, *args, **kwargs):
         self.changed_params = dict()
         self.params = kwargs
