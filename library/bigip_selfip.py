@@ -529,16 +529,8 @@ class BigIpSelfIp(object):
         else:
             vlan = "/%s/%s" % (partition, vlan)
         try:
-            if address.find('%') != -1:
-                route_domain = vlan.split('_', 1)
-                addr = address.split('%', 1)
-                ipin = "%s/%s" % (addr[0], netmask)
-                ipnet = IPNetwork(ipin)
-                iprd = "%s%s%s" % (ipnet.ip, '%', route_domain[1])
-                params['address'] = "%s/%s" % (iprd, ipnet.prefixlen)
-            else:
-                ipin = "%s/%s" % (address, netmask)
-                ipnet = IPNetwork(ipin)
+            ipin = "%s/%s" % (address, netmask)
+            ipnet = IPNetwork(ipin)
             if route_domain is not None:
                 params['address'] = "%s%s%s/%s" % (ipnet.ip, '%', route_domain, ipnet.prefixlen)
             else:
