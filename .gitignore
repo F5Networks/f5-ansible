@@ -4,6 +4,7 @@ Vagrantfile
 .idea
 .vscode
 *.iml
+.tox/
 .coveragerc
 vault.txt
 
