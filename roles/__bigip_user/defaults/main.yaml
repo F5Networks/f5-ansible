@@ -2,7 +2,6 @@
 
 username_credential: "johnd"
 password_credential: "password"
-encrypted_credential: "$6$IJbx6zvSx/BXlGIN$NXl03OfWhqJ5CYsfR6YcrCyLulpISLoM4CkL69pj7MRqKWd3/Gqep9DhkdSaD/Bft5.e/Zt0mriuh1FCtai6K/"
 partition_access1:
     - "all:admin"
     - "Common:guest"

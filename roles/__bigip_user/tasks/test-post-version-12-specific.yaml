@@ -1,0 +1,69 @@
+---
+
+- name: Create user on a different partition
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Create user on a different partition
+  assert:
+      that:
+          - result|changed
+
+- name: Create user on a different partition - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Create user on a different partition - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove user on different partition
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      state: "absent"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Remove user on different partition
+  assert:
+      that:
+          - result|changed
+
+- name: Remove user on different partition - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      state: "absent"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Remove user on different partition - Idempotent check
+  assert:
+      that:
+          - not result|changed
