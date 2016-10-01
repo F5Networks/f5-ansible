@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
+# Copyright 2016 F5 Networks Inc.
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -189,9 +191,9 @@ class BigIpUserManager(object):
     def __init__(self, *args, **kwargs):
         self.changed_params = dict()
         self.params = kwargs
-        self.api = self.connectToApi(**kwargs)
+        self.api = self.connect_to_bigip(**kwargs)
 
-    def applyChanges(self):
+    def apply_changes(self):
         result = dict()
         changed = False
 
@@ -208,24 +210,24 @@ class BigIpUserManager(object):
         return result
 
     def present(self):
-        if self.userExists():
-            return self.updateUser()
+        if self.user_exists():
+            return self.update_user()
         else:
-            return self.ensureUserIsPresent()
+            return self.ensure_user_is_present()
 
     def absent(self):
         changed = False
-        if self.userExists():
-            changed = self.ensureUserIsAbsent()
+        if self.user_exists():
+            changed = self.ensure_user_is_absent()
         return changed
 
-    def connectToApi(self, **kwargs):
+    def connect_to_bigip(self, **kwargs):
         return ManagementRoot(kwargs['server'],
                               kwargs['user'],
                               kwargs['password'],
                               port=kwargs['server_port'])
 
-    def canNotLoginWithNewCredentials(self):
+    def can_not_login_with_new_credentials(self):
         try:
             kwargs = dict(
                 server=self.params['server'],
@@ -233,16 +235,16 @@ class BigIpUserManager(object):
                 password=self.params['password_credential'],
                 port=self.params['server_port']
             )
-            self.connectToApi(**kwargs)
+            self.connect_to_bigip(**kwargs)
             return False
         except Exception:
             return True
 
-    def readUserInformation(self):
-        user = self.loadUser()
-        return self.formatUserInformation(user)
+    def read_user_information(self):
+        user = self.load_user()
+        return self.format_user_information(user)
 
-    def formatUserInformation(self, user):
+    def format_user_information(self, user):
         """Ensure that the user information is in a standard format
 
         The SDK provides information back in a format that may change with
@@ -262,34 +264,34 @@ class BigIpUserManager(object):
         if hasattr(user, 'shell'):
             result['shell'] = str(user.shell)
         if hasattr(user, 'partitionAccess'):
-            result['partition_access'] = self.formatCurrentPartitionAccess(user)
+            result['partition_access'] = self.format_current_partition_access(user)
         return result
 
-    def formatCurrentPartitionAccess(self, user):
+    def format_current_partition_access(self, user):
         result = set()
         for acl in user.partitionAccess:
             access = '%s:%s' % (acl['name'], acl['role'])
             result.update(access)
         return list(result)
 
-    def loadUser(self):
-        if self.isVersionLessThan13():
-            return self.loadUserWithoutPartition()
+    def load_user(self):
+        if self.is_version_less_than_13():
+            return self.load_user_without_partition()
         else:
-            return self.loadUserWithPartition()
+            return self.load_user_with_partition()
 
-    def loadUserWithPartition(self):
+    def load_user_with_partition(self):
         return self.api.tm.auth.users.user.load(
             name=self.params['username_credential'],
             partition=self.params['partition']
         )
 
-    def loadUserWithoutPartition(self):
+    def load_user_without_partition(self):
         return self.api.tm.auth.users.user.load(
             name=self.params['username_credential']
         )
 
-    def isVersionLessThan13(self):
+    def is_version_less_than_13(self):
         """Checks to see if the TMOS version is less than 13
 
         Anything less than BIG-IP 13.x does not support user
@@ -303,25 +305,25 @@ class BigIpUserManager(object):
         else:
             return False
 
-    def userExists(self):
-        if self.isVersionLessThan13():
-            return self.checkIfUserExistsWithoutPartition()
+    def user_exists(self):
+        if self.is_version_less_than_13():
+            return self.does_user_exist_without_partition()
         else:
-            return self.checkIfUserExistsWithPartition()
+            return self.does_user_exist_with_partition()
 
-    def checkIfUserExistsWithPartition(self):
+    def does_user_exist_with_partition(self):
         return self.api.tm.auth.users.user.exists(
             name=self.params['username_credential'],
             partition=self.params['partition']
         )
 
-    def checkIfUserExistsWithoutPartition(self):
+    def does_user_exist_without_partition(self):
         return self.api.tm.auth.users.user.exists(
             name=self.params['username_credential']
         )
 
-    def updateUser(self):
-        params = self.getChangedParameters()
+    def update_user(self):
+        params = self.get_changed_parameters()
         if params:
             self.changed_params = camel_dict_to_snake_dict(params)
             if self.params['check_mode']:
@@ -330,13 +332,13 @@ class BigIpUserManager(object):
             return False
         params['name'] = self.params['username_credential']
         params['partition'] = self.params['partition']
-        self.updateUserOnDevice(params)
+        self.update_user_on_device(params)
         return True
 
-    def updateUserOnDevice(self, params):
+    def update_user_on_device(self, params):
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
-            if self.isVersionLessThan13():
+            if self.is_version_less_than_13():
                 r = api.tm.auth.users.user.load(
                     name=self.params['username_credential']
                 )
@@ -348,20 +350,20 @@ class BigIpUserManager(object):
                 )
                 r.modify(**params)
 
-    def getChangedParameters(self):
+    def get_changed_parameters(self):
         result = dict()
-        current = self.readUserInformation()
-        if self.isDescriptionChanged(current):
+        current = self.read_user_information()
+        if self.is_description_changed(current):
             result['description'] = self.params['full_name']
-        if self.isPasswordChanged():
+        if self.is_password_changed():
             result['password'] = self.params['password_credential']
-        if self.isShellChanged(current):
+        if self.is_shell_changed(current):
             result['shell'] = self.params['shell']
-        if self.isPartitionAccessChanged(current):
+        if self.is_partition_access_changed(current):
             result['partitionAccess'] = self.getChangedPartitionAccess()
         return result
 
-    def isPartitionAccessChanged(self, current):
+    def is_partition_access_changed(self, current):
         if self.params['partition_access'] is None:
             return False
         if 'partitionAccess' not in current:
@@ -371,7 +373,7 @@ class BigIpUserManager(object):
         else:
             return True
 
-    def isShellChanged(self, current):
+    def is_shell_changed(self, current):
         shell = self.params['shell']
         if shell is None:
             return False
@@ -384,7 +386,7 @@ class BigIpUserManager(object):
         else:
             return True
 
-    def isPasswordChanged(self):
+    def is_password_changed(self):
         username_credential = self.params['username_credential']
         password_credential = self.params['password_credential']
         if password_credential is None:
@@ -393,12 +395,12 @@ class BigIpUserManager(object):
             return False
         if self.params['update_password'] == 'on_create':
             return False
-        if self.canNotLoginWithNewCredentials():
+        if self.can_not_login_with_new_credentials():
             return True
         else:
             return False
 
-    def isDescriptionChanged(self, current):
+    def is_description_changed(self, current):
         full_name = self.params['full_name']
         if full_name is None:
             return False
@@ -409,26 +411,26 @@ class BigIpUserManager(object):
         else:
             return False
 
-    def ensureUserIsPresent(self):
+    def ensure_user_is_present(self):
         if not self.params['password_credential']:
             raise F5ModuleError(
                 "A password_credential must be specified"
             )
-        params = self.getUserCreationParameters()
+        params = self.get_user_creation_parameters()
         self.changed_params = camel_dict_to_snake_dict(params)
         if self.params['check_mode']:
             return True
-        self.createUserOnDevice(params)
-        if self.userExists():
+        self.create_user_on_device(params)
+        if self.user_exists():
             return True
         else:
             raise F5ModuleError("Failed to create the user")
 
-    def getUserCreationParameters(self):
+    def get_user_creation_parameters(self):
         result = dict(
             name=self.params['username_credential'],
             partition=self.params['partition'],
-            partitionAccess=self.determinePartitionAccessToCreate()
+            partitionAccess=self.determine_partition_access_to_create()
         )
         if self.params['full_name']:
             result['description'] = self.params['full_name']
@@ -438,14 +440,14 @@ class BigIpUserManager(object):
             return result
         if self.params['shell'] == 'none':
             return result
-        if self.canHaveAdvancedShellUponCreation():
+        if self.can_have_advanced_shell_upon_creation():
             result['shell'] = self.params['shell']
         if self.params['shell'] == 'bash':
             raise F5ModuleError(
                 "Custom shells are only available to administrators"
             )
 
-    def canHaveAdvancedShellUponCreation(self):
+    def can_have_advanced_shell_upon_creation(self):
         roles_with_advanced_shell = [
             'admin', 'resource-admin'
         ]
@@ -454,12 +456,12 @@ class BigIpUserManager(object):
                 return True
         return False
 
-    def createUserOnDevice(self, params):
+    def create_user_on_device(self, params):
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
             api.tm.auth.users.user.create(**params)
 
-    def determinePartitionAccessToCreate(self):
+    def determine_partition_access_to_create(self):
         default_partition_access = dict(
             name='all-partitions',
             role='no-access'
@@ -467,9 +469,9 @@ class BigIpUserManager(object):
         if self.params['partition_access'] is None:
             return [default_partition_access]
         else:
-            return self.getPartitionAccessFromInput()
+            return self.get_partition_access_from_input()
 
-    def getPartitionAccessFromInput(self):
+    def get_partition_access_from_input(self):
         result = []
         partition_access = self.params['partition_access']
         for access in partition_access:
@@ -477,18 +479,18 @@ class BigIpUserManager(object):
             result.append({acl[0], acl[1]})
         return result
 
-    def ensureUserIsAbsent(self):
+    def ensure_user_is_absent(self):
         if self.params['check_mode']:
             return True
-        self.deleteUserFromDevice()
-        if self.userExists():
+        self.delete_user_from_device()
+        if self.user_exists():
             raise F5ModuleError("Failed to delete the user")
         return True
 
-    def deleteUserFromDevice(self):
+    def delete_user_from_device(self):
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
-            if self.isVersionLessThan13():
+            if self.is_version_less_than_13():
                 user = api.tm.auth.users.user.load(
                     name=self.params['username_credential']
                 )
@@ -510,10 +512,10 @@ class BigIpUserModuleCreator(object):
         self.states = ['absent', 'present']
         self.update_password_states = ['always', 'on_create']
 
-        self.initializeMetaArgs()
-        self.initializeArgumentSpec()
+        self.initialize_meta_args()
+        self.initialize_argument_spec()
 
-    def initializeArgumentSpec(self):
+    def initialize_argument_spec(self):
         """Ensure the argument spec is updated for this module
 
         The argument spec combines the values provided in the F5 common
@@ -524,7 +526,7 @@ class BigIpUserModuleCreator(object):
         self.argument_spec = f5_argument_spec()
         self.argument_spec.update(self.meta_args)
 
-    def initializeMetaArgs(self):
+    def initialize_meta_args(self):
         """Ensure meta arguments are set
 
         The meta arguments are arguments that are specific to this module.
@@ -589,7 +591,7 @@ def main():
 
     try:
         obj = BigIpUserManager(check_mode=module.check_mode, **module.params)
-        result = obj.applyChanges()
+        result = obj.apply_changes()
 
         module.exit_json(**result)
     except F5ModuleError as e:
