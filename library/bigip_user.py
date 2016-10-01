@@ -425,10 +425,11 @@ class BigIpUserManager(object):
             raise F5ModuleError("Failed to create the user")
 
     def getUserCreationParameters(self):
-        result = dict()
-        result['name'] = self.params['username_credential']
-        result['partition'] = self.params['partition']
-        result['partitionAccess'] = self.determinePartitionAccessToCreate()
+        result = dict(
+            name=self.params['username_credential'],
+            partition=self.params['partition'],
+            partitionAccess=self.determinePartitionAccessToCreate()
+        )
         if self.params['full_name']:
             result['description'] = self.params['full_name']
         elif self.params['password_credential']:
