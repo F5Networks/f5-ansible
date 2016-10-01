@@ -36,7 +36,7 @@ options:
     default: no
   full_name:
     description:
-      - Full name of the user
+      - Full name of the user.
     required: false
   username_credential:
     description:
