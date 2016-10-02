@@ -24,7 +24,7 @@ module: bigip_user
 short_description: Manage user accounts and user attributes on a BIG-IP.
 description:
   - Manage user accounts and user attributes on a BIG-IP.
-version_added: "2.1"
+version_added: "2.2"
 options:
   append:
     description:
@@ -294,7 +294,7 @@ class BigIpUserManager(object):
     def is_version_less_than_13(self):
         """Checks to see if the TMOS version is less than 13
 
-        Anything less than BIG-IP 13.x does not support user
+        Anything less than BIG-IP 13.x does not support users
         on different partitions.
 
         :return:
@@ -503,7 +503,7 @@ class BigIpUserManager(object):
                 user.delete()
 
 
-class BigIpUserModuleCreator(object):
+class BigIpUserModuleConfig(object):
     def __init__(self):
         self.argument_spec = dict()
         self.meta_args = dict()
@@ -515,29 +515,7 @@ class BigIpUserModuleCreator(object):
         self.initialize_meta_args()
         self.initialize_argument_spec()
 
-    def initialize_argument_spec(self):
-        """Ensure the argument spec is updated for this module
-
-        The argument spec combines the values provided in the F5 common
-        arguments as well as the arguments that are specific to this module.
-
-        :return:
-        """
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
     def initialize_meta_args(self):
-        """Ensure meta arguments are set
-
-        The meta arguments are arguments that are specific to this module.
-        These arguments are combined with the common F5 arguments to form
-        the complete argument spec.
-
-        Arguments defined in this method will override the F5 common
-        arguments.
-
-        :return:
-        """
         args = dict(
             append=dict(
                 default=False,
@@ -575,6 +553,10 @@ class BigIpUserModuleCreator(object):
         )
         self.meta_args = args
 
+    def initialize_argument_spec(self):
+        self.argument_spec = f5_argument_spec()
+        self.argument_spec.update(self.meta_args)
+
     def create(self):
         return AnsibleModule(
             argument_spec=self.argument_spec,
@@ -586,8 +568,8 @@ def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module_creator = BigIpUserModuleCreator()
-    module = module_creator.create()
+    config = BigIpUserModuleConfig()
+    module = config.create()
 
     try:
         obj = BigIpUserManager(check_mode=module.check_mode, **module.params)
