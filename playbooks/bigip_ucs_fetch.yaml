@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_ucs_fetch.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_ucs_fetch.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_ucs_fetch module
 #
-#    ansible-playbook -i notahost, tests/bigip_ucs_fetch.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_ucs_fetch.yaml
 #
 # Tested platforms:
 #

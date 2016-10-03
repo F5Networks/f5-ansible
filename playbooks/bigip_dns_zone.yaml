@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_dns_zone.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_dns_zone.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_dns_zone module
 #
-#    ansible-playbook -i notahost, tests/bigip_dns_zone.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_dns_zone.yaml
 #
 # Tested platforms:
 #

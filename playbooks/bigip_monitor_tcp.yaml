@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_monitor_tcp.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_monitor_tcp.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_monitor_tcp module
 #
-#    ansible-playbook -i notahost, tests/bigip_monitor_tcp.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_monitor_tcp.yaml
 #
 # Tested platforms:
 #

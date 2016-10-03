@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_monitor_http.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_monitor_http.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_monitor_http module
 #
-#    ansible-playbook -i notahost, tests/bigip_monitor_http.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_monitor_http.yaml
 #
 # Tested platforms:
 #

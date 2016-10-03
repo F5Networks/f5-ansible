@@ -10,7 +10,7 @@
 #
 #    export COVERAGE_PROCESS_START=${CURDIR}/.coveragerc
 #    export ANSIBLE_KEEP_REMOTE_FILES=1
-#    ansible-playbook -i inventory/hosts tests/bigip.yaml [OPTIONS]
+#    ansible-playbook -i inventory/hosts playbooks/bigip.yaml [OPTIONS]
 #
 # Examples:
 #
@@ -18,7 +18,7 @@
 #
 #    export COVERAGE_PROCESS_START=${CURDIR}/.coveragerc
 #    export ANSIBLE_KEEP_REMOTE_FILES=1
-#    ansible-playbook -i inventory/hosts tests/bigip.yaml --vault-password-file ./vault.txt
+#    ansible-playbook -i inventory/hosts playbooks/bigip.yaml --vault-password-file ./vault.txt
 #
 
 # Leave these in alphabetical order for readability

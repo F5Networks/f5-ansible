@@ -7,7 +7,7 @@ module=$1
 mkdir -p ${DIR}/../roles/__${module}/{defaults,tasks}
 
 # Touch the playbook that will run your functional tests
-touch ${DIR}/../tests/${module}.yaml
+touch ${DIR}/../playbooks/${module}.yaml
 
 # Create default vars to contain any playbook variables
 touch ${DIR}/../roles/__${module}/defaults/main.yaml
@@ -22,7 +22,7 @@ touch ${DIR}/../library/${module}.py
 touch ${DIR}/../docs/modules/${module}.rst
 
 # Stub out the test playbook
-cat > ${DIR}/../tests/${module}.yaml << EOL
+cat > ${DIR}/../playbooks/${module}.yaml << EOL
 ---
 
 # Test the ${module} module
@@ -35,13 +35,13 @@ cat > ${DIR}/../tests/${module}.yaml << EOL
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/${module}.yaml
+#    ansible-playbook -i notahost, playbooks/${module}.yaml
 #
 # Examples:
 #
 #    Run all tests on the ${module} module
 #
-#    ansible-playbook -i notahost, tests/${module}.yaml
+#    ansible-playbook -i notahost, playbooks/${module}.yaml
 #
 # Tested platforms:
 #

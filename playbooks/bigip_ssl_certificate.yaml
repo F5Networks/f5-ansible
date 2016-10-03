@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_ssl_certificate.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_ssl_certificate.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_ssl_certificate module
 #
-#    ansible-playbook -i notahost, tests/bigip_ssl_certificate.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_ssl_certificate.yaml
 #
 # Tested platforms:
 #

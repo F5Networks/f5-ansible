@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_gtm_virtual_server.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_virtual_server.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_gtm_virtual_server module
 #
-#    ansible-playbook -i notahost, tests/bigip_gtm_virtual_server.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_virtual_server.yaml
 #
 # Tested platforms:
 #

@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_gtm_facts.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_facts.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_gtm_facts module
 #
-#    ansible-playbook -i notahost, tests/bigip_gtm_facts.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_facts.yaml
 #
 # Tested platforms:
 #

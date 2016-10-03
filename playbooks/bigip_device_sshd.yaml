@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_device_sshd.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_device_sshd.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_device_sshd module
 #
-#    ansible-playbook -i notahost, tests/bigip_device_sshd.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_device_sshd.yaml
 #
 # Tested platforms:
 #

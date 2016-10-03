@@ -10,13 +10,13 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, tests/bigip_software.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_software.yaml
 #
 # Examples:
 #
 #    Run all tests on the bigip_software module
 #
-#    ansible-playbook -i notahost, tests/bigip_software.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_software.yaml
 #
 # Tested platforms:
 #
