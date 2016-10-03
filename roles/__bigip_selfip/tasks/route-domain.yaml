@@ -1,0 +1,77 @@
+---
+
+- include: setup-route-domain.ymal
+
+- name: Create Self IP, specify a Route Domain
+  bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
+      route_domain: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Create Self IP, specify a Route Domain
+  assert:
+      that:
+          - result|changed
+
+- name: Create Self IP, specify a Route Domain - Idempotent check
+  bigip_selfip:
+      address: "{{ selfip }}"
+      name: "{{ selfip_name }}"
+      netmask: "{{ selfip_netmask }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      vlan: "{{ selfip_vlan }}"
+      route_domain: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Create Self IP, specify a Route Domain - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete Self IP, specify a Route Domain
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      route_domain: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Delete Self IP, specify a Route Domain
+  assert:
+      that:
+          - result|changed
+
+- name: Delete Self IP, specify a Route Domain - Idempotent check
+  bigip_selfip:
+      name: "{{ selfip_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      route_domain: "{{ selfip_rd }}"
+  register: result
+
+- name: Assert Delete Self IP, specify a Route Domain - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- include: teardown-route-domain.yaml
