@@ -113,6 +113,7 @@ options:
       - Enable route advertisement for destination
     required: false
     default: disabled
+    version_added: "2.3"
   description:
     description:
       - Virtual server description
