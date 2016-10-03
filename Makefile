@@ -10,7 +10,7 @@ MODULE_TARGET = $(shell echo $@ | tr '-' '_')
 
 all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on" --vault-password-file ./vault.txt
-	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts tests/bigip.yaml --vault-password-file ./vault.txt
+	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/bigip.yaml --vault-password-file ./vault.txt
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" --vault-password-file ./vault.txt
 	flake8 library/*.py
 
@@ -64,7 +64,11 @@ clean-coverage:
 	$(shell rm cache/coverage/.coverage*)
 	$(shell rm .coverage)
 
-bigip-%: clean-coverage
+bigip-%:
+	ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts tests/${MODULE_TARGET}.yaml --vault-password-file ./vault.txt
+	flake8 library/${MODULE_TARGET}.py
+
+cov-bigip-%: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=on" --vault-password-file ./vault.txt
 	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts tests/${MODULE_TARGET}.yaml --vault-password-file ./vault.txt
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off" --vault-password-file ./vault.txt
