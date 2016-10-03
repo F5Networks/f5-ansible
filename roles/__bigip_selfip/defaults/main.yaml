@@ -6,6 +6,7 @@ selfip_netmask2: "255.255.0.0"
 selfip_name: "netfoo"
 selfip_vlan: "net1"
 selfip_vlan2: "net2"
+selfip_rd: "100"
 invalid_vlan:
     - "01767424"
     - "$T#%Q$WER"
