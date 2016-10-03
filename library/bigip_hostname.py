@@ -24,7 +24,7 @@ module: bigip_hostname
 short_description: Manage the hostname of a BIG-IP
 description:
   - Manage the hostname of a BIG-IP
-version_added: "2.2"
+version_added: "2.3"
 options:
   hostname:
     description:
