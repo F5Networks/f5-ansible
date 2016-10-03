@@ -33,11 +33,15 @@ options:
         configure for the VLAN. Use tagged interfaces or trunks when
         you want to assign a single interface or trunk to multiple VLANs.
     required: false
+    aliases:
+      - tagged_interface
   untagged_interfaces:
     description:
       - Specifies a list of untagged interfaces and trunks that you want to
         configure for the VLAN.
     required: false
+    aliases:
+      - untagged_interface
   name:
     description:
       - The VLAN to manage. If the special VLAN C(ALL) is specified with
@@ -91,12 +95,24 @@ EXAMPLES = '''
 
 - name: Add VLAN 2345 as tagged to interface 1.1
   bigip_vlan:
-      interfaces:
-          - 1.1
+      tagged_interface: 1.1
       name: "net1"
       password: "secret"
       server: "lb.mydomain.com"
       tag: "2345"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
+
+- name: Add VLAN 1234 as tagged to interfaces 1.1 and 1.2
+  bigip_vlan:
+      tagged_interfaces:
+          - 1.1
+          - 1.2
+      name: "net1"
+      password: "secret"
+      server: "lb.mydomain.com"
+      tag: "1234"
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
@@ -398,8 +414,8 @@ def main():
 
     meta_args = dict(
         description=dict(required=False, default=None),
-        tagged_interfaces=dict(required=False, default=None, type='list'),
-        untagged_interfaces=dict(required=False, default=None, type='list'),
+        tagged_interfaces=dict(required=False, default=None, type='list', aliases=['tagged_interface']),
+        untagged_interfaces=dict(required=False, default=None, type='list', aliases=['untagged_interface']),
         name=dict(required=True),
         tag=dict(required=False, default=None, type='int')
     )
