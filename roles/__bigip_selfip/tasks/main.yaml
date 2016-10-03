@@ -1,7 +1,7 @@
 ---
 
 - name: Include task to setup the remote device
-  include: setup.yaml
+  include: setup-main.yaml
 
 - name: Create Self IP
   bigip_selfip:
