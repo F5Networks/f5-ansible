@@ -21,6 +21,9 @@ touch ${DIR}/../library/${module}.py
 # Create the documentation link for your module
 touch ${DIR}/../docs/modules/${module}.rst
 
+# Create the unit test file
+touch ${DIR}/../tests/${module}.py
+
 # Stub out the test playbook
 cat > ${DIR}/../playbooks/${module}.yaml << EOL
 ---
