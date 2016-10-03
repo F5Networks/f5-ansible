@@ -62,6 +62,12 @@ options:
     description:
       - The VLAN that the new self IPs will be on.
     required: true
+route_domain:
+    description:
+        - The route domain id of the system.
+          If none, id of the route domain will be "0" (default route domain)
+    required: false
+    default: none
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.

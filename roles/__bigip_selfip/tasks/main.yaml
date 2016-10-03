@@ -75,7 +75,7 @@
 - name: Assert Create Self IP, specify a Route Domain - Idempotent check
   assert:
       that:
-          - result|changed
+          - not result|changed
 
 - name: Set Self IP VLAN
   bigip_selfip:
@@ -377,7 +377,7 @@
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-      route_domain: "{{ selfip_rd }}"
+      rd: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain - Idempotent check
