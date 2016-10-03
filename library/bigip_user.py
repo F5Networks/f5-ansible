@@ -198,7 +198,7 @@ class BigIpUserManager(object):
         changed = False
 
         try:
-            self.api = self.connect_to_bigip(**kwargs)
+            self.api = self.connect_to_bigip(**self.params)
 
             if self.params['state'] == "present":
                 changed = self.present()
