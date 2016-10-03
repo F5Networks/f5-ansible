@@ -62,7 +62,7 @@ options:
     description:
       - The VLAN that the new self IPs will be on.
     required: true
-route_domain:
+  route_domain:
     description:
         - The route domain id of the system.
           If none, id of the route domain will be "0" (default route domain)
