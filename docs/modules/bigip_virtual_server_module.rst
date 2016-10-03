@@ -69,6 +69,12 @@ Options
         <td><div>Destination IP of the virtual server (only host is currently supported). Required when state=present and vs does not exist.</div></br>
         <div style="font-size: small;">aliases: address, ip<div></td></tr>
             <tr>
+    <td>enabled_vlans<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>List of vlans to be enabled. When a VLAN named <code>ALL</code> is used, all VLANs will be allowed.</div></td></tr>
+            <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -161,6 +167,8 @@ Examples
           all_profiles:
               - http
               - clientssl
+          enabled_vlans:
+              - /Common/vlan2
       delegate_to: localhost
     
     - name: Modify Port of the Virtual Server

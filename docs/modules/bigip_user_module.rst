@@ -1,10 +1,10 @@
 .. _bigip_user:
 
 
-bigip_user - Manage user accounts and user attributes on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_user - Manage user accounts and user attributes on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.1
+.. versionadded:: 2.2
 
 
 .. contents::
@@ -15,7 +15,7 @@ bigip_user - Manage user accounts and user attributes on a BIG-IP
 Synopsis
 --------
 
-Manage user accounts and user attributes on a BIG-IP
+Manage user accounts and user attributes on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -44,23 +44,11 @@ Options
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>yes</code>, will only add groups, not set them to just the list in groups.</div></td></tr>
             <tr>
-    <td>encrypted_credential<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Optionally set the users password to this crypted value. One of either <code>password_credential</code> or <code>encrypted_credential</code> is required when creating a new account. The password should be encrypted using crypt(3).</div></td></tr>
-            <tr>
     <td>full_name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Full name of the user</div></td></tr>
-            <tr>
-    <td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td><ul></ul></td>
-        <td><div>Partition to create user. Ignored during updates.</div></td></tr>
+        <td><div>Full name of the user.</div></td></tr>
             <tr>
     <td>partition_access<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -72,19 +60,25 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Optionally set the users password to this unencrypted value. One of either <code>password_credential</code> or <code>encrypted_credential</code> is required when creating a new account.</div></td></tr>
+        <td><div>Optionally set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>shell<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -108,7 +102,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
     <td>username_credential<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -117,10 +111,10 @@ Options
         <td><div>Name of the user to create, remove or modify.</div></br>
         <div style="font-size: small;">aliases: user<div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -183,6 +177,7 @@ Examples
           state: "present"
           username_credential: "johnd"
           password_credential: "newsupersecretpassword"
+      delegate_to: localhost
 
 Return Values
 -------------

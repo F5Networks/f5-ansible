@@ -45,7 +45,7 @@ F5
   bigip_sys_global (E) - Manage BIG-IP global settings <bigip_sys_global_module>
   bigip_ucs (E) - Manage UCS files <bigip_ucs_module>
   bigip_ucs_fetch (E) - Fetches a UCS file from remote nodes <bigip_ucs_fetch_module>
-  bigip_user (E) - Manage user accounts and user attributes on a BIG-IP <bigip_user_module>
+  bigip_user (E) - Manage user accounts and user attributes on a BIG-IP. <bigip_user_module>
   bigip_user_facts (E) - Retrieve user account attributes from a BIG-IP <bigip_user_facts_module>
   bigip_view (E) - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
   bigip_virtual_server (E) - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>

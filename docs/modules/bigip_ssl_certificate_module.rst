@@ -157,6 +157,62 @@ Examples
           state: "absent"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> cert_checksum </td>
+        <td> SHA1 checksum of the cert that was provided </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0 </td>
+    </tr>
+            <tr>
+        <td> partition </td>
+        <td> Partition in which the cert/key was created </td>
+        <td align=center> ['changed', 'created', 'deleted'] </td>
+        <td align=center> string </td>
+        <td align=center> Common </td>
+    </tr>
+            <tr>
+        <td> cert_name </td>
+        <td> The name of the SSL certificate. The C(cert_name) and C(key_name) will be equal to each other.
+ </td>
+        <td align=center> ['created', 'changed', 'deleted'] </td>
+        <td align=center> string </td>
+        <td align=center> cert1 </td>
+    </tr>
+            <tr>
+        <td> key_checksum </td>
+        <td> SHA1 checksum of the key that was provided </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> cf23df2207d99a74fbe169e3eba035e633b65d94 </td>
+    </tr>
+            <tr>
+        <td> key_name </td>
+        <td> The name of the SSL certificate key. The C(key_name) and C(cert_name) will be equal to each other.
+ </td>
+        <td align=center> ['created', 'changed', 'deleted'] </td>
+        <td align=center> string </td>
+        <td align=center> key1 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

@@ -40,37 +40,37 @@ Options
             <tr>
     <td>banner_text<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>Specifies the text to present in the advisory banner.</div></td></tr>
             <tr>
     <td>console_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul></ul></td>
         <td><div>Specifies the number of seconds of inactivity before the system logs off a user that is logged on.</div></td></tr>
             <tr>
     <td>gui_setup<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div><code>enable</code> or <code>disabled</code> the Setup utility in the browser-based Configuration utility</div></td></tr>
             <tr>
     <td>lcd_display<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies, when <code>enabled</code>, that the system menu displays on the LCD screen on the front of the unit. This setting has no effect when used on the VE platform.</div></td></tr>
             <tr>
     <td>mgmt_dhcp<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies whether or not to enable DHCP client on the management interface</div></td></tr>
             <tr>
     <td>net_reboot<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies, when <code>enabled</code>, that the next time you reboot the system, the system boots to an ISO image on the network, rather than an internal media drive.</div></td></tr>
             <tr>
@@ -88,7 +88,7 @@ Options
             <tr>
     <td>security_banner<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies whether the system displays an advisory message on the login screen.</div></td></tr>
             <tr>

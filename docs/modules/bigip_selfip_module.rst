@@ -45,6 +45,12 @@ Options
         <td><ul></ul></td>
         <td><div>The IP addresses for the new self IP. This value is ignored upon update as addresses themselves cannot be changed after they are created.</div></td></tr>
             <tr>
+    <td>allow_service<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Configure port lockdown for the Self IP. By default, the Self IP has a "default deny" policy. This can be changed to allow TCP and UDP ports as well as specific protocols. This list should contain <code>protocol</code>:<code>port</code> values.</div></td></tr>
+            <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>Value of C(address)</td>
@@ -62,6 +68,12 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
+            <tr>
+    <td>route_domain<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>none</td>
+        <td><ul></ul></td>
+        <td><div>The route domain id of the system. If none, id of the route domain will be "0" (default route domain)</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -125,7 +137,19 @@ Examples
           validate_certs: "no"
           vlan: "vlan1"
       delegate_to: localhost
-    
+    - name: Create Self IP with a Route Domain
+      bigip_selfip:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: "no"
+          name: "self1"
+          address: "10.10.10.10"
+          netmask: "255.255.255.0"
+          vlan: "vlan1"
+          route_domain: "10"
+          allow_service: "default"
+      delegate_to: localhost
     - name: Delete Self IP
       bigip_selfip:
           name: "self1"
@@ -134,6 +158,63 @@ Examples
           state: "absent"
           user: "admin"
           validate_certs: "no"
+      delegate_to: localhost
+    - name: Allow management web UI to be accessed on this Self IP
+      bigip_selfip:
+          name: "self1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "absent"
+          user: "admin"
+          validate_certs: "no"
+          allow_service:
+              - "tcp:443"
+      delegate_to: localhost
+    - name: Allow HTTPS and SSH access to this Self IP
+      bigip_selfip:
+          name: "self1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "absent"
+          user: "admin"
+          validate_certs: "no"
+          allow_service:
+              - "tcp:443"
+              - "tpc:22"
+      delegate_to: localhost
+    - name: Allow all services access to this Self IP
+      bigip_selfip:
+          name: "self1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "absent"
+          user: "admin"
+          validate_certs: "no"
+          allow_service:
+              - all
+      delegate_to: localhost
+    - name: Allow only GRE and IGMP protocols access to this Self IP
+      bigip_selfip:
+          name: "self1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "absent"
+          user: "admin"
+          validate_certs: "no"
+          allow_service:
+              - gre:0
+              - igmp:0
+      delegate_to: localhost
+    - name: Allow all TCP, but no other protocols access to this Self IP
+      bigip_selfip:
+          name: "self1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "absent"
+          user: "admin"
+          validate_certs: "no"
+          allow_service:
+              - tcp:0
       delegate_to: localhost
 
 Return Values
@@ -160,11 +241,18 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> 255.255.255.0 </td>
     </tr>
             <tr>
-        <td> vlan </td>
-        <td> The VLAN set on the Self IP </td>
-        <td align=center>  </td>
+        <td> name </td>
+        <td> The name of the Self IP </td>
+        <td align=center> ['created', 'changed', 'deleted'] </td>
         <td align=center> string </td>
-        <td align=center> vlan1 </td>
+        <td align=center> self1 </td>
+    </tr>
+            <tr>
+        <td> address </td>
+        <td> The address for the Self IP </td>
+        <td align=center> created </td>
+        <td align=center> string </td>
+        <td align=center> 192.0.2.10 </td>
     </tr>
             <tr>
         <td> traffic_group </td>
@@ -174,18 +262,18 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> traffic-group-local-only </td>
     </tr>
             <tr>
-        <td> address </td>
-        <td> The address for the Self IP </td>
-        <td align=center> created </td>
+        <td> vlan </td>
+        <td> The VLAN set on the Self IP </td>
+        <td align=center>  </td>
         <td align=center> string </td>
-        <td align=center> 192.168.10.10 </td>
+        <td align=center> vlan1 </td>
     </tr>
             <tr>
-        <td> name </td>
-        <td> The name of the Self IP </td>
-        <td align=center> ['created', 'changed', 'deleted'] </td>
-        <td align=center> string </td>
-        <td align=center> self1 </td>
+        <td> allow_service </td>
+        <td> Services that allowed via this Self IP </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['igmp:0', 'tcp:22', 'udp:53'] </td>
     </tr>
         
     </table>

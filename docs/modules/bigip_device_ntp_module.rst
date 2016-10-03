@@ -38,17 +38,11 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>ntp_server<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>A single NTP server to set on the device. At least one of <code>ntp_servers</code> or <code>ntp_server</code> are required.</div></td></tr>
-            <tr>
     <td>ntp_servers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>A list of NTP servers to set on the device. At least one of <code>ntp_servers</code> or <code>ntp_server</code> are required.</div></td></tr>
+        <td><div>A list of NTP servers to set on the device. At least one of <code>ntp_servers</code> or <code>timezone</code> is required.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -78,7 +72,7 @@ Options
     <td>no</td>
     <td>UTC</td>
         <td><ul></ul></td>
-        <td><div>The timezone to set for NTP lookups.</div></td></tr>
+        <td><div>The timezone to set for NTP lookups. At least one of <code>ntp_servers</code> or <code>timezone</code> is required.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -104,7 +98,7 @@ Examples
     - name: Set NTP server
       bigip_device_ntp:
           ntp_servers:
-              - "192.168.10.12"
+              - "192.0.2.23"
           password: "secret"
           server: "lb.mydomain.com"
           user: "admin"
@@ -141,7 +135,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> The NTP servers that were set on the device </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['192.168.10.10', '172.27.10.10'] </td>
+        <td align=center> ['192.0.2.23', '192.0.2.42'] </td>
     </tr>
             <tr>
         <td> timezone </td>

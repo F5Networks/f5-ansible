@@ -176,7 +176,7 @@ system.
  </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> 192.168.*.* </td>
+        <td align=center> 192.0.2.* </td>
     </tr>
             <tr>
         <td> banner_text </td>

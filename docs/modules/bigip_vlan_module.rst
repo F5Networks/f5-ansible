@@ -44,12 +44,6 @@ Options
         <td><ul></ul></td>
         <td><div>The description to give to the VLAN.</div></td></tr>
             <tr>
-    <td>interfaces<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>Specifies a list of tagged or untagged interfaces and trunks that you want to configure for the VLAN. Use tagged interfaces or trunks when you want to assign a single interface or trunk to multiple VLANs.</div></td></tr>
-            <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -85,6 +79,20 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>Tag number for the VLAN. The tag number can be any integer between 1 and 4094. The system automatically assigns a tag number if you do not specify a value.</div></td></tr>
+            <tr>
+    <td>tagged_interfaces<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies a list of tagged interfaces and trunks that you want to configure for the VLAN. Use tagged interfaces or trunks when you want to assign a single interface or trunk to multiple VLANs.</div></br>
+        <div style="font-size: small;">aliases: tagged_interface<div></td></tr>
+            <tr>
+    <td>untagged_interfaces<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies a list of untagged interfaces and trunks that you want to configure for the VLAN.</div></br>
+        <div style="font-size: small;">aliases: untagged_interface<div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -128,12 +136,24 @@ Examples
     
     - name: Add VLAN 2345 as tagged to interface 1.1
       bigip_vlan:
-          interfaces:
-              - 1.1
+          tagged_interface: 1.1
           name: "net1"
           password: "secret"
           server: "lb.mydomain.com"
           tag: "2345"
+          user: "admin"
+          validate_certs: "no"
+      delegate_to: localhost
+    
+    - name: Add VLAN 1234 as tagged to interfaces 1.1 and 1.2
+      bigip_vlan:
+          tagged_interfaces:
+              - 1.1
+              - 1.2
+          name: "net1"
+          password: "secret"
+          server: "lb.mydomain.com"
+          tag: "1234"
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost

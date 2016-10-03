@@ -109,14 +109,14 @@ Examples
  ::
 
       - name: Enable virtual server
-        bigip_gtm_virtual_server:
-            server: "lb.mydomain.com"
-            user: "admin"
-            password: "secret"
-            virtual_server_name: "myname"
-            virtual_server_server: "myserver"
-            state: "enabled"
-        delegate_to: localhost
+        local_action: >
+          bigip_gtm_virtual_server
+          server=192.0.2.1
+          user=admin
+          password=mysecret
+          virtual_server_name=myname
+          virtual_server_server=myserver
+          state=enabled
 
 
 Notes

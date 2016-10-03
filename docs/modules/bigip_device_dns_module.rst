@@ -149,7 +149,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> List of name servers that were added or removed </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+        <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
     </tr>
             <tr>
         <td> ip_version </td>
@@ -163,7 +163,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> List of search domains that were added or removed </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+        <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
     </tr>
             <tr>
         <td> cache </td>
@@ -177,7 +177,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> List of forwarders that were added or removed </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['192.168.1.10', '172.17.12.10'] </td>
+        <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
     </tr>
         
     </table>
