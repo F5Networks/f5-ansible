@@ -377,7 +377,7 @@
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-      rd: "{{ selfip_rd }}"
+      route_domain: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain - Idempotent check
