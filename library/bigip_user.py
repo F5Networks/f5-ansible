@@ -191,13 +191,15 @@ class BigIpUserManager(object):
     def __init__(self, *args, **kwargs):
         self.changed_params = dict()
         self.params = kwargs
-        self.api = self.connect_to_bigip(**kwargs)
+        self.api = None
 
     def apply_changes(self):
         result = dict()
         changed = False
 
         try:
+            self.api = self.connect_to_bigip(**kwargs)
+
             if self.params['state'] == "present":
                 changed = self.present()
             elif self.params['state'] == "absent":
