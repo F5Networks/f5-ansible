@@ -21,7 +21,7 @@ This module will import/delete SSL certificates on BIG-IP LTM. Certificates can 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.3.1
+  * f5-sdk >= 1.5.0
   * BigIP >= v12
 
 
