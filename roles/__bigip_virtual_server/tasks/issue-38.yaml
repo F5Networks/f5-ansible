@@ -39,6 +39,20 @@
       lip: '1.2.3.5'
       lport: '80'
 
+- name: Delete virtual server
+  bigip_virtual_server:
+      destination: "{{ item.lip }}"
+      name: "{{ item.lname }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ item.lport }}"
+      pool: "{{ item.lpool|default(omit) }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
 - name: Delete pool
   bigip_pool:
       name: "test_pool"
