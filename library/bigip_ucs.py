@@ -33,7 +33,7 @@ options:
         configuration.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   server:
     description:
       - BIG-IP host
@@ -51,7 +51,7 @@ options:
         to believe that the image was corrupted during upload.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,
@@ -59,7 +59,7 @@ options:
         restore a UCS on RMA devices (Returned Materials Authorization).
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   no_platform_check:
     description:
       - Bypasses the platform check and allows a UCS that was created using a
@@ -67,13 +67,13 @@ options:
         a UCS created from a different platform is not allowed to be installed.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   passphrase:
     description:
       - Specifies the passphrase that is necessary to load the specified UCS file
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   password:
     description:
       - BIG-IP password
@@ -84,7 +84,7 @@ options:
         loaded from the UCS. Instead, a new set is regenerated.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   state:
     description:
       - When C(installed), ensures that the UCS is uploaded and installed,
