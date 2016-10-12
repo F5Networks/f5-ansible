@@ -72,8 +72,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Specifies the route domain the system searches when it cannot find a route in the configured domain.
-</div></td></tr>
+        <td><div>Specifies the route domain the system searches when it cannot find a route in the configured domain.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
