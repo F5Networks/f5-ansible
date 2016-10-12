@@ -4,7 +4,7 @@
 bigip_hostname - Manage the hostname of a BIG-IP
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.3
 
 
 .. contents::

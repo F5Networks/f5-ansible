@@ -4,7 +4,7 @@
 bigip_sys_global - Manage BIG-IP global settings
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.3
 
 
 .. contents::

@@ -106,6 +106,12 @@ Options
         <td><ul></ul></td>
         <td><div>Port of the virtual server . Required when state=present and vs does not exist</div></td></tr>
             <tr>
+    <td>route_advertisement_state<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td>disabled</td>
+        <td><ul></ul></td>
+        <td><div>Enable route advertisement for destination</div></td></tr>
+            <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
