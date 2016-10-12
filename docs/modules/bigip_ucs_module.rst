@@ -43,31 +43,31 @@ Options
     <td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div></td></tr>
             <tr>
     <td>include_chassis_level_config<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>During restore of the UCS file, include chassis level configuration that is shared among boot volume sets. For example, cluster default configuration.</div></td></tr>
             <tr>
     <td>no_license<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Performs a full restore of the UCS file and all the files it contains, with the exception of the license file. The option must be used to restore a UCS on RMA devices (Returned Materials Authorization).</div></td></tr>
             <tr>
     <td>no_platform_check<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Bypasses the platform check and allows a UCS that was created using a different platform to be installed. By default (without this option), a UCS created from a different platform is not allowed to be installed.</div></td></tr>
             <tr>
     <td>passphrase<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Specifies the passphrase that is necessary to load the specified UCS file</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
@@ -79,7 +79,7 @@ Options
     <td>reset_trust<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>b</li><li>o</li><li>o</li><li>l</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>When specified, the device and trust domain certs and keys are not loaded from the UCS. Instead, a new set is regenerated.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
