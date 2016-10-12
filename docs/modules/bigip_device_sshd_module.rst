@@ -175,8 +175,8 @@ range for other systems that can use SSH to communicate with this
 system.
  </td>
         <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['192.0.2.*'] </td>
+        <td align=center> string </td>
+        <td align=center> 192.0.2.* </td>
     </tr>
             <tr>
         <td> banner_text </td>
