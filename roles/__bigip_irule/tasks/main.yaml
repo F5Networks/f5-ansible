@@ -203,3 +203,7 @@
   assert:
       that:
           - not result|changed
+
+# Tests for different issues filed on Github
+- include: issue-42.yaml
+  tags: issue-42
