@@ -4,16 +4,16 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 module=$1
 
 # Create role containing all of your future functional tests
-mkdir -p ${DIR}/../roles/__${module}/{defaults,tasks}
+mkdir -p ${DIR}/../roles/${module}/{defaults,tasks}
 
 # Touch the playbook that will run your functional tests
 touch ${DIR}/../playbooks/${module}.yaml
 
 # Create default vars to contain any playbook variables
-touch ${DIR}/../roles/__${module}/defaults/main.yaml
+touch ${DIR}/../roles/${module}/defaults/main.yaml
 
 # Create default tasks file containing all your functional tests
-touch ${DIR}/../roles/__${module}/tasks/main.yaml
+touch ${DIR}/../roles/${module}/tasks/main.yaml
 
 # Create your new module python file
 touch ${DIR}/../library/${module}.py
@@ -56,5 +56,5 @@ cat > ${DIR}/../playbooks/${module}.yaml << EOL
   connection: local
 
   roles:
-      - __${module}
+      - ${module}
 EOL
