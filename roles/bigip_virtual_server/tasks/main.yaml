@@ -345,3 +345,6 @@
 # Tests for different issues filed on Github
 - include: issue-38.yaml
   tags: issue-38
+
+- include: issue-3158.yaml
+  tags: issue-3158

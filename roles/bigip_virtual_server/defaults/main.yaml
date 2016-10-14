@@ -13,3 +13,7 @@ vs_snat1: "Automap"
 pool_name: "foo.pool"
 node_host: "10.10.10.10"
 enabled_vlans: "net1"
+snat_pool_name: "my-snat-pool"
+members_list:
+    - 10.10.10.10
+    - 11.11.11.11
