@@ -1,0 +1,11 @@
+---
+
+snat_pool_name: "my-snat-pool"
+members_list:
+    - 10.10.10.10
+    - 20.20.20.20
+member_individual: 15.15.15.15
+member_append_list:
+    - 11.11.11.11
+    - 22.22.22.22
+member_append_individual: 33.33.33.33
