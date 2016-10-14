@@ -513,7 +513,7 @@ So, for our example, our test role looks like this.
 
 .. code-block:: bash
 
-   $> mkdir roles/__bigip_device_sshd/
+   $> mkdir roles/bigip_device_sshd/
 
 Inside of this role is everything that you would associate with a normal
 role in ansible.
@@ -532,8 +532,8 @@ your tests will be run from.
 
 .. code-block:: bash
 
-   $> mkdir roles/__bigip_device_sshd/
-   $> touch roles/__bigip_device_sshd/main.yaml
+   $> mkdir roles/bigip_device_sshd/
+   $> touch roles/bigip_device_sshd/main.yaml
 
 Now let's dig in to what a test should look like.
 
@@ -672,7 +672,7 @@ An excerpt of that is shown below.
      connection: local
 
      roles:
-         - __bigip_device_dns
+         - bigip_device_dns
 
 Becomes
 
@@ -687,7 +687,7 @@ Becomes
      connection: local
 
      roles:
-         - __bigip_device_sshd
+         - bigip_device_sshd
 
 Be sure to also change the comments section to reflect your module.
 
