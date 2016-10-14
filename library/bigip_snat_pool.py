@@ -142,25 +142,26 @@ class BigIpSnatPoolManager(object):
 
     def apply_changes(self):
         result = dict()
-        changed = False
 
-        try:
-            self.api = self.connect_to_bigip(**self.params)
-
-            if self.params['state'] == "present":
-                changed = self.present()
-            elif self.params['state'] == "absent":
-                changed = self.absent()
-            if changed:
-                self.save_sys_config()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        changed = self.apply_to_running_config()
+        if changed:
+            self.save_sys_config()
 
         result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
 
-    def save_sys_config(self):
+    def apply_to_running_config(self):
+        try:
+            self.api = self.connect_to_bigip(**self.params)
+            if self.params['state'] == "present":
+                return self.present()
+            elif self.params['state'] == "absent":
+                return self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+    def save_running_config(self):
         self.api.tm.sys.config.exec_cmd('save')
 
     def present(self):
