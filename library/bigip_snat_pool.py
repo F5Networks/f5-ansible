@@ -36,8 +36,9 @@ options:
     default: no
   members:
     description:
-      - List of members to put in the SNAT pool.
-    required: true when state is not C(absent)
+      - List of members to put in the SNAT pool. When a C(state) of present is
+        provided, this parameter is required. Otherwise, it is optional.
+    required: false
     default: None
     aliases: 'member'
   name:
@@ -365,7 +366,6 @@ class BigIpSnatPoolModuleConfig(object):
                 type='list',
                 aliases=['member']
             ),
-
             state=dict(
                 default='present',
                 choices=self.states
