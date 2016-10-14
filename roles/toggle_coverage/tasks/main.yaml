@@ -1,0 +1,52 @@
+---
+
+- name: Create some shorthand variables
+  set_fact:
+      test_coverage_path: "{{ playbook_dir }}/../cache/coverage/.coverage."
+      coverage_dir: "{{ playbook_dir }}/../cache/coverage"
+      base_dir: "{{ playbook_dir }}/../"
+
+- name: Check if we are in a virtualenv
+  shell: python -c 'import sys; print hasattr(sys, "real_prefix")'
+  register: venv
+  ignore_errors: true
+
+- name: Place a new coveragerc file
+  template:
+      src: "coveragerc"
+      dest: "{{ base_dir|abspath }}/.coveragerc"
+  when: toggle == 'on'
+
+- name: Include virtualenv customizations if detected
+  include: customize-venv.yaml
+  when: "{{ venv.stdout }} == True"
+
+- name: Include vanilla system customizations if detected
+  include: customize-no-venv.yaml
+  when: "{{ venv.stdout }} != True"
+
+- name: Replace the path of the coverage data file
+  lineinfile:
+      regexp: "(COVERAGE_PATH|data_file)"
+      line: "data_file = {{ base_dir|abspath }}/cache/coverage/.coverage"
+      dest: "{{ base_dir|abspath }}/.coveragerc"
+      state: "present"
+  when: toggle == 'on'
+  run_once: true
+
+- name: Include coverage for all modules if requested
+  include: module-plural.yaml
+  when: f5_module == 'all'
+
+- name: Include coverage for individual module if requested
+  include: module-single.yaml
+  when: f5_module != 'all'
+
+- name: Upload coverage files to coveralls.io
+  shell: "coveralls"
+  when: toggle == 'off'
+  args:
+      chdir: "{{ base_dir|abspath }}"
+      executable: "/bin/bash"
+  environment:
+      COVERALLS_REPO_TOKEN: "{{ coveralls_repo_token }}"
