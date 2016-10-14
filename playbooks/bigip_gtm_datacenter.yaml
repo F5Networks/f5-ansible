@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_gtm_datacenter
+      - bigip_gtm_datacenter

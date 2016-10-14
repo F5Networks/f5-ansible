@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_gtm_virtual_server
+      - bigip_gtm_virtual_server

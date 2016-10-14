@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_monitor_http
+      - bigip_monitor_http

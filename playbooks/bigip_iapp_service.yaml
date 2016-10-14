@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_iapp_service
+      - bigip_iapp_service

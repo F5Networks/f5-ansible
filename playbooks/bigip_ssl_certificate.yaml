@@ -29,4 +29,4 @@
   connection: local
 
   roles:
-      - __bigip_ssl_certificate
+      - bigip_ssl_certificate
