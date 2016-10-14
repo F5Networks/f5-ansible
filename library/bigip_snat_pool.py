@@ -87,7 +87,7 @@ EXAMPLES = '''
       member: "30.30.30.30"
   delegate_to: localhost
 
-- name: Append a new list of members to the existing list
+- name: Append a new list of members to the existing pool
   bigip_snat_pool:
       server: "lb.mydomain.com"
       user: "admin"
