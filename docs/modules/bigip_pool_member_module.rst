@@ -190,7 +190,6 @@ Examples
           partition: "Common"
           host: "{{ ansible_default_ipv4["address"] }}"
           port: 80
-          replace_all_with: true
       delegate_to: localhost
     
     

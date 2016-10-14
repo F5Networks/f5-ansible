@@ -31,6 +31,7 @@ All Modules
   bigip_routedomain_facts (E) - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
   bigip_selfip (E) - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
   bigip_service (E) - Manage BIG-IP service states <bigip_service_module>
+  bigip_snat_pool (E) - Manage SNAT pools on a BIG-IP. <bigip_snat_pool_module>
   bigip_snmp (E) - foo <bigip_snmp_module>
   bigip_software (E) - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_update (E) - Manage the software update settings of a BIG-IP <bigip_software_update_module>
