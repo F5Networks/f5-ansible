@@ -40,7 +40,7 @@ options:
         provided, this parameter is required. Otherwise, it is optional.
     required: false
     default: None
-    aliases: 'member'
+    aliases: ['member']
   name:
     description: The name of the SNAT pool.
     required: True
