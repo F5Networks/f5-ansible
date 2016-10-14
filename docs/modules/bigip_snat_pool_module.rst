@@ -49,7 +49,7 @@ Options
     <td>None</td>
         <td><ul></ul></td>
         <td><div>List of members to put in the SNAT pool. When a <code>state</code> of present is provided, this parameter is required. Otherwise, it is optional.</div></br>
-        <div style="font-size: small;">aliases: m, e, m, b, e, r<div></td></tr>
+        <div style="font-size: small;">aliases: member<div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
