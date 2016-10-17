@@ -20,7 +20,7 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 12.1.0 HF1
 #
 
 - name: Test the bigip_snat_pool module
