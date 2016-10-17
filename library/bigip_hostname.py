@@ -116,8 +116,14 @@ class BigIpHostname(object):
             current = self.read()
             result.update(hostname=current)
 
+        if changed:
+            self.save_running_config()
+
         result.update(dict(changed=changed))
         return result
+
+    def save_running_config(self):
+        self.api.tm.sys.config.exec_cmd('save')
 
 
 def main():
