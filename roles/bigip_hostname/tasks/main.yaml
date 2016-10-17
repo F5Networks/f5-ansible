@@ -10,10 +10,12 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
+- debug: var=result
 - name: Assert Change the hostname
   assert:
       that:
           - result|changed
+          - result['hostname'] == valid_hostname
 
 - name: Change the hostname - Idempotent check
   bigip_hostname:
