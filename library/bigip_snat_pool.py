@@ -145,7 +145,7 @@ class BigIpSnatPoolManager(object):
 
         changed = self.apply_to_running_config()
         if changed:
-            self.save_sys_config()
+            self.save_running_config()
 
         result.update(**self.changed_params)
         result.update(dict(changed=changed))
