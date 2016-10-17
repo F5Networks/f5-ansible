@@ -21,17 +21,17 @@
 DOCUMENTATION = '''
 ---
 module: bigip_hostname
-short_description: Manage the hostname of a BIG-IP
+short_description: Manage the hostname of a BIG-IP.
 description:
-  - Manage the hostname of a BIG-IP
+  - Manage the hostname of a BIG-IP.
 version_added: "2.3"
 options:
   hostname:
     description:
-      - Hostname of the BIG-IP host
+      - Hostname of the BIG-IP host.
     required: true
 notes:
-  - Requires the f5-sdk Python package on the host This is as easy as pip
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
@@ -145,7 +145,7 @@ class BigIpHostnameModuleConfig(object):
 
     def initialize_meta_args(self):
         args = dict(
-            hostname=dict(required=True, default=None)
+            hostname=dict(required=True)
         )
         self.meta_args = args
 
