@@ -138,7 +138,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 
             <tr>
         <td> wide_ip </td>
-        <td> ['Contains the lb method for the wide ip and the pools that are within the wide ip.'] </td>
+        <td> Contains the lb method for the wide ip and the pools that are within the wide ip. </td>
         <td align=center> when include contains wide_ip </td>
         <td align=center> dictionary </td>
         <td align=center> {"/Common/test.example.com": {"lb_method": "LB_METHOD_ROUND_ROBIN", "pool": [{"order": 0, "pool_name": "/Common/MN-test.example.com", "ratio": 1}, {"order": 1, "pool_name": "/Common/VA-test.example.com", "ratio": 1}]}} </td>
@@ -163,7 +163,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Contains the pool object status and enabled status. </td>
         <td align=center> when include contains pool </td>
         <td align=center> dictionary </td>
-        <td align=center>  <code> { "/Common/VA-test.example.com": { "member": [{ "name": "VA-test_example_com", "server": "/Common/VA-Server" }], "object_status": { "availability_status": "AVAILABILITY_STATUS_RED", "enabled_status": "ENABLED_STATUS_DISABLED", "status_description": "No enabled pool members available: disabled directly" } } } </code> </td>
+        <td align=center>  { "/Common/VA-test.example.com": { "member": [{ "name": "VA-test_example_com", "server": "/Common/VA-Server" }], "object_status": { "availability_status": "AVAILABILITY_STATUS_RED", "enabled_status": "ENABLED_STATUS_DISABLED", "status_description": "No enabled pool members available: disabled directly" } } } </td>
     </tr>
         <tr><td>contains: </td>
     <td colspan=4>
