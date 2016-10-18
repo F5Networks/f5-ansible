@@ -42,7 +42,7 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Perform regex filter of response</div></td></tr>
+        <td><div>Perform regex filter of response. Filtering is done on the name of the resource. Valid filters are anything that can be provided to Python's <code>re</code> module.</div></td></tr>
             <tr>
     <td>include<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
