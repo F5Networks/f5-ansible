@@ -21,8 +21,9 @@ all-tests-dev: flake8 ansible-doc ansible-doc-dev
 pylint: pylint-modules
 
 docs:
-	rm docs/modules/*
+	rm docs/modules/* || true
 	python scripts/module_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
+	cd docs && make html
 
 flake8:
 	flake8 library
