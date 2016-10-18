@@ -163,20 +163,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Contains the pool object status and enabled status. </td>
         <td align=center> when include contains pool </td>
         <td align=center> dictionary </td>
-        <td align=center> <code> {
-  "/Common/VA-test.example.com": {
-    "member": [{
-      "name": "VA-test_example_com",
-      "server": "/Common/VA-Server"
-    }],
-    "object_status": {
-      "availability_status": "AVAILABILITY_STATUS_RED",
-      "enabled_status": "ENABLED_STATUS_DISABLED",
-      "status_description": "No enabled pool members available: disabled directly"
-    }
-  }
-} </code>
- </td>
+        <td align=center>  <code> { "/Common/VA-test.example.com": { "member": [{ "name": "VA-test_example_com", "server": "/Common/VA-Server" }], "object_status": { "availability_status": "AVAILABILITY_STATUS_RED", "enabled_status": "ENABLED_STATUS_DISABLED", "status_description": "No enabled pool members available: disabled directly" } } } </code> </td>
     </tr>
         <tr><td>contains: </td>
     <td colspan=4>
