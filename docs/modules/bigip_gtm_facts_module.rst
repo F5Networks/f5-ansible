@@ -117,7 +117,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> virtual_server </td>
         <td> Contains the virtual server enabled and availability status, and address </td>
-        <td align=center> when include contains virtual_server </td>
+        <td align=center> changed </td>
         <td align=center> dictionary </td>
         <td align=center> {"/Common/MN-LTM": {"mn-test_example_com": {"address": {"address": "192.168.1.1", "port": 80}, "enabled_state": "STATE_ENABLED", "object_status": {"availability_status": "AVAILABILITY_STATUS_GREEN", "enabled_status": "ENABLED_STATUS_ENABLED", "status_description": " Monitor /Common/bigip from 192.168.0.1 : UP"}}, "va-test_example_com": {"address": {"address": "192.168.1.2", "port": 80}, "enabled_state": "STATE_ENABLED", "object_status": {"availability_status": "AVAILABILITY_STATUS_GREEN", "enabled_status": "ENABLED_STATUS_ENABLED", "status_description": " Monitor /Common/bigip from 192.168.0.1 : UP"}}}} </td>
     </tr>
@@ -139,7 +139,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
             <tr>
         <td> wide_ip </td>
         <td> Contains the lb method for the wide ip and the pools that are within the wide ip. </td>
-        <td align=center> when include contains wide_ip </td>
+        <td align=center> changed </td>
         <td align=center> dictionary </td>
         <td align=center> {"/Common/test.example.com": {"lb_method": "LB_METHOD_ROUND_ROBIN", "pool": [{"order": 0, "pool_name": "/Common/MN-test.example.com", "ratio": 1}, {"order": 1, "pool_name": "/Common/VA-test.example.com", "ratio": 1}]}} </td>
     </tr>
@@ -161,7 +161,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
             <tr>
         <td> pool </td>
         <td> Contains the pool object status and enabled status. </td>
-        <td align=center> when include contains pool </td>
+        <td align=center> changed </td>
         <td align=center> dictionary </td>
         <td align=center>  { "/Common/VA-test.example.com": { "member": [{ "name": "VA-test_example_com", "server": "/Common/VA-Server" }], "object_status": { "availability_status": "AVAILABILITY_STATUS_RED", "enabled_status": "ENABLED_STATUS_DISABLED", "status_description": "No enabled pool members available: disabled directly" } } } </td>
     </tr>
