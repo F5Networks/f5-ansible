@@ -12,10 +12,10 @@ All Modules
   bigip_dns_zone (E) - Manages DNS zones on a BIG-IP <bigip_dns_zone_module>
   bigip_facts (E) - Collect facts from F5 BIG-IP devices <bigip_facts_module>
   bigip_gtm_datacenter (E) - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
-  bigip_gtm_facts (E) - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
+  bigip_gtm_facts (E) - Collect facts from F5 BIG-IP GTM devices. <bigip_gtm_facts_module>
   bigip_gtm_virtual_server (E) - Manages F5 BIG-IP GTM virtual servers <bigip_gtm_virtual_server_module>
   bigip_gtm_wide_ip (E) - Manages F5 BIG-IP GTM wide ip <bigip_gtm_wide_ip_module>
-  bigip_hostname (E) - Manage the hostname of a BIG-IP <bigip_hostname_module>
+  bigip_hostname (E) - Manage the hostname of a BIG-IP. <bigip_hostname_module>
   bigip_iapp_service (E) - foo <bigip_iapp_service_module>
   bigip_iapp_template (E) - foo <bigip_iapp_template_module>
   bigip_irule (E) - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>

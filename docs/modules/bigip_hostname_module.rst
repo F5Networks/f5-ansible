@@ -1,8 +1,8 @@
 .. _bigip_hostname:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_hostname - Manage the hostname of a BIG-IP.
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,7 +15,7 @@ bigip_hostname - Manage the hostname of a BIG-IP
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP
+Manage the hostname of a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -42,7 +42,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host</div></td></tr>
+        <td><div>Hostname of the BIG-IP host.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -121,7 +121,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk.
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

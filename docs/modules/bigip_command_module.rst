@@ -22,7 +22,6 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * paramiko
-  * requests
 
 
 Options
