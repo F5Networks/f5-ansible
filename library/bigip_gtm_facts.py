@@ -36,7 +36,9 @@ options:
       - virtual_server
   filter:
     description:
-      - Perform regex filter of response
+      - Perform regex filter of response. Filtering is done on the name of
+        the resource. Valid filters are anything that can be provided to
+        Python's C(re) module.
     required: false
     default: None
 notes:
@@ -279,6 +281,10 @@ class BigIpGtmFactsPools(BigIpGtmFactsCommon):
         collection = getattr(self.api.tm.gtm.pools, type)
         pools = collection.get_collection(requests_params=rp)
         for pool in pools:
+            if self.params['filter']:
+                matches = re.match(self.params['filter'], str(pool.name))
+                if not matches:
+                    continue
             facts = self.format_pool_facts(pool)
             results.append(facts)
         return results
@@ -344,6 +350,10 @@ class BigIpGtmFactsWideIps(BigIpGtmFactsCommon):
         collection = getattr(self.api.tm.gtm.wideips, type)
         wideips = collection.get_collection(requests_params=rp)
         for wideip in wideips:
+            if self.params['filter']:
+                matches = re.match(self.params['filter'], str(wideip.name))
+                if not matches:
+                    continue
             facts = self.format_facts(wideip)
             results.append(facts)
         return results
@@ -384,6 +394,10 @@ class BigIpGtmFactsVirtualServers(BigIpGtmFactsCommon):
         rp = {'params': 'expandSubcollections=true'}
         servers = self.api.tm.gtm.servers.get_collection(requests_params=rp)
         for server in servers:
+            if self.params['filter']:
+                matches = re.match(self.params['filter'], str(server.name))
+                if not matches:
+                    continue
             facts = self.format_facts(server)
             results.append(facts)
         return results
@@ -425,12 +439,15 @@ class BigIpGtmFactsManager(object):
 
     def get_facts(self):
         result = dict()
-        facts = dict(
-            changed=True,
-            pool=self.get_pool_facts(),
-            wide_ip=self.get_wide_ip_facts(),
-            virtual_server=self.get_virtual_server_facts()
-        )
+        facts = dict()
+
+        if 'pool' in self.params['include']:
+            facts['pool'] = self.get_pool_facts()
+        if 'wide_ip' in self.params['include']:
+            facts['wide_ip'] = self.get_wide_ip_facts()
+        if 'virtual_server' in self.params['include']:
+            facts['virtual_server'] = self.get_virtual_server_facts()
+
         result.update(**facts)
         result.update(dict(changed=True))
         return result

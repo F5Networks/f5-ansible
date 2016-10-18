@@ -1,5 +1,17 @@
 ---
 
+- name: Create pool
+  bigip_pool:
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
 - name: Get GTM pool facts
   bigip_gtm_facts:
       password: "{{ bigip_password }}"
@@ -7,7 +19,6 @@
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       include: "pool"
-      fact_filter: "my_pool"
       validate_certs: "{{ validate_certs }}"
   register: result
 
@@ -15,3 +26,57 @@
   assert:
       that:
           - result|changed
+          - "'pool' in result"
+
+- name: Get GTM pool facts, many
+  bigip_gtm_facts:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      include:
+          - "pool"
+          - "wide_ip"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Get GTM pool facts, many
+  assert:
+      that:
+          - result|changed
+          - "'pool' in result"
+          - "'wide_ip' in result"
+
+- name: Get GTM pool facts with filter
+  bigip_gtm_facts:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      include: "pool"
+      filter: '{{ pool_filter }}'
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Get GTM pool facts with filter
+  assert:
+      that:
+          - result|changed
+          - result.pool.a|length == 1
+
+- name: Get GTM pool facts with bad filter
+  bigip_gtm_facts:
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      include: "pool"
+      filter: '{{ pool_filter_bad }}'
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Get GTM pool facts with bad filter
+  assert:
+      that:
+          - result|changed
+          - result.pool.a|length == 0
