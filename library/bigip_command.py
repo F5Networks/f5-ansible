@@ -62,7 +62,6 @@ notes:
     as pip install paramiko
 requirements:
   - paramiko
-  - requests
 author:
   - Tim Rupp (@caphrim007)
 '''
