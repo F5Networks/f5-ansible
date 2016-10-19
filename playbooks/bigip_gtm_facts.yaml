@@ -20,7 +20,8 @@
 #
 # Tested platforms:
 #
-#    - 11.5.4
+#    - 11.6.0
+#    - 12.1.0 HF1
 #
 
 - name: Test the bigip_gtm_facts module
