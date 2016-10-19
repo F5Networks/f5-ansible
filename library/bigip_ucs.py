@@ -21,9 +21,9 @@
 DOCUMENTATION = '''
 ---
 module: bigip_ucs
-short_description: Manage UCS files
+short_description: Manage UCS files.
 description:
-   - Manage UCS files
+   - Manage UCS files.
 version_added: "2.0"
 options:
   include_chassis_level_config:
@@ -34,10 +34,6 @@ options:
     required: false
     default: false
     choices: ['yes', 'no']
-  server:
-    description:
-      - BIG-IP host
-    required: true
   ucs:
     description:
       - The path to the UCS file to install. The parameter must be
@@ -74,10 +70,6 @@ options:
     required: false
     default: false
     choices: ['yes', 'no']
-  password:
-    description:
-      - BIG-IP password
-    required: true
   reset_trust:
     description:
       - When specified, the device and trust domain certs and keys are not
@@ -96,16 +88,7 @@ options:
       - absent
       - installed
       - present
-  user:
-    description:
-      - BIG-IP username
     required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
@@ -140,6 +123,7 @@ notes:
      RMA units.
    - This module will attempt to auto-recover a failed UCS load by using the
      iControl API to load the default backup UCS file (cs_backup.ucs)
+extends_documentation_fragment: f5
 requirements:
   - bigsuds
   - requests
