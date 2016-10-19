@@ -82,10 +82,43 @@ options:
       - drop-packet
       - fallback-ip
       - virtual-server-score
+  fallback_lb_method:
+    description:
+      - The load balancing mode that the system tries if both the
+        C(preferred_lb_method) and C(alternate_lb_method)s are unsuccessful
+        in picking a pool.
+    required: False
+    default: None
+    choices:
+      - round-robin
+      - return-to-dns
+      - ratio
+      - topology
+      - static-persistence
+      - global-availability
+      - virtual-server-capacity
+      - least-connections
+      - lowest-round-trip-time
+      - fewest-hops
+      - packet-rate
+      - cpu
+      - completion-rate
+      - quality-of-service
+      - kilobytes-per-second
+      - drop-packet
+      - fallback-ip
+      - virtual-server-score
   fallback_ipv4
-  fallback_ipv6:
     description:
       - Specifies the IPv4 address of the server to which the system
+        directs requests when it cannot use one of its pools to do so.
+        Note that the system uses the fallback IP only if you select the
+        C(fallback_ip) load balancing method.
+    required: False
+    default: None
+  fallback_ipv6:
+    description:
+      - Specifies the IPv6 address of the server to which the system
         directs requests when it cannot use one of its pools to do so.
         Note that the system uses the fallback IP only if you select the
         C(fallback_ip) load balancing method.
@@ -152,6 +185,8 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
+import copy
+
 GTM_POOL_TYPES = [
     'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
 ]
@@ -159,15 +194,11 @@ GTM_POOL_TYPES = [
 class BigIpGtmPoolManagerBase(object):
     def __init__(self, *args, **kwargs):
         self.api = None
+        self.params = kwargs
         self.changed_params = dict()
 
     def apply_changes(self):
         result = dict()
-
-        changed = self.apply_to_running_config()
-        if changed:
-            self.save_running_config()
-
         result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
@@ -214,7 +245,21 @@ class BigIpGtmPoolManagerBase(object):
         result = dict()
         result['name'] = str(pool.name)
         if hasattr(pool, 'alternateMode'):
-            result['alternate_mode'] = str(pool.alternateMode)
+            result['alternate_lb_method'] = str(pool.alternateMode)
+        if hasattr(pool, 'loadBalancingMode'):
+            result['preferred_lb_method'] = str(pool.loadBalancingMode)
+        if hasattr(pool, 'fallbackMode'):
+            result['fallback_lb_method'] = str(pool.fallbackMode)
+        if hasattr(pool, 'fallbackIpv4'):
+            result['fallback_ipv4'] = str(pool.fallbackIpv4)
+        if hasattr(pool, 'fallbackIpv6'):
+            result['fallback_ipv6'] = str(pool.fallbackIpv6)
+        if hasattr(pool, 'verifyMemberAvailability'):
+            availability = str(pool.verifyMemberAvailability)
+            if availability == 'enabled':
+                result['verify_member_availability'] = True
+            else:
+                result['verify_member_availability'] = False
         return result
 
     def update_gtm_pool(self):
@@ -236,8 +281,16 @@ class BigIpGtmPoolManagerBase(object):
     def get_changed_parameters(self):
         result = dict()
         current = self.read_gtm_pool_information()
-        if self.are_members_changed(current):
-            result['members'] = self.get_new_member_list(current['members'])
+        if self.is_preferred_lb_method_changed(current):
+            result['loadBalancingMode'] = self.params['preferred_lb_method']
+        if self.is_alternate_lb_method_changed(current):
+            result['alternateMode'] = self.params['alternate_lb_method']
+        if self.is_fallback_lb_method_changed(current):
+            result['fallbackMode'] = self.params['fallback_lb_method']
+        if self.should_set_fallback_ipv4(current):
+            result['fallbackIpv4'] = self.format_ipv4_address()
+        if self.should_set_fallback_ipv6(current):
+            result['fallbackIpv6'] = self.format_ipv6_address()
         return result
 
     def ensure_gtm_pool_is_present(self):
@@ -425,7 +478,7 @@ class BigIpGtmPoolModuleConfig(object):
         self.meta_args = dict()
         self.supports_check_mode = True
         self.states = ['absent', 'present', 'enabled', 'disabled']
-        self.lb_methods = [
+        self.preferred_lb_methods = [
             'round-robin', 'return-to-dns', 'ratio', 'topology',
             'static-persistence', 'global-availability',
             'virtual-server-capacity', 'least-connections',
@@ -433,6 +486,14 @@ class BigIpGtmPoolModuleConfig(object):
             'completion-rate', 'quality-of-service', 'kilobytes-per-second',
             'drop-packet', 'fallback-ip', 'virtual-server-score'
         ]
+        self.alternate_lb_methods = [
+            'round-robin', 'return-to-dns', 'none', 'ratio', 'topology',
+            'static-persistence', 'global-availability',
+            'virtual-server-capacity', 'packet-rate', 'drop-packet',
+            'fallback-ip', 'virtual-server-score'
+        ]
+        self.fallback_lb_methods = copy.copy(self.preferred_lb_methods)
+        self.fallback_lb_methods.append('none')
         self.types = GTM_POOL_TYPES
         self.initialize_meta_args()
         self.initialize_argument_spec()
@@ -444,11 +505,23 @@ class BigIpGtmPoolModuleConfig(object):
                 default='present',
                 choices=self.states,
             ),
-            lb_method=dict(
+            preferred_lb_method=dict(
                 type='str',
-                choices=self.lb_methods,
+                choices=self.preferred_lb_methods,
                 default=None
             ),
+            fallback_lb_method=dict(
+                type='str',
+                choices=self.fallback_lb_methods,
+                default=None
+            ),
+            alternate_lb_method=dict(
+                type='str',
+                choices=self..alternate_lb_methods,
+                default=None
+            ),
+            fallback_ipv4=dict(type='str', default=None),
+            fallback_ipv6=dict(type='str', default=None),
             type=dict(
                 type='str',
                 choices=self.types,
