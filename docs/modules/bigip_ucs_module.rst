@@ -1,8 +1,8 @@
 .. _bigip_ucs:
 
 
-bigip_ucs - Manage UCS files
-++++++++++++++++++++++++++++
+bigip_ucs - Manage UCS files.
++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.0
 
@@ -15,7 +15,7 @@ bigip_ucs - Manage UCS files
 Synopsis
 --------
 
-Manage UCS files
+Manage UCS files.
 
 
 Requirements (on host that executes module)
@@ -74,7 +74,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>reset_trust<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -86,10 +86,16 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
+    <td>yes</td>
     <td>installed</td>
         <td><ul><li>absent</li><li>installed</li><li>present</li></ul></td>
         <td><div>When <code>installed</code>, ensures that the UCS is uploaded and installed, on the system. When <code>present</code>, ensures that the UCS is uploaded. When <code>absent</code>, the UCS will be removed from the system.</div></td></tr>
@@ -104,12 +110,12 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
