@@ -1,0 +1,31 @@
+---
+
+# Test the bigip_gtm_pool module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_gtm_pool module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_pool.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_gtm_pool module
+#
+#    ansible-playbook -i notahost, playbooks/bigip_gtm_pool.yaml
+#
+# Tested platforms:
+#
+#    - NA
+#
+
+- name: Test the bigip_gtm_pool module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - bigip_gtm_pool
