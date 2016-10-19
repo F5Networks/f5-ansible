@@ -126,14 +126,14 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Contains the lb method for the wide ip and the pools that are within the wide ip. </td>
         <td align=center> changed </td>
         <td align=center> dict </td>
-        <td align=center> {'wide_ip': {'a': [], 'aaaa': [], 'cname': [], 'srv': [], 'naptr"': [{'persist_cidr_ipv4': '32', 'persist_cidr_ipv6': '128', 'pool_lb_mode': 'round-robin', 'name': 'foo.ok.com', 'failure_rcode_response': 'disabled', 'failure_rcode': 'noerror', 'partition': 'Common', 'enabled': 'True', 'last_resort_pool': '', 'failure_rcode_ttl': '0', 'ttl_persistence': '3600', 'full_path': '/Common/foo.ok.com', 'pools': [{'partition': 'Common', 'ratio': '1', 'name': 'd3qw', 'order': '0'}], 'minimal_response': 'enabled', 'persistence': 'disabled'}], 'mx': []}} </td>
+        <td align=center> {'wide_ip': [{'pool_lb_mode': 'round-robin', 'last_resort_pool': '', 'persist_cidr_ipv4': '32', 'persist_cidr_ipv6': '128', 'name': 'foo.ok.com', 'failure_rcode_response': 'disabled', 'failure_rcode': 'noerror', 'partition': 'Common', 'enabled': 'True', 'failure_rcode_ttl': '0', 'ttl_persistence': '3600', 'full_path': '/Common/foo.ok.com', 'pools': [{'partition': 'Common', 'ratio': '1', 'name': 'd3qw', 'order': '0'}], 'minimal_response': 'enabled', 'type': 'naptr', 'persistence': 'disabled'}]} </td>
     </tr>
             <tr>
         <td> pool </td>
         <td> Contains the pool object status and enabled status. </td>
         <td align=center> changed </td>
         <td align=center> dict </td>
-        <td align=center> {'pool': {'a': [], 'aaaa': [], 'naptr': [{'verify_member_availability': 'disabled', 'partition': 'Common', 'qos_packet_rate': '1', 'qos_hit_ratio': '5', 'alternate_mode': 'round-robin', 'members': [{'ratio': '1', 'name': 'ok3.com', 'service': '80', 'member_order': '0', 'disabled': 'True', 'flags': 'a', 'preference': '10', 'order': '10', 'full_path': 'ok3.com'}], 'ttl': '30', 'qos_vs_score': '0', 'qos_topology': '0', 'load_balancing_mode': 'round-robin', 'max_answers_returned': '1', 'fallback_mode': 'return-to-dns', 'qos_rtt': '50', 'name': 'd3qw', 'qos_kilobytes_second': '3', 'qos_lcs': '30', 'enabled': 'True', 'qos_vs_capacity': '0', 'qos_hops': '0', 'manual_resume': 'disabled', 'full_path': '/Common/d3qw', 'dynamic_ratio': 'disabled'}], 'cname': [], 'srv': [], 'mx': []}} </td>
+        <td align=center> {'pool': [{'verify_member_availability': 'disabled', 'partition': 'Common', 'qos_packet_rate': '1', 'qos_hit_ratio': '5', 'alternate_mode': 'round-robin', 'members': [{'ratio': '1', 'name': 'ok3.com', 'service': '80', 'member_order': '0', 'disabled': 'True', 'flags': 'a', 'preference': '10', 'order': '10', 'full_path': 'ok3.com'}], 'ttl': '30', 'qos_vs_score': '0', 'qos_topology': '0', 'load_balancing_mode': 'round-robin', 'max_answers_returned': '1', 'fallback_mode': 'return-to-dns', 'qos_rtt': '50', 'name': 'd3qw', 'qos_kilobytes_second': '3', 'qos_lcs': '30', 'enabled': 'True', 'qos_vs_capacity': '0', 'qos_hops': '0', 'manual_resume': 'disabled', 'full_path': '/Common/d3qw', 'type': 'naptr', 'dynamic_ratio': 'disabled'}]} </td>
     </tr>
         
     </table>
