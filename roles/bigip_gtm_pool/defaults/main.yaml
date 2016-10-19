@@ -1,0 +1,23 @@
+---
+
+pool_name: "foo.pool"
+pool_lb_method: "round-robin"
+pool_lb_method_alt:
+    - "round-robin"
+    - "return-to-dns"
+    - "ratio"
+    - "topology"
+    - "static-persistence"
+    - "global-availability"
+    - "virtual-server-capacity"
+    - "least-connections"
+    - "lowest-round-trip-time"
+    - "fewest-hops"
+    - "packet-rate"
+    - "cpu"
+    - "completion-rate"
+    - "quality-of-service"
+    - "kilobytes-per-second"
+    - "drop-packet"
+    - "fallback-ip"
+    - "virtual-server-score"
