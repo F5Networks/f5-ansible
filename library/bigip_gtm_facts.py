@@ -71,74 +71,64 @@ wide_ip:
     type: dict
     sample:
         wide_ip:
-            a: []
-            aaaa: []
-            cname: []
-            mx: []
-            naptr":
-              - enabled: "True"
-                failure_rcode: "noerror"
-                failure_rcode_response: "disabled"
-                failure_rcode_ttl: "0"
-                full_path: "/Common/foo.ok.com"
-                last_resort_pool: ""
-                minimal_response: "enabled"
-                name: "foo.ok.com"
-                partition: "Common"
-                persist_cidr_ipv4: "32"
-                persist_cidr_ipv6: "128"
-                persistence: "disabled"
-                pool_lb_mode: "round-robin"
-                pools:
-                    - name: "d3qw"
-                      order: "0"
-                      partition: "Common"
-                      ratio: "1"
-                ttl_persistence: "3600"
-            srv: []
+            - enabled: "True"
+              failure_rcode: "noerror"
+              failure_rcode_response: "disabled"
+              failure_rcode_ttl: "0"
+              full_path: "/Common/foo.ok.com"
+              last_resort_pool: ""
+              minimal_response: "enabled"
+              name: "foo.ok.com"
+              partition: "Common"
+              persist_cidr_ipv4: "32"
+              persist_cidr_ipv6: "128"
+              persistence: "disabled"
+              pool_lb_mode: "round-robin"
+              pools:
+                  - name: "d3qw"
+                    order: "0"
+                    partition: "Common"
+                    ratio: "1"
+              ttl_persistence: "3600"
+              type: "naptr"
 pool:
     description: Contains the pool object status and enabled status.
     returned: changed
     type: dict
     sample:
         pool:
-            a: []
-            aaaa: []
-            cname: []
-            mx: []
-            naptr:
-                - alternate_mode: "round-robin"
-                  dynamic_ratio: "disabled"
-                  enabled: "True"
-                  fallback_mode: "return-to-dns"
-                  full_path: "/Common/d3qw"
-                  load_balancing_mode: "round-robin"
-                  manual_resume: "disabled"
-                  max_answers_returned: "1"
-                  members:
-                      - disabled: "True"
-                        flags: "a"
-                        full_path: "ok3.com"
-                        member_order: "0"
-                        name: "ok3.com"
-                        order: "10"
-                        preference: "10"
-                        ratio: "1"
-                        service: "80"
-                  name: "d3qw"
-                  partition: "Common"
-                  qos_hit_ratio: "5"
-                  qos_hops: "0"
-                  qos_kilobytes_second: "3"
-                  qos_lcs: "30"
-                  qos_packet_rate: "1"
-                  qos_rtt: "50"
-                  qos_topology: "0"
-                  qos_vs_capacity: "0"
-                  qos_vs_score: "0"
-                  ttl: "30"
-                  verify_member_availability: "disabled"
-            srv: []
+            - alternate_mode: "round-robin"
+              dynamic_ratio: "disabled"
+              enabled: "True"
+              fallback_mode: "return-to-dns"
+              full_path: "/Common/d3qw"
+              load_balancing_mode: "round-robin"
+              manual_resume: "disabled"
+              max_answers_returned: "1"
+              members:
+                  - disabled: "True"
+                    flags: "a"
+                    full_path: "ok3.com"
+                    member_order: "0"
+                    name: "ok3.com"
+                    order: "10"
+                    preference: "10"
+                    ratio: "1"
+                    service: "80"
+              name: "d3qw"
+              partition: "Common"
+              qos_hit_ratio: "5"
+              qos_hops: "0"
+              qos_kilobytes_second: "3"
+              qos_lcs: "30"
+              qos_packet_rate: "1"
+              qos_rtt: "50"
+              qos_topology: "0"
+              qos_vs_capacity: "0"
+              qos_vs_score: "0"
+              ttl: "30"
+              type: "naptr"
+              verify_member_availability: "disabled"
 virtual_server:
     description:
         Contains the virtual server enabled and availability
@@ -211,12 +201,15 @@ class BigIpGtmFactsCommon(object):
             'virtualServersReference', 'nameReference'
         ]
         self.gtm_types = dict(
-            a='a_s',
-            aaaa='aaaas',
-            cname='cnames',
-            mx='mxs',
-            naptr='naptrs',
-            srv='srvs'
+            a_s='a',
+            aaaas='aaaa',
+            cnames='cname',
+            mxs='mx',
+            naptrs='naptr',
+            srvs='srv'
+        )
+        self.request_params = dict(
+            params='expandSubcollections=true'
         )
 
     def is_version_less_than_12(self):
@@ -234,6 +227,24 @@ class BigIpGtmFactsCommon(object):
             result[key] = str(val)
         return result
 
+    def filter_matches_name(self, name):
+        if not self.params['filter']:
+            return True
+        matches = re.match(self.params['filter'], str(name))
+        if matches:
+            return True
+        else:
+            return False
+
+    def get_facts_from_collection(self, collection, collection_type=None):
+        results = []
+        for item in collection:
+            if not self.filter_matches_name(item.name):
+                continue
+            facts = self.format_facts(item, collection_type)
+            results.append(facts)
+        return results
+
     def connect_to_bigip(self, **kwargs):
         return ManagementRoot(kwargs['server'],
                               kwargs['user'],
@@ -247,13 +258,8 @@ class BigIpGtmFactsPools(BigIpGtmFactsCommon):
         self.params = kwargs
 
     def get_facts(self):
-        result = dict()
-
         self.api = self.connect_to_bigip(**self.params)
-        facts = self.get_facts_from_device()
-
-        result.update(**facts)
-        return result
+        return self.get_facts_from_device()
 
     def get_facts_from_device(self):
         try:
@@ -265,45 +271,35 @@ class BigIpGtmFactsPools(BigIpGtmFactsCommon):
             raise F5ModuleError(str(e))
 
     def get_facts_with_types(self):
-        result = dict()
+        result = []
         for key, type in self.gtm_types.iteritems():
-            result[key] = self.get_all_facts_by_type(type)
+            facts = self.get_all_facts_by_type(key, type)
+            if facts:
+                result.append(facts)
         return result
 
     def get_facts_without_types(self):
-        facts = self.api.tm.gtm.pools.load()
-        return self.format_resource_facts(facts)
+        pools = self.api.tm.gtm.pools.get_collection(**self.request_params)
+        return self.get_facts_from_collection(pools)
 
-    def get_all_facts_by_type(self, type):
-        results = []
-        rp = {'params': 'expandSubcollections=true'}
+    def get_all_facts_by_type(self, key, type):
+        collection = getattr(self.api.tm.gtm.pools, key)
+        pools = collection.get_collection(**self.request_params)
+        return self.get_facts_from_collection(pools, type)
 
-        collection = getattr(self.api.tm.gtm.pools, type)
-        pools = collection.get_collection(requests_params=rp)
-        for pool in pools:
-            if self.params['filter']:
-                matches = re.match(self.params['filter'], str(pool.name))
-                if not matches:
-                    continue
-            facts = self.format_pool_facts(pool)
-            results.append(facts)
-        return results
-
-    def format_pool_facts(self, pool):
+    def format_facts(self, pool, collection_type):
         result = dict()
-
         pool_dict = pool.to_dict()
         result.update(self.format_string_facts(pool_dict))
         result.update(self.format_member_facts(pool))
-
+        if collection_type:
+            result['type'] = collection_type
         return camel_dict_to_snake_dict(result)
 
     def format_member_facts(self, pool):
         result = []
-
         if not 'items' in pool.membersReference:
             return dict(members=[])
-
         for member in pool.membersReference['items']:
             member_facts = self.format_string_facts(member)
             result.append(member_facts)
@@ -316,13 +312,8 @@ class BigIpGtmFactsWideIps(BigIpGtmFactsCommon):
         self.params = kwargs
 
     def get_facts(self):
-        result = dict()
-
         self.api = self.connect_to_bigip(**self.params)
-        facts = self.get_facts_from_device()
-
-        result.update(**facts)
-        return result
+        return self.get_facts_from_device()
 
     def get_facts_from_device(self):
         try:
@@ -334,43 +325,37 @@ class BigIpGtmFactsWideIps(BigIpGtmFactsCommon):
             raise F5ModuleError(str(e))
 
     def get_facts_with_types(self):
-        result = dict()
+        result = []
         for key, type in self.gtm_types.iteritems():
-            result[key] = self.get_all_facts_by_type(type)
+            facts = self.get_all_facts_by_type(key, type)
+            if facts:
+                result.append(facts)
         return result
 
     def get_facts_without_types(self):
-        facts = self.api.tm.gtm.wideips.load()
-        return self.format_resource_facts(facts)
+        wideips = self.api.tm.gtm.wideips.get_collection(
+            **self.request_params
+        )
+        return self.get_facts_from_collection(wideips)
 
-    def get_all_facts_by_type(self, type):
-        results = []
-        rp = {'params': 'expandSubcollections=true'}
+    def get_all_facts_by_type(self, key, type):
+        collection = getattr(self.api.tm.gtm.wideips, key)
+        wideips = collection.get_collection(**self.request_params)
+        return self.get_facts_from_collection(wideips, type)
 
-        collection = getattr(self.api.tm.gtm.wideips, type)
-        wideips = collection.get_collection(requests_params=rp)
-        for wideip in wideips:
-            if self.params['filter']:
-                matches = re.match(self.params['filter'], str(wideip.name))
-                if not matches:
-                    continue
-            facts = self.format_facts(wideip)
-            results.append(facts)
-        return results
-
-    def format_facts(self, wideip):
+    def format_facts(self, wideip, collection_type):
         result = dict()
         wideip_dict = wideip.to_dict()
         result.update(self.format_string_facts(wideip_dict))
         result.update(self.format_pool_facts(wideip))
+        if collection_type:
+            result['type'] = collection_type
         return camel_dict_to_snake_dict(result)
 
     def format_pool_facts(self, wideip):
         result = []
-
         if not hasattr(wideip, 'pools'):
             return dict(pools=[])
-
         for pool in wideip.pools:
             pool_facts = self.format_string_facts(pool)
             result.append(pool_facts)
@@ -390,19 +375,12 @@ class BigIpGtmFactsVirtualServers(BigIpGtmFactsCommon):
             raise F5ModuleError(str(e))
 
     def get_facts_from_device(self):
-        results = []
-        rp = {'params': 'expandSubcollections=true'}
-        servers = self.api.tm.gtm.servers.get_collection(requests_params=rp)
-        for server in servers:
-            if self.params['filter']:
-                matches = re.match(self.params['filter'], str(server.name))
-                if not matches:
-                    continue
-            facts = self.format_facts(server)
-            results.append(facts)
-        return results
+        servers = self.api.tm.gtm.servers.get_collection(
+            **self.request_params
+        )
+        return self.get_facts_from_collection(servers)
 
-    def format_facts(self, server):
+    def format_facts(self, server, collection_type=None):
         result = dict()
         server_dict = server.to_dict()
         result.update(self.format_string_facts(server_dict))
@@ -412,10 +390,8 @@ class BigIpGtmFactsVirtualServers(BigIpGtmFactsCommon):
 
     def format_address_facts(self, server):
         result = []
-
         if not hasattr(server, 'addresses'):
             return dict(addresses=[])
-
         for address in server.addresses:
             address_facts = self.format_string_facts(address)
             result.append(address_facts)
@@ -423,10 +399,8 @@ class BigIpGtmFactsVirtualServers(BigIpGtmFactsCommon):
 
     def format_virtual_server_facts(self, server):
         result = []
-
         if not 'items' in server.virtualServersReference:
             return dict(virtual_servers=[])
-
         for server in server.virtualServersReference['items']:
             server_facts = self.format_string_facts(server)
             result.append(server_facts)

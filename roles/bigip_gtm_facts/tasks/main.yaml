@@ -1,17 +1,5 @@
 ---
 
-- name: Create pool
-  bigip_pool:
-      lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
-
 - name: Get GTM pool facts
   bigip_gtm_facts:
       password: "{{ bigip_password }}"
@@ -62,7 +50,7 @@
   assert:
       that:
           - result|changed
-          - result.pool.a|length == 1
+          - result.pool|length == 1
 
 - name: Get GTM pool facts with bad filter
   bigip_gtm_facts:
@@ -79,4 +67,4 @@
   assert:
       that:
           - result|changed
-          - result.pool.a|length == 0
+          - result.pool|length == 0
