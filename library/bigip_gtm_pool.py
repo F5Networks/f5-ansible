@@ -108,17 +108,9 @@ options:
       - drop-packet
       - fallback-ip
       - virtual-server-score
-  fallback_ipv4
+  fallback_ip:
     description:
-      - Specifies the IPv4 address of the server to which the system
-        directs requests when it cannot use one of its pools to do so.
-        Note that the system uses the fallback IP only if you select the
-        C(fallback_ip) load balancing method.
-    required: False
-    default: None
-  fallback_ipv6:
-    description:
-      - Specifies the IPv6 address of the server to which the system
+      - Specifies the IPv4, or IPv6 address of the server to which the system
         directs requests when it cannot use one of its pools to do so.
         Note that the system uses the fallback IP only if you select the
         C(fallback_ip) load balancing method.
@@ -191,6 +183,7 @@ GTM_POOL_TYPES = [
     'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
 ]
 
+
 class BigIpGtmPoolManagerBase(object):
     def __init__(self, *args, **kwargs):
         self.api = None
@@ -199,9 +192,23 @@ class BigIpGtmPoolManagerBase(object):
 
     def apply_changes(self):
         result = dict()
+        changed = self.apply_to_running_config()
         result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
+
+    def is_version_less_than_12(self):
+        """Checks to see if the TMOS version is less than 12
+
+        Anything less than BIG-IP 12.x does not support typed pools.
+
+        :return:
+        """
+        version = self.api.tmos_version
+        if LooseVersion(version) < LooseVersion('12.0.0'):
+            return True
+        else:
+            return False
 
     def apply_to_running_config(self):
         try:
@@ -214,10 +221,45 @@ class BigIpGtmPoolManagerBase(object):
             raise F5ModuleError(str(e))
 
     def present(self):
+        self.validate_fallback_ip_args()
         if self.gtm_pool_exists():
             return self.update_gtm_pool()
         else:
             return self.ensure_gtm_pool_is_present()
+
+    def validate_fallback_ip_args(self):
+        """Verify the fallback IP parameters for lb method
+
+        The fallback IP address is required if any of the lb method parameters
+        is set to 'fallback-ip'. This method raises the necessary exceptions
+        if the user specified a 'fallback-ip' value for any of their lb
+        methods without also specifying a valid IP address
+
+        :return:
+        """
+        methods = self.get_lb_method_parameter_values()
+        if not any(l == 'fallback-ip' for l in methods):
+            return
+
+        if self.params['fallback_ip'] is None:
+            raise F5ModuleError(
+                "You must provide a valid IP address when specifying"
+                "a preferred_lb_method of type 'fallback-ip'"
+            )
+
+        try:
+            str(IPAddress(self.params['fallback_ip']))
+        except AddrFormatError:
+            raise F5ModuleError(
+                'The provided fallback address is not a valid IP address'
+            )
+
+    def get_lb_method_parameter_values(self):
+        result = list()
+        result.append(self.params['preferred_lb_method'])
+        result.append(self.params['alternate_lb_method'])
+        result.append(self.params['fallback_lb_method'])
+        return result
 
     def absent(self):
         changed = False
@@ -250,10 +292,18 @@ class BigIpGtmPoolManagerBase(object):
             result['preferred_lb_method'] = str(pool.loadBalancingMode)
         if hasattr(pool, 'fallbackMode'):
             result['fallback_lb_method'] = str(pool.fallbackMode)
+
+        # In later versions of BIG-IP this parameter was changed to
+        # just be an IP address. I flatten all of them to a single
+        # field and let the code decide based on the format of the
+        # address and the version of BIG-IP.
         if hasattr(pool, 'fallbackIpv4'):
-            result['fallback_ipv4'] = str(pool.fallbackIpv4)
-        if hasattr(pool, 'fallbackIpv6'):
-            result['fallback_ipv6'] = str(pool.fallbackIpv6)
+            result['fallback_ip'] = str(pool.fallbackIpv4)
+        elif hasattr(pool, 'fallbackIpv6'):
+            result['fallback_ip'] = str(pool.fallbackIpv6)
+        elif hasattr(pool, 'fallbackIp'):
+            result['fallback_ip'] = str(pool.fallbackIp)
+
         if hasattr(pool, 'verifyMemberAvailability'):
             availability = str(pool.verifyMemberAvailability)
             if availability == 'enabled':
@@ -287,11 +337,54 @@ class BigIpGtmPoolManagerBase(object):
             result['alternateMode'] = self.params['alternate_lb_method']
         if self.is_fallback_lb_method_changed(current):
             result['fallbackMode'] = self.params['fallback_lb_method']
-        if self.should_set_fallback_ipv4(current):
-            result['fallbackIpv4'] = self.format_ipv4_address()
-        if self.should_set_fallback_ipv6(current):
-            result['fallbackIpv6'] = self.format_ipv6_address()
+        if self.should_fallback_ip_be_set(current):
+            fallback_ip = self.format_fallback_ip()
+            result.update(fallback_ip)
         return result
+
+    def is_preferred_lb_method_changed(self, current):
+        lb_method = self.params['preferred_lb_method']
+        if lb_method is None:
+            return False
+        if 'preferred_lb_method' not in current:
+            return True
+        if lb_method != current['preferred_lb_method']:
+            return True
+        else:
+            return False
+
+    def is_alternate_lb_method_changed(self, current):
+        lb_method = self.params['alternate_lb_method']
+        if lb_method is None:
+            return False
+        if 'alternate_lb_method' not in current:
+            return True
+        if lb_method != current['alternate_lb_method']:
+            return True
+        else:
+            return False
+
+    def is_fallback_lb_method_changed(self, current):
+        lb_method = self.params['fallback_lb_method']
+        if lb_method is None:
+            return False
+        if 'fallback_lb_method' not in current:
+            return True
+        if lb_method != current['fallback_lb_method']:
+            return True
+        else:
+            return False
+
+    def should_fallback_ip_be_set(self, current):
+        fallback_ip = self.params['fallback_ip']
+        if fallback_ip is None:
+            return False
+        if 'fallback_ip' not in current:
+            return True
+        if fallback_ip != current['fallback_ip']:
+            return True
+        else:
+            return False
 
     def ensure_gtm_pool_is_present(self):
         params = self.get_gtm_pool_creation_parameters()
@@ -311,6 +404,19 @@ class BigIpGtmPoolManagerBase(object):
         if self.gtm_pool_exists():
             raise F5ModuleError("Failed to delete the GTM pool")
         return True
+
+    def get_gtm_pool_creation_parameters(self):
+        result = dict(
+            name=self.params['name'],
+            partition=self.params['partition']
+        )
+        if self.params['preferred_lb_method']:
+            result['loadBalancingMode'] = self.params['preferred_lb_method']
+        if self.params['alternate_lb_method']:
+            result['alternateMode'] = self.params['alternate_lb_method']
+        if self.params['fallback_lb_method']:
+            result['fallbackMode'] = self.params['fallback_lb_method']
+        return result
 
     def connect_to_bigip(self, **kwargs):
         return ManagementRoot(kwargs['server'],
@@ -358,7 +464,11 @@ class BigIpTypedGtmPoolManager(BigIpGtmPoolManagerBase):
             )
 
         self.resource = self.select_resource_by_type()
-        super(BigIpTypedGtmPoolManager, self).present()
+        return super(BigIpTypedGtmPoolManager, self).present()
+
+    def absent(self):
+        self.resource = self.select_resource_by_type()
+        return super(BigIpTypedGtmPoolManager, self).absent()
 
     def load_gtm_pool(self):
         return self.resource.load(
@@ -380,12 +490,12 @@ class BigIpTypedGtmPoolManager(BigIpGtmPoolManagerBase):
         r.modify(**params)
 
     def get_gtm_pool_creation_parameters(self):
-        members = self.get_formatted_members_list()
-        return dict(
-            name=self.params['name'],
-            partition=self.params['partition'],
-            members=members
-        )
+        result = super(BigIpTypedGtmPoolManager, self)\
+            .get_gtm_pool_creation_parameters()
+
+        if self.params['fallback_ip']:
+            result.update(dict(fallbackIp=self.params['fallback_ip']))
+        return result
 
     def create_gtm_pool_on_device(self, params):
         self.resource.create(**params)
@@ -396,6 +506,14 @@ class BigIpTypedGtmPoolManager(BigIpGtmPoolManagerBase):
             partition=self.params['partition']
         )
         pool.delete()
+
+    def format_fallback_ip(self, address):
+        try:
+            return dict(fallbackIp=str(IPAddress(address)))
+        except AddrFormatError:
+            raise F5ModuleError(
+                'The provided fallback address is not a valid IP address'
+            )
 
 class BigIpUntypedGtmPoolManager(BigIpGtmPoolManagerBase):
     def __init__(self, *args, **kwargs):
@@ -422,12 +540,12 @@ class BigIpUntypedGtmPoolManager(BigIpGtmPoolManagerBase):
         r.modify(**params)
 
     def get_gtm_pool_creation_parameters(self):
-        members = self.get_formatted_members_list()
-        return dict(
-            name=self.params['name'],
-            partition=self.params['partition'],
-            members=members
-        )
+        result = super(BigIpUntypedGtmPoolManager, self) \
+            .get_gtm_pool_creation_parameters()
+
+        if self.params['fallback_ip']:
+            result.update(self.format_fallback_ip())
+        return result
 
     def create_gtm_pool_on_device(self, params):
         self.api.tm.gtm.pools.pool.create(**params)
@@ -438,6 +556,19 @@ class BigIpUntypedGtmPoolManager(BigIpGtmPoolManagerBase):
             partition=self.params['partition']
         )
         pool.delete()
+
+    def format_fallback_ip(self, address):
+        try:
+            address = IPAddress(address)
+            if address.version == 4:
+                return dict(fallbackIpv4=str(address.ip))
+            elif address.version == 6:
+                return dict(fallbackIpv6=str(address.ip))
+        except AddrFormatError:
+            raise F5ModuleError(
+                'The provided fallback address is not a valid IP address'
+            )
+
 
 class BigIpGtmPoolManager(object):
     def __init__(self, *args, **kwargs):
@@ -517,11 +648,10 @@ class BigIpGtmPoolModuleConfig(object):
             ),
             alternate_lb_method=dict(
                 type='str',
-                choices=self..alternate_lb_methods,
+                choices=self.alternate_lb_methods,
                 default=None
             ),
-            fallback_ipv4=dict(type='str', default=None),
-            fallback_ipv6=dict(type='str', default=None),
+            fallback_ip=dict(type='str', default=None),
             type=dict(
                 type='str',
                 choices=self.types,
