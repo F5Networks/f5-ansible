@@ -1,101 +1,19 @@
 ---
 
-- name: Create pool
-  bigip_gtm_pool:
-      lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
+- name: Test type 'A' GTM pools
+  include: type-a-gtm-pools.yaml
 
-- name: Assert Create pool
-  assert:
-      that:
-          - result|changed
+- name: Test type 'AAAA' GTM pools
+  include: type-aaaa-gtm-pools.yaml
 
-- name: Create pool - idempotent check
-  bigip_gtm_pool:
-      lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
+- name: Test type 'CNAME' GTM pools
+  include: type-cname-gtm-pools.yaml
 
-- name: Assert Create pool - idempotent check
-  assert:
-      that:
-          - not result|changed
+- name: Test type 'MX' GTM pools
+  include: type-mx-gtm-pools.yaml
 
-- name: Change pool lb_method, ratio_member
-  bigip_gtm_pool:
-      lb_method: "{{ pool_lb_method_alt[0] }}"
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
+- name: Test type 'naptr' GTM pools
+  include: type-naptr-gtm-pools.yaml
 
-- name: Assert Change pool lb_method, ratio_member
-  assert:
-      that:
-          - result|changed
-
-- name: Change pool lb_method, ratio_member - Idempotent check
-  bigip_gtm_pool:
-      lb_method: "{{ pool_lb_method_alt[0] }}"
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
-
-- name: Assert Change pool lb_method, ratio_member - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
-- name: Delete pool
-  bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
-
-- name: Assert Delete pool
-  assert:
-      that:
-          - result|changed
-
-- name: Delete pool - idempotent check
-  bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-  register: result
-
-- name: Assert Delete pool - idempotent check
-  assert:
-      that:
-          - not result|changed
+- name: Test type 'srv' GTM pools
+  include: type-srv-gtm-pools.yaml
