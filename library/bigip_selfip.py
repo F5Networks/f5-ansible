@@ -278,11 +278,14 @@ class BigIpSelfIp(object):
 
     def read(self):
         """Read information and transform it
+
         The values that are returned by BIG-IP in the f5-sdk can have encoding
         attached to them as well as be completely missing in some cases.
+
         Therefore, this method will transform the data from the BIG-IP into a
         format that is more easily consumable by the rest of the class and the
         parameters that are supported by the module.
+
         :return: List of values currently stored in BIG-IP, formatted for use
         in this class.
         """
@@ -321,16 +324,21 @@ class BigIpSelfIp(object):
 
     def verify_services(self):
         """Verifies that a supplied service string has correct format
+
         The string format for port lockdown is PROTOCOL:PORT. This method
         will verify that the provided input matches the allowed protocols
         and the port ranges before submitting to BIG-IP.
+
         The only allowed exceptions to this rule are the following values
+
           * all
           * default
           * none
+
         These are special cases that are handled differently in the API.
         "all" is set as a string, "default" is set as a one item list, and
         "none" removes the key entirely from the REST API.
+
         :raises F5ModuleError:
         """
         result = []
@@ -362,15 +370,19 @@ class BigIpSelfIp(object):
 
     def fmt_services(self, services):
         """Returns services formatted for consumption by f5-sdk update
+
         The BIG-IP endpoint for services takes different values depending on
         what you want the "allowed services" to be. It can be any of the
         following
+
             - a list containing "protocol:port" values
             - the string "all"
             - a null value, or None
+
         This is a convenience function to massage the values the user has
         supplied so that they are formatted in such a way that BIG-IP will
         accept them and apply the specified policy.
+
         :param services: The services to format. This is always a Python set
         :return:
         """
@@ -422,6 +434,7 @@ class BigIpSelfIp(object):
             # you are not allowed to change it.
             try:
                 address = IPNetwork(current['address'])
+
                 new_addr = "%s/%s" % (address.ip, netmask)
                 nipnet = IPNetwork(new_addr)
                 if route_domain is not None:
@@ -502,16 +515,22 @@ class BigIpSelfIp(object):
 
     def get_vlans(self):
         """Returns formatted list of VLANs
+
         The VLAN values stored in BIG-IP are done so using their fully
         qualified name which includes the partition. Therefore, "correct"
         values according to BIG-IP look like this
+
             /Common/vlan1
+
         This is in contrast to the formats that most users think of VLANs
         as being stored as
+
             vlan1
+
         To provide for the consistent user experience while not turfing
         BIG-IP, we need to massage the values that are provided by the
         user so that they include the partition.
+
         :return: List of vlans formatted with preceeding partition
         """
         partition = self.params['partition']
@@ -543,6 +562,7 @@ class BigIpSelfIp(object):
             )
         else:
             vlan = "/%s/%s" % (partition, vlan)
+
         try:
             ipin = "%s/%s" % (address, netmask)
             ipnet = IPNetwork(ipin)
