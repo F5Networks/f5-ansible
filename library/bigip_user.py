@@ -368,7 +368,7 @@ class BigIpUserManager(object):
     def is_partition_access_changed(self, current):
         if self.params['partition_access'] is None:
             return False
-        if 'partitionAccess' not in current:
+        if 'partition_access' not in current:
             return True
         if self.params['partition_access'] == current['partition_access']:
             return False
