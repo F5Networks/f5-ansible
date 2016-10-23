@@ -4,7 +4,7 @@ DOCTEST := python ../scripts/ansible-doc-test.py
 PYHOOK := 'import sys;sys.path.insert(1,".")'
 PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
-MODULE_TARGET = $(shell echo $@ | tr '-' '_')
+MODULE_TARGET = $(shell echo $@ | sed s/cov-// | tr '-' '_')
 
 .PHONY: docs flake8
 
