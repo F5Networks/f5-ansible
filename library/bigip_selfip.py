@@ -70,6 +70,7 @@ options:
           If none, id of the route domain will be "0" (default route domain)
     required: false
     default: none
+    version_added: 2.3
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
