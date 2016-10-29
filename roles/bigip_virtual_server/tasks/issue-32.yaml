@@ -1,67 +1,76 @@
 ---
 
-# @see https://github.com/F5Networks/f5-ansible/issues/38
+# @see https://github.com/F5Networks/f5-ansible/issues/32
 
 - name: Create pool
   bigip_pool:
-      name: "test_pool"
+      name: "mypool"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Create virtual server
+  bigip_virtual_server:
+      name: "myvip"
+      destination: "1.1.1.1"
+      port: 80
+      pool: "mypool"
+      snat: "Automap"
+      description: "My VIP"
+      all_profiles:
+          - tcp
+          - http
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
       state: "present"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create pool
+- name: Create virtual server
   assert:
       that:
           - result|changed
 
-- name: Add virtual server
+- name: Create virtual server - Idempotent check
   bigip_virtual_server:
-      destination: "{{ item.lip }}"
-      name: "{{ item.lname }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      port: "{{ item.lport }}"
-      pool: "{{ item.lpool|default(omit) }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
+      name: "myvip"
+      destination: "1.1.1.1"
+      port: 80
+      pool: "mypool"
       snat: "Automap"
+      description: "My VIP"
+      all_profiles:
+          - tcp
+          - http
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
       state: "present"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-  with_items:
-    - lname: 'VS_HTTP1'
-      lip: '1.2.3.4'
-      lport: '80'
-    - lname: 'VS_HTTP2'
-      lpool: 'test_pool'
-      lip: '1.2.3.5'
-      lport: '80'
+  register: result
+
+- name: Create virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
 
 - name: Delete virtual server
   bigip_virtual_server:
-      destination: "{{ item.lip }}"
-      name: "{{ item.lname }}"
+      destination: "1.1.1.1"
+      name: "myvip"
       partition: "{{ bigip_partition }}"
       password: "{{ bigip_password }}"
-      port: "{{ item.lport }}"
-      pool: "{{ item.lpool|default(omit) }}"
+      port: 80
+      pool: "mypool"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
-  with_items:
-    - lname: 'VS_HTTP1'
-      lip: '1.2.3.4'
-      lport: '80'
-    - lname: 'VS_HTTP2'
-      lpool: 'test_pool'
-      lip: '1.2.3.5'
-      lport: '80'
 
 - name: Delete pool
   bigip_pool:
