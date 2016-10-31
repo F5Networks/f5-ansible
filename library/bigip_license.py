@@ -583,6 +583,7 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             fh.close()
 
         lic_server = self.test_license_server()
+        lic_status = self.get_license_activation_status()
         if not lic_server and lic_status == 'STATE_DISABLED':
             raise UnreachableActivationServerError
 
