@@ -238,6 +238,13 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+try:
+    import bigsuds
+except ImportError:
+    BIGSUDS_AVAILABLE = False
+else:
+    BIGSUDS_AVAILABLE = True
+
 SECTOR_SIZE = 2048
 TRANSPORTS = ['rest', 'soap']
 STATES = ['absent', 'activated', 'installed', 'present']
