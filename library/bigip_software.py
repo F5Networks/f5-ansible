@@ -249,6 +249,14 @@ CHUNK_SIZE = 512 * 1024
 class SoftwareInstallError(Exception):
     pass
 
+class ActiveVolumeError(Exception):
+    pass
+
+class NoVolumeError(Exception):
+    pass
+
+class NoBaseImageError(Exception):
+    pass
 
 class ISO9660IOError(IOError):
     def __init__(self, path):
