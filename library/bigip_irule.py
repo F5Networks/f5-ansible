@@ -72,7 +72,7 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Add the iRule contained in templated irule.tcl to the LTM module
+- name: Add the iRule contained in template irule.tcl to the LTM module
   bigip_irule:
       content: "{{ lookup('template', 'irule-template.tcl') }}"
       module: "ltm"
