@@ -21,9 +21,9 @@
 DOCUMENTATION = '''
 ---
 module: bigip_virtual_address
-short_description: Manages F5 BIG-IP LTM virtual addresses
+short_description: Manage LTM virtual addresses on a BIG-IP
 description:
-  - Manages F5 BIG-IP LTM virtual addresses
+  - Manage LTM virtual addresses on a BIG-IP
 version_added: "2.3"
 options:
   address:
