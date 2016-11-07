@@ -141,7 +141,7 @@ class BigIpiAppTemplateManager(object):
 
     def iapp_template_exists(self):
         return self.api.tm.sys.application.templates.template.exists(
-            name=self.params['address'],
+            name=self.params['name'],
             partition=self.params['partition']
         )
 
@@ -158,7 +158,7 @@ class BigIpiAppTemplateManager(object):
 
     def get_iapp_template_creation_parameters(self):
         result = dict(
-            name=self.params['address'],
+            name=self.params['name'],
             partition=self.params['partition']
         )
 
@@ -187,7 +187,7 @@ class BigIpiAppTemplateManager(object):
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
             tpl = api.tm.sys.application.templates.template.load(
-                name=self.params['address'],
+                name=self.params['name'],
                 partition=self.params['partition']
             )
             tpl.delete()
