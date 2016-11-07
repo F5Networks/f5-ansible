@@ -436,7 +436,7 @@ class BigIpUserManager(object):
         )
         if self.params['full_name']:
             result['description'] = self.params['full_name']
-        elif self.params['password_credential']:
+        if self.params['password_credential']:
             result['password'] = self.params['password_credential']
         if not self.params['shell']:
             return result
