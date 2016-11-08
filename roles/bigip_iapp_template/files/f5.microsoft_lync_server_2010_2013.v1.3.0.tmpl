@@ -1,0 +1,2475 @@
+
+sys application template /Common/f5.microsoft_lync_server_2010_2013.v1.3.0 {
+    actions {
+        definition {
+            html-help {
+                <h2>Lync Server Template</h2>
+<p>This template creates a
+  complete configuration optimized for managing Microsoft Lync Server 2010 or 2013 traffic. You
+  configure settings once for each Lync Server role you plan to deploy. Depending on the
+  role, you may see only some of the settings described. For more information, consult the 
+  Lync 2010/2013 Deployment Guide at http://www.f5.com/pdf/deployment-guides/microsoft-lync-iapp-dg.pdf </p>
+            }
+            implementation {
+
+set DEFAULT_ANSWER    /#default#
+set DO_NOT_USE_ANSWER /#do_not_use#
+set CREATE_NEW_ANSWER /#create_new#
+set USE_PREVIOUS_ANSWER /#use_previous#
+                
+tmsh::log_dest file
+tmsh::log_level crit
+
+tmsh::include "f5.app_utils"
+
+# constants
+set NO_ANSWER "No"
+set YES_ANSWER "Yes"
+set WAN_OPTION "WAN"
+set EMPTY_STRING "EMPTY_STRING_NO_VALUE_PRESENT"
+set CREATE_NEW_POOL_OPTION "Create New Pool"
+set CREATE_NEW_MONITOR_OPTION "Create New Monitor"
+set ADDR_FIELD "addr"
+set PORT_FIELD "port"
+set RATIO_FIELD "ratio"
+set CONNECTION_LIMIT_FIELD "connection_limit"
+set ONE_SPACE " "
+set HTTP_11_VERSION_STRING "\"Version 1.1\""
+set rp_fe_pool_name " "
+set rp_dir_pool_name " "
+
+proc tmsh_create { component arguments } {
+    regsub -all {\"} $arguments "\\\"" arguments
+    regsub -all {\[} $arguments "\\\[" arguments
+    regsub -all {\]} $arguments "\\\]" arguments
+    tmsh::run_proc f5.app_utils:do_tmsh_create "\"$component\"" "\"$arguments\""
+}
+
+proc tmsh_modify { component arguments } {
+    regsub -all {\"} $arguments "\\\"" arguments
+    regsub -all {\[} $arguments "\\\[" arguments
+    regsub -all {\]} $arguments "\\\]" arguments
+    tmsh::run_proc f5.app_utils:do_tmsh_modify "\"$component\"" "\"$arguments\""
+}
+
+proc safe_is_ipv6 { addr } {
+    set dot_location [string first "." $addr]
+    set colon_location [string first ":" $addr]
+    if { $dot_location == -1 } {
+        return $::YES_ANSWER        
+    }
+    if { $colon_location == -1 } {
+        return $::NO_ANSWER
+    }
+
+    if { [expr { $dot_location - $colon_location }] > 0 } {
+        return $::YES_ANSWER        
+    } else {
+        return $::NO_ANSWER
+    }    
+}
+
+proc create_safe_destination { addr port} {
+    set destination $addr
+    if { [safe_is_ipv6 $addr] == $::YES_ANSWER } {
+        set delimiter "."
+    } else {
+        set delimiter ":"
+    }
+    append destination $delimiter
+    append destination $port
+
+    return $destination
+}
+
+proc add_client_server_profiles { 
+        vs_name 
+        server_profile_name 
+        client_profile_name } {
+    if { $server_profile_name == $client_profile_name } {
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $server_profile_name \{ context all \} \}"
+    } else {
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $server_profile_name \{ context serverside \} \}"
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $client_profile_name \{ context clientside \} \}"
+    }
+}
+
+proc add_reverse_proxy_ssl_profiles { 
+        vs_name 
+        server_profile_name 
+        client_profile_name { client_profile_name2 "" } } {
+    if { $server_profile_name == $client_profile_name } {
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $server_profile_name \{ context all \} \}"
+    } else {
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $server_profile_name \{ context serverside \} \}"
+        tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $client_profile_name \{ context clientside \} \}"
+		if { $client_profile_name2 != "none" }  {
+			tmsh_modify "/ ltm virtual" "$vs_name profiles add \{ $client_profile_name2 \{ context clientside \} \}"
+		}
+    }
+}
+
+proc create_secure_reverse_proxy_irule {  } {
+    set secure_reverse_proxy_irule_name [format "%s_%s" $tmsh::app_name secure_reverse_proxy]   
+
+	set rule_web_host ${::reverse_proxy__web_svc_fqdn}\*
+
+	if { $::reverse_proxy__deploy_mobility == $::YES_ANSWER } {
+	set rule_mobility_host ${::reverse_proxy__mobility_url}\*
+	} elseif { $::reverse_proxy__deploy_mobility == $::NO_ANSWER } {
+	set rule_mobility_host "# "
+	}
+
+	set meet_loc [string first "/" $::reverse_proxy__meet_url] 
+
+    if { $meet_loc != -1 } {
+    set string_length [string length $::reverse_proxy__meet_url]
+    set rule_meet_uri [string range $::reverse_proxy__meet_url $meet_loc $string_length]\*
+	set rule_meet_host_long [string range $::reverse_proxy__meet_url 0 $meet_loc]
+	set rule_meet_host [string trimright $rule_meet_host_long "/"]
+    } elseif { $meet_loc == -1 } {
+    set rule_meet_host ${::reverse_proxy__meet_url}\*
+	set rule_meet_uri "# "
+    }	
+
+	set dial_loc [string first "/" $::reverse_proxy__dialin_url] 
+
+    if { $dial_loc != -1 } {
+    set string_length [string length $::reverse_proxy__dialin_url]
+    set rule_dialin_uri [string range $::reverse_proxy__dialin_url $dial_loc $string_length]\*
+	set rule_dialin_host_long [string range $::reverse_proxy__dialin_url 0 $dial_loc]
+	set rule_dialin_host [string trimright $rule_dialin_host_long "/"]
+    } elseif { $dial_loc == -1 } {
+    set rule_dialin_host ${::reverse_proxy__dialin_url}\*
+	set rule_dialin_uri "# "
+    }
+
+
+	if { $::reverse_proxy__deploy_director == $::YES_ANSWER } {
+	set rule_director_host ${::reverse_proxy__director_fqdn}\*
+	} elseif { $::reverse_proxy__deploy_director == $::NO_ANSWER } {
+	set rule_director_host "# "
+	set ::rp_dir_pool_name $::rp_fe_pool_name
+	}
+
+	if { $meet_loc != -1 && $dial_loc != -1 } {
+	set irule_buffer [string trim "{    
+when HTTP_REQUEST {
+	switch -glob \[string tolower \[HTTP::host\]\] {
+		$rule_web_host { pool $::rp_fe_pool_name }
+		$rule_director_host { pool $::rp_dir_pool_name }
+		$rule_meet_host {
+		switch -glob \[string tolower \[HTTP::uri\]\] {
+			$rule_meet_uri { pool $::rp_dir_pool_name }
+			$rule_dialin_uri { pool $::rp_dir_pool_name }	
+			}
+		}
+		$rule_mobility_host { pool $::rp_dir_pool_name }
+	}
+}
+    }"]
+} else {	
+	set irule_buffer [string trim "{    
+when HTTP_REQUEST {
+	switch -glob \[string tolower \[HTTP::host\]\] {
+		$rule_web_host { pool $::rp_fe_pool_name }
+		$rule_director_host { pool $::rp_dir_pool_name }
+		$rule_meet_host   { pool $::rp_dir_pool_name  }
+		$rule_dialin_host { pool $::rp_dir_pool_name  }
+		$rule_mobility_host { pool $::rp_dir_pool_name }
+		}		
+}
+    }"]
+}
+
+    tmsh_create "/ ltm rule" "$secure_reverse_proxy_irule_name $irule_buffer"
+
+    return $secure_reverse_proxy_irule_name
+}
+
+proc create_cookie_persistence_profile {  }  {
+
+	set cookie_persist_profile_name [format "%s_reverse_proxy_cookie_persistence" $tmsh::app_name]
+	tmsh_create "/ ltm persistence cookie" "$cookie_persist_profile_name defaults-from cookie always-send enabled cookie-name MS-WSMAN expiration 3650:0:0:0 method insert"
+	
+	return $cookie_persist_profile_name
+
+
+}
+
+proc create_monitor_5061 {  }  {
+
+	set monitor_interval 5
+	set monitor_timeout 16
+	set monitor_5061_name [format "%s_reverse_proxy_tcp_5061_monitor" $tmsh::app_name]
+	set monitor_destination "*:5061"
+	set monitor_type tcp
+    
+	tmsh_create "/ ltm monitor" "$monitor_type $monitor_5061_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+	
+	return $monitor_5061_name
+}
+
+proc build_pool_members { 
+        servers 
+        lb_method 
+        port_value } {
+    if { $servers == "" } {
+        set members_action ""
+    } else {
+        set element_list [split $servers]
+
+        set members \{
+        for {set i 0} {$i < [llength $element_list]} {incr i} {
+            set element [lindex $element_list $i]
+            if { $element == $::ADDR_FIELD } {
+                set i [incr i]
+                set addr_value [lindex $element_list $i]
+            }
+            if { $element == $::RATIO_FIELD } {
+                set i [incr i]
+                set ratio_value [lindex $element_list $i]
+                if { [string is integer $ratio_value] == 0 } {
+                    set ratio_value ""
+                }
+            }
+            if { $element == $::CONNECTION_LIMIT_FIELD } {
+                set i [incr i]
+                set conn_limit_value [lindex $element_list $i]
+            }
+            if { $element == "\}\}" } {
+                append members [create_safe_destination $addr_value $port_value]
+                if { $conn_limit_value != "-1" || 
+                        [tmsh::run_proc f5.app_utils:is_lb_method_ratio $lb_method] } {
+                    append members " \{"
+                    if { $conn_limit_value != "-1" } {
+                        append members " connection-limit "
+                        append members $conn_limit_value
+                    }
+                    if { [tmsh::run_proc f5.app_utils:is_lb_method_ratio $lb_method] } {
+                        append members "  ratio "
+                        append members $ratio_value
+                    }
+                    append members " \}"
+                }
+
+                append members " "
+                set conn_limit_value "-1"
+            }
+        }
+        append members \}
+
+        set members_action "members replace-all-with $members"
+		
+    }
+    return $members_action
+}
+
+proc configure_microsoft_lync_server_front_end_ip_deployment {} {
+    puts "Starting Front End IP Deployment."
+
+    set part_name_1 front_end_ip_135
+    set part_name_2 front_end_ip_443
+    set part_name_3 front_end_ip_444
+    set part_name_4 front_end_ip_448
+    set part_name_5 front_end_ip_5061
+    set part_name_6 front_end_ip_5067
+    set part_name_7 front_end_ip_5068
+    set part_name_8 front_end_ip_5070
+    set part_name_9 front_end_ip_5071
+    set part_name_10 front_end_ip_5072
+    set part_name_11 front_end_ip_5073
+    set part_name_12 front_end_ip_5075
+    set part_name_13 front_end_ip_5076
+    set part_name_14 front_end_ip_5080
+    set part_name_15 front_end_ip_8080
+	set part_name_16 front_end_ip_80
+
+    set port_1 135
+    set port_2 443
+    set port_3 444
+    set port_4 448
+    set port_5 5061
+    set port_6 5067
+    set port_7 5068
+    set port_8 5070
+    set port_9 5071
+    set port_10 5072
+    set port_11 5073
+    set port_12 5075
+    set port_13 5076
+    set port_14 5080
+    set port_15 8080
+	set port_16 80
+	
+	set vlan_action "vlans replace-all-with { $::front_end_ip__client_vlans } vlans-enabled"
+
+    # create the TCP monitor
+    set monitor_interval 5
+    set monitor_timeout 16
+    set monitor_name [format "%s_front_end_ip_tcp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+    set monitor_type tcp
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+	
+	#create the auxiliary port 5061 TCP monitor
+	#apply to all FE HTTP pools
+    set monitor_interval 5
+    set monitor_timeout 16
+    set monitor_5061_name [format "%s_front_end_ip_tcp_5061_monitor" $tmsh::app_name]
+    set monitor_destination "*:5061"
+    set monitor_type tcp
+    
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_5061_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+
+    # create the HTTP monitor
+    set monitor_interval 5
+    set monitor_timeout 16
+    set http_monitor_name [format "%s_front_end_ip_http_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+    set monitor_type http
+
+    tmsh_create "/ ltm monitor" "$monitor_type $http_monitor_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+
+    # create the SIP monitor
+    if { $::front_end_ip__sip_monitoring == $::YES_ANSWER } {
+        set sip_monitor_name [format "%s_front_end_ip_sip_monitor" $tmsh::app_name]
+        set monitor_destination "*:$::front_end_ip__sip_port"
+        set monitor_type sip
+
+        tmsh_create "/ ltm monitor" "$monitor_type $sip_monitor_name defaults-from $monitor_type destination $monitor_destination interval $monitor_interval timeout $monitor_timeout mode tcp filter \"401 488\""
+    }
+
+    # Create the pools
+    set servers $::front_end_ip_server_pools__servers
+    set lb_method $::front_end_ip_server_pools__lb_method_choice
+
+	if { $::front_end_ip__deploying_mediation == $::YES_ANSWER } {
+    if { $::front_end_ip__seperate_mediation_pool == $::YES_ANSWER } {
+        set mediation_servers $::front_end_ip_mediation_server_pools__servers
+        set mediation_lb_method $::front_end_ip_mediation_server_pools__lb_method_choice
+    }
+}
+
+
+
+    # create pool 1
+    set members_action [build_pool_members $servers $lb_method $port_1]
+    set pool_name_1 [format "%s_%s_%s" $tmsh::app_name $part_name_1 pool]
+    tmsh_create "/ ltm pool" "$pool_name_1 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 2
+    set members_action [build_pool_members $servers $lb_method $port_2]
+    set pool_name_2 [format "%s_%s_%s" $tmsh::app_name $part_name_2 pool]
+    tmsh_create "/ ltm pool" "$pool_name_2 $members_action monitor $monitor_name and $monitor_5061_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 3
+    set members_action [build_pool_members $servers $lb_method $port_3]
+    set pool_name_3 [format "%s_%s_%s" $tmsh::app_name $part_name_3 pool]
+    tmsh_create "/ ltm pool" "$pool_name_3 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 4
+    set members_action [build_pool_members $servers $lb_method $port_4]
+    set pool_name_4 [format "%s_%s_%s" $tmsh::app_name $part_name_4 pool]
+    tmsh_create "/ ltm pool" "$pool_name_4 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 5
+    set members_action [build_pool_members $servers $lb_method $port_5]
+    set pool_name_5 [format "%s_%s_%s" $tmsh::app_name $part_name_5 pool]
+    if { $::front_end_ip__sip_monitoring == $::YES_ANSWER } {
+        tmsh_create "/ ltm pool" "$pool_name_5 $members_action monitor $sip_monitor_name load-balancing-mode $lb_method service-down-action reset"
+    } else {
+        tmsh_create "/ ltm pool" "$pool_name_5 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+    }
+
+	if { $::front_end_ip__deploying_mediation == $::YES_ANSWER } {
+    # create pool 6
+    if { $::front_end_ip__seperate_mediation_pool == $::YES_ANSWER } {
+        set members_action [build_pool_members $mediation_servers $mediation_lb_method $port_6]
+        set pool_name_6 [format "%s_mediation_%s_%s" $tmsh::app_name $part_name_6 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_6 $members_action monitor $monitor_name load-balancing-mode $mediation_lb_method service-down-action reset"
+    } else {
+        set members_action [build_pool_members $servers $lb_method $port_6]
+        set pool_name_6 [format "%s_%s_%s" $tmsh::app_name $part_name_6 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_6 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+    }
+
+    # create pool 7
+    if { $::front_end_ip__seperate_mediation_pool == $::YES_ANSWER } {
+        set members_action [build_pool_members $mediation_servers $mediation_lb_method $port_7]
+        set pool_name_7 [format "%s_mediation_%s_%s" $tmsh::app_name $part_name_7 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_7 $members_action monitor $monitor_name load-balancing-mode $mediation_lb_method service-down-action reset"
+    } else {
+        set members_action [build_pool_members $servers $lb_method $port_7]
+        set pool_name_7 [format "%s_%s_%s" $tmsh::app_name $part_name_7 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_7 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+    }
+
+
+    # create pool 8
+    if { $::front_end_ip__seperate_mediation_pool == $::YES_ANSWER } {
+        set members_action [build_pool_members $mediation_servers $mediation_lb_method $port_8]
+        set pool_name_8 [format "%s_mediation_%s_%s" $tmsh::app_name $part_name_8 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_8 $members_action monitor $monitor_name load-balancing-mode $mediation_lb_method service-down-action reset"
+    } else {
+        set members_action [build_pool_members $servers $lb_method $port_8]
+        set pool_name_8 [format "%s_%s_%s" $tmsh::app_name $part_name_8 pool]
+
+        tmsh_create "/ ltm pool" "$pool_name_8 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+    }
+}
+
+    # create pool 9
+    set members_action [build_pool_members $servers $lb_method $port_9]
+    set pool_name_9 [format "%s_%s_%s" $tmsh::app_name $part_name_9 pool]
+    tmsh_create "/ ltm pool" "$pool_name_9 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 10
+    set members_action [build_pool_members $servers $lb_method $port_10]
+    set pool_name_10 [format "%s_%s_%s" $tmsh::app_name $part_name_10 pool]
+    tmsh_create "/ ltm pool" "$pool_name_10 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 11
+    set members_action [build_pool_members $servers $lb_method $port_11]
+    set pool_name_11 [format "%s_%s_%s" $tmsh::app_name $part_name_11 pool]
+    tmsh_create "/ ltm pool" "$pool_name_11 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 12
+    set members_action [build_pool_members $servers $lb_method $port_12]
+    set pool_name_12 [format "%s_%s_%s" $tmsh::app_name $part_name_12 pool]
+    tmsh_create "/ ltm pool" "$pool_name_12 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 13
+    set members_action [build_pool_members $servers $lb_method $port_13]
+    set pool_name_13 [format "%s_%s_%s" $tmsh::app_name $part_name_13 pool]
+    tmsh_create "/ ltm pool" "$pool_name_13 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 14
+    set members_action [build_pool_members $servers $lb_method $port_14]
+    set pool_name_14 [format "%s_%s_%s" $tmsh::app_name $part_name_14 pool]
+    tmsh_create "/ ltm pool" "$pool_name_14 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 15
+    set members_action [build_pool_members $servers $lb_method $port_15]
+    set pool_name_15 [format "%s_%s_%s" $tmsh::app_name $part_name_15 pool]
+    tmsh_create "/ ltm pool" "$pool_name_15 $members_action monitor $http_monitor_name and $monitor_5061_name load-balancing-mode $lb_method service-down-action reset"
+	
+	# create pool 16
+    set members_action [build_pool_members $servers $lb_method $port_16]
+    set pool_name_16 [format "%s_%s_%s" $tmsh::app_name $part_name_16 pool]
+    tmsh_create "/ ltm pool" "$pool_name_16 $members_action monitor $http_monitor_name and $monitor_5061_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create snat
+    if { $::front_end_ip__snat == $::NO_ANSWER } {
+        if { $::front_end_ip__snatpool == $::YES_ANSWER } {
+            set members \{
+            foreach member $::front_end_ip__snatpool_members {
+                append members [tmsh::get_field_value $member addr]
+                append members " "
+            }
+            append members \}
+
+            set snatpool_name [format "%s_front_end_ip_snatpool" $tmsh::app_name ]
+            tmsh_create "/ ltm snatpool" "$snatpool_name members replace-all-with $members"
+
+            set snat_action [format "snatpool %s" $snatpool_name]
+        } else {
+            set snat_action [format "snat %s" automap]
+        }
+    } else {
+        set snat_action [format "snat %s" none]
+    }
+
+    # create profiles
+
+    # create Source Address Affinity persistence profile
+    set saa_persist_profile_name [format "%s_front_end_ip_source_address_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence source-addr" "$saa_persist_profile_name defaults-from source_addr timeout 1800"
+
+    # create SSL Persistence profile
+    set ssl_persist_profile_name [format "%s_front_end_ip_ssl_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence ssl" "$ssl_persist_profile_name defaults-from ssl timeout 1800"
+
+    # create TCP profile
+    set tcp_profile_name [format "%s_front_end_ip_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$tcp_profile_name defaults-from tcp idle-timeout 1800"
+
+    # create Cookie Persistence profile
+    set cookie_persist_profile_name [format "%s_front_end_ip_cookie_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence cookie" "$cookie_persist_profile_name defaults-from cookie"
+
+    # create HTTP profile
+    set http_profile_name [format "%s_front_end_ip_http" $tmsh::app_name]
+    tmsh_create "/ ltm profile http" "$http_profile_name defaults-from http"
+
+    # create VSs
+    if { [safe_is_ipv6 $::front_end_ip__addr] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    # create VS 1
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_1]
+    set destination [create_safe_destination $::front_end_ip__addr $port_1]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_1 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 2
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_2]
+    set destination [create_safe_destination $::front_end_ip__addr $port_2]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_2 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 3
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_3]
+    set destination [create_safe_destination $::front_end_ip__addr $port_3]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_3 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 4
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_4]
+    set destination [create_safe_destination $::front_end_ip__addr $port_4]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_4 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 5
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_5]
+    set destination [create_safe_destination $::front_end_ip__addr $port_5]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_5 profiles none persist replace-all-with \{ $ssl_persist_profile_name \} fallback-persistence $saa_persist_profile_name $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+	if { $::front_end_ip__deploying_mediation == $::YES_ANSWER } {
+    # create VS 6
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_6]
+    set destination [create_safe_destination $::front_end_ip__addr $port_6]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_6 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+
+    # create VS 7
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_7]
+    set destination [create_safe_destination $::front_end_ip__addr $port_7]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_7 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 8
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_8]
+    set destination [create_safe_destination $::front_end_ip__addr $port_8]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_8 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+	}
+
+    # create VS 9
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_9]
+    set destination [create_safe_destination $::front_end_ip__addr $port_9]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_9 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 10
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_10]
+    set destination [create_safe_destination $::front_end_ip__addr $port_10]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_10 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 11
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_11]
+    set destination [create_safe_destination $::front_end_ip__addr $port_11]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_11 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+
+    # create VS 12
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_12]
+    set destination [create_safe_destination $::front_end_ip__addr $port_12]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_12 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 13
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_13]
+    set destination [create_safe_destination $::front_end_ip__addr $port_13]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_13 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 14
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_14]
+    set destination [create_safe_destination $::front_end_ip__addr $port_14]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_14 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 15
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_15]
+    set destination [create_safe_destination $::front_end_ip__addr $port_15]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_15 profiles replace-all-with \{ $http_profile_name \} persist replace-all-with \{ $cookie_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+	
+	# create VS 16
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_16]
+    set destination [create_safe_destination $::front_end_ip__addr $port_16]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_16 profiles replace-all-with \{ $http_profile_name \} persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+    
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    puts "Finished Front End IP Deployment."
+    puts ""
+}
+
+proc configure_microsoft_lync_server_director_ip_deployment {} {
+    puts "Starting Director IP Deployment."
+
+    set part_name_2 director_ip_5061
+	set part_name_3 director_ip_443
+	set part_name_4 director_ip_444
+
+    set port_2 5061
+	set port_3 443
+	set port_4 444
+	
+	set vlan_action "vlans replace-all-with { $::front_end_ip__client_vlans } vlans-enabled"
+
+    # create the monitor
+    set monitor_interval 5
+    set monitor_timeout 16
+    set monitor_name [format "%s_director_ip_tcp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+    set monitor_type tcp
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+
+    # Create the pools
+    set servers $::director_ip_server_pools__servers
+    set lb_method $::director_ip_server_pools__lb_method_choice
+
+    # create pool 2
+    set members_action [build_pool_members $servers $lb_method $port_2]
+    set pool_name_2 [format "%s_%s_%s" $tmsh::app_name $part_name_2 pool]
+    tmsh_create "/ ltm pool" "$pool_name_2 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+	# create pool 3
+    set members_action [build_pool_members $servers $lb_method $port_3]
+    set pool_name_3 [format "%s_%s_%s" $tmsh::app_name $part_name_3 pool]
+    tmsh_create "/ ltm pool" "$pool_name_3 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 4
+    set members_action [build_pool_members $servers $lb_method $port_4]
+    set pool_name_4 [format "%s_%s_%s" $tmsh::app_name $part_name_4 pool]
+    tmsh_create "/ ltm pool" "$pool_name_4 $members_action monitor $monitor_name load-balancing-mode $lb_method service-down-action reset"
+
+    # create snat
+    if { $::front_end_ip__snat == $::NO_ANSWER } {
+        if { $::front_end_ip__snatpool == $::YES_ANSWER } {
+            set members \{
+            foreach member $::front_end_ip__snatpool_members {
+                append members [tmsh::get_field_value $member addr]
+                append members " "
+            }
+            append members \}
+
+            set snatpool_name [format "%s_director_ip_snatpool" $tmsh::app_name ]
+            tmsh_create "/ ltm snatpool" "$snatpool_name members replace-all-with $members"
+
+            set snat_action [format "snatpool %s" $snatpool_name]
+        } else {
+            set snat_action [format "snat %s" automap]
+        }
+    } else {
+        set snat_action [format "snat %s" none]
+    }
+
+    # create TCP profile
+    set tcp_profile_name [format "%s_director_ip_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$tcp_profile_name defaults-from tcp"
+
+
+    # create VSs
+
+    # create VS 2
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_2]
+    set destination [create_safe_destination $::director_ip__addr $port_2]
+	if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_2 profiles none persist none $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+	# create VS 3
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_3]
+    set destination [create_safe_destination $::director_ip__addr $port_3]
+	if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_3 profiles none persist none $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+	# create VS 4
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_4]
+    set destination [create_safe_destination $::director_ip__addr $port_4]
+	if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_4 profiles none persist none $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    puts "Finished Director IP Deployment."
+    puts ""
+}
+
+proc configure_microsoft_lync_server_edge_external_ip_deployment {} {
+    puts "Starting Consolidated Edge External IP Deployment."
+	
+	if { $::edge_external_ip__edge_topology == "multiple" }  {
+		set part_name_1 edge_external_ip_access
+		set part_name_2 edge_external_ip_access_5061
+		set part_name_3 edge_external_ip_web_conferencing
+		set part_name_4 edge_external_ip_av_443
+		set part_name_5 edge_external_ip_av_3478
+		set part_name_6 edge_external_ip_access_5269
+
+		set access_ip $::edge_external_ip__access_addr 
+
+		set port_1 $::edge_external_ip__access_port
+		set port_2 5061
+		set port_3 443
+		set port_4 443
+		set port_5 3478
+		set port_6 5269
+		
+		if { $::edge_external_ip__deploy_conf == $::YES_ANSWER }  {
+			set web_conf_ip $::edge_external_ip__web_conferencing_addr 
+		}
+		
+		if { $::edge_external_ip__deploy_av == $::YES_ANSWER }  {
+			set av_ip $::edge_external_ip__av_addr 	
+		}
+		
+	} else {
+		set part_name_1 edge_external_ip_access
+		#set part_name_2 edge_external_ip_access_5061
+		set part_name_3 edge_external_ip_web_conferencing
+		set part_name_4 edge_external_ip_av
+		set part_name_5 edge_external_ip_av_3478
+		set part_name_6 edge_external_ip_access_5269
+
+		set access_ip $::edge_external_ip__combined_addr 
+
+		set port_1 $::edge_external_ip__combined_access_port
+		set port_2 5061
+
+		set port_5 3478
+		set port_6 5269
+		
+		if { $::edge_external_ip__deploy_conf == $::YES_ANSWER }  {
+			set web_conf_ip $::edge_external_ip__combined_addr 
+			set port_3 $::edge_external_ip__combined_web_conferencing_port
+		}
+		
+		if { $::edge_external_ip__deploy_av == $::YES_ANSWER }  {
+			set av_ip $::edge_external_ip__combined_addr 
+			set port_4 $::edge_external_ip__combined_av_port
+		}
+	}
+	
+	set vlan_action "vlans replace-all-with { $::edge_external_ip__client_vlans } vlans-enabled"
+
+
+    # create the monitors
+    set monitor_interval 5
+    set monitor_timeout 16
+
+    # create monitor 1
+    set monitor_type tcp
+    set monitor_name_tcp [format "%s_edge_external_ip_tcp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_tcp defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+
+    # create monitor 3
+    set monitor_type udp
+    set monitor_name_udp [format "%s_edge_external_ip_udp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_udp defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination send none"
+	
+	# create monitor 4
+	# supplemental monitor for 3478 UDP
+    set monitor_type gateway-icmp
+    set monitor_name_icmp [format "%s_edge_external_ip_icmp_monitor" $tmsh::app_name]
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_icmp defaults-from /Common/gateway_icmp interval $monitor_interval timeout $monitor_timeout"
+
+    # create the external transparent SIP monitor
+    if { $::edge_external_ip__sip_monitoring == $::YES_ANSWER } {
+	    set monitor_type sip
+        set edge_sip_monitor_name [format "%s_edge_external_ip_sip_monitor" $tmsh::app_name]
+        set monitor_destination "$::edge_external_ip__sip_monitor_alias:$port_2"
+
+        tmsh_create "/ ltm monitor" "$monitor_type $edge_sip_monitor_name defaults-from $monitor_type destination $monitor_destination interval $monitor_interval timeout $monitor_timeout mode tls filter \"401 488\""
+    }
+
+    # Create the pools
+	if { $::edge_external_ip__sip_monitoring == $::YES_ANSWER } {
+	set edge_sip_monitor_action "and $edge_sip_monitor_name"
+	} elseif { $::edge_external_ip__sip_monitoring == $::NO_ANSWER } {
+	set edge_sip_monitor_action ""
+	}
+
+	# create pool 1
+	set servers $::edge_external_ip_server_pools__access_servers
+    set lb_method $::edge_external_ip_server_pools__access_lb_method_choice
+    set members_action [build_pool_members $servers $lb_method $port_1]
+    set pool_name_1 [format "%s_%s_%s" $tmsh::app_name $part_name_1 pool]
+    tmsh_create "/ ltm pool" "$pool_name_1 $members_action monitor $monitor_name_tcp $edge_sip_monitor_action load-balancing-mode $lb_method service-down-action reset"
+
+	if { $::edge_external_ip__edge_topology == "multiple" }  {
+		if { $::edge_external_ip__access_port == "443" && $::edge_external_ip__federation == $::YES_ANSWER } {
+		# create pool 2
+		set servers $::edge_external_ip_server_pools__access_servers
+		set lb_method $::edge_external_ip_server_pools__access_lb_method_choice
+		set members_action [build_pool_members $servers $lb_method $port_2]
+		set pool_name_2 [format "%s_%s_%s" $tmsh::app_name $part_name_2 pool]
+		tmsh_create "/ ltm pool" "$pool_name_2 $members_action monitor $monitor_name_tcp $edge_sip_monitor_action load-balancing-mode $lb_method service-down-action reset"
+		}
+	}
+
+    # create pool 3
+	if { $::edge_external_ip__deploy_conf == $::YES_ANSWER } {
+	set servers $::edge_external_ip_server_pools__conf_servers
+    set lb_method $::edge_external_ip_server_pools__conf_lb_method_choice
+    set members_action [build_pool_members $servers $lb_method $port_3]
+    set pool_name_3 [format "%s_%s_%s" $tmsh::app_name $part_name_3 pool]
+    tmsh_create "/ ltm pool" "$pool_name_3 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+	}
+
+    # create pool 4
+	if { $::edge_external_ip__deploy_av == $::YES_ANSWER } {
+	set servers $::edge_external_ip_server_pools__av_servers
+    set lb_method $::edge_external_ip_server_pools__av_lb_method_choice
+    set members_action [build_pool_members $servers $lb_method $port_4]
+    set pool_name_4 [format "%s_%s_%s" $tmsh::app_name $part_name_4 pool]
+    tmsh_create "/ ltm pool" "$pool_name_4 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 5
+	set servers $::edge_external_ip_server_pools__av_servers
+    set lb_method $::edge_external_ip_server_pools__av_lb_method_choice
+    set members_action [build_pool_members $servers $lb_method $port_5]
+    set pool_name_5 [format "%s_%s_%s" $tmsh::app_name $part_name_5 pool]
+    tmsh_create "/ ltm pool" "$pool_name_5 $members_action monitor $monitor_name_udp and $monitor_name_icmp load-balancing-mode $lb_method service-down-action reset"
+	}
+	
+	if { $::deployment__version == "2013" }  {
+		if { $::edge_external_ip__deploy_xmpp == $::YES_ANSWER } {
+			# create pool 6
+			set servers $::edge_external_ip_server_pools__access_servers
+			set lb_method $::edge_external_ip_server_pools__access_lb_method_choice
+			set members_action [build_pool_members $servers $lb_method $port_6]
+			set pool_name_6 [format "%s_%s_%s" $tmsh::app_name $part_name_6 pool]
+			tmsh_create "/ ltm pool" "$pool_name_6 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+		}
+	}
+
+    # create snat
+    if { $::edge_external_ip__snat == $::NO_ANSWER } {
+        if { $::edge_external_ip__snatpool == $::YES_ANSWER } {
+            set members \{
+            foreach member $::edge_external_ip__snatpool_members {
+                append members [tmsh::get_field_value $member addr]
+                append members " "
+            }
+            append members \}
+
+            set snatpool_name [format "%s_edge_external_ip_snatpool" $tmsh::app_name ]
+            tmsh_create "/ ltm snatpool" "$snatpool_name members replace-all-with $members"
+
+            set snat_action [format "snatpool %s" $snatpool_name]
+        } else {
+            set snat_action [format "snat %s" automap]
+        }
+    } else {
+        set snat_action [format "snat %s" none]
+    }
+
+    # create profiles
+
+    # create Source Address Affinity persistence profile
+    set saa_persist_profile_name [format "%s_edge_external_ip_source_address_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence source-addr" "$saa_persist_profile_name defaults-from source_addr timeout 1800"
+
+    # create SSL Persistence profile
+    set ssl_persist_profile_name [format "%s_edge_external_ip_ssl_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence ssl" "$ssl_persist_profile_name defaults-from ssl timeout 1800"
+
+    # create Cookie Persistence profile
+    set cookie_persist_profile_name [format "%s_edge_external_ip_cookie_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence cookie" "$cookie_persist_profile_name defaults-from cookie"
+
+    # create HTTP profiles
+    set http_profile_name [format "%s_edge_external_ip_http" $tmsh::app_name]
+    tmsh_create "/ ltm profile http" "$http_profile_name defaults-from http"
+
+    # create TCP profile
+    set server_tcp_profile_name [format "%s_edge_external_ip_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$server_tcp_profile_name defaults-from tcp idle-timeout 1800 nagle disabled"
+
+    set client_tcp_profile_name [format "%s_edge_external_ip_wan_optimized_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$client_tcp_profile_name defaults-from tcp-wan-optimized idle-timeout 1800 nagle disabled"
+
+    # create UDP profile
+    set udp_profile_name [format "%s_edge_external_ip_udp" $tmsh::app_name]
+    tmsh_create "/ ltm profile udp" "$udp_profile_name defaults-from udp"
+
+    # create VSs
+    # create VS 1
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_1]
+    set destination [create_safe_destination $access_ip $port_1]
+    if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_1 profiles none persist replace-all-with \{ $ssl_persist_profile_name \} fallback-persistence $saa_persist_profile_name $vlan_action"
+
+    add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+
+	if { $::edge_external_ip__edge_topology == "multiple" }  {
+		if { $::edge_external_ip__access_port == "443" && $::edge_external_ip__federation == $::YES_ANSWER } {
+		# create VS 2
+		set vs_name [format "%s_%s" $tmsh::app_name $part_name_2]
+		set destination [create_safe_destination $access_ip $port_2]
+		tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_2 profiles none persist replace-all-with \{ $ssl_persist_profile_name \} fallback-persistence $saa_persist_profile_name $vlan_action"
+
+		add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+		}
+	}
+
+    # create VS 3
+	if { $::edge_external_ip__deploy_conf == $::YES_ANSWER } {
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_3]
+    set destination [create_safe_destination $web_conf_ip $port_3]
+    if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_3 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+	add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+
+    add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+	}
+
+    # create A/V virtual servers
+	if { $::edge_external_ip__deploy_av == $::YES_ANSWER } {
+		# create VS 4
+		set av_snat_action "snat none"
+		if { $::edge_external_ip__av_snat == "Yes" }  {
+			if { $::edge_external_ip__snat == $::NO_ANSWER }  {
+				set av_snat_action $snat_action
+			} else {
+				set av_snat_action "snat automap"
+			}
+		}
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_4]
+    set destination [create_safe_destination $av_ip $port_4]
+    if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $av_snat_action $mask_action pool $pool_name_4 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+
+    # create VS 5
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_5]
+    set destination [create_safe_destination $av_ip $port_5]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $av_snat_action $mask_action pool $pool_name_5 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $udp_profile_name $udp_profile_name
+	}
+	
+	# create VS 6
+	if { $::deployment__version == "2013" }  {
+		if { $::edge_external_ip__deploy_xmpp == $::YES_ANSWER } {
+			set vs_name [format "%s_%s" $tmsh::app_name $part_name_6]
+			set destination [create_safe_destination $access_ip $port_6]
+			if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+				set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+			} else {
+				set mask_action "mask 255.255.255.255"
+			}
+			tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_6 persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+    
+			add_client_server_profiles $vs_name $server_tcp_profile_name $client_tcp_profile_name
+		}
+	}
+
+    puts "Finished Consolidated Edge External IP Deployment."
+    puts ""
+}
+
+proc configure_microsoft_lync_server_edge_internal_ip_deployment {} {
+    puts "Starting Consolidated Edge Internal IP Deployment."
+
+    set part_name_1 edge_internal_ip_443
+    set part_name_2 edge_internal_ip_3478
+    set part_name_3 edge_internal_ip_5061
+    set part_name_4 edge_internal_ip_5062
+
+    set port_1 443
+    set port_2 3478
+    set port_3 5061
+    set port_4 5062
+	
+	set vlan_action "vlans replace-all-with { $::edge_internal_ip__client_vlans } vlans-enabled"
+
+    # create the monitors
+    set monitor_interval 5
+    set monitor_timeout 16
+
+    # create monitor 1
+    set monitor_type tcp
+    set monitor_name_tcp [format "%s_edge_internal_tcp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_tcp defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+
+    # create monitor 2
+    set monitor_type udp
+    set monitor_name_udp [format "%s_edge_internal_udp_monitor" $tmsh::app_name]
+    set monitor_destination "*:*"
+
+    tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_udp defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination send none"
+
+
+
+    # Create the pools
+    set servers $::edge_internal_ip_server_pools__servers
+    set lb_method $::edge_internal_ip_server_pools__lb_method_choice
+
+
+    # create pool 1
+    set members_action [build_pool_members $servers $lb_method $port_1]
+    set pool_name_1 [format "%s_%s_%s" $tmsh::app_name $part_name_1 pool]
+    tmsh_create "/ ltm pool" "$pool_name_1 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 2
+    set members_action [build_pool_members $servers $lb_method $port_2]
+    set pool_name_2 [format "%s_%s_%s" $tmsh::app_name $part_name_2 pool]
+    tmsh_create "/ ltm pool" "$pool_name_2 $members_action monitor $monitor_name_udp load-balancing-mode $lb_method service-down-action reset"
+
+
+
+
+    # create pool 3
+    set members_action [build_pool_members $servers $lb_method $port_3]
+    set pool_name_3 [format "%s_%s_%s" $tmsh::app_name $part_name_3 pool]
+    tmsh_create "/ ltm pool" "$pool_name_3 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+
+    # create pool 4
+    set members_action [build_pool_members $servers $lb_method $port_4]
+    set pool_name_4 [format "%s_%s_%s" $tmsh::app_name $part_name_4 pool]
+    tmsh_create "/ ltm pool" "$pool_name_4 $members_action monitor $monitor_name_tcp load-balancing-mode $lb_method service-down-action reset"
+
+    # create snat
+    if { $::edge_internal_ip__snat == $::NO_ANSWER } {
+        if { $::edge_internal_ip__snatpool == $::YES_ANSWER } {
+            set members \{
+            foreach member $::edge_internal_ip__snatpool_members {
+                append members [tmsh::get_field_value $member addr]
+                append members " "
+            }
+            append members \}
+
+            set snatpool_name [format "%s_edge_internal_ip_snatpool" $tmsh::app_name ]
+            tmsh_create "/ ltm snatpool" "$snatpool_name members replace-all-with $members"
+
+            set snat_action [format "snatpool %s" $snatpool_name]
+        } else {
+            set snat_action [format "snat %s" automap]
+        }
+    } else {
+        set snat_action [format "snat %s" none]
+    }
+
+
+
+
+    # create profiles
+    # create Source Address Affinity persistence profile
+    set saa_persist_profile_name [format "%s_edge_internal_ip_source_address_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence source-addr" "$saa_persist_profile_name defaults-from source_addr timeout 1800"
+
+    # create SSL Persistence profile
+    set ssl_persist_profile_name [format "%s_edge_internal_ip_ssl_persistence" $tmsh::app_name]
+    tmsh_create "/ ltm persistence ssl" "$ssl_persist_profile_name defaults-from ssl timeout 1800"
+
+    # create TCP profile
+    set tcp_profile_name [format "%s_edge_internal_ip_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$tcp_profile_name defaults-from tcp"
+    tmsh_modify "/ ltm profile tcp" "$tcp_profile_name idle-timeout 1800"
+
+    # create UDP profile
+    set udp_profile_name [format "%s_edge_internal_ip_udp" $tmsh::app_name]
+    tmsh_create "/ ltm profile udp" "$udp_profile_name defaults-from udp"
+
+
+
+
+    # create VSs
+    # create VS 1
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_1]
+    set destination [create_safe_destination $::edge_internal_ip__addr $port_1]
+    if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+        set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+    } else {
+        set mask_action "mask 255.255.255.255"
+    }
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_1 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 2
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_2]
+    set destination [create_safe_destination $::edge_internal_ip__addr $port_2]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_2 profiles none persist replace-all-with \{ $saa_persist_profile_name \} $vlan_action"
+
+    add_client_server_profiles $vs_name $udp_profile_name $udp_profile_name
+
+    # create VS 3
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_3]
+    set destination [create_safe_destination $::edge_internal_ip__addr $port_3]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_3 profiles none persist replace-all-with \{ $ssl_persist_profile_name \} fallback-persistence $saa_persist_profile_name $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    # create VS 4
+    set vs_name [format "%s_%s" $tmsh::app_name $part_name_4]
+    set destination [create_safe_destination $::edge_internal_ip__addr $port_4]
+    tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name_4 profiles none persist replace-all-with \{ $ssl_persist_profile_name \} fallback-persistence $saa_persist_profile_name $vlan_action"
+
+    add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+
+    puts "Finished Consolidated Edge Internal IP Deployment."
+    puts ""
+}
+
+proc configure_microsoft_lync_server_reverse_proxy_deployment {  } {
+
+	set monitor_interval 5
+    set monitor_timeout 16
+	set pool_port 4443
+	set lb_method "least-connections-node"  
+	set persist_action "persist none"
+	set director_client_ssl_profile_name "none"
+	
+	set vlan_action "vlans replace-all-with { $::reverse_proxy__client_vlans } vlans-enabled"
+	
+	if { $::reverse_proxy__scenario == "external" }  {
+	
+		set monitor_5061_action ""
+		
+	} else {
+		
+		# create cookie persistence profile
+		if { $::deployment__version == "2010" || $::deployment__mixed == "2010_2013" }  {
+			set persist_action "persist replace-all-with \{ [create_cookie_persistence_profile] \}"
+		}
+			
+		# create auxiliary monitor
+		set monitor_5061_action "and [create_monitor_5061]"	
+		
+	}
+	
+    # create HTTP profile
+    set http_profile_name [format "%s_reverse_proxy_http" $tmsh::app_name]
+    tmsh_create "/ ltm profile http" "$http_profile_name defaults-from http"
+
+    # create TCP profile
+    set tcp_profile_name [format "%s_reverse_proxy_tcp" $tmsh::app_name]
+    tmsh_create "/ ltm profile tcp" "$tcp_profile_name defaults-from tcp idle-timeout 1800"
+	
+	# create Server SSL profile
+    set server_ssl_profile_name [format "%s_reverse_proxy_server_ssl" $tmsh::app_name]
+    tmsh_create "/ ltm profile server-ssl" "$server_ssl_profile_name defaults-from serverssl"
+
+    # create SNAT
+    if { $::reverse_proxy__snat == $::NO_ANSWER } {
+        if { $::reverse_proxy__snatpool == $::YES_ANSWER } {
+            set members \{
+            foreach member $::reverse_proxy__snatpool_members {
+                append members [tmsh::get_field_value $member addr]
+                append members " "
+            }
+            append members \}
+
+            set snatpool_name [format "%s_reverse_proxy_snatpool" $tmsh::app_name ]
+            tmsh_create "/ ltm snatpool" "$snatpool_name members replace-all-with $members"
+
+            set snat_action [format "snatpool %s" $snatpool_name]
+        } else {
+            set snat_action [format "snat %s" automap]
+        }
+    } else {
+        set snat_action [format "snat %s" none]
+    }
+	
+	if { $::reverse_proxy__scenario == "external" ||  $::reverse_proxy__scenario == "standalone" }  {
+	
+		set part_name reverse_proxy_443
+		set pool_part_name_fe reverse_proxy_front_end_4443
+		set pool_part_name_dir reverse_proxy_director_4443
+		set vs_port 443
+		
+		# create the primary https monitor
+		set monitor_type https
+		set monitor_name_https [format "%s_reverse_proxy_front_end_https_monitor" $tmsh::app_name]
+		set monitor_destination "*:$pool_port"
+
+		set monitor_send "GET /abs"
+		set monitor_recv "401"
+		set dns_name $::reverse_proxy__web_svc_fqdn
+		set monitor_ending "\\\\r\\\\n"
+		append monitor_send " HTTP/1.1\\\\r\\\\nHost: "
+		append monitor_send $dns_name
+		append monitor_send $monitor_ending
+		append monitor_send "Connection: Close\\\\r\\\\n\\\\r\\\\n"
+
+		tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_https defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination send \"$monitor_send\" recv \"$monitor_recv\""
+		
+		# create FE pool	
+		if { $::reverse_proxy__scenario == "external"  }  {
+			set members_action "members replace-all-with \{ "
+			set pool_addr "$::reverse_proxy__reverse_proxy_fe_pool_member"
+			append members_action [create_safe_destination $pool_addr $pool_port]
+			append members_action " \}"
+		} else {
+			#set lb_method $::reverse_proxy__fe_lb_method
+			set members_action [build_pool_members $::reverse_proxy__fe_rp_server_pools $lb_method $pool_port]		
+		}
+        set pool_name [format "%s_%s_%s" $tmsh::app_name $pool_part_name_fe pool]
+        tmsh_create "/ ltm pool" "$pool_name $members_action monitor $monitor_name_https $monitor_5061_action load-balancing-mode $lb_method service-down-action reset"
+		set ::rp_fe_pool_name $pool_name
+			
+		# create FE Client SSL profile
+		if { $::reverse_proxy__clientssl == $::CREATE_NEW_ANSWER }  {
+			set client_ssl_profile_name [format "%s_reverse_proxy_client_ssl" $tmsh::app_name]
+			if { $::reverse_proxy__chainssl != $::DO_NOT_USE_ANSWER }  {
+				set intermediate_cert $::reverse_proxy__chainssl
+			} else {
+				set intermediate_cert "none"
+			}
+			tmsh_create "/ ltm profile client-ssl" "$client_ssl_profile_name defaults-from clientssl chain $intermediate_cert"
+			tmsh_modify "/ ltm profile client-ssl" "$client_ssl_profile_name key $::reverse_proxy__key"
+			tmsh_modify "/ ltm profile client-ssl" "$client_ssl_profile_name cert $::reverse_proxy__cert"
+		} else {
+			set client_ssl_profile_name $::reverse_proxy__clientssl
+		}
+		
+		if { $::reverse_proxy__deploy_director == $::YES_ANSWER  }  {
+			
+			# create DIRECTOR pool				
+			if { $::reverse_proxy__scenario == "external"  }  {
+				set members_action "members replace-all-with \{ "
+				set pool_addr "$::reverse_proxy__reverse_proxy_dir_pool_member"
+				append members_action [create_safe_destination $pool_addr $pool_port]
+				append members_action " \}"
+			} else {
+				#set lb_method $::reverse_proxy__dir_lb_method
+				set members_action [build_pool_members  $::reverse_proxy__dir_rp_server_pools $lb_method $pool_port]
+			}
+			set pool_name [format "%s_%s_%s" $tmsh::app_name $pool_part_name_dir pool]
+			tmsh_create "/ ltm pool" "$pool_name $members_action monitor $monitor_name_https load-balancing-mode $lb_method service-down-action reset"
+			set ::rp_dir_pool_name $pool_name
+			
+			# create DIRECTOR Client SSL profile
+			if { $::reverse_proxy__dir_clientssl == $::CREATE_NEW_ANSWER }  {
+				set director_client_ssl_profile_name [format "%s_reverse_proxy_dir_client_ssl" $tmsh::app_name]
+				tmsh_create "/ ltm profile client-ssl" "$director_client_ssl_profile_name defaults-from clientssl"
+				tmsh_modify "/ ltm profile client-ssl" "$director_client_ssl_profile_name key $::reverse_proxy__dir_key"
+				tmsh_modify "/ ltm profile client-ssl" "$director_client_ssl_profile_name cert $::reverse_proxy__dir_cert"			
+				if { $::reverse_proxy__clientssl == $::CREATE_NEW_ANSWER }  {
+					tmsh_modify "/ ltm profile client-ssl" "$client_ssl_profile_name server-name $::reverse_proxy__web_svc_fqdn"
+					tmsh_modify "/ ltm profile client-ssl" "$director_client_ssl_profile_name sni-default true chain $intermediate_cert"
+				}
+			} elseif { $::reverse_proxy__dir_clientssl != $::USE_PREVIOUS_ANSWER }  {
+				set director_client_ssl_profile_name $::reverse_proxy__dir_clientssl
+			} else {
+				set director_client_ssl_profile_name $client_ssl_profile_name
+			}
+		}
+		
+		# create VS
+		set rp_irule [create_secure_reverse_proxy_irule]
+		set vs_name [format "%s_%s" $tmsh::app_name $part_name]
+		set destination [create_safe_destination $::reverse_proxy__reverse_proxy_addr $vs_port]
+		if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+			set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+		} else {
+			set mask_action "mask 255.255.255.255"
+		}
+		tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool none profiles none profiles replace-all-with \{ $http_profile_name \} $persist_action rules \{ $rp_irule \} $vlan_action"
+
+		add_reverse_proxy_ssl_profiles $vs_name $server_ssl_profile_name $client_ssl_profile_name $director_client_ssl_profile_name
+		add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name 
+		
+	}
+	
+	if { $::reverse_proxy__scenario == "internal" }  {
+		
+		set vs_port 4443
+		set part_name_fe reverse_proxy_front_end_4443
+		set part_name_dir reverse_proxy_director_4443
+		
+		# create the HTTP monitor
+		set monitor_interval 5
+		set monitor_timeout 16
+		set monitor_type https
+		set monitor_name_https [format "%s_reverse_proxy_front_end_https_monitor" $tmsh::app_name]
+		set monitor_destination "*:$pool_port"
+
+		tmsh_create "/ ltm monitor" "$monitor_type $monitor_name_https defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+	
+		#create the auxiliary port 5061 TCP monitor
+		#apply to all RP HTTP pools
+		set monitor_interval 5
+		set monitor_timeout 16
+		set monitor_5061_name [format "%s_reverse_proxy_tcp_5061_monitor" $tmsh::app_name]
+		set monitor_destination "*:5061"
+		set monitor_type tcp
+    
+		tmsh_create "/ ltm monitor" "$monitor_type $monitor_5061_name defaults-from $monitor_type interval $monitor_interval timeout $monitor_timeout destination $monitor_destination"
+		
+		# create FE pool		
+		set members_action [build_pool_members $::reverse_proxy__fe_rp_server_pools $lb_method $pool_port]
+		set pool_name [format "%s_%s_%s" $tmsh::app_name $part_name_fe pool]
+		set monitor_5061_action "and [create_monitor_5061]"
+		tmsh_create "/ ltm pool" "$pool_name $members_action monitor $monitor_name_https $monitor_5061_action load-balancing-mode $lb_method service-down-action reset"
+			
+		# create FE Client SSL profile
+		if { $::reverse_proxy__clientssl == $::CREATE_NEW_ANSWER }  {
+			set client_ssl_profile_name [format "%s_reverse_proxy_client_ssl" $tmsh::app_name]
+			tmsh_create "/ ltm profile client-ssl" "$client_ssl_profile_name defaults-from clientssl"
+			tmsh_modify "/ ltm profile client-ssl" "$client_ssl_profile_name key $::reverse_proxy__key"
+			tmsh_modify "/ ltm profile client-ssl" "$client_ssl_profile_name cert $::reverse_proxy__cert"
+		} else {
+			set client_ssl_profile_name $::reverse_proxy__clientssl 
+		}
+		
+		# create FE VS
+		set vs_name [format "%s_%s" $tmsh::app_name $part_name_fe]
+		set destination [create_safe_destination $::reverse_proxy__reverse_proxy_fe_addr $vs_port]
+		if { [safe_is_ipv6 $destination] == $::YES_ANSWER } {
+			set mask_action "mask ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+		} else {
+			set mask_action "mask 255.255.255.255"
+		}
+
+		tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name profiles none profiles replace-all-with \{ $http_profile_name \} $persist_action $vlan_action"
+
+		add_client_server_profiles $vs_name $server_ssl_profile_name $client_ssl_profile_name
+		add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+	
+	if { $::reverse_proxy__deploy_director == $::YES_ANSWER  }  {
+	
+		# create DIR pool   	
+		set members_action [build_pool_members $::reverse_proxy__dir_rp_server_pools $lb_method $pool_port]
+		set pool_name [format "%s_%s_%s" $tmsh::app_name $part_name_dir pool]
+		set monitor_5061_action "and [create_monitor_5061]"
+		tmsh_create "/ ltm pool" "$pool_name $members_action monitor $monitor_name_https $monitor_5061_action load-balancing-mode $lb_method service-down-action reset"
+		
+		# create DIRECTOR Client SSL profile
+		if { $::reverse_proxy__dir_clientssl == $::CREATE_NEW_ANSWER }  {
+			set director_client_ssl_profile_name [format "%s_reverse_proxy_director_client_ssl" $tmsh::app_name]
+			tmsh_create "/ ltm profile client-ssl" "$director_client_ssl_profile_name defaults-from clientssl"
+			tmsh_modify "/ ltm profile client-ssl" "$director_client_ssl_profile_name key $::reverse_proxy__dir_key"
+			tmsh_modify "/ ltm profile client-ssl" "$director_client_ssl_profile_name cert $::reverse_proxy__dir_cert"
+		} elseif { $::reverse_proxy__dir_clientssl == $::USE_PREVIOUS_ANSWER } {
+			set director_client_ssl_profile_name $client_ssl_profile_name
+		} else {
+			set director_client_ssl_profile_name $::reverse_proxy__dir_clientssl 
+		}
+		
+		# create DIR VS
+		set vs_name [format "%s_%s" $tmsh::app_name $part_name_dir]
+		set destination [create_safe_destination $::reverse_proxy__reverse_proxy_director_addr $vs_port]
+
+		tmsh_create "/ ltm virtual" "$vs_name destination $destination $snat_action $mask_action pool $pool_name profiles none profiles replace-all-with \{ $http_profile_name \} $persist_action $vlan_action"
+
+		add_client_server_profiles $vs_name $server_ssl_profile_name $director_client_ssl_profile_name
+		add_client_server_profiles $vs_name $tcp_profile_name $tcp_profile_name
+			
+	}
+}
+}
+
+puts " "
+puts " "
+puts "Starting Microsoft Lync Server 2010/2013 template."
+puts " "
+
+
+set provisioned [tmsh::run_proc f5.app_utils:get_provisioned ltm]
+if { $provisioned == "provisioned" } {
+    if { [tmsh::run_proc f5.app_utils:is_safe_app_name "\"$tmsh::app_name\""] != true } {
+        puts "The app template name contained illegal characters."
+        error "The app template name contained illegal characters."
+    }
+    if { $::front_end_ip__deploying_front_end_ip == $::YES_ANSWER } {
+        configure_microsoft_lync_server_front_end_ip_deployment
+		if { $::director_ip__deploying_director_ip == $::YES_ANSWER } {
+			configure_microsoft_lync_server_director_ip_deployment
+		}	
+    }
+    if { $::reverse_proxy__scenario != $::NO_ANSWER } {   
+		configure_microsoft_lync_server_reverse_proxy_deployment
+	}
+    if { $::edge_external_ip__deploying_edge_external_ip == $::YES_ANSWER } {
+        configure_microsoft_lync_server_edge_external_ip_deployment			
+    }
+    if { $::edge_internal_ip__deploying_edge_internal_ip == $::YES_ANSWER } {
+        configure_microsoft_lync_server_edge_internal_ip_deployment
+    }
+
+
+
+
+
+} else {
+    puts "The app template failed because LTM is required."
+    error "The app template failed because LTM is required."
+}
+
+
+puts " "
+puts "Ending Microsoft Lync Server 2010 template."
+puts " "
+            }
+            presentation {
+                include "/Common/f5.apl_common"
+
+define choice lb_method_default default "least-connections-node" display "xxlarge" {
+    "Round Robin" => "round-robin",
+    "Ratio (member)" => "ratio-member",
+    "Ratio (node)" => "ratio-node",
+    "Ratio (session)" => "ratio-session",        
+    "Dynamic Ratio (member)" => "dynamic-ratio-member",
+    "Dynamic Ratio (node)" => "dynamic-ratio-node",
+    "Fastest (application)" => "fastest-app-response",
+    "Fastest (node)" => "fastest-node",
+    "Least Connections (member)" => "least-connections-member",
+    "Least Connections (node)" => "least-connections-node",
+    "Weighted Least Connections (member)" => "weighted-least-connections-member",
+    "Weighted Least Connections (node)" => "weighted-least-connections-node",
+    "Ratio Least Connections (member)" => "ratio-least-connections-member",
+    "Ratio Least Connections (node)" => "ratio-least-connections-node",
+    "Least Sessions" => "least-sessions",
+    "Observed (member)" => "observed-member",
+    "Observed (node)" => "observed-node",
+    "Predictive (member)" => "predictive-member",
+    "Predictive (node)" => "predictive-node"
+}
+section intro {
+	message hello "Use this template to configure availability, optimizations, encryption, and remote access for Microsoft Lync Server 2010/2013.  This template will configure the BIG-IP Local Traffic Manager (LTM) module for all internal Lync services, as well as external Edge and reverse proxy services."
+	message hello_2 "For supported topologies, see Lync Server Deployment Guide: http://www.f5.com/pdf/deployment-guides/microsoft-lync-iapp-v1_3-dg.pdf."
+	message updates "Ensure you are using the most recent template before continuing. Check for newer versions online at https://devcentral.f5.com/wiki/iApp.Microsoft-Lync-Server-v1-3-0-RC-1-iApp-template.ashx"
+	message prereqs "If you plan on using this template to configure the BIG-IP system for processing encrypted traffic, you need to import an SSL certificate and key that correspond to all fully-qualified DNS names that you are using for the traffic. Importing SSL certificates and keys is not a part of this template; see Local Traffic >> SSL Certificate List."
+ 	
+	optional ( hello == "NEVER_SHOW_THIS" ) {
+        choice ltm_provisioned tcl { tmsh::run_proc f5.app_utils:get_provisioned ltm }
+        choice is_viprion tcl { tmsh::run_proc f5.app_utils:get_is_viprion }
+    }
+    optional ( ltm_provisioned != "provisioned" ) {
+        message sorry "We are sorry but you must license and provision the LTM module to use this template."
+    }
+	choice help display "xxlarge" default "hide" {
+        "Yes, show inline help" => "max",
+        "No, do not show inline help" => "hide"
+    }
+	optional ( intro.help == "max" ) {
+			message help_help   "Inline help is available to provide contextual descriptions to aid in the completion of this configuration.  Select to show or hide the inline help in this template. Important notes and warnings are always visible, no matter which selection you make here."
+        }
+}
+optional ( intro.ltm_provisioned == "provisioned" ) {
+	#disable persistence on web services VIPs if 2013
+	section deployment {
+		choice version default "Lync Server 2010" display "xxlarge" {
+			"Lync Server 2010" => "2010",
+			"Lync Server 2013" => "2013"
+		}
+		optional ( intro.help == "max" ) {
+			message lync_version_help    "Select the version of Microsoft Lync Server for which you are deploying this template. This determines how the template configures the BIG-IP system."
+        }
+		optional ( version == "2013" )  {
+			choice mixed default "No Lync 2010 Servers" display "xxlarge" {
+			"No, there are no Lync 2010 Servers" => "2013_only",
+			"Yes, there are Lync 2010 and Lync 2013 Servers" => "2010_2013"
+			}
+			optional ( intro.help == "max" ) {
+				message lync_servers_help  "The system needs to know if you have any Lync Server 2010 servers in your Lync 2013 environment. The selection you make here determines persistence method and settings. The configuration might not function properly if you do not select the appropriate answer here."
+			}
+		}
+	}
+    section front_end_ip {
+        choice deploying_front_end_ip default "No" display "xxlarge" {
+			"Yes, deploy this BIG-IP system for Front End services" => "Yes",
+			"No, do not deploy this BIG-IP system for Front End services" => "No"
+		}
+			optional ( intro.help == "max" ) {
+				message lync_fe_help  "The system needs to know if you plan to deploy the BIG-IP system for Lync Front End services for internal clients at this time. If you are, the system uses the information you provide in this section to create multiple virtual servers for the Front End services."
+			}
+        optional ( deploying_front_end_ip == "Yes" ) {
+            string addr required validator "IpAddress" display "xxlarge"
+			optional ( intro.help == "max" ) {
+				message lync_fe_ip_help  "Specify a valid IP address the system can use for the Lync Front End virtual servers. The system creates multiple virtual servers using this IP address, but on different ports."
+			}
+			
+            choice snat default "No" display "xxlarge" {
+				"Servers have a route to clients through the BIG-IP system"           => "Yes",
+				"Servers do not have a route to clients through the BIG-IP system"    => "No"
+			}
+			optional ( intro.help == "max" ) {
+				message snat_help  "The system needs to know if you have configured a route on the BIG-IP system for traffic to pass from the servers back to the clients.  If you have not, the BIG-IP system uses Secure Network Address Translation (SNAT) to translate the client's source address to an address on the BIG-IP system."
+			}
+            optional ( snat == "No" ) {
+                choice snatpool default "No" display "xxlarge" {
+					"Fewer than 64,000 concurrent connections per server" => "No",
+					"More than 64,000 concurrent connections per server" => "Yes"
+				}
+				optional ( intro.help == "max" ) {
+					message snat_choice_help  "Because you selected that the servers do not have a route to the clients, you must choose whether you expect more or fewer than 64,000 concurrent connections to each Lync Front End server. This determines whether the system uses SNAT Auto Map (fewer) or a SNAT Pool (more)."
+				}
+                optional ( snatpool == "Yes" ) {
+                    table snatpool_members {
+                        string addr required validator "IpAddress" display "xlarge"
+                    }
+					optional ( intro.help == "max" ) {
+						message snatpool_help  "Because you selected you expect more than 64,000 concurrent connections to each Front End server, you must specify one otherwise unused IP address for every 64,000 concurrent connections you expect, or fraction thereof. Click Add to include additional rows."
+					}
+                }
+            }
+			multichoice client_vlans display "xlarge" default tcl { tmsh::run_proc f5.app_utils:get_vlans } tcl { tmsh::run_proc f5.app_utils:get_vlans }
+			optional ( intro.help == "max" ) {
+				message client_vlans_help  "For an additional layer of security, you have the option of selecting specific VLANs from which the BIG-IP system should accept internal Front End traffic. By default, all VLANs configured on the system appear in the Selected (allowed) box, so if you do not move any VLANs the BIG-IP system accepts traffic from all VLANs. If you move one or more VLANs to the Options box, the system will not accept traffic from those VLANs. The VLAN objects must already be configured on this BIG-IP system before you can select them."
+			}
+            choice sip_monitoring default "No" display "xxlarge" {
+				"Yes, a hardware load balancing port is enabled" => "Yes",
+				"No, a hardware load balancing port is not enabled" => "No"
+			}
+			optional ( intro.help == "max" ) {
+				message hw_port_help  "Choose whether you have enabled a Hardware Load Balancing Port in your Lync Front End server configuration. This is a Lync server setting and not a BIG-IP system setting."
+			}
+            optional ( sip_monitoring == "Yes" ) {
+                string sip_port default "5060" required validator "PortNumber" display "large"
+				
+				optional ( intro.help == "max" ) {
+					message hw_port_no_help  "Specify the Hardware Load Balancing port you enabled in your Lync Front End server configuration.  The default is 5060."
+				}
+			}
+			choice deploying_mediation default "No" display "xxlarge" {
+				"No, this deployment does not use Mediation services" => "No",
+				"Yes, this deployment uses Mediation services" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message mediation_help  "Choose whether you are deploying Mediation services at this time. Lync Mediation services are a necessary component for implementing Enterprise Voice and dial-in conferencing."
+			}
+			
+			optional ( deploying_mediation == "Yes" ) {
+            choice seperate_mediation_pool default "No" display "xxlarge" {
+				"No, both services are on the same server(s)" => "No",
+				"Yes, each service is on a separate server" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message mediation_yes_help  "Choose whether your Mediation services are on the same servers as your Front End servers, or if they are on different servers. This determines whether the template asks for the IP addresses of the Mediation servers."
+			}
+		}
+    }
+}
+    optional ( front_end_ip.deploying_front_end_ip == "Yes" ) {
+        section front_end_ip_server_pools {
+            lb_method_default lb_method_choice
+			optional ( intro.help == "max" ) {
+				message lb_method_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( lb_method_choice == "ratio-member" || 
+                        lb_method_choice == "ratio-node" || 
+                        lb_method_choice == "ratio-session" || 
+                        lb_method_choice == "ratio-least-connections-member" || 
+                        lb_method_choice == "ratio-least-connections-node" || 
+                        lb_method_choice == "dynamic-ratio-member" || 
+                        lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+                }
+            }
+			optional ( intro.help == "max" ) {
+				message addr_help  "Specify the IP address(es) of your Front End servers. Click Add to include additional servers. You can optionally add a Connection Limit."
+			}
+        }
+    }
+    optional ( front_end_ip.deploying_front_end_ip == "Yes" && front_end_ip.deploying_mediation == "Yes" && front_end_ip.seperate_mediation_pool == "Yes" ) {
+        section front_end_ip_mediation_server_pools {
+            lb_method_default lb_method_choice
+			optional ( intro.help == "max" ) {
+				message lb_method_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( lb_method_choice == "ratio-member" || 
+                        lb_method_choice == "ratio-node" || 
+                        lb_method_choice == "ratio-session" || 
+                        lb_method_choice == "ratio-least-connections-member" || 
+                        lb_method_choice == "ratio-least-connections-node" || 
+                        lb_method_choice == "dynamic-ratio-member" || 
+                        lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+                }
+            }
+			optional ( intro.help == "max" ) {
+				message addr_help  "Specify the IP address(es) of the servers running the Mediation service. Click Add to include additional servers. You can optionally add a Connection Limit."
+			}
+        }
+    }
+    optional ( front_end_ip.deploying_front_end_ip == "Yes" ) {
+		section director_ip {
+			choice deploying_director_ip default "No" display "xxlarge" {
+				"No, do not deploy this BIG-IP system for Director services" => "No",
+				"Yes, deploy this BIG-IP system for Director services" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message deploying_director_ip_help  "The system needs to know if you plan to deploy the BIG-IP system for Lync Director services to refer internal clients to their home pools."
+			}
+			optional ( deploying_director_ip == "Yes" ) {
+				string addr required validator "IpAddress" display "xxlarge"
+				optional ( intro.help == "max" ) {
+					message addr_help  "Specify a valid IP address the system can use for the Lync Director virtual servers. The system creates multiple virtual servers using this IP address, but on different ports."
+				}
+			}
+		}
+		optional ( director_ip.deploying_director_ip == "Yes" ) {
+			section director_ip_server_pools {
+				lb_method_default lb_method_choice
+				optional ( intro.help == "max" ) {
+					message lb_method_choice_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+				}
+				table servers {
+					string addr required validator "IpAddress" display "large"
+					string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+					optional ( lb_method_choice == "ratio-member" || 
+						lb_method_choice == "ratio-node" || 
+                        lb_method_choice == "ratio-session" || 
+                        lb_method_choice == "ratio-least-connections-member" || 
+                        lb_method_choice == "ratio-least-connections-node" || 
+                        lb_method_choice == "dynamic-ratio-member" || 
+                        lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+					}
+				}
+				optional ( intro.help == "max" ) {
+					message addr_help  "Specify the IP address(es) of the Director servers. Click Add to include additional servers. You can optionally add a Connection Limit."
+				}
+			}
+		}
+	}	
+    section edge_external_ip {
+        choice deploying_edge_external_ip default "No" display "xxlarge" {
+			"No, do not deploy this BIG-IP system for external Edge services" => "No",
+			"Yes, deploy this BIG-IP system for external Edge services" => "Yes"
+		}
+		optional ( intro.help == "max" ) {
+			message deploying_edge_external_ip_help  "The system needs to know if you plan to deploy the BIG-IP system for Lync external Edge services, including the Access service, the Web Conferencing service, and the A/V service."
+		}
+        optional ( deploying_edge_external_ip == "Yes" ) {
+			message note_2 "You must provision one unique, publicly routable IP address for each BIG-IP virtual server you create here, plus an additional publicly routable IP address per Edge Server for each Lync Edge service you are deploying.  For example, if you are deploying all three services on two Edge Servers, you need to provision nine unique, publicly routable IP addresses."
+			choice snat default "No" display "xxlarge" {
+				"Servers have a route to clients through the BIG-IP system"           => "Yes",
+				"Servers do not have a route to clients through the BIG-IP system"    => "No"
+			}
+			optional ( intro.help == "max" ) {
+				message snat_help  "The system needs to know if you have configured a route on the BIG-IP system for traffic to pass from the servers back to the clients.  If you have not, the BIG-IP system uses Secure Network Address Translation (SNAT) to translate the client's source address to an address on the BIG-IP system."
+			}
+            optional ( snat == "No" ) {
+                choice snatpool default "No" display "xxlarge" {
+					"Fewer than 64,000 concurrent connections per server" => "No",
+					"More than 64,000 concurrent connections per server" => "Yes"
+				}
+				optional ( intro.help == "max" ) {
+					message snatpool_help  "Because you selected that the servers do not have a route to the clients, you must choose whether you expect more or fewer than 64,000 concurrent connections to each server. This determines whether the system uses SNAT Auto Map (fewer) or a SNAT Pool (more)."
+				}
+                optional ( snatpool == "Yes" ) {
+                    table snatpool_members {
+                        string addr required validator "IpAddress" display "xlarge"
+                    }
+					optional ( intro.help == "max" ) {
+						message snatpool_members_help  "Because you selected you expect more than 64,000 concurrent connections to each server, you must specify one otherwise unused IP address for every 64,000 concurrent connections you expect, or fraction thereof. Click Add to include additional rows."
+					}
+                }
+			}
+			multichoice client_vlans display "xlarge" default tcl { tmsh::run_proc f5.app_utils:get_vlans } tcl { tmsh::run_proc f5.app_utils:get_vlans }
+			optional ( intro.help == "max" ) {
+				message client_vlans_help  "For an additional layer of security, you have the option of selecting specific VLANs from which the BIG-IP system should accept external Edge traffic. By default, all VLANs configured on the system appear in the Selected (allowed) box, so if you do not move any VLANs the BIG-IP system accepts traffic from all VLANs. If you move one or more VLANs to the Options box, the system will not accept traffic from those VLANs. The VLAN objects must already be configured on this BIG-IP system before you can select them."
+			}
+			choice edge_topology default "multiple" display "xxlarge"  {
+				"Lync Edge services use unique FQDNs and IP addresses" => "multiple",
+				"Lync Edge services use a single FQDN and IP address" => "combined"
+			}
+			optional ( intro.help == "max" ) {
+				message edge_topology_help  "When defining an Edge pool in the Lync Topology Builder, you specify a single FQDN with unique ports for each Edge service, or a unique FQDN for each service. If you configured separate FQDNs for web conferencing and A/V, select 'Lync Edge Services use unique FQDNs and IP addresses'.  In this case, each Lync Edge server should have a unique publicly routable IP address for each of the Edge services you are deploying (Access, A/V, and Web Conferencing) in addition to one unique public IP address for each service's BIG-IP virtual server; if you are deploying two Edge servers, you would need 9 publicly routable IP addresses. If you specified a single FQDN, select 'Lync Edge services use a single FQDN and IP address'. In this case, you only need one publicly routable IP address on each server."
+			}
+			
+			optional ( edge_topology == "multiple" )  {	
+				string access_addr required validator "IpAddress" display "xxlarge"
+			}
+			optional ( edge_topology == "combined" )  {	
+				string combined_addr required validator "IpAddress" display "xxlarge"
+			}
+			optional ( intro.help == "max" && edge_topology == "multiple" ) {
+				message access_addr_help  "Type the IP address the BIG-IP system will use for the Edge Servers - External Interface Access service virtual server. This must be a unique, publicly routable IP address."
+			}
+			optional ( intro.help == "max" && edge_topology == "combined" ) {
+				message combined_addr_help  "Type the IP address the BIG-IP system will use for the Edge Servers - External Interface virtual servers. This must be a unique, publicly routable IP address."
+			}
+			optional ( edge_topology == "multiple" )  {	
+				choice access_port default "443"  {
+					"443",
+					"5061"
+				}
+				optional ( intro.help == "max" ) {
+					message access_port_help  "Select the port on which your Edge Servers listen for Access service traffic."
+				}
+				optional ( access_port == "443" ) {
+					choice federation default "No" display "xxlarge" {
+						"No, federation on port 5061 is not enabled" => "No",
+						"Yes, federation on port 5061 is enabled" => "Yes"
+					}
+					optional ( intro.help == "max" ) {
+						message federation_help  "Choose whether you have enabled federation on port 5061 in your Lync server topology. If so, the system creates an additional virtual server for federation."
+					}
+				} 
+			}
+			optional ( edge_topology == "combined" )  {	
+				string combined_access_port required default "5061" display "small"
+			}
+			#create a 5269 virtual server
+			optional ( deployment.version == "2013" )  {
+				choice deploy_xmpp default "No" display "xxlarge" {
+					"No, federation with XMPP on port 5269 is not enabled" => "No",
+					"Yes, federation with XMPP on port 5269 is enabled" => "Yes"
+				}
+				optional ( intro.help == "max" ) {
+					message deploy_xmpp_help  "Choose whether you have enabled federation with XMPP providers in the Lync Server 2013 Topology (on port 5269).  If so, the system creates an additional virtual server for federation with XMPP."
+				}
+			}
+			choice sip_monitoring default "No" display "xxlarge" {
+				"No, do not monitor the internal SIP virtual servers" => "No",
+				"Yes, monitor the internal SIP virtual servers" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message sip_monitoring_help  "Choose whether you want to monitor the health of the internal SIP virtual servers, and mark the Edge Access service down if monitoring fails. This monitor is useful if configuring Lync with BIG-IP GTM in multiple data centers for site resiliency as described in the deployment guide."
+			}
+			optional ( sip_monitoring == "Yes" ) {
+			string sip_monitor_alias required validator "IpAddress" display "xxlarge"
+				optional ( intro.help == "max" ) {
+					message sip_monitor_alias_help  "Type the IP address of your internal BIG-IP LTM Front End virtual server. This monitor marks the Edge Access service down if monitoring fails, and is useful if configuring Lync with BIG-IP GTM in multiple data centers for site resiliency (as described in the deployment guide)."
+				}
+			}
+			choice deploy_conf default "No" display "xxlarge" {
+				"No, do not deploy this BIG-IP system for Web Conferencing services" => "No",
+				"Yes, deploy this BIG-IP system for Web Conferencing services" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message deploy_conf_help  "Select whether you are deploying the Edge server Web Conferencing service at this time."
+			}
+			
+			optional ( deploy_conf == "Yes" ) {
+				optional (  edge_topology == "multiple" )  {	
+					string web_conferencing_addr required validator "IpAddress" display "xxlarge"
+					optional ( intro.help == "max" ) {
+						message web_conferencing_addr_help  "Type the publicly routable IP address you provisioned for the Web Conferencing service."
+					}
+				}
+				optional ( edge_topology == "combined" )  {	
+					string combined_web_conferencing_port required default "444" display "small"
+					optional ( intro.help == "max" ) {
+						message combined_web_conferencing_port_help  "Type the port you configured for the Web Conferencing service."
+					}
+				}
+				
+			}
+			choice deploy_av default "No" display "xxlarge" {
+				"No, do not deploy this BIG-IP system for the A/V service" => "No",
+				"Yes, deploy this BIG-IP system for the A/V service" => "Yes"
+			}
+			optional ( intro.help == "max" ) {
+				message deploy_av_help  "Select whether you are deploying the Edge server A/V service at this time."
+			}
+			optional (deploy_av == "Yes" ) {
+				optional (  edge_topology == "multiple" )  {	
+					string av_addr required validator "IpAddress" display "xxlarge"
+						optional ( intro.help == "max" ) {
+							message av_addr_help  "Type the publicly routable IP address you provisioned for the A/V service."
+						}
+				}
+				optional ( edge_topology == "combined" )  {	
+					string combined_av_port required default "443" display "small"
+						optional ( intro.help == "max" ) {
+							message combined_av_port_help  "Type the port you configured for the A/V service."
+						}	
+					}
+				choice av_snat default "No" display "xxlarge" {
+					"No, do not translate the source address of A/V Connections" => "No",
+					"Yes, translate the source address of A/V connections" => "Yes"
+				}
+				message av_snat_note "For best performance, F5 recommends against translating the source address (using SNAT) for Lync A/V traffic, as it is optimal if the Lync Edge servers see the IP address of clients for peer-to-peer client communication. If you do select to translate the source address for A/V connections, the system proxies all A/V traffic through the Lync Edge servers."
+				optional ( av_snat == "Yes" )  {
+					message av_snat_note_2 "Because you have selected to translate the source address of A/V connections, the BIG-IP system uses the same SNAT settings for address translation as the Access and Web Conferencing services (if applicable). Otherwise, the system uses SNAT Auto Map."
+				}
+			}		
+        }
+    }
+    optional ( edge_external_ip.deploying_edge_external_ip == "Yes" ) {
+        section edge_external_ip_server_pools {
+            lb_method_default access_lb_method_choice
+			optional ( intro.help == "max" ) {
+				message access_lb_method_choice_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table access_servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( access_lb_method_choice == "ratio-member" || 
+                        access_lb_method_choice == "ratio-node" || 
+                        access_lb_method_choice == "ratio-session" || 
+                        access_lb_method_choice == "ratio-least-connections-member" || 
+                        access_lb_method_choice == "ratio-least-connections-node" || 
+                        access_lb_method_choice == "dynamic-ratio-member" || 
+                        access_lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+                }
+            }	
+			optional ( intro.help == "max" ) {
+				message addr_help  "Specify the IP address(es) of the Lync servers running the Access Edge service. Click Add to include additional servers. You can optionally add a Connection Limit."
+			}
+
+			optional ( edge_external_ip.deploy_conf  == "Yes" ) {
+            lb_method_default conf_lb_method_choice
+			optional ( intro.help == "max" ) {
+				message conf_lb_method_choice_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table conf_servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( conf_lb_method_choice == "ratio-member" || 
+                        conf_lb_method_choice == "ratio-node" || 
+                        conf_lb_method_choice == "ratio-session" || 
+                        conf_lb_method_choice == "ratio-least-connections-member" || 
+                        conf_lb_method_choice == "ratio-least-connections-node" || 
+                        conf_lb_method_choice == "dynamic-ratio-member" || 
+                        conf_lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+                }
+            }
+			optional ( intro.help == "max" ) {
+				message conf_addr_help  "Specify the IP address(es) of the Lync servers running the Web Conferencing service. Click Add to include additional servers. You can optionally add a Connection Limit."
+			}
+		}
+			optional ( edge_external_ip.deploy_av == "Yes" ) {
+            lb_method_default av_lb_method_choice
+			optional ( intro.help == "max" ) {
+				message av_lb_method_choice_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table av_servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( av_lb_method_choice == "ratio-member" || 
+                        av_lb_method_choice == "ratio-node" || 
+                        av_lb_method_choice == "ratio-session" || 
+                        av_lb_method_choice == "ratio-least-connections-member" || 
+                        av_lb_method_choice == "ratio-least-connections-node" || 
+                        av_lb_method_choice == "dynamic-ratio-member" || 
+                        av_lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+					}
+				}
+				optional ( intro.help == "max" ) {
+					message av_addr_help  "Specify the IP address(es) of the Lync servers running the A/V service. Click Add to include additional servers. You can optionally add a Connection Limit."
+				}				
+			}
+        }
+    }
+    section edge_internal_ip {
+        choice deploying_edge_internal_ip default "No" display "xxlarge" {
+			"No, do not deploy this BIG-IP system for internal Edge services" => "No",
+			"Yes, deploy this BIG-IP system for internal Edge services" => "Yes"
+		}
+		optional ( intro.help == "max" ) {
+			message deploying_edge_internal_ip_help  "The system needs to know if you plan to deploy the BIG-IP system for Lync Internal Edge services for internally-sourced client connections to external resources."
+		}
+        optional ( deploying_edge_internal_ip == "Yes" ) {
+            string addr required validator "IpAddress" display "xxlarge"
+			optional ( intro.help == "max" ) {
+				message addr_help  "Type the IP address the BIG-IP system will use for the Edge Servers - Internal Interface virtual server."
+			}
+
+            choice snat default "Yes" display "xxlarge" {
+				"Servers have a route to internal clients through the BIG-IP system"           => "Yes",
+				"Servers do not have a route to internal clients through the BIG-IP system"    => "No"
+			}
+			optional ( intro.help == "max" ) {
+				message snat_help  "The system needs to know if you have configured a route on the BIG-IP system for traffic to pass from the servers back to the clients.  For the Edge Internal Interface, the default is that the servers have a route to internal clients through the BIG-IP system, as typically the internal interface does have route back through the BIG-IP system. If you have not configured a route, the BIG-IP system uses Secure Network Address Translation (SNAT) to translate the client's source address to an address on the BIG-IP system."
+			}
+
+            optional ( snat == "No" ) {
+                choice snatpool default "No" display "xxlarge" {
+					"Fewer than 64,000 concurrent connections per server" => "No",
+					"More than 64,000 concurrent connections per server" => "Yes"
+				}
+				optional ( intro.help == "max" ) {
+					message snatpool_help  "Because you selected that the servers do not have a route to the clients, you must choose whether you expect more or fewer than 64,000 concurrent connections to each server. This determines whether the system uses SNAT Auto Map (fewer) or a SNAT Pool (more)."
+				}
+                optional ( snatpool == "Yes" ) {
+                    table snatpool_members {
+                        string addr required validator "IpAddress" display "xlarge"
+                    }
+				optional ( intro.help == "max" ) {
+					message snatpool_members_help  "Because you selected you expect more than 64,000 concurrent connections to each server, you must specify one otherwise unused IP address for every 64,000 concurrent connections you expect, or fraction thereof. Click Add to include additional rows."
+				}
+				}
+            }
+			multichoice client_vlans display "xlarge" default tcl { tmsh::run_proc f5.app_utils:get_vlans } tcl { tmsh::run_proc f5.app_utils:get_vlans }
+			optional ( intro.help == "max" ) {
+				message client_vlans_help  "For an additional layer of security, you have the option of selecting specific VLANs from which the BIG-IP system should accept internal Edge traffic. By default, all VLANs configured on the system appear in the Selected (allowed) box, so if you do not move any VLANs the BIG-IP system accepts traffic from all VLANs. If you move one or more VLANs to the Options box, the system will not accept traffic from those VLANs. The VLAN objects must already be configured on this BIG-IP system before you can select them."
+			}
+        }
+    }
+    optional ( edge_internal_ip.deploying_edge_internal_ip == "Yes" ) {
+        section edge_internal_ip_server_pools {
+            lb_method_default lb_method_choice
+			optional ( intro.help == "max" ) {
+				message lb_method_choice_help  "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the fewest current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+			}
+            table servers {
+                string addr required validator "IpAddress" display "large"
+                string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+                optional ( lb_method_choice == "ratio-member" || 
+                        lb_method_choice == "ratio-node" || 
+                        lb_method_choice == "ratio-session" || 
+                        lb_method_choice == "ratio-least-connections-member" || 
+                        lb_method_choice == "ratio-least-connections-node" || 
+                        lb_method_choice == "dynamic-ratio-member" || 
+                        lb_method_choice == "dynamic-ratio-node" ) { 
+                    string ratio default "1" validator "NonNegativeNumber" display "small" 
+                }
+            }
+			optional ( intro.help == "max" ) {
+				message addr_help  "Specify the IP address(es) of the Lync Internal Edge servers. Click Add to include additional servers. You can optionally add a Connection Limit."
+			}
+        }
+    }
+	section reverse_proxy {
+    choice scenario default "No" display "xxlarge" {
+		"No, do not deploy this BIG-IP system for reverse proxy services" => "No",
+		"Forward reverse proxy client traffic to another BIG-IP system" => "external",
+		"Forward reverse proxy client traffic to Lync server(s)" => "standalone",
+		"Receive reverse proxy traffic from another BIG-IP system" => "internal"		
+	}	
+	optional ( intro.help == "max" ) {
+		message deploying_reverse_proxy_help  "Deploying the BIG-IP system as a reverse proxy eliminates the need for a separate server to act as a reverse proxy for Lync external web services. If you choose to deploy the system as a reverse proxy, select one of the three options that is appropriate for your configuration. The following note changes with your selection to describe each option."
+	}
+	optional ( scenario == "internal" )  {
+		message internal_note "Select this option to create BIG-IP virtual servers to receive Lync web services traffic from a reverse proxy server or external BIG-IP and forward it to the Lync Front End/Director servers."
+		message note_2 "If deploying a third-party reverse proxy server, such as Microsoft Forefront TMG, configure the proxy publishing rules to forward traffic to the IP addresses of the BIG-IP virtual servers you create here.  If using BIG-IP LTM to receive the external connections, specify these IP addresses in the Reverse Proxy External Interface section."
+	}
+	optional ( scenario == "external" )  {
+		message external_note "Select this option to create BIG-IP virtual servers to receive external Lync web services traffic and forward it to a virtual server on an internal BIG-IP LTM.  The internal BIG-IP then forwards this traffic to the Lync Front End/Director servers."
+	}
+	optional ( scenario == "standalone" )  {
+		message standalone_note "Select this option to create BIG-IP virtual servers to receive external Lync web services traffic and forward it directly to the Lync Front End/Director servers."
+	}
+	optional ( scenario != "No" )  {
+	choice deploy_director default "No" display "xxlarge" {
+		"No, do not forward reverse proxy traffic to Director servers" => "No",
+		"Yes, forward reverse proxy traffic to Director servers" => "Yes"
+	}
+	optional ( intro.help == "max" ) {
+		message deploy_director_help  "Choose whether you want to forward reverse proxy traffic to the Lync Director Servers. When forwarding reverse proxy traffic to Director servers, requests for the simple URLs in the following questions are forwarded to the Director reverse proxy pool on the internal LTM. If not forwarding traffic to the Director servers, all requests are forwarded to the internal Front End reverse proxy pool."
+	}
+	choice snat default "No" display "xxlarge" {
+		"Pool members have a route to clients through the BIG-IP system"   => "Yes",
+		"Pool members do not have a route to clients through the BIG-IP system"    => "No"
+	}			
+	optional ( intro.help == "max" ) {
+		message snat_help  "The system needs to know if you have configured a route on the BIG-IP system for traffic to pass from the pool members back to the clients.  If you have not, the BIG-IP system uses Secure Network Address Translation (SNAT) to translate the client's source address to an address on the BIG-IP system."
+	}
+	optional ( snat == "No" ) {
+		choice snatpool default "No" display "xxlarge" {
+			"Fewer than 64,000 concurrent connections per pool member" => "No",
+			"More than 64,000 concurrent connections per pool member" => "Yes"
+		}			
+		optional ( intro.help == "max" ) {
+			message snatpool_help  "Because you selected that the pool members do not have a route to the clients, you must choose whether you expect more or fewer than 64,000 concurrent connections to each pool member. This determines whether the system uses SNAT Auto Map (fewer) or a SNAT Pool (more)."
+		}
+		optional ( snatpool == "Yes" ) {
+			table snatpool_members {
+				string addr required validator "IpAddress" display "xlarge"
+            }				
+		optional ( intro.help == "max" ) {
+			message snatpool_members_help  "Because you selected you expect more than 64,000 concurrent connections to each pool member, you must specify one otherwise unused IP address for every 64,000 concurrent connections you expect, or fraction thereof. Click Add to include additional rows."
+			}
+		}
+	}
+	multichoice client_vlans display "xlarge" default tcl { tmsh::run_proc f5.app_utils:get_vlans } tcl { tmsh::run_proc f5.app_utils:get_vlans }
+	optional ( intro.help == "max" ) {
+		message client_vlans_help  "For an additional layer of security, you have the option of selecting specific VLANs from which the BIG-IP system should accept reverse proxy traffic. By default, all VLANs configured on the system appear in the Selected (allowed) box, so if you do not move any VLANs the BIG-IP system accepts traffic from all VLANs. If you move one or more VLANs to the Options box, the system will not accept traffic from those VLANs. The VLAN objects must already be configured on this BIG-IP system before you can select them."
+	}
+	optional ( scenario == "external"  || scenario == "standalone")  {
+		string reverse_proxy_addr required validator "IpAddress" display "xxlarge"
+		optional ( intro.help == "max" ) {
+			message reverse_proxy_addr_help  "Type the IP address the BIG-IP system will use for the reverse proxy virtual server on port 443. This must be a unique, publicly routable IP address."
+		}
+		string web_svc_fqdn display "xxlarge" required validator "fqdn" 
+		optional ( intro.help == "max" ) {
+			message web_svc_fqdn_help  "Type the FQDN you configured in Lync for the External Web Services pool, such as chat.example.com"
+		}
+		optional ( deploy_director == "Yes" ) {
+			string director_fqdn display "xlarge" required validator "fqdn" display "xxlarge"
+			optional ( intro.help == "max" ) {
+				message director_fqdn_help  "Specify Type the FQDN you configured in Lync for the Director pool external web services, such as dir.example.com."
+			}
+		message deploy_director_note "When deploying Director Servers, requests for the simple URLs listed in the following questions are forwarded to the Director reverse proxy pool on the internal LTM.  If not deploying Director Servers, all requests are forwarded to the internal Front End reverse proxy pool."
+		}
+		string meet_url display "xxlarge" required
+		message meet_url_warning "Do not use 'https://' or a trailing forward slash in this field."
+		optional ( intro.help == "max" ) {
+			message meet_url_help  "Type the Meeting Simple URL you specified in your Lync configuration. For example, meet.example.com or www.example.com/meet."
+		}
+		string dialin_url display "xxlarge" required
+		message dialin_url_warning "Do not use 'https://' or a trailing forward slash in this field."
+		optional ( intro.help == "max" ) {
+			message dialin_url_help  "Type the Phone Access Simple URL you specified in your Lync configuration for phone access. For example, dialin.example.com or www.example.com/dialin. "
+		}
+		choice deploy_mobility default "No" display "xxlarge" {
+			"No, do not deploy this BIG-IP system for Lync Mobility services" => "No",
+			"Yes, deploy this BIG-IP system for Lync Mobility services" => "Yes"
+		}
+		optional ( intro.help == "max" ) {
+			message deploy_mobility_help  "Choose whether you are deploying Lync Mobility services for external clients at this time."
+		}
+		optional ( deploy_mobility == "Yes" ) {
+			string mobility_url display "xxlarge" required validator "fqdn" 
+			
+			optional ( intro.help == "max" ) {
+				message mobility_url_help  "Type the Lync Mobility external FQDN, such as lyncdiscover.example.com."
+			}
+		}
+	}		
+	optional ( scenario == "internal" )  {
+		string reverse_proxy_fe_addr required validator "IpAddress" display "xxlarge"
+			optional ( intro.help == "max" ) {
+				message reverse_proxy_fe_addr_help  "Specify the IP address you want to use for the reverse proxy virtual server for external web services and simple URLs. This virtual server forwards traffic to the Lync Front End Servers and listens on port 4443."
+			}
+			optional ( deploy_director == "Yes" ) {
+				string reverse_proxy_director_addr required validator "IpAddress" display "xxlarge"
+				optional ( intro.help == "max" ) {
+					message reverse_proxy_director_addr_help  "This virtual server forwards traffic to the Lync Director Servers and is on port 4443. Type the IP address you want to use for the port 4443 reverse proxy virtual server for external web services and simple URLs. "
+				}						
+			}
+		}		
+	choice clientssl display "xxlarge"
+		default "/#create_new#" tcl {
+		return "Create a new Client SSL profile\t/#create_new#\n[tmsh::run_proc f5.app_utils:get_items ltm profile client-ssl]"
+		}
+		optional ( intro.help == "max" ) {
+			message clientssl_help  "The iApp template can create a new client SSL profile for the Front End servers, or if you have already created one on this BIG-IP system for reverse proxy traffic with the appropriate certificate and key, you can select it from the list."
+		}
+	optional (clientssl == "/#create_new#" ) {
+		choice cert default "/Common/default.crt" display "xxlarge" tcl { 
+			tmsh::run_proc f5.app_utils:get_ssl_certs 
+		}	
+		optional ( intro.help == "max" ) {
+			message cert_help "Select the certificate you imported for the BIG-IP system to use to authenticate the external web services FQDNs."
+			message note_cert "The certificate you select here MUST match the certificate used in your Lync web services configuration."
+		}				
+		choice key default "/Common/default.key" display "xxlarge" tcl { 
+			tmsh::run_proc f5.app_utils:get_ssl_keys 
+		}				
+		optional ( intro.help == "max" ) {
+			message key_help  "Select the key you want the BIG-IP system to use to authenticate the external web services FQDNs."
+		}			
+		optional ( scenario == "external" || scenario == "standalone" )  {
+			choice chainssl display "xxlarge"
+				default "/#do_not_use#" tcl {
+				return "Do not use an intermediate certificate\t/#do_not_use#\n[tmsh::run_proc f5.app_utils:get_items_not_recursive sys file ssl-cert]"
+			}
+			optional ( intro.help == "max" ) {
+				message chainssl_help  "Intermediate certificates, also called intermediate certificate chains or chain certificates, are used to help systems which depend on SSL certificates for peer identification. These certificates are intended to create a chain of trust between the CA that signed the certificate and the CA that is already trusted by the recipient of the certificate. This allows the recipient to verify the validity of the certificates presented, even when the signing CA is unknown. Intermediate certificates must be created or imported onto this BIG-IP system prior to running this iApp. See http://support.f5.com/kb/en-us/solutions/public/13000/300/sol13302.html for help on creating an intermediate certificate chain."
+			}
+		 }
+	}		
+	optional ( deploy_director == "Yes" ) {
+		choice dir_clientssl display "xxlarge"
+		default "/#use_previous#" tcl {
+		return "Use the same SSL profile as the Front End servers (recommended)\t/#use_previous#\nCreate a new Client SSL profile for Director servers\t/#create_new#\n[tmsh::run_proc f5.app_utils:get_items ltm profile client-ssl]"
+        }
+		optional ( intro.help == "max" ) {
+			message dir_clientssl_help  "Choose the client SSL profile you want to use for Director server reverse proxy traffic.  Unless you have a specific need to use a custom client SSL profile or different certificates, we recommend you use the same client SSL profile (which uses the same certificate and key) as the Front End servers."
+		}
+		optional (dir_clientssl == "/#create_new#" ) {
+			choice dir_cert default "/Common/default.crt" display "xxlarge" tcl { 
+				tmsh::run_proc f5.app_utils:get_ssl_certs 
+			}
+			optional ( intro.help == "max" ) {
+				message dir_cert_help "Select the certificate you imported to authenticate the external Lync web service FQDNs for the Director servers. If you are deploying Lync Front End Servers and Director Servers, F5 recommends using the same SAN-enabled certificate for both Front End and Director web services virtual servers."
+			}
+			choice dir_key default "/Common/default.key" display "xxlarge" tcl { 
+				tmsh::run_proc f5.app_utils:get_ssl_keys 
+			}
+			optional ( intro.help == "max" ) {
+				message dir_key_help  "Select the key you want the BIG-IP system to use to authenticate the external Director FQDNs."
+			}
+		} 
+		optional ( ( scenario != "internal" ) && (dir_clientssl != "/#use_previous#" ) && ( clientssl != dir_clientssl) )  {
+			message cert_warning "You have selected pre-existing Client SSL profile(s) for Front End or Director services, or both. These profiles must be correctly configured to support Server Name Indication prior to completion of this template."
+		}
+	}			
+	optional ( scenario == "external" )  {
+		string reverse_proxy_fe_pool_member required validator "IpAddress" display "xxlarge"
+		optional ( intro.help == "max" ) {
+			message reverse_proxy_fe_pool_member_help  "Type the IP address of the internal reverse proxy BIG-IP virtual server for external web services that forwards the traffic to the Lync Front End Servers."
+		}
+		optional ( deploy_director == "Yes" ) {
+			string reverse_proxy_dir_pool_member required validator "IpAddress" display "xxlarge"
+			optional ( intro.help == "max" ) {
+				message reverse_proxy_dir_pool_member_help  "Type the IP address of the internal reverse proxy BIG-IP virtual server for external web services that forwards traffic to the Lync Director Servers."
+			}
+		}
+	}
+	optional ( scenario == "internal" || scenario == "standalone" )  {
+		table fe_rp_server_pools {			
+			string addr required validator "IpAddress" display "large"
+            string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+		}
+		optional ( intro.help == "max" ) {
+			message fe_rp_server_pools_help  "Specify the IP address(es) of each Front End server that should receive web services traffic.  Click Add to include additional Front End servers. You can optionally specify a Connection Limit for each server."
+		}
+		optional ( deploy_director == "Yes" ) {
+			table dir_rp_server_pools {
+				string addr required validator "IpAddress" display "large"
+				string connection_limit default "0" required validator "NonNegativeNumber" display "small"
+			}
+			optional ( intro.help == "max" ) {
+			message dir_rp_server_pools_help  "Specify the IP address(es) of each Director server that should receive web services traffic.  Click Add to include additional Director servers. You can optionally specify a Connection Limit for each server."
+		}
+		}
+	}
+	}
+}
+	optional ( front_end_ip.deploying_front_end_ip == "Yes" || director_ip.deploying_director_ip == "Yes" || edge_external_ip.deploying_edge_external_ip == "Yes" || edge_internal_ip.deploying_edge_internal_ip == "Yes" )  {
+	section outro {
+	optional ( front_end_ip.deploying_front_end_ip == "Yes" ) {
+	message fe "If you are deploying Lync Edge services, you must run this template again on the external, public-facing BIG-IP and select the options to deploy Edge External and External Reverse Proxy virtual servers."
+	message fe_2 "You must modify the internal DNS record for your Lync Front End and Director web services pools to point to the virtual server IP addresses you specified in the Front End and Director Virtual Servers section."
+	}
+	optional (  edge_internal_ip.deploying_edge_internal_ip == "Yes"  ) {
+	message int_edge "You must modify the DNS record for your internal Lync edge pool to point to the virtual server IP address you specified in the Edge Internal Virtual Servers section."
+	}
+	optional (  edge_external_ip.deploying_edge_external_ip == "Yes"  ) {
+	message ext_edge "You must ensure that the Lync Edge servers have a route to external clients.  The external Edge server addresses must not have a route to the internal Edge server addresses."
+	message ext_edge_2 "You must modify the DNS record for your external Lync services to point to the virtual server IP addresses you specified in the Edge External Virtual Servers section."
+	}
+	optional (  reverse_proxy.scenario != "No"  ) {
+	message int_rp "If you are using Microsoft TMG or another reverse proxy server, you must configure publishing rules to forward Lync traffic to the appropriate virtual servers you created in the Internal Reverse Proxy Virtual Server section."
+	}
+	optional (  reverse_proxy.scenario != "No" ) {
+	message ext_rp "You must modify the DNS record for your external web services FQDN and simple URLs to point to the virtual server IP address you specified in the External Reverse Proxy Virtual Server section."
+	}
+		}
+	}
+}
+text {
+    intro "Welcome to the Microsoft Lync Server template"
+    intro.hello "Introduction"
+	intro.hello_2 "Deployment Topology Note"
+	intro.updates "Check for updates"
+	intro.prereqs "Prerequisites"
+
+    intro.sorry "We're sorry:"
+	intro.help "Do you want to see inline help?"
+	intro.help_help ""
+	
+	
+	deployment "Tell us about your Lync Server deployment"
+	deployment.version "Which version of Lync Server are you using?"
+	deployment.lync_version_help ""
+	deployment.mixed "Do you have Lync 2010 servers in your Lync 2013 environment?"
+	deployment.lync_servers_help ""
+
+    front_end_ip "Microsoft Lync Server Front End Virtual Servers"
+    front_end_ip.deploying_front_end_ip "Are you deploying this system for internal Front End services?"
+	front_end_ip.lync_fe_help ""
+    front_end_ip.addr "What IP address do you want to use for the Front End virtual servers?"
+	front_end_ip.lync_fe_ip_help ""
+	front_end_ip.deploying_mediation "Are you using Microsoft Lync Server Mediation services?"
+	front_end_ip.mediation_help ""
+    front_end_ip.seperate_mediation_pool "Are Mediation servers separate from the Front End Servers?"
+	front_end_ip.mediation_yes_help ""
+    front_end_ip.sip_monitoring "Have you enabled a hardware load balancing monitoring port on your Front End Servers?"
+	front_end_ip.hw_port_help ""
+    front_end_ip.sip_port "Which port have you enabled?"
+	front_end_ip.hw_port_no_help ""
+    front_end_ip.snat "How have you configured routing on your Lync Front End servers?"
+	front_end_ip.snat_help ""
+    front_end_ip.snatpool "How many connections do you expect to each Front End server?"
+	front_end_ip.snat_choice_help ""
+    front_end_ip.snatpool_members "What are the IP addresses you want to use for the SNAT pool?"
+	front_end_ip.snatpool_help ""
+    front_end_ip.snatpool_members.addr "Address "
+	front_end_ip.client_vlans "On which VLAN(s) should internal Front End traffic be enabled?"
+	front_end_ip.client_vlans_help ""
+
+    front_end_ip_server_pools "Front End Server Pools"
+    front_end_ip_server_pools.lb_method_choice "Which load balancing method do you want to use?"
+	front_end_ip_server_pools.lb_method_help ""
+    front_end_ip_server_pools.servers "Which Front End servers should be in this pool?"
+	front_end_ip_server_pools.addr_help ""
+    front_end_ip_server_pools.servers.addr "Address"
+    front_end_ip_server_pools.servers.ratio "Ratio"
+    front_end_ip_server_pools.servers.connection_limit "Connection Limit"
+
+    front_end_ip_mediation_server_pools "Front End Mediation Server Pools"
+    front_end_ip_mediation_server_pools.lb_method_choice "Which load balancing method do you want to use?"
+	front_end_ip_mediation_server_pools.lb_method_help ""
+    front_end_ip_mediation_server_pools.servers "Which Mediation servers should be in this pool? "
+	front_end_ip_mediation_server_pools.addr_help ""
+    front_end_ip_mediation_server_pools.servers.addr "Address"
+    front_end_ip_mediation_server_pools.servers.ratio "Ratio"
+    front_end_ip_mediation_server_pools.servers.connection_limit "Connection Limit"
+
+    director_ip "Microsoft Lync Server Director Virtual Servers"
+    director_ip.deploying_director_ip    "Are you deploying this system for internal Director services?"
+	director_ip.deploying_director_ip_help ""
+    director_ip.addr "What IP address do you want to use for this Director virtual server?"
+	director_ip.addr_help ""
+
+    director_ip_server_pools "Director Server Pools"
+    director_ip_server_pools.lb_method_choice "Which load balancing method do you want to use?"
+	director_ip_server_pools.lb_method_choice_help ""
+    director_ip_server_pools.servers "Which Director servers should be in this pool?"
+    director_ip_server_pools.servers.addr "Address"
+	director_ip_server_pools.addr_help ""
+    director_ip_server_pools.servers.ratio "Ratio"
+    director_ip_server_pools.servers.connection_limit "Connection Limit"
+
+    edge_external_ip "Microsoft Lync Server Edge Virtual Servers: External Interface"
+    edge_external_ip.deploying_edge_external_ip "Are you deploying this system for external Edge services?"
+	edge_external_ip.deploying_edge_external_ip_help ""
+	edge_external_ip.note_2 "NOTE"
+	edge_external_ip.edge_topology "How have you configured Lync Edge services in Lync Topology Builder?"
+	edge_external_ip.edge_topology_help ""
+    edge_external_ip.access_addr "What IP address do you want to use for the Access service virtual server?"
+	edge_external_ip.access_addr_help ""
+	edge_external_ip.combined_addr "What IP address do you want to use for the Lync Edge services virtual servers?"
+	edge_external_ip.combined_addr_help ""
+	edge_external_ip.access_port "On which port do Edge servers listen for Access service traffic?"
+	edge_external_ip.access_port_help ""
+	edge_external_ip.combined_access_port "On which port do Edge servers listen for Access service traffic?"
+	edge_external_ip.federation "Have you enabled federation on port 5061 in the Lync Topology?"
+	edge_external_ip.federation_help ""
+	edge_external_ip.deploy_xmpp "Have you enabled federation with XMPP providers on port 5269 in the Lync Topology?"	
+	edge_external_ip.deploy_xmpp_help ""
+	edge_external_ip.sip_monitoring "Should the system monitor the internal SIP virtual servers?"
+	edge_external_ip.sip_monitoring_help ""
+	edge_external_ip.sip_monitor_alias "What is the Front End virtual server IP address on the internal BIG-IP LTM?"
+	edge_external_ip.sip_monitor_alias_help ""
+	edge_external_ip.deploy_conf "Are you deploying this system for Web Conferencing services?"
+	edge_external_ip.deploy_conf_help ""
+    edge_external_ip.web_conferencing_addr "What IP address do you want to use for the Web Conferencing service virtual server?"
+	edge_external_ip.web_conferencing_addr_help ""
+	edge_external_ip.combined_web_conferencing_port "On which port do Edge servers listen for Web Conferencing service traffic?"
+	edge_external_ip.combined_web_conferencing_port_help ""
+	edge_external_ip.deploy_av "Are you deploying this system for A/V Edge services?"
+	edge_external_ip.deploy_av_help ""
+    edge_external_ip.av_addr "What IP address do you want to use for the A/V service virtual server?"
+	edge_external_ip.av_addr_help ""
+	edge_external_ip.combined_av_port "On which port do Edge servers listen for A/V service traffic?"
+	edge_external_ip.combined_av_port_help ""
+	edge_external_ip.av_snat "Should the system translate the source address of A/V service connections?"
+	edge_external_ip.av_snat_note "IMPORTANT"
+	edge_external_ip.av_snat_note_2 "NOTE"
+    edge_external_ip.snat "How have you configured routing on your Lync Edge servers?"
+	edge_external_ip.snat_help ""
+    edge_external_ip.snatpool "How many connections do you expect to each Edge server?"
+	edge_external_ip.snatpool_help ""
+    edge_external_ip.snatpool_members "What are the IP addresses you want to use for the SNAT pool?"
+	edge_external_ip.snatpool_members_help ""
+    edge_external_ip.snatpool_members.addr "Address: "
+	edge_external_ip.client_vlans "On which VLAN(s) should external Edge traffic be enabled?"
+	edge_external_ip.client_vlans_help ""
+
+    edge_external_ip_server_pools "Edge Server Pools: External Interface"
+    edge_external_ip_server_pools.access_lb_method_choice "Which load balancing method do you want to use for the Access Edge service?"
+	edge_external_ip_server_pools.access_lb_method_choice_help ""
+    edge_external_ip_server_pools.access_servers "Which Access Edge servers should be in this pool?"
+	edge_external_ip_server_pools.addr_help ""
+    edge_external_ip_server_pools.access_servers.addr "Address"
+    edge_external_ip_server_pools.access_servers.ratio "Ratio"
+    edge_external_ip_server_pools.access_servers.connection_limit "Connection Limit"
+    edge_external_ip_server_pools.conf_lb_method_choice "Which load balancing method do you want to use for the Web Conferencing service?"
+	edge_external_ip_server_pools.conf_lb_method_choice_help ""
+	edge_external_ip_server_pools.conf_servers "Which Web Conferencing servers should be in this pool?"
+	edge_external_ip_server_pools.conf_addr_help ""
+    edge_external_ip_server_pools.conf_servers.addr "Address"
+    edge_external_ip_server_pools.conf_servers.ratio "Ratio"
+    edge_external_ip_server_pools.conf_servers.connection_limit "Connection Limit"
+    edge_external_ip_server_pools.av_lb_method_choice "Which load balancing method do you want to use for the A/V Edge service?"
+	edge_external_ip_server_pools.av_lb_method_choice_help ""
+    edge_external_ip_server_pools.av_servers "Which A/V servers should be in this pool?"
+	edge_external_ip_server_pools.av_addr_help ""
+    edge_external_ip_server_pools.av_servers.addr "Address"
+    edge_external_ip_server_pools.av_servers.ratio "Ratio"
+    edge_external_ip_server_pools.av_servers.connection_limit "Connection Limit"
+
+    edge_internal_ip "Microsoft Lync Server Edge Virtual Servers: Internal Interface"
+    edge_internal_ip.deploying_edge_internal_ip "Are you deploying this system for internal Edge services?"
+	edge_internal_ip.deploying_edge_internal_ip_help ""
+    edge_internal_ip.addr "What IP address do you want to use for this virtual server?"
+	edge_internal_ip.addr_help ""
+    edge_internal_ip.snat "How have you configured routing on your Lync Edge servers?"
+	edge_internal_ip.snat_help ""
+    edge_internal_ip.snatpool "How many connections do you expect to each Edge server?"
+	edge_internal_ip.snatpool_help ""
+    edge_internal_ip.snatpool_members "What are the IP addresses you want to use for the SNAT pool?"
+	edge_internal_ip.snatpool_members_help ""
+    edge_internal_ip.snatpool_members.addr "Address: "
+	edge_internal_ip.client_vlans "On which VLAN(s) should internal Edge traffic be enabled?"
+	edge_internal_ip.client_vlans_help ""
+
+    edge_internal_ip_server_pools "Edge Server Pools: Internal Interface"
+    edge_internal_ip_server_pools.lb_method_choice "Which load balancing method do you want to use?"
+	edge_internal_ip_server_pools.lb_method_choice_help ""
+    edge_internal_ip_server_pools.servers "Which Edge servers should be in this pool?"
+	edge_internal_ip_server_pools.addr_help ""
+    edge_internal_ip_server_pools.servers.addr "Address"
+    edge_internal_ip_server_pools.servers.ratio "Ratio"
+    edge_internal_ip_server_pools.servers.connection_limit "Connection Limit"
+
+	reverse_proxy "Microsoft Lync Server Reverse Proxy"
+    reverse_proxy.scenario "Are you deploying this BIG-IP system for Lync web services (reverse proxy) at this time?"
+	reverse_proxy.deploying_reverse_proxy_help ""
+	reverse_proxy.reverse_proxy_addr "What IP address do you want to use for the port 443 reverse proxy virtual server?"
+	reverse_proxy.reverse_proxy_addr_help ""
+	reverse_proxy.clientssl "Do you want to create a new client SSL profile for Front End services, or use an existing one?"
+	reverse_proxy.clientssl_help ""
+    reverse_proxy.cert "Which SSL certificate do you want to use?"
+	reverse_proxy.cert_help ""
+    reverse_proxy.key "Which SSL private key do you want to use?"
+	reverse_proxy.key_help ""
+	reverse_proxy.chainssl "Which intermediate certificate do you want to use?"
+	reverse_proxy.chainssl_help ""
+	reverse_proxy.web_svc_fqdn "What is the FQDN of your Lync Front End web services pool?"
+	reverse_proxy.web_svc_fqdn_help ""
+	reverse_proxy.meet_url "What is the simple URL for meetings?"
+	reverse_proxy.meet_url_warning "IMPORTANT"
+	reverse_proxy.meet_url_help ""
+	reverse_proxy.dialin_url "What is the simple URL for phone access?"
+	reverse_proxy.dialin_url_warning "IMPORTANT"
+	reverse_proxy.dialin_url_help ""
+	reverse_proxy.deploy_mobility "Do you want to include Lync Mobility services for external clients?"
+	reverse_proxy.deploy_mobility_help ""
+	reverse_proxy.mobility_url "What is the FQDN for external Lync Mobility access?"
+	reverse_proxy.mobility_url_help ""
+	reverse_proxy.reverse_proxy_fe_pool_member "What is the port 4443 virtual server IP address that forwards traffic to the Front End Servers?"
+	reverse_proxy.reverse_proxy_fe_pool_member_help ""
+	reverse_proxy.deploy_director "Do you want to forward reverse proxy traffic to Director servers?"
+	reverse_proxy.deploy_director_help ""
+	reverse_proxy.dir_clientssl "Which client SSL profile do you want to use for Director servers?"
+	reverse_proxy.dir_clientssl_help ""
+    reverse_proxy.dir_cert "Which SSL certificate do you want to use?"
+    reverse_proxy.dir_key "Which SSL private key do you want to use?"
+	reverse_proxy.director_fqdn "What is the FQDN of your Lync Director pool?"
+	reverse_proxy.director_fqdn_help ""
+	reverse_proxy.reverse_proxy_dir_pool_member "What is the port 4443 virtual server IP address that forwards traffic to the Director Servers?"
+	reverse_proxy.reverse_proxy_dir_pool_member_help ""
+	reverse_proxy.deploy_director_note "NOTE"
+    reverse_proxy.snat "Do the pool members (Lync servers or internal BIG-IP) have a route back to application clients via this BIG-IP system?"
+	reverse_proxy.snat_help ""
+    reverse_proxy.snatpool "How many connections do you expect to each pool member?"
+	reverse_proxy.snatpool_help ""
+    reverse_proxy.snatpool_members "What are the IP addresses you want to use for the SNAT pool?"
+	reverse_proxy.snatpool_members_help ""
+    reverse_proxy.snatpool_members.addr "Address: "
+	reverse_proxy.internal_note "NOTE"
+	reverse_proxy.external_note "NOTE"
+	reverse_proxy.standalone_note "NOTE"
+	reverse_proxy.note_2 ""
+    reverse_proxy.reverse_proxy_fe_addr "What IP address do you want to use for the Front End port 4443 reverse proxy virtual server?"
+	reverse_proxy.reverse_proxy_fe_addr_help ""
+	reverse_proxy.cert_help ""
+	reverse_proxy.note_cert "IMPORTANT"
+	reverse_proxy.key_help ""
+	reverse_proxy.reverse_proxy_director_addr "What IP address do you want to use for the Director port 4443 reverse proxy virtual server?"
+	reverse_proxy.reverse_proxy_director_addr_help ""
+	reverse_proxy.dir_cert_help ""
+	reverse_proxy.dir_key_help ""
+	reverse_proxy.cert_warning "WARNING:"
+	reverse_proxy.fe_rp_server_pools "Which Front End servers should receive web services traffic?"
+	reverse_proxy.fe_rp_server_pools_help ""
+	reverse_proxy.fe_rp_server_pools.addr "Address:"
+	reverse_proxy.fe_rp_server_pools.connection_limit "Connection Limit:"
+	reverse_proxy.dir_rp_server_pools "Which Director servers should receive web services traffic?"
+	reverse_proxy.dir_rp_server_pools_help ""
+	reverse_proxy.dir_rp_server_pools.addr "Address:"
+	reverse_proxy.dir_rp_server_pools.connection_limit "Connection Limit:"
+	reverse_proxy.client_vlans "On which VLAN(s) should reverse proxy traffic be enabled?"
+	reverse_proxy.client_vlans_help ""
+
+	outro "Additional Steps"
+	outro.fe "Lync Front End: "	
+	outro.fe_2 " "
+	outro.ext_edge "Lync External Edge: "
+	outro.ext_edge_2 " "
+	outro.int_edge "Lync Internal Edge: "
+	outro.ext_rp "External Reverse Proxy: "
+	outro.int_rp "Internal Reverse Proxy: "
+
+
+}
+            }
+            role-acl { admin manager resource-admin }
+            run-as none
+        }
+    }
+    description none
+}
+
+

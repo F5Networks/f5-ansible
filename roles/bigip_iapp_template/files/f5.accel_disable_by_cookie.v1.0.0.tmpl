@@ -1,0 +1,388 @@
+cli admin-partitions {
+    update-partition Common
+}
+sys application template /Common/f5.accel_disable_by_cookie.v1.0.0 {
+    actions {
+        definition {
+            html-help {
+                <!-- insert html help text -->
+<p><b>Temporarily Disable Web Acceleration</b></p>
+
+<p>For improved readability, we suggest you click the Launch button to view the Help in a separate, resizable window.</p>
+
+<p>This template offers a way to quickly enable or disable Web Acceleration for a single browser session
+(for debugging or benchmarking), using browser cookies.</p>
+
+<P>This iApp template has two parts:
+<ul>
+  <li><b>Part1</b>: The iApp creates a new web cookie virtual server using an existing virtual server IP address but a different port</li>
+  <li><b>Part2</b>: The iApp creates a new policy matching rule on your existing Web Acceleration policy to detect the cookie (optional)</li>
+</ul>
+
+<p>To satisfy browser security restrictions, the domain in the cookie that disables acceleration must both match and come from the same domain as the accelerated virtual server it disables.  The iApp accomplishes this by creating a new virtual server (to set and delete the cookie) on the same IP address as the service it affects, but on a different PORT.  </p>
+<p>If you do not specify a top-level-domain in the template, the host part of the URL for the cookie service and the accelerated server must match exactly.  If you do specify a top-level domain, the cookie applies to the top-level-domain and its subdomains.  Note that, for security reasons, browsers do not let you set a top-level-domain with just a single component (not .com or .net, etc.).</p>
+
+<p>The cookie is effective until one of the following occurs:  <ul>
+    <li>The browser exits.</li>
+    <li>The cookie service deletes it.</li>
+    <li>The random number in the cookie is changed (using the Reconfigure tab on this template).</li>
+    <li>The cookie rule that detects the cookie is deleted.</li>
+</ul>
+
+<p>When you run this template, it creates the cookie virtual server (<b>Part1</b>), and it creates scripts to add and delete a cookie matching rule to the existing (writable) Acceleration policy of the existing accelerated virtual server for which you want to toggle acceleration on or off. This template can run either of those scripts for you using your answers to the questions in the Web Acceleration Policy section.  Alternatively, you could run the scripts manually from the shell prompt, or you could create or delete the policy matching rule manually from the Acceleration Policy Editor.  F5 recommends using the iApp template to run the scripts.</p>
+
+<p>After you have completed both part 1 and 2, you can enable or disable acceleration on the virtual server by opening a new tab in the web browser, and then visiting the appropriate URL to enable or disable acceleration, or toggle acceleration on or off for that browser session.  The cookie virtual server responds with a message (visible in the tab and on the tab) letting you know whether acceleration is enabled or disabled.</P>
+
+<p>To prevent discovery or abuse, you should use the Path Prefix option in the template to require that a hard-to-guess prefix be present in the URL used to access the cookie virtual server.  This prefix, together with the non-standard port used in the virtual server, as well as any additional firewall rules you use, should prevent unauthorized users from discovering the cookie and attempting any unwanted behavior.  For additional protection, the cookie service requires that there be no 'Referer' in the request (the URL cannot be embedded in a web page.) Regardless, we recommend you do not leave this debugging service configured for extended periods, unless you periodically reconfigure the service, changing both the prefix and the cookie (which changes automatically).</P>
+
+<p>After the completing the iApp template, if you want to configure any of the other properties of the cookie virtual server manually (such as restricting the source IP or network from which it allows requests), you must first disable Strict Updates. To disable Strict Updates, from the Application Service you just created, on the menu bar, click <strong>Properties</strong> and then clear the <strong>Strict Updates</strong> box. To edit the virtual server, from the menu bar on the Application Service, click <strong>Components</strong> and then click the virtual server item. This opens the virtual server properties page where you can make changes.</p>
+
+            }
+            implementation {
+                tmsh::log_dest file
+tmsh::log_level crit
+
+if {$address__cookie_domain ne {}} {
+    set cookie_domain_no_dot [regsub {^\.} $address__cookie_domain {}]
+    set cookie_domain_error 0
+    if {[regexp {^-|-$}            $cookie_domain_no_dot]}         {set cookie_domain_error 1}
+    if {[regexp {^[-0-9a-zA-Z.]+$} $cookie_domain_no_dot]} {} else {set cookie_domain_error 1}
+    if {[regexp {^[^.]+\.[^.]}     $cookie_domain_no_dot]} {} else {set cookie_domain_error 1}
+    if {$cookie_domain_error} {error "Only letters and numbers with hyphens and dots between them are allowed in domains"}
+    set cookie_domain "; Domain=$cookie_domain_no_dot";
+    set for_domain_msg "for requests to *$cookie_domain_no_dot";
+    set uri_match "*$cookie_domain_no_dot"
+} else {
+    set cookie_domain_no_dot {}
+    set cookie_domain {}
+    set for_domain_msg {for requests to $host}
+    set uri_match {*}
+}
+set cookie_name accel-disable-$tmsh::app_name
+set cookie_value "[string map {. -} [expr rand() * 1000000]]"
+set prefix "$::address__required_path"
+if {[regexp {[^\w/]} "$prefix"]} {error "Only letters numbers and slash (/) allowed in path prefix"}
+if {[regexp {[^_a-zA-Z0-9]} "$tmsh::app_name"]} {error "Only letters numbers and underscore are allowed in the app name"}
+if {[regexp {:.*:} "$::address__virtuals"]} {set port_delim "."} else {set port_delim ":"}
+
+# Define the syslogging code (empty if not logging)
+set sl_pfx   "Acceleration disable cookie request from \\\$client"
+set log_ok_  "log -noname local0. \\\"$sl_pfx granted for: \\\$uri\\\""
+set log_err_ "log -noname local0. \\\"$sl_pfx error (\\\$host must match cookie domain $cookie_domain_no_dot)\\\""
+set log_ref_ "log -noname local0. \\\"$sl_pfx denied. Referer: \\\$referer is not empty\\\""
+set log_uri_ "log -noname local0. \\\"$sl_pfx denied. Prefix: $prefix is missing from \\\$uri\\\""
+switch $::address__syslog {
+    All    {}
+    Errors { set log_ok_ {} }
+    None   { set log_ok_ {}; set log_err_ {}; set log_ref_ {}; set log_uri_ {} }
+}
+
+# Define the HTTP responses sent back to the user from the iRule
+set disable_ \
+    "HTTP::respond 200 content {<HTML><HEAD><TITLE>Disabled</TITLE></HEAD><BODY>
+     Acceleration Disabled $for_domain_msg until this browser is closed or it is re-enabled.</BODY></HTML>\\n} \\
+     {Content-Type} {text/html} {Set-Cookie} {$cookie_name=$cookie_value; Path=/$cookie_domain}"
+
+set enable_ \
+    "HTTP::respond 200 content {<HTML><HEAD><TITLE>Enabled</TITLE></HEAD><BODY>
+     Acceleration Enabled.</BODY></HTML>\\n} {Content-Type} {text/html} \\
+     {Set-Cookie} {$cookie_name=no; Path=/$cookie_domain; Expires=Thu, 01-Jan-1970 00:00:01 GMT}"
+
+set error_ \
+    "HTTP::respond 200 content {<HTML><TITLE>Error</TITLE></HEAD><BODY>
+     Address must match cookie domain (begin with http://$uri_match).</BODY></HTML>\\n}"
+
+tmsh::create "
+ltm rule disable-by-cookie-server-rule-$cookie_value {
+when HTTP_REQUEST {
+  set host    \[regsub {:\[0-9\]+\$} \[HTTP::host\] {}\]
+  set uri     \[HTTP::uri\]
+  set client  \[IP::client_addr\]
+  set referer \[HTTP::header value Referer\]
+  set disable \"$disable_\"
+  set enable  \"$enable_\"
+  set error   \"$error_\"
+  set sorry   {HTTP::respond 403 content \"Sorry\\n\"}
+  set log_ok  \"$log_ok_\"
+  set log_err \"$log_err_\"
+  set log_ref \"$log_ref_\"
+  set log_uri \"$log_uri_\"
+
+  switch -glob \$referer {
+    ?*           {eval \$sorry; eval \$log_ref; return 0}
+    default      {}
+    }
+
+  switch -glob \$uri {
+    {*$prefix*}  {}
+    default      {eval \$sorry; eval \$log_uri; return 0}
+    }
+
+  switch -glob \$host {
+    {$uri_match} {}
+    default      {eval \$error; eval \$log_err; return 0}
+    }
+
+  switch -glob \$uri {
+    {*disable}   {eval \$disable; eval \$log_ok}
+    {*enable}    {eval \$enable;  eval \$log_ok}
+    *            {if {\[HTTP::cookie exists $cookie_name\]} {eval \$enable} else {eval \$disable}; eval \$log_ok}
+    }
+}
+}
+"
+
+tmsh::create "
+    ltm virtual accel-disable {
+        destination $::address__virtuals$port_delim$::address__port
+
+        ip-protocol tcp
+        profiles replace-all-with {
+            http { }
+            tcp { }
+        }
+        rules {
+            disable-by-cookie-server-rule-$cookie_value
+        }
+    }
+"
+# Safely creates and opens a new unique tempfile name in dir.
+# Stores the filename in out_name and returns the handle.
+proc tempfile {out_name dir} {
+    upvar $out_name nm
+    while { [
+        set nm "$dir/[expr rand()]";
+        catch {open $nm {RDWR CREAT EXCL}} fd ]
+    } {}
+    return $fd
+}
+
+if {$optional_features__policy ne "Select the Acceleration policy you want to modify:"} {
+
+# Try to determine the root node of the policy tree
+    set partition [regsub {^(/[^/]+).*$} [tmsh::pwd] {\1}]
+    set top_nodes {}
+    set policy "$partition/$optional_features__policy"
+    regsub {(.+)/(.+)} $policy {\1/Drafts/\2} draft_policy
+    foreach {n v} [lindex [tmsh::list wam policy "\"$draft_policy\""] 3] {
+        if {$n eq "nodes"} {set nodes $v; break}
+    }
+    foreach {nn vv} $nodes {
+        foreach {n v} $vv {
+            switch $n {
+                defaults-from {set df $v}
+                order         {set or $v}
+            }
+        }
+        if {$df eq "none" && $or >= 2} {lappend top_nodes $nn}
+    }
+
+# Generate the add and delete cookie shell scripts.
+    set script_dir "/tmp/iApp-generated"
+    catch { file delete $script_dir }
+    file mkdir $script_dir
+    regsub -all {[/^ <`>|$()]} ${optional_features__policy}_for_$tmsh::app_name "_" safe_policy
+
+    set dash_perms "-permissions"
+    set file [tempfile add_script $script_dir]
+    puts $file "#!/bin/sh"
+    foreach node $top_nodes {
+        puts $file "if tmsh list wam policy \"$draft_policy\" nodes { \"$node\" { matching } } | grep 'cookie:$cookie_name' >/dev/null ;then"
+        puts $file "  tmsh modify wam policy \"$draft_policy\" nodes modify { \"$node\" { matching delete { cookie:$cookie_name } } }"
+        puts $file "fi"
+        puts $file "tmsh modify wam policy \"$draft_policy\" nodes modify { \"$node\" { matching add { cookie:$cookie_name { values add { $cookie_value { can-be-missing yes invert-match yes} } } } } }"
+    }
+    puts $file "tmsh publish wam policy \"$draft_policy\" publish-comment with-cookie"
+    close $file
+    file attributes $add_script $dash_perms +x
+
+    set file [tempfile del_script $script_dir]
+    puts $file "#!/bin/sh"
+    foreach node $top_nodes {
+        puts $file "if tmsh list wam policy \"$draft_policy\" nodes { \"$node\" { matching } } | grep 'cookie:$cookie_name' >/dev/null ;then"
+        puts $file "  tmsh modify wam policy \"$draft_policy\" nodes modify { \"$node\" { matching delete { cookie:$cookie_name } } }"
+        puts $file "fi"
+    }
+    puts $file "tmsh publish wam policy \"$draft_policy\" publish-comment without-cookie"
+    close $file
+    file attributes $del_script $dash_perms +x
+
+# Run the add/delete scripts if the user requested it.
+    if {$optional_features__run_script eq "Yes"} {
+        switch -glob $optional_features__which_script {
+            Add* {exec $add_script |& true}
+            Del* {exec $del_script |& true}
+        }
+    }
+    set slash {/}
+    file rename -force $add_script "$script_dir${slash}add_cookie_rule_to_$safe_policy"
+    file rename -force $del_script "$script_dir${slash}delete_cookie_rule_from_$safe_policy"
+}
+            }
+            presentation {
+                include "/Common/f5.apl_common"
+
+section usage {
+    message Overview "This iApp provides a (temporary) way of quickly enabling/disabling Web Acceleration on a per user session basis, using a browser cookie."
+    optional ( "RUN_BUT" == "NEVER_SHOW_THIS" ) {
+        choice am_provisioned  tcl { tmsh::run_proc f5.app_utils:get_provisioned am }
+        choice wam_provisioned tcl { tmsh::run_proc f5.app_utils:get_provisioned wam }
+    }
+    optional ( am_provisioned != "provisioned" && wam_provisioned != "provisioned" ) {
+        message warn "You MUST provision the acceleration module (Application Acceleration Manager in version 11.4 and later, was WebAccelerator in version 11.3 and earlier) before using this iApp."
+    }
+	message check_for_updates "Ensure you are using the most recent template before continuing. Check for newer versions on DevCentral: https://devcentral.f5.com/wiki/iApp.Codeshare.ashx."
+    message Part1 "This iApp template creates a new virtual server using the same IP address as the target virtual server, but on a different service port. This new virtual server can set and delete the accel-disable cookie when you browse to it. "
+    message Part2 "In order to honor the accel-disable cookie, the corresponding cookie matching rule(s) must be added to the top node(s) of your Web Acceleration policy (to require the accel-disable cookie NOT exist). If you select a Web Acceleration policy to modify, this iApp template will generate scripts to make the necessary policy changes.  If you configure the iApp to add or delete the rules in the final question of the template, it will run the appropriate script for you.  If you do not add or delete the cookie matching rules using the iApp, you can run the scripts manually after completing the iApp template. There will be no performance impact from the cookie matching rule, however, to prevent discovery or abuse, we recommend that it not be left on a production policy for extended periods. See the Help tab for a detailed description of the iApp configuration."
+
+    message Part3 "When you are finished using this feature, be sure to see the Additional Steps section at the end of the template for guidance on deleting the cookie matching rules."
+}
+
+section advanced_options {
+	choice display_help display "xxlarge" default "Hide" {
+        "Yes, show inline help" => "show",
+        "No, do not show inline help" => "hide"
+	}
+		optional ( advanced_options.display_help == "show" ) {
+            message display_help_help "Inline help is available to provide contextual descriptions to aid in the completion of this template.  Select to show or hide the inline help in this template. Important notes and warnings are always visible, no matter which selection you make here."
+        }
+}
+
+section address {
+	choice virtuals display "xxlarge" tcl {
+		tmsh::include "f5.app_utils"
+		return [get_items_local_only /ltm virtual-address ]
+    }
+	optional ( advanced_options.display_help == "show" ) {
+		message virtuals_help "Select the existing virtual server address for which you want to enable or disable acceleration. This template will configure a new virtual server (on a different port you will specify next) that sets and deletes the accel-disable cookie when you browse to it."
+    }
+        string port required validator "PortNumber"
+		optional ( advanced_options.display_help == "show" ) {
+            message port_help "Select a port to use for this virtual server."
+        }
+		message important "This port MUST be different than the port used by the virtual server you selected above. The template will not complete if you use the same port as the original virtual server."
+
+    choice syslog default "All" display "xxlarge" {
+		"Yes, log all requests" => "All", 
+		"Only log errors" => "Errors",
+		"No, do not enable logging" => "None"
+	}
+	optional ( advanced_options.display_help == "show" ) {
+            message syslog_help "Choose whether you want the BIG-IP system to log requests to the virtual server you specified above. You can choose to disable logging, log all requests, or log only errors.  If you select to log all requests or errors, the BIG-IP system stores log requests in /var/log/ltm. For more information on retrieving these logs, see the BIG-IP system documentation."
+        }
+    string cookie_domain display "xxlarge"
+		optional ( advanced_options.display_help == "show" ) {
+            message cookie_domain_help "You can specify a top-level domain here. If a top-level domain is specified, the cookie applies to the top-level domain and its subdomains. In this case, the virtual server address you selected above must match the cookie domain (be in the same domain or a subdomain). If no top-level domain is specified here, the host part of the URL for the cookie service and the accelerated server must match exactly.  Note that, for security reasons, browsers do not let you set a top-level-domain with just a single component (not .com or .net, etc.)."
+        }
+	string required_path display "xxlarge"
+	optional ( advanced_options.display_help == "show" ) {
+		message required_path_help "This prefix is optional, but F5 recommends adding a hard-to-guess prefix to the URL used to access the cookie service.  This prefix, in addition to the non-standard port you used for the virtual server (and any additional firewall rules you use), should prevent unauthorized users from discovering the cookie and attempting any undesirable behavior."
+    }
+	message required_path_note "F5 recommends you use a path prefix that would be difficult for someone to guess."
+}
+
+section optional_features {
+    
+    # populate a choice with policies which are not predefined (so can be modified)
+    choice policy display "xxlarge" tcl {
+	set cwd [tmsh::pwd]
+        set folders "$cwd"
+        foreach {x y folder val} [tmsh::list sys folder recursive] {
+            switch -glob $folder {
+                *Drafts {}
+                * {lappend folders "$cwd/$folder"}
+                }
+        }
+        set policies "Select the Acceleration policy you want to modify:\n"
+        foreach folder $folders {
+            catch {
+                foreach {x y policy val} [tmsh::list wam policy $folder/* predefined] {
+                    if {[lindex $val 1] eq "no"} {append policies "$policy\n"}
+                }
+            }
+        }
+        return $policies
+    }
+	optional ( advanced_options.display_help == "show" ) {
+        message policy_help "Choose the existing Acceleration policy to which you want to add or delete the matching cookie rule.  If you select a Web Acceleration policy to modify, this iApp template will generate scripts to make the necessary policy changes. You can use the next question to automatically run the scripts to add or delete the rules, or you can run the scripts manually after completing the iApp template. There will be no performance impact from the cookie matching rule, however, to prevent discovery or abuse, we recommend that it not be left on a production policy for extended periods. There will be no performance impact from the cookie matching rule, however, to prevent discovery or abuse, we recommend that it not be left on a production policy for extended periods."
+    }
+    optional (policy != "Select the Acceleration policy you want to modify:") {
+        message Generated_Scripts "The scripts generated by the iApp to add or delete the cookie matching rule are located in /tmp/iApp-generated/."
+        choice run_script default "Yes" display "xxlarge" {
+		"No, do not add or delete the cookie matching rule(s) now" => "No", 
+		"Yes, I want to add or delete the cookie matching rule(s) now" => "Yes"
+		}
+		optional ( advanced_options.display_help == "show" ) {
+            message run_script_help "Select whether you want the iApp to run the script to add or delete cookie matching rule at this time."
+        }
+		
+        optional (run_script == "Yes") {
+            choice which_script display "xxlarge" {
+				"Add the cookie matching rule" => "Add rule", 
+				"Delete the cookie matching rule" => "Delete rule"
+			}
+        
+			optional ( advanced_options.display_help == "show" ) {
+				message which_script_help "Select whether you want the iApp to run the script to add the rule to the Acceleration policy, or delete it from the policy."
+			}
+		}
+    }
+}
+section postreq {
+        message remove "If you chose to use the iApp to run the script to add the cookie matching rule, when you are finished using this feature, first delete the rule by clicking the Reconfigure tab (Application Services > Name of iApp > Reconfigure), and then from the 'Do you want to add or delete the rule' question, select 'Delete the cookie matching rule'. Alternatively you can manually delete the matching rule from your Web Application policy using the Policy editor, or run the delete script generated by the iApp manually (scripts are located in /tmp/iApp-generated/).  After removing the cookie matching rule, delete the Application Service this iApp created."
+		}
+
+
+text {
+    usage "Welcome to the Acceleration Disable by Cookie Template"
+    usage.Overview "Introduction"
+    usage.warn ""
+	usage.check_for_updates "Check for updates"
+    usage.Part1 "Description"
+    usage.Part2 ""
+    usage.Part3 ""
+
+	advanced_options "Template Options"
+	
+	advanced_options.display_help "Do you want to see inline help?" 
+	advanced_options.display_help_help "" 
+	
+    address "Virtual server"
+    address.virtuals "Which virtual server address do you want to use?"
+	address.virtuals_help ""  
+	address.port "Which unique port should this additional listener use?" 
+	address.important "IMPORTANT" 
+	address.port_help "" 
+    address.syslog "Should the system log requests to this virtual server?"
+	address.syslog_help "" 
+    address.cookie_domain "What is the top-level domain for your site?"
+	address.cookie_domain_help "" 
+	address.required_path "What path prefix do you want to add to the URL?"
+	address.required_path_help "" 
+	address.required_path_note "NOTE" 
+	
+    optional_features "Web Acceleration policy"
+    
+    optional_features.policy "Which Acceleration policy do you want to modify?"
+	optional_features.policy_help "" 
+    optional_features.run_script "Do you want to add or delete the cookie matching rule now?"
+	optional_features.Generated_Scripts "Script location" 
+	optional_features.run_script_help "" 
+    optional_features.which_script "Do you want to add or delete the rule?"
+	optional_features.which_script_help "" 
+	
+	postreq "Additional Steps"
+    postreq.remove "When you are finished" 
+
+    }
+            }
+            role-acl none
+            run-as none
+        }
+    }
+    description none
+    requires-bigip-version-max none
+    requires-bigip-version-min 11.3.0
+    requires-modules none
+}
+
