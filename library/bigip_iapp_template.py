@@ -28,17 +28,19 @@ version_added: "2.3"
 options:
   name:
     description:
-      - The name of the template being uploaded.
-    required: True
+      - The name of the template being uploaded. If this is not provided,
+        the module will attempt to retrieve the name from the template
+        file itself.
+    required: False
   content:
     description:
-      - When used instead of 'src', sets the contents of an iRule directly to
-        the specified value. This is for simple values, but can be used with
-        lookup plugins for anything complex or with formatting. Either one
-        of C(src) or C(content) must be provided.
+      - When used instead of 'src', sets the contents of an iApp template
+        directly to the specified value. This is for simple values, but
+        can be used with lookup plugins for anything complex or with
+        formatting. Either one of C(src) or C(content) must be provided.
   src:
     description:
-      - The iRule file to interpret and upload to the BIG-IP. Either one
+      - The iApp template to interpret and upload to the BIG-IP. Either one
         of C(src) or C(content) must be provided.
     required: true
   state:
@@ -529,7 +531,7 @@ class BigIpiAppTemplateModuleConfig(object):
             ),
             name=dict(
                 type='str',
-                required=True
+                required=False
             ),
             content=dict(required=False, default=None),
             src=dict(required=False, default=None),
