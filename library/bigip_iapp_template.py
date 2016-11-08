@@ -335,8 +335,7 @@ class BigIpiAppTemplateManager(object):
 
     def present(self):
         if self.iapp_template_exists():
-            # TODO: Add ability to update existing template
-            return True
+            return self.update_iapp_template()
         else:
             if self.present_parameters_are_valid(self.params):
                 return self.ensure_iapp_template_is_present()
@@ -363,11 +362,107 @@ class BigIpiAppTemplateManager(object):
                               kwargs['password'],
                               port=kwargs['server_port'])
 
+    def read_iapp_template_information(self):
+        iapp = self.load_iapp_template()
+        return self.format_iapp_information(iapp)
+
+    def format_iapp_information(self, iapp):
+        result = dict()
+        result['name'] = str(user.name)
+        if hasattr(user, 'description'):
+            result['full_name'] = str(user.description)
+        return result
+
+    def load_iapp_template(self):
+        result = dict()
+        result.update(self.load_iapp_application())
+        result.update(self.load_iapp_actions())
+        return result
+
+    def load_iapp_application(self):
+        params = dict(
+            params='expandSubcollections=true'
+        )
+        return self.api.tm.sys.application.templates.template.load(
+            name=self.params['name'],
+            partition=self.params['partition'],
+            requests_params=params
+        )
+
     def iapp_template_exists(self):
         return self.api.tm.sys.application.templates.template.exists(
             name=self.params['name'],
             partition=self.params['partition']
         )
+
+    def update_iapp_template(self):
+        params = self.get_changed_parameters()
+        if params:
+            self.changed_params = camel_dict_to_snake_dict(params)
+            if self.params['check_mode']:
+                return True
+        else:
+            return False
+        params['name'] = self.params['name']
+        params['partition'] = self.params['partition']
+        self.update_iapp_template_on_device(params)
+        return True
+
+    def update_iapp_template_on_device(self, params):
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            r = api.tm.sys.application.templates.template.load(
+                name=self.params['name'],
+                partition=self.params['partition']
+            )
+            r.actions.modify(**params)
+
+    def get_changed_parameters(self):
+        result = dict()
+        current = self.read_iapp_template_information()
+        if self.is_implementation_changed(current):
+            result['implementation'] = self.params['implementation']
+        if self.is_presentation_changed(current):
+            result['presentation'] = self.params['presentation']
+        if self.is_html_help_changed(current):
+            result['htmlHelp'] = self.params['implementation']
+        if self.are_macros_changed(current):
+            result['macro'] = self.params['macros']
+        if self.is_minimum_version_changed(current):
+            result['requiresBigipVersionMin'] = self.params['version_min']
+        if self.is_maximim_version_changed(current):
+            result['requiresBigipVersionMax'] = self.params['version_max']
+        if self.are_required_modules_changed(current):
+            result['requiresModules'] = self.params['required_modules']
+        return result
+
+    def is_implementation_changed(self, current):
+        if self.params['implementation'] is None:
+            return False
+        if 'implementation' not in current:
+            return True
+        if self.params['implementation'] == current['implementation']:
+            return False
+        else:
+            return True
+
+    def is_presentation_changed(self, current):
+        pass
+
+    def is_html_help_changed(self, current):
+        pass
+
+    def are_macros_changed(self, current):
+        pass
+
+    def is_minimum_version_changed(self, current):
+        pass
+
+    def is_maximim_version_changed(self, current):
+        pass
+
+    def are_required_modules_changed(self, current):
+        pass
 
     def ensure_iapp_template_is_present(self):
         params = self.get_iapp_template_creation_parameters()
@@ -385,13 +480,11 @@ class BigIpiAppTemplateManager(object):
             name=self.params['name'],
             partition=self.params['partition']
         )
-
         if self.params['src']:
             with open(self.params['src']) as f:
                 result['template'] = f.read()
         elif self.params['content']:
             result['template'] = self.params['content']
-
         return result
 
     def create_iapp_template_on_device(self, params):
