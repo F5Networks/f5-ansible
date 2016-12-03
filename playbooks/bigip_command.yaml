@@ -27,5 +27,12 @@
   hosts: f5-test
   connection: local
 
+  vars:
+      cli:
+          host: "{{ inventory_hostname }}"
+          username: root
+          password: default
+          port: 2222
+
   roles:
       - bigip_command

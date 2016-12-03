@@ -19,228 +19,305 @@
 DOCUMENTATION = '''
 ---
 module: bigip_command
-short_description: Run commands on a BIG-IP via tmsh
+short_description: Run arbitrary command on F5 devices
 description:
-  - Run commands on a BIG-IP via tmsh. This module is similar to the ansible
-    C(command) module, but specifically supports all BIG-IPs via the paramiko
-    python extension. For some operations on the BIG-IP, there is not a SOAP
-    or REST endpoint that is available and the operation can only be accomplished
-    via C(tmsh). The Ansible C(command) module should be able to perform this,
-    however, older releases of BIG-IP do not have sufficient python versions
-    to support Ansible. By using this module, there is no need for python to
-    exist on the remote BIG-IP. Additionally, this module can detect the presence
-    of Appliance Mode on a BIG-IP and adjust the provided command to take this
-    feature into account. Finally, the output of this module provides more
-    Ansible-friendly data formats than could be accomplished by the C(command)
-    module alone.
-version_added: "2.2"
+  - Sends an arbitrary command to an BIG-IP node and returns the results
+    read from the device. This module includes an argument that will cause
+    the module to wait for a specific condition before returning or timing
+    out if the condition is not met.
+version_added: "2.4"
 options:
-  server:
+  commands:
     description:
-      - BIG-IP host
+      - The commands to send to the remote BIG-IP device over the
+        configured provider. The resulting output from the command
+        is returned. If the I(wait_for) argument is provided, the
+        module is not returned until the condition is satisfied or
+        the number of retires as expired.
+      - The I(commands) argument also accepts an alternative form
+        that allows for complex values that specify the command
+        to run and the output format to return. This can be done
+        on a command by command basis. The complex argument supports
+        the keywords C(command) and C(output) where C(command) is the
+        command to run and C(output) is 'text' or 'oneline'.
     required: true
-  command:
+  wait_for:
     description:
-      - tmsh command to run on the remote host
-    required: true
-  password:
-    description:
-      - BIG-IP password
-    required: true
-  user:
-    description:
-      - BIG-IP username
-    required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
+      - Specifies what to evaluate from the output of the command
+        and what conditionals to apply.  This argument will cause
+        the task to wait for a particular conditional to be true
+        before moving forward.   If the conditional is not true
+        by the configured retries, the task fails.  See examples.
     required: false
-    default: true
-notes:
-  - Requires the paramiko Python package on the ansible host. This is as easy
-    as pip install paramiko
-requirements:
-  - paramiko
+    default: null
+    aliases: ['waitfor']
+    version_added: "2.2"
+  match:
+    description:
+      - The I(match) argument is used in conjunction with the
+        I(wait_for) argument to specify the match policy.  Valid
+        values are C(all) or C(any).  If the value is set to C(all)
+        then all conditionals in the I(wait_for) must be satisfied.  If
+        the value is set to C(any) then only one of the values must be
+        satisfied.
+    required: false
+    default: all
+    version_added: "2.2"
+  retries:
+    description:
+      - Specifies the number of retries a command should by tried
+        before it is considered failed.  The command is run on the
+        target device every retry and evaluated against the I(wait_for)
+        conditionals.
+    required: false
+    default: 10
+  interval:
+    description:
+      - Configures the interval in seconds to wait between retries
+        of the command.  If the command does not pass the specified
+        conditional, the interval indicates how to long to wait before
+        trying the command again.
+    required: false
+    default: 1
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
-- name: Load the default system configuration
-  bigip_command:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      command: "tmsh load sys config default"
-      validate_certs: "no"
-  delegate_to: localhost
+# Note: examples below use the following provider dict to handle
+#       transport and authentication to the node.
+vars:
+  cli:
+    host: "{{ inventory_hostname }}"
+    username: admin
+    password: admin
+    transport: cli
+
+- name: run show version on remote devices
+  nxos_command:
+    commands: show version
+    provider: "{{ cli }}"
+
+- name: run show version and check to see if output contains Cisco
+  nxos_command:
+    commands: show version
+    wait_for: result[0] contains Cisco
+    provider: "{{ cli }}"
+
+- name: run multiple commands on remote nodes
+   nxos_command:
+    commands:
+      - show version
+      - show interfaces
+    provider: "{{ cli }}"
+
+- name: run multiple commands and evaluate the output
+  nxos_command:
+    commands:
+      - show version
+      - show interfaces
+    wait_for:
+      - result[0] contains Cisco
+      - result[1] contains loopback0
+    provider: "{{ cli }}"
+
+- name: run commands and specify the output format
+  nxos_command:
+    commands:
+      - command: show sys version
+        output: oneline
+    provider: "{{ cli }}"
 '''
 
 RETURN = '''
 stdout:
-    description: The stdout output from running the given command
-    returned: changed
-    type: string
-    sample: ""
-stderr:
-    description: The stderr output from running the given command
-    returned: changed
-    type: string
-command:
-    description: The command specified by the user
-    returned: changed
-    type: string
-    sample: "tmsh list auth user"
-app_mode:
-    description: Whether or not Appliance mode was detected for the user
-    returned: changed
-    type: boolean
-    sample: True
-app_mode_cmd:
-    description: The command as it would have been run in Appliance mode
-    returned: changed
-    type: string
-    sample: "list auth user"
+    description: The set of responses from the commands
+    returned: always
+    type: list
+    sample: ['...', '...']
+
+stdout_lines:
+    description: The value of stdout split into a list
+    returned: always
+    type: list
+    sample: [['...', '...'], ['...'], ['...']]
+
+failed_conditions:
+    description: The list of conditionals that have failed
+    returned: failed
+    type: list
+    sample: ['...', '...']
 '''
 
-import socket
 
-try:
-    import paramiko
-except ImportError:
-    paramiko_found = False
-else:
-    paramiko_found = True
+import re
 
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+from ansible.module_utils.network import ModuleStub, NetworkError, NetworkModule
+from ansible.module_utils.network import add_argument, register_transport, to_list
+from ansible.module_utils.shell import CliBase
 
+class Cli(CliBase):
 
-class BigIpCommon(object):
-    def __init__(self, *args, **kwargs):
-        self.result = dict(changed=False, changes=dict())
-        self.params = kwargs
+    CLI_PROMPTS_RE = [
+        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]")
+    ]
 
-    def appliance_mode(self):
-        user = self.params['user']
-        server = self.params['server']
-        password = self.params['password']
-        validate_certs = self.params['validate_certs']
+    CLI_ERRORS_RE = [
+        re.compile(r"connection timed out", re.I),
+        re.compile(r"syntax error: unexpected argument", re.I)
+    ]
 
-        uri = 'https://%s/mgmt/tm/auth/user/%s' % (server, user)
-        headers = {
-            'Content-Type': 'application/json'
-        }
+    NET_PASSWD_RE = re.compile(r"[\r\n]?password: $", re.I)
 
-        resp = requests.get(uri,
-                            auth=(user, password),
-                            verify=validate_certs,
-                            headers=headers)
-
-        if resp.status_code != 200:
-            raise Exception('Failed to query the REST API to check appliance mode')
-        else:
-            result = resp.json()
-            if 'shell' in result and result['shell'] == 'tmsh':
-                return True
-            else:
-                return False
+    def connect(self, params, **kwargs):
+        super(Cli, self).connect(params, kickstart=False, **kwargs)
 
 
-class BigIpSsh(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpSsh, self).__init__(*args, **kwargs)
+    ### Config methods ###
 
-        self.result = {}
-        self.api = paramiko.SSHClient()
+    def configure(self, commands, **kwargs):
+        cmds = to_list(commands)
+        if cmds[-1] != 'quit':
+            cmds.append('quit')
+        responses = self.execute(cmds)
+        return responses[1:]
 
-        user = self.params['user']
-        password = self.params['password']
-        server = self.params['server']
-        validate_certs = self.params['validate_certs']
+    def get_config(self, include_defaults=False, **kwargs):
+        cmd = 'tmsh -q show running-config'
+        if include_defaults:
+            cmd += ' all-properties'
+        return self.execute([cmd])[0]
 
-        if not validate_certs:
-            self.api.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    def load_config(self, commands, **kwargs):
+        return self.configure(commands)
 
-        self.api.connect(server, username=user, password=password)
+    def save_config(self):
+        self.execute(['tmsh save sys config'])
 
-    def flush(self):
-        result = {}
-
-        command = self.params['command']
-
-        # Appliance mode drops the user directly into tmsh, so any leading tmsh
-        # syntax can be removed from the provided command
-        if self.appliance_mode():
-            result['app_mode'] = True
-
-            if command[0:4] == 'tmsh':
-                cmd = command[4:].strip()
-                result['app_mode_cmd'] = cmd
-            else:
-                cmd = command
-        else:
-            # If the user has some BIG-IPs that are in Appliance Mode and some
-            # that are not, then it may be necessary to add the non-app mode
-            # syntax to the command before it is executed.
-            result['app_mode'] = False
-
-            if command[0:4] != 'tmsh':
-                cmd = 'tmsh ' + command
-            else:
-                cmd = command
-
-        stdin, stdout, stderr = self.api.exec_command(cmd)
-
-        result['stdout'] = ''.join(stdout.readlines())
-        result['stderr'] = ''.join(stderr.readlines())
-        result['command'] = command
-        result['changed'] = True
-
-        return result
+Cli = register_transport('cli', default=True)(Cli)
 
 
-def main():
-    argument_spec = f5_argument_spec()
 
-    meta_args = dict(
-        command=dict(required=True)
-    )
-    argument_spec.update(meta_args)
-
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=False
-    )
-
-    try:
-        if not paramiko_found:
-            raise Exception("The python paramiko module is required")
-
-        if not requests_found:
-            raise Exception("The python requests module is required")
-
-        obj = BigIpSsh(**module.params)
-        result = obj.flush()
-
-        module.exit_json(**result)
-    except socket.timeout:
-        module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except socket.gaierror:
-        module.fail_json(msg="Unable to contact the BIG-IP")
-    except paramiko.ssh_exception.SSHException as e:
-        if 'No existing session' in str(e):
-            module.fail_json(msg='Could not log in with provided credentials')
-        else:
-            module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
+from ansible.module_utils.basic import get_exception
+from ansible.module_utils.network import NetworkModule, NetworkError
+from ansible.module_utils.netcli import CommandRunner
+from ansible.module_utils.netcli import AddCommandError, FailedConditionsError
+from ansible.module_utils.netcli import FailedConditionalError, AddConditionError
+from ansible.module_utils.six import string_types
+
+
+VALID_KEYS = ['command', 'output', 'prompt', 'response']
+
+def to_lines(stdout):
+    for item in stdout:
+        if isinstance(item, string_types):
+            item = str(item).split('\n')
+        yield item
+
+
+def parse_commands(module):
+    for cmd in module.params['commands']:
+        cmd = cmd.strip()
+
+        if cmd[0:4] == 'tmsh':
+            cmd = cmd[4:].strip()
+
+        if isinstance(cmd, basestring):
+            cmd = dict(command=cmd, output=None)
+        elif 'command' not in cmd:
+            module.fail_json(msg='command keyword argument is required')
+        elif cmd.get('output') not in [None, 'text', 'oneline']:
+            module.fail_json(msg='invalid output specified for command')
+        elif not set(cmd.keys()).issubset(VALID_KEYS):
+            module.fail_json(msg='unknown keyword specified')
+
+        yield cmd
+
+
+def main():
+    spec = dict(
+        # { command: <str>, output: <str>, prompt: <str>, response: <str> }
+        commands=dict(type='list', required=True),
+
+        wait_for=dict(type='list', aliases=['waitfor']),
+        match=dict(default='all', choices=['any', 'all']),
+
+        retries=dict(default=10, type='int'),
+        interval=dict(default=1, type='int'),
+        app_mode=dict(default=False, type='bool')
+    )
+
+    module = NetworkModule(argument_spec=spec,
+                           supports_check_mode=True)
+
+    commands = list(parse_commands(module))
+    conditionals = module.params['wait_for'] or list()
+
+    warnings = list()
+
+    runner = CommandRunner(module)
+
+    for cmd in commands:
+        if module.check_mode and not cmd['command'].startswith('show'):
+            warnings.append('only show commands are supported when using '
+                            'check mode, not executing `%s`' % cmd['command'])
+        else:
+            if cmd['command'].startswith('modify') or \
+                cmd['command'].startswith('delete') or \
+                cmd['command'].startswith('add'):
+                module.fail_json(msg='bigip_command does not support running '
+                                     'config mode commands. Please use '
+                                     'bigip_config instead')
+            try:
+                if not module.params['app_mode']:
+                    cmd['command'] = 'tmsh '+cmd['command']
+
+                runner.add_command(**cmd)
+            except AddCommandError:
+                exc = get_exception()
+                warnings.append('duplicate command detected: %s' % cmd)
+
+    try:
+        for item in conditionals:
+            runner.add_conditional(item)
+    except AddConditionError:
+        exc = get_exception()
+        module.fail_json(msg=str(exc), condition=exc.condition)
+
+    runner.retries = module.params['retries']
+    runner.interval = module.params['interval']
+    runner.match = module.params['match']
+
+    try:
+        runner.run()
+    except FailedConditionsError:
+        exc = get_exception()
+        module.fail_json(msg=str(exc), failed_conditions=exc.failed_conditions)
+    except FailedConditionalError:
+        exc = get_exception()
+        module.fail_json(msg=str(exc), failed_conditional=exc.failed_conditional)
+    except NetworkError:
+        exc = get_exception()
+        module.fail_json(msg=str(exc), **exc.kwargs)
+
+    result = dict(changed=False)
+
+    result['stdout'] = list()
+    for cmd in commands:
+        try:
+            output = runner.get_command(cmd['command'], cmd.get('output'))
+        except ValueError:
+            output = 'command not executed due to check_mode, see warnings'
+        result['stdout'].append(output)
+
+    result['warnings'] = warnings
+    result['stdout_lines'] = list(to_lines(result['stdout']))
+
+    module.exit_json(**result)
+
 
 if __name__ == '__main__':
     main()
