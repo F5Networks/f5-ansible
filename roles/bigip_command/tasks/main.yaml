@@ -3,6 +3,6 @@
 - name: Run show version on remote devices
   bigip_command:
       commands:
-          - tmsh modify net self
+          - tmsh show sys version
       provider: "{{ cli }}"
   register: result
