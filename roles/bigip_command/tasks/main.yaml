@@ -1,16 +1,8 @@
 ---
 
-- name: Run a command
+- name: Run show version on remote devices
   bigip_command:
-      server: "{{ inventory_hostname }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "{{ validate_certs }}"
-      command: "tmsh list sys auth"
+      commands:
+          - tmsh modify net self
+      provider: "{{ cli }}"
   register: result
-
-- name: Assert Run a command
-  assert:
-      that:
-          - result|changed
