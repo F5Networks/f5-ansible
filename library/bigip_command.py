@@ -159,7 +159,11 @@ from ansible.module_utils.shell import CliBase
 class Cli(CliBase):
 
     CLI_PROMPTS_RE = [
-        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]")
+        # One of the default prompts on 12.x
+        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+
+        # Found on 11.6.1
+        re.compile(r"\(\w+\)?\(\/(Common|\w+)\)?\(tmos\) ?[>#\$]")
     ]
 
     CLI_ERRORS_RE = [
