@@ -250,10 +250,10 @@ def main():
         match=dict(default='all', choices=['any', 'all']),
 
         retries=dict(default=10, type='int'),
-        interval=dict(default=1, type='int'),
-        app_mode=dict(default=False, type='bool')
+        interval=dict(default=1, type='int')
     )
 
+    app_mode = False
     module = NetworkModule(argument_spec=spec,
                            supports_check_mode=True)
 
@@ -263,6 +263,18 @@ def main():
     warnings = list()
 
     runner = CommandRunner(module)
+
+    try:
+        # This trys to detect command mode.
+        runner.add_command('tmsh')
+        runner.run()
+    except NetworkError:
+        app_mode = True
+
+    # Resets the runner because raised exceptions do not remove the
+    # erroneous commands
+    runner.commands = []
+    runner.module.cli._commands = []
 
     for cmd in commands:
         if module.check_mode and not cmd['command'].startswith('show'):
@@ -276,7 +288,7 @@ def main():
                                      'config mode commands. Please use '
                                      'bigip_config instead')
             try:
-                if not module.params['app_mode']:
+                if not app_mode:
                     cmd['command'] = 'tmsh '+cmd['command']
 
                 runner.add_command(**cmd)
