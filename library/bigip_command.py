@@ -156,6 +156,7 @@ from ansible.module_utils.network import ModuleStub, NetworkError, NetworkModule
 from ansible.module_utils.network import add_argument, register_transport, to_list
 from ansible.module_utils.shell import CliBase
 
+
 class Cli(CliBase):
 
     CLI_PROMPTS_RE = [
@@ -163,7 +164,8 @@ class Cli(CliBase):
         re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]"),
 
         # Found on 11.6.1
-        re.compile(r"\(\w+\)?\(\/(Common|\w+)\)?\(tmos\) ?[>#\$]")
+        re.compile(r"\w+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\/Common\)\(tmos\)[>#\$]"),
+        re.compile(r"\w+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\w+\)\(tmos\)[>#\$]")
     ]
 
     CLI_ERRORS_RE = [
@@ -176,27 +178,6 @@ class Cli(CliBase):
     def connect(self, params, **kwargs):
         super(Cli, self).connect(params, kickstart=False, **kwargs)
 
-
-    ### Config methods ###
-
-    def configure(self, commands, **kwargs):
-        cmds = to_list(commands)
-        if cmds[-1] != 'quit':
-            cmds.append('quit')
-        responses = self.execute(cmds)
-        return responses[1:]
-
-    def get_config(self, include_defaults=False, **kwargs):
-        cmd = 'tmsh -q show running-config'
-        if include_defaults:
-            cmd += ' all-properties'
-        return self.execute([cmd])[0]
-
-    def load_config(self, commands, **kwargs):
-        return self.configure(commands)
-
-    def save_config(self):
-        self.execute(['tmsh save sys config'])
 
 Cli = register_transport('cli', default=True)(Cli)
 
@@ -214,6 +195,7 @@ from ansible.module_utils.six import string_types
 
 
 VALID_KEYS = ['command', 'output', 'prompt', 'response']
+
 
 def to_lines(stdout):
     for item in stdout:
@@ -265,7 +247,7 @@ def main():
     runner = CommandRunner(module)
 
     try:
-        # This trys to detect command mode.
+        # This tries to detect command mode.
         runner.add_command('tmsh')
         runner.run()
     except NetworkError:
@@ -273,6 +255,7 @@ def main():
 
     # Resets the runner because raised exceptions do not remove the
     # erroneous commands
+    module.disconnect()
     runner.commands = []
     runner.module.cli._commands = []
 
@@ -282,14 +265,14 @@ def main():
                             'check mode, not executing `%s`' % cmd['command'])
         else:
             if cmd['command'].startswith('modify') or \
-                cmd['command'].startswith('delete') or \
-                cmd['command'].startswith('add'):
+               cmd['command'].startswith('delete') or \
+               cmd['command'].startswith('add'):
                 module.fail_json(msg='bigip_command does not support running '
                                      'config mode commands. Please use '
                                      'bigip_config instead')
             try:
                 if not app_mode:
-                    cmd['command'] = 'tmsh '+cmd['command']
+                    cmd['command'] = 'tmsh ' + cmd['command']
 
                 runner.add_command(**cmd)
             except AddCommandError:
