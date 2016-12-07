@@ -165,6 +165,10 @@ class Cli(CliBase):
         # One of the default prompts on 12.x
         re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]"),
 
+        # Nate found this prompt in DUTs
+        # [root@Carrier2:/S1-green-P:Standby:In Sync] config #
+        re.compile(r"\[\w+\@[\w\d\-\.]+:[\w\d\/]+:[\w]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+
         # Found on 11.6.1
         re.compile(r"\w+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\/Common\)\(tmos\)[>#\$]"),
         re.compile(r"\w+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\w+\)\(tmos\)[>#\$]")
