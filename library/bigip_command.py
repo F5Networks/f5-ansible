@@ -214,9 +214,6 @@ def parse_commands(module):
     for cmd in module.params['commands']:
         cmd = cmd.strip()
 
-        if cmd[0:4] == 'tmsh':
-            cmd = cmd[4:].strip()
-
         if isinstance(cmd, basestring):
             cmd = dict(command=cmd, output=None)
         elif 'command' not in cmd:
@@ -228,6 +225,19 @@ def parse_commands(module):
 
         yield cmd
 
+
+def is_config_mode_command(cmd):
+    if cmd['command'].startswith('modify') or \
+            cmd['command'].startswith('delete') or \
+            cmd['command'].startswith('add'):
+        return True
+    return False
+
+
+def strip_tmsh_prefix(cmd):
+    if cmd['command'][0:4] == 'tmsh':
+        cmd['command'] = cmd['command'][4:].strip()
+    return cmd
 
 def main():
     spec = dict(
@@ -241,7 +251,6 @@ def main():
         interval=dict(default=1, type='int')
     )
 
-    app_mode = False
     module = NetworkModule(argument_spec=spec,
                            supports_check_mode=True)
 
@@ -256,8 +265,9 @@ def main():
         # This tries to detect command mode.
         runner.add_command('tmsh')
         runner.run()
+        shell = "bash"
     except NetworkError:
-        app_mode = True
+        shell = "tmsh"
 
     # Resets the runner because raised exceptions do not remove the
     # erroneous commands
@@ -265,22 +275,35 @@ def main():
     runner.commands = []
     runner.module.cli._commands = []
 
+
     for cmd in commands:
-        if module.check_mode and not cmd['command'].startswith('show'):
-            warnings.append('only show commands are supported when using '
-                            'check mode, not executing `%s`' % cmd['command'])
+        cmd = strip_tmsh_prefix(cmd)
+
+        if module.check_mode and not is_config_mode_command(cmd):
+            warnings.append('only show or list commands are supported when '
+                            'using check mode, not executing `%s`'
+                            % cmd['command'])
         else:
-            if cmd['command'].startswith('modify') or \
-               cmd['command'].startswith('delete') or \
-               cmd['command'].startswith('add'):
+            if is_config_mode_command(cmd):
                 module.fail_json(msg='bigip_command does not support running '
                                      'config mode commands. Please use '
                                      'bigip_config instead')
             try:
-                if not app_mode:
+                if shell == 'tmsh':
+                    disable_pager = dict(
+                        output=None,
+                        command='modify cli preference pager disabled'
+                    )
+                    runner.add_command(**disable_pager)
+                    runner.add_command(**cmd)
+                else:
+                    disable_pager = dict(
+                        output=None,
+                        command='tmsh modify cli preference pager disabled'
+                    )
                     cmd['command'] = 'tmsh ' + cmd['command']
-
-                runner.add_command(**cmd)
+                    runner.add_command(**disable_pager)
+                    runner.add_command(**cmd)
             except AddCommandError:
                 exc = get_exception()
                 warnings.append('duplicate command detected: %s' % cmd)
