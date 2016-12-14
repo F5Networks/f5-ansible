@@ -43,6 +43,7 @@ options:
     description:
       - Specifies descriptive text that identifies the pool.
     required: false
+    version_added: "2.3"
   state:
     description:
       - Pool/pool member state
