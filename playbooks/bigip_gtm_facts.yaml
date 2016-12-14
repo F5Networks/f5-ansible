@@ -8,6 +8,10 @@
 # This module will run tests against a BIG-IP host to verify that the
 # bigip_gtm_facts module behaves as expected.
 #
+# Requirements:
+#
+#    GTM must be licensed for these tests to succeed
+#
 # Usage:
 #
 #    ansible-playbook -i notahost, playbooks/bigip_gtm_facts.yaml

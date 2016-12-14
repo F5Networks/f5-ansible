@@ -20,7 +20,7 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 12.1.1 HF1
 #
 
 - name: Test the bigip_pool module
