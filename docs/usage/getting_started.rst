@@ -118,6 +118,7 @@ Add the following to your ``site.yaml`` to create a pool called ``web``:
              slow_ramp_time: "120"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
 Add two nodes
 ~~~~~~~~~~~~~
@@ -138,6 +139,7 @@ To add the two nodes, we'll put the following in our ``site.yaml``
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
        - name: Create node2
          bigip_node:
@@ -147,6 +149,7 @@ To add the two nodes, we'll put the following in our ``site.yaml``
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
 .. note::
 
@@ -174,6 +177,7 @@ members.
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
          with_items:
              - host: "10.10.10.10"
                name: "node-1"
@@ -197,7 +201,7 @@ To create a virtual server, add the following to you ``site.yaml``:
        - name: Create a VIP
          bigip_virtual_server:
              description: "foo-vip"
-             destination: "172.16.10.108:80"
+             destination: "172.16.10.108"
              password: "admin"
              name: "vip-1"
              pool: "web"
@@ -209,6 +213,7 @@ To create a virtual server, add the following to you ``site.yaml``:
                   - "http"
                   - "clientssl"
              validate_certs: "no"
+         delegate_to: localhost
 
 More info
 ---------
