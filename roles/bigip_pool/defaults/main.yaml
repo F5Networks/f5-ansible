@@ -23,3 +23,5 @@ pool_lb_method_alt:
     - "ratio_session"
     - "ratio_least_connection_member"
     - "ratio_least_connection_node_address"
+pool_description_1: "my description"
+pool_description_2: "my other description"

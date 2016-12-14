@@ -692,7 +692,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert change pool reselect_tries
+- name: Assert Change pool reselect_tries
   assert:
       that:
           - result|changed
@@ -708,7 +708,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert delete pool
+- name: Assert Delete pool
   assert:
       that:
           - result|changed
@@ -724,7 +724,113 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert delete pool - idempotent check
+- name: Assert Delete pool - idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Create pool with description
+  bigip_pool:
+      description: "{{ pool_description_1 }}"
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool with description
+  assert:
+      that:
+          - result|changed
+
+- name: Create pool with description - idempotent check
+  bigip_pool:
+      description: "{{ pool_description_1 }}"
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool with description - idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool description
+  bigip_pool:
+      description: "{{ pool_description_2 }}"
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool description
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool description - idempotent check
+  bigip_pool:
+      description: "{{ pool_description_2 }}"
+      lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool description - idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete pool with description
+  bigip_pool:
+      description: "{{ pool_description_2 }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete pool with description
+  assert:
+      that:
+          - result|changed
+
+- name: Delete pool with description - idempotent check
+  bigip_pool:
+      description: "{{ pool_description_2 }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete pool with description - idempotent check
   assert:
       that:
           - not result|changed
