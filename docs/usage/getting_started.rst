@@ -83,6 +83,14 @@ of our Ansible playbooks in a file called ``site.yaml``
 Playbook
 --------
 
+The remainder of this tutorial will walk you through the various steps of
+adding tasks to your playbook.
+
+.. note:: I've broken each task into its own section
+          to better explain it. This might lead to confusion though, so if you
+          just want to get the whole file and then follow along, you can
+          `download it here`_.
+
 Let's begin by placing the following in your ``site.yaml``:
 
 .. code-block:: yaml
@@ -97,6 +105,8 @@ Your BIG-IP is probably not called ``big-ip01.internal``. It might be a
 different hostname or even IP address. Whichever it is, place it in the hosts
 line.
 
+.. _download it here: https://github.com/F5Networks/f5-ansible/blob/master/examples/getting-started.yaml
+
 Add a pool
 ~~~~~~~~~~
 
@@ -108,7 +118,7 @@ Add the following to your ``site.yaml`` to create a pool called ``web``:
 
 .. code-block:: yaml
 
-    - tasks:
+    tasks:
        - name: Create a pool
          bigip_pool:
              lb_method: "ratio_member"
