@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_virtual_server
@@ -252,7 +256,7 @@ def set_rules(api, name, rules_list):
         return False
     rules_list = list(enumerate(rules_list))
     try:
-        current_rules = list(map(lambda x: (x['priority'], x['rule_name']), get_rules(api, name)))
+        current_rules = [(x['priority'], x['rule_name']) for x in get_rules(api, name)]
         to_add_rules = []
         for i, x in rules_list:
             if (i, x) not in current_rules:
