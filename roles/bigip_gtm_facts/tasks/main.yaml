@@ -1,5 +1,7 @@
 ---
 
+- include: setup.yaml
+
 - name: Get GTM pool facts
   bigip_gtm_facts:
       password: "{{ bigip_password }}"

@@ -1,0 +1,14 @@
+---
+
+- name: Create pool, type 'a'
+  bigip_gtm_pool:
+      preferred_lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      type: "a"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
