@@ -48,6 +48,7 @@ options:
         is only available when specifying a C(state) of C(absent) and is
         provided as a way to delete templates that you may no longer have
         the source of.
+    required: False
   content:
     description:
       - When used instead of 'src', sets the contents of an iApp template
@@ -299,7 +300,7 @@ class BigIpiAppTemplateManager(object):
         return True
 
     def delete_iapp_template_from_device(self):
-        tpl = api.tm.sys.application.templates.template.load(
+        tpl = self.api.tm.sys.application.templates.template.load(
             name=self.params['name'],
             partition=self.params['partition']
         )
@@ -318,6 +319,7 @@ class BigIpiAppTemplateModuleConfig(object):
 
     def initialize_meta_args(self):
         args = dict(
+            name=dict(required=False),
             state=dict(
                 type='str',
                 default='present',
