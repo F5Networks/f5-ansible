@@ -2,6 +2,7 @@
 
 valid_description: "foo"
 default_parent: 0
+new_parent: 100
 new_routedomain: 1024
 new_routedomain2: 1025
 invalid_route_domains:
@@ -59,3 +60,9 @@ invalid_bwc_policy:
     - "abcd"
     - 1234
     - "@%$&$#%&@#"
+new_partition: "foo"
+
+# Issue-51 related variables
+i51_vlan_valid:
+    - "issue51_a"
+    - "issue51_b"

@@ -32,6 +32,7 @@
 #    - 12.0.0
 #    - 12.1.0
 #    - 12.1.0 HF1
+#    - 12.1.1 HF1
 #
 
 - name: Test the bigip_routedomain module
