@@ -2,8 +2,7 @@
 
 - name: Create iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', 'appsvcs_integration_v2.0-001_001.tmpl') }}"
-      name: "{{ template_name }}"
+      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -18,8 +17,7 @@
 
 - name: Create iApp template - Idempotent check
   bigip_iapp_template:
-      content: "{{ lookup('file', 'appsvcs_integration_v2.0-001_001.tmpl') }}"
-      name: "{{ template_name }}"
+      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"

@@ -1,0 +1,26 @@
+sys application template good_templ {
+  actions {
+    definition {
+      html-help {
+        # HTML Help for the template
+      }
+      implementation {
+        # TMSH implementation code
+      }
+      macro {
+        # TMSH macro code
+      }
+      presentation {
+        # APL presentation language
+      }
+      role-acl { admin manager resource-admin }
+      run-as none
+    }
+  }
+  description <template description>
+  partition Common
+  requires-modules { ltm }
+  ignore-verification true
+  requires-bigip-version-max 12.1.0
+  requires-bigip-version-min 11.6.0
+}

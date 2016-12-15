@@ -1,4 +1,4 @@
 ---
 
-template_name: "iapp-template-foo"
-template_file: "appsvcs_integration_v2.0-001_001.tmpl"
+template_name: "good_templ"
+template_file: "basic-iapp.tmpl"
