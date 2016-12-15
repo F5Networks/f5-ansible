@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_iapp_template
@@ -26,12 +30,24 @@ description:
   - Manages TCL iApps on a BIG-IP
 version_added: "2.3"
 options:
+  force:
+    description:
+      - Specifies whether or not to force the uploading of an iApp. This
+        module does not handle the case of updating iApps in place. When
+        forcing an update, this module will attempt to remove the existing
+        module before uploading the new one. Existing modules cannot be
+        removed, even with C(force), if a service has been instantiated
+        from that template.
+    required: False
+    choices:
+      - yes
+      - no
   name:
     description:
-      - The name of the template being uploaded. If this is not provided,
-        the module will attempt to retrieve the name from the template
-        file itself.
-    required: False
+      - The name of the iApp template that you want to delete. This option
+        is only available when specifying a C(state) of C(absent) and is
+        provided as a way to delete templates that you may no longer have
+        the source of.
   content:
     description:
       - When used instead of 'src', sets the contents of an iApp template
@@ -54,10 +70,6 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - Requires the pyparsing Python package on the host. This is as easy as pip
-    install pyparsing.
-  - This module cannot yet manage 'cli script' sections that are found in
-    some iApp templates
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -82,233 +94,12 @@ RETURN = '''
 try:
     from f5.bigip.contexts import TransactionContextManager
     from f5.bigip import ManagementRoot
+    from f5.utils.iapp_parser import IappParser
     from icontrol.session import iControlUnexpectedHTTPError
 
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
-
-try:
-    from pyparsing import Optional, nestedExpr, Word, originalTextFor, \
-        CaselessLiteral, alphanums, OneOrMore, Forward, Suppress, alphas, \
-        nums
-
-    HAS_PYPARSING = True
-except:
-    HAS_PYPARSING = False
-
-
-class iAppGrammar:
-    """Grammar parser for a subset of iApp V1
-
-    This class is a parser for a subset of allowed iApp template code.
-    This subset is represented by the code below.
-
-    cli script <SCRIPT-NAME> {
-
-    }
-    cli admin-partitions {
-        update-partition <PARTITION>
-    }
-    sys application template <TEMPLATE> {
-        actions {
-            definition {
-                html-help {
-                }
-                implementation {
-                }
-                presentation {
-                }
-            }
-        }
-        description none
-        ignore-verification false
-        requires-bigip-version-max none
-        requires-bigip-version-min none
-        signing-key none
-        tmpl-signature none
-        requires-modules { ltm gtm }
-    }
-
-    While other code is technically allowed in an iApp, this parser will
-    not find it.
-    """
-    def __init__(self):
-        self.test = None
-        self.parsed_results = None
-        self.sections = ['implementation', 'presentation', 'html_help',
-                         'scripts']
-        self.properties = ['partition', 'description', 'verification',
-                           'version_max', 'version_min', 'signing_key',
-                           'signature', 'required_modules']
-
-    def parse_string(self, test):
-        self.test = test
-        return self.parse_results()
-
-    def parse_results(self):
-        result = dict()
-
-        for section in self.sections:
-            result[section] = self.__parse_raw_text(section)
-        for property in self.properties:
-            result[property] = self.__parse_property(property)
-        return result
-
-    def generate_parser(self):
-        """
-        This BNF is incomplete and is only my own interpretation of syntax
-        based off of people I've talked to. It was not taken from internal
-        sources, and can probably be improved as its performance is not
-        fantastic.
-
-        <labr> ::= "{"
-        <rabr> ::= "}"
-        <cli> ::= "cli"
-        <script> ::= "script"
-        <admin-partitions> ::= "admin-partitions"
-        <uppercase> ::= 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' |
-                        'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' |
-                        'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'
-        <lowercase> ::= 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' |
-                        'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' |
-                        's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
-        <nums> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-        <alphas> ::= <uppercase> <lowercase>
-        <alphanums> ::= <alphas> <nums>
-        <iapp> ::= <cli-part> | <application-template-part>
-        <cli-part> ::= <cli-script> | <cli-admin-partitions>
-        <cli-script> ::= <cli> <script>
-        <cli-admin-partitions> ::= <cli> <admin-partitions> <labr> <admin-partition-components> <rabr>
-        <admin-partition-components> ::= <update-partition> <text1>
-        <update-partition> ::= 'update-partition' <alphas>
-        <name> ::= <alphas> | <name>
-        <application-template-part> ::= 'sys' 'application' 'template'
-        """
-
-        # General definitions and declarations
-        toplevel = Forward()
-        CL = CaselessLiteral
-        lbra, rbra = map(Suppress, "{}")
-
-        # Reserved Literals
-        cli_ = CL('cli')
-        admin_partition_ = CL('admin-partitions')
-        update_partition_ = CL('update-partition')
-        sys_ = CL('sys')
-        script_ = CL('script')
-        application_ = CL('application')
-        template_ = CL('template')
-        actions_ = CL('actions').suppress()
-        definition_ = CL('definition').suppress()
-        description_ = CL('description')
-        htmlhelp_ = CL("html-help")
-        implementation_ = CL("implementation")
-        presentation_ = CL("presentation")
-        verify_ = CL('ignore-verification')
-        version_max = CL('requires-bigip-version-max')
-        version_min = CL('requires-bigip-version-min')
-        key_ = CL('signing-key')
-        signature_ = CL('tmpl-signature')
-        modules_ = CL('requires-modules')
-
-        # Reserved words whose values we suppress from parsed results
-        raw_text = originalTextFor(nestedExpr('{', '}'))
-
-        # Raw text tokens
-        script_text = raw_text.setResultsName('scripts')
-        help_text = raw_text.setResultsName('html_help')
-        implementation_text = raw_text.setResultsName('implementation')
-        presentation_text_ = raw_text.setResultsName('presentation')
-
-        # Sections
-        actions = (Optional(htmlhelp_ + help_text) &
-                   Optional(implementation_ + implementation_text) &
-                   Optional(presentation_ + presentation_text_ )
-                   )
-        # Parameter values
-        bools = (Word('true') | Word('false'))
-        word_nums = (Word(nums + '.') | 'none')
-        name = Word(alphanums + '._-/')
-
-        # Named values used when referencing results
-        description_val = name.setResultsName('description')
-        verify_val = bools.setResultsName('verification')
-        version_max_val = word_nums.setResultsName('version_max')
-        version_min_val = word_nums.setResultsName('version_min')
-        key_val = word_nums.setResultsName('signing_key')
-        signature_val = word_nums.setResultsName('signature')
-        modules_val = OneOrMore(Word(alphas)).setResultsName('required_modules')
-        partition_val = Word(alphanums + '._-').setResultsName('partition')
-
-        # Properties that can be set on the iApp
-        property_description = Optional(description_ + description_val)
-        property_verify = Optional(verify_ & verify_val)
-        property_version_max = Optional(version_max & version_max_val)
-        property_version_min = Optional(version_min & version_min_val)
-        property_key = Optional(key_ & key_val)
-        property_signature = Optional(signature_ & signature_val)
-        property_modules = Optional(modules_ + lbra + modules_val + rbra)
-        properties = property_description & \
-                     property_verify & \
-                     property_version_max & \
-                     property_version_min & \
-                     property_key & \
-                     property_signature & \
-                     property_modules
-
-        # Top-level sections that are commonly found in iApps
-
-        partition = cli_ + admin_partition_ + lbra + \
-                    update_partition_ + partition_val + rbra
-
-        cli_scripts = cli_ + script_ + name + script_text
-
-        application_template = sys_ + application_ + template_ + \
-                               name + lbra + actions_ + lbra + \
-                               definition_ + lbra + actions + rbra + \
-                               rbra & properties
-
-        template = Optional(partition) & \
-                   Optional(cli_scripts) & \
-                   Optional(application_template)
-        toplevel << template
-
-        return toplevel
-
-    def __parse_property(self, section):
-        """Returns a simple value
-
-        :return:
-        """
-        result=None
-        toplevel = self.generate_parser()
-        parsed = toplevel.parseString(self.test)
-        if not hasattr(parsed, section):
-            return result
-
-        if section == 'required_modules':
-            return list(parsed.required_modules)
-
-        return getattr(parsed, section)
-
-    def __parse_raw_text(self, section):
-        """Returns a block of raw text
-
-        Some of the sections in an iApp include raw tmsh commands. These
-        need to be sent to the REST API endpoints as their raw contents
-        so that the BIG-IP will register them correctly.
-
-        :return:
-        """
-        result=None
-        toplevel = self.generate_parser()
-        parsed = toplevel.parseString(self.test)
-
-        if hasattr(parsed, section):
-            # This slice will remove leading and trailing braces
-            result = getattr(parsed, section)[1:-1]
-        return result
 
 
 class BigIpiAppTemplateManager(object):
@@ -336,17 +127,28 @@ class BigIpiAppTemplateManager(object):
         return result
 
     def present(self):
+        source = self.get_iapp_template_source(
+            source=self.params['src'],
+            content=self.params['content']
+        )
+        template = self.get_application_template(source)
+        params = self.get_params_from_provided_iapp_template_information(
+            template
+        )
+        self.params.update(params)
+
         if self.iapp_template_exists():
-            return self.update_iapp_template()
+            return False
         else:
-            if self.present_parameters_are_valid(self.params):
+            if BigIpiAppTemplateManager.present_parameters_are_valid(self.params):
                 return self.ensure_iapp_template_is_present()
             else:
                 raise F5ModuleError(
                     "Either 'content' or 'src' must be provided"
                 )
 
-    def present_parameters_are_valid(self, params):
+    @staticmethod
+    def present_parameters_are_valid(params):
         if not params['content'] and not params['src']:
             return False
         else:
@@ -362,18 +164,59 @@ class BigIpiAppTemplateManager(object):
         return ManagementRoot(kwargs['server'],
                               kwargs['user'],
                               kwargs['password'],
-                              port=kwargs['server_port'])
+                              port=kwargs['server_port'],
+                              token=True)
 
-    def read_iapp_template_information(self):
-        iapp = self.load_iapp_template()
-        return self.format_iapp_information(iapp)
-
-    def format_iapp_information(self, iapp):
-        result = dict()
-        result['name'] = str(user.name)
-        if hasattr(user, 'description'):
-            result['full_name'] = str(user.description)
+    def get_params_from_provided_iapp_template_information(self, template):
+        actions = template['actions']['definition']
+        result = dict(
+            partition=self.get_iapp_template_partition(template=template),
+            name=self.get_iapp_template_name(template=template),
+            html_help=actions.get('htmlHelp', None),
+            role_acl=actions.get('roleAcl', None),
+            implementation=actions.get('implementation', None),
+            presentation=actions.get('presentation', None),
+            required_modules=template.get('requiresModules', None),
+            max_version=template.get('requiresBigipVersionMax', None),
+            min_version=template.get('requiresBigipVersionMin', None),
+            verification=template.get('ignoreVerification', None)
+        )
         return result
+
+    def get_iapp_template_partition(self, partition=None, template=None):
+        if partition:
+            return partition
+        else:
+            return template.get('partition', 'Common')
+
+    def get_iapp_template_name(self, name=None, template=None):
+        if name:
+            return name
+        else:
+            if 'name' not in template:
+                raise F5ModuleError(
+                    "An iApp template must include a name"
+                )
+            return  template['name']
+
+    def get_iapp_template_verification(self, template):
+        if template.get('ignoreVerification', None) in BOOLEANS:
+            return True
+        else:
+            return False
+
+    def get_application_template(self, source):
+        parser = IappParser(source)
+        return parser.parse_template()
+
+    def get_iapp_template_source(self, source=None, content=None):
+        if source:
+            with open(source) as fh:
+                return fh.read()
+        elif content:
+            return content
+        else:
+            return None
 
     def load_iapp_template(self):
         result = dict()
@@ -397,75 +240,6 @@ class BigIpiAppTemplateManager(object):
             partition=self.params['partition']
         )
 
-    def update_iapp_template(self):
-        params = self.get_changed_parameters()
-        if params:
-            self.changed_params = camel_dict_to_snake_dict(params)
-            if self.params['check_mode']:
-                return True
-        else:
-            return False
-        params['name'] = self.params['name']
-        params['partition'] = self.params['partition']
-        self.update_iapp_template_on_device(params)
-        return True
-
-    def update_iapp_template_on_device(self, params):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            r = api.tm.sys.application.templates.template.load(
-                name=self.params['name'],
-                partition=self.params['partition']
-            )
-            r.actions.modify(**params)
-
-    def get_changed_parameters(self):
-        result = dict()
-        current = self.read_iapp_template_information()
-        if self.is_implementation_changed(current):
-            result['implementation'] = self.params['implementation']
-        if self.is_presentation_changed(current):
-            result['presentation'] = self.params['presentation']
-        if self.is_html_help_changed(current):
-            result['htmlHelp'] = self.params['implementation']
-        if self.are_macros_changed(current):
-            result['macro'] = self.params['macros']
-        if self.is_minimum_version_changed(current):
-            result['requiresBigipVersionMin'] = self.params['version_min']
-        if self.is_maximim_version_changed(current):
-            result['requiresBigipVersionMax'] = self.params['version_max']
-        if self.are_required_modules_changed(current):
-            result['requiresModules'] = self.params['required_modules']
-        return result
-
-    def is_implementation_changed(self, current):
-        if self.params['implementation'] is None:
-            return False
-        if 'implementation' not in current:
-            return True
-        if self.params['implementation'] == current['implementation']:
-            return False
-        else:
-            return True
-
-    def is_presentation_changed(self, current):
-        pass
-
-    def is_html_help_changed(self, current):
-        pass
-
-    def are_macros_changed(self, current):
-        pass
-
-    def is_minimum_version_changed(self, current):
-        pass
-
-    def is_maximim_version_changed(self, current):
-        pass
-
-    def are_required_modules_changed(self, current):
-        pass
-
     def ensure_iapp_template_is_present(self):
         params = self.get_iapp_template_creation_parameters()
         self.changed_params = camel_dict_to_snake_dict(params)
@@ -480,19 +254,41 @@ class BigIpiAppTemplateManager(object):
     def get_iapp_template_creation_parameters(self):
         result = dict(
             name=self.params['name'],
-            partition=self.params['partition']
+            partition=self.params['partition'],
+            actions=dict(
+                htmlHelp=self.params['html_help'],
+                roleAcl=self.params['role_acl'],
+                implementation=self.params['implementation'],
+                presentation=self.params['presentation']
+            ),
+            required_modules=self.params['required_modules'],
+            min_version=self.params['min_version'],
+            max_version=self.params['max_version'],
+            verification=self.params['verification']
         )
-        if self.params['src']:
-            with open(self.params['src']) as f:
-                result['template'] = f.read()
-        elif self.params['content']:
-            result['template'] = self.params['content']
         return result
 
     def create_iapp_template_on_device(self, params):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            api.tm.sys.application.templates.template.create(**params)
+        check_mode = self.params['check_mode']
+
+        if check_mode:
+            return True
+
+        self.api.tm.sys.application.templates.template.create(
+            name=params['name'],
+            partition=params['partition'],
+            actions=dict(
+                definition=dict(**params['actions'])
+            ),
+            requiresModules=params['required_modules'],
+            ignoreVerification=params['verification'],
+            requiresBigipVersionMax=params['max_version'],
+            requiresBigipVersionMin=params['min_version']
+        )
+
+        if not self.iapp_template_exists():
+            raise F5ModuleError("Failed to create the iRule")
+        return True
 
     def ensure_iapp_template_is_absent(self):
         if self.params['check_mode']:
@@ -503,13 +299,11 @@ class BigIpiAppTemplateManager(object):
         return True
 
     def delete_iapp_template_from_device(self):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            tpl = api.tm.sys.application.templates.template.load(
-                name=self.params['name'],
-                partition=self.params['partition']
-            )
-            tpl.delete()
+        tpl = api.tm.sys.application.templates.template.load(
+            name=self.params['name'],
+            partition=self.params['partition']
+        )
+        tpl.delete()
 
 
 class BigIpiAppTemplateModuleConfig(object):
@@ -529,8 +323,8 @@ class BigIpiAppTemplateModuleConfig(object):
                 default='present',
                 choices=self.states
             ),
-            name=dict(
-                type='str',
+            force=dict(
+                choices=BOOLEANS,
                 required=False
             ),
             content=dict(required=False, default=None),
@@ -555,9 +349,6 @@ class BigIpiAppTemplateModuleConfig(object):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
-
-    if not HAS_PYPARSING:
-        raise F5ModuleError("The python pyparsing module is required")
 
     config = BigIpiAppTemplateModuleConfig()
     module = config.create()
