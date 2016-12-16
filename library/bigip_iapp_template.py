@@ -25,9 +25,9 @@ ANSIBLE_METADATA = {'status': ['preview'],
 DOCUMENTATION = '''
 ---
 module: bigip_iapp_template
-short_description: Manages TCL iApps on a BIG-IP
+short_description: Manages TCL iApp templates on a BIG-IP
 description:
-  - Manages TCL iApps on a BIG-IP
+  - Manages TCL iApp templates on a BIG-IP
 version_added: "2.3"
 options:
   force:
