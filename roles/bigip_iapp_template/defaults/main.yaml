@@ -2,3 +2,20 @@
 
 template_name: "good_templ"
 template_file: "basic-iapp.tmpl"
+
+template_list:
+    - appsvcs_integration_v2.0_001.tmpl
+    - f5.accel_disable_by_cookie.v1.0.0.tmpl
+    - f5.citrix_vdi.v2.4.0.tmpl
+    - f5.http.v1.2.0rc4.tmpl
+    - f5.microsoft_adfs.v1.0.0.tmpl
+    - f5.microsoft_dynamics_crm_2011_2013.v1.0.0.tmpl
+    - f5.microsoft_exchange_2010_2013_cas.v1.6.0.tmpl
+    - f5.microsoft_exchange_2016.v1.0.0.tmpl
+    - f5.microsoft_lync_server_2010_2013.v1.3.0.tmpl
+    - f5.microsoft_office_365_idp.v1.1.0.tmpl
+    - f5.microsoft_rds_remote_access.v1.0.2.tmpl
+    - f5.microsoft_rds_session_host.v1.0.3.tmpl
+    - f5.microsoft_sharepoint_2010_2013.v1.2.1.tmpl
+    - f5.ssl_intercept.v1.0.0.tmpl
+    - f5.vmware_view.v1.5.1.tmpl

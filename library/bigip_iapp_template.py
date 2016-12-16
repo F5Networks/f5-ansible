@@ -92,15 +92,30 @@ RETURN = '''
 
 '''
 
+import re
+import os
+
 try:
     from f5.bigip.contexts import TransactionContextManager
     from f5.bigip import ManagementRoot
-    from f5.utils.iapp_parser import IappParser
     from icontrol.session import iControlUnexpectedHTTPError
 
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+
+def connect_to_bigip(**kwargs):
+    return ManagementRoot(kwargs['server'],
+                          kwargs['user'],
+                          kwargs['password'],
+                          port=kwargs['server_port'],
+                          token=True)
 
 
 class BigIpiAppTemplateManager(object):
@@ -108,13 +123,14 @@ class BigIpiAppTemplateManager(object):
         self.changed_params = dict()
         self.params = kwargs
         self.api = None
+        self.pattern = r'sys application template (?P<name>[\w_\.-/]+)\s+{?'
 
     def apply_changes(self):
         result = dict()
         changed = False
 
         try:
-            self.api = self.connect_to_bigip(**self.params)
+            self.api = connect_to_bigip(**self.params)
 
             if self.params['state'] == "present":
                 changed = self.present()
@@ -128,32 +144,16 @@ class BigIpiAppTemplateManager(object):
         return result
 
     def present(self):
-        source = self.get_iapp_template_source(
-            source=self.params['src'],
-            content=self.params['content']
-        )
-        template = self.get_application_template(source)
-        params = self.get_params_from_provided_iapp_template_information(
-            template
-        )
-        self.params.update(params)
+        source = self.params['src']
+        content = self.params['content']
+
+        self.set_iapp_template_source(source, content)
+        self.set_iapp_template_name(self.params['content'])
 
         if self.iapp_template_exists():
             return False
         else:
-            if BigIpiAppTemplateManager.present_parameters_are_valid(self.params):
-                return self.ensure_iapp_template_is_present()
-            else:
-                raise F5ModuleError(
-                    "Either 'content' or 'src' must be provided"
-                )
-
-    @staticmethod
-    def present_parameters_are_valid(params):
-        if not params['content'] and not params['src']:
-            return False
-        else:
-            return True
+            return self.ensure_iapp_template_is_present()
 
     def absent(self):
         changed = False
@@ -161,79 +161,25 @@ class BigIpiAppTemplateManager(object):
             changed = self.ensure_iapp_template_is_absent()
         return changed
 
-    def connect_to_bigip(self, **kwargs):
-        return ManagementRoot(kwargs['server'],
-                              kwargs['user'],
-                              kwargs['password'],
-                              port=kwargs['server_port'],
-                              token=True)
+    def set_iapp_template_name(self, source):
+        matches = re.search(self.pattern, source)
+        if not matches:
+            raise F5ModuleError(
+                "An iApp template must include a name"
+            )
+        self.params['name'] = os.path.basename(matches.group('name'))
 
-    def get_params_from_provided_iapp_template_information(self, template):
-        actions = template['actions']['definition']
-        result = dict(
-            partition=self.get_iapp_template_partition(template=template),
-            name=self.get_iapp_template_name(template=template),
-            html_help=actions.get('htmlHelp', None),
-            role_acl=actions.get('roleAcl', None),
-            implementation=actions.get('implementation', None),
-            presentation=actions.get('presentation', None),
-            required_modules=template.get('requiresModules', None),
-            max_version=template.get('requiresBigipVersionMax', None),
-            min_version=template.get('requiresBigipVersionMin', None),
-            verification=template.get('ignoreVerification', None)
-        )
-        return result
-
-    def get_iapp_template_partition(self, partition=None, template=None):
-        if partition:
-            return partition
-        else:
-            return template.get('partition', 'Common')
-
-    def get_iapp_template_name(self, name=None, template=None):
-        if name:
-            return name
-        else:
-            if 'name' not in template:
-                raise F5ModuleError(
-                    "An iApp template must include a name"
-                )
-            return  template['name']
-
-    def get_iapp_template_verification(self, template):
-        if template.get('ignoreVerification', None) in BOOLEANS:
-            return True
-        else:
-            return False
-
-    def get_application_template(self, source):
-        parser = IappParser(source)
-        return parser.parse_template()
-
-    def get_iapp_template_source(self, source=None, content=None):
+    def set_iapp_template_source(self, source=None, content=None):
         if source:
             with open(source) as fh:
-                return fh.read()
+                result = fh.read()
         elif content:
-            return content
+            result = content
         else:
-            return None
-
-    def load_iapp_template(self):
-        result = dict()
-        result.update(self.load_iapp_application())
-        result.update(self.load_iapp_actions())
-        return result
-
-    def load_iapp_application(self):
-        params = dict(
-            params='expandSubcollections=true'
-        )
-        return self.api.tm.sys.application.templates.template.load(
-            name=self.params['name'],
-            partition=self.params['partition'],
-            requests_params=params
-        )
+            raise F5ModuleError(
+                "Either 'content' or 'src' must be provided"
+            )
+        self.params['content'] = result
 
     def iapp_template_exists(self):
         return self.api.tm.sys.application.templates.template.exists(
@@ -242,54 +188,31 @@ class BigIpiAppTemplateManager(object):
         )
 
     def ensure_iapp_template_is_present(self):
-        params = self.get_iapp_template_creation_parameters()
-        self.changed_params = camel_dict_to_snake_dict(params)
         if self.params['check_mode']:
             return True
-        self.create_iapp_template_on_device(params)
+        self.create_iapp_template_on_device(self.params)
         if self.iapp_template_exists():
             return True
         else:
             raise F5ModuleError("Failed to create the iApp template")
 
-    def get_iapp_template_creation_parameters(self):
-        result = dict(
-            name=self.params['name'],
-            partition=self.params['partition'],
-            actions=dict(
-                htmlHelp=self.params['html_help'],
-                roleAcl=self.params['role_acl'],
-                implementation=self.params['implementation'],
-                presentation=self.params['presentation']
-            ),
-            required_modules=self.params['required_modules'],
-            min_version=self.params['min_version'],
-            max_version=self.params['max_version'],
-            verification=self.params['verification']
-        )
-        return result
-
     def create_iapp_template_on_device(self, params):
-        check_mode = self.params['check_mode']
+        remote_path = "/var/config/rest/downloads/{0}".format(params['name'])
+        load_command = 'tmsh load sys application template {0}'.format(remote_path)
 
-        if check_mode:
-            return True
+        template = StringIO(params['content'])
 
-        self.api.tm.sys.application.templates.template.create(
-            name=params['name'],
-            partition=params['partition'],
-            actions=dict(
-                definition=dict(**params['actions'])
-            ),
-            requiresModules=params['required_modules'],
-            ignoreVerification=params['verification'],
-            requiresBigipVersionMax=params['max_version'],
-            requiresBigipVersionMin=params['min_version']
+        upload = self.api.shared.file_transfer.uploads
+        upload.upload_stringio(template, self.params['name'])
+        output = self.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(load_command)
         )
 
-        if not self.iapp_template_exists():
-            raise F5ModuleError("Failed to create the iRule")
-        return True
+        if hasattr(output, 'commandResult'):
+            result = output.commandResult
+        if 'Syntax Error' in result:
+            raise F5ModuleError(output.commandResult)
 
     def ensure_iapp_template_is_absent(self):
         if self.params['check_mode']:
