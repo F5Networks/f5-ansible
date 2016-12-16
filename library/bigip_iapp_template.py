@@ -80,7 +80,6 @@ EXAMPLES = '''
 - name: Add the iApp contained in template iapp.tmpl
   bigip_iapp_template:
       content: "{{ lookup('template', 'iapp.tmpl') }}"
-      name: "my-iapp"
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"
