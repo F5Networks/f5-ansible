@@ -1,5 +1,8 @@
 ---
 
+
+- include: rules-check.yaml
+
 - name: Add virtual server
   bigip_virtual_server:
       all_profiles: "{{ vs_profiles1 }}"
@@ -345,6 +348,9 @@
 # Tests for different issues filed on Github
 - include: issue-38.yaml
   tags: issue-38
+
+- include: issue-53.yaml
+  tags: issue-53
 
 # Tests for different pull requests filed on Github
 - include: pr-3158.yaml
