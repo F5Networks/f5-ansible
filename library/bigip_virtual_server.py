@@ -84,6 +84,11 @@ options:
         by the virtual server
     required: false
     default: None
+  all_policies:
+    description:
+      - List of all policies enabled for the virtual server.
+    required: false
+    default None
   all_rules:
     version_added: "2.2"
     description:
@@ -317,6 +322,43 @@ def set_profiles(api, name, profiles_list):
         return updated
     except bigsuds.OperationFailed as e:
         raise Exception('Error on setting profiles : %s' % e)
+
+
+def get_policies(api, name):
+    return api.LocalLB.VirtualServer.get_content_policy(
+        virtual_servers=[name]
+    )[0]
+
+
+def set_policies(api, name, policies_list):
+    updated = False
+    try:
+        if policies_list is None:
+            return False
+        current_policies = get_policies(api, name)
+        to_add_policies = []
+        for x in policies_list:
+            if x not in current_policies:
+                to_add_policies.append(x)
+        to_del_policies = []
+        for x in current_policies:
+            if x not in policies_list:
+                to_del_policies.append(x)
+        if len(to_del_policies) > 0:
+            api.LocalLB.VirtualServer.remove_content_policy(
+                virtual_servers=[name],
+                policies=[to_del_policies]
+            )
+            updated = True
+        if len(to_add_policies) > 0:
+            api.LocalLB.VirtualServer.add_content_policy(
+                virtual_servers=[name],
+                policies=[to_add_policies]
+            )
+            updated = True
+        return updated
+    except bigsuds.OperationFailed as e:
+        raise Exception('Error on setting policies : %s' % e)
 
 
 def get_vlan(api, name):
@@ -615,6 +657,7 @@ def main():
         name=dict(type='str', required=True, aliases=['vs']),
         destination=dict(type='str', aliases=['address', 'ip']),
         port=dict(type='int'),
+        all_policies=dict(type='list'),
         all_profiles=dict(type='list'),
         all_rules=dict(type='list'),
         enabled_vlans=dict(type='list'),
@@ -651,6 +694,7 @@ def main():
     destination = module.params['destination']
     port = module.params['port']
     all_profiles = fq_list_names(partition, module.params['all_profiles'])
+    all_policies = fq_list_names(partition, module.params['all_policies'])
     all_rules = fq_list_names(partition, module.params['all_rules'])
 
     enabled_vlans = module.params['enabled_vlans']
@@ -704,6 +748,7 @@ def main():
                     try:
                         vs_create(api, name, destination, port, pool)
                         set_profiles(api, name, all_profiles)
+                        set_policies(api, name, all_policies)
                         set_enabled_vlans(api, name, all_enabled_vlans)
                         set_rules(api, name, all_rules)
                         set_snat(api, name, snat)
@@ -732,6 +777,7 @@ def main():
                         result['changed'] |= set_description(api, name, description)
                         result['changed'] |= set_snat(api, name, snat)
                         result['changed'] |= set_profiles(api, name, all_profiles)
+                        result['changed'] |= set_policies(api, name, all_policies)
                         result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
                         result['changed'] |= set_rules(api, name, all_rules)
                         result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
