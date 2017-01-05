@@ -36,18 +36,18 @@ enhancement requests using `Github Issues`_
 Requirements
 ============
 
-* [Ansible 2.2.0 or greater][installing]
+* `Ansible 2.2.0 or greater`_
 * Advanced shell for user account enabled
-* [bigsuds Python Client 1.0.4 or later][bigsuds]
-* [f5-sdk Python Client, latest available][f5-sdk]
+* `bigsuds Python Client 1.0.4 or later`_
+* `f5-sdk Python Client, latest available`_
 
 Documentation
 =============
 
-All documentation is hosted on [ReadTheDocs][readthedocs].
+All documentation is hosted on `ReadTheDocs`_.
 
-When [writing new modules][writingnew], please refer to the
-[Guidelines][guidelines] document.
+When `writing new modules`_, please refer to the
+`Guidelines`_ document.
 
 Purpose
 =======
@@ -72,32 +72,14 @@ See `Support <SUPPORT.rst>`_.
 
 Enjoy!
 
-.. |bigsuds|
-    :target: https://pypi.python.org/pypi/bigsuds/
-    :alt: bigsuds
-
-.. |f5-sdk|
-    :target: https://pypi.python.org/pypi/f5-sdk/
-    :alt: f5-sdk
-
-.. |readthedocs|
-    :target: https://f5-ansible.readthedocs.io/en/latest/
-    :alt: ReadTheDocs
-
-.. |guidelines|
-    :target: https://f5-ansible.readthedocs.io/en/latest/development/guidelines.html
-    :alt: Guidelines
-
-.. |writingnew|
-    :target: https://f5-ansible.readthedocs.io/en/latest/development/writing-a-module.html
-    :alt: Writing a module
-
-.. |installing|
-    :target: https://f5-ansible.readthedocs.io/en/latest/usage/getting_started.html#installing-ansible
-    :alt: Installing the modules
-
 .. |slack badge| image:: https://f5ansible.herokuapp.com/badge.svg
     :target: https://f5ansible.herokuapp.com/
     :alt: Slack
 
+.. _Guidelines: https://f5-ansible.readthedocs.io/en/latest/development/guidelines.html
+.. _writing new modules: https://f5-ansible.readthedocs.io/en/latest/development/writing-a-module.html
+.. _ReadTheDocs: https://f5-ansible.readthedocs.io/en/latest/
+.. _bigsuds Python Client 1.0.4 or later: https://pypi.python.org/pypi/bigsuds/
+.. _f5-sdk Python Client, latest available: https://pypi.python.org/pypi/f5-sdk/
+.. _Ansible 2.2.0 or greater: https://f5-ansible.readthedocs.io/en/latest/usage/getting_started.html#installing-ansible
 .. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
