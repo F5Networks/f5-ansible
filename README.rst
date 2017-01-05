@@ -31,7 +31,7 @@ APIs as well as the tmsh API where required.
 These modules are freely provided to the open source community for automating
 BIG-IP device configurations using Ansible. Support for the modules is provided
 on a best effort basis by the F5 community. Please file any bugs, questions or
-enhancement requests using Github Issues.
+enhancement requests using Github Issues_
 
 Requirements
 ============
@@ -100,6 +100,4 @@ Enjoy!
     :target: https://f5ansible.herokuapp.com/
     :alt: Slack
 
-.. |Github Issues|
-    :target: https://github.com/F5Networks/f5-ansible/issues
-    :alt: Github Issues
+.. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
