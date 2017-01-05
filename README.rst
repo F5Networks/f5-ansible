@@ -31,7 +31,7 @@ APIs as well as the tmsh API where required.
 These modules are freely provided to the open source community for automating
 BIG-IP device configurations using Ansible. Support for the modules is provided
 on a best effort basis by the F5 community. Please file any bugs, questions or
-enhancement requests using Github Issues_
+enhancement requests using `Github Issues`_
 
 Requirements
 ============
