@@ -96,8 +96,8 @@ Enjoy!
     :target: https://f5-ansible.readthedocs.io/en/latest/usage/getting_started.html#installing-ansible
     :alt: Installing the modules
 
-.. |slack badge| image:: https://f5-openstack-slack.herokuapp.com/badge.svg
-    :target: https://f5-openstack-slack.herokuapp.com/
+.. |slack badge| image:: https://f5ansible.herokuapp.com/badge.svg
+    :target: https://f5ansible.herokuapp.com/
     :alt: Slack
 
 .. |Github Issues|
