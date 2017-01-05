@@ -18,4 +18,4 @@ For example
 
     @channel I had a question about Foo and how it relates to Bar
 
-.. _main repository page: https://github.com/F5Networks/f5-ansible
+.. _main repository page: https://github.com/F5Networks/f5-ansible#ansible-f5
