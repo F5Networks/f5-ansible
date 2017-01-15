@@ -712,8 +712,8 @@ def main():
     default_persistence_profile = fq_name(partition, module.params['default_persistence_profile'])
     fallback_persistence_profile = module.params['fallback_persistence_profile']
 
-    if 1 > port > 65535:
-        module.fail_json(msg="valid ports must be in range 1 - 65535")
+    if 0 > port > 65535:
+        module.fail_json(msg="valid ports must be in range 0 - 65535")
 
     try:
         api = bigip_api(server, user, password, validate_certs, port=server_port)
