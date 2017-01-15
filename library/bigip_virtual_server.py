@@ -658,7 +658,7 @@ def main():
                    choices=['present', 'absent', 'disabled', 'enabled']),
         name=dict(type='str', required=True, aliases=['vs']),
         destination=dict(type='str', aliases=['address', 'ip']),
-        port=dict(type='int', None),
+        port=dict(type='int', default=None),
         all_policies=dict(type='list'),
         all_profiles=dict(type='list'),
         all_rules=dict(type='list'),
