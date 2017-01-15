@@ -658,7 +658,7 @@ def main():
                    choices=['present', 'absent', 'disabled', 'enabled']),
         name=dict(type='str', required=True, aliases=['vs']),
         destination=dict(type='str', aliases=['address', 'ip']),
-        port=dict(type='int'),
+        port=dict(type='int', None),
         all_policies=dict(type='list'),
         all_profiles=dict(type='list'),
         all_rules=dict(type='list'),
@@ -739,7 +739,7 @@ def main():
         else:
             update = False
             if not vs_exists(api, name):
-                if (not destination) or (not port):
+                if (not destination) or (port is None):
                     module.fail_json(msg="both destination and port must be supplied to create a VS")
                 if not module.check_mode:
                     # a bit of a hack to handle concurrent runs of this module.
