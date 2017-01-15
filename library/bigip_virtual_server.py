@@ -88,7 +88,8 @@ options:
     description:
       - List of all policies enabled for the virtual server.
     required: false
-    default None
+    default: None
+    version_added: "2.3"
   all_rules:
     version_added: "2.2"
     description:
@@ -127,6 +128,7 @@ options:
         cannot use the specified default persistence profile.
     required: false
     default: None
+    version_added: "2.3"
   route_advertisement_state:
     description:
       - Enable route advertisement for destination
