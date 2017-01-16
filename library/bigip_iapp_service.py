@@ -24,33 +24,48 @@ ANSIBLE_METADATA = {'status': ['preview'],
 
 DOCUMENTATION = '''
 ---
-module: bigip_dns_record_facts
-short_description: foo
+module: bigip_iapp_service
+short_description: Manages TCL iApp services on a BIG-IP
 description:
-  - foo
-version_added: "2.2"
+  - Manages TCL iApp services on a BIG-IP
+version_added: "2.3"
 options:
-  server:
+  name:
     description:
-      - BIG-IP host
-    required: true
-  user:
+      - The name of the iApp template that you want to delete. This option
+        is only available when specifying a C(state) of C(absent) and is
+        provided as a way to delete templates that you may no longer have
+        the source of.
+    required: False
+  template:
     description:
-      - BIG-IP username
+      - The iApp template from which to instantiate a new service.
     required: true
-    aliases:
-      - username
-  password:
+  tables:
     description:
-      - BIG-IP password
-    required: true
+      - Dictionary of tables and values to supply to the iApp service
+    required: False
+    default: None
+  variables:
+    description:
+      - Dictionary of variables names and their values to supply to the iApp
+        service
+    required: False
+    default: None
+  state:
+    description:
+      - Whether the iRule should exist or not.
+    required: false
+    default: present
+    choices:
+      - present
+      - absent
 notes:
-  - Requires the f5-sdk Python package on the remote host. This is as easy as
-    pip install f5-sdk
-requirements:
-  - f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+extends_documentation_fragment: f5
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 from ansible.module_utils.basic import *
