@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_command
@@ -201,7 +205,7 @@ from ansible.module_utils.six import string_types
 
 
 VALID_KEYS = ['command', 'output', 'prompt', 'response']
-
+VALID_CONFIG_MODES = ['modify', 'delete', 'add']
 
 def to_lines(stdout):
     for item in stdout:
@@ -227,9 +231,7 @@ def parse_commands(module):
 
 
 def is_config_mode_command(cmd):
-    if cmd['command'].startswith('modify') or \
-            cmd['command'].startswith('delete') or \
-            cmd['command'].startswith('add'):
+    if all(cmd['command'].startswith(x) for x in VALID_CONFIG_MODES):
         return True
     return False
 
@@ -305,8 +307,7 @@ def main():
                     runner.add_command(**disable_pager)
                     runner.add_command(**cmd)
             except AddCommandError:
-                exc = get_exception()
-                warnings.append('duplicate command detected: %s' % cmd)
+                warnings.append('Duplicate command detected: %s' % cmd)
 
     try:
         for item in conditionals:
