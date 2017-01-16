@@ -1,8 +1,8 @@
-.. _bigip_iapp_service:
+.. _bigip_facts:
 
 
-bigip_iapp_service - Manages TCL iApp services on a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_facts - Collect facts from F5 BIG-IP devices
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,9 +15,13 @@ bigip_iapp_service - Manages TCL iApp services on a BIG-IP
 Synopsis
 --------
 
-Manages TCL iApp services on a BIG-IP
+Collect facts from F5 BIG-IP devices via iControl REST API
 
 
+Requirements (on host that executes module)
+-------------------------------------------
+
+  * f5-sdk >= 2.2.0
 
 
 Options
@@ -34,11 +38,17 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>name<br/><div style="font-size: small;"></div></td>
+    <td>filter<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul></ul></td>
-        <td><div>The name of the iApp template that you want to delete. This option is only available when specifying a <code>state</code> of <code>absent</code> and is provided as a way to delete templates that you may no longer have the source of.</div></td></tr>
+        <td><div>Shell-style glob matching string used to filter fact keys. Not applicable for software, provision, and system_info fact categories.</div></td></tr>
+            <tr>
+    <td>include<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul><li>address_class</li><li>certificate</li><li>client_ssl_profile</li><li>device</li><li>device_group</li><li>interface</li><li>key</li><li>node</li><li>pool</li><li>provision</li><li>rule</li><li>self_ip</li><li>software</li><li>system_info</li><li>traffic_group</li><li>trunk</li><li>virtual_address</li><li>virtual_server</li><li>vlan</li></ul></td>
+        <td><div>Fact category or list of categories to collect</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -58,24 +68,6 @@ Options
         <td><ul></ul></td>
         <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the iRule should exist or not.</div></td></tr>
-            <tr>
-    <td>tables<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Dictionary of tables and values to supply to the iApp service</div></td></tr>
-            <tr>
-    <td>template<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>The iApp template from which to instantiate a new service.</div></td></tr>
-            <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -87,18 +79,23 @@ Options
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
-            <tr>
-    <td>variables<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Dictionary of variables names and their values to supply to the iApp service</div></td></tr>
         </table>
     </br>
 
 
 
+Examples
+--------
 
+ ::
+
+    - name: Collect BIG-IP facts
+      bigip_facts:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          include: "interface,vlan"
+      delegate_to: localhost
 
 
 Notes

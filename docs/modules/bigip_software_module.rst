@@ -4,7 +4,7 @@
 bigip_software - Manage BIG-IP software versions and hotfixes
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * bigsuds
+  * isoparser
 
 
 Options
@@ -55,7 +56,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>reuse_inactive_volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -67,7 +68,13 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>software<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -83,15 +90,15 @@ Options
         <td><div>When <code>installed</code>, ensures that the software is uploaded and installed, on the system. The device is not, however, rebooted into the new software. When <code>activated</code>, ensures that the software is uploaded, installed, and the system is rebooted to the new software. When <code>present</code>, ensures that the software is uploaded. When <code>absent</code>, only the uploaded image will be removed from the system</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
+    <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
             <tr>
     <td>volume<br/><div style="font-size: small;"></div></td>
@@ -220,8 +227,8 @@ Notes
 -----
 
 .. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+.. note:: Requires the isoparser Python package on the host. This can be installed with pip install isoparser
 .. note:: Requires the lxml Python package on the host. This can be installed with pip install lxml
-.. note:: https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
 
 
     

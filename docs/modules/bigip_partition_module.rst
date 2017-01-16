@@ -4,7 +4,7 @@
 bigip_partition - Manage BIG-IP partitions
 ++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.3
 
 
 .. contents::
@@ -45,23 +45,29 @@ Options
         <td><ul></ul></td>
         <td><div>The description to attach to the Partition</div></td></tr>
             <tr>
+    <td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
+            <tr>
     <td>route_domain<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
         <td><div>The default Route Domain to assign to the Partition. If no route domain is specified, then the default route domain for the system (typically zero) will be used only when creating a new partition. <code>route_domain</code> and <code>route_domain_id</code> are mutually exclusive.</div></td></tr>
             <tr>
-    <td>route_domain_id<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>The default Route Domain ID to assign to the Partition. If you track the route domains by their numeric identifier, then this argument can be used to supply that ID. <code>route_domain</code> and <code>route_domain_id</code> are mutually exclusive.</div></td></tr>
-            <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -70,15 +76,15 @@ Options
         <td><div>Whether the partition should exist or not</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
+    <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
@@ -122,18 +128,11 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> route_domain_id </td>
-        <td> ID of the route domain associated with the partition </td>
-        <td align=center> changed and success </td>
-        <td align=center> string </td>
-        <td align=center> 0 </td>
-    </tr>
-            <tr>
         <td> route_domain </td>
         <td> Name of the route domain associated with the partition </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
-        <td align=center> /Common/asdf </td>
+        <td align=center> 0 </td>
     </tr>
             <tr>
         <td> description </td>

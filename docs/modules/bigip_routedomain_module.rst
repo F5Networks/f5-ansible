@@ -74,6 +74,12 @@ Options
         <td><ul></ul></td>
         <td><div>Specifies the route domain the system searches when it cannot find a route in the configured domain.</div></td></tr>
             <tr>
+    <td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td><ul></ul></td>
+        <td><div>Partition to create the route domain on. Partitions cannot be updated once they are created.</div></td></tr>
+            <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

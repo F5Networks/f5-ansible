@@ -113,9 +113,9 @@ Examples
 
  ::
 
-    - name: Add the iRule contained in templated irule.tcl to the LTM module
+    - name: Add the iRule contained in template irule.tcl to the LTM module
       bigip_irule:
-          content: "{{ lookup('template', 'irule-template.tcl') }}"
+          content: "{{ lookup('template', 'irule.tcl') }}"
           module: "ltm"
           name: "MyiRule"
           password: "secret"
@@ -130,7 +130,7 @@ Examples
           name: "MyiRule"
           password: "secret"
           server: "lb.mydomain.com"
-          src: "irule-static.tcl"
+          src: "irule.tcl"
           state: "present"
           user: "admin"
       delegate_to: localhost

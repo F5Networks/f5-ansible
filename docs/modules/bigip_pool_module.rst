@@ -37,6 +37,12 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
+    <td>description<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies descriptive text that identifies the pool.</div></td></tr>
+            <tr>
     <td>host<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

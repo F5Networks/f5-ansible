@@ -95,7 +95,7 @@ Options
         <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td>installed</td>
         <td><ul><li>absent</li><li>installed</li><li>present</li></ul></td>
         <td><div>When <code>installed</code>, ensures that the UCS is uploaded and installed, on the system. When <code>present</code>, ensures that the UCS is uploaded. When <code>absent</code>, the UCS will be removed from the system.</div></td></tr>

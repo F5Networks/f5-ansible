@@ -82,41 +82,6 @@ Examples
         username: admin
         password: admin
         transport: cli
-    
-    - name: run show version on remote devices
-      nxos_command:
-        commands: show version
-        provider: "{{ cli }}"
-    
-    - name: run show version and check to see if output contains Cisco
-      nxos_command:
-        commands: show version
-        wait_for: result[0] contains Cisco
-        provider: "{{ cli }}"
-    
-    - name: run multiple commands on remote nodes
-       nxos_command:
-        commands:
-          - show version
-          - show interfaces
-        provider: "{{ cli }}"
-    
-    - name: run multiple commands and evaluate the output
-      nxos_command:
-        commands:
-          - show version
-          - show interfaces
-        wait_for:
-          - result[0] contains Cisco
-          - result[1] contains loopback0
-        provider: "{{ cli }}"
-    
-    - name: run commands and specify the output format
-      nxos_command:
-        commands:
-          - command: show sys version
-            output: oneline
-        provider: "{{ cli }}"
 
 Return Values
 -------------

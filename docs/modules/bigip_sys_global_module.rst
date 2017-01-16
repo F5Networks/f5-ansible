@@ -1,8 +1,8 @@
 .. _bigip_sys_global:
 
 
-bigip_sys_global - Manage BIG-IP global settings
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_sys_global - Manage BIG-IP global settings.
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,7 +15,7 @@ bigip_sys_global - Manage BIG-IP global settings
 Synopsis
 --------
 
-Manage BIG-IP global settings
+Manage BIG-IP global settings.
 
 
 Requirements (on host that executes module)
