@@ -1,0 +1,64 @@
+---
+
+# @see https://github.com/F5Networks/f5-ansible/issues/53
+
+- name: Issue 53 - Create virtual server
+  bigip_virtual_server:
+      name: "issue53"
+      destination: "1.1.1.1"
+      port: 80
+      description: "Issue 53"
+      all_profiles:
+          - tcp
+          - http
+      password: "{{ bigip_password }}"
+      default_persistence_profile: "{{ i53_default_persistence_profile }}"
+      fallback_persistence_profile: "{{ i53_fallback_persistence_profile }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Create virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Issue 53 - Create virtual server - Idempotent check
+  bigip_virtual_server:
+      name: "issue53"
+      destination: "1.1.1.1"
+      port: 80
+      description: "Issue 53"
+      all_profiles:
+          - tcp
+          - http
+      password: "{{ bigip_password }}"
+      default_persistence_profile: "{{ i53_default_persistence_profile }}"
+      fallback_persistence_profile: "{{ i53_fallback_persistence_profile }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Create virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Issue 53 - Delete virtual server
+  bigip_virtual_server:
+      destination: "1.1.1.1"
+      name: "issue53"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: 80
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
