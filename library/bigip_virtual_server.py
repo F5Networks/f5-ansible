@@ -75,7 +75,9 @@ options:
       - ip
   port:
     description:
-      - Port of the virtual server . Required when state=present and vs does not exist
+      - Port of the virtual server. Required when state=present and vs does
+        not exist. If you specify a value for this field, it must be a number
+        between 0 and 65535.
     required: false
     default: None
   all_profiles:
@@ -224,9 +226,19 @@ def vs_exists(api, vs):
     return result
 
 
-def vs_create(api, name, destination, port, pool):
-    _profiles = [[{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]]
-    created = False
+def vs_create(api, name, destination, port, pool, profiles):
+    if profiles:
+        _profiles = []
+        for profile in profiles:
+            _profiles.append(
+                dict(
+                    profile_context='PROFILE_CONTEXT_TYPE_ALL',
+                    profile_name=profile
+                )
+            )
+    else:
+        _profiles = [{'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': 'tcp'}]
+
     # a bit of a hack to handle concurrent runs of this module.
     # even though we've checked the vs doesn't exist,
     # it may exist by the time we run create_vs().
@@ -237,12 +249,11 @@ def vs_create(api, name, destination, port, pool):
             definitions=[{'name': [name], 'address': [destination], 'port': port, 'protocol': 'PROTOCOL_TCP'}],
             wildmasks=['255.255.255.255'],
             resources=[{'type': 'RESOURCE_TYPE_POOL', 'default_pool_name': pool}],
-            profiles=_profiles)
+            profiles=[_profiles])
         created = True
         return created
     except bigsuds.OperationFailed as e:
-        if "already exists" not in str(e):
-            raise Exception('Error on creating Virtual Server : %s' % e)
+        raise Exception('Error on creating Virtual Server : %s' % e)
 
 
 def vs_remove(api, name):
@@ -631,18 +642,24 @@ def set_fallback_persistence_profile(api, partition, name, persistence_profile):
 
 
 def get_route_advertisement_status(api, address):
-    result = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(virtual_addresses=[address]).pop(0)
-    result = result.split("STATE_")[-1].lower()
+    result = None
+    results = api.LocalLB.VirtualAddressV2.get_route_advertisement_state(virtual_addresses=[address])
+    if results:
+        result = results.pop(0)
+        result = result.split("STATE_")[-1].lower()
     return result
 
 
 def set_route_advertisement_state(api, destination, partition, route_advertisement_state):
     updated = False
 
+    if route_advertisement_state is None:
+        return False
+
     try:
         state = "STATE_%s" % route_advertisement_state.strip().upper()
         address = fq_name(partition, destination,)
-        current_route_advertisement_state=get_route_advertisement_status(api,address)
+        current_route_advertisement_state = get_route_advertisement_status(api,address)
         if current_route_advertisement_state != route_advertisement_state:
             api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
             updated = True
@@ -660,13 +677,17 @@ def main():
         destination=dict(type='str', aliases=['address', 'ip']),
         port=dict(type='int', default=None),
         all_policies=dict(type='list'),
-        all_profiles=dict(type='list'),
+        all_profiles=dict(type='list', default=None),
         all_rules=dict(type='list'),
         enabled_vlans=dict(type='list'),
         pool=dict(type='str'),
         description=dict(type='str'),
         snat=dict(type='str'),
-        route_advertisement_state=dict(type='str', default='disabled', choices=['enabled', 'disabled']),
+        route_advertisement_state=dict(
+            type='str',
+            default=None,
+            choices=['enabled', 'disabled']
+        ),
         default_persistence_profile=dict(type='str'),
         fallback_persistence_profile=dict(type='str')
     ))
@@ -748,7 +769,7 @@ def main():
                     # this catches the exception and does something smart
                     # about it!
                     try:
-                        vs_create(api, name, destination, port, pool)
+                        vs_create(api, name, destination, port, pool, all_profiles)
                         set_profiles(api, name, all_profiles)
                         set_policies(api, name, all_policies)
                         set_enabled_vlans(api, name, all_enabled_vlans)
@@ -793,7 +814,7 @@ def main():
                     # check-mode return value
                     result = {'changed': True}
 
-    except Exception as e:
+    except IOError as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
