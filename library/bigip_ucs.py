@@ -92,7 +92,6 @@ options:
       - absent
       - installed
       - present
-    required: true
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
