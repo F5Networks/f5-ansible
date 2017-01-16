@@ -158,7 +158,6 @@ failed_conditions:
 
 import re
 
-from ansible.module_utils.network import ModuleStub, NetworkError, NetworkModule
 from ansible.module_utils.network import add_argument, register_transport, to_list
 from ansible.module_utils.shell import CliBase
 
