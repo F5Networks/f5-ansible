@@ -166,15 +166,10 @@ class Cli(CliBase):
 
     CLI_PROMPTS_RE = [
         # One of the default prompts on 12.x
-        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w~]+ ?[>#\$]"),
-
-        # Nate found this prompt in DUTs
-        # [root@Carrier2:/S1-green-P:Standby:In Sync] config #
-        re.compile(r"\[\w+\@[\w\d\-\.]+:[\w\d\/]+:[\w]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+        re.compile(r"\[\w+\@[\w\-\.]+"),
 
         # Found on 11.6.1
-        re.compile(r"[\w-]+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\/Common\)\(tmos\)[>#\$]"),
-        re.compile(r"[\w-]+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\w+\)\(tmos\)[>#\$]")
+        re.compile(r"[\w-]+\@\(\w+\)"),
     ]
 
     CLI_ERRORS_RE = [
@@ -275,7 +270,6 @@ def main():
     module.disconnect()
     runner.commands = []
     runner.module.cli._commands = []
-
 
     for cmd in commands:
         cmd = strip_tmsh_prefix(cmd)
