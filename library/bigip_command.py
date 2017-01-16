@@ -167,7 +167,7 @@ class Cli(CliBase):
 
     CLI_PROMPTS_RE = [
         # One of the default prompts on 12.x
-        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w~]+ ?[>#\$]"),
 
         # Nate found this prompt in DUTs
         # [root@Carrier2:/S1-green-P:Standby:In Sync] config #
