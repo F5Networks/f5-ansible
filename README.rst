@@ -81,7 +81,7 @@ License
 
 GPL V3
 ~~~~~~
-See `License_`
+See `License`_
 
 Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
