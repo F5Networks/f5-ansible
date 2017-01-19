@@ -23,7 +23,7 @@ to the CLA.
 
 Click the link below to download the PDF:
 
-:download:`F5 Contributor License Agreement (CLA) <_static/F5-contributor-license-agreement.pdf>`
+:download:`F5 Contributor License Agreement (CLA) <../_static/F5-contributor-license-agreement.pdf>`
 
 .. toctree::
     :hidden:
