@@ -84,38 +84,38 @@ Examples
         transport: cli
     
     - name: run show version on remote devices
-      nxos_command:
-        commands: show version
+      bigip_command:
+        commands: show sys version
         provider: "{{ cli }}"
     
-    - name: run show version and check to see if output contains Cisco
-      nxos_command:
-        commands: show version
-        wait_for: result[0] contains Cisco
+    - name: run show version and check to see if output contains BIG-IP
+      bigip_command:
+        commands: show sys version
+        wait_for: result[0] contains BIG-IP
         provider: "{{ cli }}"
     
     - name: run multiple commands on remote nodes
-       nxos_command:
+       bigip_command:
         commands:
-          - show version
-          - show interfaces
+          - show sys version
+          - list ltm virtual
         provider: "{{ cli }}"
     
     - name: run multiple commands and evaluate the output
-      nxos_command:
+      bigip_command:
         commands:
-          - show version
-          - show interfaces
+          - show sys version
+          - list ltm virtual
         wait_for:
-          - result[0] contains Cisco
-          - result[1] contains loopback0
+          - result[0] contains BIG-IP
+          - result[1] contains my-vs
         provider: "{{ cli }}"
     
-    - name: run commands and specify the output format
-      nxos_command:
+    - name: tmsh prefixes will automatically be handled
+      bigip_command:
         commands:
-          - command: show sys version
-            output: oneline
+          - show sys version
+          - tmsh list ltm virtual
         provider: "{{ cli }}"
 
 Return Values
