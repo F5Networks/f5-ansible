@@ -169,7 +169,7 @@ class Cli(CliBase):
         re.compile(r"\[\w+\@[\w\-\.]+"),
 
         # Found on 11.6.1
-        re.compile(r"[\w-]+\@\(\w+\)"),
+        re.compile(r"[\w-]+\@\([\w\-\.]+\)"),
     ]
 
     CLI_ERRORS_RE = [
