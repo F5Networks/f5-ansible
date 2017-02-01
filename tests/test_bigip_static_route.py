@@ -20,18 +20,27 @@
 
 
 try:
-    from unittest.mock import Mock, patch, MagicMock, call
+    from unittest.mock import Mock, patch, MagicMock, mock_open
 except ImportError:
-    from mock import Mock, patch, MagicMock, call
+    from mock import Mock, patch, MagicMock, mock_open
 
+import ansible.module_utils.basic
 
-import os
 from library.bigip_static_route import BigIpStaticRouteModule
+from tests.data.fixtures.bigip_static_route import (
+    all_params
+)
 
 
 class TestBigIpStaticRouteModule(object):
-    @patch('os.remove', return_value="asd")
-    def test_params1(self, *args):
-        ok = os.remove('/tmp/foo')
-        print ok
+    def test_params1(self, all_params):
+        ansible.module_utils.basic._ANSIBLE_ARGS = all_params
+        module = BigIpStaticRouteModule()
 
+        assert 'name' in module.params
+        assert 'description' in module.params
+        assert 'destination' in module.params
+        assert 'netmask' in module.params
+        assert 'resource' in module.params
+        assert 'gateway_address' in module.params
+        assert 'state' in module.params
