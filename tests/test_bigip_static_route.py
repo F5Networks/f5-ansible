@@ -19,28 +19,99 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 
-try:
-    from unittest.mock import Mock, patch, MagicMock, mock_open
-except ImportError:
-    from mock import Mock, patch, MagicMock, mock_open
-
-import ansible.module_utils.basic
-
+from tests.tools import *
 from library.bigip_static_route import BigIpStaticRouteModule
 from tests.data.fixtures.bigip_static_route import (
-    all_params
+    required_present_params,
+    missing_required_present_param_resource,
+    missing_required_present_param_destination,
+    missing_required_present_param_netmask
 )
 
+@patch('library.bigip_static_route.BigIpStaticRouteModule.fail_json',
+       return_value=None)
+class TestValidParams(object):
 
-class TestBigIpStaticRouteModule(object):
-    def test_params1(self, all_params):
-        ansible.module_utils.basic._ANSIBLE_ARGS = all_params
-        module = BigIpStaticRouteModule()
+    @patch('library.bigip_static_route.BigIpStaticRouteModule._load_params',
+           return_value=None)
+    @patch('library.bigip_static_route.BigIpStaticRouteModule.params',
+           new_callable=PropertyMock,
+           return_value=required_present_params(),
+           create=True)
+    def test_required_present_params(self, *args):
+        """Provide required parameters and ensure no exception
 
-        assert 'name' in module.params
-        assert 'description' in module.params
-        assert 'destination' in module.params
-        assert 'netmask' in module.params
-        assert 'resource' in module.params
-        assert 'gateway_address' in module.params
-        assert 'state' in module.params
+        The parameters provided to the module should match the constraints
+        that the module implements. This test ensures that a valid set
+        of credentials will raise no exception.
+
+        The `_load_params` method is patched to avoid the AnsibleModule base
+        class attempting to load the parameters from where Ansible normally
+        expects them
+
+        The `params` attribute is patched to provide to the module a set of
+        parameters to try to instantiate itself with
+
+        Arguments:
+            *args: The patches applied in the function decorators
+
+        Returns:
+            void
+        """
+        BigIpStaticRouteModule()
+
+
+@patch('library.bigip_static_route.BigIpStaticRouteModule._load_params',
+       return_value=None)
+@patch('library.bigip_static_route.BigIpStaticRouteModule.fail_json',
+       return_value=None)
+class TestMissingRequiredParams(object):
+
+    @patch('library.bigip_static_route.BigIpStaticRouteModule.params',
+           new_callable=PropertyMock,
+           return_value=missing_required_present_param_resource(),
+           create=True)
+    def test_missing_required_present_param_resource(self, *args):
+        """Provide required parameters, missing the `resource` parameter
+
+        The resource parameter is required if the state is present. Therefore,
+        test to ensure that the appropriate failure in Ansible has occurred.
+
+        :param args:
+        :return:
+        """
+        BigIpStaticRouteModule()
+
+    @patch('library.bigip_static_route.BigIpStaticRouteModule.params',
+           new_callable=PropertyMock,
+           return_value=missing_required_present_param_destination(),
+           create=True)
+    def test_missing_required_present_param_destination(self, *args):
+        """Provide required parameters, missing the `destination` parameter
+
+        The `destination` parameter is required if the state is present.
+        Therefore, test to ensure that the appropriate failure in Ansible
+        has occurred.
+
+        :param args:
+        :return:
+        """
+        BigIpStaticRouteModule()
+
+    @patch('library.bigip_static_route.BigIpStaticRouteModule.params',
+           new_callable=PropertyMock,
+           return_value=missing_required_present_param_netmask(),
+           create=True)
+    def test_missing_required_present_param_netmask(self, *args):
+        """Provide required parameters, missing the `netmask` parameter
+
+        The `netmask` parameter is required if the state is present.
+        Therefore, test to ensure that the appropriate failure in Ansible
+        has occurred.
+
+        :param args:
+        :return:
+        """
+        BigIpStaticRouteModule()
+
+
