@@ -271,6 +271,19 @@ def main():
     runner.commands = []
     runner.module.cli._commands = []
 
+    if shell == "tmsh":
+        disable_pager = dict(
+            output=None,
+            command='modify cli preference pager disabled'
+        )
+        runner.add_command(**disable_pager)
+    else:
+        disable_pager = dict(
+            output=None,
+            command='tmsh modify cli preference pager disabled'
+        )
+        runner.add_command(**disable_pager)
+     
     for cmd in commands:
         cmd = strip_tmsh_prefix(cmd)
 
@@ -284,21 +297,9 @@ def main():
                                      'config mode commands. Please use '
                                      'bigip_config instead')
             try:
-                if shell == 'tmsh':
-                    disable_pager = dict(
-                        output=None,
-                        command='modify cli preference pager disabled'
-                    )
-                    runner.add_command(**disable_pager)
-                    runner.add_command(**cmd)
-                else:
-                    disable_pager = dict(
-                        output=None,
-                        command='tmsh modify cli preference pager disabled'
-                    )
+                if shell == 'bash':
                     cmd['command'] = 'tmsh ' + cmd['command']
-                    runner.add_command(**disable_pager)
-                    runner.add_command(**cmd)
+                runner.add_command(**cmd)
             except AddCommandError:
                 warnings.append('Duplicate command detected: %s' % cmd)
 
