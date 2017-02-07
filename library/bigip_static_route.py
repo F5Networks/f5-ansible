@@ -39,33 +39,9 @@ options:
     default: None
   destination:
     description:
-      - Specifies an IP address for the Destination column of the
+      - Specifies an IP address, and netmask, for the static entry in the
         routing table.
-    required: Only when C(state) is C(present)
-    default: None
-  netmask:
-    description:
-      - Specifies the netmask for a destination address. This value appears
-        in the Netmask column of the routing table.
-    required: Only when C(state) is C(present)
-    default: None
-  resource:
-    description:
-      - Specifies the particular gateway IP address, router pool, or VLAN
-        through which the system forwards packets to the route destination.
-        When C(use_gateway), specifies that the system forwards packets to
-        the destination through the gateway whose IP address you specify.
-        When C(use_pool), specifies that the system forwards packets to the
-        destination through the pool you specify. When C(use_vlan), specifies
-        that the system forwards packets to the destination through the VLAN
-        or tunnel you specify. When C(reject), specifies that the system drops
-        packets sent to the destination.
-    required: Only when C(state) is C(present)
-    choices:
-      - use_gateway
-      - use_vlan
-      - use_pool
-      - reject
+    required: When C(state) is C(present)
     default: None
   gateway_address:
     description:
@@ -82,14 +58,18 @@ options:
       - Specifies the VLAN or Tunnel through which the system forwards packets
         to the destination.
     required:
-      - When C(resource) is set to C(use_vlan), or when C(gateway_address)
-        is a link-local IPv6 address.
+      - When C(gateway_address) is a link-local IPv6 address.
     default: None
   pool:
     description:
       - Specifies the pool through which the system forwards packets to the
         destination.
-    required: When C(resource) param is set to C(use_pool)
+    required: False
+    default: None
+  reject:
+    description:
+      - Specifies that the system drops packets sent to the destination.
+    required: False
     default: None
   mtu:
     description:
@@ -125,6 +105,8 @@ RETURN = '''
 
 '''
 
+import netaddr
+
 try:
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
@@ -133,72 +115,47 @@ except ImportError:
     HAS_F5SDK = False
 
 
+from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
 
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+_CONNECTION = None
 
 
-class BigIpStaticRouteParams(object):
-    name = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded)
-
-    def _difference(self, obj1, obj2, excluded):
-        dict1 = obj1.__dict__
-        dict2 = obj2.__dict__
-        result = dict()
-        for k,v in dict1.items():
-            if k in excluded:
-                continue
-            if not k in dict2:
-                result.update(dict(
-                    k=v
-                ))
-            if v != dict2[k]:
-                result.update(dict(
-                    k=dict2[k]
-                ))
-        return result
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
-        return result
+def setup_connection(**kwargs):
+    global _CONNECTION
+    _CONNECTION = ManagementRoot(
+        kwargs['server'],
+        kwargs['user'],
+        kwargs['password'],
+        port=kwargs['server_port'],
+        token='tmos'
+    )
 
 
-class BigIpStaticRouteModule(AnsibleModule):
+def _get_connection():
+    if _CONNECTION is None:
+        setup_connection()
+    return _CONNECTION
+
+
+def normalize_partition(partition):
+    result = partition.strip('/')
+    return '/' + result + '/'
+
+
+def format_with_path(param, partition):
+    if partition is None:
+        partition = 'Common'
+    partition = normalize_partition(partition)
+    if param.startswith(partition):
+        return param
+    else:
+        return partition + param
+
+
+class F5AnsibleModule(AnsibleModule):
     def __init__(self):
         self.params = None
         self.argument_spec = dict()
@@ -206,23 +163,13 @@ class BigIpStaticRouteModule(AnsibleModule):
         self.supports_check_mode = True
         self.init_meta_args()
         self.init_argument_spec()
-        super(BigIpStaticRouteModule, self).__init__(
+        super(F5AnsibleModule, self).__init__(
             argument_spec=self.argument_spec,
             supports_check_mode=self.supports_check_mode,
-            required_if=[
-                ['resource', 'use_vlan', ['vlan']],
-                ['resource', 'use_pool', ['pool']],
-                ['state', 'present', ['resource', 'netmask', 'destination']]
+            mutually_exclusive=[
+                ['gateway_address', 'vlan', 'pool', 'reject']
             ]
         )
-
-    def __set__(self, instance, value):
-        if isinstance(value, BigIpStaticRouteModule):
-            instance.params = BigIpStaticRouteParams.from_module(
-                self.params
-            )
-        else:
-            super(BigIpStaticRouteModule, self).__set__(instance, value)
 
     def init_meta_args(self):
         args = dict(
@@ -234,20 +181,6 @@ class BigIpStaticRouteModule(AnsibleModule):
             destination=dict(
                 required=False,
                 default=None
-            ),
-            netmask=dict(
-                required=False,
-                default=None
-            ),
-            resource=dict(
-                required=False,
-                default=None,
-                choices=[
-                    'use_gateway',
-                    'use_vlan',
-                    'use_pool',
-                    'reject'
-                ]
             ),
             gateway_address=dict(
                 required=False,
@@ -265,6 +198,11 @@ class BigIpStaticRouteModule(AnsibleModule):
                 required=False,
                 default=None
             ),
+            reject=dict(
+                required=False,
+                default=None,
+                choices=BOOLEANS_TRUE
+            ),
             state=dict(
                 required=False,
                 default='present',
@@ -278,36 +216,30 @@ class BigIpStaticRouteModule(AnsibleModule):
         self.argument_spec.update(self.meta_args)
 
 
-class BigIpStaticRouteManager(object):
-    params = BigIpStaticRouteParams()
-    current = BigIpStaticRouteParams()
-    module = None
+class ModuleManager(object):
+    have = dict()
+    want = dict()
 
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
-        self.module = BigIpStaticRouteModule()
+    def __init__(self, *args, **kwargs):
+        self.changes = dict()
+        self.module = kwargs['module']
+        self.return_key_map = dict(
+            gw='gateway_address',
+            tmInterface='vlan',
+            blackhole='reject'
+        )
 
     def apply_changes(self):
-        """Apply the user's changes to the device
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
+        self.want = self.format_params(self.module.params)
 
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
+        changed = False
         result = dict()
-        state = self.params.state
+        state = self.want.get('state')
 
         try:
-            self.api = connect_to_f5(**self.params.__dict__)
             if state == "present":
                 changed = self.present()
             elif state == "absent":
@@ -315,122 +247,159 @@ class BigIpStaticRouteManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.params.difference(self.current)
-        result.update(**changes)
+        result.update(**self.changes)
         result.update(dict(changed=changed))
+        result = self.map_to_return_keys(result)
+        return result
+
+    def map_to_return_keys(self, keys):
+        result = dict()
+        for k,v in iteritems(keys):
+            new_key = self.return_key_map.get(k, None)
+            if new_key is None:
+                result[k] = v
+            else:
+                result[new_key] = v
+        result = {k: v for k, v in result.items() if v is not None }
         return result
 
     def exists(self):
-        """Checks to see if a connector exists.
-
-        This method does not use ODATA queries because that functionality
-        is broken in iWorkflow. Therefore, we iterate over all connectors
-        until we find the one we're interested in.
-
-        :return:
-        """
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
-                continue
-            if connector.name != self.params.name:
-                continue
-            return True
-        return False
+        api = _get_connection()
+        return api.tm.net.routes.route.exists(name=self.want.name)
 
     def present(self):
         if self.exists():
-            return self.update_bigip_connector()
+            return self.update()
         else:
-            return self.create_bigip_connector()
+            return self.create()
 
-    def create_bigip_connector(self):
+    def create(self):
+        required_resources = ['pool', 'vlan', 'reject', 'gateway_address']
+
         if self.module.check_mode:
             return True
-        self.create_bigip_connector_on_device()
+
+        if self.want['destination'] is None:
+            raise F5ModuleError(
+                'destination must be specified when creating a static route'
+            )
+        if all(self.want[v] is None for v in required_resources):
+            raise F5ModuleError(
+                "You must specify at least one of "
+                + ', '.join(required_resources)
+            )
+        self.update_changed_params()
+        self.create_on_device(self.changes)
         return True
 
-    def update_bigip_connector(self):
-        changed = False
-        current = self.read_current()
-        if self.description_changed(current):
-            changed = True
-        if self.name_changed(current):
-            changed = True
-
-        if not changed:
+    def update(self):
+        current = self.read_current_from_device(self.want['name'])
+        self.have = self.format_params(current)
+        if not self.should_update():
             return False
-
         if self.module.check_mode:
             return True
-        self.update_local_connector_on_device(current)
+        self.update_on_device(self.changes)
         return True
 
-    def update_local_connector_on_device(self, current):
-        pass
-
-    def read_current(self):
-        connector = None
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
-                continue
-            if connector.name != self.params.name:
-                continue
-            break
-        if not connector:
-            return None
-        current = BigIpStaticRouteParams()
-        current.owner_machine_id = str(connector.ownerMachineId)
-        current.connector_id = str(connector.connectorId)
-        if hasattr(current, 'displayName'):
-            current.display_name = str(connector.displayName)
-        if hasattr(current, 'name'):
-            current.name = str(connector.name)
-        self.current = current
-        return self.current
-
-    def create_bigip_connector_on_device(self):
-        self.api.cm.cloud.connectors.locals.local.create(
-            name=self.params.name
-        )
-        return True
-
-    def absent(self):
-        if self.exists():
-            return self.remove_bigip_connector()
+    def should_update(self):
+        self.update_changed_params()
+        if len(self.changes.keys()) > 2:
+            return True
         return False
 
-    def remove_bigip_connector(self):
+    def update_changed_params(self):
+        result = dict(
+            name=str(self.want['name']),
+            partition=str(self.want['partition']),
+        )
+        self.update_attribute(result, 'mtu')
+        self.update_attribute(result, 'description')
+        self.update_attribute(result, 'network', self.network_address_validator)
+        self.update_attribute(result, 'pool')
+        self.update_attribute(result, 'gw', self.network_address_validator)
+        self.update_attribute(result, 'tmInterface')
+        self.update_attribute(result, 'reject')
+        self.changes = result
+
+    def network_address_validator(self, address):
+        if address is None:
+            return
+        try:
+            netaddr.IPNetwork(address)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                'The provided IP address or network mask was invalid'
+            )
+
+    def update_attribute(self, result, attribute, validator=None):
+        want = self.want.get(attribute, None)
+        have = self.have.get(attribute, None)
+        if want != have and want is not None:
+            result[attribute] = want
+        if validator is None:
+            return
+        validator(want)
+
+    def update_on_device(self, params):
+        api = _get_connection()
+        route = api.cm.cloud.connectors.locals.local.load(name=self.want.name)
+        route.update(**params)
+
+    def read_current_from_device(self, identifier):
+        api = _get_connection()
+        route = api.tm.net.routes.route.load(name=identifier)
+        if not route:
+            return dict()
+        current = route.to_dict()
+        current.pop('_meta_data')
+        return current
+
+    def format_params(self, params):
+        result = dict()
+        for k,v in iteritems(self.module.params):
+            if k in params and params[k] is not None:
+                result[k] = str(params[k])
+            else:
+                result[k] = v
+        route = result.get('vlan', None)
+        if route:
+            result['tmInterface'] = format_with_path(route, params['partition'])
+        return result
+
+    def create_on_device(self, params):
+        api = _get_connection()
+        api.cm.cloud.connectors.locals.local.create(**params)
+
+    def absent(self, ):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def remove(self):
         if self.module.check_mode:
             return True
-        self.remove_bigip_connector_from_device()
+        self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the BIG-IP connector")
+            raise F5ModuleError("Failed to delete the static route")
         return True
 
-    def remove_bigip_connector_from_device(self):
-        connector = None
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
-                continue
-            if connector.name != self.params.name:
-                continue
-            break
-        if connector:
-            connector.delete()
+    def remove_from_device():
+        api = _get_connection()
+        route = api.tm.net.routes.route.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if route:
+            route.delete()
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
-    module = BigIpStaticRouteModule()
+    module = F5AnsibleModule()
+    setup_connection(**module.params)
 
     try:
-        obj = BigIpStaticRouteManager()
-        obj.module = module
+        obj = ModuleManager(module=module)
         result = obj.apply_changes()
         module.exit_json(**result)
     except F5ModuleError as e:
