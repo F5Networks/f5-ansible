@@ -348,10 +348,10 @@ class ModuleManager(object):
 
     def read_current_from_device(self, identifier):
         api = _get_connection()
-        route = api.tm.net.routes.route.load(name=identifier)
-        if not route:
+        result = api.tm.net.routes.route.load(name=identifier)
+        if not result:
             return dict()
-        current = route.to_dict()
+        current = result.to_dict()
         current.pop('_meta_data')
         return current
 
