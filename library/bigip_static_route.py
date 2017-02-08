@@ -369,7 +369,7 @@ class ModuleManager(object):
 
     def create_on_device(self, params):
         api = _get_connection()
-        api.cm.cloud.connectors.locals.local.create(**params)
+        api.tm.net.routes.route.create(**params)
 
     def absent(self, ):
         if self.exists():
