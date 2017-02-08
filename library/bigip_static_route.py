@@ -343,7 +343,7 @@ class ModuleManager(object):
 
     def update_on_device(self, params):
         api = _get_connection()
-        route = api.cm.cloud.connectors.locals.local.load(name=self.want.name)
+        route = api.tm.net.routes.route.load(name=self.want.name)
         route.update(**params)
 
     def read_current_from_device(self, identifier):
