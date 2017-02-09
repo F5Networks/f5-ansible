@@ -264,8 +264,23 @@ class ModuleManager(object):
         return result
 
     def exists(self):
+        """Check if a route exists
+
+        Apparently the name is not what is in the URL, the SDK
+        doesn't use partitions in exists(), and the requests_params
+        to the REST API doesn't accept $filter.
+
+        #winning
+
+        :return:
+        """
         api = _get_connection()
-        return api.tm.net.routes.route.exists(name=self.want.name)
+        collection = api.tm.net.routes.get_collection()
+        for resource in collection:
+            if resource.name == self.want['name']:
+                if resource.partition == self.want['partition']:
+                    return True
+        return False
 
     def present(self):
         if self.exists():
@@ -293,7 +308,7 @@ class ModuleManager(object):
         return True
 
     def update(self):
-        current = self.read_current_from_device(self.want['name'])
+        current = self.read_current_from_device()
         self.have = self.format_params(current)
         if not self.should_update():
             return False
@@ -343,12 +358,18 @@ class ModuleManager(object):
 
     def update_on_device(self, params):
         api = _get_connection()
-        route = api.tm.net.routes.route.load(name=self.want.name)
+        route = api.tm.net.routes.route.load(
+            name=self.want['name'],
+            partition=self.want['partition']
+        )
         route.update(**params)
 
-    def read_current_from_device(self, identifier):
+    def read_current_from_device(self):
         api = _get_connection()
-        result = api.tm.net.routes.route.load(name=identifier)
+        result = api.tm.net.routes.route.load(
+            name=self.want['name'],
+            partition=self.want['partition']
+        )
         if not result:
             return dict()
         current = result.to_dict()
@@ -362,7 +383,12 @@ class ModuleManager(object):
                 result[k] = str(params[k])
             else:
                 result[k] = v
+        gw = result.get('gateway_address', None)
+        destination = result.get('destination', None)
         route = result.get('vlan', None)
+
+        if destination: result['network'] = destination
+        if gw: result['gw'] = gw
         if route:
             result['tmInterface'] = format_with_path(route, params['partition'])
         return result
@@ -384,11 +410,11 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to delete the static route")
         return True
 
-    def remove_from_device():
+    def remove_from_device(self):
         api = _get_connection()
         route = api.tm.net.routes.route.load(
-            name=self.want.name,
-            partition=self.want.partition
+            name=self.want['name'],
+            partition=self.want['partition']
         )
         if route:
             route.delete()
@@ -402,7 +428,7 @@ def main():
         obj = ModuleManager(module=module)
         result = obj.apply_changes()
         module.exit_json(**result)
-    except F5ModuleError as e:
+    except IOError as e:
         module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
