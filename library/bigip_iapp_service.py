@@ -189,7 +189,6 @@ class ModuleManager(object):
 
         result.update(**self.changes)
         result.update(dict(changed=changed))
-        result = self.map_to_return_keys(result)
         return result
 
     def exists(self):
@@ -203,6 +202,18 @@ class ModuleManager(object):
             return self.update()
         else:
             return self.create()
+
+    def get_iapp_template_source(self, source=None, content=None):
+        if source:
+            with open(source) as fh:
+                result = fh.read()
+        elif content:
+            result = content
+        else:
+            raise F5ModuleError(
+                "Either 'content' or 'src' must be provided"
+            )
+        return result
 
     def create(self):
         if self.module.check_mode:
@@ -262,6 +273,19 @@ class ModuleManager(object):
         current = result.to_dict()
         current.pop('_meta_data')
         return current
+
+    def format_params(self, params):
+        result = dict()
+        for k,v in iteritems(self.module.params):
+            if k in params and params[k] is not None:
+                result[k] = str(params[k])
+            else:
+                result[k] = v
+        source = result.get('parameters_src', None)
+        content = result.get('parameters', None)
+        if source or content:
+            result['content'] = self.get_iapp_template_source(source, content)
+        return result
 
     def create_on_device(self, params):
         api = _get_connection()
