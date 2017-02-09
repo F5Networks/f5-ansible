@@ -1,0 +1,58 @@
+---
+
+service_name: "my-service1"
+
+# The module overrides the "name" parameter with the name parameter
+# that you specify in the task.
+service1_parameters:
+  name: "http_example",
+  partition: "Common",
+  template: "/Common/f5.http",
+  lists:
+    - name: "irules__irules",
+      value: []
+  tables:
+    - name: pool__hosts
+      rows:
+        - name: "demo.example.com"
+    - name: pool__members
+      rows:
+        - addr: 10.1.1.1
+          connection_limit: 0
+        - addr: 10.1.1.2
+          connection_limit: 0
+  variables:
+    afm__policy: "/#do_not_use#"
+    afm__dos_security_profile: "/#do_not_use#"
+    afm__protocol_security_profile: "/#do_not_use#"
+    asm__use_asm: "/#do_not_use#"
+    client__http_compression: "/#do_not_use#"
+    client__standard_caching_without_wa: "/#do_not_use#"
+    client__tcp_wan_opt: "/#create_new#"
+    monitor__monitor: "/#create_new#"
+    monitor__frequency: "30"
+    monitor__uri: "/my/path"
+    monitor__response: ""
+    net__client_mode: "wan"
+    net__server_mode: "lan"
+    net__vlan_mode: "all"
+    pool__addr: "10.10.10.10"
+    pool__http: "/#create_new#"
+    pool__mask: ""
+    pool__persist: "/#cookie#"
+    pool__lb_method: "least-connections-member"
+    pool__pool_to_use: "/#create_new#"
+    pool__port_secure: "443"
+    pool__redirect_port: "80"
+    pool__redirect_to_https: "yes"
+    pool__xff: "yes"
+    server__oneconnect: "/#create_new#"
+    server__tcp_lan_opt: "/#create_new#"
+    ssl__cert: "/Common/default.crt"
+    ssl__client_ssl_profile: "/#create_new#"
+    ssl__key: "/Common/default.key"
+    ssl__mode: "client_ssl"
+    ssl__use_chain_cert: "/#do_not_use#"
+    ssl_encryption_questions__advanced: "yes"
+    stats__analytics: "/#do_not_use#"
+    stats__request_logging: "/#do_not_use#"
