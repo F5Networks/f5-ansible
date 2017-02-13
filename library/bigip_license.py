@@ -139,6 +139,7 @@ import socket
 import ssl
 import suds
 import time
+import urllib2
 
 from xml.sax._exceptions import SAXParseException
 
