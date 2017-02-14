@@ -37,7 +37,7 @@
         bigip_pool:
             state: "present"
             lb_method: "least_connection_node_address"
-            name: "{{ pool_name }}-{{ item }}"
+            name: "pool-{{ item }}"
             monitors:
                 - "tcp"
         with_sequence: start={{ port_start }} end={{ port_end }}
@@ -47,7 +47,7 @@
         bigip_pool:
             state: "present"
             lb_method: "least_connection_node_address"
-            name: "{{ pool_name }}-{{ item }}"
+            name: "pool-{{ item }}"
             monitors:
                 - "tcp"
         with_sequence: start=5001 end=6001
@@ -57,7 +57,7 @@
         bigip_pool:
             state: "present"
             lb_method: "least_connection_node_address"
-            name: "{{ pool_name }}-{{ item }}"
+            name: "pool-{{ item }}"
             monitors:
                 - "tcp"
         with_sequence: "{{ ports }}"
