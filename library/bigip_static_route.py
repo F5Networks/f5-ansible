@@ -108,71 +108,346 @@ RETURN = '''
 import netaddr
 
 try:
-    from f5.bigip import ManagementRoot
+    from f5.bigip import ManagementRoot as BigIpMgmt
+    from f5.bigiq import ManagementRoot as BigIqMgmt
+    from f5.iworkflow import ManagementRoot as iWorkflowMgmt
     from icontrol.session import iControlUnexpectedHTTPError
     HAS_F5SDK = True
 except ImportError:
     HAS_F5SDK = False
-
 
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
 
 
-_CONNECTION = None
+class AnsibleF5Client(object):
+    def __init__(self, argument_spec=None, supports_check_mode=False,
+                 mutually_exclusive=None, required_together=None,
+                 required_if=None, f5_product_name='bigip'):
 
+        merged_arg_spec = dict()
+        common_args = f5_argument_spec()
+        merged_arg_spec.update(common_args)
+        if argument_spec:
+            merged_arg_spec.update(argument_spec)
+            self.arg_spec = merged_arg_spec
 
-def setup_connection(**kwargs):
-    global _CONNECTION
-    _CONNECTION = ManagementRoot(
-        kwargs['server'],
-        kwargs['user'],
-        kwargs['password'],
-        port=kwargs['server_port'],
-        token='tmos'
-    )
+        mutually_exclusive_params = []
+        if mutually_exclusive:
+            mutually_exclusive_params += mutually_exclusive
 
+        required_together_params = []
+        if required_together:
+            required_together_params += required_together
 
-def _get_connection():
-    if _CONNECTION is None:
-        setup_connection()
-    return _CONNECTION
-
-
-def normalize_partition(partition):
-    result = partition.strip('/')
-    return '/' + result + '/'
-
-
-def format_with_path(param, partition):
-    if partition is None:
-        partition = 'Common'
-    partition = normalize_partition(partition)
-    if param.startswith(partition):
-        return param
-    else:
-        return partition + param
-
-
-class F5AnsibleModule(AnsibleModule):
-    def __init__(self):
-        self.params = None
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(F5AnsibleModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            mutually_exclusive=[
-                ['gateway_address', 'vlan', 'pool', 'reject']
-            ]
+        self.module = AnsibleModule(
+            argument_spec=merged_arg_spec,
+            supports_check_mode=supports_check_mode,
+            mutually_exclusive=mutually_exclusive_params,
+            required_together=required_together_params,
+            required_if=required_if
         )
 
-    def init_meta_args(self):
-        args = dict(
+        self.check_mode = self.module.check_mode
+        self._connect_params = self._get_connect_params()
+
+        try:
+            self.api = self._get_mgmt_root(
+                f5_product_name, **self._connect_params
+            )
+        except iControlUnexpectedHTTPError as exc:
+            self.fail(str(exc))
+
+    def fail(self, msg):
+        self.module.fail_json(msg=msg)
+
+    def _get_connect_params(self):
+        params = dict(
+            user=self.module.params['user'],
+            password=self.module.params['password'],
+            server=self.module.params['server'],
+            server_port=self.module.params['server_port'],
+            validate_certs=self.module.params['validate_certs']
+        )
+        return params
+
+    def _get_mgmt_root(self, type, **kwargs):
+        if type == 'bigip':
+            return BigIpMgmt(
+                kwargs['server'],
+                kwargs['user'],
+                kwargs['password'],
+                port=kwargs['server_port'],
+                token='tmos'
+            )
+        elif type == 'iworkflow':
+            return iWorkflowMgmt(
+                kwargs['server'],
+                kwargs['user'],
+                kwargs['password'],
+                port=kwargs['server_port'],
+                token='local'
+            )
+        elif type == 'bigiq':
+            return BigIqMgmt(
+                kwargs['server'],
+                kwargs['user'],
+                kwargs['password'],
+                port=kwargs['server_port'],
+                token='local'
+            )
+
+
+class Parameters(object):
+    def __init__(self, params=None):
+        self._vlan = None
+        self._partition = None
+        self._gateway_address = None
+        self._destination = None
+        self._reject = None
+        if params is None:
+            return
+        for key, value in iteritems(params):
+            setattr(self, key, value)
+
+    @property
+    def partition(self):
+        if self._partition is None:
+            return 'Common'
+        return self._partition.strip('/')
+
+    @partition.setter
+    def partition(self, value):
+        self._partition = value
+
+    @property
+    def vlan(self):
+        if self._vlan is None:
+            return None
+        if self._vlan.startswith(self.partition):
+            return self._vlan
+        else:
+            return '/{0}/{1}'.format(self.partition, self._vlan)
+
+    @vlan.setter
+    def vlan(self, value):
+        self._vlan = value
+
+    @property
+    def gateway_address(self):
+        if self._gateway_address is None:
+            return None
+        try:
+            ip = netaddr.IPNetwork(self._gateway_address)
+            return str(ip.ip)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided gateway_address is not an IP address"
+            )
+
+    @gateway_address.setter
+    def gateway_address(self, value):
+        self._gateway_address = value
+
+    @property
+    def reject(self):
+        if self._reject in BOOLEANS_TRUE:
+            return True
+        else:
+            return False
+
+    @reject.setter
+    def reject(self, value):
+        self._reject = value
+
+    @property
+    def destination(self):
+        if self._destination is None:
+            return None
+        try:
+            ip = netaddr.IPNetwork(self._destination)
+            return '{0}/{1}'.format(ip.ip, ip.prefixlen)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided destination is not an IP address"
+            )
+
+    @destination.setter
+    def destination(self, value):
+        self._destination = value
+
+    @classmethod
+    def from_api(cls, params):
+        params['vlan'] = params.pop('tmInterface', None)
+        params['gateway_address'] = params.pop('gw', None)
+        params['reject'] = params.pop('blackhole', False)
+        params['destination'] = params.pop('network', None)
+        p = cls(params)
+        return p
+
+    def __getattr__(self, item):
+        return None
+
+    def api_params(self):
+        result = dict(
+            tmInterface=self.vlan,
+            network=self.destination,
+            pool=self.pool,
+            gw=self.gateway_address,
+            description=self.description,
+            mtu=self.mtu,
+            blackhole=self.reject
+        )
+        return dict((k, v) for k, v in result.iteritems() if v is not None)
+
+
+class StaticRouteManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def exec_module(self):
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        #result.update(**self.changes)
+        result.update(dict(changed=changed))
+        return result
+
+    def exists(self):
+        collection = self.client.api.tm.net.routes.get_collection()
+        for resource in collection:
+            if resource.name == self.want.name:
+                if resource.partition == self.want.partition:
+                    return True
+        return False
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def create(self):
+        required_resources = ['pool', 'vlan', 'reject', 'gateway_address']
+
+        if self.client.check_mode:
+            return True
+
+        if self.want.destination is None:
+            raise F5ModuleError(
+                'destination must be specified when creating a static route'
+            )
+        if all(getattr(self.want, v) is None for v in required_resources):
+            raise F5ModuleError(
+                "You must specify at least one of "
+                + ', '.join(required_resources)
+            )
+        self.create_on_device()
+        return True
+
+    def should_update(self):
+        updateable = [
+            'description', 'gateway_address', 'vlan',
+            'pool', 'mtu', 'reject'
+        ]
+
+        for key in updateable:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    setattr(self.changes, key, getattr(self.want, key))
+                    return True
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if self.have.destination != self.want.destination:
+            raise F5ModuleError(
+                "The destination cannot be changed. Delete and recreate the"
+                "static route if you need to do this."
+            )
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
+    def update_attribute(self, result, attribute):
+        want = getattr(self.want, attribute, None)
+        have = getattr(self.have, attribute, None)
+        if want != have and want is not None:
+            result[attribute] = want
+
+    def update_on_device(self):
+        params = self.want.api_params()
+
+        # The 'network' attribute is not updateable
+        params.pop('network', None)
+        route = self.client.api.tm.net.routes.route.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        route.modify(**params)
+
+    def read_current_from_device(self):
+        result = self.client.api.tm.net.routes.route.load(
+            name=self.want.name,
+            partition=self.want.partition
+        ).to_dict()
+        result.pop('_meta_data', 'None')
+        return Parameters.from_api(result)
+
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.net.routes.route.create(
+            name=self.want.name,
+            partition=self.want.partition,
+            **params
+        )
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the static route")
+        return True
+
+    def remove_from_device(self):
+        route = self.client.api.tm.net.routes.route.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if route:
+            route.delete()
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
             name=dict(required=True),
             description=dict(
                 required=False,
@@ -209,227 +484,25 @@ class F5AnsibleModule(AnsibleModule):
                 choices=['absent', 'present']
             )
         )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-
-class ModuleManager(object):
-    have = dict()
-    want = dict()
-
-    def __init__(self, *args, **kwargs):
-        self.changes = dict()
-        self.module = kwargs['module']
-        self.return_key_map = dict(
-            gw='gateway_address',
-            tmInterface='vlan',
-            blackhole='reject'
-        )
-
-    def apply_changes(self):
-        if not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required")
-
-        self.want = self.format_params(self.module.params)
-
-        changed = False
-        result = dict()
-        state = self.want.get('state')
-
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        result.update(**self.changes)
-        result.update(dict(changed=changed))
-        result = self.map_to_return_keys(result)
-        return result
-
-    def map_to_return_keys(self, keys):
-        result = dict()
-        for k,v in iteritems(keys):
-            new_key = self.return_key_map.get(k, None)
-            if new_key is None:
-                result[k] = v
-            else:
-                result[new_key] = v
-        result = {k: v for k, v in result.items() if v is not None }
-        return result
-
-    def exists(self):
-        """Check if a route exists
-
-        Apparently the name is not what is in the URL, the SDK
-        doesn't use partitions in exists(), and the requests_params
-        to the REST API doesn't accept $filter.
-
-        #winning
-
-        :return:
-        """
-        api = _get_connection()
-        collection = api.tm.net.routes.get_collection()
-        for resource in collection:
-            if resource.name == self.want['name']:
-                if resource.partition == self.want['partition']:
-                    return True
-        return False
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            return self.create()
-
-    def create(self):
-        required_resources = ['pool', 'vlan', 'reject', 'gateway_address']
-
-        if self.module.check_mode:
-            return True
-
-        if self.want['destination'] is None:
-            raise F5ModuleError(
-                'destination must be specified when creating a static route'
-            )
-        if all(self.want[v] is None for v in required_resources):
-            raise F5ModuleError(
-                "You must specify at least one of "
-                + ', '.join(required_resources)
-            )
-        self.update_changed_params()
-        self.create_on_device(self.changes)
-        return True
-
-    def update(self):
-        current = self.read_current_from_device()
-        self.have = self.format_params(current)
-        if not self.should_update():
-            return False
-        if self.module.check_mode:
-            return True
-        self.update_on_device(self.changes)
-        return True
-
-    def should_update(self):
-        self.update_changed_params()
-        if len(self.changes.keys()) > 2:
-            return True
-        return False
-
-    def update_changed_params(self):
-        result = dict(
-            name=str(self.want['name']),
-            partition=str(self.want['partition']),
-        )
-        self.update_attribute(result, 'mtu')
-        self.update_attribute(result, 'description')
-        self.update_attribute(result, 'network', self.network_address_validator)
-        self.update_attribute(result, 'pool')
-        self.update_attribute(result, 'gw', self.network_address_validator)
-        self.update_attribute(result, 'tmInterface')
-        self.update_attribute(result, 'reject')
-        self.changes = result
-
-    def network_address_validator(self, address):
-        if address is None:
-            return
-        try:
-            netaddr.IPNetwork(address)
-        except netaddr.core.AddrFormatError:
-            raise F5ModuleError(
-                'The provided IP address or network mask was invalid'
-            )
-
-    def update_attribute(self, result, attribute, validator=None):
-        want = self.want.get(attribute, None)
-        have = self.have.get(attribute, None)
-        if want != have and want is not None:
-            result[attribute] = want
-        if validator is None:
-            return
-        validator(want)
-
-    def update_on_device(self, params):
-        api = _get_connection()
-        route = api.tm.net.routes.route.load(
-            name=self.want['name'],
-            partition=self.want['partition']
-        )
-        route.update(**params)
-
-    def read_current_from_device(self):
-        api = _get_connection()
-        result = api.tm.net.routes.route.load(
-            name=self.want['name'],
-            partition=self.want['partition']
-        )
-        if not result:
-            return dict()
-        current = result.to_dict()
-        current.pop('_meta_data')
-        return current
-
-    def format_params(self, params):
-        result = dict()
-        for k,v in iteritems(self.module.params):
-            if k in params and params[k] is not None:
-                result[k] = str(params[k])
-            else:
-                result[k] = v
-        gw = result.get('gateway_address', None)
-        destination = result.get('destination', None)
-        route = result.get('vlan', None)
-
-        if destination: result['network'] = destination
-        if gw: result['gw'] = gw
-        if route:
-            result['tmInterface'] = format_with_path(route, params['partition'])
-        return result
-
-    def create_on_device(self, params):
-        api = _get_connection()
-        api.tm.net.routes.route.create(**params)
-
-    def absent(self, ):
-        if self.exists():
-            return self.remove()
-        return False
-
-    def remove(self):
-        if self.module.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the static route")
-        return True
-
-    def remove_from_device(self):
-        api = _get_connection()
-        route = api.tm.net.routes.route.load(
-            name=self.want['name'],
-            partition=self.want['partition']
-        )
-        if route:
-            route.delete()
+        self.mutually_exclusive = [
+            ['gateway_address', 'vlan', 'pool', 'reject']
+        ]
+        self.f5_product_name = 'bigip'
 
 
 def main():
-    module = F5AnsibleModule()
-    setup_connection(**module.params)
+    spec = ArgumentSpec()
 
-    try:
-        obj = ModuleManager(module=module)
-        result = obj.apply_changes()
-        module.exit_json(**result)
-    except IOError as e:
-        module.fail_json(msg=str(e))
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        mutually_exclusive=spec.mutually_exclusive,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
+
+    mm = StaticRouteManager(client)
+    results = mm.exec_module()
+    client.module.exit_json(**results)
 
 if __name__ == '__main__':
     main()
