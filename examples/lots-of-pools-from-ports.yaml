@@ -36,32 +36,29 @@
       - name: Pools from ports - Sequence with variables
         bigip_pool:
             state: "present"
-            partition: "{{ default_partition }}"
             lb_method: "least_connection_node_address"
             name: "{{ pool_name }}-{{ item }}"
             monitors:
-                - "/Common/POOL_{{ item }}_GenericTCP"
+                - "tcp"
         with_sequence: start={{ port_start }} end={{ port_end }}
         delegate_to: localhost
 
       - name: Pools from ports - Sequence with static range
         bigip_pool:
             state: "present"
-            partition: "{{ default_partition }}"
             lb_method: "least_connection_node_address"
             name: "{{ pool_name }}-{{ item }}"
             monitors:
-                - "/Common/POOL_{{ item }}_GenericTCP"
+                - "tcp"
         with_sequence: start=5001 end=6001
         delegate_to: localhost
 
       - name: Pools from ports - Sequence lookup
         bigip_pool:
             state: "present"
-            partition: "{{ default_partition }}"
             lb_method: "least_connection_node_address"
             name: "{{ pool_name }}-{{ item }}"
             monitors:
-                - "/Common/POOL_{{ item }}_GenericTCP"
+                - "tcp"
         with_sequence: "{{ ports }}"
         delegate_to: localhost
