@@ -1,0 +1,131 @@
+---
+
+- name: Create static route with gateway address
+  bigip_static_route:
+      destination: "{{ destination1 }}"
+      gateway_address: "{{ gateway_address1 }}"
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create static route with gateway address
+  assert:
+      that:
+          - result|changed
+
+- name: Create static route with gateway address - Idempotent check
+  bigip_static_route:
+      destination: "{{ destination1 }}"
+      gateway_address: "{{ gateway_address1 }}"
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create static route with gateway address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set static route description
+  bigip_static_route:
+      description: "{{ description1 }}"
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set static route description
+  assert:
+      that:
+          - result|changed
+
+- name: Set static route description - Idempotent check
+  bigip_static_route:
+      description: "{{ description1 }}"
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set static route description - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set route to blackhole
+  bigip_static_route:
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      reject: "yes"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set route to blackhole
+  assert:
+      that:
+          - result|changed
+
+- name: Set route to blackhole - Idempotent check
+  bigip_static_route:
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      reject: "yes"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set route to blackhole - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete a static route
+  bigip_static_route:
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Delete a static route
+  assert:
+      that:
+          - result|changed
+
+- name: Delete a static route - Idempotent check
+  bigip_static_route:
+      name: "{{ static_route_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Delete a static route - Idempotent check
+  assert:
+      that:
+          - not result|changed
