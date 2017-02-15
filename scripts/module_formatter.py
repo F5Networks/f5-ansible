@@ -35,8 +35,7 @@ from jinja2 import Environment, FileSystemLoader
 from six import iteritems
 
 from ansible.utils import module_docs
-from ansible.utils.vars import merge_hash
-from ansible.utils.unicode import to_bytes
+from ansible.module_utils._text import to_bytes
 from ansible.errors import AnsibleError
 
 #####################################################################################

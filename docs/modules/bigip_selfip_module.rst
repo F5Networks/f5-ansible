@@ -69,7 +69,7 @@ Options
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
-    <td>route_domain<br/><div style="font-size: small;"></div></td>
+    <td>route_domain<br/><div style="font-size: small;"> (added in 2.3)</div></td>
     <td>no</td>
     <td>none</td>
         <td><ul></ul></td>
@@ -137,6 +137,7 @@ Examples
           validate_certs: "no"
           vlan: "vlan1"
       delegate_to: localhost
+    
     - name: Create Self IP with a Route Domain
       bigip_selfip:
           server: "lb.mydomain.com"
@@ -150,6 +151,7 @@ Examples
           route_domain: "10"
           allow_service: "default"
       delegate_to: localhost
+    
     - name: Delete Self IP
       bigip_selfip:
           name: "self1"
@@ -159,6 +161,7 @@ Examples
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost
+    
     - name: Allow management web UI to be accessed on this Self IP
       bigip_selfip:
           name: "self1"
@@ -170,6 +173,7 @@ Examples
           allow_service:
               - "tcp:443"
       delegate_to: localhost
+    
     - name: Allow HTTPS and SSH access to this Self IP
       bigip_selfip:
           name: "self1"
@@ -182,6 +186,7 @@ Examples
               - "tcp:443"
               - "tpc:22"
       delegate_to: localhost
+    
     - name: Allow all services access to this Self IP
       bigip_selfip:
           name: "self1"
@@ -193,6 +198,7 @@ Examples
           allow_service:
               - all
       delegate_to: localhost
+    
     - name: Allow only GRE and IGMP protocols access to this Self IP
       bigip_selfip:
           name: "self1"
@@ -205,6 +211,7 @@ Examples
               - gre:0
               - igmp:0
       delegate_to: localhost
+    
     - name: Allow all TCP, but no other protocols access to this Self IP
       bigip_selfip:
           name: "self1"

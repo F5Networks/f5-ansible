@@ -28,4 +28,8 @@
   connection: local
 
   roles:
+<<<<<<< HEAD
       - __iworkflow_license_pool
+=======
+      - iworkflow_license_pool
+>>>>>>> master

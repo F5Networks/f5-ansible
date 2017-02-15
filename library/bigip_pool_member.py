@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_pool_member
@@ -101,7 +105,7 @@ options:
   ratio:
     description:
       - Pool member ratio weight. Valid values range from 1 through 100.
-        New pool members -- unless overriden with this value -- default
+        New pool members -- unless overridden with this value -- default
         to 1.
     required: false
     default: null

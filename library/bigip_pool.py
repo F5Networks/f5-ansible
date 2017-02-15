@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_pool
@@ -35,6 +39,11 @@ notes:
 requirements:
   - bigsuds
 options:
+  description:
+    description:
+      - Specifies descriptive text that identifies the pool.
+    required: false
+    version_added: "2.3"
   state:
     description:
       - Pool/pool member state
@@ -343,6 +352,16 @@ def add_pool_member(api, pool, address, port):
     api.LocalLB.Pool.add_member_v2(pool_names=[pool], members=[members])
 
 
+def set_description(api, pool, description):
+    api.LocalLB.Pool.set_description(
+        pool_names=[pool], descriptions=[description]
+    )
+
+
+def get_description(api, pool):
+    return api.LocalLB.Pool.get_description(pool_names=[pool])[0]
+
+
 def main():
     lb_method_choices = ['round_robin', 'ratio_member',
                          'least_connection_member', 'observed_member',
@@ -373,7 +392,8 @@ def main():
         reselect_tries=dict(type='int'),
         service_down_action=dict(type='str', choices=service_down_choices),
         host=dict(type='str', aliases=['address']),
-        port=dict(type='int')
+        port=dict(type='int'),
+        description=dict(type='str')
     )
     argument_spec.update(meta_args)
 
@@ -397,6 +417,7 @@ def main():
     state = module.params['state']
     partition = module.params['partition']
     validate_certs = module.params['validate_certs']
+    description = module.params['description']
 
     name = module.params['name']
     pool = fq_name(partition, name)
@@ -510,6 +531,8 @@ def main():
                             set_action_on_service_down(api, pool, service_down_action)
                         if host and port:
                             add_pool_member(api, pool, address, port)
+                        if description:
+                            set_description(api, pool, description)
                 else:
                     # check-mode return value
                     result = {'changed': True}
@@ -547,6 +570,10 @@ def main():
                 if (host and port == 0) and not member_exists(api, pool, address, port):
                     if not module.check_mode:
                         add_pool_member(api, pool, address, port)
+                    result = {'changed': True}
+                if description and description != get_description(api, pool):
+                    if not module.check_mode:
+                        set_description(api, pool, description)
                     result = {'changed': True}
 
     except Exception as e:

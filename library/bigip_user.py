@@ -356,7 +356,7 @@ class BigIpUserManager(object):
     def is_partition_access_changed(self, current):
         if self.params['partition_access'] is None:
             return False
-        if 'partitionAccess' not in current:
+        if 'partition_access' not in current:
             return True
         if self.params['partition_access'] == current['partition_access']:
             return False
@@ -424,7 +424,7 @@ class BigIpUserManager(object):
         )
         if self.params['full_name']:
             result['description'] = self.params['full_name']
-        elif self.params['password_credential']:
+        if self.params['password_credential']:
             result['password'] = self.params['password_credential']
         if not self.params['shell']:
             return result

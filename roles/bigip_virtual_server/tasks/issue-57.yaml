@@ -1,0 +1,51 @@
+---
+
+# @see https://github.com/F5Networks/f5-ansible/issues/57
+
+- name: Create virtual server
+  bigip_virtual_server:
+      destination: "10.10.10.10"
+      port: "443"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "testVS"
+      partition: "GEN"
+      state: "present"
+      all_rules:
+          - /Common/_sys_https_redirect
+          - /Common/_sys_auth_tacacs
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 57 - Create virtual server
+  bigip_virtual_server:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "testVS"
+      partition: "GEN"
+      state: "present"
+      all_rules:
+          - /Common/_sys_https_redirect
+          - /Common/_sys_auth_tacacs
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Create virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Issue 57 - Delete virtual server
+  bigip_virtual_server:
+      name: "testVS"
+      partition: "{{ i57_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"

@@ -174,41 +174,53 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
+        <td> cert_source_path </td>
+        <td> Path on BIG-IP where the source of the certificate is stored. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> /var/config/rest/downloads/cert1.crt </td>
+    </tr>
+            <tr>
         <td> cert_checksum </td>
-        <td> SHA1 checksum of the cert that was provided </td>
+        <td> SHA1 checksum of the cert that was provided. </td>
         <td align=center>  </td>
         <td align=center> string </td>
         <td align=center> f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0 </td>
     </tr>
             <tr>
-        <td> partition </td>
-        <td> Partition in which the cert/key was created </td>
-        <td align=center> ['changed', 'created', 'deleted'] </td>
+        <td> cert_filename </td>
+        <td> ['The name of the SSL certificate. The C(cert_filename) and C(key_filename) will be similar to each other, however the C(cert_filename) will have a C(.crt) extension.'] </td>
+        <td align=center> ['created'] </td>
         <td align=center> string </td>
-        <td align=center> Common </td>
+        <td align=center> cert1.crt </td>
     </tr>
             <tr>
         <td> cert_name </td>
-        <td> The name of the SSL certificate. The C(cert_name) and C(key_name) will be equal to each other.
- </td>
-        <td align=center> ['created', 'changed', 'deleted'] </td>
+        <td> The name of the certificate that the user provided </td>
+        <td align=center> ['created'] </td>
         <td align=center> string </td>
         <td align=center> cert1 </td>
     </tr>
             <tr>
+        <td> key_source_path </td>
+        <td> Path on BIG-IP where the source of the key is stored </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> /var/config/rest/downloads/cert1.key </td>
+    </tr>
+            <tr>
+        <td> key_filename </td>
+        <td> ['The name of the SSL certificate key. The C(key_filename) and C(cert_filename) will be similar to each other, however the C(key_filename) will have a C(.key) extension.'] </td>
+        <td align=center> ['created'] </td>
+        <td align=center> string </td>
+        <td align=center> cert1.key </td>
+    </tr>
+            <tr>
         <td> key_checksum </td>
-        <td> SHA1 checksum of the key that was provided </td>
+        <td> SHA1 checksum of the key that was provided. </td>
         <td align=center>  </td>
         <td align=center> string </td>
         <td align=center> cf23df2207d99a74fbe169e3eba035e633b65d94 </td>
-    </tr>
-            <tr>
-        <td> key_name </td>
-        <td> The name of the SSL certificate key. The C(key_name) and C(cert_name) will be equal to each other.
- </td>
-        <td align=center> ['created', 'changed', 'deleted'] </td>
-        <td align=center> string </td>
-        <td align=center> key1 </td>
     </tr>
         
     </table>
@@ -218,8 +230,6 @@ Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-.. note:: Requires the netaddr Python package on the host.
-.. note:: If you use this module, you will not be able to remove the certificates and keys that are managed, via the web UI. You can only remove them via tmsh or these modules.
 
 
     

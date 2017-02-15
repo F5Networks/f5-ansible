@@ -1,0 +1,83 @@
+---
+
+# @see https://github.com/F5Networks/f5-ansible/issues/59
+
+- name: Issue 59 - Create virtual server
+  bigip_virtual_server:
+      destination: "10.10.10.10"
+      port: "80"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "issue59"
+      partition: "{{ bigip_partition }}"
+      state: "present"
+      all_policies:
+          - /Common/policy1
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 59 - Create virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Issue 59 - Create virtual server - Idempotent check
+  bigip_virtual_server:
+      destination: "10.10.10.10"
+      port: "80"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "issue59"
+      partition: "{{ bigip_partition }}"
+      state: "present"
+      all_policies:
+          - /Common/policy1
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 59 - Create virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Issue 59 - Delete virtual server
+  bigip_virtual_server:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "issue59"
+      partition: "{{ bigip_partition }}"
+      state: "absent"
+      all_policies:
+          - /Common/policy1
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 59 - Delete virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Issue 59 - Delete virtual server - Idempotent check
+  bigip_virtual_server:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "issue59"
+      partition: "{{ bigip_partition }}"
+      state: "absent"
+      all_policies:
+          - /Common/policy1
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 59 - Delete virtual server - Idempotent check
+  assert:
+      that:
+          - result|changed

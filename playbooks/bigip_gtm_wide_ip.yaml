@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_gtm_wide_ip
+      - bigip_gtm_wide_ip

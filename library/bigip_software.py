@@ -18,13 +18,17 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_software
 short_description: Manage BIG-IP software versions and hotfixes
 description:
    - Manage BIG-IP software versions and hotfixes
-version_added: "2.2"
+version_added: "2.4"
 options:
   force:
     description:
@@ -48,10 +52,6 @@ options:
     default: None
     aliases:
       - hotfix_image
-  password:
-    description:
-      - BIG-IP password
-    required: true
   reuse_inactive_volume:
     description:
       - Automatically chooses the first inactive volume in alphanumeric order. If there
@@ -61,10 +61,6 @@ options:
         numeric character, then add .1 to the current active volume name. When C(volume)
         is specified, this option will be ignored.
     required: false
-  server:
-    description:
-      - BIG-IP host
-    required: true
   state:
     description:
       - When C(installed), ensures that the software is uploaded and installed,
@@ -87,16 +83,6 @@ options:
     required: false
     aliases:
       - base_image
-  user:
-    description:
-      - BIG-IP username
-    required: false
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
   volume:
     description:
       - The volume to install the software and, optionally, the hotfix to. This
@@ -106,11 +92,14 @@ options:
 notes:
   - Requires the bigsuds Python package on the host if using the iControl
     interface. This is as easy as pip install bigsuds
+  - Requires the isoparser Python package on the host. This can be installed
+    with pip install isoparser
   - Requires the lxml Python package on the host. This can be installed
     with pip install lxml
-  - https://devcentral.f5.com/articles/icontrol-101-06-file-transfer-apis
+extends_documentation_fragment: f5
 requirements:
   - bigsuds
+  - isoparser
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -224,19 +213,27 @@ EXAMPLES = '''
 '''
 
 import base64
-import datetime
-import io
 import os
-import socket
-import struct
 import time
-
-from lxml import etree
 
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+
+try:
+    import bigsuds
+except ImportError:
+    BIGSUDS_AVAILABLE = False
+else:
+    BIGSUDS_AVAILABLE = True
+
+try:
+    import isoparser
+except ImportError:
+    ISOPARSER_AVAILABLE = False
+else:
+    ISOPARSER_AVAILABLE = True
 
 SECTOR_SIZE = 2048
 TRANSPORTS = ['rest', 'soap']
@@ -244,258 +241,6 @@ STATES = ['absent', 'activated', 'installed', 'present']
 
 # Size of chunks of data to read and send via the iControl API
 CHUNK_SIZE = 512 * 1024
-
-
-class SoftwareInstallError(Exception):
-    pass
-
-
-class ISO9660IOError(IOError):
-    def __init__(self, path):
-        self.path = path
-
-    def __str__(self):
-        return "Path not found: %s" % self.path
-
-
-class ISO9660(object):
-    def __init__(self, url):
-        # input buffer
-        self._buff = None
-
-        # root node
-        self._root = None
-
-        # primary volume descriptor
-        self._pvd = {}
-
-        # path table
-        self._paths = []
-        self._url = url
-
-        if not hasattr(self, '_get_sector'):
-            # it might have been set by a subclass
-            self._get_sector = self._get_sector_file
-
-        # Volume Descriptors
-        sector = 0x10
-        while True:
-            self._get_sector(sector, SECTOR_SIZE)
-            sector += 1
-            ty = self._unpack('B')
-
-            if ty == 1:
-                self._unpack_pvd()
-            elif ty == 255:
-                break
-            else:
-                continue
-
-        # Path table
-        l0 = self._pvd['path_table_size']
-        self._get_sector(self._pvd['path_table_l_loc'], l0)
-
-        while l0 > 0:
-            p = {}
-            l1 = self._unpack('B')
-            self._unpack('B')
-            p['ex_loc'] = self._unpack('<I')
-            p['parent'] = self._unpack('<H')
-            p['name'] = self._unpack_string(l1)
-            if p['name'] == '\x00':
-                p['name'] = ''
-
-            if l1 % 2 == 1:
-                self._unpack('B')
-
-            self._paths.append(p)
-
-            l0 -= 8 + l1 + (l1 % 2)
-
-        assert l0 == 0
-
-    # Retrieve file contents as a string
-    def get_file(self, path):
-        path = path.upper().strip('/').split('/')
-        path, filename = path[:-1], path[-1]
-
-        if len(path) == 0:
-            parent_dir = self._root
-        else:
-            try:
-                parent_dir = self._dir_record_by_table(path)
-            except ISO9660IOError:
-                parent_dir = self._dir_record_by_root(path)
-
-        f = self._search_dir_children(parent_dir, filename)
-
-        self._get_sector(f['ex_loc'], f['ex_len'])
-        return self._unpack_raw(f['ex_len'])
-
-    def _get_sector_file(self, sector, length):
-        with open(self._url, 'rb') as f:
-            f.seek(sector * SECTOR_SIZE)
-            self._buff = StringIO(f.read(length))
-
-    # Return the record for final directory in a path
-    def _dir_record_by_table(self, path):
-        for e in self._paths[::-1]:
-            search = list(path)
-            f = e
-            while f['name'] == search[-1]:
-                search.pop()
-                f = self._paths[f['parent'] - 1]
-                if f['parent'] == 1:
-                    e['ex_len'] = SECTOR_SIZE
-                    return e
-        raise ISO9660IOError(path)
-
-    def _dir_record_by_root(self, path):
-        current = self._root
-        remaining = list(path)
-
-        while remaining:
-            current = self._search_dir_children(current, remaining[0])
-
-            remaining.pop(0)
-
-        return current
-
-    # Unpack the Primary Volume Descriptor
-    def _unpack_pvd(self):
-        self._pvd['type_code'] = self._unpack_string(5)
-        self._pvd['standard_identifier'] = self._unpack('B')
-
-        # discard 1 byte
-        self._unpack_raw(1)
-        self._pvd['system_identifier'] = self._unpack_string(32)
-        self._pvd['volume_identifier'] = self._unpack_string(32)
-
-        # discard 8 bytes
-        self._unpack_raw(8)
-
-        self._pvd['volume_space_size'] = self._unpack_both('i')
-
-        # discard 32 bytes
-        self._unpack_raw(32)
-        self._pvd['volume_set_size'] = self._unpack_both('h')
-        self._pvd['volume_seq_num'] = self._unpack_both('h')
-        self._pvd['logical_block_size'] = self._unpack_both('h')
-        self._pvd['path_table_size'] = self._unpack_both('i')
-        self._pvd['path_table_l_loc'] = self._unpack('<i')
-        self._pvd['path_table_opt_l_loc'] = self._unpack('<i')
-        self._pvd['path_table_m_loc'] = self._unpack('>i')
-        self._pvd['path_table_opt_m_loc'] = self._unpack('>i')
-
-        # root directory record
-        _, self._root = self._unpack_record()
-        self._pvd['volume_set_identifer'] = self._unpack_string(128)
-        self._pvd['publisher_identifier'] = self._unpack_string(128)
-        self._pvd['data_preparer_identifier'] = self._unpack_string(128)
-        self._pvd['application_identifier'] = self._unpack_string(128)
-        self._pvd['copyright_file_identifier'] = self._unpack_string(38)
-        self._pvd['abstract_file_identifier'] = self._unpack_string(36)
-        self._pvd['bibliographic_file_identifier'] = self._unpack_string(37)
-        self._pvd['volume_datetime_created'] = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_modified'] = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_expires'] = self._unpack_vd_datetime()
-        self._pvd['volume_datetime_effective'] = self._unpack_vd_datetime()
-        self._pvd['file_structure_version'] = self._unpack('B')
-
-    def _unpack_record(self, read=0):
-        l0 = self._unpack('B')
-
-        if l0 == 0:
-            return read + 1, None
-
-        d = dict()
-        d['ex_loc'] = self._unpack_both('I')
-        d['ex_len'] = self._unpack_both('I')
-        d['datetime'] = self._unpack_dir_datetime()
-        d['flags'] = self._unpack('B')
-        d['interleave_unit_size'] = self._unpack('B')
-        d['interleave_gap_size'] = self._unpack('B')
-        d['volume_sequence'] = self._unpack_both('h')
-
-        l2 = self._unpack('B')
-        d['name'] = self._unpack_string(l2).split(';')[0]
-        if d['name'] == '\x00':
-            d['name'] = ''
-
-        if l2 % 2 == 0:
-            self._unpack('B')
-
-        t = 34 + l2 - (l2 % 2)
-
-        e = l0 - t
-        if e > 0:
-            pass
-
-        return read + l0, d
-
-    def _unpack_dir_children(self, d):
-        sector = d['ex_loc']
-        read = 0
-        self._get_sector(sector, 2048)
-
-        read, r_self = self._unpack_record(read)
-        read, r_parent = self._unpack_record(read)
-
-        while read < r_self['ex_len']:
-            if read % 2048 == 0:
-                sector += 1
-                self._get_sector(sector, 2048)
-            read, data = self._unpack_record(read)
-
-            if data is None:
-                to_read = 2048 - (read % 2048)
-                self._unpack_raw(to_read)
-                read += to_read
-            else:
-                yield data
-
-    def _search_dir_children(self, d, term):
-        for e in self._unpack_dir_children(d):
-            if e['name'] == term:
-                return e
-
-        raise ISO9660IOError(term)
-
-    def _unpack_raw(self, l):
-        return self._buff.read(l)
-
-    def _unpack_both(self, st):
-        a = self._unpack('<' + st)
-        b = self._unpack('>' + st)
-        assert a == b
-        return a
-
-    def _unpack_string(self, l):
-        return self._buff.read(l).rstrip(' ')
-
-    def _unpack(self, st):
-        if st[0] not in ('<', '>'):
-            st = '<' + st
-        d = struct.unpack(st, self._buff.read(struct.calcsize(st)))
-        if len(st) == 2:
-            return d[0]
-        else:
-            return d
-
-    def _unpack_vd_datetime(self):
-        return self._unpack_raw(17)
-
-    def _unpack_dir_datetime(self):
-        epoch = datetime.datetime(1970, 1, 1)
-        date = self._unpack_raw(7)
-        t = [struct.unpack('<B', i)[0] for i in date[:-1]]
-        t.append(struct.unpack('<b', date[-1])[0])
-        t[0] += 1900
-        t_offset = t.pop(-1) * 15 * 60.    # Offset from GMT in 15min intervals, converted to secs
-        t_timestamp = (datetime.datetime(*t) - epoch).total_seconds() - t_offset
-        t_datetime = datetime.datetime.fromtimestamp(t_timestamp)
-        t_readable = t_datetime.strftime('%Y-%m-%d %H:%M:%S')
-        return t_readable
 
 
 class BigIpApiFactory(object):
@@ -533,8 +278,8 @@ class BigIpCommon(object):
             build=None
         )
 
-        cd = ISO9660(iso)
-        content = cd.get_file('/METADATA.XML')
+        iso = isoparser.parse(iso)
+        content = iso.record('/METADATA.XML').content
         content = io.BytesIO(content)
 
         context = etree.iterparse(content)
@@ -561,9 +306,9 @@ class BigIpCommon(object):
         if state == 'activated' or state == 'installed':
             if not volume:
                 if not reuse_inactive_volume:
-                    raise NoVolumeError
+                    raise F5ModuleError("You must specify a volume")
             elif not software:
-                raise NoBaseImageError
+                raise F5ModuleError("You must specify a base image")
 
         if state == "activated":
             changed = self.activated()
@@ -782,7 +527,7 @@ class BigIpSoapApi(BigIpCommon):
             if 'complete' in progress:
                 break
             elif 'failed' in progress:
-                raise SoftwareInstallError(progress)
+                raise F5ModuleError(progress)
 
     def wait_for_reboot(self):
         volume = self.params['volume']
@@ -861,7 +606,9 @@ class BigIpSoapApi(BigIpCommon):
             self.wait_for_reboot()
             return True
         elif volume == self.get_active_volume():
-            raise ActiveVolumeError
+            raise F5ModuleError(
+                "Cannot install software or hotfixes to active volumes"
+            )
 
         images = self.read()
         total = sum(len(v) for v in images.itervalues())
@@ -941,7 +688,9 @@ class BigIpSoapApi(BigIpCommon):
         if self.is_installed():
             return False
         elif volume == self.get_active_volume():
-            raise ActiveVolumeError
+            raise F5ModuleError(
+                "Cannot install software or hotfixes to active volumes"
+            )
 
         images = self.read()
         total = sum(len(v) for v in images.itervalues())
@@ -1108,18 +857,6 @@ def main():
         module.exit_json(**result)
     except bigsuds.ConnectionError:
         module.fail_json(msg='Could not connect to BIG-IP host')
-    except ActiveVolumeError:
-        module.fail_json(msg='Cannot install software or hotfixes to active volumes')
-    except NoVolumeError:
-        module.fail_json(msg='You must specify a volume')
-    except NoBaseImageError:
-        module.fail_json(msg='You must specify a base image')
-    except SoftwareInstallError as e:
-        module.fail_json(msg=str(e))
-    except ISO9660IOError:
-        module.fail_json(msg='Failed checking the version metadata in the ISO')
-    except socket.timeout:
-        module.fail_json(msg='Timed out connecting to the BIG-IP')
 
     module.exit_json(changed=changed)
 

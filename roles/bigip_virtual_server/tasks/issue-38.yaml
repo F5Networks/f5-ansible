@@ -1,0 +1,80 @@
+---
+
+# @see https://github.com/F5Networks/f5-ansible/issues/38
+
+- name: Create pool
+  bigip_pool:
+      name: "test_pool"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool
+  assert:
+      that:
+          - result|changed
+
+- name: Add virtual server
+  bigip_virtual_server:
+      destination: "{{ item.lip }}"
+      name: "{{ item.lname }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ item.lport }}"
+      pool: "{{ item.lpool|default(omit) }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "Automap"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items:
+    - lname: 'VS_HTTP1'
+      lip: '1.2.3.4'
+      lport: '80'
+    - lname: 'VS_HTTP2'
+      lpool: 'test_pool'
+      lip: '1.2.3.5'
+      lport: '80'
+
+- name: Delete virtual server
+  bigip_virtual_server:
+      destination: "{{ item.lip }}"
+      name: "{{ item.lname }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ item.lport }}"
+      pool: "{{ item.lpool|default(omit) }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items:
+    - lname: 'VS_HTTP1'
+      lip: '1.2.3.4'
+      lport: '80'
+    - lname: 'VS_HTTP2'
+      lpool: 'test_pool'
+      lip: '1.2.3.5'
+      lport: '80'
+
+- name: Delete pool
+  bigip_pool:
+      name: "test_pool"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete pool
+  assert:
+      that:
+          - result|changed

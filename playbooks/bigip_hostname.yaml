@@ -21,6 +21,7 @@
 # Tested platforms:
 #
 #    - 12.0.0
+#    - 12.1.0 HF1
 #
 
 - name: Test the bigip_hostname module
@@ -28,4 +29,4 @@
   connection: local
 
   roles:
-      - __bigip_hostname
+      - bigip_hostname

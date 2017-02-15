@@ -1,0 +1,15 @@
+---
+
+- name: Find the venv site-packages path
+  command: python -c 'import sys; print sys.path[-1]'
+  register: venv_packages
+
+- name: Ensure the venv packages directory exists
+  file:
+      path: "{{ venv_packages.stdout }}"
+      state: "directory"
+
+- name: Create the .pth hook for coverage of the module
+  copy:
+      dest: "{{ venv_packages.stdout }}/ansible_coverage.pth"
+      content: "import coverage; coverage.process_startup()"

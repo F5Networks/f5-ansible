@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_software_update
+      - bigip_software_update

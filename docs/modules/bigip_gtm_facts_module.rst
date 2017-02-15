@@ -1,10 +1,10 @@
 .. _bigip_gtm_facts:
 
 
-bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.3
 
 
 .. contents::
@@ -15,13 +15,13 @@ bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
 Synopsis
 --------
 
-Collect facts from F5 BIG-IP GTM devices
+Collect facts from F5 BIG-IP GTM devices.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds >= 11.4
+  * f5-sdk
 
 
 Options
@@ -38,11 +38,11 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>fact_filter<br/><div style="font-size: small;"></div></td>
+    <td>filter<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Perform regex filter of response</div></td></tr>
+        <td><div>Perform regex filter of response. Filtering is done on the name of the resource. Valid filters are anything that can be provided to Python's <code>re</code> module.</div></td></tr>
             <tr>
     <td>include<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -54,19 +54,31 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
+            <tr>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
         </table>
     </br>
 
@@ -77,14 +89,14 @@ Examples
 
  ::
 
-      - name: Get pool facts
-        local_action: >
-          bigip_gtm_facts
-          server=192.168.0.1
-          user=admin
-          password=mysecret
-          include=pool
-          fact_filter=my_pool
+    - name: Get pool facts
+      bigip_gtm_facts:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          include: "pool"
+          filter: "my_pool"
+      delegate_to: localhost
 
 Return Values
 -------------
@@ -103,48 +115,26 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> bigip_gtm_facts </td>
-        <td> Details about GTM wide ip, pool, virtual servers </td>
-        <td align=center> success </td>
-        <td align=center> dictionary </td>
-        <td align=center>  </td>
-    </tr>
-        <tr><td>contains: </td>
-    <td colspan=4>
-        <table border=1 cellpadding=2>
-        <tr>
-        <th class="head">name</th>
-        <th class="head">description</th>
-        <th class="head">returned</th>
-        <th class="head">type</th>
-        <th class="head">sample</th>
-        </tr>
-
-                <tr>
         <td> virtual_server </td>
         <td> Contains the virtual server enabled and availability status, and address </td>
-        <td align=center> when include contains virtual_server </td>
-        <td align=center> dictionary </td>
-        <td align=center> {"virtual_server": {"/Common/MN-LTM": {"mn-test_example_com": {"address": {"address": "192.168.1.1", "port": 80}, "enabled_state": "STATE_ENABLED", "object_status": {"availability_status": "AVAILABILITY_STATUS_GREEN", "enabled_status": "ENABLED_STATUS_ENABLED", "status_description": " Monitor /Common/bigip from 192.168.0.1 : UP"}}, "va-test_example_com": {"address": {"address": "192.168.1.2", "port": 80}, "enabled_state": "STATE_ENABLED", "object_status": {"availability_status": "AVAILABILITY_STATUS_GREEN", "enabled_status": "ENABLED_STATUS_ENABLED", "status_description": " Monitor /Common/bigip from 192.168.0.1 : UP"}}}}} </td>
-        </tr>
-                <tr>
+        <td align=center> changed </td>
+        <td align=center> dict </td>
+        <td align=center> {'virtual_server': [{'product': 'single-bigip', 'virtual_servers': [{'limit_max_pps_status': 'disabled', 'name': 'jsdfhsd', 'destination': '10.10.10.10:0', 'enabled': 'True', 'translation_address': 'none', 'limit_max_pps': '0', 'limit_max_bps': '0', 'limit_max_bps_status': 'disabled', 'limit_max_connections': '0', 'limit_max_connections_status': 'disabled', 'full_path': 'jsdfhsd', 'translation_port': '0'}], 'addresses': [{'translation': 'none', 'name': '10.10.10.10', 'device_name': '/Common/qweqwe'}], 'datacenter': '/Common/xfxgh', 'limit_cpu_usage': '0', 'expose_route_domains': 'no', 'virtual_server_discovery': 'disabled', 'iq_allow_snmp': 'yes', 'iq_allow_service_check': 'yes', 'limit_max_bps_status': 'disabled', 'limit_max_connections': '0', 'limit_cpu_usage_status': 'disabled', 'limit_max_pps_status': 'disabled', 'link_discovery': 'disabled', 'iq_allow_path': 'yes', 'monitor': '/Common/bigip ', 'limit_mem_avail_status': 'disabled', 'limit_mem_avail': '0', 'partition': 'Common', 'enabled': 'True', 'name': 'qweqwe', 'limit_max_pps': '0', 'limit_max_bps': '0', 'limit_max_connections_status': 'disabled', 'full_path': '/Common/qweqwe'}]} </td>
+    </tr>
+            <tr>
         <td> wide_ip </td>
-        <td> Contains the lb method for the wide ip and the pools that are within the wide ip </td>
-        <td align=center> when include contains wide_ip </td>
-        <td align=center> dictionary </td>
-        <td align=center> {"wide_ip": {"/Common/test.example.com": {"lb_method": "LB_METHOD_ROUND_ROBIN", "pool": [{"order": 0, "pool_name": "/Common/MN-test.example.com", "ratio": 1}, {"order": 1, "pool_name": "/Common/VA-test.example.com", "ratio": 1}]}}} </td>
-        </tr>
-                <tr>
+        <td> Contains the lb method for the wide ip and the pools that are within the wide ip. </td>
+        <td align=center> changed </td>
+        <td align=center> dict </td>
+        <td align=center> {'wide_ip': [{'pool_lb_mode': 'round-robin', 'last_resort_pool': '', 'persist_cidr_ipv4': '32', 'persist_cidr_ipv6': '128', 'name': 'foo.ok.com', 'failure_rcode_response': 'disabled', 'failure_rcode': 'noerror', 'partition': 'Common', 'enabled': 'True', 'failure_rcode_ttl': '0', 'ttl_persistence': '3600', 'full_path': '/Common/foo.ok.com', 'pools': [{'partition': 'Common', 'ratio': '1', 'name': 'd3qw', 'order': '0'}], 'minimal_response': 'enabled', 'type': 'naptr', 'persistence': 'disabled'}]} </td>
+    </tr>
+            <tr>
         <td> pool </td>
-        <td> Contains the pool object status and enabled status </td>
-        <td align=center> when include contains pool </td>
-        <td align=center> dictionary </td>
-        <td align=center> {"pool": {"/Common/VA-test.example.com": {"member": [{"name": "VA-test_example_com", "server": "/Common/VA-Server"}], "object_status": {"availability_status": "AVAILABILITY_STATUS_RED", "enabled_status": "ENABLED_STATUS_DISABLED", "status_description": "No enabled pool members available: disabled directly"}}}} </td>
-        </tr>
-        
-        </table>
-    </td></tr>
-
+        <td> Contains the pool object status and enabled status. </td>
+        <td align=center> changed </td>
+        <td align=center> dict </td>
+        <td align=center> {'pool': [{'verify_member_availability': 'disabled', 'partition': 'Common', 'qos_packet_rate': '1', 'qos_hit_ratio': '5', 'alternate_mode': 'round-robin', 'members': [{'ratio': '1', 'name': 'ok3.com', 'service': '80', 'member_order': '0', 'disabled': 'True', 'flags': 'a', 'preference': '10', 'order': '10', 'full_path': 'ok3.com'}], 'ttl': '30', 'qos_vs_score': '0', 'qos_topology': '0', 'load_balancing_mode': 'round-robin', 'max_answers_returned': '1', 'fallback_mode': 'return-to-dns', 'qos_rtt': '50', 'name': 'd3qw', 'qos_kilobytes_second': '3', 'qos_lcs': '30', 'enabled': 'True', 'qos_vs_capacity': '0', 'qos_hops': '0', 'manual_resume': 'disabled', 'full_path': '/Common/d3qw', 'type': 'naptr', 'dynamic_ratio': 'disabled'}]} </td>
+    </tr>
         
     </table>
     </br></br>
@@ -152,10 +142,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires BIG-IP software version >= 11.4
-.. note:: F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
-.. note:: Best run as a local_action in your playbook
-.. note:: Tested with manager and above account privilege level
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
     

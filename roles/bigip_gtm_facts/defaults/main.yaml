@@ -1,0 +1,6 @@
+---
+
+pool_name: "foo.pool"
+pool_lb_method: "round-robin"
+pool_filter: "foo."
+pool_filter_bad: "baz."

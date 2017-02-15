@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_pool_member
+      - bigip_pool_member

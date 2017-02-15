@@ -28,6 +28,7 @@
   gather_facts: false
   connection: local
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
   roles:
       - __bigip_command
@@ -72,3 +73,14 @@
   roles:
       - role: bigip_command
 >>>>>>> Stashed changes
+=======
+  vars:
+      cli:
+          host: "{{ inventory_hostname }}"
+          username: root
+          password: default
+          port: 2222
+
+  roles:
+      - bigip_command
+>>>>>>> master

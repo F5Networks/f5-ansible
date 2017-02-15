@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_ucs_fetch
+      - bigip_ucs_fetch

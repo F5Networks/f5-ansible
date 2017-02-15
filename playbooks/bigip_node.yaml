@@ -20,7 +20,7 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 12.1.1 HF2
 #
 
 - name: Test the bigip_node module
@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_node
+      - bigip_node

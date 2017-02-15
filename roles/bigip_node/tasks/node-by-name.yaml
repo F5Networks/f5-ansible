@@ -1,0 +1,113 @@
+---
+
+- name: Create node
+  bigip_node:
+      description: "{{ node_description }}"
+      host: "{{ node_host_dns }}"
+      monitor_type: "{{ monitor_type }}"
+      monitors: "{{ node_monitors }}"
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      quorum: "{{ node_quorum }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create node
+  assert:
+      that:
+          - result|changed
+
+- name: Create node - idempotent check
+  bigip_node:
+      description: "{{ node_description }}"
+      host: "{{ node_host_dns }}"
+      monitor_type: "{{ monitor_type }}"
+      monitors: "{{ node_monitors }}"
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      quorum: "{{ node_quorum }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create node - idempotent check
+  assert:
+      that:
+        - not result|changed
+
+- name: Change node description
+  bigip_node:
+      description: "new {{ node_description }}"
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert change node description
+  assert:
+      that:
+          - result|changed
+
+- name: Change session state
+  bigip_node:
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      session_state: "disabled"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert change node session state
+  assert:
+      that:
+        - result|changed
+
+- name: Delete node
+  bigip_node:
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert delete node
+  assert:
+      that:
+          - result|changed
+
+- name: Delete node - idempotent check
+  bigip_node:
+      name: "{{ node_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert delete node - idempotent check
+  assert:
+      that:
+          - not result|changed

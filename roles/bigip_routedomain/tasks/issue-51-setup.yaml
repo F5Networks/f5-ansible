@@ -1,0 +1,35 @@
+---
+
+- name: Create a new partition to test route domain creation
+  bigip_partition:
+      name: "{{ new_partition }}"
+      password: "{{ bigip_password }}"
+      route_domain: "0"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Create a parent route domain
+  bigip_routedomain:
+      id: "{{ new_parent }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      partition: "{{ new_partition }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Create VLANs for Issue 51
+  bigip_vlan:
+      name: "{{ item }}"
+      partition: "{{ new_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items: "{{ i51_vlan_valid }}"
+  register: result

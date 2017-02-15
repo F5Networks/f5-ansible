@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_routedomain
@@ -46,12 +50,19 @@ options:
       - The unique identifying integer representing the route domain.
     required: true
   parent:
-    description: |
+    description:
       Specifies the route domain the system searches when it cannot
       find a route in the configured domain.
+    required: false
+  partition:
+    description:
+      - Partition to create the route domain on. Partitions cannot be updated
+        once they are created.
+    required: false
+    default: Common
   routing_protocol:
     description:
-      -  Dynamic routing protocols for the system to use in the route domain.
+      - Dynamic routing protocols for the system to use in the route domain.
     choices:
       - BFD
       - BGP
@@ -197,7 +208,8 @@ class BigIpRouteDomain(object):
         self.api = ManagementRoot(kwargs['server'],
                                   kwargs['user'],
                                   kwargs['password'],
-                                  port=kwargs['server_port'])
+                                  port=kwargs['server_port'],
+                                  token=True)
 
     def absent(self):
         if not self.exists():
@@ -207,7 +219,8 @@ class BigIpRouteDomain(object):
             return True
 
         rd = self.api.tm.net.route_domains.route_domain.load(
-            name=self.params['name']
+            name=self.params['name'],
+            partition=self.params['partition']
         )
         rd.delete()
 
@@ -236,7 +249,8 @@ class BigIpRouteDomain(object):
         """
         p = dict()
         r = self.api.tm.net.route_domains.route_domain.load(
-            name=self.params['name']
+            name=self.params['name'],
+            partition=self.params['partition']
         )
 
         p['id'] = int(r.id)
@@ -280,6 +294,7 @@ class BigIpRouteDomain(object):
         params = dict()
         params['id'] = self.params['id']
         params['name'] = self.params['name']
+        params['partition'] = self.params['partition']
 
         partition = self.params['partition']
         description = self.params['description']
@@ -340,7 +355,8 @@ class BigIpRouteDomain(object):
 
         self.api.tm.net.route_domains.route_domain.create(**params)
         exists = self.api.tm.net.route_domains.route_domain.exists(
-            name=self.params['name']
+            name=self.params['name'],
+            partition=self.params['partition']
         )
 
         if exists:
@@ -452,7 +468,8 @@ class BigIpRouteDomain(object):
 
         try:
             rd = self.api.tm.net.route_domains.route_domain.load(
-                name=self.params['name']
+                name=self.params['name'],
+                partition=self.params['partition']
             )
             rd.update(**params)
             rd.refresh()
@@ -463,7 +480,8 @@ class BigIpRouteDomain(object):
 
     def exists(self):
         return self.api.tm.net.route_domains.route_domain.exists(
-            name=self.params['name']
+            name=self.params['name'],
+            partition=self.params['partition']
         )
 
     def flush(self):
@@ -495,6 +513,7 @@ def main():
         description=dict(required=False, default=None),
         strict=dict(required=False, default=None, choices=STRICTS),
         parent=dict(required=False, type='int', default=None),
+        partition=dict(required=False, type='str', default='Common'),
         vlans=dict(required=False, default=None, type='list'),
         routing_protocol=dict(required=False, default=None, type='list'),
         bwc_policy=dict(required=False, type='str', default=None),

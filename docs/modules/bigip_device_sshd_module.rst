@@ -170,18 +170,15 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> allow </td>
-        <td> Specifies, if you have enabled SSH access, the IP address or address
-range for other systems that can use SSH to communicate with this
-system.
+        <td> Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.
  </td>
         <td align=center> changed </td>
-        <td align=center> list </td>
+        <td align=center> string </td>
         <td align=center> 192.0.2.* </td>
     </tr>
             <tr>
         <td> banner_text </td>
-        <td> Specifies the text included on the pre-login banner that
-displays when a user attempts to login to the system using SSH.
+        <td> Specifies the text included on the pre-login banner that displays when a user attempts to login to the system using SSH.
  </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
@@ -189,8 +186,7 @@ displays when a user attempts to login to the system using SSH.
     </tr>
             <tr>
         <td> inactivity_timeout </td>
-        <td> The number of seconds before inactivity causes an SSH.
-session to log out
+        <td> The number of seconds before inactivity causes an SSH. session to log out
  </td>
         <td align=center> changed </td>
         <td align=center> int </td>

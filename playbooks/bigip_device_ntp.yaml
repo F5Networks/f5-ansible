@@ -31,4 +31,4 @@
   connection: local
 
   roles:
-      - __bigip_device_ntp
+      - bigip_device_ntp

@@ -1,0 +1,2068 @@
+# Copyright 2016. F5 Networks, Inc. See End User License Agreement (EULA) for
+# license terms. Notwithstanding anything to the contrary in the EULA, Licensee
+# may copy and modify this software product for its internal business purposes.
+# Further, Licensee may upload, publish and distribute the modified version of
+# the software product on devcentral.f5.com.
+
+cli script f5.iapp.1.5.1.cli {
+ 
+#  Initialization proc for all templates.
+#  Parameters "start" and "stop" or "end".
+proc iapp_template { action } {
+    switch $action {
+        start {
+            catch { tmsh::modify sys scriptd log-level debug }
+            set ::clock_clicks [clock clicks]
+            puts "\nStarting iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\n"
+            tmsh::log info "Starting iApp template $tmsh::app_template_name"
+        }
+        stop -
+        end {
+            if { [info exists ::substa_debug] } {
+                puts $::substa_debug
+            }
+            puts "\nEnding iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\nRun time [expr \
+                { ([clock clicks] - $::clock_clicks) / 1000 }] msec\n"
+            tmsh::log info "Ending iApp template $tmsh::app_template_name"
+        }
+    }
+    set ::HTTP_CONTENT_TYPES { application/(css\|css-stylesheet\|doc\|excel\|javascript\|json\|lotus123\|mdb\|mpp\|msaccess\|msexcel\|ms-excel\|mspowerpoint\|ms-powerpoint\|msproject\|msword\|ms-word\|photoshop\|postscript\|powerpoint\|ps\|psd\|quarkexpress\|rtf\|txt\|visio\|vnd\\.excel\|vnd\\.msaccess\|vnd\\.ms-access\|vnd\\.msexcel\|vnd\\.ms-excel\|vnd\\.mspowerpoint\|vnd\\.ms-powerpoint\|vnd\\.ms-pps\|vnd\\.ms-project\|vnd\\.msword\|vnd\\.ms-word\|vnd\\.ms-works\|vnd\\.ms-works-db\|vnd\\.powerpoint\|vnd\\.visio\|vnd\\.wap\\.cmlscriptc\|vnd\\.wap\\.wmlc\|vnd\\.wap\\.xhtml\\+xml\|vnd\\.word\|vsd\|winword\|wks\|word\|x-excel\|xhtml\\+xml\|x-java-jnlp-file\|x-javascript\|x-json\|x-lotus123\|xls\|x-mdb\|xml\|x-mscardfile\|x-msclip\|x-msexcel\|x-ms-excel\|x-mspowerpoint\|x-msproject\|x-ms-project\|x-msword\|x-msworks-db\|x-msworks-wps\|x-photoshop\|x-postscript\|x-powerpoint\|x-ps\|x-quark-express\|x-rtf\|x-vermeer-rpc\|x-visio\|x-vsd\|x-wks\|x-word\|x-xls\|x-xml) image/(photoshop\|psd\|x-photoshop\|x-vsd) text/(css\|html\|javascript\|json\|plain\|postscript\|richtext\|rtf\|vnd\\.wap\\.wml\|vnd\\.wap\\.wmlscript\|wap\|wml\|x-component\|xml\|x-vcalendar\|x-vcard) }
+}
+
+proc iapp_is { args } {
+    set up_var [lindex $args 0]
+    upvar $up_var var
+    if { [info exists var] } {
+        foreach val [lrange $args 1 end] {
+            if { [subst $var] eq $val } {
+                return 1
+            }
+        }
+    }
+    return 0
+}
+
+proc iapp_substa { args } {
+    upvar substa_in  argx \
+          substa_out rval
+    set   argx $args
+
+    # check the explicit value first.
+    # multiple layers of variable substitution requires multiple subst.
+    # error occurs here if any of the substituted variables do not exist
+    # valid wildcard (*) array entries will fail here first.
+    uplevel {
+        append ::substa_debug "\n$substa_in"
+        if { [info exists [set substa_in]] } {
+            set substa_out [subst $$substa_in]
+            set substa_out [subst $substa_out]
+        } else {
+            # since explicit value did not exist, try a wildcard value.
+            # substitute "*" as the array key and repeat.
+            set substa_tmp [split $substa_in "()"]
+            set substa_in "[lindex $substa_tmp 0](*)"
+            append ::substa_debug "*"
+            if { [info exists [set substa_in]] } {
+                set substa_out [subst $$substa_in]
+                set substa_out [subst $substa_out]
+            } else {
+                error "substa \"$substa_in\" array value not found"
+            }
+        }
+    }
+    return $rval
+}
+
+proc iapp_conf { args } {
+
+    # Return value $object_name is set to the first word in $arg that
+    # contains an underscore, since the position of the object name in
+    # tmsh syntax is not consistent.
+    set args [join $args]
+    set object_name [lindex $args [lsearch -glob $args "*_*"]]
+
+    # Global array ::tmsh_history persists between calls to iapp_conf
+    # in order to suppress duplicate commands.
+    if { ![info exists ::tmsh_history($args)] } {
+        set ::tmsh_history($args) 1
+        iapp_debug $args
+        switch -exact -- [string range $args 0 5] {
+            create { tmsh::create [string range $args 7 end] }
+            modify { tmsh::modify [string range $args 7 end] }
+            delete { tmsh::delete [string range $args 7 end] }
+            default { error "iapp_conf illegal parameter" }
+        }
+    }
+    return $object_name
+}
+
+proc iapp_make_safe_password { password } {
+    return [string map { \' \\\' \" \\\" \{ \\\{ \} \\\} \; \\\; \| \\\| \# \\\# \  \\\  \\ \\\\ } $password]
+}
+
+proc iapp_pull { loc items_list } {
+    upvar $items_list items
+    if { [set item [lindex $items $loc]] != "" } {
+        set items [lreplace $items $loc $loc]
+    }
+    return $item
+}
+
+proc iapp_process_flags { flags_array args_list } {
+    upvar $flags_array flags
+    upvar $args_list args
+
+    if { [set dubdash [lsearch $args "--"]] != -1 } {
+        set args [lreplace $args $dubdash $dubdash];
+    } else {
+        set dubdash end
+    }
+
+    foreach flag [array names flags] {
+        while { [set ptr [lsearch [lrange $args 0 $dubdash] $flag]] != -1 } {
+            set args [lreplace $args $ptr $ptr];
+
+            # we want to run the code in the flags_array at the calling
+            # proc's level so that the variables that it sets up are
+            # available there.
+            set access_var [format "$%s(%s)" $flags_array $flag]
+            set command [subst -nocommands { set ptr $ptr ; subst $access_var }]
+
+            uplevel 1 $command
+        }
+    }
+    return $args
+}
+
+proc iapp_tmos_version { args } {
+    set cversion [tmsh::version]
+    if { $cversion eq "" } {
+        tmsh::log err "unable to determine TMOS version"
+        error "unable to determine TMOS version"
+    }
+
+    # if no op+version was specified, just return the version
+    if { $args eq "" } { return $cversion }
+    if { [llength $args] > 2 } {
+        error "Too many arguments"
+    }
+
+    set op [lindex $args 0]; # operator
+    set NOTFOUND -1
+    # constrain to valid operators - adding more is fine as long as
+    # they are supported by [expr] (and makes sense)
+    if { [lsearch -exact { < > <= >= == != } $op] == $NOTFOUND } {
+        tmsh::log err "illegal operator: $op"
+        error "illegal operator: $op"
+    }
+
+    set tversion [lindex $args 1]; # target version
+    # one or two decimal digits, optionally followed by 0-2 complete groups of
+    # dots followed by one or two decimal digits with nothing before or after
+    set regex {^\d{1,2}(\.\d{1,2}){0,2}$}
+    if { ! [regexp -- $regex $tversion] } {
+        tmsh::log err "cannot parse version from: $tversion"
+        error "cannot parse version from: $tversion"
+    }
+
+    # p=>prefix, c=>current, t=>target
+    foreach p { c t } {
+        # extract major/minor/point components
+        scan [set [set p]version] "%d.%d.%d" [set p]mjr [set p]mnr [set p]pnt
+        # ensure that these are each set to at least 0
+        foreach level { mjr mnr pnt } {
+            if { ! [info exists [set p]${level}] } { set [set p]${level} 0 }
+        }
+        # turn them into one big number that we can compare
+        # leave room in-between just to be safe
+        set [set p]num [expr {
+            [set [set p]mjr]*1000000 +
+            [set [set p]mnr]*10000 +
+            [set [set p]pnt]*100
+        }]
+    }
+    # a simple numeric comparison is all that is needed at this point
+    return [eval expr $cnum $op $tnum ]
+}
+
+proc iapp_safe_display { args } {
+    # strings sent to APL must be truncated to 65535 bytes, see BZ435592
+    if { [string length [set [set args]]] > 65535 } {
+        set last_newline [string last "\n" [set [set args]] 65500]
+        return "[string range [set [set args]] 0 $last_newline]Error: Too many items for display"
+    } else {
+        return [set [set args]]
+    }
+}
+
+proc iapp_get_items { args } {
+
+    # Set default values.
+    set error_msg  "iapp_get_items $args:"
+    set do_binary  0
+    set nocomplain 0
+    set items      ""
+    set join_char  "\n"
+    set recursive  "recursive"
+    set com_dir    "/Common"
+    set loc_dir    "[tmsh::pwd]"
+
+    # Set up flag-related work.
+    array set flags  {
+        -exists      { [set do_binary 1] }
+        -nocomplain  { [set nocomplain 1] }
+        -list        { [set join_char " "] }
+        -norecursive { [set recursive ""] }
+        -local       { [set com_dir   ""] }
+        -dir         { [set loc_dir      [iapp_pull $ptr args]] }
+        -filter      { [set filter_field [iapp_pull $ptr args]] \
+                       [set filter_op    [iapp_pull $ptr args]] \
+                       [set filter_value [iapp_pull $ptr args]] }
+    }
+    iapp_process_flags flags args
+
+    # Get system object names in all requested directories.
+    set save_dir [tmsh::pwd]
+    foreach dir [lsort -unique "$com_dir $loc_dir"] {
+        tmsh::cd $dir
+        set tmsh_rval [catch {
+            foreach obj [tmsh::get_config $args $recursive] {
+
+                if { [info exists filter_field] } {
+                    if { $filter_field eq "NAME" } {
+                        set val [tmsh::get_name $obj]
+                    } else {
+                        # If get_field_value throws error, assume "none" value
+                        if { [catch {
+                            set val [tmsh::get_field_value $obj $filter_field]
+                            # strip quotes per BZ442531
+                            set val [string map {\" ""} $val]
+                        }]} { set val none }
+                    }
+                    # Non-Tcl operators =~ and !~ added for extra flexibility
+                    if { $filter_op eq "=~" } {
+                        set filter "\[regexp \"$filter_value\" \"$val\"\]"
+                    } elseif { $filter_op eq "!~" } {
+                        set filter "!\[regexp \"$filter_value\" \"$val\"\]"
+                    } else {
+                        set filter "\\\"$val\\\" $filter_op \\\"$filter_value\\\""
+                    }
+                    # If filter fails, skip to next object
+                    if { ![eval expr $filter] } {
+                        continue
+                    }
+                }
+                # string map catches /Common added by ltm profile ntlm,
+                # which is unlike all other ltm profile return values.
+                lappend items $dir/[string map {/Common/ ""} [tmsh::get_name $obj]]
+            }
+        } err ]
+    }
+    tmsh::cd $save_dir
+
+    # array keys: $do_binary,$tmsh_rval,$nocomplain. Do not insert whitespace.
+    array set rval {
+        0,0,0 {[join $items $join_char]}
+        0,0,1 {[join $items $join_char]}
+        0,1,0 {[error "$error_msg $err"]}
+        0,1,1 {}
+        1,0,0 {[llength $items]}
+        1,0,1 {[llength $items]}
+        1,1,0 {0}
+        1,1,1 {0}
+    }
+
+    return [subst $rval($do_binary,$tmsh_rval,$nocomplain)]
+}
+
+proc iapp_get_provisioned { args } {
+
+    array set lnum {
+        none      0
+        minimum   1
+        nominal   2
+        dedicated 3
+    }
+
+    # Set defaults.
+    set required minimum
+    set do_binary 1
+
+    # Set up flag-related work.
+    array set flags  {
+        -is          { [set required [iapp_pull $ptr args]] }
+        -level       { [set do_binary 0] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # If checking for AM provisioning on TMOS < 11.4,
+    # check for WAM provisioning instead.
+    if { $args eq "am" && [iapp_tmos_version < 11.4] } {
+        set args "wam"
+    }
+
+    # Get the provisioning level. If blank, assume none.
+    # Proc only checks 1 module at a time, so only 1 object is returned.
+    if { [catch {
+        set obj [tmsh::get_config sys provision $args]
+        set level [tmsh::get_field_value [lindex $obj 0] level]
+    }]} { set level none }
+
+    if { $do_binary } {
+        return [expr { $lnum($level) >= $lnum($required) }]
+    } else {
+        return $level
+    }
+}
+
+proc iapp_get_user { args } {
+
+    # Set defaults.
+    set do_role 0
+    set do_binary 0
+
+    # Set up flag-related work.
+    array set flags  {
+        -is_admin    { [set do_binary 1] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # Show user auth was introduced in v11.6
+    set user "unknown"
+    catch {
+        set user [tmsh::show auth user field-fmt]
+    } err
+    if { $do_binary } {
+        return [expr { $user == "unknown"
+        || [string first "role " $user] == -1
+        || [string first "role admin" $user] != -1
+        || [string first "role resource-admin" $user] != -1 }]
+    } else {
+        return $user
+    }
+}
+
+proc iapp_destination { args } {
+    # Set defaults. Flag actions may overwrite defaults later.
+    set route_domain    0
+    set do_mask         0
+    set port            0
+
+    # Set up flag-based actions.
+    array set flags  {
+        -route_domain { [set route_domain [iapp_pull $ptr args]] }
+        -mask         { [set do_mask 1] }
+        -length       { [set cidr_bits [iapp_pull $ptr args]] }
+    }
+
+    if { [llength [set non_switches [iapp_process_flags flags args]]] > 2 } {
+        error "Too many arguments"
+    }
+    if { [llength $non_switches] == 2 } { set port [lindex $non_switches 1] }
+    set addr [lindex $non_switches 0]
+
+
+    # Detect a CIDR mask and pull it off the addr string
+    if { [set loc [string first "/" $addr end-4]] != -1 } {
+        set cidr_bits [string range $addr [expr {$loc + 1}] end]
+        set addr [string range $addr 0 [expr {$loc - 1}]]
+    }
+
+    # Pull the route-domain off the addr string, but only use it as the
+    # route domain if it wasn't overridden by -route_domain flag.
+    if { [string first "%" $addr] != -1 } {
+        if { $route_domain == 0 } {
+            # route-domain is still default, so use value from addr string
+            set route_domain [lindex [split $addr "%"] 1]
+        }
+        set addr [lindex [split $addr "%"] 0]
+    }
+
+    if { $do_mask } {
+
+        # Define the delta between ipv4 and ipv6.
+        # length: ipv4 mask is 32 bits, ipv6 is 128 bits.
+        # group: ipv4 is grouped in octets, ipv6 as 16 bit words.
+        # format: ipv4 is decimal notation, ipv6 is hex.
+        # format1 also has the delimiter, format2 does not.
+        array set v {
+            0,length  32
+            0,group   8
+            0,format1 d.
+            0,format2 d
+            1,length  128
+            1,group   16
+            1,format1 .4x:
+            1,format2 .4x
+        }
+        set is_ipv6 [string match "*:*:*" $addr]
+
+        # Soften result of an illegal -length parameter.
+        if { ![info exists cidr_bits] || $cidr_bits > $v($is_ipv6,length) } {
+            set cidr_bits $v($is_ipv6,length)
+        } elseif { $cidr_bits < 0 } {
+            set cidr_bits 0
+        }
+
+        # Loop on the full length of the mask: 32 bits for ipv4, 128 for ipv6
+        for { set octet 0; set i 0 } { $i < $v($is_ipv6,length) } { incr i } {
+
+           # Take a break at intervals to save the grouping and add delimiter.
+           # Interval is 8 bits for ipv4 and 16 bits for ipv6.
+           if { $i && ![expr {$i % $v($is_ipv6,group)}] } {
+
+               # Add the grouping and delimiter to the mask, then reset.
+               append mask [format %$v($is_ipv6,format1) $octet]
+               set octet 0
+           }
+           # Shift the prior bits left by multiplying by 2.
+           # Then add the current bit, which is 1 if part of the mask, 0 if not.
+           # Current bit is part of the mask if $i < number of bits in the mask.
+           set octet [expr { 2 * $octet + ($i < $cidr_bits) }]
+        }
+        # Add the final grouping, then return the finished mask.
+        set ret_val [format $mask%$v($is_ipv6,format2) $octet]
+
+    } else {
+
+        # calculate a destination
+        # the route domain might be a name and we need a number.
+        if { ![string is integer $route_domain] } {
+            set route_domains [tmsh::get_config "/ net route-domain $route_domain"]
+            if { [llength $route_domains] != 1 } {
+                error "no such route domain: $route_domain"
+            }
+            # since we have already determined that the list is 1 long,
+            # this explicit reference to element 0 is safe
+            set route_domain [tmsh::get_field_value [lindex $route_domains 0] "id"]
+        }
+
+        set route_domain [expr { $route_domain == 0 ? "" : "%$route_domain" }]
+
+        # 0 and * represent wildcard port assignments in the GUI,
+        # but TMSH requires the string 'any' to specify a wildcard.
+        if { $port == 0 || $port == "*" } {
+            set port any
+        }
+
+        # Build the final destination. Use ":" for node names even if ipv6.
+        set is_ipv6_literal [string match "*:*:*" $addr]
+        set addr_delimiter  [expr { $is_ipv6_literal ? "." : ":" }]
+        set ret_val ${addr}${route_domain}${addr_delimiter}${port}
+    }
+    return $ret_val
+}
+
+proc iapp_pool_members { args } {
+
+    # Set defaults.
+    array set fields {
+        address          addr
+        port             port
+        port-secure      port_secure
+        connection-limit connection_limit
+        priority-group   priority
+        ratio            ratio
+    }
+    set route_domain ""
+    set port_override -1
+    set aaa_domain 0
+    set aaa_priority -1
+    set app_service ""
+    # Set up flag-related work.
+    array set flags {
+        -fields       { [array set fields  [iapp_pull $ptr args]] }
+        -route_domain { [set route_domain  [iapp_pull $ptr args]] }
+        -port         { [set port_override [iapp_pull $ptr args]] }
+        -aaa_domain   { [set aaa_domain    1] }
+        -aaa_pool     { [set aaa_priority  0] }
+        -noapp        { [set app_service " app-service none"] }
+    }
+    iapp_process_flags flags args
+
+    # Identify the non-address/non-port fields. These go inside braces in tmsh.
+    set nonport_fields [lsearch -all -not -inline -regexp \
+        [array names fields] {address|port|port-secure}]
+
+    set members ""
+    foreach row [join $args] {
+
+        # Skip invalid table rows.
+        if { [llength [join $row]] %2 == 1 } {
+            continue
+        }
+
+        # Import APL table into an array for processing.
+        array unset columns
+        array set columns [join $row]
+        set addr $columns($fields(address))
+
+        # Identify the port number, either from table columns or by -port flag.
+        if { $port_override != -1 } {
+            set port $port_override
+        } elseif { [info exists columns($fields(port))] } {
+            set port $columns($fields(port))
+        } elseif { [info exists columns($fields(port-secure))] } {
+            set port $columns($fields(port-secure))
+        } else {
+            set port 80
+        }
+
+        # If specified, strip entered route domain and append the flag value.
+        if { $route_domain != "" } {
+            set addr [lindex [split $addr "%"] 0]
+            set addr "$addr%$route_domain"
+        }
+
+        # If -aaa_domain, use domain controller format, otherwise use pool format
+        if { $aaa_domain } {
+            append members " $columns($fields(host)) \{ ip $addr $app_service \}"
+        } else {
+            append members " [iapp_destination $addr $port] \{"
+
+            # Transfer non-port fields from the table to the tmsh string.
+            foreach name $nonport_fields {
+                if { [info exists columns($fields($name))] } {
+                    append members " $name $columns($fields($name))"
+                }
+            }
+
+            # If -aaa_pool, add priority field with incrementing value.
+            # This is required by APM.
+            if { $aaa_priority >= 0 } {
+                append members " priority-group [incr aaa_priority]$app_service"
+            }
+            append members " \}"
+        }
+    }
+
+    return "[expr { $aaa_domain ? "" : "members " }][expr { $members eq "" \
+        ? "none" : "replace-all-with \{ $members \}" }]"
+}
+
+proc iapp_debug { args } {
+
+    # Passwords should be obscured in all logs. Fields shown here are handled
+    # in this proc, but the global variable may be overwritten if alternate
+    # fields should be obscured.
+    if { ![info exists ::SENSITIVES] } {
+        set ::SENSITIVES {
+            account-password
+            admin-encrypted-password
+            PASSWORD
+            password
+            passwd
+            proxy-ca-passphrase
+            secret
+        }
+    }
+
+    # look for any of the sensitive words, and replace the word that follows it
+    set regex "(\\m([join $::SENSITIVES |])\\M)\\s+\[^\\s\]*"
+    regsub -all $regex [join $args] {\1 -OBSCURED-} args
+    regsub -all "(<Password.*>).*(</Password>)" $args {\1-OBSCURED-\2} args
+
+    set lev [tmsh::get_field_value [lindex [tmsh::get_config sys scriptd \
+        log-level] 0] log-level]
+    if { $lev eq {debug} } {
+        puts $args
+    }
+}
+
+# The apm_config proc provides a tmsh pre-processor for APM
+# configuration, which in most cases will drastically reduce
+# implementation code. To configure APM with this proc, pass
+# it an array of object names and associated meta-tag substitutions.
+# Each object must be categorized as a profile, a resource, or
+# a policy-item. APM agents and customization-groups are derived
+# from these 3 categories as needed.
+#
+# apm_config's return value is a list of the APM profiles defined
+# in the argument and instantiated by the proc. This allows the
+# procedure call to be embedded directly into a virtual server
+# definition.
+#
+# These universal meta-tags may be placed anywhere in the array:
+# <ITEM> The object name, eg. apm_access
+# <PREFIX> The app name, including folder, eg. /Common/my_app.app/my_app
+#
+# Profile objects require the following meta-tags:
+# <PROFILE_TYPE> The tmsh object type, eg. "apm profile access"
+# <PROFILE_DEF>  The body of the object, eg.:
+#     "access-policy <PREFIX>
+#      defaults-from /Common/access
+#      eps-group <PREFIX>_eps
+#      errormap-group <PREFIX>_errormap
+#      general-ui-group <PREFIX>_general_ui"
+#
+# apm_config will automatically create default customization-groups
+# for the "-group" lines specified in access profile definitions.
+# In the above example, there is no need to additionally specify a
+# customization-group for errormap and general-ui.
+#
+# <PROFILE_TYPE> is a catch-all for other APM types, eg:
+#      apm_sso {
+#          <PROFILE_TYPE> {apm sso kerberos}
+#          <PROFILE_DEF>  "account-name <USER>
+#                          account-password <PASS>
+#                          realm <REALM>" }
+#
+# In the example above, <PROFILE_TYPE> and <PROFILE_DEF> are
+# apm_config meta-tags, while <USER>, <PASS>, and <REALM> must
+# be substituted before calling apm_config, eg. if these tags are
+# defined in $pre_proc_map, they may be substituted with:
+# array set apm_map [string map [subst $pre_proc_map] [array get apm_map]]
+#
+# Resource objects require the following meta-tags:
+# <RESOURCE_TYPE> The apm resource object type, eg. "webtop"
+# <RESOURCE_DEF>  The body of the object, eg.:
+#     "customization-group <ITEM>
+#      minimize-to-tray false
+#      webtop-type full"
+#
+# In the above example, a customization-group is specified. Any
+# customization-group is assumed to be blank unless further defined by the
+# <GROUP_DEF> meta-tag, eg. <GROUP_DEF> {type webtop}
+#
+# Policy-item objects are defined by the following meta-tags:
+# <AGENT_TYPE>   default "resource-assign"
+# <AGENT_DEF>    default "customization-group <ITEM>"
+# <ITEM_AGENT>   default "agents { <ITEM>_ag { type <AGENT_TYPE> }}"
+# <ITEM_CAPTION> default "<ITEM>"
+# <ITEM_COLOR>   default "1"
+# <ITEM_TYPE>    default "action"
+# <ITEM_RULES>   defaults to a set of expressions/next-items where specified
+# <RULE_CAPTION_0> default "fallback"
+# <RULE_CAPTION_1> default "Successful"
+# <RULE_CAPTION_2> default "successful"
+#
+# apm_config generates the APM agent and customization-group definitions
+# as required for each policy-item, but specific objects may be defined
+# by using the <AGENT_DEF> and <GROUP_DEF> meta-tags.
+# To suppress the formation of an APM agent, specify <ITEM_AGENT> {}.
+
+proc iapp_apm_config { args } {
+
+    set app_service ""
+    array set flags  {
+        -noapp       { [set app_service "app-service none\n   "] }
+    }
+    iapp_process_flags flags args
+
+    upvar [lindex $args 0] map_array
+
+    # Pull $prefix from the array
+    set prefix $map_array(prefix)
+    unset map_array(prefix)
+
+    # Stencils for creating apm objects
+    set access_form \
+       "<TMSH_CREATE> apm policy access-policy <ITEM> {\n   \
+          $app_service    caption general\n   \
+          start-item <ACCESS_START_ITEM>\n   \
+          default-ending <ACCESS_ENDING>\n   \
+          items replace-all-with {\n<ACCESS_ITEMS>    }\n}"
+
+    set profile_form "<TMSH_CREATE> <PROFILE_TYPE> <ITEM> {\n   \
+        $app_service    <PROFILE_DEF>\n}"
+
+    set resource_form "<TMSH_CREATE> apm resource <RESOURCE_TYPE> <ITEM> {\n   \
+        $app_service    <RESOURCE_DEF>\n}"
+
+    set agent_form "<TMSH_CREATE> apm policy agent <AGENT_TYPE> <ITEM>_ag {\n   \
+        $app_service    <AGENT_DEF>\n}"
+
+    set group_form "<TMSH_CREATE> apm policy customization-group <ITEM> {\
+        $app_service    <GROUP_DEF>}"
+
+    set agent_group_form "<TMSH_CREATE> apm policy customization-group <ITEM>_ag {\
+        $app_service    <GROUP_DEF>}"
+
+    set policy_item_form "<TMSH_CREATE> apm policy policy-item <ITEM> {
+    $app_service    <ITEM_AGENT>caption <ITEM_CAPTION>
+    color <ITEM_COLOR>
+    <ITEM_TYPE>
+    <ITEM_RULES>\n}"
+
+    # 1st round apm string map
+    set default_map_1 {
+        <ACCESS_ITEM> {}
+        <AGENT_DEF> "customization-group <ITEM>_ag"
+        <ITEM_AGENT> "agents replace-all-with {
+        <ITEM>_ag { type <AGENT_TYPE> }}\n    "
+        <ITEM_CAPTION> <ITEM>
+        <ITEM_COLOR> {1}
+        <ITEM_TYPE> "item-type action"
+        <ITEM_RULES> "rules
+        {[expr {[string first <RULE_NEXT_2> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_2>
+            expression <RULE_EXPR_2>
+            next-item ${prefix}_<RULE_NEXT_2>
+        }":""}][expr {[string first <RULE_NEXT_1> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_1>
+            expression <RULE_EXPR_1>
+            next-item ${prefix}_<RULE_NEXT_1>
+        }":""}]{
+            caption <RULE_CAPTION_0>
+            next-item ${prefix}_<RULE_NEXT_0>
+        }}"
+    }
+
+    # 2nd round apm string map
+    set default_map_2 {
+        <ITEM> [expr { $item eq {default} ? "$prefix" : "${prefix}_$item" }]
+        <PREFIX> $prefix
+        <LOCAL_PATH> [string map {/ :} $prefix]
+        <GROUP_DEF> ""
+        <AGENT_TYPE> "resource-assign"
+        <RULE_CAPTION_2> "successful"
+        <RULE_CAPTION_1> "Successful"
+        <RULE_CAPTION_0> "fallback"
+    }
+
+    # Build APM access profile and access-policy from the access_form.
+    # Tags <ACCESS_ITEM> and <ACCESS_ENDING> are picked up from
+    # $map_array items. <ITEM> and <GROUP_DEF> are picked up from
+    # $default_map_2.
+    foreach item [lsort [array names map_array]] {
+
+        # Pick up the <ACCESS_ENDING> tag. There should be just 1.
+        set access_form [string map $map_array($item) $access_form]
+
+        # Filter out items that do not belong in the access-policy.
+        # Anything with an ITEM_xxx tag belongs
+        if { [string first <ITEM_ $map_array($item)] == -1 } {
+            continue
+        }
+
+        # Add to the items list for the access-policy, e.g. priority
+        append access_items "        ${prefix}_$item {<ACCESS_ITEM>}\n"
+        set access_items [string map $map_array($item) $access_items]
+        set access_items [string map [subst $default_map_1] $access_items]
+    }
+
+    # Build APM resources, policy-items, agents, and customization-groups from
+    # the policy_item_form and resource_form.
+    foreach item [lsort [array names map_array]] {
+
+        # Each item starts as a profile, a resource, or a policy-item.
+        # Profiles are free-form, so other apm objects can use the profile form.
+        # In most cases, a policy-item spawns an agent.
+        # Any definition specifying a customization-group will spawn that group.
+        if { [string first "<PROFILE_DEF>" $map_array($item)] != -1 } {
+
+            # Collect profile names for attachment to the virtual server
+            if { [string first "apm profile " $map_array($item)] != -1 } {
+                lappend profiles [expr { $item eq {default}
+                                 ? "$prefix" : "${prefix}_$item" }]
+                # When an access profile is found, built a policy of the same name
+                if { [string first "apm profile access" $map_array($item)] != -1 } {
+                    set def [string map "<ACCESS_ITEMS> {$access_items}" $access_form]
+                    append cmds "[string map [subst $default_map_2] $def]\n"
+                }
+            }
+            set def $profile_form
+        } elseif { [string first "<RESOURCE_DEF>" $map_array($item)] != -1 } {
+            set def $resource_form
+        } else {
+            set def $policy_item_form
+            if { [string first "<ITEM_AGENT> {}" $map_array($item)] == -1 } {
+                append def $agent_form
+            }
+        }
+
+        # Apply 1st pass of string maps
+        set def [string map $map_array($item) $def]
+        set def [string map [subst $default_map_1] $def]
+
+        # If a customization-group is specified, add its definition
+        if { [string first "customization-group" $def] != -1 } {
+            if { [string first "apm policy agent" $def] != -1 } {
+                append def $agent_group_form
+            } elseif { [string first "apm profile access" $def] == -1 } {
+                append def $group_form
+            }
+        }
+
+        # Apply 2nd pass of string maps
+        set def [string map $map_array($item) $def]
+        append cmds [string map [subst $default_map_2] $def]
+    }
+
+    # Divide and execute tmsh commands
+    set tag "<TMSH_CREATE>"
+    set tag_length [string length $tag]
+    set last [expr { [string first $tag $cmds] + $tag_length }]
+    while { [set pos [string first $tag $cmds $last]] != -1 } {
+        incr pos -1
+        iapp_conf create [string range $cmds $last $pos]
+        set last [expr { $pos + $tag_length + 1 }]
+    }
+    iapp_conf create [string range $cmds $last end]
+    return $profiles
+}
+
+proc iapp_upgrade_template { upgrade_var upgrade_trans } {
+    upvar $upgrade_var   upgrade_var_arr
+    upvar $upgrade_trans upgrade_trans_arr
+
+    # create the new variables from the old
+    foreach { var } [array names upgrade_var_arr] {
+
+        # substitute old variable name for abbreviation "##"
+        regsub -all {##} $upgrade_var_arr($var) \$$var map_cmd
+
+        # run the mapping command from inside the array
+        if { [catch { subst $map_cmd } err] } {
+            if { [string first "no such variable" $err] == -1 } {
+                puts "ERROR $err"
+            }
+        }
+    }
+
+    # move variables over and apply translations
+    set var_mods ""
+    set var_adds ""
+    foreach var [array names vx] {
+
+        # if the APL variable name is in the translation array,
+        # then use the custom translation built for that variable.
+        if { [info exists upgrade_trans_arr($var)] } {
+            array set sub_arr [subst $upgrade_trans_arr($var)]
+            if { [info exists sub_arr($vx($var))] } {
+                set vx($var) $sub_arr($vx($var))
+            }
+            array unset sub_arr
+        # else, if the APL variable value is in the translation array,
+        # then use the generic translation of that value.
+        } elseif { [info exists upgrade_trans_arr($vx($var))] } {
+            set vx($var) [subst $upgrade_trans_arr($vx($var))]
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$var] } {
+            append var_mods "\n $var \{ value \"$vx($var)\" \} "
+        } else {
+            append var_adds "\n $var \{ value \"$vx($var)\" \} "
+        }
+    }
+
+    # move tables over
+    set tbl_mods ""
+    set tbl_adds ""
+    foreach tbl [array names tx] {
+
+        # convert table from APL format to TMSH format
+        if { ![llength $tx($tbl)] } {
+            set tbl_def "column-names none"
+        } else {
+            set rows_def ""
+            foreach apl_row $tx($tbl) {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            set tbl_def \
+            "\n  column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$tbl] } {
+            append tbl_mods "\n $tbl \{ $tbl_def \} "
+        } else {
+            append tbl_adds "\n $tbl \{ $tbl_def \} "
+        }
+    }
+
+    # construct the "tmsh modify" command
+    set cmd "sys application service $tmsh::app_name "
+    if { [llength $var_mods] } {
+        append cmd "\nvariables modify { $var_mods }"
+    }
+    if { [llength $var_adds] } {
+        append cmd "\nvariables add { $var_adds }"
+    }
+    if { [llength $tbl_mods] } {
+        append cmd "\ntables modify { $tbl_mods }"
+    }
+    if { [llength $tbl_adds] } {
+        append cmd "\ntables add { $tbl_adds }"
+    }
+
+    # Execute with debug output. This conversion takes place within the
+    # existing ASO, so tmsh modify is used instead of tmsh create.
+    iapp_debug "TEMPLATE UPGRADE"
+    iapp_conf modify $cmd
+    return
+}
+
+proc iapp_downgrade_template { pivot_var upgrade_var downgrade_table } {
+    upvar $downgrade_table downgrade_tbl_arr
+
+    # The ASO variable "offload_history" is used to recover the legacy
+    # choice a user made about SSL offload. It should be present in all cases.
+    # This conditional only handles the case where a user has deliberately
+    # deleted it by manipulating the ASO directly from tmsh.
+    if { ![info exists ::offload_history] } {
+        set ::offload_history "No"
+    }
+
+    # BIG-IP erases table contents when the APL optional hides the table.
+    # Since the prior data is not available, this downgrade must back-convert
+    # existing table data. Unlike tables, variables remain intact from the
+    # legacy ASO.
+    set tbl_def ""
+    foreach tbl [array names downgrade_tbl_arr] {
+        # Check for existence of each table in the current context.
+        # If not, skip to next.
+        if { ![info exists [set tbl]] } {
+            continue
+        }
+        # Check for existence of each table in the legacy context.
+        # If not, add an empty table so "tmsh tables modify" does not fail.
+        if { ![info exists ::$downgrade_tbl_arr($tbl)] } {
+            iapp_conf modify sys app ser $tmsh::app_name tables add \{ $downgrade_tbl_arr($tbl) \}
+        }
+        append tbl_def "$downgrade_tbl_arr($tbl) \{ "
+        if { [llength [subst $$tbl]] } {
+            set rows_def ""
+            foreach apl_row [subst $$tbl] {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            append tbl_def \
+            "column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        } else {
+            append tbl_def "rows none"
+        }
+        append tbl_def " \} "
+    }
+    regsub -all "\n" $tbl_def {} tbl_def
+    set cmd "sys app ser $tmsh::app_name \
+        variables modify \{ \
+            $pivot_var \{ value $::offload_history \} \
+            $upgrade_var \{ value No \} \
+        \} \
+        tables modify \{ $tbl_def \}"
+    iapp_debug "TEMPLATE DOWNGRADE"
+    iapp_conf modify $cmd
+    return
+}
+
+proc iapp_get_ca_certs { args } {
+    # Procedure formats and returns ca-bundle 509 certificates from ca-bundle.bak
+    # (copy of tmos supplied ca-bundle.crt)
+    # Returns backup files when using -files flag
+    # Returns specified restore file certificates when using -restore -return flags
+    # Returns specified restore file table certificates when using -restore -tablename
+    # Returns selected certificates
+    #
+    # Set defaults. Flag actions may overwrite defaults later.
+    set rest_files         0
+    set do_restore         0
+    set restore_return     0
+    set restore_table_name 0
+    set do_certs 0
+    set user_get [iapp_get_user]
+    set username [string range $user_get [expr {[string last user $user_get] +5 }] end-3 ]
+    # Set up flag-based actions.
+    array set flags  {
+        -files     { [set rest_files 1] }
+        -return    { [set do_restore 1] [set restore_return 1] }
+        -tablename { [set do_restore 1] [set restore_table_name 1] }
+        -certs     { [set do_certs 1] }
+    }
+    iapp_process_flags flags args
+    set fn_ca_bundle "[lindex $args 0]"
+    set cert_choices "[lindex $args 1]"
+    set duplicate " "
+    if { $rest_files eq 0 || $do_restore } {
+        set fh_ca_bundle [open $fn_ca_bundle r]
+        set ca_bundle_data [read $fh_ca_bundle]
+        close $fh_ca_bundle
+        set ca_bundle_split [split [string map "{-----END CERTIFICATE-----} \001" $ca_bundle_data] "\001"]
+        set final ""
+        # Grab Subject Name and Serial number from each certificate
+        foreach subject $ca_bundle_split {
+            if {$subject eq {}} {
+                continue
+            }
+            set a [string first Subject: $subject]
+            set b [string first \n $subject $a]
+            set ab [string range $subject $a $b]
+            set c [expr {[string first O= $ab] +2}]
+            if { $c < 2 }{
+                set c [expr {[string first CN= $ab] +2}]
+            }
+            set d [expr {[string first , $ab $c] -1}]
+            # Deal with case were comma is not present after subject name
+            if { $d < 0 }{
+                set dc [string range $ab $c end-1]
+            # Deal with case were text is not able to be located using common name, just grab the first 30 characters
+            } elseif { $d > 2000 }{
+                set dc [string range $ab $c 47]
+            } else {
+                set dc [string range $ab $c $d]
+            }
+            set f [expr {[string first Number: $subject] +7}]
+            set g [expr {[string first Signature $subject $f] -1}]
+            set fg [string range $subject $f $g]
+            # Remove spaces and new line characters from serial number
+            set fg_nospace [string map {" " "" "\n" "" ":" ""} $fg]
+            set first_5 [string map {"(" ""} [string range $fg_nospace 0 4]]
+            # -cert flag returns list of selected root certificates
+            if { $do_certs }{
+                foreach selection $cert_choices {
+                    if { $first_5 eq $selection }{
+                        # setup to remove duplicate root certificates - tmos supplied ca-bundle can have duplicates
+                        set i 0
+                        set duplicate_split [split [string map "{ } \001" $duplicate] "\001"]
+                        foreach dup $duplicate_split {
+                            if { $dup eq $first_5 }{
+                                incr i
+                            }
+                        }
+                        # add certificate if not a duplicate
+                        if { $i < 1 }{
+                            append final "${subject}-----END CERTIFICATE-----\n"
+                            puts [tmsh::log notice "User:'${username}' Modified CA-Bundle, adding the following Root CA:(SN) ${fg_nospace} Name:${dc}"]
+                            append duplicate "$first_5 "
+                        }
+                    }
+                }
+            } elseif { $dc !="" || $fg_nospace !="" || $restore_table_name eq 1 }{
+                if { $restore_return eq 0 && $restore_table_name eq 0 }{
+                    append final "${dc},SN:${fg_nospace}\t${first_5}\n"
+                } elseif { $restore_table_name eq 1 }{
+                    set table_cert [string first ### $subject]
+                    if { $table_cert > -1 && $table_cert < 500 } {
+                        set ending "$subject-----END CERTIFICATE-----"
+                        set table_certificate [string range $ending [string first -----BEGIN $ending] [ expr { [string first -----END $ending] +24 }]]
+                        append final  "{ row { \"[string map {"\n" " "} $table_certificate]\" \"[string range $subject 4 [expr { [string first \n $subject 1] -1 }]]\" } }"
+                    }
+
+                } else {
+                    set table_cert [string first ### $subject]
+                    if { $table_cert < 0 || $table_cert > 500 } {
+                        append final "${first_5} "
+                    }
+                }
+            }
+        }
+        if { $do_restore && $restore_table_name eq 0 }{
+            set final [string map {"(" ""} $final]
+        }
+        return $final
+    }
+    if { $rest_files }{
+        # Pull TMOS ca-bundle file into list
+        catch { set fn_bak_ca_bundle [exec ls -t /config/ssl/ssl.crt/] } err
+        if { $::errorCode != "" } {
+            puts "Error during file lookup in ssl certificate directory: ${err}"
+            error "Error during file lookup in ssl certificate directory: ${err}"
+        }
+        foreach bak [join "$fn_bak_ca_bundle"] {
+            set full_path "/config/ssl/ssl.crt/$bak"
+            if { [iapp_is full_path $fn_ca_bundle] }{
+                set fn_bak_exists 1
+                break
+            } else {
+                set fn_bak_exists 0
+            }
+        }
+        if { $fn_bak_exists }{
+            puts "Backup of factory TMOS ca-bundle /config/ssl/ssl.crt/ca-bundle.crt, at:${fn_ca_bundle}, already exists. No need to backup"
+        } elseif { $fn_bak_exists eq 0 }{
+            puts "Backing up factory TMOS ca-bundle /config/ssl/ssl.crt/ca-bundle.crt, to ${fn_ca_bundle}."
+            catch { exec cp /config/ssl/ssl.crt/ca-bundle.crt ${fn_ca_bundle} } err
+            if { $::errorCode != "" } {
+                puts "Error creating backup file:${fn_ca_bundle}: ${err}"
+                error "Error creating backup file:${fn_ca_bundle}: ${err}"
+            }
+        }
+        set restore_list [lsearch -all -inline $fn_bak_ca_bundle *_bak*]
+        set restore_final ""
+        foreach res $restore_list {
+            append restore_final "${res}\t${res}\n"
+        }
+        if { $restore_final == "" }{
+            return "No restore files found"
+        } else {
+            return $restore_final
+        }
+    }
+}
+}
+
+
+sys application template f5.microsoft_rds_session_host.v1.0.3 {
+    actions {
+        definition {
+            html-help {
+            }
+            implementation {
+tmsh::include f5.iapp.1.5.1.cli
+iapp_template start
+
+#constants
+set DEFAULT_ANSWER    /#default#
+set DO_NOT_USE_ANSWER /#do_not_use#
+set CREATE_NEW_ANSWER /#create_new#
+
+proc arrange_tcp_profiles { client_profile server_profile } {
+    if { $client_profile == $server_profile } {
+        set profile_list "$client_profile \{ context all \} "
+    } else {
+        set profile_list "$client_profile \{ context clientside \} \
+                          $server_profile \{ context serverside \} "
+    }
+    return $profile_list
+}
+
+proc configure_rdsh_deployment {  } {
+   tmsh::include f5.iapp.1.5.1.cli
+    set app $tmsh::app_name
+    set lb_lcm_licensed [expr {[string first ltm_lb_least_conn  [tmsh::show sys license detail]] != -1}]
+    set srv_version $::basic__version
+    set advanced [expr { [iapp_is ::basic__advanced "yes"] }]
+    set do_udp [expr {[info exists ::basic__udp] && [iapp_is ::basic__udp "yes"]}]
+
+    # MONITOR
+    set need_monitor [expr { $::vs_pool__pool_to_use == "/#create_new#" }]
+    set new_monitor [iapp_is ::app_health__monitor "/#create_new#"]
+
+    # array keys: $need_monitor,$new_monitor
+    array set tcp_monitor {
+        1,1   { monitor [iapp_conf create ltm monitor tcp ${app}_rdsh_tcp \
+             defaults-from tcp \
+             interval $::app_health__frequency \
+             timeout [ expr {( $::app_health__frequency * 3 ) + 1} ] \
+             send [ expr {[iapp_is ::app_health__send ""] ? "none" : $::app_health__send }] \
+             recv [ expr {[iapp_is ::app_health__recv ""] ? "none" : $::app_health__recv }]]}
+        1,0   { monitor $::app_health__monitor }
+        *     { monitor none }
+    }
+
+   # array keys: $need_monitor,$new_monitor
+    array set udp_monitor {
+        1,1   { monitor [iapp_conf create ltm monitor udp ${app}_rdsh_udp \
+             defaults-from udp \
+             interval $::app_health__frequency \
+             timeout [ expr {( $::app_health__frequency * 3 ) + 1} ] \ ] \
+             and [iapp_conf create ltm monitor gateway-icmp ${app}_rdsh_icmp \
+             defaults-from gateway_icmp \
+             interval $::app_health__frequency \
+             timeout [ expr {( $::app_health__frequency * 3 ) + 1} ] \ ] }
+        1,0   { monitor udp }
+        *     { monitor none }
+    }
+
+    # POOL
+    set use_slow_ramp [iapp_is ::vs_pool__use_slow_ramp yes]
+    # array keys: $advanced,$use_slow_ramp
+    array set pool_slow_ramp {
+        *   { slow-ramp-time 300 }
+        1,0 { slow-ramp-time 10 }
+        1,1 { slow-ramp-time $::vs_pool__slow_ramp_setvalue }
+    }
+
+    set use_pga [iapp_is ::vs_pool__use_pga yes]
+    # array keys: $advanced,$use_pga
+    array set pool_pga {
+        1,1 { min-active-members $::vs_pool__min_active_members }
+        *   { min-active-members 0 }
+    }
+
+    set tcp_queuing [iapp_is ::vs_pool__tcp_req_queueing "yes"]
+    # array keys: $advanced,$tcp_queuing
+    array set tcp_req_queueing {
+        1,1 { queue-on-connection-limit enabled \
+            queue-depth-limit $::vs_pool__tcp_queue_length \
+            queue-time-limit  $::vs_pool__tcp_queue_timeout }
+        *   { queue-on-connection-limit disabled }
+    }
+
+    # array keys: $advanced,$lb_lcm_licensed
+    array set pool_lb_method {
+        0,0 { load-balancing-mode round-robin }
+        0,1 { load-balancing-mode least-connections-member }
+        *   { load-balancing-mode $::vs_pool__lb_method_choice }
+    }
+
+
+    set new_pool [iapp_is ::vs_pool__pool_to_use "/#create_new#"]
+    # array keys: $new_pool,tcp or udp
+    array set pool {
+        1,tcp { pool [iapp_conf create ltm pool ${app}_tcp_pool \
+                   [iapp_substa pool_lb_method($advanced,$lb_lcm_licensed)] \
+                   [iapp_pool_members $::vs_pool__members \
+                   -fields {connection-limit conn_limit}] \
+                   [iapp_substa tcp_monitor($need_monitor,$new_monitor)] \
+                   [iapp_substa pool_slow_ramp($advanced,$use_slow_ramp)] \
+                   [iapp_substa tcp_req_queueing($advanced,$tcp_queuing)] \
+                   [iapp_substa pool_pga($advanced,$use_pga)] ] }
+        1,udp { pool [iapp_conf create ltm pool ${app}_udp_pool \
+                   [iapp_substa pool_lb_method($advanced,$lb_lcm_licensed)] \
+                   [iapp_pool_members $::vs_pool__members \
+                   -fields {connection-limit conn_limit}] \
+                   [iapp_substa udp_monitor($need_monitor,$new_monitor)] \
+                   [iapp_substa pool_slow_ramp($advanced,$use_slow_ramp)] \
+                   [iapp_substa pool_pga($advanced,$use_pga)] ] }
+        *     { pool $::vs_pool__pool_to_use }
+    }
+
+
+    # PROFILES
+    # CLIENT TCP OPTIMIZATION PROFILE
+    # In order to show the correct recommendation per the chosen topology,
+    # the presentation of client tcp optimization has a split presentation.
+    # Only one of tcp_lan_opt or tcp_wan_opt contains the user's selection.
+    # This statement identifies whether the user has selected the recommended
+    # option from this split presentation.
+    set new_client_tcp [expr { !$advanced || ( \
+          [iapp_is ::net__client_mode lan] ? \
+          [iapp_is ::client_opt__tcp_lan_opt "/#create_new#"] : \
+          [iapp_is ::client_opt__tcp_wan_opt "/#create_new#"] )}]
+
+    # array keys: $new_client_tcp,$::net__client_mode
+    array set client_tcp {
+        0,lan    { $::client_opt__tcp_lan_opt }
+        0,wan    { $::client_opt__tcp_wan_opt }
+        1,lan    { [iapp_conf create ltm profile tcp ${app}_lan-optimized-tcp \
+                    defaults-from tcp-lan-optimized idle-timeout 1200] }
+        *        { [iapp_conf create ltm profile tcp ${app}_wan-optimized-tcp \
+                    defaults-from tcp-wan-optimized idle-timeout 1200 nagle disabled keep-alive-interval 75] }
+    }
+
+    # SERVER TCP OPTIMIZATION PROFILE
+    # See above comments regarding the client tcp optimization array.
+    set new_server_tcp [expr { !$advanced || ( \
+          [iapp_is ::net__server_mode lan] ? \
+          [iapp_is ::server_opt__tcp_lan_opt "/#create_new#"] : \
+          [iapp_is ::server_opt__tcp_wan_opt "/#create_new#"] )}]
+
+    # array keys: $new_server_tcp,$::net__server_mode
+    array set server_tcp {
+        0,lan    { $::server_opt__tcp_lan_opt }
+        0,wan    { $::server_opt__tcp_wan_opt }
+        1,lan    { [iapp_conf create ltm profile tcp ${app}_lan-optimized-tcp \
+             defaults-from tcp-lan-optimized] }
+        *        { [iapp_conf create ltm profile tcp ${app}_wan-optimized-tcp \
+             defaults-from tcp-wan-optimized idle-timeout 1200 nagle disabled keep-alive-interval 75] }
+    }
+
+    if { $advanced } {
+        set client_mode $::net__client_mode
+        set server_mode $::net__server_mode
+    } else {
+        set client_mode wan
+        set server_mode lan
+    }
+
+    # array keys: type = tcp or udp
+    array set profiles {
+        tcp     { profiles add \{ \
+                    [arrange_tcp_profiles \
+                        [iapp_substa client_tcp($new_client_tcp,$client_mode)] \
+                        [iapp_substa server_tcp($new_server_tcp,$server_mode)] ] \} }
+        udp     { profiles add \{ \
+                        [iapp_conf create ltm profile udp ${app}_udp \
+                            defaults-from udp] \} }
+    }
+
+    # SNAT
+    set do_snat      [expr { [iapp_is ::net__same_subnet  yes] \
+                       || ![iapp_is ::net__route_to_bigip yes] }]
+    set do_automap   [expr { [iapp_is ::net__snat_type automap] }]
+    set new_snatpool [iapp_is ::net__snatpool "/#create_new#"]
+
+    # array keys: $do_snat,$do_automap,$new_snatpool
+    array set snat {
+        1,1,1 { snat automap }
+        1,1,0 { snat automap }
+        1,0,1 { snatpool [iapp_conf create ltm snatpool ${app}_snatpool \
+                members replace-all-with \{ \
+                [string map {"addr " "" \{ "" \} ""} $::net__snatpool_members] \
+                \}] }
+        1,0,0 { snatpool $::net__snatpool }
+        *     { snat none }
+    }
+
+    # VLANS
+    # array keys: $advanced
+    array set vlans {
+        1     { vlans-enabled \
+            vlans replace-all-with \{ $::net__client_vlan \} }
+        *       { vlans-disabled vlans none }
+    }
+
+
+    # TCP RULES
+    set have_tcp_rules [expr { ![iapp_is ::irules__irules_tcp ""] }]
+    # array keys $advanced,$have_tcp_rules
+    array set tcp_rules {
+        1,1     { rules \{ $::irules__irules_tcp \} }
+        *       { rules none }
+    }
+
+    # UDP RULES
+    set have_udp_rules [expr { ![iapp_is ::irules__irules_udp ""] }]
+    # array keys $advanced,$have_udp_rules
+    array set udp_rules {
+        1,1     { rules \{ $::irules__irules_udp \} }
+        *       { rules none }
+    }
+
+   # FIREWALL (AFM) POLICY
+    # beware: syntactically correct AFM commands fail when AFM is not provisioned
+    # extra info exists test benefits BIG-IQ apps that bypass presentation
+    set is_admin [iapp_get_user -is_admin]
+    set afm_provisioned [expr { [iapp_get_provisioned afm] && [iapp_tmos_version >= 11.4] }]
+    set do_firewall [expr { $afm_provisioned && \
+        [info exists ::afm__policy] && \
+        ![iapp_is ::afm__policy $::DO_NOT_USE_ANSWER] }]
+    set new_firewall [iapp_is ::afm__policy $::DEFAULT_ANSWER]
+    set allow_by_reputation [iapp_is ::afm__restrict_by_reputation "accept"]
+    set staging_policy [expr { $do_firewall && \
+        ![iapp_is ::afm__staging_policy $::DO_NOT_USE_ANSWER] \
+        ? "$::afm__staging_policy" : "none" }]
+    set afm_security_logging [expr { $do_firewall && \
+        ![iapp_is ::afm__security_logging $::DO_NOT_USE_ANSWER] \
+        ? "\"$::afm__security_logging\"" : "" }]
+    set security_logging [expr { $is_admin \
+        ? "security-log-profiles replace-all-with \{ $afm_security_logging \}"
+        : "" }]
+    # array key: $do_udp
+   array set fw_rules_arr {
+      1 { rules replace-all-with \{ \
+                  acceptPacketsTcp \{ \
+                    action accept \
+                    log no \
+                    ip-protocol tcp \
+                    status enabled \
+                    source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                  dropPacketsTcp \{ \
+                    action drop \
+                    log yes \
+                    ip-protocol tcp \
+                    status enabled \
+                    source \{ addresses replace-all-with \{ any/any \}\}\} \
+              acceptPacketsUdp \{ \
+                    action accept \
+                    log no \
+                    ip-protocol udp \
+                    status enabled \
+                    source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                  dropPacketsUdp \{ \
+                    action drop \
+                    log yes \
+                    ip-protocol udp \
+                    status enabled \
+                    source \{ addresses replace-all-with \{ any/any \}\}\}\}}
+      0 { rules replace-all-with \{ \
+                  acceptPackets \{ \
+                    action accept \
+                    log no \
+                    ip-protocol tcp \
+                    status enabled \
+                    source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                  dropPackets \{ \
+                    action drop \
+                    log yes \
+                    ip-protocol tcp \
+                    status enabled \
+                    source \{ addresses replace-all-with \{ any/any \}\}\}\}}
+   }
+
+   # array key: $afm_provisioned,$do_firewall,$new_firewall
+    array set firewall_arr {
+        1,1,1 { fw-enforced-policy \
+                [iapp_conf create security firewall policy ${app}_firewall \
+                [iapp_substa fw_rules_arr($do_udp)]] \
+                fw-staged-policy [subst $staging_policy] }
+        1,1,0 { fw-enforced-policy $::afm__policy \
+                fw-staged-policy [subst $staging_policy] }
+        1,0,1 { fw-enforced-policy none \
+                fw-staged-policy none }
+        1,0,0 { fw-enforced-policy none \
+                fw-staged-policy none }
+        *     { }
+    }
+
+    # array key: $::afm__restrict_by_addr
+    array set afm_restrict {
+        /#create_new# {addresses replace-all-with \{ $::afm__allowed_addr \}}
+        /#do_not_use# {addresses replace-all-with \{ any/any \}}
+        *         {address-lists replace-all-with \{ $::afm__restrict_by_addr \}}
+    }
+
+    # ip-intelligence was a profile in 11.4, is a policy in 11.5
+    set is_v11_5 [iapp_tmos_version >= 11.5]
+
+    # array keys:
+    # $afm_provisioned,$do_firewall,$allow_by_reputation,$is_v11_5
+   array set ip_intelligence_arr {
+      1,1,0,0 { profiles add \{ [iapp_conf create security ip-intelligence  profile           ${app}_ip_intelligence  defaults-from     ip-intelligence  botnets           $::afm__restrict_by_reputation  denial-of-service $::afm__restrict_by_reputation  infected-sources  $::afm__restrict_by_reputation  phishing          $::afm__restrict_by_reputation  proxy             $::afm__restrict_by_reputation  scanners          $::afm__restrict_by_reputation  spam-sources      $::afm__restrict_by_reputation  web-attacks       $::afm__restrict_by_reputation  windows-exploits  $::afm__restrict_by_reputation] \} }
+      1,1,1,0 { profiles add \{ [iapp_conf create security ip-intelligence  profile           ${app}_ip_intelligence  defaults-from     ip-intelligence  botnets           $::afm__restrict_by_reputation  denial-of-service $::afm__restrict_by_reputation  infected-sources  $::afm__restrict_by_reputation  phishing          $::afm__restrict_by_reputation  proxy             $::afm__restrict_by_reputation  scanners          $::afm__restrict_by_reputation  spam-sources      $::afm__restrict_by_reputation  web-attacks       $::afm__restrict_by_reputation  windows-exploits  $::afm__restrict_by_reputation] \} }
+      1,1,0,1  { ip-intelligence-policy [iapp_conf create security ip-intelligence  policy            ${app}_ip_intelligence  default-action     $action($::afm__restrict_by_reputation)  blacklist-categories replace-all-with \{ botnets \{ action use-policy-setting \}  cloud_provider_networks \{ action use-policy-setting \}  denial_of_service \{ action use-policy-setting \}  illegal_websites \{ action use-policy-setting \}  infected_sources \{ action use-policy-setting \}  phishing \{ action use-policy-setting \}  proxy \{ action use-policy-setting \}  scanners \{ action use-policy-setting \}  spam_sources \{ action use-policy-setting \}  web_attacks \{ action use-policy-setting \}  windows_exploits \{ action use-policy-setting \}\}] }
+      1,0,0,1  { ip-intelligence-policy none }
+      1,0,1,1  { ip-intelligence-policy none }
+      1,1,1,1  { ip-intelligence-policy none }
+      *     { }
+   }
+
+    # array key: $::afm__restrict_by_reputation
+    array set action {
+        accept { accept default-log-blacklist-hit-only no }
+        reject { drop   default-log-blacklist-hit-only yes }
+        warn   { accept default-log-blacklist-hit-only yes }
+    }
+
+ # VIRTUALS
+    set destination [iapp_destination $::vs_pool__vs_addr $::vs_pool__vs_port]
+    set mask_action "mask [iapp_destination -mask $::vs_pool__vs_addr]"
+
+   # array key: $do_udp
+   array set vs_arr {
+   1   { [iapp_conf create \
+         ltm virtual ${app}_tcp_vs \
+         destination $destination \
+         ip-protocol tcp \
+         [iapp_substa pool($new_pool,tcp)] \
+         [iapp_substa firewall_arr($afm_provisioned,$do_firewall,$new_firewall)] \
+         [iapp_substa \
+         ip_intelligence_arr($afm_provisioned,$do_firewall,$allow_by_reputation,$is_v11_5)] \
+         $security_logging \
+         [iapp_substa profiles(tcp)] \
+         [iapp_substa snat($do_snat,$do_automap,$new_snatpool)] \
+         [iapp_substa vlans($advanced)] \
+         [iapp_substa tcp_rules($advanced,$have_tcp_rules)] \
+         persist replace-all-with \{ [iapp_conf create ltm persistence msrdp ${app}_msrdp defaults-from msrdp] \} \
+         fallback-persistence [iapp_conf create ltm persistence source-addr ${app}_source_addr defaults-from source_addr match-across-services enabled mirror enabled] \
+         $mask_action
+
+      iapp_conf create \
+         ltm virtual ${app}_udp_vs \
+         destination $destination \
+         ip-protocol udp \
+         [iapp_substa pool($new_pool,udp)] \
+         [iapp_substa firewall_arr($afm_provisioned,$do_firewall,$new_firewall)] \
+         [iapp_substa \
+         ip_intelligence_arr($afm_provisioned,$do_firewall,$allow_by_reputation,$is_v11_5)] \
+         $security_logging \
+         [iapp_substa profiles(udp)] \
+         [iapp_substa snat($do_snat,$do_automap,$new_snatpool)] \
+         [iapp_substa vlans($advanced)] \
+         [iapp_substa udp_rules($advanced,$have_udp_rules)] \
+         persist replace-all-with \{ ${app}_source_addr \} \
+         translate-address enabled] }
+
+   0   { [iapp_conf create \
+         ltm virtual ${app}_tcp_vs \
+         destination $destination \
+         ip-protocol tcp \
+         [iapp_substa pool($new_pool,tcp)] \
+         [iapp_substa firewall_arr($afm_provisioned,$do_firewall,$new_firewall)] \
+         [iapp_substa \
+         ip_intelligence_arr($afm_provisioned,$do_firewall,$allow_by_reputation,$is_v11_5)] \
+         $security_logging \
+         [iapp_substa profiles(tcp)] \
+         [iapp_substa snat($do_snat,$do_automap,$new_snatpool)] \
+         [iapp_substa vlans($advanced)] \
+         [iapp_substa tcp_rules($advanced,$have_tcp_rules)] \
+         persist replace-all-with \{ [iapp_conf create ltm persistence msrdp ${app}_msrdp defaults-from msrdp] \} \
+         fallback-persistence none \
+         $mask_action] }
+   }
+
+   iapp_substa vs_arr($do_udp)
+}
+
+# MAIN
+
+configure_rdsh_deployment
+
+iapp_template stop
+}
+         presentation {
+
+define choice lb_method display "xxlarge" tcl {
+    if { [string first ltm_lb_least_conn [tmsh::show sys license detail]] != -1 } {
+        set choices "Least Connections (member)\tleast-connections-member\nLeast Connections (node)\tleast-connections-node\nLeast Sessions\tleast-sessions\nDynamic Ratio (member)\tdynamic-ratio-member\nDynamic Ratio (node)\tdynamic-ratio-node\nFastest (application)\tfastest-app-response\nFastest (node)\tfastest-node\nObserved (member)\tobserved-member\nObserved (node)\tobserved-node\nPredictive (member)\tpredictive-member\nPredictive (node)\tpredictive-node\nRound Robin\tround-robin\nRatio (member)\tratio-member\nRatio (node)\tratio-node\nRatio (session)\tratio-session\nRatio Least Connections (member)\tratio-least-connections-member\nRatio Least Connections (node)\tratio-least-connections-node\nWeighted Least Connections (member)\tweighted-least-connections-member"
+    } else {
+        set choices "Round Robin\tround-robin\nRatio (member)\tratio-member\nRatio (node)\tratio-node"
+    }
+    return $choices
+}
+
+section intro {
+    
+    message intro "Configure high availability and acceleration for Remote Desktop Session Host implementations.  For detailed information and configuration assistance, see http://www.f5.com/pdf/deployment-guides/f5-microsoft-remote-desktop-services-dg.pdf"
+    message check_for_updates "Check for new versions of this template on DevCentral (https://devcentral.f5.com/wiki/iApp.Microsoft-Applications.ashx)."
+    optional ( intro == "NEVER_SHOW_THIS" ) {
+        choice is_admin tcl {
+            
+            return [expr { [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_user -is_admin] ? "yes" : "no"}]
+        }
+        choice ltm_provisioned tcl {
+            return [expr {[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_provisioned ltm] ? "yes" : "no"}]
+        }
+        choice afm_provisioned tcl {
+            return [expr {[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_provisioned afm] ? "yes" : "no"}]
+        }
+        choice afm_version tcl {
+            return [expr {[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_tmos_version >= 11.4] ? "yes" : "no"}]
+        }
+    }
+    optional ( is_admin == "no" ) {
+        message manager_role_warning "You have opened this iApp while logged into the BIG-IP system as a user that is not assigned the Administrator role.  You can run this iApp with the BIG-IP role of 'Manager', however this iApp limit the functionality based on this role. In some cases, entire sections of the iApp have been removed due to the restrictions of the role. Also note, if you attempt to use the iApp's Reconfigure feature while logged in as a Manager, and the iApp was initially configured by a user with the Admin role, there may be errors if any of the features configured by the Admin are unavailable to the Manager role."
+        message manager_role_warning_afm "You are logged in with the BIG-IP role of Manager. The AFM configuration in this iApp has been disabled due to the rights of the Manager role. If you need to configure AFM using this iApp, you need to log in using the BIG-IP role of Administrator."
+    }
+    optional ( ltm_provisioned == "no" ) {
+        message sorry "You must license and provision the Local Traffic Manager (LTM) module to use this template."
+    }
+}
+optional ( intro.ltm_provisioned == "yes" ) {
+    section basic {
+        choice display_help display "xxlarge" default "hide" {
+            "Yes, show inline help" => "max"  ,
+            "No, do not show inline help" => "hide"
+        }
+        optional ( basic.display_help == "max" ) {
+            message display_help_max "Inline help is available to provide contextual descriptions to aid in the completion of this configuration.  Select to show or hide the inline help in this template. Important notes and warnings are always visible, no matter which selection you make here."
+        }
+        choice advanced display "xxlarge" default "no" {
+            "Basic - Use F5's recommended settings" => "no"  ,
+            "Advanced - Configure advanced options"    => "yes"
+        }
+        optional ( basic.display_help == "max" ) {
+            message advanced_max "This template supports two configurations modes. Basic mode exposes the most commonly used settings, and automatically configures the rest of the options.  Advanced mode allows you to review and change all settings."
+        }
+        choice version display "xxlarge" default "2008R2" {
+            "Windows Server 2008 R2" => "2008R2"  ,
+            "Windows Server 2012" =>"2012"  ,
+            "Windows Server 2012 R2" => "2012R2"
+        }
+        optional ( basic.display_help == "max" ) {
+            message version_max "Select the version of Microsoft Windows Server you are using. The system uses this information to create the proper server health monitor."
+        }
+        optional ( version != "2008R2" )  {
+            choice udp display "xxlarge" default "yes" {
+                "No, clients will not use UDP" => "no"  ,
+                "Yes, clients will use UDP" => "yes"
+            }
+            optional ( basic.display_help == "max" ) {
+                message udp_max "Select whether your clients will attempt to connect to the Windows Server 2012 or 2012 R2 servers using UDP.  The BIG-IP system uses this information to create the appropriate virtual servers."
+            }
+        }
+    }
+    section net {
+        optional ( basic.advanced == "yes" ) {
+            choice client_mode display "xxlarge" default "wan" {
+                "Local area network  ( LAN ) " => "lan"  ,
+                "Wide area network  ( WAN ) " => "wan"
+            }
+        }
+        optional ( basic.display_help == "max" && basic.advanced == "yes" ) {
+            message client_mode_max "Select the type of network that connects the clients to the BIG-IP system. This is used to determine the client-side TCP optimizations the system uses."
+        }
+        optional ( basic.advanced == "yes" ) {
+            multichoice client_vlan default tcl {
+            set ::choices [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items net vlan]
+            return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+        } tcl {
+            set ::choices [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items net vlan]
+            return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+        }
+        optional ( basic.display_help == "max" && basic.advanced == "yes" ) {
+            message client_vlan_max "You can optionally configure the BIG-IP system to accept client traffic from specific VLANs you have configured.   By default, the BIG-IP system accepts traffic from all VLANs configured on the system. The VLAN objects must already be configured on this BIG-IP system before you can select them. If you do not move any VLANs to the Selected box, the BIG-IP system accepts traffic from all VLANs"
+        }
+    }
+    optional ( basic.advanced == "yes" ) {
+        choice server_mode display "xxlarge" default "lan" {
+            "Local area network  ( LAN ) " => "lan"  ,
+            "Wide area network  ( WAN ) " => "wan"
+        }
+    }
+    optional ( basic.display_help == "max" && basic.advanced == "yes" ) {
+        message server_mode_max "Select the type of network that connects the servers to the BIG-IP system. This is used to determine the server-side TCP optimizations the system uses."
+    }
+    choice same_subnet display "xxlarge" default "no" {
+        "BIG-IP virtual server IP and Remote Desktop Session Host servers are on different subnets" => "no"  ,
+        "BIG-IP virtual server IP and Remote Desktop Session Host servers are on the same subnet"   => "yes"
+    }
+    optional ( basic.display_help == "max" ) {
+        message subnet_1_max "It is important to ensure that responses to client requests made using the BIG-IP virtual server address are returned through the BIG-IP system. If the client receives a response directly from the Remote Desktop server, the connection is dropped. The way the BIG-IP system handles this depends on your network topology."
+        message subnet_2_max "For environments in which the virtual server IP address is on a subnet different from the Remote Desktop servers, select BIG-IP virtual server IP and the Remote Desktop servers are on different subnets."
+        message subnet_3_max "For environments in which the virtual server IP address provided is on the same subnet as the Remote Desktop servers in the associated pool, select BIG-IP virtual server IP and the Remote Desktop servers are on the same subnet. This enables Secure Network Address Translation (SNAT Auto Map). This configuration results in the BIG-IP system replacing the client IP address of an incoming connection with its local floating self IP address, ensuring the server response returns through the BIG-IP system."
+    }
+    optional ( same_subnet == "no" ) {
+        choice route_to_bigip display "xxlarge" default "no" {
+            "Remote Desktop Session Host servers have a route to clients through the BIG-IP"           => "yes"  ,
+            "Remote Desktop Session Host servers do not have a route to clients through the BIG-IP"    => "no"
+        }
+    }
+    optional ( basic.display_help == "max" ) {
+        message def_rt_1_max "For environments in which the virtual server IP is on a subnet different from the Remote Desktop servers, information regarding the IP setting of the Remote Desktop servers is required to ensure the correct BIG-IP system configuration."
+        message def_rt_2_max "If the Remote Desktop servers use the BIG-IP system as their default gateway, select Remote Desktop servers have a route for clients through the BIG-IP. In this scenario, no configuration is needed to support your environment to ensure correct server response handling."
+        message def_rt_3_max "If the Remote Desktop servers do not have a route through the BIG-IP system, select Remote Desktop servers do not have a route for clients through the BIG-IP. This enables Secure Network Address Translation (SNAT Auto Map). This configuration results in the BIG-IP system replacing the client IP address of an incoming connection with its local floating self IP address ensuring the server response returns through the BIG-IP system."
+    }
+    optional ( same_subnet == "yes"
+         || ( same_subnet == "no"
+         && route_to_bigip == "no" )) {
+        choice snat_type display "xxlarge" default "automap" {
+            "Fewer than 64,000 concurrent connections per server" => "automap"  ,
+            "More than 64,000 concurrent connections per server" => "snatpool"
+        }
+        optional ( basic.display_help == "max" ) {
+            message snat_max "For environments with fewer than 64,000 concurrent connections per server, the BIG-IP system enables SNAT Auto Map, which uses a unique IP:port combination for each client request it sends to the Remote Desktop server. For environments with more than 64,000 concurrent connections per Remote Desktop server, the BIG-IP system enables a SNAT pool, and additional IP addresses are reserved to ensure the system has enough unique combinations. If the system exhausts all combinations, new client connections are refused until one is available."
+        }
+        optional ( snat_type == "snatpool" ) {
+            optional ( intro.is_admin == "no" ) {
+                message manager_role_warning_snat "SNAT pool creation is not available while logged in with the Manager role. Select an existing pool or make a selection that does not use SNAT pools."
+            }
+            choice snatpool display "xxlarge" default "/#create_new#" tcl {
+                set ::choices "Create a new SNAT pool\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm snatpool]"
+                return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+            optional ( basic.display_help == "max" ) {
+                message snatpool_max "Choose whether you want the iApp template to create a new SNAT Pool for this implementation. If you have already created a custom SNAT Pool, you can select it from the list."
+            }
+            optional ( snatpool == "/#create_new#" && intro.is_admin == "yes" ) {
+                table snatpool_members {
+                    string addr required validator "IpAddress" display "xlarge"
+                }
+                optional ( basic.display_help == "max" ) {
+                    message snatpool_members_max "SNAT Pool addresses should be available IP addresses, not the self-IP address(es) of the BIG-IP system"
+                }
+           }
+        }
+    }
+}
+
+   optional ( intro.afm_provisioned == "yes" && intro.afm_version == "yes" && intro.is_admin == "yes" ) {
+      section afm {
+         choice policy default "/#do_not_use#" display "xxlarge" tcl {
+            set ::choices "Yes, use F5's recommended AFM configuration\t/#default#\nNo, do not use AFM to secure your application\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -nocomplain security firewall policy]"
+            return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+      }
+         optional ( basic.display_help == "max" ) {
+            message policy_max "BIG-IP Advanced Firewall Manager (AFM) is a high-performance, stateful, full-proxy network firewall designed to guard data centers against incoming threats that enter the network on the most widely deployed protocols.  BIG-IP AFM must be fully licensed and provisioned to use this functionality. If you have already created an AFM Network Firewall Policy on this BIG-IP system for this implementation, you can select it from the list."
+         }
+         optional ( policy == "/#default#" ) {
+            choice restrict_by_addr default "/#do_not_use#" display "xxlarge" tcl {
+               set ::choices "No, do not restrict source addresses (allow all sources)\t/#do_not_use#\nRestrict source addresses\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -nocomplain security firewall address-list]"
+               return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+            optional ( basic.display_help == "max" ) {
+               message restrict_max "You can use the BIG-IP AFM to restrict access to your application by either IP address or network address. If enabled, the system will only allow access to the virtual server from the address(es) you specify."
+            }
+            optional ( restrict_by_addr == "/#create_new#" ) {
+               string allowed_addr display "xxlarge" required
+               optional ( basic.display_help == "max" ) {
+                  message allowed_addr_max "Specify the IP or network address that should have access to the application.  You can use a single IP address, a list of IP addresses separated by spaces, a range of IP addresses separated by a dash (for example 192.0.2.10-192.0.2.100), a single network address, such as 192.0.2.200/24, or any combination of these."
+               }
+            }
+         }
+         optional ( policy != "/#do_not_use#" ) {
+            choice restrict_by_reputation default "accept" display "xxlarge" {
+               "Allow all sources regardless of reputation" => "accept"  ,
+               "Reject access from sources with a low reputation" => "reject"  ,
+               "Allow but log access from sources with a low reputation" => "warn"
+               }
+            optional ( basic.display_help == "max" ) {
+               message restrict_by_reputation_max "The BIG-IP AFM uses an IP intelligence database to categorize IP addresses coming into the system. Select the way you want the system to handle IP addresses with a low reputation score."
+            }
+            optional ( basic.display_help == "max" && restrict_by_reputation != "accept" ) {
+               message restrict_by_reputation_log "By default, IP Intelligence events are logged to Security > Event Logs > Network > IP Intelligence.  For the best performance, F5 recommends creating a remote logging profile to log IP Intelligence events."
+            }
+            message restrict_by_reputation_warn "You must have an active IP Intelligence license for IP reputation-based access control to function correctly."
+
+            choice staging_policy default "/#do_not_use#" display "xxlarge" tcl {
+               set ::choices "Do not apply a staging policy\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -nocomplain security firewall policy]"
+               return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+            message staging_policy1_max "A policy in Staging mode does not block any traffic, and only logs what would be blocked if the policy were placed into production."
+
+            optional ( basic.display_help == "max" ) {
+               message staging_policy_max "A staged policy allows you to evaluate the effect a policy has on traffic by analyzing the system logs, without actually modifying traffic based on the firewall rules.  You must already have a policy on the system in order to select it from the list.  For specific information on creating a staging policy, see the AFM documentation."
+            }
+            choice security_logging default "/#do_not_use#" display "xxlarge" tcl {
+               # Menu should display all log profiles with "network none".
+               # tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items will not filter security log profiles,
+               # so the filter has been written inline here.
+               set ::choices "Do not use a logging profile\t/#do_not_use#\n"
+               if { [catch {
+                  set profile_list [tmsh::list security log profile all-properties recursive]
+               } err] } {
+                  set profile_list " "
+               }
+               array set profiles \
+                  [string map {"security log profile" ""} $profile_list]
+               foreach name [array names profiles] {
+                  array set subprofile $profiles($name)
+                  if { [info exists subprofile(network)] && \
+                     $subprofile(network) != "none" } {
+                     append ::choices "$name\n"
+                  }
+               }
+               return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+            optional ( basic.display_help == "max" ) {
+               message security_logging_max "The logging profile enables you to log detailed information about BIG-IP system Network Firewall events and store those logs on the BIG-IP system or a remote logging server (syslog or Splunk). If you want to use a logging profile, we recommend creating one outside this template. Only logging profiles with Network Firewall enabled appear in the list."
+               message security_logging1_max "If you are also using BIG-IP ASM, and the logging profile you created has both Application Security and Network Firewall enabled in the same profile, you must also select that profile here. See the BIG-IP AFM documentation for specific information on Logging profiles."
+            }
+         }
+      }
+   }
+   section vs_pool {
+      string vs_addr display "xxlarge" validator "IPAddress" required
+      optional ( basic.display_help == "max" ) {
+         message vs_addr_max "This IP and port combination become the BIG-IP virtual server address and port, which clients use to access the application. The system intercepts requests to this IP:Port and distributes them to the Remote Desktop servers."
+      }
+      string vs_port display "medium" validator "PortNumber" default "3389" required
+      optional ( basic.display_help == "max" ) {
+         message vs_port_max "Specify the service port you want to use for the virtual server. The default port for Remote Desktop is 3389."
+      }
+      choice pool_to_use display "xxlarge" default "/#create_new#" tcl {
+
+         set ::choices "Create a new pool\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm pool]"
+         return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+      }
+      optional ( basic.display_help == "max" ) {
+         message pool_max "A load balancing pool is a logical set of devices, such as Remote Desktop servers, grouped together to receive and process traffic. When clients attempt to access the application via the BIG-IP virtual server, the BIG-IP system distributes requests to any of the servers that are members of that pool."
+      }
+      optional ( pool_to_use == "/#create_new#" ) {
+         optional ( basic.advanced == "yes" ) {
+               lb_method lb_method_choice
+               optional ( basic.display_help == "max" ) {
+                  message lb_method_max "A load balancing method is an algorithm that the BIG-IP system uses to select a pool member for processing a request. F5 recommends the Least Connections load balancing method, where new connections are routed to the node that has the least number of current connections. This is ideal for environments in which pool members have similar performance and capacity capabilities."
+               }
+               choice tcp_req_queueing display "xxlarge" default "no" {
+                  "Enable TCP request queuing"           => "yes"  ,
+                  "Do not enable TCP request queuing"    => "no"
+               }
+               optional ( basic.display_help == "max" ) {
+                  message tcp_request_queue_2_max "TCP request queuing provides the ability to queue connection requests that exceed the capacity of connections for a pool, pool member, or node, as determined by the connection limit. If you enable TCP request queuing, you must specify a queue length and timeout for queued requests based on server capability, load, and need for shared resources."
+               }
+               optional ( tcp_req_queueing == "yes" ) {
+                message tcp_request_queue_1_max "Improper use or misconfiguration of TCP Request Queuing/Connection Limits can result in unwanted application behavior and poor performance of your BIG-IP system. For this reason we recommended you verify these settings impact prior to deployment in a production environment. You MUST add a Connection Limit to your pool members for TCP Request Queuing."
+                  string tcp_queue_length display "medium"
+                     default "0" required
+                     validator "NonNegativeNumber"
+                  optional ( basic.display_help == "max" ) {
+                     message tcp_queue_length_max "Specify a number for the length of the queue. You should not use a value of '0', which indicates an unlimited queue length, and is only constrained by available memory."
+                  }
+                  string tcp_queue_timeout display "medium"
+                     default "0" required
+                     validator "NonNegativeNumber"
+                  optional ( basic.display_help == "max" ) {
+                     message tcp_queue_timeout_max "Specify a number of milliseconds that requests should remain in the queue before timing out."
+                  }
+               }
+               choice use_slow_ramp default "yes" display "xxlarge"  {
+                  "Use Slow Ramp"        => "yes"  ,
+                  "Do not use Slow Ramp" => "no"
+               }
+               optional ( basic.display_help == "max" ) {
+                  message slow_ramp_max "With Slow Ramp, the BIG-IP system gradually adds connections to a newly-enabled or newly-added Remote Desktop server over a time period you specify, rather than sending a full proportion of the traffic immediately. Slow Ramp is essential when using load balancing methods like Least Connections, as the BIG-IP system would otherwise send all new connections to a new server immediately, potentially overwhelming that server. The time period you select for Slow Ramp is highly dependent on the speed of your server hardware and the behavior of your Remote Desktop services. "
+               }
+               optional ( use_slow_ramp == "yes" ) {
+                  string slow_ramp_setvalue display "medium"
+                     default "300" required
+                     validator "NonNegativeNumber"
+               }
+               optional ( basic.display_help == "max" ) {
+                  message slow_ramp_setvalue_max "Specify the duration (in seconds) for Slow Ramp time (the amount of time the system sends less traffic to a newly-enabled pool member). The default setting of 300 seconds  (5 minutes) is very conservative in most cases."
+               }
+               choice use_pga default "no" display "xxlarge"  {
+                  "Do not use Priority Group Activation" => "no"  ,
+                  "Use Priority Group Activation"        => "yes"
+               }
+               optional ( basic.display_help == "max" ) {
+                  message pga_max "Priority Group Activation allows you to segment your servers into priority groups.  With Priority Group Activation, the BIG-IP system load balances traffic according to the priority number you assign to the pool members. A higher number indicates higher priority. Traffic is only sent to the servers with the highest priority, unless the number of available servers in that priority group falls below the value you specify as the minimum. The BIG-IP system then sends traffic to the group of servers with the next highest priority, and so on. See the BIG-IP documentation for more details."
+               }
+               optional ( use_pga == "yes" ) {
+                  string min_active_members display "medium"
+                     default "0" required
+                     validator "NonNegativeNumber"
+                  optional ( basic.display_help == "max" ) {
+                     message min_active_members_max "Specify the minimum number of servers which must be available before the system sends traffic to servers with a lower priority."
+                  }
+               }
+            }
+            table members {
+               editchoice addr display "large" tcl {
+
+                  set ::choices [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm node]
+                  return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+               }
+               string port display "small" required
+                  default "3389" validator "PortNumber"
+               string conn_limit display "small" required
+                  default "0" validator "NonNegativeNumber"
+               optional ( lb_method_choice == "ratio-member"
+                       || lb_method_choice == "ratio-node"
+                       || lb_method_choice == "ratio-session"
+                       || lb_method_choice == "ratio-least-connections-member"
+                       || lb_method_choice == "ratio-least-connections-node"
+                       || lb_method_choice == "dynamic-ratio-member"
+                       || lb_method_choice == "dynamic-ratio-node") {
+                  string ratio default "1" validator "NonNegativeNumber"
+                     display "small"
+               }
+               optional ( use_pga == "yes" ) {
+                  string priority default "0" required
+                     validator "NonNegativeNumber" display "small"
+               }
+            }
+            optional ( basic.display_help == "max" ) {
+               message members_max "Specify the IP address(es) of your Remote Desktop servers. If you have existing nodes on this BIG-IP system, you can select them from the list, otherwise type the addresses. Click Add to include additional servers."
+            }
+         }
+      }
+   optional ( vs_pool.pool_to_use == "/#create_new#" ) {
+        section app_health {
+            choice monitor display "xxlarge" default "/#create_new#" tcl {
+                 set ::choices "Create a new monitor\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -filter NAME != "tcp" \
+                 ltm monitor tcp]"
+                 return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+             }
+              optional ( basic.display_help == "max" ) {
+                 message monitor_max "Monitors are used to determine the health of the application on each Remote Desktop server. If an application instance does not respond or responds incorrectly the system will cease to send client requests to that Remote Desktop server. The system will continue to monitor the instance and will begin sending requests once the application responds correctly."
+                 message monitor_max_2 "To choose a pre-existing monitor, you must have created a monitor of the type TCP before running this iApp.  Monitors of other types will not appear in this list."
+              }
+              optional ( monitor == "/#create_new#" ) {
+                 string frequency display "medium" required default "30"
+                 string send display "xxlarge" default ""
+                 optional ( basic.display_help == "max" ) {
+                    message send_max "Enter the TCP string to send to the Remote Desktop server(s). Consult the deployment guide for the correct send string for your version of Remote Desktop."
+                 }
+                 string recv display "xxlarge" default ""
+                 optional ( basic.display_help == "max" ) {
+                    message recv_max "Enter the TCP string indicating that Remote Desktop server(s). Consult the deployment guide for the correct receive string for your version of Remote Desktop."
+                 }
+                 optional ( basic.display_help == "max" ) {
+                    message freq_max "This is the duration, in seconds, of a single monitor cycle. At this interval, the system checks the health of the application instance on each Remote Desktop server configured in the Remote Desktop server pool."
+                 }
+             }
+        }
+   }
+   optional ( basic.advanced == "yes" ) {
+      section client_opt {
+         optional ( net.client_mode == "lan" ) {
+            choice tcp_lan_opt display "xxlarge"
+               default "/#create_new#" tcl {
+
+                  set ::choices "New profile based on tcp-lan-optimized ( recommended )\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm profile tcp]"
+                  return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+         }
+         optional ( net.client_mode != "lan" ) {
+            choice tcp_wan_opt display "xxlarge"
+            default "/#create_new#" tcl {
+
+               set ::choices "New profile based on tcp-wan-optimized ( recommended )\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm profile tcp]"
+               return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+         }
+         optional ( basic.display_help == "max" ) {
+            message tcp_max "The client-side TCP profile optimizes the communication between the BIG-IP system and the client by controlling the behavior of the traffic which results in higher transfer rates, improved connection reliability and increased bandwidth efficiency."
+         }
+      }
+
+      section server_opt {
+         optional ( net.server_mode == "lan" ) {
+            choice tcp_lan_opt display "xxlarge"
+               default "/#create_new#" tcl {
+
+                  set ::choices "New profile based on tcp-lan-optimized ( recommended )\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm profile tcp]"
+                  return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+               }
+            }
+         optional ( net.server_mode != "lan" ) {
+            choice tcp_wan_opt display "xxlarge"
+               default "/#create_new#" tcl {
+
+                  set ::choices "New profile based on tcp-wan-optimized ( recommended )\t/#create_new#\n[tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items ltm profile tcp]"
+                  return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+               }
+            }
+         optional ( basic.display_help == "max" ) {
+            message tcp_max "The server-side TCP profile optimizes the communication between the BIG-IP system and the server by controlling the behavior of the traffic which results in higher transfer rates, improved connection reliability and increased bandwidth efficiency."
+         }
+         }
+      section irules {
+         message irule_1_max "Improper use or misconfigurations of an iRule can result in unwanted application behavior and poor performance of your BIG-IP system. For this reason we recommended you verify the impact of an iRule prior to deployment in a production environment."
+         optional ( basic.display_help == "max" ) {
+            message irule_2_max "The BIG-IP system supports a scripting language to allow an administrator to instruct the system to intercept, inspect, transform, direct and track inbound or outbound application traffic. An iRule contains the set of instructions the system uses to process data flowing through it, either in the header or payload of a packet."
+            message irule_3_max "Correct event priority is critical when assigning multiple iRules. For more information about iRule event priority, see https://devcentral.f5.com/wiki/iRules.priority.ashx."
+         }
+         multichoice irules_tcp display "xlarge" tcl {
+
+            set ::choices [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -filter NAME !~ "^_sys_" ltm rule]
+            return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+            }
+         multichoice irules_udp display "xlarge" tcl {
+
+            set ::choices [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_get_items -filter NAME !~ "^_sys_" ltm rule]
+            return [tmsh::run_proc f5.iapp.1.5.1.cli:iapp_safe_display ::choices]
+         }
+      }
+   }
+   optional ( basic.display_help == "max" ) {
+      section addl_steps {
+         message dns "You must configure a DNS entry for each fully qualified host name that the clients use to access the Remote Desktop servers.  Each DNS record must resolve to the IP address you configured for the BIG-IP virtual server defined in the High Availability section."
+      }
+   }
+}
+text {
+   intro "Welcome to the iApp template for Remote Desktop Session Host"
+   
+   intro.intro "Introduction"
+   intro.check_for_updates "Check for Updates"
+   intro.sorry "We're sorry"
+   intro.manager_role_warning "**WARNING**"
+   intro.manager_role_warning_afm "**WARNING**"
+
+   basic "Template Options"
+   basic.display_help "Do you want to see inline help?"
+   basic.display_help_max ""
+   basic.advanced "Which configuration mode do you want to use?"
+   basic.advanced_max ""
+   basic.version "Which version of Windows Server are you deploying?"
+   basic.version_max ""
+   basic.udp "Will clients be connecting via UDP?"
+   basic.udp_max ""
+
+   net "Network"
+   net.client_vlan "Which VLANs transport client traffic?"
+   net.client_vlan_max ""
+   net.client_mode "What type of network connects clients to the BIG-IP?"
+   net.client_mode_max ""
+   net.server_mode "What type of network connects servers to the BIG-IP?"
+   net.server_mode_max ""
+   net.same_subnet "Where will the virtual servers be in relation to the Remote Desktop Session Host servers?"
+   net.subnet_1_max ""
+   net.subnet_2_max ""
+   net.subnet_3_max ""
+   net.route_to_bigip "How have you configured routing on your Remote Desktop Session Host servers?"
+   net.def_rt_1_max ""
+   net.def_rt_2_max ""
+   net.def_rt_3_max ""
+   net.snat_type "How many connections per server do you expect?"
+   net.snatpool "Create a new SNAT pool or use an existing one?"
+   net.manager_role_warning_snat "**WARNING**"
+   net.snatpool_max ""
+   net.snatpool_members "What are the IP addresses you want to use for the SNAT pool?"
+   net.snatpool_members.addr "IP"
+   net.snatpool_members_max ""
+   net.snat_max ""
+
+   afm "Advanced Firewall Manager (BIG-IP AFM)"
+   afm.policy "Do you want to use BIG-IP AFM to protect your application?"
+   afm.policy_max ""
+   afm.restrict_by_addr "Do you want to restrict access to your application by network or IP address?"
+   afm.restrict_max ""
+   afm.allowed_addr "What IP or network addresses should be allowed to access your application?"
+   afm.allowed_addr_max ""
+   afm.security_logging "Which logging profile would you like to use?"
+   afm.security_logging_max ""
+   afm.security_logging1_max ""
+   afm.restrict_by_reputation "How do you want to control access to your application from sources with a low reputation score?"
+   afm.restrict_by_reputation_max ""
+   afm.restrict_by_reputation_log ""
+   afm.restrict_by_reputation_warn "IMPORTANT"
+   afm.staging_policy "Would you like to stage a policy for testing purposes?"
+   afm.staging_policy_max ""
+   afm.staging_policy1_max "CRITICAL"
+
+   vs_pool "High Availability"
+   vs_pool.vs_addr "What IP address do you want to use for the virtual server?"
+   vs_pool.vs_addr_max ""
+   vs_pool.vs_port "What is the associated service port?"
+   vs_pool.vs_port_max ""
+   vs_pool.pool_to_use "Do you want to create a new pool or use an existing one?"
+   vs_pool.pool_max ""
+   vs_pool.members "Which servers are a part of this pool?"
+   vs_pool.members_max ""
+   vs_pool.members.addr "IP Address"
+   vs_pool.members.port "Port"
+   vs_pool.members.conn_limit "Connection limit"
+   vs_pool.members.ratio "Ratio"
+   vs_pool.members.priority "Priority"
+   vs_pool.lb_method_choice "Which load balancing method do you want to use?"
+   vs_pool.lb_method_max ""
+   vs_pool.tcp_req_queueing "Should the BIG-IP system queue TCP requests?"
+   vs_pool.tcp_queue_length "What is the maximum number of queued TCP requests?"
+   vs_pool.tcp_queue_length_max ""
+   vs_pool.tcp_queue_timeout "How many milliseconds should requests stay in the queue?"
+   vs_pool.tcp_queue_timeout_max ""
+   vs_pool.tcp_request_queue_1_max "WARNING"
+   vs_pool.tcp_request_queue_2_max ""
+   vs_pool.use_slow_ramp "Use a Slow Ramp time for newly added servers?"
+   vs_pool.slow_ramp_max ""
+   vs_pool.slow_ramp_setvalue "How many seconds should Slow Ramp time last?"
+   vs_pool.slow_ramp_setvalue_max ""
+   vs_pool.use_pga "Do you want to give priority to specific groups of servers?"
+   vs_pool.pga_max ""
+   vs_pool.min_active_members "What is the minimum number of active members in a group?"
+   vs_pool.min_active_members_max ""
+
+   app_health "Application Health"
+   app_health.monitor "Create a new health monitor or use an existing one?"
+   app_health.send "TCP monitor send string:"
+   app_health.recv "TCP monitor receive string:"
+   app_health.send_max ""
+   app_health.recv_max ""
+   app_health.monitor_max ""
+   app_health.monitor_max_2 ""
+
+   app_health.frequency "How many seconds between each health check?"
+   app_health.freq_max ""
+
+   client_opt "Client Optimization"
+   client_opt.tcp_lan_opt "How do you want to optimize client-side connections?"
+   client_opt.tcp_wan_opt "How do you want to optimize client-side connections?"
+   client_opt.tcp_max ""
+
+   server_opt "Server Optimization"
+   server_opt.tcp_lan_opt "How do you want to optimize server-side connections?"
+   server_opt.tcp_wan_opt "How do you want to optimize server-side connections?"
+   server_opt.tcp_max ""
+
+   irules "iRules"
+   irules.irules_tcp "Do you want to add any custom iRules to the TCP virtual server?"
+   irules.irules_udp "Do you want to add any custom iRules to the UDP virtual server?"
+   irules.irule_1_max "WARNING"
+   irules.irule_2_max ""
+   irules.irule_3_max ""
+
+   addl_steps "Additional Steps"
+   addl_steps.dns "Remote Desktop"
+
+}
+            }
+            role-acl { admin manager resource-admin }
+            run-as none
+      }
+   }
+   requires-bigip-version-min 11.3.0
+}

@@ -1,0 +1,65 @@
+---
+
+- name: Change the hostname
+  bigip_hostname:
+      hostname: "{{ valid_hostname }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- debug: var=result
+- name: Assert Change the hostname
+  assert:
+      that:
+          - result|changed
+          - result['hostname'] == valid_hostname
+
+- name: Change the hostname - Idempotent check
+  bigip_hostname:
+      hostname: "{{ valid_hostname }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change the hostname - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change the hostname, invalid name
+  bigip_hostname:
+      hostname: "{{ invalid_hostname }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Change the hostname, invalid name
+  assert:
+      that:
+          - not result|changed
+
+- name: Change the hostname, invalid name - Idempotent check
+  bigip_hostname:
+      hostname: "{{ invalid_hostname }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Change the hostname, invalid name - Idempotent check
+  assert:
+      that:
+          - not result|changed

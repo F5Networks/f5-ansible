@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_user_facts
+      - bigip_user_facts

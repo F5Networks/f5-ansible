@@ -7,6 +7,7 @@ Vagrantfile
 .tox/
 .coveragerc
 vault.txt
+**.cache/
 
 # Byte-compiled files
 __pycache__/

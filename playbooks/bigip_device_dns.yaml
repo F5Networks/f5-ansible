@@ -8,6 +8,14 @@
 # This module will run tests against a BIG-IP host to verify that the
 # bigip_device_dns module behaves as expected.
 #
+# Requirements:
+#
+#    The following command must be run on BIG-IP prior to running these tests
+#
+#        tmsh modify sys global-settings mgmt-dhcp disabled
+#
+#    This ensures that the tests to manipulate DNS settings will complete.
+#
 # Usage:
 #
 #    ansible-playbook -i notahost, playbooks/bigip_device_dns.yaml
@@ -22,6 +30,7 @@
 #
 #    - 11.6.0
 #    - 12.0.0
+#    - 12.1.1 HF1
 #
 
 - name: Test the bigip_device_dns module
@@ -29,4 +38,4 @@
   connection: local
 
   roles:
-      - __bigip_device_dns
+      - bigip_device_dns

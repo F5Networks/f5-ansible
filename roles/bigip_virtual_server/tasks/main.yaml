@@ -1,0 +1,395 @@
+---
+
+- name: Add virtual server
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Add virtual server - Idempotent check
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Modify port of the Virtual Server
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Modify port of the Virtual Server
+  assert:
+      that:
+          - result|changed
+
+- name: Modify port of the Virtual Server - Idempotent check
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Modify port of the Virtual Server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Enable route advertisement
+  bigip_virtual_server:
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      route_advertisement_state: "enabled"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable route advertisement
+  assert:
+      that:
+          - result|changed
+
+- name: Enable route advertisement - Idempotent check
+  bigip_virtual_server:
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      route_advertisement_state: "enabled"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable route advertisement - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Disable route advertisement
+  bigip_virtual_server:
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      route_advertisement_state: "disabled"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable route advertisement
+  assert:
+      that:
+          - result|changed
+
+- name: Disable route advertisement - Idempotent check
+  bigip_virtual_server:
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port2 }}"
+      route_advertisement_state: "disabled"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable route advertisement - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete virtual server
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Delete virtual server - Idempotent check
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Add virtual server for VLAN test
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add virtual server for VLAN test
+  assert:
+      that:
+          - result|changed
+
+- name: Set VLAN on virtual server
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      enabled_vlans: "{{ enabled_vlans }}"
+  register: result
+
+- name: Assert Set VLAN on virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Set VLAN on virtual server - Idempotent check
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      enabled_vlans: "{{ enabled_vlans }}"
+  register: result
+
+- name: Assert Set VLAN on virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set ALL VLAN on virtual server
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      enabled_vlans: "ALL"
+  register: result
+
+- name: Assert Set ALL VLAN on virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Set ALL VLAN on virtual server - Idempotent check
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      enabled_vlans: "ALL"
+  register: result
+
+- name: Assert Set ALL VLAN on virtual server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete VLAN virtual server
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete VLAN virtual server
+  assert:
+      that:
+          - result|changed
+
+- name: Add virtual server (FastHTTP)
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles_fasthttp }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Add virtual server again
+  bigip_virtual_server:
+      all_profiles: "{{ vs_profiles1 }}"
+      description: "{{ vs_description }}"
+      destination: "{{ node_host }}"
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      port: "{{ vs_port1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      snat: "{{ vs_snat1 }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Add virtual server again
+  assert:
+      that:
+          - result|changed
+
+- name: Delete virtual server with empty port
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      partition: "{{ bigip_partition }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      port: ""
+  register: result
+
+# Tests for different issues filed on Github
+- include: issue-38.yaml
+  tags: issue-38
+
+- include: issue-53.yaml
+  tags: issue-53
+
+- include: issue-57.yaml
+  tags: issue-57
+
+- include: issue-59.yaml
+  tags: issue-59
+
+# Tests for different pull requests filed on Github
+- include: pr-3158.yaml
+  tags: pr-3158

@@ -1,0 +1,2287 @@
+cli script f5.iapp.1.4.0.cli {
+ 
+#  Initialization proc for all templates.
+#  Parameters "start" and "stop" or "end".
+proc iapp_template { action } {
+    switch $action {
+        start {
+            catch { tmsh::modify sys scriptd log-level debug }
+            set ::clock_clicks [clock clicks]
+            puts "\nStarting iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\n"
+            tmsh::log info "Starting iApp template $tmsh::app_template_name"
+        }
+        stop -
+        end {
+            if { [info exists ::substa_debug] } {
+                puts $::substa_debug
+            }
+            puts "\nEnding iApp $tmsh::app_template_name [clock format \
+                [clock seconds] -format {%m/%d/%Y %T}]\nRun time [expr \
+                { ([clock clicks] - $::clock_clicks) / 1000 }] msec\n"
+            tmsh::log info "Ending iApp template $tmsh::app_template_name"
+        }
+    }
+    set ::HTTP_CONTENT_TYPES { application/(css\|css-stylesheet\|doc\|excel\|javascript\|json\|lotus123\|mdb\|mpp\|msaccess\|msexcel\|ms-excel\|mspowerpoint\|ms-powerpoint\|msproject\|msword\|ms-word\|photoshop\|postscript\|powerpoint\|ps\|psd\|quarkexpress\|rtf\|txt\|visio\|vnd\\.excel\|vnd\\.msaccess\|vnd\\.ms-access\|vnd\\.msexcel\|vnd\\.ms-excel\|vnd\\.mspowerpoint\|vnd\\.ms-powerpoint\|vnd\\.ms-pps\|vnd\\.ms-project\|vnd\\.msword\|vnd\\.ms-word\|vnd\\.ms-works\|vnd\\.ms-works-db\|vnd\\.powerpoint\|vnd\\.visio\|vnd\\.wap\\.cmlscriptc\|vnd\\.wap\\.wmlc\|vnd\\.wap\\.xhtml\\+xml\|vnd\\.word\|vsd\|winword\|wks\|word\|x-excel\|xhtml\\+xml\|x-java-jnlp-file\|x-javascript\|x-json\|x-lotus123\|xls\|x-mdb\|xml\|x-mscardfile\|x-msclip\|x-msexcel\|x-ms-excel\|x-mspowerpoint\|x-msproject\|x-ms-project\|x-msword\|x-msworks-db\|x-msworks-wps\|x-photoshop\|x-postscript\|x-powerpoint\|x-ps\|x-quark-express\|x-rtf\|x-vermeer-rpc\|x-visio\|x-vsd\|x-wks\|x-word\|x-xls\|x-xml) image/(photoshop\|psd\|x-photoshop\|x-vsd) text/(css\|html\|javascript\|json\|plain\|postscript\|richtext\|rtf\|vnd\\.wap\\.wml\|vnd\\.wap\\.wmlscript\|wap\|wml\|x-component\|xml\|x-vcalendar\|x-vcard) }
+}
+
+proc iapp_is { args } {
+    set up_var [lindex $args 0]
+    upvar $up_var var
+    if { [info exists var] } {
+        foreach val [lrange $args 1 end] {
+            if { [subst $var] eq $val } {
+                return 1
+            }
+        }
+    }
+    return 0
+}
+
+proc iapp_substa { args } {
+    upvar substa_in  argx \
+          substa_out rval
+    set   argx $args
+
+    # check the explicit value first.
+    # multiple layers of variable substitution requires multiple subst.
+    # error occurs here if any of the substituted variables do not exist
+    # valid wildcard (*) array entries will fail here first.
+    uplevel {
+        append ::substa_debug "\n$substa_in"
+        if { [info exists [set substa_in]] } {
+            set substa_out [subst $$substa_in]
+            set substa_out [subst $substa_out]
+        } else {
+            # since explicit value did not exist, try a wildcard value.
+            # substitute "*" as the array key and repeat.
+            set substa_tmp [split $substa_in "()"]
+            set substa_in "[lindex $substa_tmp 0](*)"
+            append ::substa_debug "*"
+            if { [info exists [set substa_in]] } {
+                set substa_out [subst $$substa_in]
+                set substa_out [subst $substa_out]
+            } else {
+                error "substa \"$substa_in\" array value not found"
+            }
+        }
+    }
+    return $rval
+}
+
+proc iapp_conf { args } {
+
+    # Return value $object_name is set to the first word in $arg that
+    # contains an underscore, since the position of the object name in
+    # tmsh syntax is not consistent.
+    set args [join $args]
+    set object_name [lindex $args [lsearch -glob $args "*_*"]]
+
+    # Global array ::tmsh_history persists between calls to iapp_conf
+    # in order to suppress duplicate commands.
+    if { ![info exists ::tmsh_history($args)] } {
+        set ::tmsh_history($args) 1
+        iapp_debug $args
+        switch -exact -- [string range $args 0 5] {
+            create { tmsh::create [string range $args 7 end] }
+            modify { tmsh::modify [string range $args 7 end] }
+            delete { tmsh::delete [string range $args 7 end] }
+            default { error "iapp_conf illegal parameter" }
+        }
+    }
+    return $object_name
+}
+
+proc iapp_make_safe_password { password } {
+    return [string map { \' \\\' \" \\\" \{ \\\{ \} \\\} \; \\\; \| \\\| \# \\\# \  \\\  \\ \\\\ } $password]
+}
+
+proc iapp_pull { loc items_list } {
+    upvar $items_list items
+    if { [set item [lindex $items $loc]] != "" } {
+        set items [lreplace $items $loc $loc]
+    }
+    return $item
+}
+
+proc iapp_process_flags { flags_array args_list } {
+    upvar $flags_array flags
+    upvar $args_list args
+
+    if { [set dubdash [lsearch $args "--"]] != -1 } {
+        set args [lreplace $args $dubdash $dubdash];
+    } else {
+        set dubdash end
+    }
+
+    foreach flag [array names flags] {
+        while { [set ptr [lsearch [lrange $args 0 $dubdash] $flag]] != -1 } {
+            set args [lreplace $args $ptr $ptr];
+
+            # we want to run the code in the flags_array at the calling
+            # proc's level so that the variables that it sets up are
+            # available there.
+            set access_var [format "$%s(%s)" $flags_array $flag]
+            set command [subst -nocommands { set ptr $ptr ; subst $access_var }]
+
+            uplevel 1 $command
+        }
+    }
+    return $args
+}
+
+proc iapp_tmos_version { args } {
+    set cversion [tmsh::version]
+    if { $cversion eq "" } {
+        tmsh::log err "unable to determine TMOS version"
+        error "unable to determine TMOS version"
+    }
+
+    # if no op+version was specified, just return the version
+    if { $args eq "" } { return $cversion }
+    if { [llength $args] > 2 } {
+        error "Too many arguments"
+    }
+
+    set op [lindex $args 0]; # operator
+    set NOTFOUND -1
+    # constrain to valid operators - adding more is fine as long as
+    # they are supported by [expr] (and makes sense)
+    if { [lsearch -exact { < > <= >= == != } $op] == $NOTFOUND } {
+        tmsh::log err "illegal operator: $op"
+        error "illegal operator: $op"
+    }
+
+    set tversion [lindex $args 1]; # target version
+    # one or two decimal digits, optionally followed by 0-2 complete groups of
+    # dots followed by one or two decimal digits with nothing before or after
+    set regex {^\d{1,2}(\.\d{1,2}){0,2}$}
+    if { ! [regexp -- $regex $tversion] } {
+        tmsh::log err "cannot parse version from: $tversion"
+        error "cannot parse version from: $tversion"
+    }
+
+    # p=>prefix, c=>current, t=>target
+    foreach p { c t } {
+        # extract major/minor/point components
+        scan [set [set p]version] "%d.%d.%d" [set p]mjr [set p]mnr [set p]pnt
+        # ensure that these are each set to at least 0
+        foreach level { mjr mnr pnt } {
+            if { ! [info exists [set p]${level}] } { set [set p]${level} 0 }
+        }
+        # turn them into one big number that we can compare
+        # leave room in-between just to be safe
+        set [set p]num [expr {
+            [set [set p]mjr]*1000000 +
+            [set [set p]mnr]*10000 +
+            [set [set p]pnt]*100
+        }]
+    }
+    # a simple numeric comparison is all that is needed at this point
+    return [eval expr $cnum $op $tnum ]
+}
+
+proc iapp_safe_display { args } {
+    # strings sent to APL must be truncated to 65535 bytes, see BZ435592
+    if { [string length [set [set args]]] > 65535 } {
+        set last_newline [string last "\n" [set [set args]] 65500]
+        return "[string range [set [set args]] 0 $last_newline]Error: Too many items for display"
+    } else {
+        return [set [set args]]
+    }
+}
+
+proc iapp_get_items { args } {
+
+    # Set default values.
+    set error_msg  "iapp_get_items $args:"
+    set do_binary  0
+    set nocomplain 0
+    set items      ""
+    set join_char  "\n"
+    set recursive  "recursive"
+    set com_dir    "/Common"
+    set loc_dir    "[tmsh::pwd]"
+
+    # Set up flag-related work.
+    array set flags  {
+        -exists      { [set do_binary 1] }
+        -nocomplain  { [set nocomplain 1] }
+        -list        { [set join_char " "] }
+        -norecursive { [set recursive ""] }
+        -local       { [set com_dir   ""] }
+        -dir         { [set loc_dir      [iapp_pull $ptr args]] }
+        -filter      { [set filter_field [iapp_pull $ptr args]] \
+                       [set filter_op    [iapp_pull $ptr args]] \
+                       [set filter_value [iapp_pull $ptr args]] }
+    }
+    iapp_process_flags flags args
+
+    # Get system object names in all requested directories.
+    set save_dir [tmsh::pwd]
+    foreach dir [lsort -unique "$com_dir $loc_dir"] {
+        tmsh::cd $dir
+        set tmsh_rval [catch {
+            foreach obj [tmsh::get_config $args $recursive] {
+
+                if { [info exists filter_field] } {
+                    if { $filter_field eq "NAME" } {
+                        set val [tmsh::get_name $obj]
+                    } else {
+                        # If get_field_value throws error, assume "none" value
+                        if { [catch {
+                            set val [tmsh::get_field_value $obj $filter_field]
+                            # strip quotes per BZ442531
+                            set val [string map {\" ""} $val]
+                        }]} { set val none }
+                    }
+                    # Non-Tcl operators =~ and !~ added for extra flexibility
+                    if { $filter_op eq "=~" } {
+                        set filter "\[regexp \"$filter_value\" \"$val\"\]"
+                    } elseif { $filter_op eq "!~" } {
+                        set filter "!\[regexp \"$filter_value\" \"$val\"\]"
+                    } else {
+                        set filter "\\\"$val\\\" $filter_op \\\"$filter_value\\\""
+                    }
+                    # If filter fails, skip to next object
+                    if { ![eval expr $filter] } {
+                        continue
+                    }
+                }
+                # string map catches /Common added by ltm profile ntlm,
+                # which is unlike all other ltm profile return values.
+                lappend items $dir/[string map {/Common/ ""} [tmsh::get_name $obj]]
+            }
+        } err ]
+    }
+    tmsh::cd $save_dir
+
+    # array keys: $do_binary,$tmsh_rval,$nocomplain. Do not insert whitespace.
+    array set rval {
+        0,0,0 {[join $items $join_char]}
+        0,0,1 {[join $items $join_char]}
+        0,1,0 {[error "$error_msg $err"]}
+        0,1,1 {}
+        1,0,0 {[llength $items]}
+        1,0,1 {[llength $items]}
+        1,1,0 {0}
+        1,1,1 {0}
+    }
+
+    return [subst $rval($do_binary,$tmsh_rval,$nocomplain)]
+}
+
+proc iapp_get_provisioned { args } {
+
+    array set lnum {
+        none      0
+        minimum   1
+        nominal   2
+        dedicated 3
+    }
+
+    # Set defaults.
+    set required minimum
+    set do_binary 1
+
+    # Set up flag-related work.
+    array set flags  {
+        -is          { [set required [iapp_pull $ptr args]] }
+        -level       { [set do_binary 0] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # If checking for AM provisioning on TMOS < 11.4,
+    # check for WAM provisioning instead.
+    if { $args eq "am" && [iapp_tmos_version < 11.4] } {
+        set args "wam"
+    }
+
+    # Get the provisioning level. If blank, assume none.
+    # Proc only checks 1 module at a time, so only 1 object is returned.
+    if { [catch {
+        set obj [tmsh::get_config sys provision $args]
+        set level [tmsh::get_field_value [lindex $obj 0] level]
+    }]} { set level none }
+
+    if { $do_binary } {
+        return [expr { $lnum($level) >= $lnum($required) }]
+    } else {
+        return $level
+    }
+}
+
+proc iapp_get_user { args } {
+
+    # Set defaults.
+    set do_role 0
+    set do_binary 0
+
+    # Set up flag-related work.
+    array set flags  {
+        -is_admin    { [set do_binary 1] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # Show user auth was introduced in v11.6
+    set user "unknown"
+    catch {
+        set user [tmsh::show auth user field-fmt]
+    } err
+    if { $do_binary } {
+        return [expr { $user == "unknown"
+        || [string first "role " $user] == -1
+        || [string first "role admin" $user] != -1
+        || [string first "role resource-admin" $user] != -1 }]
+    } else {
+        return $user
+    }
+}
+
+proc iapp_destination { args } {
+    # Set defaults. Flag actions may overwrite defaults later.
+    set route_domain    0
+    set do_mask         0
+    set port            0
+
+    # Set up flag-based actions.
+    array set flags  {
+        -route_domain { [set route_domain [iapp_pull $ptr args]] }
+        -mask         { [set do_mask 1] }
+        -length       { [set cidr_bits [iapp_pull $ptr args]] }
+    }
+
+    if { [llength [set non_switches [iapp_process_flags flags args]]] > 2 } {
+        error "Too many arguments"
+    }
+    if { [llength $non_switches] == 2 } { set port [lindex $non_switches 1] }
+    set addr [lindex $non_switches 0]
+
+
+    # Detect a CIDR mask and pull it off the addr string
+    if { [set loc [string first "/" $addr end-4]] != -1 } {
+        set cidr_bits [string range $addr [expr {$loc + 1}] end]
+        set addr [string range $addr 0 [expr {$loc - 1}]]
+    }
+
+    # Pull the route-domain off the addr string, but only use it as the
+    # route domain if it wasn't overridden by -route_domain flag.
+    if { [string first "%" $addr] != -1 } {
+        if { $route_domain == 0 } {
+            # route-domain is still default, so use value from addr string
+            set route_domain [lindex [split $addr "%"] 1]
+        }
+        set addr [lindex [split $addr "%"] 0]
+    }
+
+    if { $do_mask } {
+
+        # Define the delta between ipv4 and ipv6.
+        # length: ipv4 mask is 32 bits, ipv6 is 128 bits.
+        # group: ipv4 is grouped in octets, ipv6 as 16 bit words.
+        # format: ipv4 is decimal notation, ipv6 is hex.
+        # format1 also has the delimiter, format2 does not.
+        array set v {
+            0,length  32
+            0,group   8
+            0,format1 d.
+            0,format2 d
+            1,length  128
+            1,group   16
+            1,format1 .4x:
+            1,format2 .4x
+        }
+        set is_ipv6 [string match "*:*:*" $addr]
+
+        # Soften result of an illegal -length parameter.
+        if { ![info exists cidr_bits] || $cidr_bits > $v($is_ipv6,length) } {
+            set cidr_bits $v($is_ipv6,length)
+        } elseif { $cidr_bits < 0 } {
+            set cidr_bits 0
+        }
+
+        # Loop on the full length of the mask: 32 bits for ipv4, 128 for ipv6
+        for { set octet 0; set i 0 } { $i < $v($is_ipv6,length) } { incr i } {
+
+           # Take a break at intervals to save the grouping and add delimiter.
+           # Interval is 8 bits for ipv4 and 16 bits for ipv6.
+           if { $i && ![expr {$i % $v($is_ipv6,group)}] } {
+
+               # Add the grouping and delimiter to the mask, then reset.
+               append mask [format %$v($is_ipv6,format1) $octet]
+               set octet 0
+           }
+           # Shift the prior bits left by multiplying by 2.
+           # Then add the current bit, which is 1 if part of the mask, 0 if not.
+           # Current bit is part of the mask if $i < number of bits in the mask.
+           set octet [expr { 2 * $octet + ($i < $cidr_bits) }]
+        }
+        # Add the final grouping, then return the finished mask.
+        set ret_val [format $mask%$v($is_ipv6,format2) $octet]
+
+    } else {
+
+        # calculate a destination
+        # the route domain might be a name and we need a number.
+        if { ![string is integer $route_domain] } {
+            set route_domains [tmsh::get_config "/ net route-domain $route_domain"]
+            if { [llength $route_domains] != 1 } {
+                error "no such route domain: $route_domain"
+            }
+            # since we have already determined that the list is 1 long,
+            # this explicit reference to element 0 is safe
+            set route_domain [tmsh::get_field_value [lindex $route_domains 0] "id"]
+        }
+
+        set route_domain [expr { $route_domain == 0 ? "" : "%$route_domain" }]
+
+        # 0 and * represent wildcard port assignments in the GUI,
+        # but TMSH requires the string 'any' to specify a wildcard.
+        if { $port == 0 || $port == "*" } {
+            set port any
+        }
+
+        # Build the final destination. Use ":" for node names even if ipv6.
+        set is_ipv6_literal [string match "*:*:*" $addr]
+        set addr_delimiter  [expr { $is_ipv6_literal ? "." : ":" }]
+        set ret_val ${addr}${route_domain}${addr_delimiter}${port}
+    }
+    return $ret_val
+}
+
+proc iapp_pool_members { args } {
+
+    # Set defaults.
+    array set fields {
+        address          addr
+        port             port
+        port-secure      port_secure
+        connection-limit connection_limit
+        priority-group   priority
+        ratio            ratio
+    }
+    set route_domain ""
+    set port_override -1
+    set aaa_domain 0
+    set aaa_priority -1
+
+    # Set up flag-related work.
+    array set flags {
+        -fields       { [array set fields  [iapp_pull $ptr args]] }
+        -route_domain { [set route_domain  [iapp_pull $ptr args]] }
+        -port         { [set port_override [iapp_pull $ptr args]] }
+        -aaa_domain   { [set aaa_domain    1] }
+        -aaa_pool     { [set aaa_priority  0] }
+    }
+    iapp_process_flags flags args
+
+    # Identify the non-address/non-port fields. These go inside braces in tmsh.
+    set nonport_fields [lsearch -all -not -inline -regexp \
+        [array names fields] {address|port|port-secure}]
+
+    set members ""
+    foreach row [join $args] {
+
+        # Skip invalid table rows.
+        if { [llength [join $row]] %2 == 1 } {
+            continue
+        }
+
+        # Import APL table into an array for processing.
+        array unset columns
+        array set columns [join $row]
+        set addr $columns($fields(address))
+
+        # Identify the port number, either from table columns or by -port flag.
+        if { $port_override != -1 } {
+            set port $port_override
+        } elseif { [info exists columns($fields(port))] } {
+            set port $columns($fields(port))
+        } elseif { [info exists columns($fields(port-secure))] } {
+            set port $columns($fields(port-secure))
+        } else {
+            set port 80
+        }
+
+        # If specified, strip entered route domain and append the flag value.
+        if { $route_domain != "" } {
+            set addr [lindex [split $addr "%"] 0]
+            set addr "$addr%$route_domain"
+        }
+
+        # If -aaa_domain, use domain controller format, otherwise use pool format
+        if { $aaa_domain } {
+            append members " $columns($fields(host)) \{ ip $addr \}"
+        } else {
+            append members " [iapp_destination $addr $port] \{"
+
+            # Transfer non-port fields from the table to the tmsh string.
+            foreach name $nonport_fields {
+                if { [info exists columns($fields($name))] } {
+                    append members " $name $columns($fields($name))"
+                }
+            }
+
+            # If -aaa_pool, add priority field with incrementing value.
+            # This is required by APM.
+            if { $aaa_priority >= 0 } {
+                append members " priority-group [incr aaa_priority]"
+            }
+            append members " \}"
+        }
+    }
+
+    return "[expr { $aaa_domain ? "" : "members " }][expr { $members eq "" \
+        ? "none" : "replace-all-with \{ $members \}" }]"
+}
+
+proc iapp_debug { args } {
+
+    # Passwords should be obscured in all logs. Fields shown here are handled
+    # in this proc, but the global variable may be overwritten if alternate
+    # fields should be obscured.
+    if { ![info exists ::SENSITIVES] } {
+        set ::SENSITIVES {
+            account-password
+            admin-encrypted-password
+            password
+            passwd
+            secret
+        }
+    }
+
+    # look for any of the sensitive words, and replace the word that follows it
+    set regex "(\\m([join $::SENSITIVES |])\\M)\\s+\[^\\s\]*"
+    regsub -all $regex [join $args] {\1 -OBSCURED-} args
+    regsub -all "(<Password.*>).*(</Password>)" $args {\1-OBSCURED-\2} args
+
+    set lev [tmsh::get_field_value [lindex [tmsh::get_config sys scriptd \
+        log-level] 0] log-level]
+    if { $lev eq {debug} } {
+        puts $args
+    }
+}
+
+# The apm_config proc provides a tmsh pre-processor for APM
+# configuration, which in most cases will drastically reduce
+# implementation code. To configure APM with this proc, pass
+# it an array of object names and associated meta-tag substitutions.
+# Each object must be categorized as a profile, a resource, or
+# a policy-item. APM agents and customization-groups are derived
+# from these 3 categories as needed.
+#
+# apm_config's return value is a list of the APM profiles defined
+# in the argument and instantiated by the proc. This allows the
+# procedure call to be embedded directly into a virtual server
+# definition.
+#
+# These universal meta-tags may be placed anywhere in the array:
+# <ITEM> The object name, eg. apm_access
+# <PREFIX> The app name, including folder, eg. /Common/my_app.app/my_app
+#
+# Profile objects require the following meta-tags:
+# <PROFILE_TYPE> The tmsh object type, eg. "apm profile access"
+# <PROFILE_DEF>  The body of the object, eg.:
+#     "access-policy <PREFIX>
+#      defaults-from /Common/access
+#      eps-group <PREFIX>_eps
+#      errormap-group <PREFIX>_errormap
+#      general-ui-group <PREFIX>_general_ui"
+#
+# apm_config will automatically create default customization-groups
+# for the "-group" lines specified in access profile definitions.
+# In the above example, there is no need to additionally specify a
+# customization-group for errormap and general-ui.
+#
+# <PROFILE_TYPE> is a catch-all for other APM types, eg:
+#      apm_sso {
+#          <PROFILE_TYPE> {apm sso kerberos}
+#          <PROFILE_DEF>  "account-name <USER>
+#                          account-password <PASS>
+#                          realm <REALM>" }
+#
+# In the example above, <PROFILE_TYPE> and <PROFILE_DEF> are
+# apm_config meta-tags, while <USER>, <PASS>, and <REALM> must
+# be substituted before calling apm_config, eg. if these tags are
+# defined in $pre_proc_map, they may be substituted with:
+# array set apm_map [string map [subst $pre_proc_map] [array get apm_map]]
+#
+# Resource objects require the following meta-tags:
+# <RESOURCE_TYPE> The apm resource object type, eg. "webtop"
+# <RESOURCE_DEF>  The body of the object, eg.:
+#     "customization-group <ITEM>
+#      minimize-to-tray false
+#      webtop-type full"
+#
+# In the above example, a customization-group is specified. Any
+# customization-group is assumed to be blank unless further defined by the
+# <GROUP_DEF> meta-tag, eg. <GROUP_DEF> {type webtop}
+#
+# Policy-item objects are defined by the following meta-tags:
+# <AGENT_TYPE>   default "resource-assign"
+# <AGENT_DEF>    default "customization-group <ITEM>"
+# <ITEM_AGENT>   default "agents { <ITEM>_ag { type <AGENT_TYPE> }}"
+# <ITEM_CAPTION> default "<ITEM>"
+# <ITEM_COLOR>   default "1"
+# <ITEM_TYPE>    default "action"
+# <ITEM_RULES>   defaults to a set of expressions/next-items where specified
+# <RULE_CAPTION_0> default "fallback"
+# <RULE_CAPTION_1> default "Successful"
+# <RULE_CAPTION_2> default "successful"
+#
+# apm_config generates the APM agent and customization-group definitions
+# as required for each policy-item, but specific objects may be defined
+# by using the <AGENT_DEF> and <GROUP_DEF> meta-tags.
+# To suppress the formation of an APM agent, specify <ITEM_AGENT> {}.
+
+proc iapp_apm_config { map_array_name } {
+    upvar $map_array_name map_array
+
+    # Pull $prefix from the array
+    set prefix $map_array(prefix)
+    unset map_array(prefix)
+
+    # Stencils for creating apm objects
+    set access_form \
+       "<TMSH_CREATE> apm policy access-policy <ITEM> {\n   \
+          caption general\n   \
+          start-item <ACCESS_START_ITEM>\n   \
+          default-ending <ACCESS_ENDING>\n   \
+          items replace-all-with {\n<ACCESS_ITEMS>    }\n}"
+
+    set profile_form "<TMSH_CREATE> <PROFILE_TYPE> <ITEM> {\n   \
+        <PROFILE_DEF>\n}"
+
+    set resource_form "<TMSH_CREATE> apm resource <RESOURCE_TYPE> <ITEM> {\n   \
+        <RESOURCE_DEF>\n}"
+
+    set agent_form "<TMSH_CREATE> apm policy agent <AGENT_TYPE> <ITEM>_ag {\n   \
+        <AGENT_DEF>\n}"
+
+    set group_form "<TMSH_CREATE> apm policy customization-group <ITEM> {\
+        <GROUP_DEF>}"
+
+    set agent_group_form "<TMSH_CREATE> apm policy customization-group <ITEM>_ag {\
+        <GROUP_DEF>}"
+
+    set policy_item_form "<TMSH_CREATE> apm policy policy-item <ITEM> {
+    <ITEM_AGENT>caption <ITEM_CAPTION>
+    color <ITEM_COLOR>
+    <ITEM_TYPE>
+    <ITEM_RULES>\n}"
+
+    # 1st round apm string map
+    set default_map_1 {
+        <ACCESS_ITEM> {}
+        <AGENT_DEF> "customization-group <ITEM>_ag"
+        <ITEM_AGENT> "agents replace-all-with {
+        <ITEM>_ag { type <AGENT_TYPE> }}\n    "
+        <ITEM_CAPTION> <ITEM>
+        <ITEM_COLOR> {1}
+        <ITEM_TYPE> "item-type action"
+        <ITEM_RULES> "rules
+        {[expr {[string first <RULE_NEXT_2> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_2>
+            expression <RULE_EXPR_2>
+            next-item ${prefix}_<RULE_NEXT_2>
+        }":""}][expr {[string first <RULE_NEXT_1> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_1>
+            expression <RULE_EXPR_1>
+            next-item ${prefix}_<RULE_NEXT_1>
+        }":""}]{
+            caption <RULE_CAPTION_0>
+            next-item ${prefix}_<RULE_NEXT_0>
+        }}"
+    }
+
+    # 2nd round apm string map
+    set default_map_2 {
+        <ITEM> [expr { $item eq {default} ? "$prefix" : "${prefix}_$item" }]
+        <PREFIX> $prefix
+        <LOCAL_PATH> [string map {/ :} $prefix]
+        <GROUP_DEF> ""
+        <AGENT_TYPE> "resource-assign"
+        <RULE_CAPTION_2> "successful"
+        <RULE_CAPTION_1> "Successful"
+        <RULE_CAPTION_0> "fallback"
+    }
+
+    # Build APM access profile and access-policy from the access_form.
+    # Tags <ACCESS_ITEM> and <ACCESS_ENDING> are picked up from
+    # $map_array items. <ITEM> and <GROUP_DEF> are picked up from
+    # $default_map_2.
+    foreach item [lsort [array names map_array]] {
+
+        # Pick up the <ACCESS_ENDING> tag. There should be just 1.
+        set access_form [string map $map_array($item) $access_form]
+
+        # Filter out items that do not belong in the access-policy.
+        # Anything with an ITEM_xxx tag belongs
+        if { [string first <ITEM_ $map_array($item)] == -1 } {
+            continue
+        }
+
+        # Add to the items list for the access-policy, e.g. priority
+        append access_items "        ${prefix}_$item {<ACCESS_ITEM>}\n"
+        set access_items [string map $map_array($item) $access_items]
+        set access_items [string map [subst $default_map_1] $access_items]
+    }
+
+    # Build APM resources, policy-items, agents, and customization-groups from
+    # the policy_item_form and resource_form.
+    foreach item [lsort [array names map_array]] {
+
+        # Each item starts as a profile, a resource, or a policy-item.
+        # Profiles are free-form, so other apm objects can use the profile form.
+        # In most cases, a policy-item spawns an agent.
+        # Any definition specifying a customization-group will spawn that group.
+        if { [string first "<PROFILE_DEF>" $map_array($item)] != -1 } {
+
+            # Collect profile names for attachment to the virtual server
+            if { [string first "apm profile " $map_array($item)] != -1 } {
+                lappend profiles [expr { $item eq {default}
+                                 ? "$prefix" : "${prefix}_$item" }]
+                # When an access profile is found, built a policy of the same name
+                if { [string first "apm profile access" $map_array($item)] != -1 } {
+                    set def [string map "<ACCESS_ITEMS> {$access_items}" $access_form]
+                    append cmds "[string map [subst $default_map_2] $def]\n"
+                }
+            }
+            set def $profile_form
+        } elseif { [string first "<RESOURCE_DEF>" $map_array($item)] != -1 } {
+            set def $resource_form
+        } else {
+            set def $policy_item_form
+            if { [string first "<ITEM_AGENT> {}" $map_array($item)] == -1 } {
+                append def $agent_form
+            }
+        }
+
+        # Apply 1st pass of string maps
+        set def [string map $map_array($item) $def]
+        set def [string map [subst $default_map_1] $def]
+
+        # If a customization-group is specified, add its definition
+        if { [string first "customization-group" $def] != -1 } {
+            if { [string first "apm policy agent" $def] != -1 } {
+                append def $agent_group_form
+            } elseif { [string first "apm profile access" $def] == -1 } {
+                append def $group_form
+            }
+        }
+
+        # Apply 2nd pass of string maps
+        set def [string map $map_array($item) $def]
+        append cmds [string map [subst $default_map_2] $def]
+    }
+
+    # Divide and execute tmsh commands
+    set tag "<TMSH_CREATE>"
+    set tag_length [string length $tag]
+    set last [expr { [string first $tag $cmds] + $tag_length }]
+    while { [set pos [string first $tag $cmds $last]] != -1 } {
+        incr pos -1
+        iapp_conf create [string range $cmds $last $pos]
+        set last [expr { $pos + $tag_length + 1 }]
+    }
+    iapp_conf create [string range $cmds $last end]
+    return $profiles
+}
+}
+
+sys application template f5.ssl_intercept.v1.0.0 {
+    actions {
+        definition {
+            html-help {
+
+            }
+            implementation {
+            tmsh::include f5.iapp.1.4.0.cli
+            iapp_template start
+            
+            #constants
+            set DEFAULT_ANSWER    /#default#
+            set DO_NOT_USE_ANSWER /#do_not_use#
+            set CREATE_NEW_ANSWER /#create_new#
+            
+############################################################
+## Begin Error pages for Explicit Proxy
+
+set ::dns_lookup_failed_page {
+<html lang=\"en_US\">
+<head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\">
+<meta http-equiv=\"CACHE-CONTROL\" content=\"NO-CACHE\">
+<meta http-equiv=\"PRAGMA\" content=\"NO-CACHE\">
+<meta http-equiv=\"EXPIRES\" content=\"Mon, 22 Jul 2002 11:12:01 GMT\">
+<title>Proxy: Connection Failed</title>
+
+        <style>
+        <!--
+        .mainbody {
+            background-color: #C0C0C0;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0px;
+            padding: 20px 0px 20px 0px;
+            position: relative;
+            text-align: center;
+            width: 100%;
+        }
+        .bdywrpr {
+            width:500px;
+            height:auto;
+            text-align:left;
+            margin:10px auto; 
+            z-index:1;
+            position: relative;
+        }
+        #banner-wrapper {
+            width: 500px;
+            padding: 0px;
+            margin: 0px;
+            overflow:hidden;
+            background-color: #FFFFFF;
+            background-repeat: no-repeat;
+        }
+        #banner-image {
+            float: left;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 3px 0px 2px 7px;
+            width: 500px;
+        }
+        #textbody {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 13px;
+            width: 500px;
+            padding:0px;
+            text-align:justify;
+            margin: 0px;
+
+        }
+        -->
+        </style>
+
+</head>
+<body class=\"mainbody\">
+<div class=\"bdywrpr\">
+  <div id=\"banner-wrapper\">
+     <div id=\"banner-image\">
+        <br><br>
+        <center><img alt=\"F5 Proxy\" src=\"data:image/png;base64,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\" /></center>
+     </div>
+  </div>
+  <div id=\"textbody\">
+   <table border=\"0\" cellpadding=\"30\"><tr><td>
+   <center><p style=\"font-size:18px\"><b>
+The hostname lookup was not successful.
+</b></p></center>
+<br>
+Host: <i>\[HTTP::host\]</i><br><br>
+The proxy could not resolve the sitename you've requested. This site may not exist. Please check your spelling and try again if you feel you've encountered this message in error.
+<br>
+<p>Click <b>Go Back</b> or use the browser's Back button to return to the previous page.<br><input type=\"button\" value=\"      Go Back      \" onclick=\"javascript:history.back()\"></p>
+</td></tr></table>
+</div>
+</body>
+</html>    
+}
+
+set ::connect_failed_page {
+<html lang=\"en_US\">
+<head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\">
+<meta http-equiv=\"CACHE-CONTROL\" content=\"NO-CACHE\">
+<meta http-equiv=\"PRAGMA\" content=\"NO-CACHE\">
+<meta http-equiv=\"EXPIRES\" content=\"Mon, 22 Jul 2002 11:12:01 GMT\">
+<title>Proxy: Connection Failed</title>
+
+        <style>
+        <!--
+        .mainbody {
+            background-color: #C0C0C0;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0px;
+            padding: 20px 0px 20px 0px;
+            position: relative;
+            text-align: center;
+            width: 100%;
+        }
+        .bdywrpr {
+            width:500px;
+            height:auto;
+            text-align:left;
+            margin:10px auto; 
+            z-index:1;
+            position: relative;
+        }
+        #banner-wrapper {
+            width: 500px;
+            padding: 0px;
+            margin: 0px;
+            overflow:hidden;
+            background-color: #FFFFFF;
+            background-repeat: no-repeat;
+        }
+        #banner-image {
+            float: left;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 3px 0px 2px 7px;
+            width: 500px;
+        }
+        #textbody {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 13px;
+            width: 500px;
+            padding:0px;
+            text-align:justify;
+            margin: 0px;
+
+        }
+        -->
+        </style>
+
+</head>
+<body class=\"mainbody\">
+<div class=\"bdywrpr\">
+  <div id=\"banner-wrapper\">
+     <div id=\"banner-image\">
+        <br><br>
+        <center><img alt=\"F5 Proxy\" src=\"data:image/png;base64,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\" /></center>
+     </div>
+  </div>
+  <div id=\"textbody\">
+   <table border=\"0\" cellpadding=\"30\"><tr><td>
+   <center><p style=\"font-size:18px\"><b>
+A connection could not be established.
+</b></p></center>
+<br>
+Host: <i>\[HTTP::host\]</i><br><br>
+The proxy could not connect to the site you've requested. The site is either down or the network connection cannot be made. Please check your spelling and try again if you feel you've encountered this message in error.
+<br>
+<p>Click <b>Go Back</b> or use the browser's Back button to return to the previous page.<br><input type=\"button\" value=\"      Go Back      \" onclick=\"javascript:history.back()\"></p>
+</td></tr></table>
+</div>
+</body>
+</html>
+}
+
+set ::bad_request_page {
+<html lang=\"en_US\">
+<head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\">
+<meta http-equiv=\"CACHE-CONTROL\" content=\"NO-CACHE\">
+<meta http-equiv=\"PRAGMA\" content=\"NO-CACHE\">
+<meta http-equiv=\"EXPIRES\" content=\"Mon, 22 Jul 2002 11:12:01 GMT\">
+<title>Proxy: Bad Request</title>
+
+        <style>
+        <!--
+        .mainbody {
+            background-color: #C0C0C0;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0px;
+            padding: 20px 0px 20px 0px;
+            position: relative;
+            text-align: center;
+            width: 100%;
+        }
+        .bdywrpr {
+            width:500px;
+            height:auto;
+            text-align:left;
+            margin:10px auto; 
+            z-index:1;
+            position: relative;
+        }
+        #banner-wrapper {
+            width: 500px;
+            padding: 0px;
+            margin: 0px;
+            overflow:hidden;
+            background-color: #FFFFFF;
+            background-repeat: no-repeat;
+        }
+        #banner-image {
+            float: left;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 3px 0px 2px 7px;
+            width: 500px;
+        }
+        #textbody {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 13px;
+            width: 500px;
+            padding:0px;
+            text-align:justify;
+            margin: 0px;
+
+        }
+        -->
+        </style>
+
+</head>
+<body class=\"mainbody\">
+<div class=\"bdywrpr\">
+  <div id=\"banner-wrapper\">
+     <div id=\"banner-image\">
+        <br><br>
+        <center><img alt=\"F5 Proxy\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEoAAABECAYAAAAm2qMBAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAE1pJREFUeNrsm3twVNd9x393V7sSEoLlIYmXsSxhwE4Qy7MmdooYx1NPmtZg9682DqKdzjg4Lnimxq6dCSZN/ch0DKRN67bjSiZ1TLANNLUpNs0gIGA7xUjY8QOCw/IQ74eEhB6795zT33mfe7WLWEnEdodrH865d1dX93zu9/c7v/M7Rx5jDK4ffR+R6wiug7oO6jqoz/FRkO2i53nX/Bd3/PMzSUr8SvBJEnwfmO9Px5LgbbzWynyyn8l2imVIatSP6xs/C0B6sPOyjXrXAlTn+ueTQMhClvHnI4BaIBwOAQlDAAHqZ0QtwanPMrJGWPx6M9aN+J0Xy376avP/G1Dd//UfCUZIHSP+MoRUaYFgLUD5AVASiK9ASViQCdYsrdqoMpb2N4NP11ZseSP1hQTV8z8bKxHOSq4gLAkDhLgQ/KBy9PUrgcrYGiEZaLSHNECarhr7y22pLwSo9M7XE4yy5UDJMgGIgyFBEBZCJgjEgMqEFOaoiUM0oCQswJryupvw0sB66MPjfr2jdbBBDdqol/7l1lqIFDR50ehKiEQTEMFb84LQBfhAgeC5fkEAoWuefnPuaww2g++0Dl/U4Zbq2xd+LsOD9K4tT0LE246QKjkcTwCK5ADE//ecXmYB4zaz1QZQb+XjlQQw2NQy/rb6o2N+L3FNw4M8fFECogWbUJ+1+HDAvKAZX+ksOmYCoIlKk0LzpCePY/vyIDoXqKPAkocq5iyadPp/U58ZqO6tP0N/RLd7Hk2yCGoEO42kuFEDXseaijYvkZHl4I0sg8ioCvASo8CLxbPekxw9DJdfaUBgHZZrtloXYFn4yH/UJ0l8iqaPymctuPXMewMKJ/rlzPmwj35oOxREk14kivJA3hFlQhTvh6C8kqEQuaEaomXjAWKxqxdCdxd0/qwe/EMHhPM2Thzr6E03KydPRJ1uft868y7hzIFyp45t1kMwcqCQxv6lGW31GV2QPNvU3F9nnjeoztdeSCCc7V5BQRKiHFIUBCxPOo7IiNHYoangYT2Qo2vLRuje+Qsz4sVurYGSv3xIyYVZgfE2nqSb9qMJU/A/PgT0Qjv4HxyE9LGT0PXRb6CHEcgwJmDNPbe/uT+g8jc9QjchkCT3K55ypuJmaE4Fk74E0Yk3Z/+Fl9uB/PaAMEuutmjFBPBKh+X8NUVfvxf8o0fAP/ixABOvmXnFx4ola/BrFApm1Ch4FIXNYDi2u97ZB93HTiaI79efuffuBeVlo1uvqY/qfOnHq9EB1zI1gDEhyYjwO7HZvw/ekJKckHq2vopm1WnjJoyxojdUQcGUaVBQNaX3+0DnTk4cU/6IQWz6jGyvO+tAET4vnJuEgtk1/CUlCaX1eGnRNQsPOupX12IHl/MAUgSRovjglY+D+G135oTED//A++gzuoRpCEdPZZ359AB0/Xw9XP635yDzwT7zfXrxAlz+17XAOjulmubejvcvzs7E5ZUFFQMWHg8WHnl33/JroqiOf3k2gXDqxS8iKnrho9nwcojNvEOY3ZUOeuGsCQMEaD5CEgmMF9p6Abpe3wDdjVshNukWSH+4H2jnZemL0ITiNTNyQHCvMTUYMugru92yavXKLcOnbv562yepQVUUKmG5mNQSFfdw00EHHq/9Rs6hPvDzXZ0gpzO+AGSVRaS61Dm9cA569jSKWo6eDLzCIRALgGJ9xU9Z4gQnpkCKPUeOJ/DW9YNqepfWfh8nuGSlUYOa9Rd8eQ548fjV+f+zp8CYLHWUpQAxBYyDYbwQa56xaTMc82JX6aaUtpj9ji6kvQN6Wk4B3r12Y+nk2sEzPZ4FYFEpbPzfizKhotityTxGSg2FSAgOKFtb/6XVxEu8Jhnof/eWN4B2dODLUkrEGsd+iE7/soAM/HxcOUTGVxiTDIQdGD5IaAxvT1fipcYBg2p75m94BrIOovK1MFUXYCCZVyzCswHKxAQIDY6rk2g1EWOWWk1eYRGa3cyAUrreeB1Hw1M6vYLk8PtYUx5w9siSwXtg3IQFP5taBaS0BDyE540tg3aMq/DuWMR7qH2puKr2zzp/2zggUNjBOhFQ8pcSVYEeTngjYyfkCYoYx61BMaJNUJ9TC00pLDYzGTA7P5UCcvq0gs7tiEm4vmr7ynQ5BAUjjQriwEQRkTr6QjFIMFFjWXw1qor0YTKLRdxDdOwjS6R0eH5jazhp1wuSNkl1roDGps8MOKOexu0KjvJjvtMm0mSJsFilGNBAlCVLFSmQCiZjdS/EJyb6DeriEw8l0ezsSEectG0eq8v0zEkJKKOAmGynjcdcXyUBYDteBHEE5Tpx3umCG2+0kHylJlW4ynjnCYBWi4QFTEOxtVuALey/6RG6kD+YB3rIiAiz48UblkeaB/1MfN4CjLkS+HMjgkO2irqZGpI6X3sZCE5bOIhCDAnsiCbNqWTJn5u2mN/tw3irFed16Hcyu/dBz+4mqxRTeOiXA5L6DmHsHvxaQ79A4Vufz5Nw0THjoegb98l53ZAhUIDnecUfw0dA4R13Xjns0TN0hKoVZsyOZc9qCXXNmCanN/PnQdED98NQ9D897zRBx5u74NK2nUBxUkxcKMYsw9Bobf99lE9qhQnECqGgchJEK6txIjvOpoIGnFcLQlIqFuYkRrsZs208FJrJu7ETMxkE+b0YzusS3/0OTNi+HkY/+ygUzZ1ugBDlu4wfs9cTayIVybxBnX+wrlbEJzreCUd4Wv4DBaR67B/8BNqfexoyH38k/JNUUzCdAg4kCYUFMnTm+wYag9JFd8MNP1kDY59+DKB0qDYzCy0IK5m36aHjTXgRvC36Je5UcyRqZBXKXYUzWeTieUjvfdv4I1tkh9N7dmHkfsYGndzsZswKQgqZnOu3XDXZj5gFiiWx6A+gZME8OLD0ceh+Z18AErGmWJm/j/KJSO9yo8407YWLD/2FyGB6WCKjymDYd5/KOXUPg6Pnz0H3f//cOm2VAQVnqmJGO0LF3C4+c3YQkvodlNnRj5nrrLeashRvaDHcXP8c/Oaxp+DExi0CkIREZRvo9PwVhfIXKykRGcBBlIpzDqHPES8cOvAH5b7OgcSoA0xPXYj8Xvy2WTkgaUtjZjoFjmq0udma2uvUfqfqByswePehBWHZ0Y8HoTSRvzPPkBtF3KNy02L9X6/Y8jefXy5V/bxzD2flV64CU/kZnsdmzekFiekwAoJm65qcnb+xoOlRMarZrCeWyhVLITaugqvImB4Bmv+ohw9cKVdlVbCZkbDMOQv44j5Byc0WvgPdvgQDEGs+2sXnzrVmqiNpB1LQL13J3FRmQkGiOjOBJYpmOPn7j2iTw5oKWP0BZUvaNysfejVELEUB65XCyFpo6H4ZB1ZaFXUtPnuuUYnxSWFINOSXqAsHglC0aVGrJqpy6cNmTYPiyVVGTf1SFD50M2RsJ/SGCKkE6gzvzvpdroCB+x8XTkZuxJD38+1neB7jalK3pmpSlg1SNr9EWcgvKUAGEqUGIFV+csKfLkI1EenQ+wCV1ZnTtN/GnbcX5U6WT1twJMNwgY98wmRCSLxwPOOqkz8UVyV1Rz135FOjH/opr6gY0u/th8iYCoiMrXBMzo5wQfMK+iUNRWRLKVW+iRowLHRt+MxpRk2kD9PLHh704M34iFfAQwLsQDRiFzj52xdzQLt5gvWxLiZAMTCQmAMJzASXQdu3/1pMcllGgouUl0Okohyic6aDN74CordUQwEWDUl0mjo+SavIMTmtJA2OUlsKx5SDV1oMpL2NqyrVD1CkEcGsBB+1EuUFHzwqd6WIiD3L9MPrtevEOBqxmqvVJMyHKFURZrMAvJ1h8v4qa0kPn4DMpy1A9sgg0eeBYWkJFOC0ZMjXbodiLDC0xKzhMeqoibpq6g1Jgyy5uQo69u3jijqSP6gMS/Ff4iEcEAUVFQVhgum9zeIX6NVkzYblWDcSPqFHKYo4pqfzSjqn5NvUiUyZUPkVNe3gkHx8JtJ2CTrf2gkX39qB5wyG3PkVGLH4T6B4To3xSaaQEJwQSELkiCdND5rzBjW2aXuqZepXWxFSgkPieXLh9jm0iJd1gurl2IYjlML3A1DH9IhTm+ykCjqJ7KQG5ILS0bSExkQnL27bBWcRWmxKNYx7bCmUoJlKEMQC4TWRhbimSCUkXybymvuXPeihjawb30C3DxQLw86yLlWUQ2TO8iILR8m6KFBMFeq0BUCV52ZpfHD0S3xjRUaB4EBk7ludM6ra1LRlipfBpY8Owq/vXwaf/uBHAdXkKoRImPJlQOpHkO6Hj5J+ageqZ6FQEPdTHGlEKkqoyLvSkrZnlyX5A/HEv+PMpQmCmr64OSKwkbKjpt6KkhG1gEc1OCYgH3txA3S2tsIkHlAaMMQqy4WE7e6ODv57+r+4QCjbjP5ltRjsfE+algHFQvGBl3PtXzhvbXrGocv4SOaxnaRaCJA8BwcYVSZnFWaByQUE/h0+j/PKR8PEB77pmBwJQiKyXDh0iD/af/Y7cTfx1LspfHONGfUQPj4xQdOgOIJlUObB4I72Cvas6VGxV4liWMF/3idqRUSbDWOmzVdIYjiSxbH4znVbtPlRoyK+spJRkHzV5nVq3Qboab1klBNw4EReO9u8n/un1uchs3lAy1X4YC+ifmp5GhjDTrkNk3lAWtshqqNxT5piroiKr6dlmN0XYFdBWGC1hLdL7r0byp59DMildmj/8CBkjp8w5hYwQ2rVpYHxjvsKlqgvXYLTv9gJ5X94VwCQC65l925+34YBL6lPPb23ge9WS6u3rXavSbPQ0wMV9drpQigPhLN09+czpk0D620li++D0c88KuIdHhuVP73CKEV/x1WPLgIMdl4ryWe2tCNoCYkYUL4yOX4cRVD49GsHZe8BqmFtxumY6CR/gEAkTHvNr1xwaQdO2u24AjfiiQdh5OMPBoLCIhzmEwiPj2i2BIH5jsn5fFedAiZNk4h5nIXkGyXx4/Cbb0H7qZMN/w4kNSig8M2swV+c4p1Kq4foOXYyNC1gTsQbKhqIowYBC5iBNuxb9zlDur1X2dLFEBGmG/ZrCogGo8FxQGhMAhrWxZOqAj6J1+LF4Ui395/+katpVbY+V99YmcSSyAvU3HP7W/EBVxk1UOncw3MnQt1gzhZCg2ZrzE9Dw/r8q2/YoJCPTmKkQvMoGQIT/m6FAyNoYhltdjquAgnRx/9iY8tg9B3zlJKIgcSPt3/4QwwL2le9CCyVBdBhbK7GUo/turz2R91+/v0GfJhGrYYuZfuyYyw4PVAOU3ZYLY8LVRCjjLSrLHz4U/UbgqMS1QpA3zWrBkZ/c5GjHqc295QKyjBfKIq3J//VAxISCUN6Fo7s3pXC17AmS1eXYeEjIAfIFXVP3lsTcWRZEr1lUmvJPXfBcHxwM3qQ0FTBnXwyeS06pcr6KEdJYtMEljYMN1rffk85WmqKhj1xxbdh5B/flQWW9UdSSRLSl554BMpQTb4yORfSwTe38pBgyUsYFmTpJr/Wxvenq/b+vDe7fu3ih6njG7YtweYmHi7wjuiMgRdeqPKCceeopd+Cy8da4LLem6QmPu4K7qnXtsBNM6fJIMIdIFR70t8+Al7FaDjyk1cgg+GDnsz6ZlJLIY7mNuPxRyAxfVpgdOM+acf3vgcn9jdxSKvW5969wiHNx7JEqWu+6VK++8yPHD3+JFYrw9mDvjbxCyfackrA6uTA8L+2XzVD66+aVMDOYMa2n0KhSti5uSY7wqKC2trhHP5M6ycHzYDBYZV99SswtPom47j16HbgtY2wf10DdHW0c0gN6yWEnAf6peXK5PgkedWh1OHWfoHiR+OS5fWxslF1hePHAC/FUydBwbChOZZAQ8vgZssggnq3GT6oW24SbWPvvw+qViwNpHVt1pI5Zm3Tu4QwM5/TkNLt7RhM7oEP1q2DtlMnZLYBO47oFryS3eT63JDf77/Xe7m4mm8WrbNJO4AhUySwQgwy4whQbGbh7XEV5ueKp1RDtLRE8OMmtGfeH7mbuiCCnw2bPR2Gz66BksnVWKogWlKsEm3UJOlsKCHhdJw4AaebmuEMTkuOYyApFUQNJNYPSIMCih/riir5luq6cCrKvWUgDaPUxFSmwOS7IdeOE6omxlQAi5QWm5Vdqn0Ttk8jHKL2RflqVYVDysjd3pvxlkte7QekQQPFjxcKJ9bhPeqt2bGs+wXcPeB6bc7siHPBmWyCBBEAphYBqKp9CcJA0oB8+9kaBPTwgHbdDOafyj4fm5BEFWzCZmUvLbHem+XNuZoUB3fEBeFQB46EpaG4gJgDSXzWSqWKNsMAj0H/m+J/iI7hm9xX4t2WGwfubvVxVQV2D4ExPfVvcLecPddQaC9AGpJRER/6OaQUDMJxzf5K/e+98lrsMgJjtayXn7LJY5tIDu2zdM5JYHshmP2ZxHxGlU8Sn6fwew8Phop+J6D08RSMrMWOOMByKMrUEIIFAUA0BMg6bzGirX2ljz2Yn1tQ+ngSSiuxo8v4zlsEUZkdllYYGEBBWCzgr5QP2oxl7YY+Vk++MKDc41EoSuJvQ4XR+VT+vW+lhsNCcIK+iiEYxgPGHRzQy9cYzmcOKtvxHYgjMJZgENoorxTUcBUrJJ8ZqOtH7+P/BBgAH5CtgNDV3NsAAAAASUVORK5CYII=\" /></center>
+     </div>
+  </div>
+  <div id=\"textbody\">
+   <table border=\"0\" cellpadding=\"30\"><tr><td>
+   <center><p style=\"font-size:18px\"><b>
+Your request is not recognized.
+</b></p></center>
+<br>
+The proxy did not understand the request you sent and cannot forward this connection to an external site. Please check your browser settings to ensure they are correct.
+<br>
+<p>Click <b>Go Back</b> or use the browser's Back button to return to the previous page.<br><input type=\"button\" value=\"      Go Back      \" onclick=\"javascript:history.back()\"></p>
+</td></tr></table>
+</div>
+</body>
+</html>    
+}
+
+set ::bad_response_page {
+<html lang=\"en_US\">
+<head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=us-ascii\">
+<meta http-equiv=\"CACHE-CONTROL\" content=\"NO-CACHE\">
+<meta http-equiv=\"PRAGMA\" content=\"NO-CACHE\">
+<meta http-equiv=\"EXPIRES\" content=\"Mon, 22 Jul 2002 11:12:01 GMT\">
+<title>Proxy: Unrecognized Response</title>
+
+        <style>
+        <!--
+        .mainbody {
+            background-color: #C0C0C0;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 12px;
+            margin: 0px;
+            padding: 20px 0px 20px 0px;
+            position: relative;
+            text-align: center;
+            width: 100%;
+        }
+        .bdywrpr {
+            width:500px;
+            height:auto;
+            text-align:left;
+            margin:10px auto; 
+            z-index:1;
+            position: relative;
+        }
+        #banner-wrapper {
+            width: 500px;
+            padding: 0px;
+            margin: 0px;
+            overflow:hidden;
+            background-color: #FFFFFF;
+            background-repeat: no-repeat;
+        }
+        #banner-image {
+            float: left;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 3px 0px 2px 7px;
+            width: 500px;
+        }
+        #textbody {
+            background-color: #FFFFFF;
+            color: #000000;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 13px;
+            width: 500px;
+            padding:0px;
+            text-align:justify;
+            margin: 0px;
+
+        }
+        -->
+        </style>
+
+</head>
+<body class=\"mainbody\">
+<div class=\"bdywrpr\">
+  <div id=\"banner-wrapper\">
+     <div id=\"banner-image\">
+        <br><br>
+        <center><img alt=\"F5 Proxy\" src=\"data:image/png;base64,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\" /></center>
+     </div>
+  </div>
+  <div id=\"textbody\">
+   <table border=\"0\" cellpadding=\"30\"><tr><td>
+   <center><p style=\"font-size:18px\"><b>
+An unknown response has been received.
+</b></p></center>
+<br>
+Host: <i>\[HTTP::host\]</i><br><br>
+The proxy could not understand the response given by this remote site and cannot complete the connection. There may be a problem with that site, or with your browser settings. Please check your configuration.
+<br>
+<p>Click <b>Go Back</b> or use the browser's Back button to return to the previous page.<br><input type=\"button\" value=\"      Go Back      \" onclick=\"javascript:history.back()\"></p>
+</td></tr></table>
+</div>
+</body>
+</html>    
+}
+
+## End Error Pages for Explicit Proxy 
+############################################################
+            
+            proc encode_content { content } {
+                set encoded_content ""
+                set pos 0
+                foreach line [regexp -line -all -inline {^.*$} $content] {
+                    set line [string map { \\\[ \[ \\\] \] \$ \\$ \\ \\\\\\ } $line]
+                    append encoded_content "$line \r\n"
+                }
+                return $encoded_content
+            }
+            
+            proc configure_afm {  }  {
+               tmsh::include f5.iapp.1.4.0.cli
+               set app $tmsh::app_name
+
+               # FIREWALL (AFM) POLICY
+               # beware: syntactically correct AFM commands fail when AFM is not provisioned
+               # extra info exists test benefits BIG-IQ apps that bypass presentation
+
+               set afm_provisioned [expr { [iapp_get_provisioned afm] && [iapp_tmos_version >= 11.4] }]
+
+               set do_firewall [expr { $afm_provisioned && \
+                  [info exists ::afm__policy] && \
+                  ![iapp_is ::afm__policy $::DO_NOT_USE_ANSWER] }]
+
+               set new_firewall [iapp_is ::afm__policy $::DEFAULT_ANSWER]
+               
+               set do_deny [expr { ![iapp_is ::afm__restrict_by_addr $::DO_NOT_USE_ANSWER] && ![iapp_is ::afm__deny_by_addr $::DO_NOT_USE_ANSWER] }]
+
+               set staging_policy [expr { $do_firewall && \
+                  ![iapp_is ::afm__staging_policy $::DO_NOT_USE_ANSWER] \
+                  ? "$::afm__staging_policy" : "none" }]
+
+               set security_logging [expr { $do_firewall && \
+                  ![iapp_is ::afm__security_logging $::DO_NOT_USE_ANSWER] \
+                  ? "\"$::afm__security_logging\"" : "" }]
+
+               # array key: $do_deny
+               array set fw_rules_arr {
+                  0 { rules replace-all-with \{ \
+                           acceptPacketsTcp \{ \
+                           action accept \
+                           log no \
+                           ip-protocol tcp \
+                           status enabled \
+                           source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                           dropPacketsTcp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol tcp \
+                           status enabled \
+                           source \{ addresses replace-all-with \{ any/any \}\}\} \
+                           acceptPacketsUdp \{ \
+                           action accept \
+                           log no \
+                           ip-protocol udp \
+                           status enabled \
+                           source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                           dropPacketsUdp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol udp \
+                           status enabled \
+                           source \{ addresses replace-all-with \{ any/any \}\}\}\}}
+                  1 { rules replace-all-with \{ \
+                           denyPacketsTcp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol tcp \
+                           status enabled \
+                           source \{ [iapp_substa afm_deny($::afm__deny_by_addr)] \}\} \
+                           acceptPacketsTcp \{ \
+                           action accept \
+                           log no \
+                           ip-protocol tcp \
+                           status enabled \
+                           source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                           dropPacketsTcp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol tcp \
+                           status enabled \
+                           source \{ addresses replace-all-with \{ any/any \}\}\} \
+                           denyPacketsUdp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol udp \
+                           status enabled \
+                           source \{ [iapp_substa afm_deny($::afm__deny_by_addr)] \}\} \
+                           acceptPacketsUdp \{ \
+                           action accept \
+                           log no \
+                           ip-protocol udp \
+                           status enabled \
+                           source \{ [iapp_substa afm_restrict($::afm__restrict_by_addr)] \}\} \
+                           dropPacketsUdp \{ \
+                           action drop \
+                           log yes \
+                           ip-protocol udp \
+                           status enabled \
+                           source \{ addresses replace-all-with \{ any/any \}\}\}\}}
+               }
+
+               # array key: $afm_provisioned,$do_firewall,$new_firewall
+               array set firewall_arr {
+                  1,1,1 { fw-enforced-policy \
+                        [iapp_conf create security firewall policy ${app}_firewall \
+                        [iapp_substa fw_rules_arr($do_deny)]] \
+                        fw-staged-policy [subst $staging_policy] }
+                  1,1,0 { fw-enforced-policy $::afm__policy \
+                        fw-staged-policy [subst $staging_policy] }
+                  1,0,1 { fw-enforced-policy none \
+                        fw-staged-policy none }
+                  1,0,0 { fw-enforced-policy none \
+                        fw-staged-policy none }
+                  *     { }
+               }
+
+               # array key: $::afm__restrict_by_addr
+               array set afm_restrict {
+                  /#create_new# {addresses replace-all-with \{ $::afm__allowed_addr \}}
+                  /#do_not_use# {addresses replace-all-with \{ any/any \}}
+                  *         {address-lists replace-all-with \{ $::afm__restrict_by_addr \}}
+               }
+               
+               # array key: $::afm__deny_by_addr
+               array set afm_deny {
+                  /#create_new# {addresses replace-all-with \{ $::afm__denied_addr \}}
+                  /#do_not_use# {}
+                  * {address-lists replace-all-with \{ $::afm__deny_by_addr \}}
+               }
+
+               set afm_params "[iapp_substa firewall_arr($afm_provisioned,$do_firewall,$new_firewall)] \
+                  security-log-profiles replace-all-with \{ $security_logging \}"
+
+               return $afm_params
+            }
+            
+            proc configure_airgap_deployment {  } {
+
+               tmsh::include f5.iapp.1.4.0.cli
+
+               set app $tmsh::app_name
+               set is_115 [iapp_tmos_version >= 11.5]
+               set swg_provisioned [expr {[iapp_get_provisioned swg]}]
+               set advanced [expr {[iapp_is ::intro__advanced "yes"]}]
+               set do_internal [expr {[iapp_is ::airgap__scenario "internal"] }]
+               set do_external [expr {[iapp_is ::airgap__scenario "external"] }]
+               set do_combined [expr {[iapp_is ::airgap__scenario "combined"] }]
+               set do_explicit [expr {[info exists ::airgap__proxy_type] && [iapp_is ::airgap__proxy_type "explicit"]}]
+               set afm_params [configure_afm]
+
+               ### Pools
+               set internal_any_pool [expr { $do_internal || $do_combined ?  [iapp_conf create ltm pool ${app}_ingress_pool_any load-balancing-mode least-connections-member [iapp_pool_members $::airgap__pool_int_members -port any]] : "" }]
+               set internal_80_pool [expr { $do_internal || $do_combined ?  [iapp_conf create ltm pool ${app}_ingress_pool_80 load-balancing-mode least-connections-member [iapp_pool_members  $::airgap__pool_int_members -port 80]] : "" }]
+               set external_any_pool [expr { ( $do_external || $do_combined ) && [iapp_is ::airgap__pool_ext "/#create_new#"] ? [iapp_conf create ltm pool ${app}_egress_pool_any load-balancing-mode least-connections-member [iapp_pool_members  $::airgap__pool_ext_members -port any]] : "" }]
+
+               ### SSL Profiles              
+               # Client SSL profile
+               # array key: $do_new_clientssl
+               set do_new_clientssl [expr { ( $do_internal || $do_combined ) && [iapp_is ::airgap__clientssl "/#create_new#"]}]
+               set bypass_action [expr { $is_115 ? "ssl-forward-proxy-bypass enabled" : "" }]
+               set host_whitelist [expr { $is_115 ? [expr { $advanced && $do_new_clientssl && ![iapp_is ::airgap__host_bypass "/#do_not_use#"] ? "hostname-whitelist $::airgap__host_bypass" : "hostname-whitelist none" }] : "" }]
+               set src_whitelist [expr { $is_115 ? [expr { $advanced && $do_new_clientssl && ![iapp_is ::airgap__src_bypass "/#do_not_use#"] ? "source-ip-whitelist $::airgap__src_bypass" : "source-ip-whitelist none" }] : "" }]
+               set dst_whitelist [expr { $is_115 ? [expr { $advanced && $do_new_clientssl && ![iapp_is ::airgap__dst_bypass "/#do_not_use#"] ? "destination-ip-whitelist $::airgap__dst_bypass" : "destination-ip-whitelist none" }] : "" }]
+               
+               set cssl_cmd \
+                       "ltm profile client-ssl ${app}_clientssl_ingress \
+                        defaults-from clientssl \
+                        ssl-forward-proxy enabled \
+                        $bypass_action \
+                        cert-extension-includes \{ basic-constraints extended-key-usage subject-alternative-name \} \
+                        $host_whitelist \
+                        $src_whitelist \
+                        $dst_whitelist"
+               
+               # array key: $do_new_clientssl
+               array set clientssl_arr {
+                  1 { [iapp_conf create $cssl_cmd proxy-ca-cert $::airgap__CA_cert proxy-ca-key $::airgap__CA_key chain none]}
+                  0 { $::airgap__clientssl }
+                  *     {}
+               }
+
+               set client_ssl_profile [expr { $do_internal || $do_combined ? [iapp_substa clientssl_arr($do_new_clientssl)] : "" }]
+
+               # SERVER SSL
+               # ingress
+               set do_new_serverssl [expr { [iapp_is ::airgap__serverssl "/#create_new#"] }]
+     
+               # array keys: $advanced
+               array set serverssl_params_arr {
+                    0 { ca-file ca-bundle.crt expire-cert-response-control drop untrusted-cert-response-control drop }
+                    1 { ca-file $::airgap__bundle expire-cert-response-control $::airgap__expiredaction untrusted-cert-response-control $::airgap__untrustedaction } 
+               }
+               
+                set sssl_cmd_int \
+                      "ltm profile server-ssl ${app}_serverssl_ingress \
+                       defaults-from serverssl \
+                       ssl-forward-proxy enabled \
+                       $bypass_action \
+                       peer-cert-mode require \
+                       secure-renegotiation request"
+                       
+               # array key: $do_new_serverssl
+               array set serverssl_arr {
+                  1 { [iapp_conf create $sssl_cmd_int [iapp_substa serverssl_params_arr($advanced)] ] }
+                  0 { $::airgap__serverssl }
+               }
+
+               set server_ssl_profile_int [expr { !$do_external ? [iapp_substa serverssl_arr($do_new_serverssl)] : "" }]
+               
+               # egress
+               set sssl_cmd_ext \
+                    "ltm profile server-ssl ${app}_server-ssl_egress defaults-from serverssl secure-renegotiation request"
+                    
+               set server_ssl_profile_ext [expr { !$do_internal ? [iapp_conf create $sssl_cmd_ext] : "" }]
+
+               ### HTTP profiles
+               set new_http_int [expr { !$advanced || ( [info exists ::airgap__http_profile_int] && [iapp_is ::airgap__http_profile_int "/#create_new#"] ) }]
+               set new_http_ext [expr { !$advanced || ( [info exists ::airgap__http_profile_ext] && [iapp_is ::airgap__http_profile_ext "/#create_new#"] ) }]
+
+               # array keys: $new_http_int
+               array set http_int_arr {
+                  0   { $::airgap__http_profile_int }
+                  1   { [iapp_conf create ltm profile http ${app}_http_int defaults-from http]}
+               }
+
+               # array keys: $new_http_ext
+               array set http_ext_arr {
+                  0   { $::airgap__http_profile_ext }
+                  1   { [iapp_conf create ltm profile http ${app}_http_ext defaults-from http]}
+               }
+
+               ### OneConnect Profile
+               set oneconnect_profile [expr {![iapp_is ::airgap__scenario "internal"] ? "profiles add \{ [iapp_conf create ltm profile one-connect ${app}_oneconnect defaults-from oneconnect] \}" : "" }]
+               
+               ### iRules
+               set do_url_filtering [expr { $is_115 && [info exists ::airgap__bypasscategories] && ![iapp_is ::airgap__bypasscategories ""]}]
+               
+               set have_internal_rules [expr {[info exists ::airgap__internal_rules] && ![iapp_is ::airgap__internal_rules ""]}]
+               set have_external_rules [expr {[info exists ::airgap__external_rules] && ![iapp_is ::airgap__external_rules ""]}]
+               
+               set external_pool_cmd [expr { ![iapp_is ::airgap__scenario "internal"] && [iapp_is ::airgap__pool_ext "/#create_new#"] \
+                    ? "pool $external_any_pool" \
+                    : "#" }]
+                    
+               set external_node_cmd [expr { ![iapp_is ::airgap__scenario "internal"] \
+                    ? [expr { [iapp_is ::airgap__pool_ext "/#create_new#"] \
+                         ? "node \[lindex \[active_nodes -list $external_any_pool\] 0\] \[lindex \[split \[HTTP::header X-Proxy-HTTPS\] \":\"\] 0\]" \
+                    : "node [tmsh::get_field_value [lindex [tmsh::get_config net route $::airgap__pool_ext] 0] "gw"] \[lindex \[split \[HTTP::header X-Proxy-HTTPS\] \":\"\] 0\]" }] \
+                         : "" }]
+
+               if { $do_url_filtering }  {
+                  set category_list ""
+                  set categories ""
+                  foreach item $::airgap__bypasscategories {
+                     set something [lindex $item 0]
+                     lappend categories "          ${something}\n"
+                  }
+                  set category_list [join $categories]
+               }
+
+               set internal_rule_buffer {
+when CLIENT_ACCEPTED {
+	HTTP::disable
+	SSL::disable clientside
+	SSL::disable serverside
+	TCP::collect
+}
+when CLIENT_DATA {
+	binary scan \[TCP::payload\] c type
+	if { ( \$type == 23 ) or ( \$type == 20 ) } {
+		SSL::enable clientside
+		SSL::enable serverside
+	} elseif { \$type == 22 } {
+		SSL::enable clientside
+		SSL::enable serverside
+		HTTP::enable
+	} 
+	TCP::release
+}
+when CLIENTSSL_CLIENTHELLO {
+	if { \[SSL::extensions exists -type 0\] } {
+		binary scan \[SSL::extensions -type 0\] @9a* tls_servername
+     }
+}
+when HTTP_REQUEST {
+      if { \[info exists tls_servername\] } {
+		HTTP::header insert X-Proxy-HTTPS "\[TCP::local_port\]:\${tls_servername}"
+      } else {
+		HTTP::header insert X-Proxy-HTTPS "\[TCP::local_port\]:0"
+      }
+      LB::detach
+      SSL::disable serverside
+      pool $internal_80_pool
+}
+               }
+
+               set bypass_rule_buffer {
+when RULE_INIT {
+   set static::${app}_ssl_bypass_categories {
+      ${category_list}
+   }
+}
+when CLIENT_ACCEPTED {
+	HTTP::disable
+	SSL::disable clientside
+	SSL::disable serverside
+	TCP::collect
+}
+when CLIENT_DATA {
+	binary scan \[TCP::payload\] c type
+	if { ( \$type == 23 ) or ( \$type == 20 ) } {
+		SSL::enable clientside
+		SSL::enable serverside
+	} elseif { \$type == 22 } {
+		SSL::enable clientside
+		SSL::enable serverside
+		HTTP::enable
+	} 
+	TCP::release
+}
+when CLIENTSSL_CLIENTHELLO {
+    set sni_exists \[SSL::extensions exists -type 0\]
+    if { \$sni_exists } {
+        binary scan \[SSL::extensions -type 0\] S1S1S1cS1a* ssl_ext_type ssl_ext_len ssl_ext_sn_list_len ssl_ext_sn_type ssl_ext_sn_len ssl_ext_sn
+    }
+}
+when SERVERSSL_HANDSHAKE {
+   if { not \$sni_exists } {
+      set ssl_bypass_mitm 0
+      set subject \[X509::subject \[SSL::cert 0\]\]
+      regexp {CN=(.*?),} \$subject fullcn subcn
+      if { \[info exists subcn\] } {
+         set this_uri "http://\$subcn/"
+         set reply \[getfield \[CATEGORY::lookup \$this_uri\] " " 1\]
+         set decision \[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\]
+         if {\[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\] >= 0}{
+            set ssl_bypass_mitm 1
+         } else {
+            set ssl_bypass_mitm 0
+         }
+      } else {
+         regexp {CN=(.*?)$} \$subject fullcn subcn
+         if { \[info exists subcn\] } {
+            set this_uri "http://\$subcn/"
+            set reply \[getfield \[CATEGORY::lookup \$this_uri\] " " 1\]
+            set decision \[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\]
+            if {\[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\] >= 0}{
+               set ssl_bypass_mitm 1
+            } else {
+               set ssl_bypass_mitm 0
+            }
+         } else {
+            set ssl_bypass_mitm 0
+         }
+      }
+   }
+}
+when CLIENTSSL_SERVERHELLO_SEND {
+    if { not \[info exists ssl_bypass_mitm\] && \[info exists ssl_ext_sn\] } {
+        set this_uri "http://\$ssl_ext_sn/"
+        set reply \[getfield \[CATEGORY::lookup \$this_uri\] " " 1\]
+        set decision \[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\]
+        if {\[lsearch -exact \$static::${app}_ssl_bypass_categories \$reply\] >= 0}{
+            set ssl_bypass_mitm 1
+        } else {
+            set ssl_bypass_mitm 0
+        }
+    }
+
+    if { \[info exists ssl_bypass_mitm\] } {
+        if { \$ssl_bypass_mitm } {
+         SSL::forward_proxy policy bypass
+         catch { HTTP::disable }
+        } else {
+         SSL::forward_proxy policy intercept
+        }
+    } else {
+   }
+}
+when SERVER_CONNECTED {
+    if { \[info exists ssl_bypass_mitm\] } {
+        if { \$ssl_bypass_mitm } {
+         catch { HTTP::disable }
+        }
+    }
+}
+when HTTP_REQUEST {
+      if { \[info exists ssl_ext_sn\] } {
+		HTTP::header insert X-Proxy-HTTPS "\[TCP::local_port\]:\${ssl_ext_sn}"
+      } else {
+		HTTP::header insert X-Proxy-HTTPS "\[TCP::local_port\]:0"
+      }
+      LB::detach
+      SSL::disable serverside
+      pool $internal_80_pool
+}
+               }
+
+               set external_rule_buffer {
+when HTTP_REQUEST {
+   if { not ( \[HTTP::header exists X-Proxy-HTTPS\] ) } {    
+          SSL::disable serverside
+          $external_pool_cmd
+   } else {
+          if { \[lindex \[split \[HTTP::header X-Proxy-HTTPS\] ":"\] 1\] ne "0" } {
+			set servername \[lindex \[split \[HTTP::header X-Proxy-HTTPS\] ":"\] 1]
+		}
+          $external_node_cmd
+          HTTP::header remove X-Proxy-HTTPS
+   }
+}
+when SERVERSSL_CLIENTHELLO_SEND {	
+	if { \[info exists servername\] } {
+		set bin \[binary format S1S1S1S1ca* 0 \[expr \[string length \${servername}\] + 5\] \[expr \[string length \${servername}\] + 3\] 0 \[string length \${servername}\] \${servername}\]	
+		SSL::extensions insert \$bin
+	}
+}
+               }
+
+               # array keys: $do_external,$do_url_filtering,$have_internal_rules
+               array set internal_rule_arr {
+                  0,0,0 { [iapp_conf create ltm rule ${app}_ingress_rule  \{ [subst $internal_rule_buffer] \}] }
+                  0,1,0 { [iapp_conf create ltm rule ${app}_ingress_rule  \{ [subst $bypass_rule_buffer] \}] }
+                  0,0,1 { [iapp_conf create ltm rule ${app}_ingress_rule  \{ [subst $internal_rule_buffer] \}] $::airgap__internal_rules }
+                  0,1,1 { [iapp_conf create ltm rule ${app}_ingress_rule  \{ [subst $bypass_rule_buffer] \}] $::airgap__internal_rules }
+                  *         { }
+               }
+
+               # array keys: $do_internal,$have_external_rules
+               array set external_rule_arr {
+                  0,0 { [iapp_conf create ltm rule ${app}_egress_rule  \{ [subst $external_rule_buffer] \}] }
+                  0,1 { [iapp_conf create ltm rule ${app}_egress_rule  \{ [subst $external_rule_buffer] \}] $::airgap__external_rules }
+                  *     { }
+               }
+               
+               ### VLANs
+               # internal
+               # array keys: $select_vlans_int
+               set select_vlans_int [expr {[info exists ::airgap__vlan_mode_int] && [iapp_is ::airgap__vlan_mode_int enabled disabled]}]
+
+               array set vlans_int {
+                  1 { vlans-$::airgap__vlan_mode_int vlans replace-all-with \{ $::airgap__client_vlan_int \} }
+                  *   { vlans-disabled vlans none }
+               }
+
+               set vlan_action_int [iapp_substa vlans_int($select_vlans_int)]
+
+               # external
+               # array keys: $select_vlans_ext
+               set select_vlans_ext [expr {[info exists ::airgap__vlan_mode_ext] && [iapp_is ::airgap__vlan_mode_ext enabled disabled]}]
+
+               array set vlans_ext {
+                  1 { vlans-$::airgap__vlan_mode_ext vlans replace-all-with \{ $::airgap__client_vlan_ext \} }
+                  *   { vlans-disabled vlans none }
+               }
+
+               set vlan_action_ext [iapp_substa vlans_ext($select_vlans_ext)]
+               
+               ### EXPLICIT PROXY OBJECTS
+               set afm_proxy_params [expr { $do_explicit ? "" : $afm_params }]
+               
+               # HTTP TUNNEL
+               set proxy_tunnel [expr { $do_explicit ? \
+               [iapp_conf create net tunnels tunnel ${app}_http_tunnel \
+               profile tcp-forward] : "" }]
+               
+               set vlan_action_proxy_int [expr { $do_explicit ? \
+               "vlans-enabled vlans replace-all-with \{ $proxy_tunnel \}" : $vlan_action_int }]
+               
+               # DNS RESOLVER
+               if { !$do_external && $do_explicit && [info exists ::airgap__restype] && [iapp_is ::airgap__restype "Yes"] } {
+                   foreach row $::airgap__resolvers {
+                       array set columns [lindex $row 0]
+                       lappend dns_forwarder_table "$columns(ip):$columns(port)"
+                   }
+                   set forward_zones "forward-zones replace-all-with \{ . \{ nameservers replace-all-with \{ [join $dns_forwarder_table] \} \} \}"
+               } else {
+                   set forward_zones "forward-zones none"
+               }
+               
+               set proxy_resolver [expr { $do_explicit ? \
+               [iapp_conf create net dns-resolver ${app}_dns_resolver \
+               $forward_zones] : "" }]
+               
+               # HTTP PROFILE
+               set proxy_http [expr { $do_explicit ? \
+               [iapp_conf create ltm profile http ${app}_http_explicit \
+               defaults-from http-explicit \
+               explicit-proxy \{ \
+               dns-resolver $proxy_resolver \
+               host-names replace-all-with \{ $::airgap__proxy_name \} \
+               tunnel-name $proxy_tunnel \
+               bad-request-message \"[encode_content $::bad_request_page]\" \
+               bad-response-message \"[encode_content $::bad_response_page]\" \
+               connect-error-message \"[encode_content $::connect_failed_page]\" \
+               dns-error-message \"[encode_content $::dns_lookup_failed_page]\" \}] : "" }]
+               
+               # VIRTUAL SERVER
+               set proxy_vs [expr { $do_explicit ? \
+               [iapp_conf create ltm virtual ${app}_ingress_vs_${::airgap__proxy_explicit__proxy_port} \
+               destination [iapp_destination $::airgap__proxy_explicit__proxy_ip $::airgap__proxy_explicit__proxy_port] \
+               ip-protocol tcp\
+               mask 255.255.255.255 \
+               $afm_params \
+               source-address-translation \{ type automap \} \
+               $vlan_action_int \
+               profiles replace-all-with \{ $proxy_http tcp \}] : "" }]
+
+               ### Virtual Servers
+               # array key:  $do_internal, $do_combined
+               array set vs_arr {
+                  1,0   {[iapp_conf create ltm virtual ${app}_ingress_vs_any_tcp \
+                            destination 0.0.0.0:any \
+                            ip-protocol tcp \
+                            mask any \
+                            $afm_proxy_params \
+                            translate-address disabled \
+                            translate-port enabled \
+                            source-address-translation \{ type automap \} \
+                            pool $internal_any_pool \
+                            profiles replace-all-with \{ $client_ssl_profile \{ context clientside\} $server_ssl_profile_int \{ context serverside\} [iapp_substa http_int_arr($new_http_int)] \} \
+                            $vlan_action_proxy_int \
+                            rules \{ [iapp_substa internal_rule_arr($do_external,$do_url_filtering,$have_internal_rules)] \}]
+                            
+                            [iapp_conf create ltm virtual ${app}_ingress_vs_any_udp \
+                            destination 0.0.0.0:any \
+                            ip-protocol udp \
+                            mask any \
+                            $afm_proxy_params \
+                            translate-address disabled \
+                            translate-port disabled \
+                            source-address-translation \{ type automap \} \
+                            pool $internal_any_pool \
+                            $vlan_action_int]}
+
+                  0,0   {[iapp_conf create ltm virtual ${app}_egress_vs_80_tcp \
+                            destination 0.0.0.0:http \
+                            ip-protocol tcp \
+                            mask any \
+                            translate-address disabled \
+                            source-address-translation \{ type automap \} \
+                            pool none \
+                            profiles replace-all-with \{ $server_ssl_profile_ext \{ context serverside\} [iapp_substa http_ext_arr($new_http_ext)] \} \
+                            $oneconnect_profile \
+                            $vlan_action_ext \
+                            rules \{ [iapp_substa external_rule_arr($do_internal,$have_external_rules)] \}]
+
+                            [iapp_conf create ltm virtual ${app}_egress_vs_any \
+                            destination 0.0.0.0:any \
+                            ip-protocol any \
+                            mask any \
+                            translate-address disabled \
+                            translate-port disabled \
+                            source-address-translation \{ type automap \} \
+                            $vlan_action_ext \
+                            pool [expr { [iapp_is ::airgap__pool_ext "/#create_new#"] ? $external_any_pool : "none" }] ]}
+
+                      *  {[iapp_conf create ltm virtual ${app}_ingress_vs_any_tcp \
+                            destination 0.0.0.0:any \
+                            ip-protocol tcp \
+                            mask any \
+                            $afm_proxy_params \
+                            translate-address disabled \
+                            translate-port enabled \
+                            source-address-translation \{ type automap \} \
+                            pool $internal_any_pool \
+                            profiles replace-all-with \{ $client_ssl_profile \{ context clientside\} $server_ssl_profile_int \{ context serverside\} [iapp_substa http_int_arr($new_http_int)] \} \
+                            $vlan_action_proxy_int \
+                            rules \{ [iapp_substa internal_rule_arr($do_external,$do_url_filtering,$have_internal_rules)] \}]
+                            
+                            [iapp_conf create ltm virtual ${app}_ingress_vs_any_udp \
+                            destination 0.0.0.0:any \
+                            ip-protocol udp \
+                            mask any \
+                            $afm_proxy_params \
+                            translate-address disabled \
+                            translate-port disabled \
+                            source-address-translation \{ type automap \} \
+                            pool $internal_any_pool \
+                            $vlan_action_int]
+
+                            [iapp_conf create ltm virtual ${app}_egress_vs_80_tcp \
+                            destination 0.0.0.0:http \
+                            ip-protocol tcp \
+                            mask any \
+                            translate-address disabled \
+                            source-address-translation \{ type automap \} \
+                            pool none \
+                            profiles replace-all-with \{ $server_ssl_profile_ext \{ context serverside\} [iapp_substa http_ext_arr($new_http_ext)] \} \
+                            $oneconnect_profile \
+                            $vlan_action_ext \
+                            rules \{ [iapp_substa external_rule_arr($do_internal,$have_external_rules)] \}]
+
+                            [iapp_conf create ltm virtual ${app}_egress_vs_any \
+                            destination 0.0.0.0:any \
+                            ip-protocol any \
+                            mask any \
+                            translate-address disabled \
+                            translate-port disabled \
+                            source-address-translation \{ type automap \} \
+                            $vlan_action_ext \
+                            pool [expr { [iapp_is ::airgap__pool_ext "/#create_new#"] ? $external_any_pool : "none" }] ]}
+               }
+
+               iapp_substa vs_arr($do_internal,$do_combined)
+            }
+
+            # MAIN
+
+            configure_airgap_deployment
+
+            iapp_template stop
+         }
+            presentation {
+                 section intro {
+                    
+                    optional ( "HIDE" == "THIS" ) {
+                         choice version tcl {
+                              return [expr {[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_tmos_version >= 11.4] ? "yes" : "no"}]
+                         }
+                         choice ltm_provisioned tcl {
+                              return [expr {[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_provisioned ltm] ? "yes" : "no" }]
+                         }
+                         choice is_115 tcl {
+                              return [expr {[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_tmos_version >= 11.5] ? "yes" : "no"}]
+                         }
+                         choice swg_provisioned tcl {
+                              return [expr {[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_provisioned swg] ? "yes" : "no" }]
+                         }
+                         choice afm_provisioned tcl {
+                              return [expr {[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_provisioned afm] ? "yes" : "no"}]
+                         }
+                    }
+                    message hello_supported "This iApp supports configuring BIG-IP LTM 11.4.0 or later for SSL forward proxy decryption for HTTPS egress traffic inspection. "
+                    message hello "Use this template to configure BIG-IP to act as a forward proxy for decrypting outbound HTTPS traffic for inspection by a security device. The template can also be configured to receive, re-encrypt, and forward decrypted traffic to a pool of routers or other devices."
+                    message check_for_updates "Ensure you are using the most recent template before continuing. Check for newer versions on downloads.f5.com or DevCentral: https://devcentral.f5.com/codeshare/Topic/iapps.  Note that this iApp template was previously known as f5.airgap_egress."
+                    optional ( version == "no" ) {
+                         message version_sorry "You must be running version 11.4.0 or later to use this template."
+                    }
+                    optional ( ltm_provisioned == "no" ) {
+                         message sorry "You must license and provision the Local Traffic Manager (LTM) module to use this template."
+                    }
+                    message prereqs_1 "You MUST have licensed the SSL Forward Proxy feature before configuring BIG-IP for SSL Intercept." 
+                    message prereqs_2 "To process encrypted traffic on this BIG-IP system, you must import an SSL certificate and key from a Certificate Authority that is trusted by internal clients.  For more information on certificate requirements, see the deployment guide."
+                    
+                    choice help display "xxlarge" default "hide" {
+                         "Yes, show inline help" => "show"  ,
+                         "No, do not show inline help" => "hide"
+                    }
+                    optional ( intro.help == "show" ) {
+                         message help_help "Inline help is available to provide contextual descriptions to aid in the completion of this configuration.  Select to show or hide the inline help in this template. Important notes and warnings are always visible, no matter which selection you make here."
+                    }
+                    choice advanced display "xxlarge" default "no" {
+                         "Basic - Use F5's recommended settings" => "no"  ,
+                         "Advanced - Configure advanced options"    => "yes"
+                    }
+                    optional ( intro.help == "show" ) {
+                         message advanced_help "This template supports two configurations modes. Basic mode exposes the most commonly used settings, and automatically configures the rest of the options.  Advanced mode allows you to review and change all settings."
+                    }
+                 } 
+                 optional ( intro.version == "yes" && intro.ltm_provisioned == "yes" )  {
+                    section airgap {
+                         choice scenario display "xxlarge" default "internal" {
+                              "This LTM will receive ingress traffic from internal clients" => "internal"  ,
+                              "This LTM will receive egress traffic from a security device" => "external"  ,
+                              "This LTM will receive ingress and egress traffic on different networks" => "combined"
+                         }
+                         optional ( intro.help == "show" && scenario == "internal" ) {
+                              message scenario_internal_help "The system needs to know where the BIG-IP system you are configuring is going to reside in your network. Select this option if this BIG-IP LTM is internal-facing and will receive ingress traffic from internal clients. This is a two device solution and you must run this iApp on a separate BIG-IP LTM which you configure to receive egress traffic from a security device."  
+                         }
+                         optional ( intro.help == "show" && scenario == "external" ) {
+                              message scenario_external_help "The system needs to know where the BIG-IP system you are configuring is going to reside in your network. Select this option if this BIG-IP LTM is external-facing and will receive egress traffic from a security device, such as an Intrusion Prevention System (IPS) or firewall. This is a two device solution and you must run this iApp on a separate BIG-IP LTM which you configure to receive ingress traffic from internal clients."  
+                         }
+                         optional ( intro.help == "show" && scenario == "combined" ) {
+                              message scenario_combined_help "The system needs to know where the BIG-IP system you are configuring is going to reside in your network. Select this option if you are using a single F5 device in this deployment. This BIG-IP LTM will receive ingress traffic from internal clients and egress traffic from security device(s) on different networks. This is a single device solution, and you must have at least two VLANs configured on the system (one for receiving traffic from clients and one for receiving traffic from a security device)."  
+                         }
+                         optional ( scenario == "internal" || scenario == "combined" ) {
+                              choice proxy_type display "xxlarge" default "transparent" {
+                                   "Transparent Proxy" => "transparent"  ,
+                                   "Explicit Proxy" => "explicit"
+                              }
+                              optional ( intro.help == "show" && scenario == "internal" || scenario == "combined" ) {
+                                   message proxy_type_help "Choose whether you want to deploy the system as an Explicit Proxy or a Transparent Proxy. Selecting Explicit Proxy configures an HTTP proxy in explicit mode. In this scenario, browser clients must be specifically configured to use the proxy via system settings. Selecting Transparent Proxy configures a transparent forwarding proxy. In this scenario, browser clients passing through the BIG-IP system do not need to be configured with proxy settings. Note that this mode requires the traffic from the clients is routed to one of the BIG-IP Self IP addresses as part of its route out of the network."  
+                              }
+                              optional ( proxy_type == "explicit" )  {
+                                   row proxy_explicit {
+                                        string proxy_ip required validator "IpAddress" display "large"
+                                        string proxy_port required validator "PortNumber" display "small" default "3128" 
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message proxy_explicit_help "Specify an IP address and port number to use for your explicit proxy instance. The default port is TCP port 3128. Both the IP address and port are required."
+                                   }
+                                   string proxy_name required display "xxlarge" validator "Fqdn"
+                                   optional ( intro.help == "show" ) {
+                                        message proxy_name_help "Specify the fully qualified domain name for this proxy." 
+                                   }
+                                   choice restype display "xxlarge" default "No" {
+                                        "Yes, forward all name requests" => "Yes"  ,
+                                        "No, resolve all name requests directly" => "No"
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message restype_help "You can either choose to forward all name requests to a group of DNS servers, or you can allow the BIG-IP system to resolve and cache the names directly (e.g., follow root-hints). The default is to forward DNS name requests to a group of external resolvers, but you can allow the local system to resolve the names directly if you choose."
+                                   }
+                                   optional (restype == "Yes") {
+                                        table resolvers {
+                                             string ip required display "large" validator "IpAddress" 
+                                             string port required display "small" default "53" validator "PortNumber"
+                                        }
+                                        optional ( intro.help == "show" ) {
+                                             message resolvers_help "Type the IP addresses of the DNS servers that will be used to resolve external host names by this proxy instance. The default port is 53.  Click Add to include more DNS servers."
+                                        }
+                                   }
+                              }
+                              choice clientssl display "xxlarge"
+                              default "/#create_new#" tcl {
+                                   set ::choices "Create a new Client SSL profile\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -filter ssl-forward-proxy eq enabled ltm profile client-ssl]"
+                                   return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message clientssl_help "Choose whether you want the system to create a new Client SSL profile for this implementation, or if you've already created a Client SSL profile that contains the appropriate certificate and key you can select it from the list. The certificate and key in the profile must be from a Certificate Authority that is trusted by your internal clients, and must have Digital Signature and Certificate Signing key usage properties. F5 recommends using a subordinate CA certificate, if available."  
+                                   message clientssl_help2 " If you select an existing profile, it must have SSL Forward Proxy enabled. If you have chosen to bypass SSL Intercept using URL categories or data groups, the profile must have SSL Forward Proxy Bypass enabled."
+                              }
+                              optional ( clientssl == "/#create_new#" ) {
+                                   choice CA_cert default "/Common/default.crt" display "xxlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter NAME !~ ca-bundle.crt|f5-irule.crt sys file ssl-cert]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message CA_cert_help "Select the trusted SSL certificate you imported for this implementation. This must be a certificate from a Certificate Authority that is trusted by your internal clients, and must have Digital Signature and Certificate Signing key usage properties. F5 recommends using a subordinate CA certificate, if available." 
+                                   }
+                                   choice CA_key default "/Common/default.key" display "xxlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter security-type ne "password" sys file ssl-key]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message CA_key_help "Select the associated trusted private key you imported."
+                                        message ssl_warn_3 "If your key is password-protected, you must manually create a Client SSL profile outside the iApp, and then select it from the list above."
+                                   }
+                                   optional ( intro.is_115 == "yes" && intro.advanced == "yes" ) {
+                                        choice host_bypass default "/#do_not_use#" display "xxlarge" tcl {
+                                             set ::choices "Do not bypass hostnames\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter type eq string ltm data-group internal]"
+                                             return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                        }
+                                        optional ( intro.help == "show" ) {
+                                             message host_bypass_help "Select an internal string data group. Traffic with hostnames matching this data group will bypass SSL interception. You must have already created the data group prior to configuring the iApp."  
+                                        }
+                                        choice src_bypass default "/#do_not_use#" display "xxlarge" tcl {
+                                             set ::choices "Do not bypass source IP\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter type eq ip ltm data-group internal]"
+                                             return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                        }
+                                        optional ( intro.help == "show" ) {
+                                             message src_bypass_help "Select an internal IP data group. Traffic sourced from IP addresses matching this data group will bypass SSL interception. You must have already created the data group prior to configuring the iApp."  
+                                        }
+                                        choice dst_bypass default "/#do_not_use#" display "xxlarge" tcl {
+                                             set ::choices "Do not bypass destination IP\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter type eq ip ltm data-group internal]"
+                                             return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                        }
+                                        optional ( intro.help == "show" ) {
+                                             message dst_bypass_help "Select an internal IP data group. Traffic destined for IP addresses matching this data group will bypass SSL interception. You must have already created the data group prior to configuring the iApp."  
+                                        }
+                                   }
+                              }
+                              choice serverssl display "xxlarge" default "/#create_new#" tcl {
+                                   set ::choices "Create a new Server SSL profile\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -filter ssl-forward-proxy eq enabled ltm profile server-ssl]"
+                                   return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message serverssl_help "F5 recommends creating a new server SSL profile. Pre-existing profiles must be configured for SSL Forward Proxy before they will appear in this list."
+                              }
+                              optional ( intro.advanced == "yes" && serverssl == "/#create_new#" )  {
+                                   choice bundle default "/Common/ca-bundle.crt" display "xxlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -filter NAME !~ f5-irule.crt sys file ssl-cert]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message bundle_help "Select the certificate bundle containing your Trusted Root Certificate CAs.  The default (ca-bundle.crt) contains many of the most common CAs."
+                                   }
+                                   choice expiredaction display "xxlarge" default "drop" {
+                                        "Drop" => "drop"  ,
+                                        "Ignore" => "ignore"
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message expiredaction_help "Choose whether you want the system to drop connections from clients using expired certificates, or if the system should ignore the expired certificate and allow the connection."
+                                   }
+                                   choice untrustedaction display "xxlarge" default "drop" {
+                                        "Drop" => "drop"  ,
+                                        "Ignore" => "ignore"
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message untrustedaction_help "Choose whether you want the system to drop connections from clients using untrusted certificates, or if the system should ignore the untrusted certificate and allow the connection."
+                                   }
+                              }
+                              
+                              table pool_int_members {
+                                   editchoice addr display "large" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items ltm node]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message pool_int_members_help "Specify the IP addresses of the devices where you want the BIG-IP system to forward outbound client traffic.  Click the Add button to include more devices. If the device already exists on the BIG-IP system, you can select it from the list."  
+                                   message pool_int_members_help_2 "If the security device is OSI layer 2-based, specify the self IP address of the egress BIG-IP. If the security device is layer 3-based, specify the IP address of that device. That device must be configured to route traffic to the internal self IP address of the egress device."  
+                              }
+                              optional ( intro.advanced == "yes" )  {
+                                   choice http_profile_int display "xxlarge"
+                                   default "/#create_new#" tcl {
+                                        set ::choices "Create a new HTTP profile\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items ltm profile http]"
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message http_profile_help_int "The HTTP profile contains settings that tell the BIG-IP system how to handle the HTTP protocol. If you have created a custom HTTP profile for this application, you can select it from the list."  
+                                   }
+                              }
+                              choice vlan_mode_int display "xxlarge" default "enabled" {
+                                   "Enable traffic on all VLANs and Tunnels" => "all"  ,
+                                   "Yes, enable traffic only on the VLANs I specify" => "enabled"  ,
+                                   "Yes, disable traffic only on the VLANs I specify" => "disabled"
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message vlan_mode_help_int "You can optionally configure the BIG-IP system to accept or deny client traffic from specific VLANs you have configured. If you select to enable or disable traffic on specific VLANs, you must specify the VLANs in the next question. The VLAN objects must already be configured on this BIG-IP system before you can select them."  
+                              }
+                              optional ( vlan_mode_int != "all" ) {
+                                   multichoice client_vlan_int display "xlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items net vlan]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message client_vlan_help_int "Because you selected you want to enable or disable traffic on specific VLANs in the previous question, use this section to specify the VLANs. By default, all VLANs on the BIG-IP system appear in the Selected box. Click any applicable VLANs and then use the Move buttons (<<) and (>>) to adjust list membership. The Selected box lists the VLANs and tunnels that are specifically enabled or disabled."  
+                              }
+                              optional ( intro.is_115 == "yes" && intro.swg_provisioned == "yes"  )  {
+                                   multichoice bypasscategories display "xlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -norecursive -nocomplain sys url-db url-category]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message bypasscategories_help "Select the URL categories that should BYPASS SSL decryption. Normally this is done for concerns over user privacy, or for categories that contain items that may rely on specific SSL certificates to be presented as part of a verification process (e.g., software update tools). Use the Add and Remove buttons to move categories to or from the Selected list." 
+                                   }
+                                   message bypasscategories_help_2 "You must have licensed URL filtering and provisioned Secure Web Gateway (SWG) to use the URL SSL bypass feature." 
+                              }
+                              optional ( intro.advanced == "yes" )  {
+                                   multichoice internal_rules display "xlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -filter NAME !~ "^_sys_" ltm rule]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   message internal_irule_1_max "Improper use or misconfiguration of an iRule can result in unwanted application behavior and poor performance of your BIG-IP system. For this reason we recommended you verify the impact of an iRule prior to deployment in a production environment."
+                                   optional ( intro.help == "show" ) {
+                                        message internal_irule_2_max "The BIG-IP system supports a scripting language to allow an administrator to instruct the system to intercept, inspect, transform, direct and track inbound or outbound application traffic. An iRule contains the set of instructions the system uses to process data flowing through it, either in the header or payload of a packet."
+                                        message internal_irule_3_max "Correct event priority is critical when assigning multiple iRules. For more information about iRule event priority, see https://devcentral.f5.com/wiki/iRules.priority.ashx."
+                                   }
+                              }
+                         }
+                         optional (scenario == "external" || scenario == "combined") {
+                              choice pool_ext display "xxlarge" default "/#create_new#" tcl {
+                                   set ::choices "Forward to a pool\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -filter network eq default net route]"
+                                   return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message pool_ext_help "You choose to forward traffic to a pool of router(s), or select the default route previously configured on this BIG-IP system."
+                              }
+                              optional ( pool_ext != "/#create_new#" )  {
+                                   message default_route_warn "You MUST have configured this route with a gateway IP address before deploying this iApp. Selecting a default route that forwards traffic to a VLAN or pool will result in an error message."
+                              }
+                              optional ( pool_ext == "/#create_new#" )  {
+                                   table pool_ext_members {
+                                        editchoice addr display "large" tcl {
+                                             set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items ltm node]
+                                             return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                        }
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message pool_ext_members_help "Specify the IP addresses of the devices where you want the BIG-IP system to forward re-encrypted outbound client traffic.  Click the Add button to include more devices. If the device already exists on the BIG-IP system, you can select it from the list."  
+                                   }
+                              }
+                              optional ( intro.advanced == "yes" )  {
+                                   choice http_profile_ext display "xxlarge"
+                                   default "/#create_new#" tcl {
+                                        set ::choices "Create a new HTTP profile\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items ltm profile http]"
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message http_profile_help_ext "The HTTP profile contains settings that tell the BIG-IP system how to handle the HTTP protocol. If you have created a custom HTTP profile for server-side traffic, you can select it from the list."  
+                                   }
+                              }
+                              choice vlan_mode_ext display "xxlarge" default "enabled" {
+                                   "Enable traffic on all VLANs and Tunnels" => "all"  ,
+                                   "Yes, enable traffic only on the VLANs I specify" => "enabled"  ,
+                                   "Yes, disable traffic only on the VLANs I specify" => "disabled"
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message vlan_mode_help_ext "You can optionally configure the BIG-IP system to accept or deny client traffic from specific VLANs you have configured. If you select to enable or disable traffic on specific VLANs, you must specify the VLANs in the next question. The VLAN objects must already be configured on this BIG-IP system before you can select them."  
+                              }
+                              optional ( vlan_mode_ext != "all" ) {
+                                   multichoice client_vlan_ext display "xlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items net vlan]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message client_vlan_help_ext "Because you selected you want to enable or disable traffic on specific VLANs in the previous question, use this section to specify the VLANs. By default, all VLANs on the BIG-IP system appear in the Selected box. Click any applicable VLANs and then use the Move buttons (<<) and (>>) to adjust list membership. The Selected box lists the VLANs and tunnels that are specifically enabled or disabled."
+                              }
+                              optional ( scenario == "combined" ) {
+                                   message vlan_warning "You must select different VLANs for receiving traffic from clients and security devices."
+                              }
+                              optional ( intro.advanced == "yes" )  {
+                                   multichoice external_rules display "xlarge" tcl {
+                                        set ::choices [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -filter NAME !~ "^_sys_" ltm rule]
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   message external_irule_1_max "Improper use or misconfiguration of an iRule can result in unwanted application behavior and poor performance of your BIG-IP system. For this reason we recommended you verify the impact of an iRule prior to deployment in a production environment."
+                                   optional ( intro.help == "show" ) {
+                                        message external_irule_2_max "The BIG-IP system supports a scripting language to allow an administrator to instruct the system to intercept, inspect, transform, direct and track inbound or outbound application traffic. An iRule contains the set of instructions the system uses to process data flowing through it, either in the header or payload of a packet."
+                                        message external_irule_3_max "Correct event priority is critical when assigning multiple iRules. For more information about iRule event priority, see https://devcentral.f5.com/wiki/iRules.priority.ashx."
+                                   }
+                              }
+                         }
+                    }
+                    optional ( intro.afm_provisioned == "yes" && ( airgap.scenario == "internal" || airgap.scenario == "combined" ) ) {
+                         section afm {
+                              choice policy default "/#do_not_use#" display "xxlarge" tcl {
+                                   set choices "Yes, use F5's recommended AFM configuration\t/#default#\nNo, do not use AFM to secure your application\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -nocomplain security firewall policy]"
+                                   return $choices
+                              }
+                              optional ( intro.help == "show" ) {
+                                   message policy_help "BIG-IP Advanced Firewall Manager (AFM) is a high-performance, stateful, full-proxy network firewall designed to guard data centers against incoming threats that enter the network on the most widely deployed protocols.  BIG-IP AFM must be fully licensed and provisioned to use this functionality. If you have already created an AFM Network Firewall Policy on this BIG-IP system for this implementation, you can select it from the list."
+                              }
+                              optional ( policy == "/#default#" ) {
+                                   choice restrict_by_addr default "/#do_not_use#" display "xxlarge" tcl {
+                                        set choices "No, do not restrict source addresses (allow all sources)\t/#do_not_use#\nYes, restrict source addresses\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -nocomplain security firewall address-list]"
+                                        return $choices
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message restrict_help "You can use the BIG-IP AFM to restrict access to external resources by either IP address or network address. If enabled, the system will only allow access to the virtual server from the address(es) you specify, and implicitly deny access to all unspecified addresses."
+                                   }
+                                   optional ( restrict_by_addr == "/#create_new#" ) {
+                                        string allowed_addr display "xxlarge" required
+                                        optional ( intro.help == "show" ) {
+                                             message allowed_addr_help "Specify the IP or network address(es) that should be allowed external access.  You can use a single IP address, a list of IP addresses separated by spaces, a range of IP addresses separated by a dash (for example 192.0.2.10-192.0.2.100), a single network address, such as 192.0.2.200/24, or any combination of these."
+                                        }
+                                   }
+                                   optional ( restrict_by_addr != "/#do_not_use#" ) {
+                                        choice deny_by_addr default "/#do_not_use#" display "xxlarge" tcl {
+                                             set choices "No, do not explicitly deny source addresses\t/#do_not_use#\nYes, explicitly deny source addresses\t/#create_new#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -nocomplain security firewall address-list]"
+                                             return $choices
+                                        }
+                                        optional ( intro.help == "show" ) {
+                                             message deny_help "You can use the BIG-IP AFM to deny access to external resources by either IP address or network address. If enabled, the system will explicitly deny access to the virtual server from the address(es) you specify."
+                                        }
+                                        optional ( deny_by_addr == "/#create_new#" )  {
+                                             string denied_addr display "xxlarge"
+                                             optional ( intro.help == "show" ) {
+                                                  message denied_addr_help "Specify the IP or network address that should be denied external access.  You can use a single IP address, a list of IP addresses separated by spaces, a range of IP addresses separated by a dash (for example 192.0.2.10-192.0.2.100), a single network address, such as 192.0.2.200/24, or any combination of these."
+                                             }
+                                        }
+                                   }
+                              }
+                              optional ( policy != "/#do_not_use#" ) {
+                                   choice staging_policy default "/#do_not_use#" display "xxlarge" tcl {
+                                        set choices "Do not apply a staging policy\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items -nocomplain security firewall policy]"
+                                        return $choices
+                                   }
+                                   message staging_policy1_help "A policy in Staging mode does not block any traffic, and only logs what would be blocked if the policy were placed into production."
+                                   optional ( intro.help == "show" ) {
+                                        message staging_policy_help "A staged policy allows you to evaluate the effect a policy has on traffic by analyzing the system logs, without actually modifying traffic based on the firewall rules.  You must already have a policy on the system in order to select it from the list.  For specific information on creating a staging policy, see the AFM documentation."
+                                   }
+                                   choice security_logging default "/#do_not_use#" display "xxlarge" tcl {
+                                        # Menu should display all log profiles with "network none".
+                                        # tmsh::run_proc f5.iapp.1.4.0.cli:iapp_get_items will not filter security log profiles,
+                                        # so the filter has been written inline here.
+                                        set ::choices "Do not use a logging profile\t/#do_not_use#\n"
+                                        if { [catch {
+                                             set profile_list [tmsh::list security log profile all-properties recursive]
+                                        } err] } {
+                                        set profile_list " "
+                                        }
+                                        array set profiles \
+                                        [string map {"security log profile" ""} $profile_list]
+                                        foreach name [array names profiles] {
+                                             array set subprofile $profiles($name)
+                                             if { [info exists subprofile(network)] && \
+                                                  $subprofile(network) != "none" } {
+                                                  append ::choices "$name\n"
+                                             }
+                                        }
+                                        return [tmsh::run_proc f5.iapp.1.4.0.cli:iapp_safe_display ::choices]
+                                   }
+                                   optional ( intro.help == "show" ) {
+                                        message security_logging_help "The logging profile enables you to log detailed information about BIG-IP system Network Firewall events and store those logs on the BIG-IP system or a remote logging server (syslog or Splunk). If you want to use a logging profile, we recommend creating one outside this template. Only logging profiles with Network Firewall enabled appear in the list."
+                                        message security_logging1_help "If you are also using BIG-IP ASM, and the logging profile you created has both Application Security and Network Firewall enabled in the same profile, you must also select that profile here. See the BIG-IP AFM documentation for specific information on Logging profiles."
+                                   }
+                              }
+                         }
+                    }
+               }
+
+            text {
+
+               intro "Welcome to the F5 SSL Intercept iApp Template"
+               
+               intro.hello_supported "Supported Software:" 
+               intro.hello "Introduction" 
+               intro.check_for_updates "Check for updates" 
+               intro.version_sorry "We're sorry" 
+               intro.sorry "We're sorry" 
+               intro.prereqs_1 "Prerequisites" 
+               intro.prereqs_2 "" 
+               intro.help "Do you want to see inline help?"
+               intro.help_help "" 
+               intro.advanced "Which configuration mode do you want to use?"
+               intro.advanced_help "" 
+               
+               afm "Advanced Firewall Manager (BIG-IP AFM)"
+               afm.policy "Do you want to use BIG-IP AFM to protect this deployment?"
+               afm.policy_help "" 
+               afm.restrict_by_addr "Do you want to restrict access to external resources by client IP or network address?"
+               afm.restrict_help "" 
+               afm.allowed_addr "What client IP or network addresses should be allowed to access external resources?"
+               afm.allowed_addr_help "" 
+               afm.deny_by_addr "Do you want to explicitly deny access to external resources by client IP or network address?"
+               afm.deny_help "" 
+               afm.denied_addr "What client IP or network addresses should be explicitly denied access external resources?"
+               afm.denied_addr_help "" 
+               afm.security_logging "Which logging profile would you like to use?"
+               afm.security_logging_help "" 
+               afm.security_logging1_help "" 
+               afm.staging_policy "Would you like to stage a policy for testing purposes?"
+               afm.staging_policy_help "" 
+               afm.staging_policy1_help "CRITICAL" 
+
+               airgap "Virtual Server Configuration"
+               airgap.scenario "Where does this BIG-IP system reside in your network?"
+               airgap.scenario_internal_help "" 
+               airgap.scenario_external_help "" 
+               airgap.scenario_combined_help "" 
+
+               airgap.pool_int_members "To which device(s) should this BIG-IP LTM forward decrypted outbound client traffic?"
+               airgap.pool_int_members_help "" 
+               airgap.pool_int_members.addr "IP Address:"
+               airgap.pool_int_members_help_2 "" 
+
+               airgap.pool_ext "Would you like to forward re-encrypted outbound client traffic to a pool of routers, or use the default network route?"
+               airgap.pool_ext_help ""
+               airgap.default_route_warn "WARNING:"
+               airgap.pool_ext_members "To which device(s) should this BIG-IP LTM forward re-encrypted outbound client traffic?"
+               airgap.pool_ext_members_help "" 
+               airgap.pool_ext_members.addr "IP Address:"
+               
+               airgap.proxy_type "Which type of forward proxy are you deploying at this time?"
+               airgap.proxy_type_help "" 
+               airgap.proxy_explicit "What IP address and port do you want to use for the proxy virtual server?"
+               airgap.proxy_explicit_help "" 
+               airgap.proxy_explicit.proxy_ip "IP Address"
+               airgap.proxy_explicit.proxy_port "Port"
+               airgap.proxy_name "What is the FQDN of this proxy?"
+               airgap.proxy_name_help "" 
+               
+                airgap.restype "Do you want the system to forward all name requests?"
+                airgap.restype_help "" 
+                airgap.resolvers "Which DNS servers do you want to use for forwarding?"
+                airgap.resolvers_help "" 
+                airgap.resolvers.ip "IP"
+                airgap.resolvers.port "Port"
+
+               airgap.clientssl "Which Client SSL profile (with SSL Forward Proxy enabled) do you want to use?"
+               airgap.clientssl_help "" 
+               airgap.clientssl_help2 ""
+
+               airgap.CA_cert "Which trusted CA certificate do you want to use to issue server certificates for client-side connections?"
+               airgap.CA_cert_help "" 
+               airgap.CA_key "Which trusted CA private key do you want to use to issue server certificates for client-side connections?"
+               airgap.CA_key_help ""
+               airgap.ssl_warn_3 "NOTE:" 
+               
+               airgap.host_bypass "Which hostnames would you like to bypass SSL interception?"
+               airgap.host_bypass_help "" 
+               airgap.src_bypass "Which source IP addresses would you like to bypass SSL interception?"
+               airgap.src_bypass_help "" 
+               airgap.dst_bypass "Which destination IP addresses would you like to bypass SSL interception?"
+               airgap.dst_bypass_help "" 
+               
+               airgap.serverssl "Which Server SSL profile (with SSL Forward Proxy enabled) do you want to use for server-side connections?"
+               airgap.serverssl_help "" 
+
+               airgap.bundle "Which certificate bundle contains your Trusted Root CAs?"
+               airgap.bundle_help "" 
+               airgap.expiredaction "What action should be taken for an expired certificate?"
+               airgap.expiredaction_help "" 
+               airgap.untrustedaction "What action should be taken for an untrusted certificate?"
+               airgap.untrustedaction_help "" 
+
+               airgap.http_profile_int "Which HTTP profile do you want to use for client-side traffic?"
+               airgap.http_profile_help_int "" 
+
+               airgap.vlan_mode_int "Do you want to restrict client-side traffic to specific VLANs?"
+               airgap.vlan_mode_help_int "" 
+               airgap.client_vlan_int "On which VLANs should client-side traffic be enabled or disabled?"
+               airgap.client_vlan_help_int "" 
+
+               airgap.bypasscategories "Which URL Categories should bypass SSL filtering?"
+               airgap.bypasscategories_help "" 
+               airgap.bypasscategories_help_2 "NOTE" 
+
+               airgap.http_profile_ext "Which HTTP profile do you want to use for server-side traffic?"
+               airgap.http_profile_help_ext "" 
+
+               airgap.vlan_mode_ext "Do you want to restrict server-side traffic to specific VLANs?"
+               airgap.vlan_mode_help_ext "" 
+               airgap.client_vlan_ext "On which VLANs should server-side traffic be enabled or disabled?"
+               airgap.client_vlan_help_ext "" 
+
+               airgap.vlan_warning "WARNING" 
+               
+               airgap.internal_rules "Do you want to apply additional iRules to decrypted SSL traffic before it is forwarded to the security device?"
+               airgap.external_rules "Do you want to apply additional iRules to SSL traffic before it is re-encrypted?"
+               
+               airgap.internal_irule_1_max "WARNING" 
+               airgap.internal_irule_2_max "" 
+               airgap.internal_irule_3_max "" 
+               
+               airgap.external_irule_1_max "WARNING" 
+               airgap.external_irule_2_max "" 
+               airgap.external_irule_3_max "" 
+
+            }
+      }
+            role-acl { admin manager resource-admin }
+            run-as none
+      }
+   }
+    requires-bigip-version-max none
+    requires-bigip-version-min 11.4.0
+    requires-modules { ltm }
+}

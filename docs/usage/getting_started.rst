@@ -7,62 +7,21 @@ virtual server to serve requests to the nodes in the pool.
 
 First, obtain `Python 2.7`_ and `Ansible`_ if you do not already have them.
 
-The version of Ansible that is required is at least 2.2.0. At the time of
-this writing, that version is still in development. Below, I've included
-steps to install Ansible in a virtualenv for you to use until such time
-as Ansible 2.2.0 is released
+The version of Ansible that is required is at least 2.2.0.
 
 Installing Ansible
 ------------------
 
-At this time, an unreleased version of Ansible is required to make full
-use of these modules; 2.2.0.
+Let's install Ansible to make it possible to use the modules.
 
-Let's install Ansible in a virtualenv to make it possible to use the
-modules.
-
-First, make sure `virtualenv` is installed.
+First, make sure `ansible` is installed.
 
 .. code-block:: bash
 
-   pip install virtualenv
+   pip install ansible
 
-This will make available to you a `virtualenv` command. You can use that
-it make a virtual environment for your Ansible installation.
-
-.. code-block:: bash
-
-   virtualenv ansible2
-
-In your current working directory, you will find a new directory called
-`ansible2`. In this directory resides a copy of Python that is configured
-to install any modules inside of that local directory. Via this method,
-we can install Python modules without stomping on the system wide ones.
-
-To use this new location, you must `activate` it.
-
-.. code-block:: bash
-
-   . ansible2/bin/activate
-
-You should see your prompt change so that the name of the virtualenv is
-prefixing the normal prompt. For example.
-
-.. code-block:: bash
-
-   (ansible2)SEA-ML-RUPP1:f5 trupp$
-
-Now that our `virtualenv` is active, all future Python commands (such as
-`pip`) will install modules into the virtualenv. So let's install the
-development copy of ansible.
-
-.. code-block:: bash
-
-   pip install git+git://github.com/ansible/ansible.git@devel
-
-You should be able to verify that you are running the new version of
-Ansible by using the `--version` argument to the `ansible` command, like
-so.
+You should be able to verify that you are running Ansible by using the
+`--version` argument to the `ansible` command, like so.
 
 .. code-block:: bash
 
@@ -80,8 +39,21 @@ You should be presented with output that resembles the following
 With this ready, you can create your first playbook. We'll write the remainder
 of our Ansible playbooks in a file called ``site.yaml``
 
+Installing Modules
+------------------
+
+Refer to the documentation on `installing the modules here`_.
+
 Playbook
 --------
+
+The remainder of this tutorial will walk you through the various steps of
+adding tasks to your playbook.
+
+.. note:: I've broken each task into its own section
+          to better explain it. This might lead to confusion though, so if you
+          just want to get the whole file and then follow along, you can
+          `download it here`_.
 
 Let's begin by placing the following in your ``site.yaml``:
 
@@ -97,6 +69,8 @@ Your BIG-IP is probably not called ``big-ip01.internal``. It might be a
 different hostname or even IP address. Whichever it is, place it in the hosts
 line.
 
+.. _download it here: https://github.com/F5Networks/f5-ansible/blob/master/examples/getting-started.yaml
+
 Add a pool
 ~~~~~~~~~~
 
@@ -108,7 +82,7 @@ Add the following to your ``site.yaml`` to create a pool called ``web``:
 
 .. code-block:: yaml
 
-    - tasks:
+    tasks:
        - name: Create a pool
          bigip_pool:
              lb_method: "ratio_member"
@@ -118,6 +92,7 @@ Add the following to your ``site.yaml`` to create a pool called ``web``:
              slow_ramp_time: "120"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
 Add two nodes
 ~~~~~~~~~~~~~
@@ -138,6 +113,7 @@ To add the two nodes, we'll put the following in our ``site.yaml``
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
        - name: Create node2
          bigip_node:
@@ -147,6 +123,7 @@ To add the two nodes, we'll put the following in our ``site.yaml``
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
 
 .. note::
 
@@ -174,6 +151,7 @@ members.
              server: "big-ip01.internal"
              user: "admin"
              validate_certs: "no"
+         delegate_to: localhost
          with_items:
              - host: "10.10.10.10"
                name: "node-1"
@@ -197,7 +175,7 @@ To create a virtual server, add the following to you ``site.yaml``:
        - name: Create a VIP
          bigip_virtual_server:
              description: "foo-vip"
-             destination: "172.16.10.108:80"
+             destination: "172.16.10.108"
              password: "admin"
              name: "vip-1"
              pool: "web"
@@ -209,6 +187,7 @@ To create a virtual server, add the following to you ``site.yaml``:
                   - "http"
                   - "clientssl"
              validate_certs: "no"
+         delegate_to: localhost
 
 More info
 ---------
@@ -219,3 +198,4 @@ links relevant to your interests.
 
 .. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
 .. _Python 2.7: http://www.python.org/
+.. _installing the modules here: https://f5-ansible.readthedocs.io/en/latest/usage/installing_modules.html

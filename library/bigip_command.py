@@ -100,6 +100,7 @@ vars:
     transport: cli
 
 - name: run show version on remote devices
+<<<<<<< HEAD
   bigip_command:
     commands: show sys version
     provider: "{{ cli }}"
@@ -107,6 +108,15 @@ vars:
 - name: run show version and check to see if output contains BIG-IP
   bigip_command:
     commands: show sys version
+=======
+  bigip_command:
+    commands: show sys version
+    provider: "{{ cli }}"
+
+- name: run show version and check to see if output contains BIG-IP
+  bigip_command:
+    commands: show sys version
+>>>>>>> master
     wait_for: result[0] contains BIG-IP
     provider: "{{ cli }}"
 

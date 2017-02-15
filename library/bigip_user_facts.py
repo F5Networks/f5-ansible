@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_user_facts
@@ -26,39 +30,15 @@ description:
    - Retrieve user account attributes from a BIG-IP
 version_added: "2.2"
 options:
-  server:
-    description:
-      - BIG-IP host
-    required: true
-  server_port:
-    description:
-      - BIG-IP server port
-    required: false
-    default: 443
-  password:
-    description:
-      - BIG-IP password
-    required: true
-  user:
-    description:
-      - BIG-IP username
-    required: true
-    aliases:
-      - username
   username_credential:
     description:
       - Name of the user to retrieve facts for
     required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk
   - Facts are placed in the C(bigip) variable
+extends_documentation_fragment: f5
 requirements:
   - f5-sdk
 author:

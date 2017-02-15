@@ -34,7 +34,6 @@ The main documentation for the modules is organized into a couple sections:
 
 .. toctree::
    :maxdepth: 2
-   :glob:
    :caption: Module Documentation
 
    general

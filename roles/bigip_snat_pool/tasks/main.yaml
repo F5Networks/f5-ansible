@@ -1,0 +1,182 @@
+---
+
+- name: Create SNAT pool from list of members
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ members_list }}"
+  register: result
+
+- name: Assert Create SNAT pool from list of members
+  assert:
+      that:
+          - result|changed
+
+- name: Create SNAT pool from list of members - Idempotent check
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ members_list }}"
+  register: result
+
+- name: Assert Create SNAT pool from list of members - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set SNAT pool to single member
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_individual }}"
+  register: result
+
+- name: Assert Set SNAT pool to single member
+  assert:
+      that:
+          - result|changed
+
+- name: Set SNAT pool to single member - Idempotent check
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_individual }}"
+  register: result
+
+- name: Assert Set SNAT pool to single member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Append a list of members
+  bigip_snat_pool:
+      append: "yes"
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_append_list }}"
+  register: result
+
+- name: Assert Append a list of members
+  assert:
+      that:
+          - result|changed
+
+- name: Append a list of members - Idempotent check
+  bigip_snat_pool:
+      append: "yes"
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_append_list }}"
+  register: result
+
+- name: Assert Append a list of members - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Append an individual member
+  bigip_snat_pool:
+      append: "yes"
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_append_individual }}"
+  register: result
+
+- name: Assert Append an individual member
+  assert:
+      that:
+          - result|changed
+
+- name: Append an individual member - Idempotent check
+  bigip_snat_pool:
+      append: "yes"
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_append_individual }}"
+  register: result
+
+- name: Assert Append an individual member - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Append an existing list of members
+  bigip_snat_pool:
+      append: "yes"
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      members: "{{ member_append_list }}"
+  register: result
+
+- name: Assert Append an existing list of members
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete a SNAT pool
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Delete a SNAT pool
+  assert:
+      that:
+          - result|changed
+
+- name: Delete a SNAT pool - Idempotent check
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Delete a SNAT pool - Idempotent check
+  assert:
+      that:
+          - not result|changed

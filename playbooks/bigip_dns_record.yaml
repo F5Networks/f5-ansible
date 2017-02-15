@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - __bigip_dns_record
+      - bigip_dns_record

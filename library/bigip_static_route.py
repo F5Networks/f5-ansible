@@ -107,7 +107,6 @@ RETURN = '''
 
 import netaddr
 
-
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5_utils import *
 

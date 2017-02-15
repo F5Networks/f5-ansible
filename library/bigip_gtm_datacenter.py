@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_gtm_datacenter
@@ -189,7 +193,7 @@ class BigIpGtmDatacenter(object):
         )
 
         if hasattr(r, 'servers'):
-            # Deliberately using sets to supress duplicates
+            # Deliberately using sets to suppress duplicates
             p['servers'] = set([str(x) for x in r.servers])
         if hasattr(r, 'contact'):
             p['contact'] = str(r.contact)

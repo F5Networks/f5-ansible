@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_license
@@ -30,10 +34,6 @@ options:
     description:
       - Path to file containing kernel dossier for your system
     required: false
-  server:
-    description:
-      - BIG-IP host to connect to
-    required: true
   key:
     description:
       - The registration key to use to license the BIG-IP. This is required
@@ -47,10 +47,6 @@ options:
     description:
       - Dictionary of options to use when creating the license
     required: false
-  password:
-    description:
-      - The password of the user used to authenticate to the BIG-IP
-    required: true
   state:
     description:
       - The state of the license on the system. When C(present), only guarantees
@@ -71,18 +67,6 @@ options:
         file at run-time from the licensing servers
     required: false
     default: None
-  user:
-    description:
-      - The username used when connecting to the BIG-IP
-    required: true
-    aliases:
-      - username
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the suds Python package on the host. This is as easy as
     pip install suds
@@ -92,6 +76,7 @@ notes:
     C(absent). This is as easy as pip install paramiko
   - Requires the requests Python package on the host if using the C(state)
     C(absent). This is as easy as pip install paramiko
+extends_documentation_fragment: f5
 requirements:
   - bigsuds
   - requests
@@ -154,6 +139,7 @@ import socket
 import ssl
 import suds
 import time
+import urllib2
 
 from xml.sax._exceptions import SAXParseException
 
@@ -169,32 +155,24 @@ LIC_EXTERNAL = 'activate.f5.com'
 LIC_INTERNAL = 'authem.f5net.com'
 
 
+class HTTPSHandlerNoVerify(urllib2.HTTPSHandler):
+    def __init__(self, *args, **kwargs):
+        try:
+            kwargs['context'] = ssl._create_unverified_context()
+        except AttributeError:
+            # Python prior to 2.7.9 doesn't have default-enabled certificate
+            # verification
+            pass
+
+        urllib2.HTTPSHandler.__init__(self, *args, **kwargs)
+
+
 def is_production_key(key):
     m = re.search("\d", key[1:-1])
     if m:
         return False
     else:
         return True
-
-
-class UnreachableActivationServerError(Exception):
-    pass
-
-
-class DossierNotGeneratedError(Exception):
-    pass
-
-
-class NoLicenseReturnedError(Exception):
-    pass
-
-
-class SSLCertVerifyError(Exception):
-    pass
-
-
-class UnprivilegedAccountError(Exception):
-    pass
 
 
 class BigIpLicenseCommon(object):
@@ -225,10 +203,6 @@ class BigIpLicenseCommon(object):
             url = 'https://%s/license/services/urn:com.f5.license.v5b.ActivationService?wsdl' % server
 
         try:
-            if server == LIC_INTERNAL:
-                if hasattr(ssl, 'SSLContext'):
-                    ssl._create_default_https_context = ssl._create_unverified_context()
-
             # Specifying the location here is required because the URLs in the
             # WSDL for activate specify http but the URL we are querying for
             # here is https. Something is weird in suds and causes the following
@@ -241,7 +215,12 @@ class BigIpLicenseCommon(object):
             if self._validate_certs:
                 client = suds.client.Client(url=url, location=url, timeout=10)
             else:
-                client = suds.client.Client(url, timeout=10)
+                transport = HTTPSTransportNoVerify(
+                    username=self.username,
+                    password=self.password,
+                    timeout=10
+                )
+                client = suds.client.Client(url, timeout=10, transport=transport)
 
             result = client.service.ping()
             if result:
@@ -273,7 +252,10 @@ class BigIpLicenseCommon(object):
                                 auth=(self.username, self.password),
                                 verify=self._validate_certs)
         except requests.exceptions.SSLError:
-            raise SSLCertVerifyError
+            raise F5ModuleError(
+                "SSL certificate verification failed. Use "
+                "validate_certs=no to bypass this"
+            )
 
         if resp.status_code != 200:
             raise Exception('Failed to query the REST API')
@@ -394,7 +376,9 @@ class BigIpLicenseCommon(object):
         # Usually this is the 'admin' account. If you do not have the
         # required role though, we need to stop further work
         if not self.can_have_advanced_shell():
-            raise UnprivilegedAccountError
+            raise F5ModuleError(
+                "You account does not have permission to reload the license."
+            )
 
         # Start by reading in the current shell.
         #
@@ -583,13 +567,19 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             fh.close()
 
         lic_server = self.test_license_server()
+        lic_status = self.get_license_activation_status()
         if not lic_server and lic_status == 'STATE_DISABLED':
-            raise UnreachableActivationServerError
+            raise F5ModuleError(
+                "Could not reach the specified activation server"
+                "to license BIG-IP"
+            )
 
         if not self.dossier:
             self.get_dossier(self.regkey)
             if not self.dossier:
-                raise DossierNotGeneratedError
+                raise F5ModuleError(
+                    "Dossier not generated"
+                )
 
         resp = self.get_license()
         if resp.state == "EULA_REQUIRED":
@@ -604,7 +594,7 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             if big_license:
                 self.upload_eula(resp.eula)
         else:
-            raise NoLicenseReturnedError(resp.fault.faultText)
+            raise F5ModuleError(resp.fault.faultText)
 
         if self.install_license(big_license):
             return True
@@ -615,19 +605,20 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
 def main():
     changed = False
 
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        dossier_file=dict(no_log=True),
+        key=dict(required=False, no_log=True),
+        license_file=dict(no_log=True),
+        license_options=dict(type='dict', no_log=True),
+        state=dict(default='present', choices=['absent', 'present', 'latest']),
+        wsdl=dict(default=None)
+    )
+    argument_spec.update(meta_args)
+
     module = AnsibleModule(
-        argument_spec=dict(
-            dossier_file=dict(),
-            server=dict(required=True),
-            key=dict(required=False),
-            license_file=dict(),
-            license_options=dict(type='dict'),
-            password=dict(required=True),
-            state=dict(default='present', choices=['absent', 'present', 'latest']),
-            user=dict(required=True, aliases=['username']),
-            validate_certs=dict(default='yes', type='bool'),
-            wsdl=dict(default=None)
-        )
+        argument_spec=argument_spec
     )
 
     state = module.params.get('state')
@@ -667,16 +658,6 @@ def main():
         module.fail_json(msg="Could not connect to BIG-IP host")
     except socket.timeout:
         module.fail_json(msg="Timed out connecting to the BIG-IP")
-    except UnreachableActivationServerError:
-        module.fail_json(changed=False, msg="Could not reach the specified activation server to license BIG-IP")
-    except DossierNotGeneratedError:
-        module.fail_json(changed=False, msg="Dossier not generated")
-    except NoLicenseReturnedError as e:
-        module.fail_json(msg=str(e))
-    except SSLCertVerifyError:
-        module.fail_json(msg="SSL certificate verification failed. Use validate_certs=no to bypass this")
-    except UnprivilegedAccountError:
-        module.fail_json(msg="You account does not have permission to reload the license!")
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *

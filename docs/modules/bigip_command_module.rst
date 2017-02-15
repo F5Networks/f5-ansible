@@ -1,10 +1,10 @@
 .. _bigip_command:
 
 
-bigip_command - Run commands on a BIG-IP via tmsh
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_command - Run arbitrary command on F5 devices
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,14 +15,9 @@ bigip_command - Run commands on a BIG-IP via tmsh
 Synopsis
 --------
 
-Run commands on a BIG-IP via tmsh. This module is similar to the ansible ``command`` module, but specifically supports all BIG-IPs via the paramiko python extension. For some operations on the BIG-IP, there is not a SOAP or REST endpoint that is available and the operation can only be accomplished via ``tmsh``. The Ansible ``command`` module should be able to perform this, however, older releases of BIG-IP do not have sufficient python versions to support Ansible. By using this module, there is no need for python to exist on the remote BIG-IP. Additionally, this module can detect the presence of Appliance Mode on a BIG-IP and adjust the provided command to take this feature into account. Finally, the output of this module provides more Ansible-friendly data formats than could be accomplished by the ``command`` module alone.
+Sends an arbitrary command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
 
 
-Requirements (on host that executes module)
--------------------------------------------
-
-  * paramiko
-  * requests
 
 
 Options
@@ -39,35 +34,36 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>command<br/><div style="font-size: small;"></div></td>
+    <td>commands<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>tmsh command to run on the remote host</div></td></tr>
+        <td><div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retires as expired.</div><div>The <em>commands</em> argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return. This can be done on a command by command basis. The complex argument supports the keywords <code>command</code> and <code>output</code> where <code>command</code> is the command to run and <code>output</code> is 'text' or 'oneline'.</div></td></tr>
             <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>interval<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>True</td>
+    <td>1</td>
         <td><ul></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
+        <td><div>Configures the interval in seconds to wait between retries of the command.  If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.</div></td></tr>
+            <tr>
+    <td>match<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>all</td>
+        <td><ul></ul></td>
+        <td><div>The <em>match</em> argument is used in conjunction with the <em>wait_for</em> argument to specify the match policy.  Valid values are <code>all</code> or <code>any</code>.  If the value is set to <code>all</code> then all conditionals in the <em>wait_for</em> must be satisfied.  If the value is set to <code>any</code> then only one of the values must be satisfied.</div></td></tr>
+            <tr>
+    <td>retries<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>10</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the number of retries a command should by tried before it is considered failed.  The command is run on the target device every retry and evaluated against the <em>wait_for</em> conditionals.</div></td></tr>
+            <tr>
+    <td>wait_for<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward.   If the conditional is not true by the configured retries, the task fails.  See examples.</div></br>
+        <div style="font-size: small;">aliases: waitfor<div></td></tr>
         </table>
     </br>
 
@@ -78,14 +74,49 @@ Examples
 
  ::
 
-    - name: Load the default system configuration
+    # Note: examples below use the following provider dict to handle
+    #       transport and authentication to the node.
+    vars:
+      cli:
+        host: "{{ inventory_hostname }}"
+        username: admin
+        password: admin
+        transport: cli
+    
+    - name: run show version on remote devices
       bigip_command:
-          server: "bigip.localhost.localdomain"
-          user: "admin"
-          password: "admin"
-          command: "tmsh load sys config default"
-          validate_certs: "no"
-      delegate_to: localhost
+        commands: show sys version
+        provider: "{{ cli }}"
+    
+    - name: run show version and check to see if output contains BIG-IP
+      bigip_command:
+        commands: show sys version
+        wait_for: result[0] contains BIG-IP
+        provider: "{{ cli }}"
+    
+    - name: run multiple commands on remote nodes
+       bigip_command:
+        commands:
+          - show sys version
+          - list ltm virtual
+        provider: "{{ cli }}"
+    
+    - name: run multiple commands and evaluate the output
+      bigip_command:
+        commands:
+          - show sys version
+          - list ltm virtual
+        wait_for:
+          - result[0] contains BIG-IP
+          - result[1] contains my-vs
+        provider: "{{ cli }}"
+    
+    - name: tmsh prefixes will automatically be handled
+      bigip_command:
+        commands:
+          - show sys version
+          - tmsh list ltm virtual
+        provider: "{{ cli }}"
 
 Return Values
 -------------
@@ -104,48 +135,30 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> command </td>
-        <td> The command specified by the user </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> tmsh list auth user </td>
-    </tr>
-            <tr>
-        <td> app_mode_cmd </td>
-        <td> The command as it would have been run in Appliance mode </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> list auth user </td>
-    </tr>
-            <tr>
-        <td> app_mode </td>
-        <td> Whether or not Appliance mode was detected for the user </td>
-        <td align=center> changed </td>
-        <td align=center> boolean </td>
-        <td align=center> True </td>
-    </tr>
-            <tr>
-        <td> stderr </td>
-        <td> The stderr output from running the given command </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center>  </td>
+        <td> stdout_lines </td>
+        <td> The value of stdout split into a list </td>
+        <td align=center> always </td>
+        <td align=center> list </td>
+        <td align=center> [['...', '...'], ['...'], ['...']] </td>
     </tr>
             <tr>
         <td> stdout </td>
-        <td> The stdout output from running the given command </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center>  </td>
+        <td> The set of responses from the commands </td>
+        <td align=center> always </td>
+        <td align=center> list </td>
+        <td align=center> ['...', '...'] </td>
+    </tr>
+            <tr>
+        <td> failed_conditions </td>
+        <td> The list of conditionals that have failed </td>
+        <td align=center> failed </td>
+        <td align=center> list </td>
+        <td align=center> ['...', '...'] </td>
     </tr>
         
     </table>
     </br></br>
 
-Notes
------
-
-.. note:: Requires the paramiko Python package on the ansible host. This is as easy as pip install paramiko
 
 
     

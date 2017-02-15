@@ -1,0 +1,16 @@
+---
+
+- name: Collect BIG-IP facts
+  bigip_facts:
+      include: "system_info"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- include: common-tasks.yaml
+
+- include: issue-51.yaml
+  tags: issue-51

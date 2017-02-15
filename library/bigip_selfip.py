@@ -18,6 +18,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_selfip
@@ -70,6 +74,7 @@ options:
           If none, id of the route domain will be "0" (default route domain)
     required: false
     default: none
+    version_added: 2.3
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -94,6 +99,7 @@ EXAMPLES = '''
       validate_certs: "no"
       vlan: "vlan1"
   delegate_to: localhost
+
 - name: Create Self IP with a Route Domain
   bigip_selfip:
       server: "lb.mydomain.com"
@@ -107,6 +113,7 @@ EXAMPLES = '''
       route_domain: "10"
       allow_service: "default"
   delegate_to: localhost
+
 - name: Delete Self IP
   bigip_selfip:
       name: "self1"
@@ -116,6 +123,7 @@ EXAMPLES = '''
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
+
 - name: Allow management web UI to be accessed on this Self IP
   bigip_selfip:
       name: "self1"
@@ -127,6 +135,7 @@ EXAMPLES = '''
       allow_service:
           - "tcp:443"
   delegate_to: localhost
+
 - name: Allow HTTPS and SSH access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -139,6 +148,7 @@ EXAMPLES = '''
           - "tcp:443"
           - "tpc:22"
   delegate_to: localhost
+
 - name: Allow all services access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -150,6 +160,7 @@ EXAMPLES = '''
       allow_service:
           - all
   delegate_to: localhost
+
 - name: Allow only GRE and IGMP protocols access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -162,6 +173,7 @@ EXAMPLES = '''
           - gre:0
           - igmp:0
   delegate_to: localhost
+
 - name: Allow all TCP, but no other protocols access to this Self IP
   bigip_selfip:
       name: "self1"
@@ -271,11 +283,14 @@ class BigIpSelfIp(object):
 
     def read(self):
         """Read information and transform it
+
         The values that are returned by BIG-IP in the f5-sdk can have encoding
         attached to them as well as be completely missing in some cases.
+
         Therefore, this method will transform the data from the BIG-IP into a
         format that is more easily consumable by the rest of the class and the
         parameters that are supported by the module.
+
         :return: List of values currently stored in BIG-IP, formatted for use
         in this class.
         """
@@ -314,16 +329,21 @@ class BigIpSelfIp(object):
 
     def verify_services(self):
         """Verifies that a supplied service string has correct format
+
         The string format for port lockdown is PROTOCOL:PORT. This method
         will verify that the provided input matches the allowed protocols
         and the port ranges before submitting to BIG-IP.
+
         The only allowed exceptions to this rule are the following values
+
           * all
           * default
           * none
+
         These are special cases that are handled differently in the API.
         "all" is set as a string, "default" is set as a one item list, and
         "none" removes the key entirely from the REST API.
+
         :raises F5ModuleError:
         """
         result = []
@@ -355,15 +375,19 @@ class BigIpSelfIp(object):
 
     def fmt_services(self, services):
         """Returns services formatted for consumption by f5-sdk update
+
         The BIG-IP endpoint for services takes different values depending on
         what you want the "allowed services" to be. It can be any of the
         following
+
             - a list containing "protocol:port" values
             - the string "all"
             - a null value, or None
+
         This is a convenience function to massage the values the user has
         supplied so that they are formatted in such a way that BIG-IP will
         accept them and apply the specified policy.
+
         :param services: The services to format. This is always a Python set
         :return:
         """
@@ -415,6 +439,7 @@ class BigIpSelfIp(object):
             # you are not allowed to change it.
             try:
                 address = IPNetwork(current['address'])
+
                 new_addr = "%s/%s" % (address.ip, netmask)
                 nipnet = IPNetwork(new_addr)
                 if route_domain is not None:
@@ -495,17 +520,23 @@ class BigIpSelfIp(object):
 
     def get_vlans(self):
         """Returns formatted list of VLANs
+
         The VLAN values stored in BIG-IP are done so using their fully
         qualified name which includes the partition. Therefore, "correct"
         values according to BIG-IP look like this
+
             /Common/vlan1
+
         This is in contrast to the formats that most users think of VLANs
         as being stored as
+
             vlan1
+
         To provide for the consistent user experience while not turfing
         BIG-IP, we need to massage the values that are provided by the
         user so that they include the partition.
-        :return: List of vlans formatted with preceeding partition
+
+        :return: List of vlans formatted with preceding partition
         """
         partition = self.params['partition']
         vlans = self.api.tm.net.vlans.get_collection()
@@ -536,6 +567,7 @@ class BigIpSelfIp(object):
             )
         else:
             vlan = "/%s/%s" % (partition, vlan)
+
         try:
             ipin = "%s/%s" % (address, netmask)
             ipnet = IPNetwork(ipin)

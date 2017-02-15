@@ -30,4 +30,4 @@
   connection: local
 
   roles:
-      - __bigip_irule
+      - bigip_irule

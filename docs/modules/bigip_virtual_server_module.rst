@@ -38,6 +38,12 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
+    <td>all_policies<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>List of all policies enabled for the virtual server.</div></td></tr>
+            <tr>
     <td>all_profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
@@ -75,6 +81,12 @@ Options
         <td><ul></ul></td>
         <td><div>List of vlans to be enabled. When a VLAN named <code>ALL</code> is used, all VLANs will be allowed.</div></td></tr>
             <tr>
+    <td>fallback_persistence_profile<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div></td></tr>
+            <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -104,7 +116,13 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Port of the virtual server . Required when state=present and vs does not exist</div></td></tr>
+        <td><div>Port of the virtual server. Required when state=present and vs does not exist. If you specify a value for this field, it must be a number between 0 and 65535.</div></td></tr>
+            <tr>
+    <td>route_advertisement_state<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td>disabled</td>
+        <td><ul></ul></td>
+        <td><div>Enable route advertisement for destination</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -121,7 +139,7 @@ Options
     <td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
-        <td><ul></ul></td>
+        <td><ul><li>None</li><li>Automap</li><li>Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT with the specific pool</li></ul></td>
         <td><div>Source network address policy</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>

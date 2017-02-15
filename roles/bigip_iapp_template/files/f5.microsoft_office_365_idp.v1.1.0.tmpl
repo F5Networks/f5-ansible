@@ -1,0 +1,1799 @@
+cli script f5.iapp.1.3.0.cli {
+ 
+#  Initialization proc for all templates.
+#  Parameters "start" and "stop" or "end".
+proc iapp_template { action } {
+    set lev [tmsh::get_field_value [lindex [tmsh::get_config sys scriptd \
+        log-level] 0] log-level]
+    switch $action {
+        start {
+            set ::clock_clicks [clock clicks]
+            if { $lev eq {debug} } {
+                puts "\nStarting iApp $tmsh::app_template_name [clock format \
+                    [clock seconds] -format {%m/%d/%Y %T}]\n"
+            }
+            tmsh::log_level $lev
+            tmsh::log info "Starting iApp template $tmsh::app_template_name"
+        }
+        stop -
+        end {
+            if { $lev eq {debug} } {
+                if { [info exists ::substa_debug] } {
+                    puts $::substa_debug
+                }
+                puts "\nEnding iApp $tmsh::app_template_name [clock format \
+                    [clock seconds] -format {%m/%d/%Y %T}]\nRun time [expr \
+                    { ([clock clicks] - $::clock_clicks) / 1000 }] msec\n"
+            }
+            tmsh::log info "Ending iApp template $tmsh::app_template_name"
+        }
+    }
+    set ::HTTP_CONTENT_TYPES { application/(css\|css-stylesheet\|doc\|excel\|javascript\|json\|lotus123\|mdb\|mpp\|msaccess\|msexcel\|ms-excel\|mspowerpoint\|ms-powerpoint\|msproject\|msword\|ms-word\|photoshop\|postscript\|powerpoint\|ps\|psd\|quarkexpress\|rtf\|txt\|visio\|vnd\\.excel\|vnd\\.msaccess\|vnd\\.ms-access\|vnd\\.msexcel\|vnd\\.ms-excel\|vnd\\.mspowerpoint\|vnd\\.ms-powerpoint\|vnd\\.ms-pps\|vnd\\.ms-project\|vnd\\.msword\|vnd\\.ms-word\|vnd\\.ms-works\|vnd\\.ms-works-db\|vnd\\.powerpoint\|vnd\\.visio\|vnd\\.wap\\.cmlscriptc\|vnd\\.wap\\.wmlc\|vnd\\.wap\\.xhtml\\+xml\|vnd\\.word\|vsd\|winword\|wks\|word\|x-excel\|xhtml\\+xml\|x-java-jnlp-file\|x-javascript\|x-json\|x-lotus123\|xls\|x-mdb\|xml\|x-mscardfile\|x-msclip\|x-msexcel\|x-ms-excel\|x-mspowerpoint\|x-msproject\|x-ms-project\|x-msword\|x-msworks-db\|x-msworks-wps\|x-photoshop\|x-postscript\|x-powerpoint\|x-ps\|x-quark-express\|x-rtf\|x-vermeer-rpc\|x-visio\|x-vsd\|x-wks\|x-word\|x-xls\|x-xml) image/(photoshop\|psd\|x-photoshop\|x-vsd) text/(css\|html\|javascript\|json\|plain\|postscript\|richtext\|rtf\|vnd\\.wap\\.wml\|vnd\\.wap\\.wmlscript\|wap\|wml\|x-component\|xml\|x-vcalendar\|x-vcard) }
+}
+
+proc iapp_is { args } {
+    set up_var [lindex $args 0]
+    upvar $up_var var
+    if { [info exists var] } {
+        foreach val [lrange $args 1 end] {
+            if { [subst $var] eq $val } {
+                return 1
+            }
+        }
+    }
+    return 0
+}
+
+proc iapp_substa { args } {
+    upvar substa_in  argx \
+          substa_out rval
+    set   argx $args
+
+    # check the explicit value first.
+    # multiple layers of variable substitution requires multiple subst.
+    # error occurs here if any of the substituted variables do not exist
+    # valid wildcard (*) array entries will fail here first.
+    uplevel {
+        append ::substa_debug "\n$substa_in"
+        if { [info exists [set substa_in]] } {
+            set substa_out [subst $$substa_in]
+            set substa_out [subst $substa_out]
+        } else {
+            # since explicit value did not exist, try a wildcard value.
+            # substitute "*" as the array key and repeat.
+            set substa_tmp [split $substa_in "()"]
+            set substa_in "[lindex $substa_tmp 0](*)"
+            append ::substa_debug "*"
+            if { [info exists [set substa_in]] } {
+                set substa_out [subst $$substa_in]
+                set substa_out [subst $substa_out]
+            } else {
+                error "substa \"$substa_in\" array value not found"
+            }
+        }
+    }
+    return $rval
+}
+
+proc iapp_conf { args } {
+
+    # Return value $object_name is set to the first word in $arg that
+    # contains an underscore, since the position of the object name in
+    # tmsh syntax is not consistent.
+    set args [join $args]
+    set object_name [lindex $args [lsearch -glob $args "*_*"]]
+
+    # Global array ::tmsh_history persists between calls to iapp_conf
+    # in order to suppress duplicate commands.
+    if { ![info exists ::tmsh_history($args)] } {
+        set ::tmsh_history($args) 1
+        iapp_debug $args
+        switch -exact -- [string range $args 0 5] {
+            create { tmsh::create [string range $args 7 end] }
+            modify { tmsh::modify [string range $args 7 end] }
+            delete { tmsh::delete [string range $args 7 end] }
+            default { error "iapp_conf illegal parameter" }
+        }
+    }
+    return $object_name
+}
+
+proc iapp_make_safe_password { password } {
+    return [string map { \' \\\' \" \\\" \{ \\\{ \} \\\} \; \\\; \| \\\| \# \\\# \  \\\  \\ \\\\ } $password]
+}
+
+proc iapp_pull { loc items_list } {
+    upvar $items_list items
+    if { [set item [lindex $items $loc]] != "" } {
+        set items [lreplace $items $loc $loc]
+    }
+    return $item
+}
+
+proc iapp_process_flags { flags_array args_list } {
+    upvar $flags_array flags
+    upvar $args_list args
+
+    if { [set dubdash [lsearch $args "--"]] != -1 } {
+        set args [lreplace $args $dubdash $dubdash];
+    } else {
+        set dubdash end
+    }
+
+    foreach flag [array names flags] {
+        while { [set ptr [lsearch [lrange $args 0 $dubdash] $flag]] != -1 } {
+            set args [lreplace $args $ptr $ptr];
+
+            # we want to run the code in the flags_array at the calling
+            # proc's level so that the variables that it sets up are
+            # available there.
+            set access_var [format "$%s(%s)" $flags_array $flag]
+            set command [subst -nocommands { set ptr $ptr ; subst $access_var }]
+
+            uplevel 1 $command
+        }
+    }
+    return $args
+}
+
+proc iapp_tmos_version { args } {
+    # if $::version equals "", it might just mean that it hasn't been
+    # initialized yet - use a global variable so that subsequent comparisons
+    # don't have to fetch this from the MCP
+    if { ![info exists ::version] || $::version eq "" } {
+        if { [catch { set version_blob [tmsh::show sys version] } err] } {
+            tmsh::log err "unable to retrieve TMOS version"
+            error "unable to retrieve TMOS version"
+        }
+        # the first and last few lines of this output can be skipped because
+        # they are either blank or don't represent key/value pairs
+        # TODO: this won't work for hotfixes
+        foreach line [string trim [lrange [split $version_blob "\n"] 3 end-2]] {
+            set key [lindex $line 0]
+            if { $key eq "Version" } {
+                set ::cversion [lindex $line 1]
+                break
+            }
+        }
+    }
+
+    if { $::cversion eq "" } {
+        tmsh::log err "unable to determine TMOS version"
+        error "unable to determine TMOS version"
+    }
+
+    # if no op+version was specified, just return the version
+    if { $args eq "" } { return $::cversion }
+    if { [llength $args] > 2 } {
+        error "Too many arguments"
+    }
+
+    set op [lindex $args 0]; # operator
+    set NOTFOUND -1
+    # constrain to valid operators - adding more is fine as long as
+    # they're supported by [expr] (and makes sense)
+    if { [lsearch -exact { < > <= >= == != } $op] == $NOTFOUND } {
+        tmsh::log err "illegal operator: $op"
+        error "illegal operator: $op"
+    }
+
+    set tversion [lindex $args 1]; # target version
+    # one or two decimal digits, optionally followed by 0-2 complete groups of
+    # dots followed by one or two decimal digits with nothing before or after
+    set regex {^\d{1,2}(\.\d{1,2}){0,2}$}
+    if { ! [regexp -- $regex $tversion] } {
+        tmsh::log err "cannot parse version from: $tversion"
+        error "cannot parse version from: $tversion"
+    }
+
+    set cversion $::cversion; # current version
+    # p=>prefix, c=>current, t=>target
+    foreach p { c t } {
+        # extract major/minor/point components
+        scan [set [set p]version] "%d.%d.%d" [set p]mjr [set p]mnr [set p]pnt
+        # ensure that these are each set to at least 0
+        foreach level { mjr mnr pnt } {
+            if { ! [info exists [set p]${level}] } { set [set p]${level} 0 }
+        }
+        # turn them into one big number that we can compare
+        # leave room in-between just to be safe
+        set [set p]num [expr {
+            [set [set p]mjr]*1000000 +
+            [set [set p]mnr]*10000 +
+            [set [set p]pnt]*100
+        }]
+    }
+    # a simple numeric comparison is all that is needed at this point
+    return [eval expr $cnum $op $tnum ]
+}
+
+proc iapp_safe_display { args } {
+    # strings sent to APL must be truncated to 65535 bytes, see BZ435592
+    if { [string length [set [set args]]] > 65535 } {
+        set last_newline [string last "\n" [set [set args]] 65500]
+        return "[string range [set [set args]] 0 $last_newline]Error: Too many items for display"
+    } else {
+        return [set [set args]]
+    }
+}
+
+proc iapp_get_items { args } {
+
+    # Set default values.
+    set error_msg  "iapp_get_items $args:"
+    set do_binary  0
+    set nocomplain 0
+    set items      ""
+    set join_char  "\n"
+    set recursive  "recursive"
+    set com_dir    "/Common"
+    set loc_dir    "[tmsh::pwd]"
+
+    # Set up flag-related work.
+    array set flags  {
+        -exists      { [set do_binary 1] }
+        -nocomplain  { [set nocomplain 1] }
+        -list        { [set join_char " "] }
+        -norecursive { [set recursive ""] }
+        -local       { [set com_dir   ""] }
+        -dir         { [set loc_dir      [iapp_pull $ptr args]] }
+        -filter      { [set filter_field [iapp_pull $ptr args]] \
+                       [set filter_op    [iapp_pull $ptr args]] \
+                       [set filter_value [iapp_pull $ptr args]] }
+    }
+    iapp_process_flags flags args
+
+    # Get system object names in all requested directories.
+    set save_dir [tmsh::pwd]
+    foreach dir [lsort -unique "$com_dir $loc_dir"] {
+        tmsh::cd $dir
+        set tmsh_rval [catch {
+            foreach obj [tmsh::get_config $args $recursive] {
+
+                if { [info exists filter_field] } {
+                    if { $filter_field eq "NAME" } {
+                        set val [tmsh::get_name $obj]
+                    } else {
+                        # If get_field_value throws error, assume "none" value
+                        if { [catch {
+                            set val [tmsh::get_field_value $obj $filter_field]
+                            # strip quotes per BZ442531
+                            set val [string map {\" ""} $val]
+                        }]} { set val none }
+                    }
+                    # Non-Tcl operators =~ and !~ added for extra flexibility
+                    if { $filter_op eq "=~" } {
+                        set filter "\[regexp \"$filter_value\" \"$val\"\]"
+                    } elseif { $filter_op eq "!~" } {
+                        set filter "!\[regexp \"$filter_value\" \"$val\"\]"
+                    } else {
+                        set filter "\\\"$val\\\" $filter_op \\\"$filter_value\\\""
+                    }
+                    # If filter fails, skip to next object
+                    if { ![eval expr $filter] } {
+                        continue
+                    }
+                }
+                # string map catches /Common added by ltm profile ntlm,
+                # which is unlike all other ltm profile return values.
+                lappend items $dir/[string map {/Common/ ""} [tmsh::get_name $obj]]
+            }
+        } err ]
+    }
+    tmsh::cd $save_dir
+
+    # array keys: $do_binary,$tmsh_rval,$nocomplain. Do not insert whitespace.
+    array set rval {
+        0,0,0 {[join $items $join_char]}
+        0,0,1 {[join $items $join_char]}
+        0,1,0 {[error "$error_msg $err"]}
+        0,1,1 {}
+        1,0,0 {[llength $items]}
+        1,0,1 {[llength $items]}
+        1,1,0 {0}
+        1,1,1 {0}
+    }
+
+    return [subst $rval($do_binary,$tmsh_rval,$nocomplain)]
+}
+
+proc iapp_get_provisioned { args } {
+
+    array set lnum {
+        none      0
+        minimum   1
+        nominal   2
+        dedicated 3
+    }
+
+    # Set defaults.
+    set required minimum
+    set do_binary 1
+
+    # Set up flag-related work.
+    array set flags  {
+        -is          { [set required [iapp_pull $ptr args]] }
+        -level       { [set do_binary 0] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # If checking for AM provisioning on TMOS < 11.4,
+    # check for WAM provisioning instead.
+    if { $args eq "am" && [iapp_tmos_version < 11.4] } {
+        set args "wam"
+    }
+
+    # Get the provisioning level. If blank, assume none.
+    # Proc only checks 1 module at a time, so only 1 object is returned.
+    if { [catch {
+        set obj [tmsh::get_config sys provision $args]
+        set level [tmsh::get_field_value [lindex $obj 0] level]
+    }]} { set level none }
+
+    if { $do_binary } {
+        return [expr { $lnum($level) >= $lnum($required) }]
+    } else {
+        return $level
+    }
+}
+
+proc iapp_get_user { args } {
+
+    # Set defaults.
+    set do_role 0
+    set do_binary 0
+
+    # Set up flag-related work.
+    array set flags  {
+        -is_admin    { [set do_binary 1] }
+    }
+    iapp_process_flags flags args
+    if { [llength $args] > 1 } {
+        error "Too many arguments"
+    }
+
+    # Show user auth was introduced in v11.6
+    set user "unknown"
+    catch {
+        set user [tmsh::show auth user field-fmt]
+    } err
+    if { $do_binary } {
+        return [expr { $user == "unknown"
+        || [string first "role " $user] == -1
+        || [string first "role admin" $user] != -1
+        || [string first "role resource-admin" $user] != -1 }]
+    } else {
+        return $user
+    }
+}
+
+proc iapp_destination { args } {
+    # Set defaults. Flag actions may overwrite defaults later.
+    set route_domain    0
+    set do_mask         0
+    set port            0
+
+    # Set up flag-based actions.
+    array set flags  {
+        -route_domain { [set route_domain [iapp_pull $ptr args]] }
+        -mask         { [set do_mask 1] }
+        -length       { [set cidr_bits [iapp_pull $ptr args]] }
+    }
+
+    if { [llength [set non_switches [iapp_process_flags flags args]]] > 2 } {
+        error "Too many arguments"
+    }
+    if { [llength $non_switches] == 2 } { set port [lindex $non_switches 1] }
+    set addr [lindex $non_switches 0]
+
+    # Pull the route-domain off the addr string, but only use it as the
+    # route domain if it wasn't overridden by -route_domain flag.
+    if { [string first "%" $addr] != -1 } {
+        if { $route_domain == 0 } {
+            # route-domain is still default, so use value from addr string
+            set route_domain [lindex [split $addr "%"] 1]
+        }
+        set addr [lindex [split $addr "%"] 0]
+    }
+
+    if { $do_mask } { ;# calculate a mask
+
+        # Define the delta between ipv4 and ipv6.
+        # length: ipv4 mask is 32 bits, ipv6 is 128 bits.
+        # group: ipv4 is grouped in octets, ipv6 as 16 bit words.
+        # format: ipv4 is decimal notation, ipv6 is hex.
+        # format1 also has the delimiter, format2 does not.
+        array set v {
+            0,length  32
+            0,group   8
+            0,format1 d.
+            0,format2 d
+            1,length  128
+            1,group   16
+            1,format1 .4x:
+            1,format2 .4x
+        }
+
+        # Detect a node name and convert it to an ip address, then detect IPv6.
+        if { [string first / $addr] != -1 } {
+            set node [lindex [tmsh::get_config ltm node $addr] 0]
+            set addr [tmsh::get_field_value $node address]
+        }
+        set is_ipv6 [string match "*:*:*" $addr]
+
+        # Soften result of an illegal -length parameter.
+        if { ![info exists cidr_bits] || $cidr_bits > $v($is_ipv6,length) } {
+            set cidr_bits $v($is_ipv6,length)
+        } elseif { $cidr_bits < 0 } {
+            set cidr_bits 0
+        }
+
+        # Loop on the full length of the mask: 32 bits for ipv4, 128 for ipv6
+        for { set octet 0; set i 0 } { $i < $v($is_ipv6,length) } { incr i } {
+
+           # Take a break at intervals to save the grouping and add delimiter.
+           # Interval is 8 bits for ipv4 and 16 bits for ipv6.
+           if { $i && ![expr {$i % $v($is_ipv6,group)}] } {
+
+               # Add the grouping and delimiter to the mask, then reset.
+               append mask [format %$v($is_ipv6,format1) $octet]
+               set octet 0
+           }
+           # Shift the prior bits left by multiplying by 2.
+           # Then add the current bit, which is 1 if part of the mask, 0 if not.
+           # Current bit is part of the mask if $i < number of bits in the mask.
+           set octet [expr { 2 * $octet + ($i < $cidr_bits) }]
+        }
+        # Add the final grouping, then return the finished mask.
+        set ret_val [format $mask%$v($is_ipv6,format2) $octet]
+
+    } else { ;# calculate a destination
+        # the route domain might be a name and we need a number.
+        if { ![string is integer $route_domain] } {
+            set route_domains [tmsh::get_config "/ net route-domain $route_domain"]
+            if { [llength $route_domains] != 1 } {
+                error "no such route domain: $route_domain"
+            }
+            # since we have already determined that the list is 1 long,
+            # this explicit reference to element 0 is safe
+            set route_domain [tmsh::get_field_value [lindex $route_domains 0] "id"]
+        }
+
+        set route_domain [expr { $route_domain == 0 ? "" : "%$route_domain" }]
+
+        # 0 and * represent wildcard port assignments in the GUI,
+        # but TMSH requires the string 'any' to specify a wildcard.
+        if { $port == 0 || $port == "*" } {
+            set port any
+        }
+
+        # Build the final destination. Use ":" for node names even if ipv6.
+        set is_ipv6_literal [string match "*:*:*" $addr]
+        set addr_delimiter  [expr { $is_ipv6_literal ? "." : ":" }]
+        set ret_val ${addr}${route_domain}${addr_delimiter}${port}
+    }
+    return $ret_val
+}
+
+proc iapp_pool_members { args } {
+
+    # Set defaults.
+    array set fields {
+        address          addr
+        port             port
+        port-secure      port_secure
+        connection-limit connection_limit
+        priority-group   priority
+        ratio            ratio
+    }
+    set route_domain ""
+    set port_override -1
+    set aaa_domain 0
+    set aaa_priority -1
+
+    # Set up flag-related work.
+    array set flags {
+        -fields       { [array set fields  [iapp_pull $ptr args]] }
+        -route_domain { [set route_domain  [iapp_pull $ptr args]] }
+        -port         { [set port_override [iapp_pull $ptr args]] }
+        -aaa_domain   { [set aaa_domain    1] }
+        -aaa_pool     { [set aaa_priority  0] }
+    }
+    iapp_process_flags flags args
+
+    # Identify the non-address/non-port fields. These go inside braces in tmsh.
+    set nonport_fields [lsearch -all -not -inline -regexp \
+        [array names fields] {address|port|port-secure}]
+
+    set members ""
+    foreach row [join $args] {
+
+        # Skip invalid table rows.
+        if { [llength [join $row]] %2 == 1 } {
+            continue
+        }
+
+        # Import APL table into an array for processing.
+        array unset columns
+        array set columns [join $row]
+        set addr $columns($fields(address))
+
+        # Identify the port number, either from table columns or by -port flag.
+        if { $port_override != -1 } {
+            set port $port_override
+        } elseif { [info exists columns($fields(port))] } {
+            set port $columns($fields(port))
+        } elseif { [info exists columns($fields(port-secure))] } {
+            set port $columns($fields(port-secure))
+        } else {
+            set port 80
+        }
+
+        # If specified, strip entered route domain and append the flag value.
+        if { $route_domain != "" } {
+            set addr [lindex [split $addr "%"] 0]
+            set addr "$addr%$route_domain"
+        }
+
+        # If -aaa_domain, use domain controller format, otherwise use pool format
+        if { $aaa_domain } {
+            append members " $columns($fields(host)) \{ ip $addr \}"
+        } else {
+            append members " [iapp_destination $addr $port] \{"
+
+            # Transfer non-port fields from the table to the tmsh string.
+            foreach name $nonport_fields {
+                if { [info exists columns($fields($name))] } {
+                    append members " $name $columns($fields($name))"
+                }
+            }
+
+            # If -aaa_pool, add priority field with incrementing value.
+            # This is required by APM.
+            if { $aaa_priority >= 0 } {
+                append members " priority-group [incr aaa_priority]"
+            }
+            append members " \}"
+        }
+    }
+
+    return "[expr { $aaa_domain ? "" : "members " }][expr { $members eq "" \
+        ? "none" : "replace-all-with \{ $members \}" }]"
+}
+
+proc iapp_debug { args } {
+
+    # Passwords should be obscured in all logs. Fields shown here are handled
+    # in this proc, but the global variable may be overwritten if alternate
+    # fields should be obscured.
+    if { ![info exists ::SENSITIVES] } {
+        set ::SENSITIVES {
+            account-password
+            admin-encrypted-password
+            password
+            passwd
+            secret
+        }
+    }
+
+    # look for any of the sensitive words, and replace the word that follows it
+    set regex "(\\m([join $::SENSITIVES |])\\M)\\s+\[^\\s\]*"
+    regsub -all $regex [join $args] {\1 -OBSCURED-} args
+    regsub -all "(<Password.*>).*(</Password>)" $args {\1-OBSCURED-\2} args
+
+    set lev [tmsh::get_field_value [lindex [tmsh::get_config sys scriptd \
+        log-level] 0] log-level]
+    if { $lev eq {debug} } {
+        puts $args
+    }
+}
+
+# The apm_config proc provides a tmsh pre-processor for APM
+# configuration, which in most cases will drastically reduce
+# implementation code. To configure APM with this proc, pass
+# it an array of object names and associated meta-tag substitutions.
+# Each object must be categorized as a profile, a resource, or
+# a policy-item. APM agents and customization-groups are derived
+# from these 3 categories as needed.
+#
+# apm_config's return value is a list of the APM profiles defined
+# in the argument and instantiated by the proc. This allows the
+# procedure call to be embedded directly into a virtual server
+# definition.
+#
+# These universal meta-tags may be placed anywhere in the array:
+# <ITEM> The object name, eg. apm_access
+# <PREFIX> The app name, including folder, eg. /Common/my_app.app/my_app
+#
+# Profile objects require the following meta-tags:
+# <PROFILE_TYPE> The tmsh object type, eg. "apm profile access"
+# <PROFILE_DEF>  The body of the object, eg.:
+#     "access-policy <PREFIX>
+#      defaults-from /Common/access
+#      eps-group <PREFIX>_eps
+#      errormap-group <PREFIX>_errormap
+#      general-ui-group <PREFIX>_general_ui"
+#
+# apm_config will automatically create default customization-groups
+# for the "-group" lines specified in access profile definitions.
+# In the above example, there is no need to additionally specify a
+# customization-group for errormap and general-ui.
+#
+# <PROFILE_TYPE> is a catch-all for other APM types, eg:
+#      apm_sso {
+#          <PROFILE_TYPE> {apm sso kerberos}
+#          <PROFILE_DEF>  "account-name <USER>
+#                          account-password <PASS>
+#                          realm <REALM>" }
+#
+# In the example above, <PROFILE_TYPE> and <PROFILE_DEF> are
+# apm_config meta-tags, while <USER>, <PASS>, and <REALM> must
+# be substituted before calling apm_config, eg. if these tags are
+# defined in $pre_proc_map, they may be substituted with:
+# array set apm_map [string map [subst $pre_proc_map] [array get apm_map]]
+#
+# Resource objects require the following meta-tags:
+# <RESOURCE_TYPE> The apm resource object type, eg. "webtop"
+# <RESOURCE_DEF>  The body of the object, eg.:
+#     "customization-group <ITEM>
+#      minimize-to-tray false
+#      webtop-type full"
+#
+# In the above example, a customization-group is specified. Any
+# customization-group is assumed to be blank unless further defined by the
+# <GROUP_DEF> meta-tag, eg. <GROUP_DEF> {type webtop}
+#
+# Policy-item objects are defined by the following meta-tags:
+# <AGENT_TYPE>   default "resource-assign"
+# <AGENT_DEF>    default "customization-group <ITEM>"
+# <ITEM_AGENT>   default "agents { <ITEM>_ag { type <AGENT_TYPE> }}"
+# <ITEM_CAPTION> default "<ITEM>"
+# <ITEM_COLOR>   default "1"
+# <ITEM_TYPE>    default "action"
+# <ITEM_RULES>   defaults to a set of expressions/next-items where specified
+# <RULE_CAPTION_0> default "fallback"
+# <RULE_CAPTION_1> default "Successful"
+# <RULE_CAPTION_2> default "successful"
+#
+# apm_config generates the APM agent and customization-group definitions
+# as required for each policy-item, but specific objects may be defined
+# by using the <AGENT_DEF> and <GROUP_DEF> meta-tags.
+# To suppress the formation of an APM agent, specify <ITEM_AGENT> {}.
+
+proc iapp_apm_config { map_array_name } {
+    upvar $map_array_name map_array
+
+    # Pull $prefix from the array
+    set prefix $map_array(prefix)
+    unset map_array(prefix)
+
+    # Stencils for creating apm objects
+    set access_form \
+       "<TMSH_CREATE> apm policy access-policy <ITEM> {\n   \
+          caption general\n   \
+          start-item <ACCESS_START_ITEM>\n   \
+          default-ending <ACCESS_ENDING>\n   \
+          items replace-all-with {\n<ACCESS_ITEMS>    }\n}"
+
+    set profile_form "<TMSH_CREATE> <PROFILE_TYPE> <ITEM> {\n   \
+        <PROFILE_DEF>\n}"
+
+    set resource_form "<TMSH_CREATE> apm resource <RESOURCE_TYPE> <ITEM> {\n   \
+        <RESOURCE_DEF>\n}"
+
+    set agent_form "<TMSH_CREATE> apm policy agent <AGENT_TYPE> <ITEM>_ag {\n   \
+        <AGENT_DEF>\n}"
+
+    set group_form "<TMSH_CREATE> apm policy customization-group <ITEM> {\
+        <GROUP_DEF>}"
+
+    set agent_group_form "<TMSH_CREATE> apm policy customization-group <ITEM>_ag {\
+        <GROUP_DEF>}"
+
+    set policy_item_form "<TMSH_CREATE> apm policy policy-item <ITEM> {
+    <ITEM_AGENT>caption <ITEM_CAPTION>
+    color <ITEM_COLOR>
+    <ITEM_TYPE>
+    <ITEM_RULES>\n}"
+
+    # 1st round apm string map
+    set default_map_1 {
+        <ACCESS_ITEM> {}
+        <AGENT_DEF> "customization-group <ITEM>_ag"
+        <ITEM_AGENT> "agents replace-all-with {
+        <ITEM>_ag { type <AGENT_TYPE> }}\n    "
+        <ITEM_CAPTION> <ITEM>
+        <ITEM_COLOR> {1}
+        <ITEM_TYPE> "item-type action"
+        <ITEM_RULES> "rules
+        {[expr {[string first <RULE_NEXT_2> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_2>
+            expression <RULE_EXPR_2>
+            next-item ${prefix}_<RULE_NEXT_2>
+        }":""}][expr {[string first <RULE_NEXT_1> $map_array($item)] != -1 ? "{
+            caption <RULE_CAPTION_1>
+            expression <RULE_EXPR_1>
+            next-item ${prefix}_<RULE_NEXT_1>
+        }":""}]{
+            caption <RULE_CAPTION_0>
+            next-item ${prefix}_<RULE_NEXT_0>
+        }}"
+    }
+
+    # 2nd round apm string map
+    set default_map_2 {
+        <ITEM> [expr { $item eq {default} ? "$prefix" : "${prefix}_$item" }]
+        <PREFIX> $prefix
+        <LOCAL_PATH> [string map {/ :} $prefix]
+        <GROUP_DEF> ""
+        <AGENT_TYPE> "resource-assign"
+        <RULE_CAPTION_2> "successful"
+        <RULE_CAPTION_1> "Successful"
+        <RULE_CAPTION_0> "fallback"
+    }
+
+    # Build APM access profile and access-policy from the access_form.
+    # Tags <ACCESS_ITEM> and <ACCESS_ENDING> are picked up from
+    # $map_array items. <ITEM> and <GROUP_DEF> are picked up from
+    # $default_map_2.
+    foreach item [lsort [array names map_array]] {
+
+        # Pick up the <ACCESS_ENDING> tag. There should be just 1.
+        set access_form [string map $map_array($item) $access_form]
+
+        # Filter out items that do not belong in the access-policy.
+        # Anything with an ITEM_xxx tag belongs
+        if { [string first <ITEM_ $map_array($item)] == -1 } {
+            continue
+        }
+
+        # Add to the items list for the access-policy, e.g. priority
+        append access_items "        ${prefix}_$item {<ACCESS_ITEM>}\n"
+        set access_items [string map $map_array($item) $access_items]
+        set access_items [string map [subst $default_map_1] $access_items]
+    }
+
+    # Build APM resources, policy-items, agents, and customization-groups from
+    # the policy_item_form and resource_form.
+    foreach item [lsort [array names map_array]] {
+
+        # Each item starts as a profile, a resource, or a policy-item.
+        # Profiles are free-form, so other apm objects can use the profile form.
+        # In most cases, a policy-item spawns an agent.
+        # Any definition specifying a customization-group will spawn that group.
+        if { [string first "<PROFILE_DEF>" $map_array($item)] != -1 } {
+
+            # Collect profile names for attachment to the virtual server
+            if { [string first "apm profile " $map_array($item)] != -1 } {
+                lappend profiles [expr { $item eq {default}
+                                 ? "$prefix" : "${prefix}_$item" }]
+                # When an access profile is found, built a policy of the same name
+                if { [string first "apm profile access" $map_array($item)] != -1 } {
+                    set def [string map "<ACCESS_ITEMS> {$access_items}" $access_form]
+                    append cmds "[string map [subst $default_map_2] $def]\n"
+                }
+            }
+            set def $profile_form
+        } elseif { [string first "<RESOURCE_DEF>" $map_array($item)] != -1 } {
+            set def $resource_form
+        } else {
+            set def $policy_item_form
+            if { [string first "<ITEM_AGENT> {}" $map_array($item)] == -1 } {
+                append def $agent_form
+            }
+        }
+
+        # Apply 1st pass of string maps
+        set def [string map $map_array($item) $def]
+        set def [string map [subst $default_map_1] $def]
+
+        # If a customization-group is specified, add its definition
+        if { [string first "customization-group" $def] != -1 } {
+            if { [string first "apm policy agent" $def] != -1 } {
+                append def $agent_group_form
+            } elseif { [string first "apm profile access" $def] == -1 } {
+                append def $group_form
+            }
+        }
+
+        # Apply 2nd pass of string maps
+        set def [string map $map_array($item) $def]
+        append cmds [string map [subst $default_map_2] $def]
+    }
+
+    # Divide and execute tmsh commands
+    set tag "<TMSH_CREATE>"
+    set tag_length [string length $tag]
+    set last [expr { [string first $tag $cmds] + $tag_length }]
+    while { [set pos [string first $tag $cmds $last]] != -1 } {
+        incr pos -1
+        iapp_conf create [string range $cmds $last $pos]
+        set last [expr { $pos + $tag_length + 1 }]
+    }
+    iapp_conf create [string range $cmds $last end]
+    return $profiles
+}
+
+proc iapp_upgrade_template { upgrade_var upgrade_trans } {
+    upvar $upgrade_var   upgrade_var_arr
+    upvar $upgrade_trans upgrade_trans_arr
+
+    # create the new variables from the old
+    foreach { var } [array names upgrade_var_arr] {
+
+        # substitute old variable name for abbreviation "##"
+        regsub -all {##} $upgrade_var_arr($var) \$$var map_cmd
+
+        # run the mapping command from inside the array
+        if { [catch { subst $map_cmd } err] } {
+            if { [string first "no such variable" $err] == -1 } {
+                puts "ERROR $err"
+            }
+        }
+    }
+
+    # move variables over and apply translations
+    set var_mods ""
+    set var_adds ""
+    foreach var [array names vx] {
+
+        # if the APL variable name is in the translation array,
+        # then use the custom translation built for that variable.
+        if { [info exists upgrade_trans_arr($var)] } {
+            array set sub_arr [subst $upgrade_trans_arr($var)]
+            if { [info exists sub_arr($vx($var))] } {
+                set vx($var) $sub_arr($vx($var))
+            }
+            array unset sub_arr
+        # else, if the APL variable value is in the translation array,
+        # then use the generic translation of that value.
+        } elseif { [info exists upgrade_trans_arr($vx($var))] } {
+            set vx($var) [subst $upgrade_trans_arr($vx($var))]
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$var] } {
+            append var_mods "\n $var \{ value \"$vx($var)\" \} "
+        } else {
+            append var_adds "\n $var \{ value \"$vx($var)\" \} "
+        }
+    }
+
+    # move tables over
+    set tbl_mods ""
+    set tbl_adds ""
+    foreach tbl [array names tx] {
+
+        # convert table from APL format to TMSH format
+        if { ![llength $tx($tbl)] } {
+            set tbl_def "column-names none"
+        } else {
+            set rows_def ""
+            foreach apl_row $tx($tbl) {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            set tbl_def \
+            "\n  column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        }
+
+        # add to tmsh command string
+        if { [info exists ::$tbl] } {
+            append tbl_mods "\n $tbl \{ $tbl_def \} "
+        } else {
+            append tbl_adds "\n $tbl \{ $tbl_def \} "
+        }
+    }
+
+    # construct the "tmsh modify" command
+    set cmd "sys application service $tmsh::app_name "
+    if { [llength $var_mods] } {
+        append cmd "\nvariables modify { $var_mods }"
+    }
+    if { [llength $var_adds] } {
+        append cmd "\nvariables add { $var_adds }"
+    }
+    if { [llength $tbl_mods] } {
+        append cmd "\ntables modify { $tbl_mods }"
+    }
+    if { [llength $tbl_adds] } {
+        append cmd "\ntables add { $tbl_adds }"
+    }
+
+    # Execute with debug output. This conversion takes place within the
+    # existing ASO, so tmsh modify is used instead of tmsh create.
+    iapp_debug "TEMPLATE UPGRADE"
+    iapp_conf modify $cmd
+    return
+}
+
+proc iapp_downgrade_template { pivot_var upgrade_var downgrade_table } {
+    upvar $downgrade_table downgrade_tbl_arr
+
+    # The ASO variable "offload_history" is used to recover the legacy
+    # choice a user made about SSL offload. It should be present in all cases.
+    # This conditional only handles the case where a user has deliberately
+    # deleted it by manipulating the ASO directly from tmsh.
+    if { ![info exists ::offload_history] } {
+        set ::offload_history "No"
+    }
+
+    # BIG-IP erases table contents when the APL optional hides the table.
+    # Since the prior data is not available, this downgrade must back-convert
+    # existing table data. Unlike tables, variables remain intact from the
+    # legacy ASO.
+    set tbl_def ""
+    foreach tbl [array names downgrade_tbl_arr] {
+        # Check for existence of each table in the current context.
+        # If not, skip to next.
+        if { ![info exists [set tbl]] } {
+            continue
+        }
+        # Check for existence of each table in the legacy context.
+        # If not, add an empty table so "tmsh tables modify" does not fail.
+        if { ![info exists ::$downgrade_tbl_arr($tbl)] } {
+            iapp_conf modify sys app ser $tmsh::app_name tables add \{ $downgrade_tbl_arr($tbl) \}
+        }
+        append tbl_def "$downgrade_tbl_arr($tbl) \{ "
+        if { [llength [subst $$tbl]] } {
+            set rows_def ""
+            foreach apl_row [subst $$tbl] {
+                array set row_arr [join $apl_row]
+                append rows_def "\n  \{ row \{ "
+                foreach apl_col [array names row_arr] {
+                    append rows_def "$row_arr($apl_col) "
+                }
+                append rows_def "\}\}"
+            }
+            append tbl_def \
+            "column-names \{ [array names row_arr] \} rows \{ $rows_def \}"
+            array unset row_arr
+        } else {
+            append tbl_def "rows none"
+        }
+        append tbl_def " \} "
+    }
+    regsub -all "\n" $tbl_def {} tbl_def
+    set cmd "sys app ser $tmsh::app_name \
+        variables modify \{ \
+            $pivot_var \{ value $::offload_history \} \
+            $upgrade_var \{ value No \} \
+        \} \
+        tables modify \{ $tbl_def \}"
+    iapp_debug "TEMPLATE DOWNGRADE"
+    iapp_conf modify $cmd
+    return
+}
+}
+sys application template f5.microsoft_office_365_idp.v1.1.0 {
+    actions {
+        definition {
+            html-help {
+            }
+            implementation {
+                tmsh::include f5.iapp.1.3.0.cli
+                iapp_template start
+
+                set YES_ANSWER "yes"
+                set DEFAULT_ANSWER    /#default#
+                set DO_NOT_USE_ANSWER /#do_not_use#
+                set CREATE_NEW_ANSWER /#create_new#
+
+                proc configure_o365_deployment {} {
+                    tmsh::include f5.iapp.1.3.0.cli
+                    set app $tmsh::app_name
+                    set is_113 [iapp_tmos_version >= 11.3]
+                    set is_v12_0 [iapp_tmos_version >= 12.0]
+                    set advanced [expr { [iapp_is ::general__config_mode advanced] }]
+
+                    # HTTPS iRules
+                    set irule_names "_sys_APM_Office365_SAML_BasicAuth "
+
+                    append irule_names [iapp_conf create ltm rule ${app}_encode_ObjectGUID_irule {
+when ACCESS_POLICY_AGENT_EVENT {
+   if {[ACCESS::policy agent_id] eq "encode"} {
+       set tmpVar [binary format H* [substr "[ACCESS::session data get session.ad.last.attr.objectGUID]" 2]]
+       ACCESS::session data set session.ad.last.attr.objectGUIDencoded [b64encode $tmpVar]
+    }
+}
+}]
+
+                    append irule_names [expr { $advanced && [info exists ::irules__irules] \
+                        ? " $::irules__irules" : "" }]
+
+                    # array key: $advanced, [llength $irule_names]
+                    array set irule_arr {
+                        1,1 { rules \{ $irule_names \} }
+                        * { rules none }
+                    }
+
+                    # APM
+                    # AAA config
+                    # array keys: $advanced,$::apm__ad_secure
+                    array set aaa_port {
+                        1,ssl  {$::apm__ad_port_ssl}
+                        1,tls  {$::apm__ad_port_not_ssl}
+                        1,none {$::apm__ad_port_not_ssl}
+                        0,ssl  {636}
+                        0,tls  {389}
+                        0,none {389}
+                    }
+
+                    # array key: $::apm__ad_monitor
+                    array set aaa_monitor {
+                        ad_create { monitor [iapp_conf create ltm monitor ldap ${app}_ldap  base \"$::apm__ad_tree\"  chase-referrals yes  debug no  defaults-from ldap  destination *:[subst $aaa_port($advanced,$::apm__ad_secure)]  filter \"cn=$::apm__ad_user\"  interval [expr { $advanced ? $::apm__ad_interval : "10" }]  timeout [expr {$advanced ? ($::apm__ad_interval * 3 + 1):"31"}]  mandatory-attributes no  password [iapp_make_safe_password $::apm__ad_password]  security $::apm__ad_secure  time-until-up 0  username \"cn=${::apm__ad_user},${::apm__ad_tree}\"] }
+                        ad_select { monitor $::apm__ad_monitor_choice }
+                        ad_icmp   { monitor [iapp_conf create ltm monitor gateway-icmp ${app}_icmp  defaults-from gateway_icmp  interval 5  timeout 16] }
+                    }
+
+                    # array key: $multiple_ad
+                    array set aaa_pool {
+                        1 { domain-controllers [iapp_pool_members -aaa_domain -fields { host fqdn }  $::apm__active_directory_servers]  pool [iapp_conf create ltm pool ${app}_aaa  [iapp_pool_members $::apm__active_directory_servers -port any -aaa_pool]  load-balancing-mode "round-robin"  [subst $aaa_monitor($::apm__ad_monitor)]  min-active-members 1] }
+                        0 { domain-controller $::apm__active_directory_server }
+                    }
+
+                    set do_new_aaa [iapp_is ::apm__aaa_profile "/#create_new#"]
+                    set credentials [iapp_is ::apm__credentials "yes"]
+                    set multiple_ad 1
+
+                    # array key: $do_new_aaa
+                    array set aaa_server {
+                        1 {[iapp_conf create apm aaa active-directory ${app}_apm_aaa \{  admin-encrypted-password [expr { $credentials  ? "[iapp_make_safe_password $::apm__active_directory_password]"  : "none" }]  admin-name [expr { $credentials  ? "$::apm__active_directory_username"  : "none" }]  domain "$::apm__login_domain"  [subst $aaa_pool($multiple_ad)] \}] }
+                        0 { $::apm__aaa_profile }
+                    }
+
+                    set ad_aaa [iapp_substa aaa_server($do_new_aaa)]
+
+                    # APM config
+                    set entityid_urn [expr { $is_v12_0 && [iapp_is ::apm__saml_entity_id_format "URN"] }]
+
+                    # array keys: $is_v12_0,$entityid_urn
+                    array set saml_sso_arr {
+                        0,0 { { "entity-id $::apm__saml_entity_id \
+                                subject-value \\\\\"%{session.ad.last.attr.objectGUIDencoded}\\\\\" \
+                                subject-type persistent \
+                                attributes { { name IDPEmail  value \\\\\"%{session.ad.last.attr.userPrincipalName}\\\\\" } } \
+                                sp-connectors add { saml_office365  } \
+                                idp-certificate $::idp_encryption__cert \
+                                idp-signkey $::idp_encryption__key" } }
+                        1,0 { { "entity-id $::apm__saml_entity_id \
+                                subject-value \\\\\"%{session.ad.last.attr.objectGUIDencoded}\\\\\" \
+                                subject-type persistent \
+                                attributes { { name IDPEmail  multi-values { \\\\\"%{session.ad.last.attr.userPrincipalName}\\\\\" } } } \
+                                sp-connectors add { saml_office365  } \
+                                idp-certificate $::idp_encryption__cert \
+                                idp-signkey $::idp_encryption__key \
+                                saml-profiles replace-all-with { web-browser-sso ecp }" } }
+                        1,1 { { "entity-id $::apm__saml_entity_id \
+                                subject-value \\\\\"%{session.ad.last.attr.objectGUIDencoded}\\\\\" \
+                                subject-type persistent \
+                                attributes { { name IDPEmail  multi-values { \\\\\"%{session.ad.last.attr.userPrincipalName}\\\\\" } } } \
+                                sp-connectors add { saml_office365  } \
+                                idp-certificate $::idp_encryption__cert \
+                                idp-signkey $::idp_encryption__key \
+                                saml-profiles replace-all-with { web-browser-sso ecp } \
+                                idp-host $::apm__saml_idp_host \
+                                idp-scheme $::apm__saml_idp_scheme" } }
+                        * { }
+                    }
+
+                    set pre_proc_map "
+                        <SAML_SSO_PARAMS>   [iapp_substa saml_sso_arr($is_v12_0,$entityid_urn)]
+                        <AAA>   $ad_aaa"
+                        
+                   if { $is_v12_0 && $do_new_aaa } {
+                       if { [iapp_is ::apm__log_settings "/#do_not_use#"] } {
+                           append pre_proc_map { <LOG_SETTINGS> "log-settings none" }
+                       } else {
+                           append pre_proc_map { <LOG_SETTINGS> "log-settings replace-all-with \{ $::apm__log_settings \}" }
+                       }
+                   } else {
+                       append pre_proc_map { <LOG_SETTINGS> "" }
+                   }
+
+                    array set apm_map {
+                        default {
+            <PROFILE_TYPE> {apm profile access}
+            <GROUP_DEF> {type logout }
+            <PROFILE_DEF> "accept-languages replace-all-with { en }
+            access-policy <PREFIX>
+            defaults-from /Common/access
+            generation-action increment
+            domain-mode single-domain
+            domain-cookie none
+            persistent-cookie false
+            secure-cookie true
+            logout-uri-include none
+            logout-uri-timeout 5
+            customization-group <PREFIX>_logout
+            eps-group <PREFIX>_eps
+            errormap-group <PREFIX>_errormap
+            framework-installation-group <PREFIX>_frameworkinstallation
+            general-ui-group <PREFIX>_general_ui
+            sso-name none
+            <LOG_SETTINGS>" }
+                        apm_ent {
+            <ITEM_AGENT> {}
+            <ITEM_CAPTION> {"Start"}
+            <ITEM_TYPE> {}
+            <RULE_NEXT_0> apm_logon }
+                        apm_logon {
+            <ACCESS_ITEM> { priority 2 }
+            <AGENT_TYPE> logon-page
+            <ITEM_CAPTION> {"Logon Page"}
+            <RULE_NEXT_0> apm_auth }
+                        apm_auth {
+            <ACCESS_ITEM> { priority 3 }
+            <AGENT_TYPE> aaa-active-directory
+            <AGENT_DEF> "server <AAA>\n    type auth"
+            <ITEM_CAPTION> {"AD Auth"}
+            <RULE_EXPR_1> {"expr {[mcget {session.ad.last.authresult}] == \"1\"}"}
+            <RULE_NEXT_1> apm_ad_query
+            <RULE_NEXT_0> apm_deny }
+                        apm_ad_query {
+            <ACCESS_ITEM> { priority 4 }
+            <AGENT_TYPE> aaa-active-directory
+            <AGENT_DEF> "server <AAA>  type query query-filter \"samAccountName=%{session.logon.last.username}\""
+            <ITEM_CAPTION> {"AD Query"}
+            <RULE_EXPR_1> {"expr {[mcget {session.ad.last.queryresult}] == 1}"}
+            <RULE_NEXT_1> apm_irule_event
+            <RULE_NEXT_0> apm_deny }
+                        apm_irule_event {
+            <ACCESS_ITEM> { priority 5 }
+            <AGENT_TYPE> irule-event
+            <AGENT_DEF> "id encode"
+            <ITEM_CAPTION> {"iRule Event"}
+            <RULE_NEXT_0> apm_resource_assign}
+                        apm_saml_sso {
+            <PROFILE_TYPE> {apm sso saml}
+            <GROUP_DEF> {type webtop}
+            <PROFILE_DEF> <SAML_SSO_PARAMS> }
+                        apm_saml_resource_sso {
+            <PROFILE_TYPE> {apm sso saml-resource}
+            <GROUP_DEF> {}
+            <PROFILE_DEF> "sso-config-saml <PREFIX>_apm_saml_sso" }
+                        apm_webtop {
+            <RESOURCE_TYPE> "webtop"
+            <RESOURCE_DEF> "minimize-to-tray false webtop-type full" }
+                        apm_resource_assign {
+            <ACCESS_ITEM> { priority 6 }
+            <AGENT_TYPE> resource-assign
+            <AGENT_DEF> "rules { { saml-resources replace-all-with { <PREFIX>_apm_saml_resource_sso } webtop <PREFIX>_apm_webtop } }"
+            <ITEM_CAPTION> {"Full Resource Assign"}
+            <RULE_NEXT_0> apm_allow}
+                        apm_allow {
+            <ACCESS_ITEM> { priority 7 }
+            <AGENT_DEF> {}
+            <AGENT_TYPE> ending-allow
+            <ITEM_CAPTION> {"Allow"}
+            <ITEM_TYPE> {item-type ending}
+            <ITEM_RULES> {} }
+                        apm_deny {
+            <ACCESS_ITEM> { priority 8 }
+            <ACCESS_START_ITEM> <PREFIX>_apm_ent
+            <ACCESS_ENDING> <PREFIX>_apm_deny
+            <AGENT_TYPE> ending-deny
+            <GROUP_DEF> {type logout }
+            <ITEM_CAPTION> {"Deny"}
+            <ITEM_TYPE> {item-type ending}
+            <ITEM_COLOR> {2}
+            <ITEM_RULES> {} }
+                        apm_connectivity {
+            <PROFILE_TYPE> {apm profile connectivity}
+            <GROUP_DEF> {}
+            <PROFILE_DEF> "defaults-from /Common/connectivity" }
+                    }
+
+                    set apm_map(prefix) [tmsh::pwd]/$app
+
+                    # Instantiate the APM configuration (plus websso and rba)
+
+                    array set apm_map [string map [subst $pre_proc_map] [array get apm_map]]
+                    set apm_profiles "[iapp_apm_config apm_map] /Common/websso /Common/rba /Common/ppp"
+
+                    # APM policies do not commit in a reliable manner when configured via iApp.
+                    # This time-bomb script insures that the policy gets committed.
+                    # See subcase SR1-315233635 for details.
+                    set dir [tmsh::pwd]
+                    set fn "/var/tmp/iapp_${app}.sh"
+                    set fh [open $fn w]
+                    puts $fh "sleep 5"
+                    puts $fh "tmsh modify apm profile access ${dir}/${app} generation-action increment"
+                    close $fh
+                    exec chmod 777 $fn
+                    exec $fn &
+
+                    # CLIENT-SIDE VLAN SELECTION
+                    set select_vlans [iapp_is ::webui_virtual__vlan_mode enabled disabled]
+
+                    # array keys: $advanced,$select_vlans
+                    array set vlans {
+                        1,1 { vlans-$::webui_virtual__vlan_mode vlans replace-all-with \{ $::webui_virtual__client_vlan \} }
+                        *   { vlans-disabled vlans none }
+                    }
+
+                    # Client TCP Profile
+                    set client_mode [expr { $advanced ? $::webui_virtual__lan_or_wan : "WAN" }]
+
+                    set new_client_tcp [expr { !$advanced || \
+                    ( ( [info exists ::webui_virtual__tcp_wan_opt ] && [iapp_is ::webui_virtual__tcp_wan_opt "/#create_new#"] ) || \
+                    ( [info exists ::webui_virtual__tcp_lan_opt ] && [iapp_is ::webui_virtual__tcp_lan_opt "/#create_new#"] ) ) }]
+
+                    # array keys: $new_client_tcp,$client_mode
+                    array set client_tcp {
+                        0,LAN       { $::webui_virtual__tcp_lan_opt }
+                        0,WAN     { $::webui_virtual__tcp_wan_opt }
+                        1,LAN     { [iapp_conf create ltm profile tcp ${app}_lan-optimized-tcp \
+                                    defaults-from tcp-lan-optimized idle-timeout 1800] }
+                        1,WAN    { [iapp_conf create ltm profile tcp ${app}_wan-optimized-tcp \
+                                    defaults-from tcp-wan-optimized idle-timeout 1800] }
+                    }
+
+                    # HTTP profile
+                    set new_http [expr { !$advanced || \
+                       [iapp_is ::webui_virtual__http $::CREATE_NEW_ANSWER] }]
+
+                    #array keys: $advanced, $new_http
+                    array set http_arr {
+                        1,0    {  $::webui_virtual__http }
+                        *        { [iapp_conf create ltm profile http ${app}_http \
+                                defaults-from http  \
+                                insert-xforwarded-for enabled] }
+                    }
+
+                    # Client SSL Profile
+                    set new_client_ssl [expr { !$advanced || [iapp_is \
+                       ::webui_virtual__clientssl "/#create_new#"] }]
+
+                    set do_chain_cert  [expr { $advanced && \
+                       [info exists ::webui_virtual__chainssl] && \
+                       ![iapp_is ::webui_virtual__chainssl "/#do_not_use#"] }]
+
+                    set cssl_cmd \
+                        "ltm profile client-ssl ${app}_client-ssl defaults-from clientssl"
+
+                    # array keys: $new_client_ssl,$do_chain_cert
+                    array set client_ssl_arr {
+                        1,1 { [iapp_conf create $cssl_cmd key $::webui_virtual__key cert $::webui_virtual__cert \
+                            chain $::webui_virtual__chainssl] \{ context clientside \} }
+                        1,0 { [iapp_conf create $cssl_cmd key $::webui_virtual__key cert $::webui_virtual__cert \
+                            chain none] \{ context clientside \} }
+                        0,1 { $::webui_virtual__clientssl \{ context clientside \} }
+                        0,0 { $::webui_virtual__clientssl \{ context clientside \} }
+                        *     {}
+                    }
+
+                    # Virtual Server
+                    set do_redirect [expr { !$is_v12_0 && ( !$advanced || [iapp_is ::webui_virtual__create_redir_vs "yes"] ) }]
+
+                    set redirect_port [expr { $do_redirect && $advanced ? $::webui_virtual__redir_port : "80" }]
+
+                    set http_profile "[iapp_substa http_arr($advanced,$new_http)]"
+
+                    set tcp_profile "[iapp_substa client_tcp($new_client_tcp,$client_mode)]"
+
+                    set ssl_profile "[iapp_substa client_ssl_arr($new_client_ssl,$do_chain_cert)]"
+
+                    # array keys: $do_redirect
+                    array set vs_array {
+                        1 { [iapp_conf create ltm virtual ${app}_vs \
+                                destination [iapp_destination $::webui_virtual__addr $::webui_virtual__port] \
+                                mask [iapp_destination -mask $::webui_virtual__addr] \
+                                ip-protocol tcp \
+                                profiles replace-all-with \{ $ssl_profile $tcp_profile \}\
+                                profiles add \{ $http_profile $apm_profiles \} \
+                                rules \{ $irule_names \} \
+                                [iapp_substa vlans($advanced,$select_vlans)]] \
+                                \
+                                [iapp_conf create ltm virtual ${app}_redir_vs \
+                                destination [iapp_destination $::webui_virtual__addr $redirect_port] \
+                                mask [iapp_destination -mask $::webui_virtual__addr] \
+                                ip-protocol tcp \
+                                profiles replace-all-with \{ $tcp_profile \} \
+                                profiles add \{ $http_profile \} \
+                                [iapp_substa vlans($advanced,$select_vlans)] \
+                                rules \{  _sys_https_redirect \}]}
+                        0 { [iapp_conf create ltm virtual ${app}_vs \
+                                destination [iapp_destination $::webui_virtual__addr $::webui_virtual__port] \
+                                mask [iapp_destination -mask $::webui_virtual__addr] \
+                                ip-protocol tcp \
+                                profiles replace-all-with \{ $ssl_profile $tcp_profile \} \
+                                profiles add \{ $http_profile $apm_profiles \} \
+                                rules \{ $irule_names \}\
+                                [iapp_substa vlans($advanced,$select_vlans)]]}
+                        *   { [iapp_conf create ltm virtual ${app}_vs \
+                                destination [iapp_destination $::webui_virtual__addr $::webui_virtual__port] \
+                                mask [iapp_destination -mask $::webui_virtual__addr] \
+                                ip-protocol tcp \
+                                profiles replace-all-with \{ $ssl_profile $tcp_profile \} \
+                                profiles add \{ $http_profile $apm_profiles \} \
+                                rules \{ $irule_names \} \
+                                [iapp_substa vlans($advanced,$select_vlans)]]}
+                    }
+
+                    iapp_substa vs_array($do_redirect)
+
+                }
+
+                # MAIN
+                configure_o365_deployment
+                iapp_template stop
+
+            }
+            presentation {
+                section intro {
+                    optional ( "HIDE" == "THIS" ) {
+                            choice is_113 tcl {
+                                return [expr {[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_tmos_version >= 11.3] ? "yes" : "no"}]
+                            }
+                            choice ltm_provisioned tcl {
+                                return [expr {[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_provisioned ltm] ? "yes" : "no" }]
+                            }
+                            choice apm_provisioned tcl {
+                                return [expr {[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_provisioned apm] ? "yes" : "no" }]
+                            }
+                            choice is_v12_0 tcl {
+                                return [expr {[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_tmos_version >= 12.0] ? "yes" : "no"}]
+                            }
+                            choice afm_provisioned tcl {
+                                return [expr {[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_provisioned afm] && [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_tmos_version >= 11.4] ? "yes" : "no" }]
+                            }
+                        }
+                        
+                        message hello_supported "This iApp supports configuring BIG-IP APM 11.3.0 or later with Microsoft Office 365."
+                        message hello "Use this template to configure BIG-IP to act as SAML Identity Provider(IdP) to Microsoft Office 365 applications, such as Exchange and SharePoint."
+                        message check_for_updates "Ensure you are using the most recent template before continuing. This template is v1.1.0. Check for newer community versions online at DevCentral (https://devcentral.f5.com/wiki/iApp.CodeShare.ashx) and newer supported versions at the main F5 download site (https://downloads.f5.com/esd/), with instructions at the AskF5 Knowledge Base (http://support.f5.com/kb/en-us/solutions/public/13000/400/sol13422.html)."
+                        optional ( is_113 == "no" ) {
+                            message version_sorry "You must be running version 11.3.0 or later to use this template."
+                        }
+                        optional ( ltm_provisioned == "no" ) {
+                            message sorry "You must license and provision the Local Traffic Manager (LTM) module to use this template."
+                        }
+                        optional ( apm_provisioned == "no" ) {
+                            message apm_opportunity "Provisioning Access Policy Manager (APM) will enable additional options in this template."
+                        }
+                        message prereqs_1 "To process encrypted traffic on this BIG-IP system, you need to import an SSL certificate and key that correspond to all fully-qualified DNS names that you are using for the traffic. Importing SSL certificates and keys is not a part of this template; see Local Traffic >> SSL Certificate List. This template can make use of existing route domains. Creating route domains is not part of this template; see Network >> Route Domains."
+                        message prereqs_2 "To ensure a successful deployment, F5 strongly recommends following the instructions in the Deployment Guide at http://www.f5.com/pdf/deployment-guides/microsoft-office-365-saml-idp-dg.pdf."
+                }
+                optional ( intro.is_113 == "yes" && intro.ltm_provisioned == "yes" && intro.apm_provisioned == "yes" )  {
+                    section general {
+                        choice assistance_options display "xxlarge" default "full" {
+                            "Yes, show inline help" => "full"  ,
+                            "No, do not show inline help" => "minimal"
+                        }
+                        message assistance_options_about "This template offers extensive inline assistance, notes, and configuration tips. We strongly recommend reading all information presented in the template until you are familiar with the functionality and implications of the deployment options.  Important notes and warnings are always visible, no matter which selection you make here."
+                        choice config_mode display "xxlarge" default "basic" {
+                            "Basic - Use F5's recommended settings" => "basic"  ,
+                            "Advanced - Configure advanced options"    => "advanced"
+                        }
+                        optional ( general.assistance_options == "full" ) {
+                            message config_mode_info "This template supports two configuration modes. Basic mode automatically configures the BIG-IP system with F5 recommended settings without user intervention. Advanced mode allows you to review and edit the F5 recommended settings before configuring the system."
+                        }
+                    }
+                    section apm {
+                        optional ( intro.is_v12_0 == "yes" )  {
+                            choice saml_entity_id_format display "xxlarge" default "URL" {
+                                "My EntityID is a URL" => "URL"  ,
+                                "My EntityID is a URN" => "URN"
+                            }
+							optional ( general.assistance_options == "full" ) {
+								message saml_entity_id_format_help "The BIG-IP system needs to know whether the EntityID is formatted as a URL or URN.  This choice determines settings in the APM SSO Configuration object.  If you select URN, additional questions appear."
+							}
+                        }
+                        string saml_entity_id required display "xxlarge"
+                        optional ( general.assistance_options == "full" ) {
+                            message saml_entity_id_help "Specify the globally unique, persistent URL or URN that will be used to identify this Identity Provider to SAML federation partners. Examples of EntityID are https://login.example.com/idp/f5/ or idp:example:com:my_idp_name."
+                        }
+                        optional ( intro.is_v12_0 == "yes" && saml_entity_id_format == "URN" )  {
+                            string saml_idp_host required display "xxlarge"
+							optional ( general.assistance_options == "full" ) {
+								message saml_idp_host_help "Because you selected that your EntityID is a URN, the BIG-IP system requires the hostname of your IdP deployment.  Type the hostname of your IdP deployment in this field."
+							}
+							
+                            choice saml_idp_scheme display "xxlarge" default "https"  {
+                                "HTTPS" => "https"  ,
+                                "HTTP" => "http"
+                            }
+							optional ( general.assistance_options == "full" ) {
+								message saml_idp_scheme_help "Because you selected that your EntityID is a URN, the BIG-IP system needs to know if your IdP scheme is HTTP or HTTPS.  Select the appropriate value from the list."
+							}
+                        }
+                        choice aaa_profile display "xxlarge" default "/#create_new#" tcl {
+
+                            set ::choices   "Create a new AAA Server\t/#create_new#\n"
+                            append ::choices [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -nocomplain \
+                            apm aaa active-directory]
+                            return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                        }
+                        optional ( general.assistance_options == "full" ) {
+                            message aaa_profile_help "Choose whether you want the iApp template to create a new AAA server object, or select the custom AAA server you created for this deployment. The BIG-IP APM AAA server configuration object contains information about the external AAA servers. Unless you have specific requirements, we recommend allowing the iApp to create a new AAA server for the deployment. "
+                        }
+                        optional ( aaa_profile == "/#create_new#" ) {
+                            table active_directory_servers {
+                                string fqdn display "large" required validator "FQDN"
+                                string addr display "large" required validator "IpAddress"
+                            }
+                            optional ( general.assistance_options == "full" ) {
+                                message active_directory_servers_help "Specify each of your Active Directory domain controllers, both FQDN and associated IP address, used for this environment. Click the Add button for additional rows."
+                            }
+                            string login_domain display "xxlarge" required
+                                optional ( general.assistance_options == "full" ) {
+                                    message login_domain_help "Specify the FQDN of the Active Directory deployment for your Office 365 users. This is the FQDN for your domain, such as example.com, rather than the FQDN for any specific host."
+                                }
+                            choice credentials display "xxlarge" default "no" {
+                                "Anonymous binding is allowed" => "no"  ,
+                                "Require credentials for authentication" => "yes"
+                            }
+                            optional ( general.assistance_options == "full" ) {
+                                message credentials_help "Choose whether your Active Directory implementation allows anonymous binding or not. If it does not, you must provide a user name and password with administrative permissions."
+                            }
+                            optional ( credentials == "yes" ) {
+                                string active_directory_username display "xxlarge" required
+                                optional ( general.assistance_options == "full" ) {
+                                    message active_directory_username_help "You must type the user name of an Active Directory account that has administrative permissions."
+                                }
+                                password active_directory_password display "xxlarge" required
+                                    optional ( general.assistance_options == "full" ) {
+                                        message active_directory_password_help "Type the associated password."
+                                    }
+                            }
+                            choice ad_monitor display "xxlarge" default "ad_icmp" {
+                                "Create a new LDAP monitor for the Active Directory pool " => "ad_create"  ,
+                                "Select an existing monitor for the Active Directory pool" => "ad_select"  ,
+                                "Use a simple ICMP monitor for the Active Directory pool"  => "ad_icmp"
+                            }
+                            optional ( general.assistance_options == "full" ) {
+                                message active_directory_monitor_help "Choose whether you want the template to create a new LDAP monitor for your Active Directory servers, use a simple ICMP/ping monitor, or you can choose an existing monitor you created for the servers."
+                            }
+                            optional ( ad_monitor == "ad_create" ) {
+                                string ad_user required display "xxlarge"
+                                message ad_user_critical "The Active Directory service account you specify here must be set to never expire. A deleted or locked account will cause the BIG-IP system to mark your Active Directory pool members as unavailable, which takes them offline."
+                                password ad_password required display "xxlarge"
+                                message ad_password_important "Credentials are stored in plaintext on your BIG-IP system."
+                                string ad_tree required display "xxlarge"
+                                optional ( general.assistance_options == "full" ) {
+                                    message ad_tree_info "Specify the LDAP tree for the user name you provided. ADSI editor, an administration tool for Active Directory LDAP administration, is useful for determining the correct LDAP tree value. For example, if the user name is 'user1' which is in the organizational unit 'F5 Users' and is in the domain 'f5.example.com', the LDAP tree would be: ou=F5 Users, dc=f5, dc=example, dc=com."
+                                }
+                                choice ad_secure display "xxlarge" {
+                                    "No, a secure protocol is not required" => "none"  ,
+                                    "Yes, SSL communication is required"     => "ssl"  ,
+                                    "Yes, TLS communication is required"    => "tls"
+                                }
+                                optional ( general.assistance_options == "full" ) {
+                                    message ad_secure_info "Select whether your Active Directory implementation requires a secure protocol (SSL or TLS) for communication, or if it does not use a secure protocol."
+                                }
+                                optional ( general.config_mode == "advanced" ) {
+                                    string ad_interval default "10" validator "NonNegativeNumber"
+                                    optional ( general.assistance_options == "full" ) {
+                                        message ad_interval_info "Specify the number of seconds to use between each health monitor attempt. Members of this pool are marked down after four incorrect responses, and marked available after one correct response. "
+                                    }
+                                    optional ( ad_secure == "ssl" ) {
+                                        string ad_port_ssl default "636" required
+                                    }
+                                    optional ( ad_secure != "ssl" ) {
+                                        string ad_port_not_ssl default "389" required
+                                    }
+                                    optional ( general.assistance_options == "full" ) {
+                                        message ad_port_info "Specify the port being used by your Active Directory deployment.  The default port when using the TLS security protocol, or no security, is port 389. The default port used when using the SSL security protocol is 636."
+                                    }
+                                }
+                            }
+                            optional ( ad_monitor == "ad_select" ) {
+                                choice ad_monitor_choice display "xxlarge" tcl {
+
+                                    set ::choices "[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -filter NAME != "ldap" ltm monitor ldap]\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -filter NAME != "external" ltm monitor external]"
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                }
+                                optional ( general.assistance_options == "full" ) {
+                                        message ad_monitor_choice_help "Select the existing LDAP health monitor you created for this deployment.  Only health monitors with a Type of LDAP appear in this list."
+                                    }
+                            }
+                            optional ( intro.is_v12_0 == "yes")  {
+                              choice log_settings display "xxlarge" default "/Common/default-log-setting" tcl {
+                                      set log ""
+                                      catch {
+                                          set log [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items apm log-setting]
+                                      } err
+                                      set ::choices "Do not specify a logging profile for the APM profile\t/#do_not_use#\n$log"
+                                      return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                  }
+                              optional ( general.assistance_options ==  "full" )  {
+                                   message log_settings_help "Select APM logging profile to use for the Access Policy created for this iApp deployment. You must have previously created the profile before it will appear in the list."
+                              }
+                            }
+                        }
+                    }
+                    section webui_virtual {
+                        string addr required validator "IpAddress" display "xxlarge"
+                        optional ( general.assistance_options ==  "full" ) {
+                            message addr_webui_help "Specify the IP address for the BIG-IP virtual server. Clients will resolve the FQDN of the Identity Provider to this IP address."
+                        }
+                        string port required default "443" validator "PortNumber"
+                        optional ( general.assistance_options ==  "full" ) {
+                            message port_help "Specify the associated service port. The default port is 443."
+                        }
+                        optional ( general.config_mode == "advanced" ) {
+                            optional ( intro.is_v12_0 == "no" )  {
+                                choice create_redir_vs default "yes" display "xxlarge" {
+                                    "Yes, redirect users to HTTPS" => "yes"  ,
+                                    "No, do not redirect users to HTTPS" => "no"
+                                }
+                                optional ( general.assistance_options ==  "full" ) {
+                                    message create_redir_vs_help "It is common for users to mistakenly attempt insecure access (HTTP) to a secure application (HTTPS). The BIG-IP system can automatically redirect these connections to use an encrypted connection."
+                                }
+                                optional (create_redir_vs == "yes") {
+                                    string redir_port default "80" required validator "PortNumber"
+                                }
+                                optional ( general.assistance_options ==  "full" ) {
+                                    message redir_port_help "Specify the port from which you want users redirected. The most common port for HTTP is 80."
+                                }
+                            }
+                            choice vlan_mode display "xxlarge" default "enabled" {
+                                "Enable traffic on all VLANs and Tunnels" => "all"  ,
+                                "Yes, enable traffic only on the VLANs I specify" => "enabled"  ,
+                                "Yes, disable traffic only on the VLANs I specify" => "disabled"
+                            }
+                            optional ( general.assistance_options ==  "full" ) {
+                                message vlan_help "You can optionally configure the BIG-IP system to accept or deny client traffic from specific VLANs you have configured. If you leave the default, the BIG-IP system accepts traffic from all VLANs configured on the system. If you select to enable or disable traffic on specific VLANs, you must specify the VLANs in the next question. The VLAN objects must already be configured on this BIG-IP system before you can select them."
+                            }
+                            optional ( vlan_mode != "all" ) {
+                                multichoice client_vlan default tcl {
+
+                                    set ::choices [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items net vlan]
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                } tcl {
+
+                                    set ::choices  [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items net vlan]
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                }
+                                optional ( vlan_mode == "disabled" ) {
+                                    message disabled_vlan_help "By default, all VLANs on the box are in the Selected list.  Because you selected to disable client traffic from specific VLANs, if you do not move any of the VLANs to the Options list, traffic will be denied from ALL VLANs, and this configuration will not pass any traffic."
+                                }
+                                optional ( general.assistance_options ==  "full") {
+                                    message client_vlan_help "Because you selected you want to enable or disable traffic on specific VLANs in the previous question, use this section to specify the VLANs. By default, all VLANs on the BIG-IP system appear in the Selected box. Click any applicable VLANs and then use the Move buttons (<<) and (>>) to adjust list membership. The Selected box lists the VLANs and tunnels that are specifically enabled or disabled."
+                                }
+                            }
+                            choice lan_or_wan default "WAN" display "xxlarge" {
+                                "Most clients connect over a WAN" => "WAN"  ,
+                                "Most clients connect over a LAN" => "LAN"
+                            }
+
+                            optional ( general.assistance_options ==  "full" ) {
+                                message lan_or_wan_help "In order to configure the proper TCP optimization settings, you must specify whether the majority of your clients will be connecting to the BIG-IP system over a WAN or a LAN."
+                            }
+                            optional ( webui_virtual.lan_or_wan == "WAN" ) {
+                                choice tcp_wan_opt display "xxlarge"
+                                    default "/#create_new#" tcl {
+
+                                    set ::choices "Create a new tcp-wan-optimized profile (recommended)\t/#create_new#\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items ltm profile tcp]"
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                }
+                            }
+                            optional ( webui_virtual.lan_or_wan == "LAN" ) {
+                                choice tcp_lan_opt display "xxlarge"
+                                    default "/#create_new#" tcl {
+
+                                    set ::choices "Create a new tcp-lan-optimized profile (recommended)\t/#create_new#\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items ltm profile tcp]"
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                }
+                            }
+                            message lan_or_wan_note "To select a network optimization profile from the following list, it must already be present on the BIG-IP system. Creating a custom profile is not a part of this template; see Local Traffic >> Profiles : Protocol : TCP to create a network profile. To select any new profiles you create, you need to restart or reconfigure this template."
+
+                            choice http display "xxlarge" default "/#create_new#" tcl {
+
+                                set ::choices "Create a new HTTP profile (recommended)\t/#create_new#\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items ltm profile http]"
+                                return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                            }
+                            optional ( general.assistance_options ==  "full" ) {
+                                message http_help "    Choose whether you want the iApp template to create a new HTTP profile, or select the custom HTTP profile you created for this deployment. Unless you have specific requirements, we recommend allowing the iApp to create a new HTTP profile for the deployment."
+                            }
+                        }
+                        optional ( general.config_mode == "advanced" )  {
+                            choice clientssl display "xxlarge"
+                                default "/#create_new#" tcl {
+
+                                set ::choices "Create a new Client SSL profile\t/#create_new#\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items ltm profile client-ssl]"
+                                return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                            }
+                            optional ( general.assistance_options ==  "full" ) {
+                                message clientssl_help "If you have already created an Client SSL profile that includes the appropriate certificate and key, you can select it from the list. Otherwise, the iApp creates a new Client SSL profile and asks for the appropriate certificate and key in the following questions. Note that "
+                            }
+                        }
+                        optional ( general.config_mode == "basic" || ( general.config_mode == "advanced" && clientssl == "/#create_new#" ) ) {
+                            choice cert default "/Common/default.crt" display "xxlarge" tcl {
+
+                                set ::choices [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -norecursive -filter NAME !~ ca-bundle.crt|f5-irule.crt sys file ssl-cert]
+                                return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                            }
+                            optional ( general.assistance_options ==  "full" ) {
+                                message cert_webui_help "Select the name of the certificate the system uses for client-side SSL processing. The certificate must already be present on the BIG-IP system in order to select it. To select any new certificates and keys you import, you need to restart or reconfigure this template."
+                            }
+                            choice key default "/Common/default.key" display "xxlarge" tcl {
+
+                                set ::choices  [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -norecursive sys file ssl-key]
+                                return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                            }
+                            optional ( general.assistance_options ==  "full" ) {
+                                message key_webui_help "Select the name of the associated SSL key."
+                            }
+                            optional (cert == "/Common/ca-bundle.crt"
+                                || cert == "/Common/f5-irule.crt"
+                                || cert == "/Common/default.crt"
+                                || key == "/Common/default.key" ) {
+                                message key_cert_critical "You have selected a default BIG-IP certificate and/or key. This application service configuration is incomplete and will not be secure until you import and assign a trusted certificate and key that are valid for all fully qualified domain names used to access the application. See Local Traffic >>     SSL Certificate List for importing certificates and keys. To select any new certificates and keys you import, you need to restart or reconfigure this template."
+                            }
+                            optional ( general.config_mode == "advanced" && clientssl == "/#create_new#" )  {
+                                choice chainssl display "xxlarge"
+                                    default "/#do_not_use#" tcl {
+
+                                    set ::choices "Do not use an intermediate certificate\t/#do_not_use#\n[tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -norecursive sys file ssl-cert]"
+                                    return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                                }
+                                optional ( general.assistance_options ==  "full" ) {
+                                    message cert_chain_webui_help "Intermediate certificates or intermediate certificate chains are used to help systems which depend on SSL certificates for peer identification. The chain certificate is intended to create a chain of trust between the CA that signed the certificate and the CA that is already trusted by the recipient of the certificate. This allows the recipient to verify the validity of the certificates presented, even when the signing CA is unknown. Chain certificates must be created or imported onto this BIG-IP system prior to running this iApp. See SOL13302 on http://support.f5.com for help on creating an intermediate     certificate chain."
+                                }
+                            }
+                        }
+                    }
+                    section idp_encryption {
+                        choice cert default "/Common/default.crt" display "xxlarge" tcl {
+
+                            set ::choices  [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -norecursive -filter NAME !~ ca-bundle.crt|f5-irule.crt sys file ssl-cert]
+                            return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                        }
+                        optional ( general.assistance_options ==  "full" ) {
+                                message cert_help "Select the name of the certificate you imported to use to encrypt your SAML Assertion.  The certificate must already be present on the BIG-IP system in order to select it. To select any new certificates and keys you import, you need to restart or reconfigure this template."
+                            }
+                            message client_ssl_important "The certificate can be either self-signed certificate generated by the BIG-IP system, or you can import a certificate for this purpose. The only restriction is you cannot use a wildcard certificate to sign SAML assertions to Office 365."
+
+                        choice key default "/Common/default.key" display "xxlarge" tcl {
+
+                            set ::choices  [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -norecursive sys file ssl-key]
+                            return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                        }
+                        optional ( general.assistance_options ==  "full" ) {
+                                message key_help "Select the name of the associated SSL key."
+                            }
+                    }
+                    optional ( general.config_mode == "advanced" ) {
+
+                        section irules {
+                            message irule_1_help "Improper use or misconfiguration of an iRule can result in unwanted application behavior and poor performance of your BIG-IP system. For this reason we recommended you verify the impact of an iRule prior to deployment in a production environment."
+                            optional ( general.assistance_options ==  "full"  ) {
+                                message irule_2_help "The BIG-IP system supports a scripting language to allow an administrator to instruct the system to intercept, inspect, transform, direct and track inbound or outbound application traffic. An iRule contains the set of instructions the system uses to process data flowing through it, either in the header or payload of a packet."
+                                message irule_3_help "Correct event priority is critical when assigning multiple iRules. For more information about iRule event priority, see https://devcentral.f5.com/wiki/iRules.priority.ashx."
+                            }
+                            multichoice irules display "xlarge" tcl {
+
+                                set ::choices  [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_get_items -filter NAME !~ "^_sys_" ltm rule]
+                                return [tmsh::run_proc f5.iapp.1.3.0.cli:iapp_safe_display ::choices]
+                            }
+                        }
+                    }
+                }
+
+                text {
+
+                        intro "Welcome to the iApp template for Microsoft Office 365 SAML Identity Provider"
+                        
+                        intro.hello_supported "Supported Software:"
+                        intro.hello "Introduction"
+                        intro.check_for_updates "Check for updates"
+                        intro.version_sorry "We're sorry"
+                        intro.sorry "We're sorry"
+                        intro.apm_opportunity "Additional features available"
+                        intro.prereqs_1 "Prerequisites"
+                        intro.prereqs_2 ""
+
+                        general "Template Options"
+                        general.assistance_options "Do you want to see inline help?"
+                        general.assistance_options_about ""
+                        general.config_mode "Which configuration mode do you want to use?"
+                        general.config_mode_info ""
+
+                        apm "BIG-IP APM Configuration"
+                        apm.aaa_profile "Should the iApp create a new AAA server or use an existing one?"
+                        apm.aaa_profile_help ""
+                        apm.active_directory_servers "Which Active Directory server IP address in your domain can this BIG-IP system contact?"
+                        apm.active_directory_servers_help ""
+                        apm.active_directory_servers.fqdn "FQDN"
+                        apm.active_directory_servers.addr "IP"
+                        apm.login_domain "What is the FQDN of the Active Directory implementation for your Office 365 users?"
+                        apm.login_domain_help ""
+                        apm.credentials "Does your Active Directory domain allow anonymous binding?"
+                        apm.credentials_help ""
+                        apm.active_directory_username "Which Active Directory user with administrative permissions do you want to use?"
+                        apm.active_directory_username_help ""
+                        apm.active_directory_password "What is the password associated with that account?"
+                        apm.active_directory_password_help ""
+                        apm.ad_monitor "How do you want to handle health monitoring for this pool?"
+                        apm.active_directory_monitor_help ""
+                        apm.ad_user "Which Active Directory user name should the monitor use?"
+                        apm.ad_user_critical "CRITICAL"
+                        apm.ad_password "What is the associated password?"
+                        apm.ad_password_important "IMPORTANT"
+                        apm.ad_tree "What is the LDAP tree for this user account?"
+                        apm.ad_tree_info ""
+                        apm.ad_secure "Does your Active Directory domain require a secure protocol for communication?"
+                        apm.ad_secure_info ""
+                        apm.ad_interval "How many seconds between Active Directory health checks?"
+                        apm.ad_interval_info ""
+                        apm.ad_port_ssl "Which port is used for Active Directory communication?"
+                        apm.ad_port_not_ssl "Which port is used for Active Directory communication?"
+                        apm.ad_port_info ""
+                        apm.ad_monitor_choice "Which health monitor do you want to use?"
+                        apm.ad_monitor_choice_help ""
+                        apm.saml_entity_id_format "How is your EntityID formatted?"
+						apm.saml_entity_id_format_help ""
+                        apm.saml_entity_id "What EntityID do you want to use for your Office 365 IdP?"
+                        apm.saml_entity_id_help ""
+                        apm.saml_idp_host "What is the hostname of your IdP deployment?"
+						apm.saml_idp_host_help ""
+                        apm.saml_idp_scheme "What is the IdP scheme?"
+						apm.saml_idp_scheme_help ""
+                        apm.log_settings "Which log settings would you like to use to log APM events?"
+                        apm.log_settings_help ""
+
+                        webui_virtual "BIG-IP IdP Virtual Server"
+                        webui_virtual.addr "What is the IP address clients will use to access the BIG-IP IdP Service?"
+                        webui_virtual.addr_webui_help ""
+                        webui_virtual.port "What port do you want to use for the virtual server?"
+                        webui_virtual.port_help ""
+                        webui_virtual.create_redir_vs "Do you want to redirect inbound HTTP traffic to HTTPS?"
+                        webui_virtual.create_redir_vs_help ""
+                        webui_virtual.redir_port "From which port should HTTP traffic be redirected?"
+                        webui_virtual.redir_port_help ""
+                        webui_virtual.vlan_mode "Do you want to restrict client traffic to specific VLANs?"
+                        webui_virtual.vlan_help ""
+                        webui_virtual.client_vlan "On which VLANs should traffic be enabled or disabled?"
+                        webui_virtual.client_vlan_help ""
+                        webui_virtual.disabled_vlan_help "WARNING"
+                        webui_virtual.clientssl "Do you want to create a new client SSL profile or use an existing one?"
+                        webui_virtual.clientssl_help ""
+                        webui_virtual.cert "Which certificate do you want this BIG-IP system to use for client authentication?"
+                        webui_virtual.key_cert_critical "WARNING:"
+                        webui_virtual.cert_webui_help ""
+                        webui_virtual.key "What is the associated private key?"
+                        webui_virtual.key_webui_help ""
+                        webui_virtual.chainssl "Do you need to use an intermediate certificate?"
+                        webui_virtual.cert_chain_webui_help ""
+                        webui_virtual.lan_or_wan "Will clients be connecting to this BIG-IP LTM virtual server primarily over a LAN or a WAN?"
+                        webui_virtual.lan_or_wan_help ""
+                        webui_virtual.tcp_lan_opt "How do you want to optimize client-side connections?"
+                        webui_virtual.tcp_wan_opt "How do you want to optimize client-side connections?"
+                        webui_virtual.lan_or_wan_note ""
+                        webui_virtual.http "Which HTTP profile do you want to use?"
+                        webui_virtual.http_help ""
+
+                        idp_encryption "IDP Encryption Certificate and key"
+                        idp_encryption.cert "Which certificate do you want to use to encrypt your SAML Assertion?"
+                        idp_encryption.cert_help ""
+                        idp_encryption.client_ssl_important "IMPORTANT"
+                        idp_encryption.key "What is the associated private key?"
+                        idp_encryption.key_help ""
+
+
+                        irules "iRules"
+                        irules.irules "Do you want to add any custom iRules to the TCP virtual server?"
+                        irules.irule_1_help "WARNING"
+                        irules.irule_2_help ""
+                        irules.irule_3_help ""
+
+                }
+        }
+            role-acl { admin manager resource-admin }
+            run-as none
+        }
+    }
+    requires-bigip-version-max none
+    requires-bigip-version-min 11.3.0
+    requires-modules { apm }
+}

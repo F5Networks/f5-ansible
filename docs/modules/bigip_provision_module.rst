@@ -4,7 +4,7 @@
 bigip_provision - Manage BIG-IP module provisioning
 +++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.3
 
 
 .. contents::
@@ -21,8 +21,7 @@ Manage BIG-IP module provisioning. This module will only provision at the standa
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk
 
 
 Options
@@ -49,19 +48,25 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul><li>afm</li><li>am</li><li>sam</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>lc</li><li>ltm</li><li>pem</li><li>swg</li></ul></td>
-        <td><div>The module to provision in BIG-IP</div></td></tr>
+        <td><div>The module to provision in BIG-IP.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td>admin</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
+        <td><div>The BIG-IP host.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -70,12 +75,12 @@ Options
         <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, unprovisions the module.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>admin</td>
+    <td>yes</td>
+    <td></td>
         <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
             <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
@@ -92,23 +97,29 @@ Examples
 
     - name: Provision PEM at "nominal" level
       bigip_provision:
-          server: "big-ip"
+          server: "lb.mydomain.com"
           module: "pem"
           level: "nominal"
+          password: "secret"
+          user: "admin"
+          validate_certs: "no"
       delegate_to: localhost
     
     - name: Provision a dedicated SWG. This will unprovision every other module
       bigip_provision:
-          server: "big-ip"
+          server: "lb.mydomain.com"
           module: "swg"
+          password: "secret"
           level: "dedicated"
+          user: "admin"
+          validate_certs: "no"
       delegate_to: localhost
 
 
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

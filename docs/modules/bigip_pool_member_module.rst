@@ -103,7 +103,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Pool member ratio weight. Valid values range from 1 through 100. New pool members -- unless overriden with this value -- default to 1.</div></td></tr>
+        <td><div>Pool member ratio weight. Valid values range from 1 through 100. New pool members -- unless overridden with this value -- default to 1.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>

@@ -90,7 +90,7 @@ notes:
     install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.3.1
+    - f5-sdk >= 1.5.0
     - BigIP >= v12
 author:
     - Kevin Coming (@waffie1)

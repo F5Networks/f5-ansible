@@ -1,0 +1,107 @@
+---
+
+- name: Create pool, type 'srv'
+  bigip_gtm_pool:
+      preferred_lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool, type 'srv'
+  assert:
+      that:
+          - result|changed
+
+- name: Create pool, type 'srv' - idempotent check
+  bigip_gtm_pool:
+      preferred_lb_method: "{{ pool_lb_method }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create pool, 'srv' - idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change pool type 'srv' lb_method to ratio
+  bigip_gtm_pool:
+      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool type 'srv' lb_method to ratio
+  assert:
+      that:
+          - result|changed
+
+- name: Change pool type 'srv' lb_method to ratio - Idempotent check
+  bigip_gtm_pool:
+      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Change pool type 'srv' lb_method to ratio - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete pool
+  bigip_gtm_pool:
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete pool
+  assert:
+      that:
+          - result|changed
+
+- name: Delete pool - idempotent check
+  bigip_gtm_pool:
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      type: "srv"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete pool - idempotent check
+  assert:
+      that:
+          - not result|changed

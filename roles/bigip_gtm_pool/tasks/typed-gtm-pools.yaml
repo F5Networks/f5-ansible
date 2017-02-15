@@ -1,0 +1,19 @@
+---
+
+- name: Test type 'A' GTM pools
+  include: type-a-gtm-pools.yaml
+
+- name: Test type 'AAAA' GTM pools
+  include: type-aaaa-gtm-pools.yaml
+
+- name: Test type 'CNAME' GTM pools
+  include: type-cname-gtm-pools.yaml
+
+- name: Test type 'MX' GTM pools
+  include: type-mx-gtm-pools.yaml
+
+- name: Test type 'naptr' GTM pools
+  include: type-naptr-gtm-pools.yaml
+
+- name: Test type 'srv' GTM pools
+  include: type-srv-gtm-pools.yaml

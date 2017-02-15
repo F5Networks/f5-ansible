@@ -18,12 +18,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
 ---
 module: bigip_ucs
-short_description: Manage UCS files
+short_description: Manage UCS files.
 description:
-   - Manage UCS files
+   - Manage UCS files.
 version_added: "2.0"
 options:
   include_chassis_level_config:
@@ -33,11 +37,7 @@ options:
         configuration.
     required: false
     default: false
-    choices: bool
-  server:
-    description:
-      - BIG-IP host
-    required: true
+    choices: ['yes', 'no']
   ucs:
     description:
       - The path to the UCS file to install. The parameter must be
@@ -51,7 +51,7 @@ options:
         to believe that the image was corrupted during upload.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,
@@ -59,7 +59,7 @@ options:
         restore a UCS on RMA devices (Returned Materials Authorization).
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   no_platform_check:
     description:
       - Bypasses the platform check and allows a UCS that was created using a
@@ -67,24 +67,20 @@ options:
         a UCS created from a different platform is not allowed to be installed.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   passphrase:
     description:
       - Specifies the passphrase that is necessary to load the specified UCS file
     required: false
     default: false
-    choices: bool
-  password:
-    description:
-      - BIG-IP password
-    required: true
+    choices: ['yes', 'no']
   reset_trust:
     description:
       - When specified, the device and trust domain certs and keys are not
         loaded from the UCS. Instead, a new set is regenerated.
     required: false
     default: false
-    choices: bool
+    choices: ['yes', 'no']
   state:
     description:
       - When C(installed), ensures that the UCS is uploaded and installed,
@@ -96,16 +92,6 @@ options:
       - absent
       - installed
       - present
-  user:
-    description:
-      - BIG-IP username
-    required: true
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
    - Requires the bigsuds Python package on the host if using the iControl
      interface. This is as easy as pip install bigsuds
@@ -140,6 +126,7 @@ notes:
      RMA units.
    - This module will attempt to auto-recover a failed UCS load by using the
      iControl API to load the default backup UCS file (cs_backup.ucs)
+extends_documentation_fragment: f5
 requirements:
   - bigsuds
   - requests

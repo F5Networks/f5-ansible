@@ -31,4 +31,4 @@
   connection: local
 
   roles:
-      - __bigip_vlan
+      - bigip_vlan

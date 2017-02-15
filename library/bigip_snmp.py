@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 #
 # Copyright 2016 F5 Networks Inc.
 #
@@ -18,13 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
----
-module: bigip_dns_record_facts
-short_description: foo
+module: bigip_snmp_contact
+short_description: Manipulate SNMP contact information on a BIG-IP.
 description:
-  - foo
-version_added: "2.2"
+  - Manipulate SNMP contact information on a BIG-IP.
+version_added: 2.3
 options:
   contact:
     description:
@@ -83,9 +85,20 @@ RETURN = '''
 
 '''
 
+import netaddr
 
+try:
+    from f5.bigip import ManagementRoot as BigIpMgmt
+    from f5.bigiq import ManagementRoot as BigIqMgmt
+    from f5.iworkflow import ManagementRoot as iWorkflowMgmt
+    from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
+from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
@@ -97,7 +110,6 @@ class Parameters(AnsibleF5Parameters):
             location='sysLocation',
             contact='sysContact'
         )
-        self._vlan = None
         if params is None:
             return
         for key, value in iteritems(params):
@@ -154,6 +166,34 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError(
                 "The provided destination is not an IP address"
             )
+
+    @destination.setter
+    def destination(self, value):
+        self._destination = value
+
+    @classmethod
+    def from_api(cls, params):
+        params['vlan'] = params.pop('tmInterface', None)
+        params['gateway_address'] = params.pop('gw', None)
+        params['reject'] = params.pop('blackhole', False)
+        params['destination'] = params.pop('network', None)
+        p = cls(params)
+        return p
+
+    def __getattr__(self, item):
+        return None
+
+    def api_params(self):
+        result = dict(
+            tmInterface=self.vlan,
+            network=self.destination,
+            pool=self.pool,
+            gw=self.gateway_address,
+            description=self.description,
+            mtu=self.mtu,
+            blackhole=self.reject
+        )
+        return dict((k, v) for k, v in result.iteritems() if v is not None)
 
 
 class StaticRouteManager(object):
