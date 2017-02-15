@@ -112,7 +112,7 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    _api_param_map = dict(
+    api_param_map = dict(
         vlan='tmInterface',
         gateway_address='gw',
         destination='network',
