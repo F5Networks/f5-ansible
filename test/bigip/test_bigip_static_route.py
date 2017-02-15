@@ -28,7 +28,6 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from library import bigip_static_route
 from library.bigip_static_route import (
     AnsibleF5Client,
     ArgumentSpec,
@@ -126,12 +125,12 @@ class TestStaticRouteParameters(unittest.TestCase):
         assert p.destination == '10.10.10.10/32'
 
 
-class TestStaticRouteModule(unittest.TestCase):
+class TestStaticRouteManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('library.bigip_static_route.AnsibleF5Client._get_mgmt_root',
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
     def test_create_blackhole(self, foo):
         set_module_args(dict(
