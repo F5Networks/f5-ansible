@@ -271,6 +271,19 @@ class BigIpCommon(object):
 
         self.params = kwargs
 
+    def _find_iso_content(self, iso):
+        paths = ['/METADATA.XML', 'metadata.xml']
+
+        for path in paths:
+            try:
+                content = iso.record(path).content
+                return content
+            except KeyError:
+                pass
+        raise Exception(
+            "Unable to find metadata file in ISO. Please file a bug"
+        )
+
     def iso_info(self, iso):
         result = dict(
             product=None,
@@ -279,7 +292,7 @@ class BigIpCommon(object):
         )
 
         iso = isoparser.parse(iso)
-        content = iso.record('/METADATA.XML').content
+        content = self._find_iso_content(iso)
         content = io.BytesIO(content)
 
         context = etree.iterparse(content)
