@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 #
 # Copyright 2016 F5 Networks Inc.
 #
@@ -18,59 +17,82 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
+
 DOCUMENTATION = '''
----
-module: bigip_dns_record_facts
-short_description: foo
+module: bigip_static_route
+short_description: Manipulate static routes on a BIG-IP.
 description:
-  - foo
-version_added: "2.2"
+  - Manipulate static routes on a BIG-IP.
+version_added: 2.3
 options:
-  contact:
+  name:
     description:
-      - Specifies the name of the person who administers the SNMP
-        service for this system.
+      - Name of the static route
+    required: True
+  description:
+    description:
+      - Descriptive text that identifies the route.
     required: False
     default: None
-  agent_status_traps:
+  destination:
     description:
-      - When C(enabled), ensures that the system sends a trap whenever the
-        SNMP agent starts running or stops running.
+      - Specifies an IP address, and netmask, for the static entry in the
+        routing table.
+    required: When C(state) is C(present)
+    default: None
+  gateway_address:
+    description:
+      - Specifies the router for the system to use when forwarding packets
+        to the destination host or network. Also known as the next-hop router
+        address. This can be either an IPv4 or IPv6 address. When it is an
+        IPv6 address that starts with C(FE80:), the address will be treated
+        as a link-local address. This requires that the C(vlan) parameter
+        also be supplied.
     required: False
     default: None
+  vlan:
+    description:
+      - Specifies the VLAN or Tunnel through which the system forwards packets
+        to the destination.
+    required:
+      - When C(gateway_address) is a link-local IPv6 address.
+    default: None
+  pool:
+    description:
+      - Specifies the pool through which the system forwards packets to the
+        destination.
+    required: False
+    default: None
+  reject:
+    description:
+      - Specifies that the system drops packets sent to the destination.
+    required: False
+    default: None
+  mtu:
+    description:
+      - Specifies a specific maximum transmission unit (MTU).
+    required: False
+    default: None
+  state:
+    description:
+      - When C(present), ensures that the cloud connector exists. When
+        C(absent), ensures that the cloud connector does not exist.
+    required: False
+    default: present
     choices:
-      - enabled
-      - disabled
-  agent_authentication_traps:
-    description:
-      - When C(enabled), ensures that the system sends authentication warning
-        traps to the trap destinations.
-    required: False
-    default: None
-    choices:
-      - enabled
-      - disabled
-  device_warning_traps:
-    description:
-      - When C(enabled), ensures that the system sends device warning traps
-        to the trap destinations.
-    required: False
-    default: None
-    choices:
-      - enabled
-      - disabled
-  location:
-    description:
-      - Specifies the description of this system's physical location.
-    required: False
-    default: None
+      - present
+      - absent
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+  - Requires the netaddr Python package on the host. This is as easy as pip
+    install netaddr
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 2.2.0
-    - ansible >= 2.3.0
+    - f5-sdk >= 1.5.0
 author:
     - Tim Rupp (@caphrim007)
 '''
@@ -83,25 +105,32 @@ RETURN = '''
 
 '''
 
+import netaddr
+
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
+    _api_param_map = dict(
+        vlan='tmInterface',
+        gateway_address='gw',
+        destination='network',
+        pool='pool',
+        description='description',
+        mtu='mtu',
+        reject='blackhole'
+    )
+
     def __init__(self, params=None):
-        self._api_param_map = dict(
-            agent_status_traps='agentTrap',
-            agent_authentication_traps='authTrap',
-            device_warning_traps='bigipTraps',
-            location='sysLocation',
-            contact='sysContact'
-        )
         self._vlan = None
-        if params is None:
-            return
-        for key, value in iteritems(params):
-            setattr(self, key, value)
+        self._partition = None
+        self._gateway_address = None
+        self._destination = None
+        self._reject = None
+
+        super(Parameters, self).__init__(params)
 
     @property
     def vlan(self):
@@ -137,7 +166,7 @@ class Parameters(AnsibleF5Parameters):
         if self._reject in BOOLEANS_TRUE:
             return True
         else:
-            return False
+            return None
 
     @reject.setter
     def reject(self, value):
@@ -154,6 +183,10 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError(
                 "The provided destination is not an IP address"
             )
+
+    @destination.setter
+    def destination(self, value):
+        self._destination = value
 
 
 class StaticRouteManager(object):
@@ -231,11 +264,12 @@ class StaticRouteManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        if self.have.destination != self.want.destination:
-            raise F5ModuleError(
-                "The destination cannot be changed. Delete and recreate the"
-                "static route if you need to do this."
-            )
+        if self.want.destination is not None:
+            if self.have.destination != self.want.destination:
+                raise F5ModuleError(
+                    "The destination cannot be changed. Delete and recreate"
+                    "the static route if you need to do this."
+                )
         if not self.should_update():
             return False
         if self.client.check_mode:

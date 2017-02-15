@@ -1,3 +1,2 @@
 [f5-test]
-localhost ansible_python_interpreter=/Users/trupp/src/virtualenv/ansible-2.0/bin/python
-# 172.27.42.28 ansible_python_interpreter=/Users/trupp/src/virtualenv/ansible-2.0/bin/python
+localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python

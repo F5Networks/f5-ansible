@@ -247,18 +247,6 @@ class BigIpUserManager(object):
         return self.format_user_information(user)
 
     def format_user_information(self, user):
-        """Ensure that the user information is in a standard format
-
-        The SDK provides information back in a format that may change with
-        the version of BIG-IP being worked with. Therefore, we need to make
-        sure that the data is formatted in a way that our module expects it.
-
-        Additionally, this takes care of minor variations between Python 2
-        and Python 3.
-
-        :param user:
-        :return:
-        """
         result = dict()
         result['name'] = str(user.name)
         if hasattr(user, 'description'):
@@ -442,6 +430,8 @@ class BigIpUserManager(object):
             return result
         if self.params['shell'] == 'none':
             return result
+        if self.params['shell'] == 'tmsh':
+            return result
         if self.can_have_advanced_shell_upon_creation():
             result['shell'] = self.params['shell']
         if self.params['shell'] == 'bash':
@@ -453,6 +443,9 @@ class BigIpUserManager(object):
         roles_with_advanced_shell = [
             'admin', 'resource-admin'
         ]
+        if 'partitionAccess' not in self.params:
+            return False
+
         for x in self.params['partitionAccess']:
             if x['role'] in roles_with_advanced_shell:
                 return True
@@ -478,7 +471,11 @@ class BigIpUserManager(object):
         partition_access = self.params['partition_access']
         for access in partition_access:
             acl = access.split(':')
-            result.append({acl[0], acl[1]})
+            value = dict(
+                name=acl[0],
+                role=acl[1]
+            )
+            result.append(value)
         return result
 
     def ensure_user_is_absent(self):

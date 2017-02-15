@@ -18,9 +18,73 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-ANSIBLE_METADATA = {'status': ['preview'],
-                    'supported_by': 'community',
-                    'version': '1.0'}
+DOCUMENTATION = '''
+---
+module: bigip_config
+short_description: Manage BIG-IP configuration sections
+description:
+  - Cisco NXOS configurations use a simple block indent file syntax
+    for segmenting configuration into sections. This module provides
+    an implementation for working with NXOS configuration sections in
+    a deterministic way. This module works with either CLI or NXAPI
+    transports.
+version_added: "2.3"
+options:
+  save:
+    description:
+      - The C(save) argument instructs the module to save the
+        running-config to startup-config. This operation is performed
+        after any changes are made to the current running config. If
+        no changes are made, the configuration is still saved to the
+        startup config. This option will always cause the module to
+        return changed.
+    choices:
+      - yes
+      - no
+    required: false
+    default: false
+  load_sys_default:
+    description:
+      - Loads the default configuration on the device
+notes:
+  - Requires the f5-sdk Python package on the remote host. This is as easy as
+    pip install f5-sdk
+extends_documentation_fragment: f5
+requirements:
+  - f5-sdk
+author:
+    - Tim Rupp (@caphrim007)
+'''
+
+
+
+
+
+
+
+
+
+
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright 2016 F5 Networks Inc.
+#
+# This file is part of Ansible
+#
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 DOCUMENTATION = '''
 ---
@@ -98,41 +162,6 @@ vars:
     username: admin
     password: admin
     transport: cli
-
-- name: run show version on remote devices
-  bigip_command:
-    commands: show sys version
-    provider: "{{ cli }}"
-
-- name: run show version and check to see if output contains BIG-IP
-  bigip_command:
-    commands: show sys version
-    wait_for: result[0] contains BIG-IP
-    provider: "{{ cli }}"
-
-- name: run multiple commands on remote nodes
-   bigip_command:
-    commands:
-      - show sys version
-      - list ltm virtual
-    provider: "{{ cli }}"
-
-- name: run multiple commands and evaluate the output
-  bigip_command:
-    commands:
-      - show sys version
-      - list ltm virtual
-    wait_for:
-      - result[0] contains BIG-IP
-      - result[1] contains my-vs
-    provider: "{{ cli }}"
-
-- name: tmsh prefixes will automatically be handled
-  bigip_command:
-    commands:
-      - show sys version
-      - tmsh list ltm virtual
-    provider: "{{ cli }}"
 '''
 
 RETURN = '''
@@ -156,8 +185,46 @@ failed_conditions:
 '''
 
 
+import re
+
+from ansible.module_utils.network import ModuleStub, NetworkError, NetworkModule
+from ansible.module_utils.network import add_argument, register_transport, to_list
+from ansible.module_utils.shell import CliBase
+
+
+class Cli(CliBase):
+
+    CLI_PROMPTS_RE = [
+        # One of the default prompts on 12.x
+        re.compile(r"\[\w+\@[\w\-\.]+:[\w\s]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+
+        # Nate found this prompt in DUTs
+        # [root@Carrier2:/S1-green-P:Standby:In Sync] config #
+        re.compile(r"\[\w+\@[\w\d\-\.]+:[\w\d\/]+:[\w]+:[\w\s]+\] [\w]+ ?[>#\$]"),
+
+        # Found on 11.6.1
+        re.compile(r"[\w-]+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\/Common\)\(tmos\)[>#\$]"),
+        re.compile(r"[\w-]+\@\(\w+\)\([\w\s-]+\)\(\w+\)\(\w+\)\(tmos\)[>#\$]")
+    ]
+
+    CLI_ERRORS_RE = [
+        re.compile(r"connection timed out", re.I),
+        re.compile(r"syntax error: unexpected argument", re.I)
+    ]
+
+    NET_PASSWD_RE = re.compile(r"[\r\n]?password: $", re.I)
+
+    def connect(self, params, **kwargs):
+        super(Cli, self).connect(params, kickstart=False, **kwargs)
+
+
+Cli = register_transport('cli', default=True)(Cli)
+
+
+
+
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5_cli import *
+from ansible.module_utils.f5 import *
 from ansible.module_utils.basic import get_exception
 from ansible.module_utils.network import NetworkModule, NetworkError
 from ansible.module_utils.netcli import CommandRunner
@@ -167,7 +234,7 @@ from ansible.module_utils.six import string_types
 
 
 VALID_KEYS = ['command', 'output', 'prompt', 'response']
-VALID_CONFIG_MODES = ['modify', 'delete', 'add']
+
 
 def to_lines(stdout):
     for item in stdout:
@@ -193,7 +260,9 @@ def parse_commands(module):
 
 
 def is_config_mode_command(cmd):
-    if all(cmd['command'].startswith(x) for x in VALID_CONFIG_MODES):
+    if cmd['command'].startswith('modify') or \
+            cmd['command'].startswith('delete') or \
+            cmd['command'].startswith('add'):
         return True
     return False
 
@@ -239,18 +308,6 @@ def main():
     runner.commands = []
     runner.module.cli._commands = []
 
-    if shell == 'tmsh':
-        disable_pager = dict(
-            output=None,
-            command='modify cli preference pager disabled'
-        )
-        runner.add_command(**disable_pager)
-    else:
-        disable_pager = dict(
-            output=None,
-            command='tmsh modify cli preference pager disabled'
-        )
-        runner.add_command(**disable_pager)
 
     for cmd in commands:
         cmd = strip_tmsh_prefix(cmd)
@@ -265,11 +322,24 @@ def main():
                                      'config mode commands. Please use '
                                      'bigip_config instead')
             try:
-                if shell == 'bash':
+                if shell == 'tmsh':
+                    disable_pager = dict(
+                        output=None,
+                        command='modify cli preference pager disabled'
+                    )
+                    runner.add_command(**disable_pager)
+                    runner.add_command(**cmd)
+                else:
+                    disable_pager = dict(
+                        output=None,
+                        command='tmsh modify cli preference pager disabled'
+                    )
                     cmd['command'] = 'tmsh ' + cmd['command']
-                runner.add_command(**cmd)
+                    runner.add_command(**disable_pager)
+                    runner.add_command(**cmd)
             except AddCommandError:
-                warnings.append('Duplicate command detected: %s' % cmd)
+                exc = get_exception()
+                warnings.append('duplicate command detected: %s' % cmd)
 
     try:
         for item in conditionals:

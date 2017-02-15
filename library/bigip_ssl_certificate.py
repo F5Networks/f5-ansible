@@ -1,6 +1,8 @@
 #!/usr/bin/python
 #
-# (c) 2016, Kevin Coming (@waffie1)
+# Copyright 2016 F5 Networks Inc.
+#
+# Based off the original work of Kevin Coming (@waffie1)
 #
 # This file is part of Ansible
 #
@@ -16,6 +18,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
+ANSIBLE_METADATA = {'status': ['preview'],
+                    'supported_by': 'community',
+                    'version': '1.0'}
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
@@ -82,10 +88,6 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - Requires the netaddr Python package on the host.
-  - If you use this module, you will not be able to remove the certificates
-    and keys that are managed, via the web UI. You can only remove them via
-    tmsh or these modules.
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 1.3.1
@@ -130,47 +132,53 @@ EXAMPLES = '''
 
 RETURN = '''
 cert_name:
-    description: >
-        The name of the SSL certificate. The C(cert_name) and
-        C(key_name) will be equal to each other.
+    description: The name of the certificate that the user provided
     returned:
         - created
-        - changed
-        - deleted
     type: string
     sample: "cert1"
-key_name:
-    description: >
-        The name of the SSL certificate key. The C(key_name) and
-        C(cert_name) will be equal to each other.
+cert_filename:
+    description:
+        - The name of the SSL certificate. The C(cert_filename) and
+          C(key_filename) will be similar to each other, however the
+          C(cert_filename) will have a C(.crt) extension.
     returned:
         - created
-        - changed
-        - deleted
     type: string
-    sample: "key1"
-partition:
-    description: Partition in which the cert/key was created
+    sample: "cert1.crt"
+key_filename:
+    description:
+        - The name of the SSL certificate key. The C(key_filename) and
+          C(cert_filename) will be similar to each other, however the
+          C(key_filename) will have a C(.key) extension.
     returned:
-        - changed
         - created
-        - deleted
     type: string
-    sample: "Common"
+    sample: "cert1.key"
 key_checksum:
-    description: SHA1 checksum of the key that was provided
+    description: SHA1 checksum of the key that was provided.
     return:
         - changed
         - created
     type: string
     sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
 cert_checksum:
-    description: SHA1 checksum of the cert that was provided
+    description: SHA1 checksum of the cert that was provided.
     return:
         - changed
         - created
     type: string
     sample: "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
+cert_source_path:
+    description: Path on BIG-IP where the source of the certificate is stored.
+    return: created
+    type: string
+    sample: "/var/config/rest/downloads/cert1.crt"
+key_source_path:
+    description: Path on BIG-IP where the source of the key is stored
+    return: created
+    type: string
+    sample: "/var/config/rest/downloads/cert1.key"
 '''
 
 
@@ -185,45 +193,270 @@ except ImportError:
 
 import hashlib
 import StringIO
+import os
+import re
+
+from ansible.module_utils.basic import *
+from ansible.module_utils.f5 import *
 
 
-class BigIpSslCertificate(object):
-    def __init__(self, *args, **kwargs):
-        if not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required")
+def connect_to_bigip(**kwargs):
+    return ManagementRoot(kwargs['server'],
+                          kwargs['user'],
+                          kwargs['password'],
+                          port=kwargs['server_port'],
+                          token=True)
 
-        required_args = ['key_content', 'key_src', 'cert_content', 'cert_src']
 
-        ksource = kwargs['key_src']
-        if ksource:
-            with open(ksource) as f:
-                kwargs['key_content'] = f.read()
+class F5CommonHashMixin(object):
+    @staticmethod
+    def get_hash(content):
+        k = hashlib.sha1()
+        s = StringIO.StringIO(content)
+        while True:
+            data = s.read(1024)
+            if not data:
+                break
+            k.update(data)
+        return k.hexdigest()
 
-        csource = kwargs['cert_src']
-        if csource:
-            with open(csource) as f:
-                kwargs['cert_content'] = f.read()
 
-        if kwargs['state'] == 'present':
-            if not any(kwargs[k] is not None for k in required_args):
-                raise F5ModuleError(
-                    "Either 'key_content', 'key_src', 'cert_content' or "
-                    "'cert_src' must be provided"
-                )
+class F5SslParamBase(object):
+    def __get__(self, instance, owner):
+        return instance.__dict__.get(self._name, None)
 
-        # This is the remote BIG-IP path from where it will look for certs
-        # to install.
+
+class F5SslKeySrc(F5SslParamBase):
+    _name = 'key_src'
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = value
+        if not value:
+            return
+        with open(value) as fh:
+            instance.key_content = fh.read()
+
+
+class F5SslKeyContent(F5CommonHashMixin, F5SslParamBase):
+    _name = 'key_content'
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = value
+        if not value:
+            return
+        instance.key_checksum = self.get_hash(value)
+
+
+class F5SslCertSrc(F5SslParamBase):
+    _name = 'cert_src'
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = value
+        if not value:
+            return
+        with open(value) as fh:
+            instance.cert_content = fh.read()
+
+
+class F5SslCertContent(F5CommonHashMixin, F5SslParamBase):
+    _name = 'cert_content'
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = value
+        if not value:
+            return
+        instance.cert_checksum = self.get_hash(value)
+
+
+class F5SslCertName(F5SslParamBase):
+    _name = 'cert_name'
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = value
+        fname, fext = os.path.splitext(value)
+        instance.key_filename = fname + '.key'
+        instance.cert_filename = fname + '.crt'
+
+
+class BigIpSslCertificateParams(object):
+    cert_checksum = None
+    cert_content = F5SslCertContent()
+    cert_filename = None
+    cert_src = F5SslCertSrc()
+    key_checksum = None
+    key_content = F5SslKeyContent()
+    key_filename = None
+    key_src = F5SslKeySrc()
+    name = F5SslCertName()
+
+    def difference(self, obj):
+        """Compute difference between one object and another
+
+        :param obj:
+        Returns:
+            Returns a new set with elements in s but not in t (s - t)
+        """
+        excluded_keys = [
+            'passphrase', 'cert_content', 'password', 'server', 'key_content',
+            'state', 'user', 'server_port', 'validate_certs'
+        ]
+        return self._difference(self, obj, excluded_keys)
+
+    def _difference(self, obj1, obj2, excluded_keys):
+        """
+
+        Code take from https://www.djangosnippets.org/snippets/2281/
+
+        :param obj1:
+        :param obj2:
+        :param excluded_keys:
+        :return:
+        """
+        d1, d2 = obj1.__dict__, obj2.__dict__
+        new = {}
+        for k,v in d1.items():
+            if k in excluded_keys:
+                continue
+            try:
+                if v != d2[k]:
+                    new.update({k: d2[k]})
+            except KeyError:
+                new.update({k: v})
+        return new
+
+    @classmethod
+    def from_module(cls, module):
+        """Create instance from dictionary of Ansible Module params
+
+        This method accepts a dictionary that is in the form supplied by
+        the
+
+        Args:
+             module: An AnsibleModule object's `params` attribute.
+
+        Returns:
+            A new instance of BigIpSslCertificateParams. The attributes
+            of this object are set according to the param data that is
+            supplied by the user.
+        """
+        result = cls()
+        for key in module:
+            setattr(result, key, module[key])
+        return result
+
+
+class BigIpSslCertificateModule(AnsibleModule):
+    def __init__(self):
+        self.argument_spec = dict()
+        self.meta_args = dict()
+        self.supports_check_mode = True
+        self.required_args = [
+            'key_content', 'key_src', 'cert_content', 'cert_src'
+        ]
+        self.init_meta_args()
+        self.init_argument_spec()
+        super(BigIpSslCertificateModule, self).__init__(
+            argument_spec=self.argument_spec,
+            supports_check_mode=self.supports_check_mode,
+            mutually_exclusive=[
+                ['key_content', 'key_src'],
+                ['cert_content', 'cert_src']
+            ]
+        )
+
+    def __set__(self, instance, value):
+        if isinstance(value, BigIpSslCertificateModule):
+            instance.params = BigIpSslCertificateParams.from_module(self.params)
+        else:
+            super(BigIpSslCertificateModule, self).__set__(instance, value)
+
+    def init_meta_args(self):
+        args = dict(
+            name=dict(
+                type='str',
+                required=True
+            ),
+            cert_content=dict(
+                type='str',
+                default=None
+            ),
+            cert_src=dict(
+                type='path',
+                default=None
+            ),
+            key_content=dict(
+                type='str',
+                default=None
+            ),
+            key_src=dict(
+                type='path',
+                default=None
+            ),
+            passphrase=dict(
+                type='str',
+                default=None,
+                no_log=True
+            )
+        )
+        self.meta_args = args
+
+    def init_argument_spec(self):
+        self.argument_spec = f5_argument_spec()
+        self.argument_spec.update(self.meta_args)
+
+
+class BigIpSslCertificateManager(object):
+    params = BigIpSslCertificateParams()
+    current = BigIpSslCertificateParams()
+    module = BigIpSslCertificateModule()
+
+    def __init__(self):
+        """
+        Attributes:
+            has_key: A boolean holding the cached value from the first call
+                to key_exists().
+            has_cert: A boolean holding the cached value from the first call
+                to cert_exists().
+        """
+        self.has_key = None
+        self.has_cert = None
+        self.config = None
+        self.api = None
         self.dlpath = '/var/config/rest/downloads'
+        self.changes = None
 
-        # The params that change in the module
-        self.cparams = dict()
+    def apply_changes(self):
+        """Apply the user's changes to the device
 
-        # Stores the params that are sent to the module
-        self.params = kwargs
-        self.api = ManagementRoot(kwargs['server'],
-                                  kwargs['user'],
-                                  kwargs['password'],
-                                  port=kwargs['server_port'])
+        This method is the primary entry-point to this module. Based on the
+        parameters supplied by the user to the class, this method will
+        determine which `state` needs to be fulfilled and delegate the work
+        to more specialized helper methods.
+
+        Additionally, this method will return the result of applying the
+        changes so that Ansible can communicate this result to the user.
+
+        Raises:
+            F5ModuleError: An error occurred communicating with the device
+        """
+        changed = False
+        result = dict()
+        state = self.params.state
+
+        try:
+            self.api = connect_to_bigip(**self.params.__dict__)
+
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        changes = self.params.difference(self.current)
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        return result
 
     def exists(self):
         cert = self.cert_exists()
@@ -234,283 +467,366 @@ class BigIpSslCertificate(object):
         else:
             return False
 
-    def get_hash(self, content):
-        k = hashlib.sha1()
-        s = StringIO.StringIO(content)
-        while True:
-            data = s.read(1024)
-            if not data:
-                break
-            k.update(data)
-        return k.hexdigest()
+    def ensure_required_params_are_specified(self):
+        if not self.module:
+            raise F5ModuleError(
+                "A config object has not yet been created"
+            )
+        required = self.module.required_args
+        values = self.params.__dict__
+        if any(values[k] is not None for k in required):
+            return
+
+        raise F5ModuleError(
+            "Either 'key_content', 'key_src', 'cert_content' or "
+            "'cert_src' must be provided"
+        )
+
+    def no_content_specified(self):
+        """Determine whether no content was specified, or not
+
+        :return:
+        """
+        if not self.params.cert_content and not self.params.key_content:
+            return True
+        return False
 
     def present(self):
-        current = self.read()
-        changed = False
-        do_key = False
-        do_cert = False
-        chash = None
-        khash = None
-
-        check_mode = self.params['check_mode']
-        name = self.params['name']
-        partition = self.params['partition']
-        cert_content = self.params['cert_content']
-        key_content = self.params['key_content']
-        passphrase = self.params['passphrase']
-
-        # Technically you dont need to provide us with anything in the form
-        # of content for your cert, but that's kind of illogical, so we just
-        # return saying you didn't "do" anything if you left the cert and keys
-        # empty.
-        if not cert_content and not key_content:
+        self.ensure_required_params_are_specified()
+        if self.no_content_specified():
             return False
+        if self.key_and_cert_exist():
+            return self.update_key_and_cert()
+        elif self.key_exists():
+            return self.create_cert_update_key()
+        elif self.cert_exists():
+            return self.create_key_update_cert()
+        else:
+            return self.create_key_and_cert()
 
-        if key_content is not None:
-            if 'key_checksum' in current:
-                khash = self.get_hash(key_content)
-                if khash not in current['key_checksum']:
-                    do_key = "update"
-            else:
-                do_key = "create"
+    def cert_and_key_are_changed(self, current):
+        if current.key_checksum != self.params.key_checksum:
+            return True
+        if current.cert_checksum != self.params.cert_checksum:
+            return True
+        return False
 
-        if cert_content is not None:
-            if 'cert_checksum' in current:
-                chash = self.get_hash(cert_content)
-                if chash not in current['cert_checksum']:
-                    do_cert = "update"
-            else:
-                do_cert = "create"
+    def update_key_and_cert(self):
+        """Updates both a key and certificate on a remote device
 
-        if do_cert or do_key:
-            changed = True
-            params = dict()
-            params['cert_name'] = name
-            params['key_name'] = name
-            params['partition'] = partition
-            if khash:
-                params['key_checksum'] = khash
-            if chash:
-                params['cert_checksum'] = chash
-            self.cparams = params
-
-            if check_mode:
-                return changed
-
-        if not do_cert and not do_key:
+        :return:
+        """
+        current = self.read_current()
+        if not self.cert_and_key_are_changed(current):
             return False
-
+        if self.module.check_mode:
+            return True
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
-            if do_cert:
-                # Upload the content of a certificate as a StringIO object
-                cstring = StringIO.StringIO(cert_content)
-                filename = "%s.crt" % (name)
-                filepath = os.path.join(self.dlpath, filename)
-                api.shared.file_transfer.uploads.upload_stringio(
-                    cstring,
-                    filename
-                )
+            self.upload_key(api)
+            self.update_key(api)
+            self.upload_cert(api)
+            self.update_cert(api)
+        return True
 
-            if do_cert == "update":
-                # Install the certificate
-                params = {
-                    'name': name,
-                    'partition': partition
-                }
-                cert = api.tm.sys.file.ssl_certs.ssl_cert.load(**params)
+    def create_key_and_cert(self):
+        if self.module.check_mode:
+            return True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            self.upload_key(api)
+            self.create_key(api)
+            self.upload_cert(api)
+            self.create_cert(api)
+        return True
 
-                # This works because, while the source path is the same,
-                # calling update causes the file to be re-read
-                cert.update()
-                changed = True
-            elif do_cert == "create":
-                # Install the certificate
-                params = {
-                    'sourcePath': "file://" + filepath,
-                    'name': name,
-                    'partition': partition
-                }
-                api.tm.sys.file.ssl_certs.ssl_cert.create(**params)
-                changed = True
+    def create_cert_update_key(self):
+        current = self.read_current()
+        if not self.key_is_changed(current):
+            return False
+        if self.module.check_mode:
+            return True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            self.upload_key(api)
+            self.update_key(api)
+            self.upload_cert(api)
+            self.create_cert(api)
+        return True
 
-            if do_key:
-                # Upload the content of a certificate key as a StringIO object
-                kstring = StringIO.StringIO(key_content)
-                filename = "%s.key" % (name)
-                filepath = os.path.join(self.dlpath, filename)
-                api.shared.file_transfer.uploads.upload_stringio(
-                    kstring,
-                    filename
-                )
+    def key_is_changed(self, current):
+        if current.key_checksum != self.params.key_checksum:
+            return True
+        return False
 
-            if do_key == "update":
-                # Install the key
-                params = {
-                    'name': name,
-                    'partition': partition
-                }
-                key = api.tm.sys.file.ssl_keys.ssl_key.load(**params)
+    def create_key_update_cert(self):
+        current = self.read_current()
+        if not self.cert_is_changed(current):
+            return False
+        if self.module.check_mode:
+            return True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            self.upload_key(api)
+            self.create_key(api)
+            self.upload_cert(api)
+            self.create_cert(api)
+        return True
 
-                params = dict()
+    def cert_is_changed(self, current):
+        if current.cert_checksum != self.params.cert_checksum:
+            return True
+        return False
 
-                if passphrase:
-                    params['passphrase'] = passphrase
-                else:
-                    params['passphrase'] = None
+    def update_key(self, api):
+        params = dict(
+            name=self.params.key_filename,
+            partition=self.params.partition
+        )
+        key = api.tm.sys.file.ssl_keys.ssl_key.load(**params)
 
-                key.update(**params)
-                changed = True
-            elif do_key == "create":
-                # Install the key
-                params = {
-                    'sourcePath': "file://" + filepath,
-                    'name': name,
-                    'partition': partition
-                }
-                if passphrase:
-                    params['passphrase'] = self.params['passphrase']
-                else:
-                    params['passphrase'] = None
+        params = dict()
+        if self.params.passphrase:
+            params['passphrase'] = self.params.passphrase
+        else:
+            params['passphrase'] = None
+        key.update(**params)
+        return True
 
-                api.tm.sys.file.ssl_keys.ssl_key.create(**params)
-                changed = True
-        return changed
+    def upload_cert(self, api):
+        # Upload the content of a certificate as a StringIO object
+        cstring = StringIO.StringIO(self.params.cert_content)
+        filepath = os.path.join(self.dlpath, self.params.cert_filename)
+        api.shared.file_transfer.uploads.upload_stringio(
+            cstring, self.params.cert_filename
+        )
+        self.params.cert_source_path = filepath
+
+    def update_cert(self, api):
+        params = dict(
+            name=self.params.cert_filename,
+            partition=self.params.partition
+        )
+        cert = api.tm.sys.file.ssl_certs.ssl_cert.load(**params)
+        # This works because, while the source path is the same,
+        # calling update causes the file to be re-read
+        cert.update()
+        return True
+
+    def create_cert(self, api):
+        filepath = os.path.join(self.dlpath, self.params.cert_filename)
+        params = dict(
+            sourcePath="file://" + filepath,
+            name=self.params.cert_filename,
+            partition=self.params.partition
+        )
+        api.tm.sys.file.ssl_certs.ssl_cert.create(**params)
+        return True
+
+    def upload_key(self, api):
+        # Upload the content of a certificate key as a StringIO object
+        kstring = StringIO.StringIO(self.params.key_content)
+        filepath = os.path.join(self.dlpath, self.params.key_filename)
+        api.shared.file_transfer.uploads.upload_stringio(
+            kstring, self.params.key_filename
+        )
+        self.params.key_source_path = filepath
+
+    def create_key(self, api):
+        filepath = os.path.join(self.dlpath, self.params.key_filename)
+        params = dict(
+            sourcePath="file://" + filepath,
+            name=self.params.key_filename,
+            partition=self.params.partition
+        )
+        if self.params.passphrase:
+            params['passphrase'] = self.params.passphrase
+        else:
+            params['passphrase'] = None
+        api.tm.sys.file.ssl_keys.ssl_key.create(**params)
+        return True
+
+    def key_and_cert_exist(self):
+        return self.key_exists() and self.cert_exists()
 
     def key_exists(self):
-        return self.api.tm.sys.file.ssl_keys.ssl_key.exists(
-            name=self.params['name'],
-            partition=self.params['partition']
-        )
+        if self.has_key is not None:
+            return self.has_key
+        if self.read_existing_key():
+            self.has_key = True
+        else:
+            self.has_key = False
+        return self.has_key
 
     def cert_exists(self):
-        return self.api.tm.sys.file.ssl_certs.ssl_cert.exists(
-            name=self.params['name'],
-            partition=self.params['partition']
-        )
+        if self.has_cert is not None:
+            return self.has_cert
+        if self.read_existing_cert():
+            self.has_cert = True
+        else:
+            self.has_cert = False
+        return self.has_cert
 
-    def read(self):
-        p = dict()
-        name = self.params['name']
-        partition = self.params['partition']
-
-        if self.key_exists():
+    def read_existing_key(self):
+        result = dict()
+        try:
             key = self.api.tm.sys.file.ssl_keys.ssl_key.load(
-                name=name,
-                partition=partition
+                name=self.params.key_filename,
+                partition=self.params.partition
             )
             if hasattr(key, 'checksum'):
-                p['key_checksum'] = str(key.checksum)
+                formatted = self.format_sha1_value_from_device(key.checksum)
+                result['key_checksum'] = formatted
+            if hasattr(key, 'sourcePath'):
+                path = self.format_source_path_from_device(key.sourcePath)
+                result['key_source_path'] = path
+            return result
+        except iControlUnexpectedHTTPError:
+            return None
 
-        if self.cert_exists():
+    def read_existing_cert(self):
+        result = dict()
+        try:
             cert = self.api.tm.sys.file.ssl_certs.ssl_cert.load(
-                name=name,
-                partition=partition
+                name=self.params.cert_filename,
+                partition=self.params.partition
             )
             if hasattr(cert, 'checksum'):
-                p['cert_checksum'] = str(cert.checksum)
+                formatted = self.format_sha1_value_from_device(cert.checksum)
+                result['cert_checksum'] = formatted
+            if hasattr(cert, 'sourcePath'):
+                path = self.format_source_path_from_device(cert.sourcePath)
+                result['cert_source_path'] = path
+            return result
+        except iControlUnexpectedHTTPError:
+            return None
 
-        p['name'] = name
-        return p
+    def format_source_path_from_device(self, path):
+        """Formats a source path for Ansible consumption
 
-    def flush(self):
-        result = dict()
-        state = self.params['state']
+        The `sourcePath` value that is provided by BIG-IP has a protocol
+        string attached to it. Usually this is "file://". This method just
+        strips that prefix off so that the path matches one sent by the user.
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        Arguments:
+            path: The path that needs to be formatted
 
-        result.update(**self.cparams)
-        result.update(dict(changed=changed))
-        return result
+        Returns:
+            A new string formatted to remove any leading protocol prefix
+        """
+        return str(path).replace('file://', '')
+
+    def format_sha1_value_from_device(self, sha1):
+        """Formats a SHA1 for Ansible consumption
+
+        The `checksum` value that is provided by BIG-IP has several prefixes
+        as part of the value that we are not interested in. This value, when
+        returned by BIG-IP, normally looks like this.
+
+            SHA1:5752:b390c93c0e34c618b7559d9cf510ade6c062c6f3
+
+        This method strips off the unnecessary information and leaves the
+        checksum behind so that the module is able to compare against it
+        with the values provided by the user
+
+        Arguments:
+            sha1: The checksum from the BIG-IP that needs to be formatted
+
+        Returns:
+            A new string formatted to remote extraneous information in the
+            checksum.
+        """
+        pattern = r'SHA1:\d+:(?P<value>[\w+]{40})'
+        matches = re.match(pattern, sha1)
+        if matches:
+            return matches.group('value')
+        else:
+            return None
+
+    def read_current(self):
+        existing_key = self.read_existing_key()
+        existing_cert = self.read_existing_cert()
+        current = BigIpSslCertificateParams()
+        current.name = self.params.name
+        current.partition = self.params.partition
+        current.key_checksum = existing_key['key_checksum']
+        current.cert_checksum = existing_cert['cert_checksum']
+        current.cert_source_path = existing_cert['cert_source_path']
+        current.key_source_path = existing_key['key_source_path']
+        self.current = current
+        return self.current
 
     def absent(self):
         changed = False
-
         if self.exists():
             changed = self.delete()
-
         return changed
 
     def delete(self):
-        changed = False
+        if self.key_and_cert_exist():
+            return self.delete_key_and_cert()
+        elif self.key_exists():
+            return self.only_delete_key()
+        elif self.cert_exists():
+            return self.only_delete_cert()
+        else:
+            return False
 
-        check_mode = self.params['check_mode']
-
-        delete_cert = self.cert_exists()
-        delete_key = self.key_exists()
-
-        if not delete_cert and not delete_key:
-            return changed
-
-        if check_mode:
-            params = dict()
-            params['cert_name'] = name
-            params['key_name'] = name
-            params['partition'] = partition
-            self.cparams = params
+    def delete_key_and_cert(self):
+        if self.module.check_mode:
             return True
-
         tx = self.api.tm.transactions.transaction
         with TransactionContextManager(tx) as api:
-            if delete_cert:
-                # Delete the certificate
-                c = api.tm.sys.file.ssl_certs.ssl_cert.load(
-                    name=self.params['name'],
-                    partition=self.params['partition']
-                )
-                c.delete()
-                changed = True
+            self.delete_key(api)
+            self.delete_cert(api)
+        return True
 
-            if delete_key:
-                # Delete the certificate key
-                k = self.api.tm.sys.file.ssl_keys.ssl_key.load(
-                    name=self.params['name'],
-                    partition=self.params['partition']
-                )
-                k.delete()
-                changed = True
-        return changed
+    def only_delete_cert(self):
+        if self.module.check_mode:
+            return True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            self.delete_cert(api)
+        return True
+
+    def only_delete_key(self):
+        if self.module.check_mode:
+            return True
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            self.delete_key(api)
+        return True
+
+    def delete_cert(self, api):
+        c = api.tm.sys.file.ssl_certs.ssl_cert.load(
+            name=self.params.cert_filename,
+            partition=self.params.partition
+        )
+        c.delete()
+        return True
+
+    def delete_key(self, api):
+        k = api.tm.sys.file.ssl_keys.ssl_key.load(
+            name=self.params.key_filename,
+            partition=self.params.partition
+        )
+        k.delete()
+        return True
 
 
 def main():
-    argument_spec = f5_argument_spec()
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
 
-    meta_args = dict(
-        name=dict(type='str', required=True),
-        cert_content=dict(type='str', default=None),
-        cert_src=dict(type='path', default=None),
-        key_content=dict(type='str', default=None),
-        key_src=dict(type='path', default=None),
-        passphrase=dict(type='str', default=None, no_log=True)
-    )
-
-    argument_spec.update(meta_args)
-
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True,
-        mutually_exclusive=[
-            ['key_content', 'key_src'],
-            ['cert_content', 'cert_src']
-        ]
-    )
+    module = BigIpSslCertificateModule()
 
     try:
-        obj = BigIpSslCertificate(check_mode=module.check_mode,
-                                  **module.params)
-        result = obj.flush()
+        obj = BigIpSslCertificateManager()
+        obj.module = module
+        result = obj.apply_changes()
         module.exit_json(**result)
     except F5ModuleError as e:
         module.fail_json(msg=str(e))
-
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
 
 if __name__ == '__main__':
     main()

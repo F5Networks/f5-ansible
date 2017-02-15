@@ -29,3 +29,11 @@ correctly.
 We provide this service to you because we understand that it may not be the
 case that you have instances of BIG-IP availble to you. These instances have
 all of the necessary modules enabled for you to test against.
+
+Unit tests
+----------
+
+* https://pypi.python.org/pypi/responses
+
+Common fixtures
+*

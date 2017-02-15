@@ -23,9 +23,52 @@
 #    - NA
 #
 
-- name: Test the bigip_command module
+- name: Test the bigip_command module, root credentials with bash
   hosts: f5-test
+  gather_facts: false
   connection: local
 
+<<<<<<< Updated upstream
   roles:
       - __bigip_command
+=======
+  vars:
+      cli:
+          host: "{{ inventory_hostname }}"
+          username: root
+          password: default
+          port: 2200
+
+  roles:
+      - bigip_command
+
+- name: Test the bigip_command module, user credentials with tmsh
+  hosts: f5-test
+  gather_facts: false
+  connection: local
+
+  vars:
+      cli:
+          host: "{{ inventory_hostname }}"
+          username: vagrant
+          password: vagrant
+          port: 2200
+
+  roles:
+      - bigip_command
+
+- name: Test the bigip_command module, user credentials TACACS
+  hosts: f5-test
+  gather_facts: false
+  connection: local
+
+  vars:
+      cli:
+          host: "{{ inventory_hostname }}"
+          username: f5user1
+          password: letmein
+          port: 2222
+
+  roles:
+      - role: bigip_command
+>>>>>>> Stashed changes

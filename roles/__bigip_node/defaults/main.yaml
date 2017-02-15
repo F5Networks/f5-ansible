@@ -1,9 +1,18 @@
 ---
 
-node_host: "10.10.10.10"
+node_host_ip: "10.10.10.10"
+node_host_dns: "foo.bar.com"
 node_name: "foo.example"
 node_description: "foo node"
-node_monitor_type: "and_list"
+availability_requirement: "at_least"
 node_monitors:
     - "icmp"
+    - "gateway_icmp"
+node_monitors_changed:
+    - "icmp"
+    - "gateway_icmp"
+    - "http"
 node_quorum: 1
+
+
+monitor_type: "and_list"

@@ -27,15 +27,11 @@ description:
     standard levels of Dedicated, Nominal, and Minimum. While iControl SOAP
     additionally supports a Custom level, this level is not supported by this
     module.
-version_added: "2.2"
+version_added: "2.3"
 options:
-  server:
-    description:
-      - BIG-IP host
-    required: true
   module:
     description:
-      - The module to provision in BIG-IP
+      - The module to provision in BIG-IP.
     required: true
     choices:
       - afm
@@ -49,11 +45,6 @@ options:
       - ltm
       - pem
       - swg
-  password:
-    description:
-      - BIG-IP password
-    required: true
-    default: admin
   level:
     description:
       - Sets the provisioning level for the requested modules. Changing the
@@ -67,20 +58,6 @@ options:
       - dedicated
       - nominal
       - minimum
-  user:
-    description:
-      - BIG-IP username
-    required: false
-    default: admin
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: yes
-    choices:
-      - yes
-      - no
   state:
     description:
       - The state of the provisioned module on the system. When C(present),
@@ -94,11 +71,11 @@ options:
       - present
       - absent
 notes:
-  - Requires the bigsuds Python package on the host if using the iControl
-    interface. This is as easy as pip install bigsuds
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk
+extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -106,121 +83,34 @@ author:
 EXAMPLES = '''
 - name: Provision PEM at "nominal" level
   bigip_provision:
-      server: "big-ip"
+      server: "lb.mydomain.com"
       module: "pem"
       level: "nominal"
+      password: "secret"
+      user: "admin"
+      validate_certs: "no"
   delegate_to: localhost
 
 - name: Provision a dedicated SWG. This will unprovision every other module
   bigip_provision:
-      server: "big-ip"
+      server: "lb.mydomain.com"
       module: "swg"
+      password: "secret"
       level: "dedicated"
+      user: "admin"
+      validate_certs: "no"
   delegate_to: localhost
 '''
 
-import json
-import socket
-
 try:
-    import bigsuds
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
 except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
-try:
-    import requests
-except ImportError:
-    requests_found = False
-else:
-    requests_found = True
+    HAS_F5SDK = False
 
 
-class BigIpCommon(object):
-    def __init__(self, module):
-        self._username = module.params.get('user')
-        self._password = module.params.get('password')
-        self._hostname = module.params.get('server')
-
-        self._level = module.params.get('level')
-        self._module = module.params.get('module')
-        self._validate_certs = module.params.get('validate_certs')
-
-
-class BigIpIControl(BigIpCommon):
-    def __init__(self, module):
-        super(BigIpIControl, self).__init__(module)
-
-        self._client = bigsuds.BIGIP(
-            hostname=self._hostname,
-            username=self._username,
-            password=self._password,
-            debug=True
-        )
-        # TODO(Make the REST interface to this work)
-        """
-         module_map = {
-            'afm': 'TMOS_MODULE_AFM',
-            'am': 'TMOS_MODULE_AM',
-            'sam': 'TMOS_MODULE_SAM',
-            'asm': 'TMOS_MODULE_ASM',
-            'avr': 'TMOS_MODULE_AVR',
-            'fps': 'TMOS_MODULE_FPS',
-            'gtm': 'TMOS_MODULE_GTM',
-            'lc': 'TMOS_MODULE_LC',
-            'ltm': 'TMOS_MODULE_LTM',
-            'pem': 'TMOS_MODULE_PEM',
-            'swg': 'TMOS_MODULE_SWG'
-        }
-         level_map = {
-            'PROVISION_LEVEL_NONE',
-            'PROVISION_LEVEL_NOMINAL',
-            'PROVISION_LEVEL_MINIMAL',
-            'PROVISION_LEVEL_DEDICATED'
-        }
-        """
-
-    def exists(self):
-        try:
-            self._client.Management.Provision.get_level(
-                modules=[self._module]
-            )
-        except bigsuds.ServerError:
-            return False
-
-    def read(self):
-        try:
-            response = self._client.Management.DBVariable.query(
-                variables=[self._key]
-            )
-        except bigsuds.ServerError:
-            return {}
-
-        return response[0]
-
-    def present(self):
-        changed = False
-        current = self.read()
-
-        if current and current['name'].lower() == self._key:
-            if current['value'] != self._value:
-                try:
-                    params = dict(
-                        name=self._key,
-                        value=self._value
-                    )
-                    self._client.Management.DBVariable.modify(
-                        variables=[params]
-                    )
-                    changed = True
-                except Exception:
-                    raise Exception('Failed to set the provided key')
-
-        return changed
-
-
-class BigIpRest(BigIpCommon):
+class BigIpRest():
     def __init__(self, module):
         super(BigIpRest, self).__init__(module)
 
@@ -267,7 +157,6 @@ def main():
 
     module = AnsibleModule(
         argument_spec=dict(
-            connection=dict(default='rest', choices=['icontrol', 'rest']),
             server=dict(required=True),
             module=dict(required=True, choices=module_choices),
             level=dict(default='nominal', choices=['nominal', 'dedicated', 'minimal']),
@@ -278,7 +167,6 @@ def main():
         )
     )
 
-    connection = module.params.get('connection')
     hostname = module.params.get('server')
     password = module.params.get('password')
     username = module.params.get('user')

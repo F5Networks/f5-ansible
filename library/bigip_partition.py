@@ -24,7 +24,7 @@ module: bigip_partition
 short_description: Manage BIG-IP partitions
 description:
   - Manage BIG-IP partitions
-version_added: "2.2"
+version_added: "2.3"
 options:
   description:
     description:
@@ -37,14 +37,6 @@ options:
         is specified, then the default route domain for the system (typically
         zero) will be used only when creating a new partition. C(route_domain)
         and C(route_domain_id) are mutually exclusive.
-    required: False
-    default: None
-  route_domain_id:
-    description:
-      - The default Route Domain ID to assign to the Partition. If you track
-        the route domains by their numeric identifier, then this argument
-        can be used to supply that ID. C(route_domain) and C(route_domain_id)
-        are mutually exclusive.
     required: False
     default: None
   server:
@@ -75,6 +67,7 @@ notes:
 requirements:
   - bigsuds
   - requests
+extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -97,16 +90,11 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-route_domain_id:
-    description: ID of the route domain associated with the partition
-    returned: changed and success
-    type: string
-    sample: "0"
 route_domain:
     description: Name of the route domain associated with the partition
     returned: changed and success
     type: string
-    sample: "/Common/asdf"
+    sample: "0"
 description:
     description: The description of the partition
     returned: changed and success
@@ -119,66 +107,68 @@ name:
     sample: "/foo"
 '''
 
-TRANSPORTS = ['rest', 'soap']
+try:
+    from f5.bigip.contexts import TransactionContextManager
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
+def connect_to_bigip(**kwargs):
+    return ManagementRoot(kwargs['server'],
+                          kwargs['user'],
+                          kwargs['password'],
+                          port=kwargs['server_port'],
+                          token=True)
 
 
-class DeleteFolderError(Exception):
-    pass
-
-
-class BigIpApiFactory(object):
-    def factory(module):
-        connection = module.params.get('connection')
-
-        if connection == 'rest':
-            if not requests_found:
-                raise Exception("The python requests module is required")
-            return BigIpRestApi(check_mode=module.check_mode, **module.params)
-        elif connection == 'soap':
-            if not bigsuds_found:
-                raise Exception("The python bigsuds module is required")
-            return BigIpSoapApi(check_mode=module.check_mode, **module.params)
-
-    factory = staticmethod(factory)
-
-
-class BigIpCommon(object):
+class BigIpPartitionManager(object):
     def __init__(self, *args, **kwargs):
-        self.result = dict(changed=False, changes=dict())
-
-        if kwargs['name'][0:1] != '/':
-            kwargs['folder'] = '/' + kwargs['name']
-        else:
-            kwargs['folder'] = kwargs['name']
-
+        self.changed_params = dict()
         self.params = kwargs
-        self.current = dict()
+        self.api = None
 
-    def flush(self):
+    def apply_changes(self):
         result = dict()
-        state = self.params['state']
+        changed = False
 
-        if state == "present":
-            changed = self.present()
+        try:
+            self.api = connect_to_bigip(**self.params)
 
-            if not self.params['check_mode']:
-                current = self.read()
-                result.update(current)
-        else:
-            changed = self.absent()
+            if self.params['state'] == "present":
+                changed = self.present()
+            elif self.params['state'] == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
 
+        result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
 
+    def present(self):
+        if self.partition_exists():
+            return False
+        else:
+            return self.ensure_partition_is_present()
 
-class BigIpSoapApi(BigIpCommon):
-    def __init__(self, *args, **kwargs):
-        super(BigIpSoapApi, self).__init__(*args, **kwargs)
+    def absent(self):
+        changed = False
+        if self.partition_exists():
+            changed = self.ensure_partition_is_absent()
+        return changed
 
-        self.api = bigip_api(kwargs['server'],
-                             kwargs['user'],
-                             kwargs['password'],
-                             kwargs['validate_certs'])
+    def partition_exists(self):
+        return self.api.tm.sys.folder.exists(
+            name=self.params['name']
+        )
+
+
+
+
+
 
     def get_route_domain_id(self, route_domain):
         resp = self.api.Networking.RouteDomainV2.get_identifier(
@@ -216,14 +206,6 @@ class BigIpSoapApi(BigIpCommon):
         self.api.System.Session.submit_transaction()
 
         return True
-
-    def exists(self):
-        name = self.params['name']
-        resp = self.api.Management.Partition.get_partition_list()
-        for partition in resp:
-            if partition['partition_name'] == name:
-                return True
-        return False
 
     def update(self):
         changed = dict()
@@ -334,46 +316,52 @@ class BigIpSoapApi(BigIpCommon):
         result['name'] = folder
         return result
 
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            if self.params['check_mode']:
-                return True
-            return self.create()
+
+class BigIpPartitionModuleConfig(object):
+    def __init__(self):
+        self.argument_spec = dict()
+        self.meta_args = dict()
+        self.supports_check_mode = True
+        self.states = ['present', 'absent']
+
+        self.initialize_meta_args()
+        self.initialize_argument_spec()
+
+    def initialize_meta_args(self):
+        args = dict(
+            name=dict(required=True),
+            description=dict(required=False, default=None),
+            route_domain=dict(required=False, default=None)
+        )
+        self.meta_args = args
+
+    def initialize_argument_spec(self):
+        self.argument_spec = f5_argument_spec()
+        self.argument_spec.update(self.meta_args)
+
+    def create(self):
+        return AnsibleModule(
+            argument_spec=self.argument_spec,
+            supports_check_mode=self.supports_check_mode
+        )
 
 
 def main():
-    argument_spec = f5_argument_spec()
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
 
-    meta_args = dict(
-        connection=dict(default='soap', choices=TRANSPORTS),
-        description=dict(required=False, default=None),
-        name=dict(required=True),
-        route_domain=dict(required=False, default=None),
-        route_domain_id=dict(required=False, default=None)
-    )
-    argument_spec.update(meta_args)
-
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True,
-        mutually_exclusive=[
-            ['route_domain', 'route_domain_id']
-        ]
-    )
+    config = BigIpPartitionModuleConfig()
+    module = config.create()
 
     try:
-        obj = BigIpApiFactory.factory(module)
-        result = obj.flush()
+        obj = BigIpPartitionManager(
+            check_mode=module.check_mode, **module.params
+        )
+        result = obj.apply_changes()
 
         module.exit_json(**result)
-    except bigsuds.ConnectionError:
-        module.fail_json(msg="Could not connect to BIG-IP host")
-    except bigsuds.ServerError as e:
+    except F5ModuleError as e:
         module.fail_json(msg=str(e))
-    except DeleteFolderError:
-        module.fail_json(msg='Failed to delete the specified partition')
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5 import *
