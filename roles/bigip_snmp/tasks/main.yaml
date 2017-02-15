@@ -1,0 +1,261 @@
+---
+
+- name: Set snmp contact
+  bigip_snmp:
+      contact: "{{ contact1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set snmp contact
+  assert:
+      that:
+          - result|changed
+
+- name: Set snmp contact - Idempotent check
+  bigip_snmp_contact:
+      contact: "{{ contact1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set snmp contact - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Reset snmp contact
+  bigip_snmp:
+      contact: "{{ contact2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Set snmp location
+  bigip_snmp:
+      location: "{{ location1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set snmp location
+  assert:
+      that:
+          - result|changed
+
+- name: Set snmp location - Idempotent check
+  bigip_snmp:
+      location: "{{ location1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Set snmp location - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Reset snmp location
+  bigip_snmp:
+      location: "{{ location2 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Disable agent status traps
+  bigip_snmp:
+      agent_status_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable agent status traps
+  assert:
+      that:
+          - result|changed
+
+- name: Disable agent status traps - Idempotent check
+  bigip_snmp:
+      agent_status_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable agent status traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Enable agent status traps
+  bigip_snmp:
+      agent_status_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable agent status traps
+  assert:
+      that:
+          - result|changed
+
+- name: Enable agent status traps - Idempotent check
+  bigip_snmp:
+      agent_status_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable agent status traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Enable agent authentication traps
+  bigip_snmp:
+      agent_authentication_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable agent authentication traps
+  assert:
+      that:
+          - result|changed
+
+- name: Enable agent authentication traps - Idempotent check
+  bigip_snmp:
+      agent_authentication_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable agent authentication traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Disable agent authentication traps
+  bigip_snmp:
+      agent_status_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable agent authentication traps
+  assert:
+      that:
+          - result|changed
+
+- name: Disable agent authentication traps - Idempotent check
+  bigip_snmp:
+      agent_authentication_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable agent authentication traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Disable device warning traps
+  bigip_snmp:
+      device_warning_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable device warning traps
+  assert:
+      that:
+          - result|changed
+
+- name: Disable device warning traps - Idempotent check
+  bigip_snmp:
+      device_warning_traps: "disabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Disable device warning traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Enable device warning traps
+  bigip_snmp:
+      device_warning_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable device warning traps
+  assert:
+      that:
+          - result|changed
+
+- name: Enable device warning traps - Idempotent check
+  bigip_snmp:
+      device_warning_traps: "enabled"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Enable device warning traps - Idempotent check
+  assert:
+      that:
+          - not result|changed
