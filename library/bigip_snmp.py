@@ -22,10 +22,10 @@ ANSIBLE_METADATA = {'status': ['preview'],
                     'version': '1.0'}
 
 DOCUMENTATION = '''
-module: bigip_snmp_contact
-short_description: Manipulate SNMP contact information on a BIG-IP.
+module: bigip_snmp
+short_description: Manipulate general SNMP settings on a BIG-IP.
 description:
-  - Manipulate SNMP contact information on a BIG-IP.
+  - Manipulate general SNMP settings on a BIG-IP.
 version_added: 2.3
 options:
   contact:
