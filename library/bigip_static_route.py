@@ -287,11 +287,11 @@ class StaticRouteManager(object):
 
         # The 'network' attribute is not updateable
         params.pop('network', None)
-        route = self.client.api.tm.net.routes.route.load(
+        result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
         )
-        route.modify(**params)
+        result.modify(**params)
 
     def read_current_from_device(self):
         result = self.client.api.tm.net.routes.route.load(
@@ -323,12 +323,12 @@ class StaticRouteManager(object):
         return True
 
     def remove_from_device(self):
-        route = self.client.api.tm.net.routes.route.load(
+        result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
         )
-        if route:
-            route.delete()
+        if result:
+            result.delete()
 
 
 class ArgumentSpec(object):
