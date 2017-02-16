@@ -28,4 +28,4 @@
   connection: local
 
   roles:
-      - bigip_snmp_traps
+      - bigip_snmp_trap
