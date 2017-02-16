@@ -276,12 +276,6 @@ class StaticRouteManager(object):
         self.update_on_device()
         return True
 
-    def update_attribute(self, result, attribute):
-        want = getattr(self.want, attribute, None)
-        have = getattr(self.have, attribute, None)
-        if want != have and want is not None:
-            result[attribute] = want
-
     def update_on_device(self):
         params = self.want.api_params()
 
