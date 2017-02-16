@@ -39,8 +39,8 @@ options:
     required: False
     default: None
     choices:
-      - v1
-      - v2c
+      - 1
+      - 2c
   community:
     description:
       - Specifies the community name for the trap destination.
@@ -66,6 +66,15 @@ options:
       - other
       - management
       - default
+  state:
+    description:
+      - When C(present), ensures that the cloud connector exists. When
+        C(absent), ensures that the cloud connector does not exist.
+    required: False
+    default: present
+    choices:
+      - present
+      - absent
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -99,7 +108,38 @@ class Parameters(AnsibleF5Parameters):
     )
 
     def __init__(self, params=None):
+        self._network = None
         super(Parameters, self).__init__(params)
+
+    @property
+    def network(self):
+        if self._network is None:
+            return None
+        network = str(self._network)
+        if network == 'management':
+            return 'mgmt'
+        else:
+            return network
+
+    @network.setter
+    def network(self, value):
+        self._network = value
+
+    @classmethod
+    def from_api(cls, params):
+        for key,value in iteritems(cls.api_param_map):
+            param = params.pop(value, None)
+            if param is not None:
+                param = str(param)
+            params[key] = param
+        p = cls(params)
+        return p
+
+    def api_params(self):
+        params = super(Parameters, self).api_params()
+        if self.network == 'default':
+            params.update({'network': None})
+        return params
 
 
 class SnmpTrapManager(object):
@@ -113,10 +153,15 @@ class SnmpTrapManager(object):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
+        changed = False
         result = dict()
+        state = self.want.state
 
         try:
-            changed = self.update()
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
@@ -186,6 +231,15 @@ class SnmpTrapManager(object):
             partition=self.want.partition
         ).to_dict()
         result.pop('_meta_data', 'None')
+
+        # BIG-IP's value for "default" is that the key does not
+        # exist. This conflicts with our purpose of having a key
+        # not exist (which we equate to "i dont want to change that"
+        # therefore, if we load the information from BIG-IP and
+        # find that there is no 'network' key, that is BIG-IP's
+        # way of saying that the network value is "default"
+        if 'network' not in result:
+            result['network'] = 'default'
         return Parameters.from_api(result)
 
     def create_on_device(self):
@@ -217,13 +271,40 @@ class SnmpTrapManager(object):
         if result:
             result.delete()
 
+
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            location=dict(
+            name=dict(
+                required=True
+            ),
+            snmp_version=dict(
+                required=False,
+                default=None,
+                choices=['1','2c']
+            ),
+            community=dict(
                 required=False,
                 default=None
+            ),
+            destination=dict(
+                required=False,
+                default=None
+            ),
+            port=dict(
+                required=False,
+                default=None
+            ),
+            network=dict(
+                required=False,
+                default=None,
+                choices=['other', 'management', 'default']
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
             )
         )
         self.f5_product_name = 'bigip'
