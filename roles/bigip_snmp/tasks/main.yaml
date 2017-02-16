@@ -16,7 +16,7 @@
           - result|changed
 
 - name: Set snmp contact - Idempotent check
-  bigip_snmp_contact:
+  bigip_snmp:
       contact: "{{ contact1 }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
@@ -172,7 +172,7 @@
 
 - name: Disable agent authentication traps
   bigip_snmp:
-      agent_status_traps: "disabled"
+      agent_authentication_traps: "disabled"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
