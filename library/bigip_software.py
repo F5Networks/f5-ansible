@@ -215,6 +215,8 @@ EXAMPLES = '''
 import base64
 import os
 import time
+import io
+from lxml import etree
 
 try:
     from cStringIO import StringIO
