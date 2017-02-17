@@ -142,6 +142,7 @@ import time
 import urllib2
 
 from xml.sax._exceptions import SAXParseException
+from suds.transport.https import HttpAuthenticated
 
 try:
     import paramiko
@@ -165,6 +166,13 @@ class HTTPSHandlerNoVerify(urllib2.HTTPSHandler):
             pass
 
         urllib2.HTTPSHandler.__init__(self, *args, **kwargs)
+
+
+class HTTPSTransportNoVerify(HttpAuthenticated):
+    def u2handlers(self):
+        handlers = HttpAuthenticated.u2handlers(self)
+        handlers.append(HTTPSHandlerNoVerify())
+        return handlers
 
 
 def is_production_key(key):
