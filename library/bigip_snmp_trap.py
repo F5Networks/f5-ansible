@@ -230,7 +230,7 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         ).to_dict()
-        result.pop('_meta_data', 'None')
+        result.pop('_meta_data', None)
 
         # BIG-IP's value for "default" is that the key does not
         # exist. This conflicts with our purpose of having a key

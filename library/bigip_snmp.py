@@ -153,7 +153,7 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         result = self.client.api.tm.sys.snmp.load().to_dict()
-        result.pop('_meta_data', 'None')
+        result.pop('_meta_data', None)
         return Parameters.from_api(result)
 
 

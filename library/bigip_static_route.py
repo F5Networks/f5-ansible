@@ -292,7 +292,7 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         ).to_dict()
-        result.pop('_meta_data', 'None')
+        result.pop('_meta_data', None)
         return Parameters.from_api(result)
 
     def create_on_device(self):
