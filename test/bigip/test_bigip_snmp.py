@@ -30,7 +30,7 @@ from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from library.bigip_snmp import (
     Parameters,
-    SnmpManager
+    ModuleManager
 )
 
 
@@ -61,7 +61,7 @@ def load_fixture(name):
     return data
 
 
-class TestSnmpParameters(unittest.TestCase):
+class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             agent_status_traps='enabled',
@@ -115,7 +115,7 @@ class TestSnmpParameters(unittest.TestCase):
         self.assertEqual(p.device_warning_traps, 'disabled')
 
 
-class TestSnmpManager(unittest.TestCase):
+class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
@@ -136,7 +136,7 @@ class TestSnmpManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = SnmpManager(client)
+        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
         mm.exit_json = lambda x: True

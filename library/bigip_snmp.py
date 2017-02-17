@@ -104,7 +104,7 @@ class Parameters(AnsibleF5Parameters):
         super(Parameters, self).__init__(params)
 
 
-class SnmpManager(object):
+class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
@@ -198,7 +198,7 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = SnmpManager(client)
+    mm = ModuleManager(client)
     results = mm.exec_module()
     client.module.exit_json(**results)
 

@@ -29,10 +29,8 @@ from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from library.bigip_static_route import (
-    AnsibleF5Client,
-    ArgumentSpec,
     Parameters,
-    StaticRouteManager
+    ModuleManager
 )
 
 
@@ -63,7 +61,7 @@ def load_fixture(name):
     return data
 
 
-class TestStaticRouteParameters(unittest.TestCase):
+class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             vlan="foo",
@@ -125,7 +123,7 @@ class TestStaticRouteParameters(unittest.TestCase):
         assert p.destination == '10.10.10.10/32'
 
 
-class TestStaticRouteManager(unittest.TestCase):
+class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
@@ -150,7 +148,7 @@ class TestStaticRouteManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = StaticRouteManager(client)
+        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
         mm.exists = lambda: False

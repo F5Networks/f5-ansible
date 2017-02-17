@@ -142,7 +142,7 @@ class Parameters(AnsibleF5Parameters):
         return params
 
 
-class SnmpTrapManager(object):
+class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
@@ -319,7 +319,7 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = SnmpTrapManager(client)
+    mm = ModuleManager(client)
     results = mm.exec_module()
     client.module.exit_json(**results)
 
