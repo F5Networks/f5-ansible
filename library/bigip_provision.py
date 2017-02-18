@@ -155,16 +155,26 @@ def main():
         'gtm', 'lc', 'ltm', 'pem', 'swg'
     ]
 
-    module = AnsibleModule(
-        argument_spec=dict(
-            server=dict(required=True),
-            module=dict(required=True, choices=module_choices),
-            level=dict(default='nominal', choices=['nominal', 'dedicated', 'minimal']),
-            password=dict(default='admin'),
-            state=dict(default='present', choices=['present', 'reset']),
-            user=dict(default='admin'),
-            validate_certs=dict(default='yes', type='bool', choices=['yes', 'no']),
+    argument_spec = f5_argument_spec()
+
+    meta_args = dict(
+        server=dict(required=True),
+        module=dict(required=True, choices=module_choices),
+        level=dict(default='nominal', choices=['nominal', 'dedicated', 'minimal']),
+        password=dict(default='admin'),
+        state=dict(default='present', choices=['present', 'reset']),
+        user=dict(default='admin'),
+        validate_certs=dict(
+            default='yes',
+            type='bool',
+            choices=BOOLEANS
         )
+    )
+    argument_spec.update(meta_args)
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=False
     )
 
     hostname = module.params.get('server')
