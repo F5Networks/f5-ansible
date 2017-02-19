@@ -112,7 +112,7 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    api_param_map = dict(
+    param_api_map = dict(
         vlan='tmInterface',
         gateway_address='gw',
         destination='network',
@@ -279,7 +279,7 @@ class ModuleManager(object):
     def update_on_device(self):
         params = self.want.api_params()
 
-        # The 'network' attribute is not updateable
+        # The 'network' attribute is not updatable
         params.pop('network', None)
         result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
