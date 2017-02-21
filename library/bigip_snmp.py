@@ -92,7 +92,7 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    api_param_map = dict(
+    param_api_map = dict(
         agent_status_traps='agentTrap',
         agent_authentication_traps='authTrap',
         device_warning_traps='bigipTraps',
