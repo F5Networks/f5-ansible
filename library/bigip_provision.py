@@ -102,6 +102,8 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+import socket
+
 try:
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
@@ -109,8 +111,21 @@ try:
 except ImportError:
     HAS_F5SDK = False
 
+class BigIpCommon(object):
+    def __init__(self, module):
+        self._username = module.params.get('user')
+        self._password = module.params.get('password')
+        self._hostname = module.params.get('server')
 
-class BigIpRest():
+        self._level = module.params.get('level')
+        self._module = module.params.get('module')
+        self._validate_certs = module.params.get('validate_certs')
+
+        # Check if we can connect to the device
+        sock = socket.create_connection((self._hostname,443), 60)
+        sock.close()
+
+class BigIpRest(BigIpCommon):
     def __init__(self, module):
         super(BigIpRest, self).__init__(module)
 
