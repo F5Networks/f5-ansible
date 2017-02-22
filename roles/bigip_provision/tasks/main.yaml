@@ -1,0 +1,63 @@
+---
+
+- name: Provision GTM on the device
+  bigip_provision:
+      module: "{{ module1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Provision GTM on the device
+  assert:
+      that:
+          - result|changed
+
+- name: Provision GTM on the device - Idempotent check
+  bigip_provision:
+      module: "{{ module1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Provision GTM on the device - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Deprovision GTM on the device
+  bigip_provision:
+      module: "{{ module1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Deprovision GTM on the device
+  assert:
+      that:
+          - result|changed
+
+- name: Deprovision GTM on the device - Idempotent check
+  bigip_provision:
+      module: "{{ module1 }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Deprovision GTM on the device - Idempotent check
+  assert:
+      that:
+          - not result|changed
