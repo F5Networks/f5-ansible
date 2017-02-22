@@ -28,10 +28,13 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from library import bigip_iapp_service as mut
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client
+)
 from library.bigip_iapp_service import (
-    F5AnsibleModule,
-    ModuleManager
+    Parameters,
+    ModuleManager,
+    ArgumentSpec
 )
 
 
@@ -42,6 +45,7 @@ fixture_data = {}
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
+
 
 
 def load_fixture(name):
@@ -62,168 +66,104 @@ def load_fixture(name):
     return data
 
 
-class TestBigipIappServiceModule(unittest.TestCase):
-
-    def test_create_service_from_file(self):
-        parameters = load_fixture('iapp_service_parameters_f5_http.json')
-        set_module_args(dict(
-            name='test-route',
-            password='admin',
-            server='localhost',
-            user='admin',
-            state='present',
+class TestParameters(unittest.TestCase):
+    def setUp(self):
+        args = dict(
+            name='foo',
             template='f5.http',
-            parameters=parameters
-        ))
-        mut._CONNECTION = True
+            parameters=dict(
+                variables=[
+                    {'afm__policy': '/#do_not_use#'},
+                    {'afm__dos_security_profile': '/#do_not_use#'},
+                    {'asm__use_asm': '/#do_not_use#'},
+                    {'client__http_compression': '/#do_not_use#'},
+                    {'client__standard_caching_without_wa': '/#do_not_use#'},
+                    {'client__tcp_wan_opt': '/#create_new#'},
+                    {'monitor__monitor': '/#create_new#'},
+                    {'monitor__frequency': '30'},
+                    {'monitor__uri': '/my/path'},
+                    {'monitor__response': ''},
+                    {'net__client_mode': 'wan'},
+                    {'net__server_mode': 'lan'},
+                    {'net__vlan_mode': 'all'},
+                    {'pool__addr': '10.10.10.10'},
+                    {'pool__http': '/#create_new#'},
+                    {'pool__mask': ''},
+                    {'pool__persist': '/#cookie#'},
+                    {'pool__lb_method': 'least-connections-member'},
+                    {'pool__pool_to_use': '/#create_new#'},
+                    {'pool__port_secure': '443'},
+                    {'pool__redirect_port': '80'},
+                    {'pool__redirect_to_https': 'yes'},
+                    {'pool__xff': 'yes'},
+                    {'server__oneconnect': '/#create_new#'},
+                    {'server__tcp_lan_opt': '/#create_new#'},
+                    {'ssl__cert': '/Common/default.crt'},
+                    {'ssl__client_ssl_profile': '/#create_new#'},
+                    {'ssl__key': '/Common/default.key'},
+                    {'ssl__mode': 'client_ssl'},
+                    {'ssl__use_chain_cert': '/#do_not_use#'},
+                    {'ssl_encryption_questions__advanced': 'yes'},
+                    {'stats__analytics': '/#do_not_use#'},
+                    {'stats__request_logging': '/#do_not_use#'}
+                ],
+                tables=[
+                    {''}
+                ]
+            )
+        )
+        p = Parameters(args)
+        self.p1 = p
 
-        module = F5AnsibleModule()
-        obj = ModuleManager(module=module)
+    def test_module_parameters(self):
+        # check that all the provided variables have a correctly
+        # interpreted name and value
+        for variable in self.p1.variables:
+            assert 'name' in variable
+            assert 'value' in variable
+
+        assert self.p1.variables[0]['name'] == 'afm__policy'
+        assert self.p1.variables[1]['name'] == 'afm__dos_security_profile'
+        assert self.p1.variables[2]['name'] == 'asm__use_asm'
+        assert self.p1.variables[3]['name'] == 'client__http_compression'
+        assert self.p1.variables[4]['name'] == 'client__standard_caching_without_wa'
+        assert self.p1.variables[5]['name'] == 'client__tcp_wan_opt'
+        assert self.p1.variables[6]['name'] == 'monitor__monitor'
+        assert self.p1.variables[7]['name'] == 'monitor__frequency'
+        assert self.p1.variables[8]['name'] == 'monitor__uri'
+        assert self.p1.variables[9]['name'] == 'monitor__response'
+        assert self.p1.variables[10]['name'] == 'net__client_mode'
+        assert self.p1.variables[11]['name'] == 'net__server_mode'
+        assert self.p1.variables[12]['name'] == 'net__vlan_mode'
+        assert self.p1.variables[13]['name'] == 'pool__addr'
+        assert self.p1.variables[14]['name'] == 'pool__http'
+
+
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_create_blackhole(self, mgmt):
+        set_module_args(dict(
+            name='foo',
+            template='f5.http',
+            parameters_src='enabled',
+            state='present'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        obj.exists = lambda: False
-        obj.create_on_device = lambda x: True
-        obj.exit_json = lambda x: True
-        results = obj.apply_changes()
+        mm.exit_json = lambda x: True
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
-
-#    def test_create_route_to_pool(self):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='present',
-#            destination='10.10.10.10',
-#            pool="test-pool"
-#        ))
-#        mut._CONNECTION = True
-#
-#        module = F5AnsibleModule()
-#        obj = ModuleManager(module=module)
-#
-#        # Override methods to force specific logic in the module to happen
-#        obj.exists = lambda: False
-#        obj.create_on_device = lambda x: True
-#        obj.exit_json = lambda x: True
-#        results = obj.apply_changes()
-#
-#        assert results['changed'] is True
-#        assert results['pool'] == 'test-pool'
-#        assert results['partition'] == 'Common'
-#
-#    def test_create_route_to_vlan(self):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='present',
-#            destination='10.10.10.10',
-#            vlan="test-vlan"
-#        ))
-#        mut._CONNECTION = True
-#
-#        module = F5AnsibleModule()
-#        obj = ModuleManager(module=module)
-#
-#        # Override methods to force specific logic in the module to happen
-#        obj.exists = lambda: False
-#        obj.create_on_device = lambda x: True
-#        obj.exit_json = lambda x: True
-#        results = obj.apply_changes()
-#
-#        assert results['changed'] is True
-#        assert results['vlan'] == '/Common/test-vlan'
-#        assert results['partition'] == 'Common'
-#
-#    def test_update_description(self):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='present',
-#            description='foo description'
-#        ))
-#        mut._CONNECTION = True
-#
-#        module = F5AnsibleModule()
-#        obj = ModuleManager(module=module)
-#
-#        # Override methods to force specific logic in the module to happen
-#        current = load_fixture('load_net_route_description.json')
-#        obj.exists = lambda: True
-#        obj.update_on_device = lambda x: True
-#        obj.exit_json = lambda x: True
-#        obj.read_current_from_device = lambda x: current
-#        results = obj.apply_changes()
-#
-#        assert results['changed'] is True
-#        assert results['description'] == 'foo description'
-#        assert results['partition'] == 'Common'
-#
-#    def test_update_description_idempotent(self):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='present',
-#            description='asdasd'
-#        ))
-#        mut._CONNECTION = True
-#
-#        module = F5AnsibleModule()
-#        obj = ModuleManager(module=module)
-#
-#        # Override methods to force specific logic in the module to happen
-#        current = load_fixture('load_net_route_description.json')
-#        obj.exists = lambda: True
-#        obj.update_on_device = lambda x: True
-#        obj.exit_json = lambda x: True
-#        obj.read_current_from_device = lambda x: current
-#        results = obj.apply_changes()
-#
-#        # There is no assert for the description, because it should
-#        # not have changed
-#        assert results['changed'] is False
-#        assert results['partition'] == 'Common'
-#
-#    def test_delete(self):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='absent'
-#        ))
-#        mut._CONNECTION = True
-#
-#        module = F5AnsibleModule()
-#        obj = ModuleManager(module=module)
-#
-#        # Override methods to force specific logic in the module to happen
-#        obj.exists = Mock()
-#        obj.exists.side_effect = [True, False]
-#        obj.remove_from_device = lambda: True
-#        obj.exit_json = lambda x: True
-#        results = obj.apply_changes()
-#
-#        assert results['changed'] is True
-#        assert 'description' not in results
-#
-#    @patch('library.bigip_static_route.F5AnsibleModule.fail_json')
-#    def test_invalid_unknown_params(self, mock_module):
-#        set_module_args(dict(
-#            name='test-route',
-#            password='admin',
-#            server='localhost',
-#            user='admin',
-#            state='present',
-#            foo="bar"
-#        ))
-#        mut._CONNECTION = True
-#        module = F5AnsibleModule()
-#        assert module.fail_json.call_count == 1
