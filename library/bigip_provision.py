@@ -294,11 +294,37 @@ except ImportError:
                 result[v] = value
             return result
 
+        def _params_from_map(self):
+            result = dict()
+            pmap = self.__class__.param_api_map
+            for k,v in iteritems(pmap):
+                value = getattr(self, k)
+                result[k] = value
+            return result
+
+        def to_dict(self):
+            result = self._params_from_map()
+            return self._filter_none(result)
+
 
 class Parameters(AnsibleF5Parameters):
     param_api_map = dict(
         level='level'
     )
+
+    def __init__(self, params=None):
+        self._level = None
+        super(Parameters, self).__init__(params)
+
+    @property
+    def level(self):
+        if self._level is None:
+            return None
+        return str(self._level)
+
+    @level.setter
+    def level(self, value):
+        self._level = value
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -323,7 +349,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(vars(self.changes))
+        #result.update(**self.changes.to_dict())
         result.update(dict(changed=changed))
         return result
 
@@ -349,6 +375,7 @@ class ModuleManager(object):
 
     def should_update(self):
         if self.want.level != self.have.level:
+            self.changes.level = self.want.level
             return True
         return False
 
@@ -361,7 +388,8 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         provision = self.client.api.tm.sys.provision
-        resource = getattr(provision, self.want.module)
+        resource = getattr(provision, str(self.want.module))
+        resource = resource.load()
         result = resource.to_dict()
         result.pop('_meta_data', None)
         return Parameters.from_api(result)
