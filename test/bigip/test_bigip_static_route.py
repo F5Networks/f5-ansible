@@ -28,9 +28,13 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client
+)
 from library.bigip_static_route import (
     Parameters,
-    ModuleManager
+    ModuleManager,
+    ArgumentSpec
 )
 
 
@@ -68,8 +72,8 @@ class TestParameters(unittest.TestCase):
             gateway_address="10.10.10.10"
         )
         p = Parameters(args)
-        self.assertEqual(p.vlan, '/Common/foo')
-        self.assertEqual(p.gateway_address, '10.10.10.10')
+        assert p.vlan == '/Common/foo'
+        assert p.gateway_address == '10.10.10.10'
 
     def test_api_parameters(self):
         args = dict(
@@ -77,34 +81,34 @@ class TestParameters(unittest.TestCase):
             gw="10.10.10.10"
         )
         p = Parameters.from_api(args)
-        self.assertEqual(p.vlan, '/Common/foo')
-        self.assertEqual(p.gateway_address, '10.10.10.10')
+        assert p.vlan == '/Common/foo'
+        assert p.gateway_address == '10.10.10.10'
 
     def test_reject_parameter_types(self):
         # boolean true
         args = dict(reject=True)
         p = Parameters(args)
-        self.assertTrue(p.reject)
+        assert p.reject is True
 
         # boolean false
         args = dict(reject=False)
         p = Parameters(args)
-        self.assertFalse(p.reject)
+        assert p.reject is False
 
         # string
         args = dict(reject="yes")
         p = Parameters(args)
-        self.assertTrue(p.reject)
+        assert p.reject is True
 
         # integer
         args = dict(reject=1)
         p = Parameters(args)
-        self.assertTrue(p.reject)
+        assert p.reject is True
 
         # none
         args = dict(reject=None)
         p = Parameters(args)
-        self.assertFalse(p.reject)
+        assert p.reject is False
 
     def test_destination_parameter_types(self):
         # ip address
