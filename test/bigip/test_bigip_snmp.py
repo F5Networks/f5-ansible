@@ -28,9 +28,11 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
+from ansible.module_utils.f5_utils import *
 from library.bigip_snmp import (
     Parameters,
-    ModuleManager
+    ModuleManager,
+    ArgumentSpec
 )
 
 
@@ -66,53 +68,65 @@ class TestParameters(unittest.TestCase):
         args = dict(
             agent_status_traps='enabled',
             agent_authentication_traps='enabled',
+            contact='Alice@foo.org',
             device_warning_traps='enabled',
             location='Lunar orbit',
-            contact='Alice@foo.org'
+            password='password',
+            server='localhost',
+            user='admin'
         )
         p = Parameters(args)
-        self.assertEqual(p.agent_status_traps, 'enabled')
-        self.assertEqual(p.agent_authentication_traps, 'enabled')
-        self.assertEqual(p.device_warning_traps, 'enabled')
-        self.assertEqual(p.location, 'Lunar orbit')
-        self.assertEqual(p.contact, 'Alice@foo.org')
+        assert p.agent_status_traps == 'enabled'
+        assert p.agent_authentication_traps == 'enabled'
+        assert p.device_warning_traps == 'enabled'
+        assert p.location == 'Lunar orbit'
+        assert p.contact == 'Alice@foo.org'
 
     def test_module_parameters_disabled(self):
         args = dict(
             agent_status_traps='disabled',
             agent_authentication_traps='disabled',
             device_warning_traps='disabled',
+            password='password',
+            server='localhost',
+            user='admin'
         )
         p = Parameters(args)
-        self.assertEqual(p.agent_status_traps, 'disabled')
-        self.assertEqual(p.agent_authentication_traps, 'disabled')
-        self.assertEqual(p.device_warning_traps, 'disabled')
+        assert p.agent_status_traps == 'disabled'
+        assert p.agent_authentication_traps == 'disabled'
+        assert p.device_warning_traps == 'disabled'
 
     def test_api_parameters(self):
         args = dict(
-            agentTrap="enabled",
-            authTrap="enabled",
-            bigipTraps="enabled",
-            sysLocation="Lunar orbit",
-            sysContact="Alice@foo.org"
+            agentTrap='enabled',
+            authTrap='enabled',
+            bigipTraps='enabled',
+            password='password',
+            server='localhost',
+            sysLocation='Lunar orbit',
+            sysContact='Alice@foo.org',
+            user='admin'
         )
         p = Parameters.from_api(args)
-        self.assertEqual(p.agent_status_traps, 'enabled')
-        self.assertEqual(p.agent_authentication_traps, 'enabled')
-        self.assertEqual(p.device_warning_traps, 'enabled')
-        self.assertEqual(p.location, 'Lunar orbit')
-        self.assertEqual(p.contact, 'Alice@foo.org')
+        assert p.agent_status_traps == 'enabled'
+        assert p.agent_authentication_traps == 'enabled'
+        assert p.device_warning_traps == 'enabled'
+        assert p.location == 'Lunar orbit'
+        assert p.contact == 'Alice@foo.org'
 
     def test_api_parameters_disabled(self):
         args = dict(
-            agentTrap="disabled",
-            authTrap="disabled",
-            bigipTraps="disabled",
+            agentTrap='disabled',
+            authTrap='disabled',
+            bigipTraps='disabled',
+            password='password',
+            server='localhost',
+            user='admin'
         )
         p = Parameters.from_api(args)
-        self.assertEqual(p.agent_status_traps, 'disabled')
-        self.assertEqual(p.agent_authentication_traps, 'disabled')
-        self.assertEqual(p.device_warning_traps, 'disabled')
+        assert p.agent_status_traps == 'disabled'
+        assert p.agent_authentication_traps == 'disabled'
+        assert p.device_warning_traps == 'disabled'
 
 
 class TestManager(unittest.TestCase):
@@ -126,9 +140,12 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             agent_status_traps='enabled',
             agent_authentication_traps='enabled',
+            contact='Alice@foo.org',
             device_warning_traps='enabled',
             location='Lunar orbit',
-            contact='Alice@foo.org'
+            password='passsword',
+            server='localhost',
+            user='admin'
         ))
 
         client = AnsibleF5Client(
