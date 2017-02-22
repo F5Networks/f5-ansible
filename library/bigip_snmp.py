@@ -127,7 +127,7 @@ class ModuleManager(object):
         return result
 
     def should_update(self):
-        updateable = Parameters.api_param_map.keys()
+        updateable = Parameters.param_api_map.keys()
 
         for key in updateable:
             if getattr(self.want, key) is not None:

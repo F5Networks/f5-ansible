@@ -136,17 +136,21 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_create_blackhole(self, foo):
+    def test_update_agent_status_traps(self, *args):
         set_module_args(dict(
             agent_status_traps='enabled',
-            agent_authentication_traps='enabled',
-            contact='Alice@foo.org',
-            device_warning_traps='enabled',
-            location='Lunar orbit',
             password='passsword',
             server='localhost',
             user='admin'
         ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(
+            dict(
+                agent_status_traps='disabled'
+            )
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -156,7 +160,9 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
+        mm.exit_json = lambda x: False
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
 
         results = mm.exec_module()
 
