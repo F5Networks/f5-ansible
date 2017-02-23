@@ -122,34 +122,25 @@ class Parameters(AnsibleF5Parameters):
         reject='blackhole'
     )
 
-    def __init__(self, params=None):
-        self._vlan = None
-        self._partition = None
-        self._gateway_address = None
-        self._destination = None
-        self._reject = None
-
-        super(Parameters, self).__init__(params)
-
     @property
     def vlan(self):
-        if self._vlan is None:
+        if self._values['vlan'] is None:
             return None
-        if self._vlan.startswith(self.partition):
-            return self._vlan
+        if self._values['vlan'].startswith(self.partition):
+            return self._values['vlan']
         else:
-            return '/{0}/{1}'.format(self.partition, self._vlan)
+            return '/{0}/{1}'.format(self.partition, self._values['vlan'])
 
     @vlan.setter
     def vlan(self, value):
-        self._vlan = value
+        self._values['vlan'] = value
 
     @property
     def gateway_address(self):
-        if self._gateway_address is None:
+        if self._values['gateway_address'] is None:
             return None
         try:
-            ip = netaddr.IPNetwork(self._gateway_address)
+            ip = netaddr.IPNetwork(self._values['gateway_address'])
             return str(ip.ip)
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
@@ -158,25 +149,25 @@ class Parameters(AnsibleF5Parameters):
 
     @gateway_address.setter
     def gateway_address(self, value):
-        self._gateway_address = value
+        self._values['gateway_address'] = value
 
     @property
     def reject(self):
-        if self._reject in BOOLEANS_TRUE:
+        if self._values['reject'] in BOOLEANS_TRUE:
             return True
         else:
             return None
 
     @reject.setter
     def reject(self, value):
-        self._reject = value
+        self._values['reject'] = value
 
     @property
     def destination(self):
-        if self._destination is None:
+        if self._values['destination'] is None:
             return None
         try:
-            ip = netaddr.IPNetwork(self._destination)
+            ip = netaddr.IPNetwork(self._values['destination'])
             return '{0}/{1}'.format(ip.ip, ip.prefixlen)
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
@@ -185,7 +176,7 @@ class Parameters(AnsibleF5Parameters):
 
     @destination.setter
     def destination(self, value):
-        self._destination = value
+        self._values['destination'] = value
 
 
 class ModuleManager(object):
@@ -211,7 +202,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        #result.update(**self.changes)
+        result.update(self.changes.to_dict())
         result.update(dict(changed=changed))
         return result
 
