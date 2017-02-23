@@ -100,9 +100,6 @@ class Parameters(AnsibleF5Parameters):
         contact='sysContact'
     )
 
-    def __init__(self, params=None):
-        super(Parameters, self).__init__(params)
-
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -122,7 +119,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        #result.update(**self.changes)
+        result.update(**self.changes.to_dict())
         result.update(dict(changed=changed))
         return result
 
