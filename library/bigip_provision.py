@@ -357,7 +357,7 @@ class ModuleManager(object):
         resource = resource.load()
         result = resource.to_dict()
         result.pop('_meta_data', None)
-        if str(result.level) == 'none':
+        if str(result['level']) == 'none':
             return False
         return True
 
@@ -392,7 +392,7 @@ class ModuleManager(object):
         result.pop('_meta_data', None)
         return Parameters.from_api(result)
 
-    def absent(self, ):
+    def absent(self):
         if self.exists():
             return self.remove()
         return False
@@ -406,7 +406,7 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to deprovision the module")
         return True
 
-    def remove_from_device():
+    def remove_from_device(self):
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, self.want.module)
         resource = resource.load()
