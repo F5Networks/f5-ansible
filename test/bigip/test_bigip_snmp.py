@@ -101,11 +101,8 @@ class TestParameters(unittest.TestCase):
             agentTrap='enabled',
             authTrap='enabled',
             bigipTraps='enabled',
-            password='password',
-            server='localhost',
             sysLocation='Lunar orbit',
             sysContact='Alice@foo.org',
-            user='admin'
         )
         p = Parameters.from_api(args)
         assert p.agent_status_traps == 'enabled'
@@ -119,9 +116,6 @@ class TestParameters(unittest.TestCase):
             agentTrap='disabled',
             authTrap='disabled',
             bigipTraps='disabled',
-            password='password',
-            server='localhost',
-            user='admin'
         )
         p = Parameters.from_api(args)
         assert p.agent_status_traps == 'disabled'
