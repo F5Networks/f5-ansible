@@ -93,7 +93,7 @@ class TestParameters(unittest.TestCase):
         # boolean false
         args = dict(reject=False)
         p = Parameters(args)
-        assert p.reject is False
+        assert p.reject is None
 
         # string
         args = dict(reject="yes")
@@ -108,7 +108,7 @@ class TestParameters(unittest.TestCase):
         # none
         args = dict(reject=None)
         p = Parameters(args)
-        assert p.reject is False
+        assert p.reject is None
 
     def test_destination_parameter_types(self):
         # ip address
@@ -134,12 +134,11 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_create_blackhole(self, foo):
+    def test_create_blackhole(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
             server='localhost',
-            server_port=443,
             user='admin',
             state='present',
             destination='10.10.10.10',
@@ -160,7 +159,6 @@ class TestManager(unittest.TestCase):
         mm.exit_json = lambda x: True
 
         results = mm.exec_module()
-
         assert results['changed'] is True
 
     #def test_create_route_to_pool(self):
