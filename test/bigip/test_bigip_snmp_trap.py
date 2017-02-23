@@ -66,67 +66,40 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            agent_status_traps='enabled',
-            agent_authentication_traps='enabled',
-            contact='Alice@foo.org',
-            device_warning_traps='enabled',
-            location='Lunar orbit',
+            name='foo',
+            snmp_version='1',
+            community='public',
+            destination='10.10.10.10',
+            port=1000,
+            network='other',
             password='password',
             server='localhost',
             user='admin'
         )
         p = Parameters(args)
-        assert p.agent_status_traps == 'enabled'
-        assert p.agent_authentication_traps == 'enabled'
-        assert p.device_warning_traps == 'enabled'
-        assert p.location == 'Lunar orbit'
-        assert p.contact == 'Alice@foo.org'
-
-    def test_module_parameters_disabled(self):
-        args = dict(
-            agent_status_traps='disabled',
-            agent_authentication_traps='disabled',
-            device_warning_traps='disabled',
-            password='password',
-            server='localhost',
-            user='admin'
-        )
-        p = Parameters(args)
-        assert p.agent_status_traps == 'disabled'
-        assert p.agent_authentication_traps == 'disabled'
-        assert p.device_warning_traps == 'disabled'
+        assert p.name == 'foo'
+        assert p.snmp_version == '1'
+        assert p.community == 'public'
+        assert p.destination == '10.10.10.10'
+        assert p.port == '1000'
+        assert p.network == 'other'
 
     def test_api_parameters(self):
         args = dict(
-            agentTrap='enabled',
-            authTrap='enabled',
-            bigipTraps='enabled',
-            password='password',
-            server='localhost',
-            sysLocation='Lunar orbit',
-            sysContact='Alice@foo.org',
-            user='admin'
+            name='foo',
+            community='public',
+            host='10.10.10.10',
+            network='other',
+            version=1,
+            port=1000
         )
         p = Parameters.from_api(args)
-        assert p.agent_status_traps == 'enabled'
-        assert p.agent_authentication_traps == 'enabled'
-        assert p.device_warning_traps == 'enabled'
-        assert p.location == 'Lunar orbit'
-        assert p.contact == 'Alice@foo.org'
-
-    def test_api_parameters_disabled(self):
-        args = dict(
-            agentTrap='disabled',
-            authTrap='disabled',
-            bigipTraps='disabled',
-            password='password',
-            server='localhost',
-            user='admin'
-        )
-        p = Parameters.from_api(args)
-        assert p.agent_status_traps == 'disabled'
-        assert p.agent_authentication_traps == 'disabled'
-        assert p.device_warning_traps == 'disabled'
+        assert p.name == 'foo'
+        assert p.snmp_version == '1'
+        assert p.community == 'public'
+        assert p.destination == '10.10.10.10'
+        assert p.port == '1000'
+        assert p.network == 'other'
 
 
 class TestManager(unittest.TestCase):
@@ -136,21 +109,18 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_update_agent_status_traps(self, *args):
+    def test_create_trap(self, *args):
         set_module_args(dict(
-            agent_status_traps='enabled',
-            password='passsword',
+            name='foo',
+            snmp_version='1',
+            community='public',
+            destination='10.10.10.10',
+            port=1000,
+            network='other',
+            password='password',
             server='localhost',
             user='admin'
         ))
-
-        # Configure the parameters that would be returned by querying the
-        # remote device
-        current = Parameters(
-            dict(
-                agent_status_traps='disabled'
-            )
-        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -161,8 +131,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
 
         results = mm.exec_module()
 
