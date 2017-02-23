@@ -86,8 +86,6 @@ class TestParameters(unittest.TestCase):
         # BIG-IP considers "ipv4" to be an empty value
         assert p.ip_version == ''
 
-        print(p.api_params())
-
     def test_ipv6_parameter(self):
         args = dict(
             ip_version=6
@@ -103,14 +101,25 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_create_blackhole(self, mgmt):
+    def test_update_settings(self, *args):
         set_module_args(dict(
-            agent_status_traps='enabled',
-            agent_authentication_traps='enabled',
-            device_warning_traps='enabled',
-            location='Lunar orbit',
-            contact='Alice@foo.org'
+            cache='disable',
+            forwarders=['12.12.12.12', '13.13.13.13'],
+            ip_version=4,
+            name_servers=['10.10.10.10', '11.11.11.11'],
+            search=['14.14.14.14', '15.15.15.15'],
+            server='localhost',
+            user='admin',
+            password='password'
         ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(
+            dict(
+                cache='enable'
+            )
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -121,6 +130,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exit_json = lambda x: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
 
         results = mm.exec_module()
 
