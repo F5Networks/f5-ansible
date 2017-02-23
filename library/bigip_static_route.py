@@ -156,6 +156,7 @@ class Parameters(AnsibleF5Parameters):
         if self._values['reject'] in BOOLEANS_TRUE:
             return True
         else:
+            # None is the value accepted by the API
             return None
 
     @reject.setter
@@ -202,7 +203,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(self.changes.to_dict())
+        result.update(self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
