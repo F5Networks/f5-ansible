@@ -119,7 +119,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_dict())
+        result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
