@@ -130,15 +130,6 @@ class Parameters(AnsibleF5Parameters):
         ip_version='include'
     )
 
-    def __init__(self, params=None):
-        self._ip_version = None
-        self._dhcp = None
-        self._cache = None
-        self._forwarders = None
-        self._name_servers = None
-        self._search = None
-        super(Parameters, self).__init__(params)
-
     @property
     def search(self):
         result = []
