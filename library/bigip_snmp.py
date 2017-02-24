@@ -81,11 +81,51 @@ author:
 '''
 
 EXAMPLES = '''
+- name: Set snmp contact
+  bigip_snmp:
+      contact: "Joe User"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
+      validate_certs: "false"
+  delegate_to: localhost
 
+- name: Set snmp location
+  bigip_snmp:
+      location: "US West 1"
+      password: "secret"
+      server: "lb.mydomain.com"
+      user: "admin"
+      validate_certs: "false"
+  delegate_to: localhost
 '''
 
 RETURN = '''
-
+agent_status_traps:
+    description: Value that the agent status traps was set to.
+    return: changed
+    type: string
+    sample: "enabled"
+agent_authentication_traps:
+    description: Value that the authentication status traps was set to.
+    return: changed
+    type: string
+    sample: "enabled"
+device_warning_traps:
+    description: Value that the warning status traps was set to.
+    return: changed
+    type: string
+    sample: "enabled"
+contact:
+    description: The new value for the person who administers SNMP on the device.
+    return: changed
+    type: string
+    sample: Joe User
+location:
+    description: The new value for the system's physical location.
+    return: changed
+    type: string
+    sample: "US West 1a"
 '''
 
 from ansible.module_utils.f5_utils import *
@@ -125,13 +165,12 @@ class ModuleManager(object):
 
     def should_update(self):
         updateable = Parameters.param_api_map.keys()
-
         for key in updateable:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    setattr(self.changes, key, getattr(self.want, key))
+                    self.changes._values[key] = getattr(self.want, key)
                     return True
 
     def update(self):
