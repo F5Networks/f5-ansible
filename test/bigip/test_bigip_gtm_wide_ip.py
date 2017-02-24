@@ -23,6 +23,7 @@ __metaclass__ = type
 
 import os
 import json
+import pytest
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
@@ -32,7 +33,9 @@ from ansible.module_utils.f5_utils import *
 from library.bigip_gtm_wide_ip import (
     Parameters,
     ModuleManager,
-    ArgumentSpec
+    ArgumentSpec,
+    UntypedManager,
+    TypedManager
 )
 
 
@@ -67,10 +70,7 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             name='foo.baz.bar',
-            lb_method='round-robin',
-            password='password',
-            server='localhost',
-            user='admin'
+            lb_method='round-robin'
         )
         p = Parameters(args)
         assert p.name == 'foo.baz.bar'
@@ -85,6 +85,16 @@ class TestParameters(unittest.TestCase):
         assert p.name == 'foo.baz.bar'
         assert p.lb_method == 'round-robin'
 
+    def test_api_not_fqdn_name(self):
+        args = dict(
+            name='foo.baz',
+            poolLbMode='round-robin'
+        )
+        with pytest.raises(F5ModuleError) as excinfo:
+            p = Parameters.from_api(args)
+            assert p.name == 'foo.baz'
+        assert 'The provided name must be a valid FQDN' in str(excinfo)
+
 
 class TestManager(unittest.TestCase):
 
@@ -93,35 +103,140 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_update_agent_status_traps(self, *args):
+    def test_create_wideip_pre_v12(self, *args):
         set_module_args(dict(
-            agent_status_traps='enabled',
+            name='foo.baz.bar',
+            lb_method='round-robin',
             password='passsword',
             server='localhost',
             user='admin'
         ))
-
-        # Configure the parameters that would be returned by querying the
-        # remote device
-        current = Parameters(
-            dict(
-                agent_status_traps='disabled'
-            )
-        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
         mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.version_is_less_than_12 = lambda: True
+        mm.get_manager = lambda x: tm
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = lambda: False
+        tm.create_on_device = lambda: True
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['agent_status_traps'] == 'enabled'
+        assert results['name'] == 'foo.baz.bar'
+        assert results['state'] == 'present'
+        assert results['lb_method'] == 'round-robin'
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_create_wideip_post_v12(self, *args):
+        set_module_args(dict(
+            name='foo.baz.bar',
+            lb_method='round-robin',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.version_is_less_than_12 = lambda: False
+        mm.get_manager = lambda x: tm
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = lambda: False
+        tm.create_on_device = lambda: True
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'foo.baz.bar'
+        assert results['state'] == 'present'
+        assert results['lb_method'] == 'round-robin'
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_create_wideip_deprecated_lb_method1(self, *args):
+        set_module_args(dict(
+            name='foo.baz.bar',
+            lb_method='round_robin',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.version_is_less_than_12 = lambda: False
+        mm.get_manager = lambda x: tm
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = lambda: False
+        tm.create_on_device = lambda: True
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'foo.baz.bar'
+        assert results['state'] == 'present'
+        assert results['lb_method'] == 'round-robin'
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_create_wideip_deprecated_lb_method2(self, *args):
+        set_module_args(dict(
+            name='foo.baz.bar',
+            lb_method='global_availability',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.version_is_less_than_12 = lambda: False
+        mm.get_manager = lambda x: tm
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = lambda: False
+        tm.create_on_device = lambda: True
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'foo.baz.bar'
+        assert results['state'] == 'present'
+        assert results['lb_method'] == 'global-availability'
