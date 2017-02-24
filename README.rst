@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|slack badge|
+|slack badge| |docs badge|
 
 Introduction
 ------------
@@ -28,35 +28,37 @@ This repository provides the foundation for working with F5 devices and Ansible.
 The architecture of the modules makes inherent use of the BIG-IP SOAP and REST
 APIs as well as the tmsh API where required.
 
+This repository is an **incubator** for Ansible modules that we would like to
+have upstreamed over the course of time.
+
 These modules are freely provided to the open source community for automating
 BIG-IP device configurations using Ansible. Support for the modules is provided
 on a best effort basis by the F5 community. Please file any bugs, questions or
 enhancement requests using `Github Issues`_
 
+One last ask. I'm curious who has Ansible in house and is considering using it
+with BIG-IP. If you've got the time, consider sending me an email from your
+organization introducing yourself and what you do. I love getting email.
+
+-tim (t.rupp@f5.com)
+
 Requirements
 ------------
 
-* `Ansible 2.2.0 or greater`_
-* Advanced shell for user account enabled
-* `bigsuds Python Client 1.0.4 or later`_
-* `f5-sdk Python Client, latest available`_
+Please refer to the `Requirements`_ docs.
 
 Documentation
 -------------
 
 All documentation is hosted on `ReadTheDocs`_.
 
-When `writing new modules`_, please refer to the
-`Guidelines`_ document.
+When `writing new modules`_, please refer to the `Guidelines`_ document.
 
-Purpose
--------
+Branches
+--------
 
-The purpose of this repository is to serve as a **staging ground** for Ansible
-modules that we would prefer to have upstreamed over the course of time.
-
-The modules in this repository **may be broken** due to experimentation
-or refactoring
+Please refer to the `Branching`_ docs for more info about the branching
+strategy we use.
 
 Your ideas
 ----------
@@ -68,7 +70,7 @@ an issue here and we will hammer out the details.
 Copyright
 ---------
 
-Copyright 2015-2016 F5 Networks Inc.
+Copyright 2017 F5 Networks Inc.
 
 
 Support
@@ -96,11 +98,17 @@ in this project.
     :target: https://f5ansible.herokuapp.com/
     :alt: Slack
 
-.. _Guidelines: https://f5-ansible.readthedocs.io/en/latest/development/guidelines.html
-.. _writing new modules: https://f5-ansible.readthedocs.io/en/latest/development/writing-a-module.html
-.. _ReadTheDocs: https://f5-ansible.readthedocs.io/en/latest/
+.. |docs badge| image:: https://readthedocs.org/projects/f5-ansible/badge/?version=devel
+    :target: http://f5-ansible.readthedocs.io/en/devel/
+    :alt: Documentation
+
+.. _Guidelines: https://f5-ansible.readthedocs.io/en/devel/development/guidelines.html
+.. _writing new modules: https://f5-ansible.readthedocs.io/en/devel/development/writing-a-module.html
+.. _ReadTheDocs: https://f5-ansible.readthedocs.io/en/devel/
 .. _bigsuds Python Client 1.0.4 or later: https://pypi.python.org/pypi/bigsuds/
 .. _f5-sdk Python Client, latest available: https://pypi.python.org/pypi/f5-sdk/
-.. _Ansible 2.2.0 or greater: https://f5-ansible.readthedocs.io/en/latest/usage/getting_started.html#installing-ansible
+.. _Ansible 2.2.0 or greater: https://f5-ansible.readthedocs.io/en/devel/usage/getting_started.html#installing-ansible
 .. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
 .. _License: https://github.com/F5Networks/f5-ansible/blob/master/LICENSE
+.. _Requirements: https://f5-ansible.readthedocs.io/en/devel/usage/requirements.html
+.. _Brnaching: https://f5-ansible.readthedocs.io/en/devel/development/branching.html
