@@ -109,17 +109,17 @@ from ansible.module_utils.f5_utils import *
 class Parameters(AnsibleF5Parameters):
     param_api_map = dict(
         lb_method='poolLbMode',
-        state='state'
+        state='state',
+        name='name'
     )
 
     @property
     def lb_method(self):
         deprecated = [
-            'return_to_dns', 'null', 'round_robin', 'ratio', 'topology',
-            'static_persist', 'global_availability', 'vs_capacity',
-            'least_conn', 'lowest_rtt', 'lowest_hops', 'packet_rate',
-            'cpu', 'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
-            'connection_rate', 'vs_score'
+            'return_to_dns', 'null', 'ratio', 'topology', 'static_persist',
+            'vs_capacity', 'least_conn', 'lowest_rtt', 'lowest_hops',
+            'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps', 'drop_packet',
+            'explicit_ip', 'connection_rate', 'vs_score'
         ]
         if self._values['lb_method'] is None:
             return None
@@ -128,6 +128,30 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError(
                 "The provided lb_method is not supported"
             )
+        elif lb_method == 'global_availability':
+            if self._values['__warnings'] is None:
+                self._values['__warnings'] = []
+            self._values['__warnings'].append(
+                [
+                    dict(
+                        msg='The provided lb_method is deprecated',
+                        version='2.4'
+                    )
+                ]
+            )
+            lb_method = 'global-availability'
+        elif lb_method == 'round_robin':
+            if self._values['__warnings'] is None:
+                self._values['__warnings'] = []
+            self._values['__warnings'].append(
+                [
+                    dict(
+                        msg='The provided lb_method is deprecated',
+                        version='2.4'
+                    )
+                ]
+            )
+            lb_method = 'round-robin'
         return lb_method
 
     @lb_method.setter
@@ -153,14 +177,14 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def name(self):
+        if not re.search(r'.*\..*\..*', self._values['name']):
+            raise F5ModuleError(
+                "The provided name must be a valid FQDN"
+            )
         return self._values['name']
 
     @name.setter
     def name(self, value):
-        if not re.search(r'.*\..*\..*', value):
-            raise F5ModuleError(
-                "The provided name must be a valid FQDN"
-            )
         self._value['name'] = value
 
 
@@ -170,10 +194,16 @@ class ModuleManager(object):
 
     def exec_module(self):
         if self.version_is_less_than_12():
-            manager = UntypedManager(self.client)
+            manager = self.get_manager('untyped')
         else:
-            manager = TypedManager(self.client)
+            manager = self.get_manager('typed')
         return manager.exec_module()
+
+    def get_manager(self, type):
+        if type == 'typed':
+            return TypedManager(self.client)
+        elif type =='untyped':
+            return UntypedManager(self.client)
 
     def version_is_less_than_12(self):
         version = self.client.api.tmos_version
@@ -208,7 +238,16 @@ class BaseManager(object):
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def present(self):
         if self.exists():
@@ -217,7 +256,7 @@ class BaseManager(object):
             return self.create()
 
     def should_update(self):
-        updateable = Parameters.api_param_map.keys()
+        updateable = Parameters.param_api_map.keys()
         for key in updateable:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
@@ -257,6 +296,10 @@ class UntypedManager(BaseManager):
         )
 
     def create(self):
+        updateable = Parameters.param_api_map.keys()
+        for key in updateable:
+            if getattr(self.want, key) is not None:
+                self.changes._values[key] = getattr(self.want, key)
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -353,13 +396,17 @@ class TypedManager(BaseManager):
 
 class ArgumentSpec(object):
     def __init__(self):
-        lb_method_choices = [
+        deprecated = [
             'return_to_dns', 'null', 'round_robin', 'ratio', 'topology',
             'static_persist', 'global_availability', 'vs_capacity',
             'least_conn', 'lowest_rtt', 'lowest_hops', 'packet_rate',
             'cpu', 'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
             'connection_rate', 'vs_score'
         ]
+        supported = [
+            'round-robin', 'topology', 'ratio', 'global-availability'
+        ]
+        lb_method_choices = deprecated + supported
         self.supports_check_mode = True
         self.argument_spec = dict(
             lb_method=dict(
