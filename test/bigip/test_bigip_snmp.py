@@ -161,3 +161,4 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+        assert results['agent_status_traps'] == 'enabled'
