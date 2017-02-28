@@ -104,22 +104,21 @@ RETURN = '''
 import re
 
 from ansible.module_utils.f5_utils import *
+from distutils.version import LooseVersion
 
 
 class Parameters(AnsibleF5Parameters):
     param_api_map = dict(
-        lb_method='poolLbMode',
-        state='state',
-        name='name'
+        lb_method='poolLbMode'
     )
 
     @property
     def lb_method(self):
         deprecated = [
-            'return_to_dns', 'null', 'ratio', 'topology', 'static_persist',
-            'vs_capacity', 'least_conn', 'lowest_rtt', 'lowest_hops',
-            'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps', 'drop_packet',
-            'explicit_ip', 'connection_rate', 'vs_score'
+            'return_to_dns', 'null', 'static_persist', 'vs_capacity',
+            'least_conn', 'lowest_rtt', 'lowest_hops', 'packet_rate', 'cpu',
+            'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
+            'connection_rate', 'vs_score'
         ]
         if self._values['lb_method'] is None:
             return None
@@ -159,7 +158,7 @@ class Parameters(AnsibleF5Parameters):
         self._values['lb_method'] = value
 
     @property
-    def type(self):
+    def collection(self):
         type_map = dict(
             a='a_s',
             aaaa='aaaas',
@@ -168,11 +167,19 @@ class Parameters(AnsibleF5Parameters):
             naptr='naptrs',
             srv='srvs'
         )
+        if self._values['type'] is None:
+            return None
         wideip_type = self._values['type']
         return type_map[wideip_type]
 
-    @type.setter
+    @property
     def type(self):
+        if self._values['type'] is None:
+            return None
+        return str(self._values['type'])
+
+    @type.setter
+    def type(self, value):
         self._values['type'] = value
 
     @property
@@ -186,6 +193,11 @@ class Parameters(AnsibleF5Parameters):
     @name.setter
     def name(self, value):
         self._value['name'] = value
+
+    def api_params(self):
+        result = super(Parameters, self).api_params()
+        result.pop('state', None)
+        return result
 
 
 class ModuleManager(object):
@@ -250,6 +262,10 @@ class BaseManager(object):
             )
 
     def present(self):
+        if self.want.lb_method is None:
+            raise F5ModuleError(
+                "The 'lb_method' option is required when state is 'present'"
+            )
         if self.exists():
             return self.update()
         else:
@@ -264,6 +280,7 @@ class BaseManager(object):
                 if attr1 != attr2:
                     self.changes._values[key] = getattr(self.want, key)
                     return True
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -339,9 +356,18 @@ class UntypedManager(BaseManager):
 
 
 class TypedManager(BaseManager):
+    def __init__(self, client):
+        super(TypedManager, self).__init__(client)
+        if self.want.type is None:
+            raise F5ModuleError(
+                "The 'type' option is required for BIG-IP instances "
+                "greater than or equal to 12.x"
+            )
+
     def exists(self):
         wideips = self.client.api.tm.gtm.wideips
-        resource = getattr(wideips, self.want.type)
+        collection = getattr(wideips, self.want.collection)
+        resource = getattr(collection, self.want.type)
         return resource.exists(
             name=self.want.name,
             partition=self.want.partition
@@ -356,7 +382,8 @@ class TypedManager(BaseManager):
     def update_on_device(self):
         params = self.want.api_params()
         wideips = self.client.api.tm.gtm.wideips
-        resource = getattr(wideips, self.want.type)
+        collection = getattr(wideips, self.want.collection)
+        resource = getattr(collection, self.want.type)
         result = resource.load(
             name=self.want.name,
             partition=self.want.partition
@@ -365,7 +392,8 @@ class TypedManager(BaseManager):
 
     def read_current_from_device(self):
         wideips = self.client.api.tm.gtm.wideips
-        resource = getattr(wideips, self.want.type)
+        collection = getattr(wideips, self.want.collection)
+        resource = getattr(collection, self.want.type)
         result = resource.load(
             name=self.want.name,
             partition=self.want.partition
@@ -376,7 +404,8 @@ class TypedManager(BaseManager):
     def create_on_device(self):
         params = self.want.api_params()
         wideips = self.client.api.tm.gtm.wideips
-        resource = getattr(wideips, self.want.type)
+        collection = getattr(wideips, self.want.collection)
+        resource = getattr(collection, self.want.type)
         resource.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -385,7 +414,8 @@ class TypedManager(BaseManager):
 
     def remove_from_device(self):
         wideips = self.client.api.tm.gtm.wideips
-        resource = getattr(wideips, self.want.type)
+        collection = getattr(wideips, self.want.collection)
+        resource = getattr(collection, self.want.type)
         result = resource.load(
             name=self.want.name,
             partition=self.want.partition
@@ -397,11 +427,10 @@ class TypedManager(BaseManager):
 class ArgumentSpec(object):
     def __init__(self):
         deprecated = [
-            'return_to_dns', 'null', 'round_robin', 'ratio', 'topology',
-            'static_persist', 'global_availability', 'vs_capacity',
-            'least_conn', 'lowest_rtt', 'lowest_hops', 'packet_rate',
-            'cpu', 'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
-            'connection_rate', 'vs_score'
+            'return_to_dns', 'null', 'round_robin', 'static_persist',
+            'global_availability', 'vs_capacity', 'least_conn', 'lowest_rtt',
+            'lowest_hops', 'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps',
+            'drop_packet', 'explicit_ip', 'connection_rate', 'vs_score'
         ]
         supported = [
             'round-robin', 'topology', 'ratio', 'global-availability'
@@ -410,8 +439,9 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             lb_method=dict(
-                required=True,
-                choices=lb_method_choices
+                required=False,
+                choices=lb_method_choices,
+                default=None
             ),
             name=dict(
                 required=True,
@@ -442,9 +472,12 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
