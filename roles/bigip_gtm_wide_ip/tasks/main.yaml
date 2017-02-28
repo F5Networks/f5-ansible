@@ -22,4 +22,4 @@
 
 - name: Test BIG-IP versions greater than 12
   include: typed-gtm-wideip.yaml
-#  when: system_info.product_information.product_version >= "12.0.0"
+  when: system_info.product_information.product_version >= "12.0.0"
