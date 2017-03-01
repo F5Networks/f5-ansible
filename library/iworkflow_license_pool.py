@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# Copyright 2016 F5 Networks Inc.
+# Copyright 2017 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
@@ -85,7 +85,7 @@ except ImportError:
 
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+from ansible.module_utils.f5_utils import *
 
 
 def connect_to_f5(**kwargs):
@@ -185,7 +185,7 @@ class iWorkflowLicensePoolModule(AnsibleModule):
                 choices=BOOLEANS
             ),
             base_key=dict(
-                required=True
+                required=False
             ),
             name=dict(
                 required=True
@@ -285,19 +285,33 @@ class iWorkflowLicensePoolManager(object):
             )
         if self.module.check_mode:
             return True
-        self.reactivate_license_pool_on_device(current)
+        self.reactivate_license_pool_on_device()
         return True
 
-    def reactivate_license_pool_on_device(self, current):
-        current.modify(
+    def reactivate_license_pool_on_device(self):
+        pools = self.api.cm.shared.licensing.pools_s.get_collection(
+            requests_params=dict(
+                params="$filter=name+eq+'{0}'".format(self.params.name)
+            )
+        )
+        pool = pools.pop()
+        pool.modify(
             state='RELICENSE',
             method='AUTOMATIC'
         )
-        return self.wait_for_license_pool_state_to_activate(current)
+        return self.wait_for_license_pool_state_to_activate(pool)
 
     def create_license_pool(self):
         if self.module.check_mode:
             return True
+        if self.params.base_key is None:
+            raise F5ModuleError(
+                "You must specify a 'base_key' when creating a license pool"
+            )
+        if self.params.accept_eula in BOOLEANS_FALSE:
+            raise F5ModuleError(
+                "You must accept the EULA before creating a license pool."
+            )
         self.create_license_pool_on_device()
         return True
 
@@ -325,6 +339,11 @@ class iWorkflowLicensePoolManager(object):
         return self.current
 
     def create_license_pool_on_device(self):
+        if self.params.base_key is None:
+            raise F5ModuleError(
+                "You must accept the EULA with the 'accept_eula' option "
+                "when creating a new license pool."
+            )
         pool = self.api.cm.shared.licensing.pools_s.pool.create(
             name=self.params.name,
             baseRegKey=self.params.base_key,
@@ -334,13 +353,18 @@ class iWorkflowLicensePoolManager(object):
 
     def wait_for_license_pool_state_to_activate(self, pool):
         error_values = ['EXPIRED', 'FAILED']
-        # Wait no more than half an hour
-        for x in range(1, 180):
+        # Wait no more than 5 minutes
+        for x in range(1, 30):
             pool.refresh()
             if pool.state == 'LICENSED':
                 return True
+            elif pool.state == 'WAITING_FOR_EULA_ACCEPTANCE':
+                pool.modify(
+                    eulaText=pool.eulaText,
+                    state='ACCEPTED_EULA'
+                )
             elif pool.state in error_values:
-                raise F5ModuleError(device.errorText)
+                raise F5ModuleError(pool.errorText)
             time.sleep(10)
 
     def absent(self):
