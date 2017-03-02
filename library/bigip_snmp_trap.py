@@ -99,7 +99,7 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    api_param_map = dict(
+    param_api_map = dict(
         snmp_version='version',
         community='community',
         destination='host',
@@ -107,15 +107,11 @@ class Parameters(AnsibleF5Parameters):
         network='network'
     )
 
-    def __init__(self, params=None):
-        self._network = None
-        super(Parameters, self).__init__(params)
-
     @property
     def network(self):
-        if self._network is None:
+        if self._values['network'] is None:
             return None
-        network = str(self._network)
+        network = str(self._values['network'])
         if network == 'management':
             return 'mgmt'
         else:
@@ -123,17 +119,27 @@ class Parameters(AnsibleF5Parameters):
 
     @network.setter
     def network(self, value):
-        self._network = value
+        self._values['network'] = value
 
     @classmethod
     def from_api(cls, params):
-        for key,value in iteritems(cls.api_param_map):
+        for key,value in iteritems(cls.param_api_map):
             param = params.pop(value, None)
             if param is not None:
                 param = str(param)
             params[key] = param
         p = cls(params)
         return p
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        return str(self._values['port'])
+
+    @port.setter
+    def port(self, value):
+        self._values['port'] = value
 
     def api_params(self):
         params = super(Parameters, self).api_params()
@@ -165,7 +171,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        #result.update(**self.changes)
+        result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
