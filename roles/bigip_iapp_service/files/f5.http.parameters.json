@@ -10,176 +10,107 @@
   ],
   "tables": [
     {
+      "name": "basic__snatpool_members"
+    },
+    {
+      "name": "net__snatpool_members"
+    },
+    {
+      "name": "optimizations__hosts"
+    },
+    {
+      "name": "pool__hosts",
       "columnNames": [
         "name"
       ],
-      "name": "pool__hosts",
       "rows": [
         {
           "row": [
-            "demo.example.com"
+            "foo.baz.bar"
           ]
         }
       ]
     },
     {
+      "name": "pool__members",
       "columnNames": [
         "addr",
+        "port",
         "connection_limit"
       ],
-      "name": "pool__members",
       "rows": [
         {
           "row": [
-            "10.1.1.1",
-            "0"
-          ]
-        },
-        {
-          "row": [
-            "10.1.1.2",
+            "",
+            "80",
             "0"
           ]
         }
       ]
+    },
+    {
+      "name": "server_pools__servers"
     }
   ],
   "variables": [
     {
-      "name": "afm__policy",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "afm__dos_security_profile",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "afm__protocol_security_profile",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "asm__use_asm",
-      "value": "/#do_not_use#"
-    },
-    {
       "name": "client__http_compression",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "client__standard_caching_without_wa",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "client__tcp_wan_opt",
+      "encrypted": "no",
       "value": "/#create_new#"
     },
     {
       "name": "monitor__monitor",
+      "encrypted": "no",
       "value": "/#create_new#"
     },
     {
-      "name": "monitor__frequency",
-      "value": "30"
+      "name": "monitor__response",
+      "encrypted": "no"
     },
     {
       "name": "monitor__uri",
-      "value": "/my/path"
-    },
-    {
-      "name": "monitor__response",
-      "value": ""
+      "encrypted": "no",
+      "value": "/"
     },
     {
       "name": "net__client_mode",
+      "encrypted": "no",
       "value": "wan"
     },
     {
       "name": "net__server_mode",
+      "encrypted": "no",
       "value": "lan"
     },
     {
-      "name": "net__vlan_mode",
-      "value": "all"
-    },
-    {
       "name": "pool__addr",
+      "encrypted": "no",
       "value": "10.10.10.10"
     },
     {
-      "name": "pool__http",
-      "value": "/#create_new#"
-    },
-    {
-      "name": "pool__mask",
-      "value": ""
-    },
-    {
-      "name": "pool__persist",
-      "value": "/#cookie#"
-    },
-    {
-      "name": "pool__lb_method",
-      "value": "least-connections-member"
-    },
-    {
       "name": "pool__pool_to_use",
+      "encrypted": "no",
       "value": "/#create_new#"
     },
     {
-      "name": "pool__port_secure",
-      "value": "443"
-    },
-    {
-      "name": "pool__redirect_port",
+      "name": "pool__port",
+      "encrypted": "no",
       "value": "80"
     },
     {
-      "name": "pool__redirect_to_https",
-      "value": "yes"
-    },
-    {
-      "name": "pool__xff",
-      "value": "yes"
-    },
-    {
-      "name": "server__oneconnect",
-      "value": "/#create_new#"
-    },
-    {
-      "name": "server__tcp_lan_opt",
-      "value": "/#create_new#"
-    },
-    {
-      "name": "ssl__cert",
-      "value": "/Common/default.crt"
-    },
-    {
-      "name": "ssl__client_ssl_profile",
-      "value": "/#create_new#"
-    },
-    {
-      "name": "ssl__key",
-      "value": "/Common/default.key"
-    },
-    {
       "name": "ssl__mode",
-      "value": "client_ssl"
-    },
-    {
-      "name": "ssl__use_chain_cert",
-      "value": "/#do_not_use#"
+      "encrypted": "no",
+      "value": "no_ssl"
     },
     {
       "name": "ssl_encryption_questions__advanced",
-      "value": "yes"
+      "encrypted": "no",
+      "value": "no"
     },
     {
-      "name": "stats__analytics",
-      "value": "/#do_not_use#"
-    },
-    {
-      "name": "stats__request_logging",
-      "value": "/#do_not_use#"
+      "name": "ssl_encryption_questions__help",
+      "encrypted": "no",
+      "value": "hide"
     }
   ]
 }

@@ -5,11 +5,11 @@ service_name: "my-service1"
 # The module overrides the "name" parameter with the name parameter
 # that you specify in the task.
 service1_parameters:
-  name: "http_example",
-  partition: "Common",
-  template: "/Common/f5.http",
+  name: "http_example"
+  partition: "Common"
+  template: "/Common/f5.http"
   lists:
-    - name: "irules__irules",
+    - name: "irules__irules"
       value: []
   tables:
     - name: pool__hosts
