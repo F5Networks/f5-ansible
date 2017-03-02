@@ -68,7 +68,16 @@ author:
 '''
 
 EXAMPLES = '''
-
+- name: Create HTTP iApp service from iApp template
+  bigip_iapp_service:
+      name: "foo-service"
+      template: "f5.http"
+      parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -84,6 +93,7 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = [
         'tables', 'variables', 'template', 'lists'
     ]
+    updateables = ['tables', 'variables', 'lists']
 
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
@@ -145,7 +155,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         variables = self._values['variables']
         for variable in variables:
-            tmp = dict((k, str(v)) for k, v in iteritems(variable))
+            tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
             result.append(tmp)
         return result
 
@@ -160,8 +170,17 @@ class Parameters(AnsibleF5Parameters):
             return None
         lists = self._values['lists']
         for list in lists:
-            tmp = dict((k, str(v)) for k, v in iteritems(list) if k != 'value')
-            tmp['value'] = [str(x) for x in list['value']]
+            tmp = dict((str(k), str(v)) for k, v in iteritems(list) if k != 'value')
+            if 'encrypted' not in list:
+                # BIG-IP will inject an 'encrypted' key if you don't provide one.
+                # If you don't provide one, then we give you the default 'no', by
+                # default.
+                tmp['encrypted'] = 'no'
+            if 'value' in list:
+                if len(list['value']) > 0:
+                    # BIG-IP removes empty values entries, so mimic this behavior
+                    # for user-supplied values.
+                    tmp['value'] = [str(x) for x in list['value']]
             result.append(tmp)
         return result
 
@@ -173,15 +192,20 @@ class Parameters(AnsibleF5Parameters):
     def parameters(self):
         return dict(
             tables=self.tables,
-            variables=self.variables
+            variables=self.variables,
+            lists=self.lists
         )
 
     @parameters.setter
     def parameters(self, value):
+        if value is None:
+            return
         if 'tables' in value:
             self.tables = value['tables']
         if 'variables' in value:
             self.variables = value['variables']
+        if 'lists' in value:
+            self.lists = value['lists']
 
     @property
     def template(self):
@@ -239,7 +263,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        updateable = self.client.module.argument_spec.keys()
+        updateable = Parameters.updateables
         for key in updateable:
             if getattr(self.want, key) is not None:
                 self.changes._values[key] = getattr(self.want, key)
@@ -258,18 +282,22 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        updateable = self.client.module.argument_spec.keys()
+        updateable = Parameters.updateables
         for key in updateable:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
+                    print attr1,attr2
+                    import sys; sys.exit()
                     setattr(self.changes, key, getattr(self.want, key))
                     return True
 
-    def update_on_device(self, params):
+    def update_on_device(self):
+        params = self.want.api_params()
         resource = self.client.api.tm.sys.application.services.service.load(
-            name=self.want.name
+            name=self.want.name,
+            partition=self.want.partition
         )
         resource.update(**params)
 
@@ -279,7 +307,7 @@ class ModuleManager(object):
             partition=self.want.partition
         ).to_dict()
         result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        return Parameters(result)
 
     def format_params(self, params):
         result = dict()
@@ -297,7 +325,8 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.sys.application.services.service.create(
-            partition=self.have.partition,
+            name=self.want.name,
+            partition=self.want.partition,
             **params
         )
 
@@ -314,14 +343,13 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to delete the iApp service")
         return True
 
-    def remove_from_device():
-        api = _get_connection()
-        result = api.tm.sys.application.services.service.load(
+    def remove_from_device(self):
+        resource = self.client.api.tm.sys.application.services.service.load(
             name=self.want.name,
             partition=self.want.partition
         )
-        if result:
-            result.delete()
+        if resource:
+            resource.delete()
 
 
 class ArgumentSpec(object):
@@ -352,14 +380,16 @@ def main():
 
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
-        mutually_exclusive=spec.mutually_exclusive,
         supports_check_mode=spec.supports_check_mode,
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
