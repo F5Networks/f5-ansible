@@ -288,8 +288,6 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    print attr1,attr2
-                    import sys; sys.exit()
                     setattr(self.changes, key, getattr(self.want, key))
                     return True
 
