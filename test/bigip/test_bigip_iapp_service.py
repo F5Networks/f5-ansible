@@ -23,6 +23,7 @@ __metaclass__ = type
 
 import os
 import json
+import yaml
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
@@ -67,76 +68,128 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
-    def setUp(self):
+
+    def test_module_parameters_keys(self):
+        args = load_fixture('iapp_service_parameters_f5_http.json')
+        p = Parameters(args)
+
+        # Assert the top-level keys
+        assert p.name == 'http_example'
+        assert p.partition == 'Common'
+        assert p.template == '/Common/f5.http'
+
+    def test_module_parameters_lists(self):
+        args = load_fixture('iapp_service_parameters_f5_http.json')
+        p = Parameters(args)
+
+        assert 'lists' in p._values
+
+        assert p.lists[0]['name'] == 'irules__irules'
+        assert p.lists[0]['encrypted'] == 'no'
+        assert len(p.lists[0]['value']) == 1
+        assert p.lists[0]['value'][0] == '/Common/lgyft'
+
+        assert p.lists[1]['name'] == 'net__client_vlan'
+        assert p.lists[1]['encrypted'] == 'no'
+        assert len(p.lists[1]['value']) == 1
+        assert p.lists[1]['value'][0] == '/Common/net2'
+
+    def test_module_parameters_tables(self):
+        args = load_fixture('iapp_service_parameters_f5_http.json')
+        p = Parameters(args)
+
+        assert 'tables' in p._values
+
+        assert 'columnNames' in p.tables[0]
+        assert len(p.tables[0]['columnNames']) == 1
+        assert p.tables[0]['columnNames'][0] == 'name'
+
+        assert 'name' in p.tables[0]
+        assert p.tables[0]['name'] == 'pool__hosts'
+
+        assert 'rows' in p.tables[0]
+        assert len(p.tables[0]['rows']) == 1
+        assert 'row' in p.tables[0]['rows'][0]
+        assert len(p.tables[0]['rows'][0]['row']) == 1
+        assert p.tables[0]['rows'][0]['row'][0] == 'demo.example.com'
+
+        assert len(p.tables[1]['rows']) == 2
+        assert 'row' in p.tables[0]['rows'][0]
+        assert len(p.tables[1]['rows'][0]['row']) == 2
+        assert p.tables[1]['rows'][0]['row'][0] == '10.1.1.1'
+        assert p.tables[1]['rows'][0]['row'][1] == '0'
+        assert p.tables[1]['rows'][1]['row'][0] == '10.1.1.2'
+        assert p.tables[1]['rows'][1]['row'][1] == '0'
+
+    def test_module_parameters_variables(self):
+        args = load_fixture('iapp_service_parameters_f5_http.json')
+        p = Parameters(args)
+
+        assert 'variables' in p._values
+        assert len(p.variables) == 34
+
+        # Assert one configuration value
+        assert 'name' in p.variables[0]
+        assert 'value' in p.variables[0]
+        assert p.variables[0]['name'] == 'afm__policy'
+        assert p.variables[0]['value'] == '/#do_not_use#'
+
+        # Assert a second configuration value
+        assert 'name' in p.variables[0]
+        assert 'value' in p.variables[0]
+        assert p.variables[0]['name'] == 'afm__policy'
+        assert p.variables[0]['value'] == '/#do_not_use#'
+
+    def test_api_parameters_variables(self):
         args = dict(
-            name='foo',
-            template='f5.http',
-            parameters=dict(
-                variables=[
-                    {'afm__policy': '/#do_not_use#'},
-                    {'afm__dos_security_profile': '/#do_not_use#'},
-                    {'asm__use_asm': '/#do_not_use#'},
-                    {'client__http_compression': '/#do_not_use#'},
-                    {'client__standard_caching_without_wa': '/#do_not_use#'},
-                    {'client__tcp_wan_opt': '/#create_new#'},
-                    {'monitor__monitor': '/#create_new#'},
-                    {'monitor__frequency': '30'},
-                    {'monitor__uri': '/my/path'},
-                    {'monitor__response': ''},
-                    {'net__client_mode': 'wan'},
-                    {'net__server_mode': 'lan'},
-                    {'net__vlan_mode': 'all'},
-                    {'pool__addr': '10.10.10.10'},
-                    {'pool__http': '/#create_new#'},
-                    {'pool__mask': ''},
-                    {'pool__persist': '/#cookie#'},
-                    {'pool__lb_method': 'least-connections-member'},
-                    {'pool__pool_to_use': '/#create_new#'},
-                    {'pool__port_secure': '443'},
-                    {'pool__redirect_port': '80'},
-                    {'pool__redirect_to_https': 'yes'},
-                    {'pool__xff': 'yes'},
-                    {'server__oneconnect': '/#create_new#'},
-                    {'server__tcp_lan_opt': '/#create_new#'},
-                    {'ssl__cert': '/Common/default.crt'},
-                    {'ssl__client_ssl_profile': '/#create_new#'},
-                    {'ssl__key': '/Common/default.key'},
-                    {'ssl__mode': 'client_ssl'},
-                    {'ssl__use_chain_cert': '/#do_not_use#'},
-                    {'ssl_encryption_questions__advanced': 'yes'},
-                    {'stats__analytics': '/#do_not_use#'},
-                    {'stats__request_logging': '/#do_not_use#'}
-                ],
-                tables=[
-                    {''}
-                ]
-            )
+            variables=[
+                dict(
+                    name="client__http_compression",
+                    encrypted="no",
+                    value="/#create_new#"
+                )
+            ]
         )
         p = Parameters(args)
-        self.p1 = p
+        assert p.variables[0]['name'] == 'client__http_compression'
 
-    def test_module_parameters(self):
-        # check that all the provided variables have a correctly
-        # interpreted name and value
-        for variable in self.p1.variables:
-            assert 'name' in variable
-            assert 'value' in variable
-
-        assert self.p1.variables[0]['name'] == 'afm__policy'
-        assert self.p1.variables[1]['name'] == 'afm__dos_security_profile'
-        assert self.p1.variables[2]['name'] == 'asm__use_asm'
-        assert self.p1.variables[3]['name'] == 'client__http_compression'
-        assert self.p1.variables[4]['name'] == 'client__standard_caching_without_wa'
-        assert self.p1.variables[5]['name'] == 'client__tcp_wan_opt'
-        assert self.p1.variables[6]['name'] == 'monitor__monitor'
-        assert self.p1.variables[7]['name'] == 'monitor__frequency'
-        assert self.p1.variables[8]['name'] == 'monitor__uri'
-        assert self.p1.variables[9]['name'] == 'monitor__response'
-        assert self.p1.variables[10]['name'] == 'net__client_mode'
-        assert self.p1.variables[11]['name'] == 'net__server_mode'
-        assert self.p1.variables[12]['name'] == 'net__vlan_mode'
-        assert self.p1.variables[13]['name'] == 'pool__addr'
-        assert self.p1.variables[14]['name'] == 'pool__http'
+    def test_api_parameters_tables(self):
+        args = dict(
+            tables=[
+                {
+                    "name": "pool__members",
+                    "columnNames": [
+                        "addr",
+                        "port",
+                        "connection_limit"
+                    ],
+                    "rows": [
+                        {
+                            "row": [
+                                "12.12.12.12",
+                                "80",
+                                "0"
+                            ]
+                        },
+                        {
+                            "row": [
+                                "13.13.13.13",
+                                "443",
+                                10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        )
+        p = Parameters(args)
+        assert p.tables[0]['name'] == 'pool__members'
+        assert p.tables[0]['columnNames'] == ['addr','port','connection_limit']
+        assert len(p.tables[0]['rows']) == 2
+        assert 'row' in p.tables[0]['rows'][0]
+        assert 'row' in p.tables[0]['rows'][1]
+        assert p.tables[0]['rows'][0]['row'] == ['12.12.12.12', '80', '0']
+        assert p.tables[0]['rows'][1]['row'] == ['13.13.13.13', '443', '10']
 
 
 class TestManager(unittest.TestCase):
@@ -146,12 +199,16 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_create_blackhole(self, mgmt):
+    def test_create_service(self, mgmt):
+        parameters = load_fixture('iapp_service_parameters_f5_http.json')
         set_module_args(dict(
             name='foo',
             template='f5.http',
-            parameters_src='enabled',
-            state='present'
+            parameters=parameters,
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
         ))
 
         client = AnsibleF5Client(
@@ -163,7 +220,10 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm.exit_json = lambda x: True
+        mm.exists = lambda: False
+        mm.create_on_device = lambda: True
 
         results = mm.exec_module()
 
+        print(results)
         assert results['changed'] is True

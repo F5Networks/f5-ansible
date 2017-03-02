@@ -45,22 +45,16 @@ options:
   parameters:
     description:
       - A hash of all the required template variables for the iApp template.
-        This parameter is mutually exclusive with C(parameters_src). Either
-        one of them is required if C(state) parameter is C(present).
-    required: False
-    default: None
-  parameters_src:
-    description:
-      - Path of file containing the parameters body. This parameter is mutually
-        exclusive with C(parameters). Either one of them is required if
-        C(state) is C(present).
+        If your parameters are stored in a file (the more common scenario)
+        it is recommended you use either the `file` or `template` lookups
+        to supply the expected parameters
     required: False
     default: None
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
         When C(absent), ensures that the iApp service has been removed.
-    required: false
+    required: False
     default: present
     choices:
       - present
@@ -81,103 +75,144 @@ RETURN = '''
 
 '''
 
-import json
-
-try:
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.f5_utils import *
 
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+class Parameters(AnsibleF5Parameters):
+    param_api_map = None
+    returnables = []
+    api_attributes = [
+        'tables', 'variables', 'template', 'lists'
+    ]
 
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            for k,v in iteritems(params):
+                setattr(self, k, v)
 
-_CONNECTION = None
-
-
-def setup_connection(**kwargs):
-    global _CONNECTION
-    _CONNECTION = ManagementRoot(
-        kwargs['server'],
-        kwargs['user'],
-        kwargs['password'],
-        port=kwargs['server_port'],
-        token='tmos'
-    )
-
-
-def _get_connection():
-    if _CONNECTION is None:
-        setup_connection()
-    return _CONNECTION
-
-
-class F5AnsibleModule(AnsibleModule):
-    def __init__(self):
-        self.params = None
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(F5AnsibleModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            mutually_exclusive=[
-                ['parameters', 'parameters_src']
-            ]
+    def from_api(self):
+        raise F5ModuleError(
+            "from_api is deprecated"
         )
 
-    def init_meta_args(self):
-        args = dict(
-            name=dict(required=True),
-            template=dict(
-                required=False,
-                default=None
-            ),
-            parameters=dict(
-                required=False,
-                default=None,
-                type='dict'
-            ),
-            parameters_src=dict(
-                required=False,
-                default=None,
-                type='path'
-            ),
-            state=dict(
-                required=False,
-                default='present',
-                choices=['absent', 'present']
+    def api_params(self):
+        result = dict()
+        for attr in self.api_attributes:
+            result[attr] = getattr(self, attr)
+        return self._filter_params(result)
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        return result
+
+    @property
+    def tables(self):
+        result = []
+        if self._values['tables'] is None:
+            return None
+        tables = self._values['tables']
+        for table in tables:
+            tmp = dict()
+            name = table.get('name', None)
+            if name is None:
+                raise F5ModuleError(
+                    "One of the provided tables does not have a name"
+                )
+            tmp['name'] = str(name)
+            columns = table.get('columnNames', None)
+            if columns:
+                tmp['columnNames'] = [str(x) for x in columns]
+                # You cannot have rows without columns
+                rows = table.get('rows', None)
+                if rows:
+                    tmp['rows'] = []
+                    for row in rows:
+                        tmp['rows'].append(dict(row=[str(x) for x in row['row']]))
+            result.append(tmp)
+        return result
+
+    @tables.setter
+    def tables(self, value):
+        self._values['tables'] = value
+
+    @property
+    def variables(self):
+        result = []
+        if self._values['variables'] is None:
+            return None
+        variables = self._values['variables']
+        for variable in variables:
+            tmp = dict((k, str(v)) for k, v in iteritems(variable))
+            result.append(tmp)
+        return result
+
+    @variables.setter
+    def variables(self, value):
+        self._values['variables'] = value
+
+    @property
+    def lists(self):
+        result = []
+        if self._values['lists'] is None:
+            return None
+        lists = self._values['lists']
+        for list in lists:
+            tmp = dict((k, str(v)) for k, v in iteritems(list) if k != 'value')
+            tmp['value'] = [str(x) for x in list['value']]
+            result.append(tmp)
+        return result
+
+    @lists.setter
+    def lists(self, value):
+        self._values['lists'] = value
+
+    @property
+    def parameters(self):
+        return dict(
+            tables=self.tables,
+            variables=self.variables
+        )
+
+    @parameters.setter
+    def parameters(self, value):
+        if 'tables' in value:
+            self.tables = value['tables']
+        if 'variables' in value:
+            self.variables = value['variables']
+
+    @property
+    def template(self):
+        if self._values['template'] is None:
+            return None
+        if self._values['template'].startswith("/"+self.partition):
+            return self._values['template']
+        else:
+            return '/{0}/{1}'.format(
+                self.partition, self._values['template']
             )
-        )
-        self.meta_args = args
 
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
+    @template.setter
+    def template(self, value):
+        self._values['template'] = value
 
 
 class ModuleManager(object):
-    have = dict()
-    want = dict()
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
 
-    def __init__(self, *args, **kwargs):
-        self.changes = dict()
-        self.module = kwargs['module']
-
-    def apply_changes(self):
+    def exec_module(self):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
 
-        self.want = self.format_params(self.module.params)
-
         changed = False
         result = dict()
-        state = self.want.get('state')
+        state = self.want.state
 
         try:
             if state == "present":
@@ -187,14 +222,14 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes)
+        result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
     def exists(self):
-        api = _get_connection()
-        return api.tm.sys.application.services.service.exists(
-            name=self.want.name
+        return self.client.api.tm.sys.application.services.service.exists(
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def present(self):
@@ -203,76 +238,48 @@ class ModuleManager(object):
         else:
             return self.create()
 
-    def get_iapp_template_source(self, source=None, content=None):
-        if source:
-            with open(source) as fh:
-                result = fh.read()
-        elif content:
-            result = content
-        else:
-            raise F5ModuleError(
-                "Either 'content' or 'src' must be provided"
-            )
-        return result
-
     def create(self):
-        if self.module.check_mode:
+        updateable = self.client.module.argument_spec.keys()
+        for key in updateable:
+            if getattr(self.want, key) is not None:
+                self.changes._values[key] = getattr(self.want, key)
+        if self.client.check_mode:
             return True
-        self.update_changed_params()
-        self.create_on_device(self.changes)
+        self.create_on_device()
         return True
 
     def update(self):
-        current = self.read_current_from_device()
-        self.have = self.format_params(current)
+        self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.module.check_mode:
+        if self.client.check_mode:
             return True
-        self.update_on_device(self.changes)
+        self.update_on_device()
         return True
 
     def should_update(self):
-        self.update_changed_params()
-        if len(self.changes.keys()) > 2:
-            return True
-        return False
-
-    def update_changed_params(self):
-        result = dict(
-            name=str(self.want['name']),
-            partition=str(self.want['partition']),
-        )
-        self.update_attribute(result, 'mtu')
-        self.changes = result
-
-    def update_attribute(self, result, attribute, validator=None):
-        want = self.want.get(attribute, None)
-        have = self.have.get(attribute, None)
-        if want != have and want is not None:
-            result[attribute] = want
-        if validator is None:
-            return
-        validator(want)
+        updateable = self.client.module.argument_spec.keys()
+        for key in updateable:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    setattr(self.changes, key, getattr(self.want, key))
+                    return True
 
     def update_on_device(self, params):
-        api = _get_connection()
-        route = api.tm.sys.application.services.service.load(
+        resource = self.client.api.tm.sys.application.services.service.load(
             name=self.want.name
         )
-        route.update(**params)
+        resource.update(**params)
 
     def read_current_from_device(self):
-        api = _get_connection()
-        result = api.tm.sys.application.services.service.load(
+        result = self.client.api.tm.sys.application.services.service.load(
             name=self.want.name,
             partition=self.want.partition
-        )
-        if not result:
-            return dict()
-        current = result.to_dict()
-        current.pop('_meta_data')
-        return current
+        ).to_dict()
+        result.pop('_meta_data', None)
+        return Parameters.from_api(result)
 
     def format_params(self, params):
         result = dict()
@@ -287,17 +294,20 @@ class ModuleManager(object):
             result['content'] = self.get_iapp_template_source(source, content)
         return result
 
-    def create_on_device(self, params):
-        api = _get_connection()
-        api.tm.sys.application.services.service.create(**params)
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.sys.application.services.service.create(
+            partition=self.have.partition,
+            **params
+        )
 
-    def absent(self, ):
+    def absent(self):
         if self.exists():
             return self.remove()
         return False
 
     def remove(self):
-        if self.module.check_mode:
+        if self.client.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
@@ -306,24 +316,50 @@ class ModuleManager(object):
 
     def remove_from_device():
         api = _get_connection()
-        route = api.tm.sys.application.services.service.load(
+        result = api.tm.sys.application.services.service.load(
             name=self.want.name,
             partition=self.want.partition
         )
-        if route:
-            route.delete()
+        if result:
+            result.delete()
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            name=dict(required=True),
+            template=dict(
+                required=False,
+                default=None
+            ),
+            parameters=dict(
+                required=False,
+                default=None,
+                type='dict'
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
+            )
+        )
+        self.f5_product_name = 'bigip'
 
 
 def main():
-    module = F5AnsibleModule()
-    setup_connection(**module.params)
+    spec = ArgumentSpec()
 
-    try:
-        obj = ModuleManager(module=module)
-        result = obj.apply_changes()
-        module.exit_json(**result)
-    except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        mutually_exclusive=spec.mutually_exclusive,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
+
+    mm = ModuleManager(client)
+    results = mm.exec_module()
+    client.module.exit_json(**results)
 
 if __name__ == '__main__':
     main()

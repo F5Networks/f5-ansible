@@ -5,7 +5,17 @@
   "lists": [
     {
       "name": "irules__irules",
-      "value": []
+      "encrypted": "no",
+      "value": [
+        "/Common/lgyft"
+      ]
+    },
+    {
+      "name": "net__client_vlan",
+      "encrypted": "no",
+      "value": [
+        "/Common/net2"
+      ]
     }
   ],
   "tables": [
