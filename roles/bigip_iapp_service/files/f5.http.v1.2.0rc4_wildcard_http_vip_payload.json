@@ -1,0 +1,57 @@
+{
+  "name": "service-1-blue",
+  "template": "/Common/f5.http.v1.2.0rc4",
+  "templateModified": "no",
+  "strictUpdates": "enabled",
+  "partition": "Common",
+  "deviceGroup": "/Common/autoscale-group",
+  "inheritedDevicegroup": "false",
+  "trafficGroup": "/Common/traffic-group-1",
+  "inheritedTrafficGroup": "true",
+  "tables": [
+    {
+      "columnNames": [
+        "addr",
+        "port",
+        "connection_limit"
+      ],
+      "name": "pool__members",
+      "rows": [
+        {
+          "row": [
+            "service-1-blue",
+            "80",
+            "0"
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "encrypted": "no",
+      "name": "asm__use_asm",
+      "value": "app-ltm-policy"
+    },
+    {
+      "encrypted": "no",
+      "name": "monitor__http_version",
+      "value": "http10"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__addr",
+      "value": "0.0.0.0"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__mask",
+      "value": "0.0.0.0"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__port",
+      "value": "80"
+    }
+  ]
+}

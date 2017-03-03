@@ -1,23 +1,176 @@
 ---
 
-#- name: Create HTTP iApp template
-#  bigip_iapp_template:
-#      content: "{{ lookup('file', 'f5.http.v1.2.0rc4.tmpl') }}"
-#      password: "{{ bigip_password }}"
-#      server: "{{ inventory_hostname }}"
-#      server_port: "{{ bigip_port }}"
-#      user: "{{ bigip_username }}"
-#      validate_certs: "{{ validate_certs }}"
-#  register: result
+- name: Ensure GTM is provisioned
+  bigip_provision:
+      module: "asm"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      state: "present"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Create HTTP iApp template
+  bigip_iapp_template:
+      content: "{{ lookup('file', item) }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items:
+      - f5.http.v1.2.0rc4.tmpl
+      - appsvcs_integration_v2.0.002.tmpl
+  register: result
 
 - name: Create HTTP iApp service from iApp template
   bigip_iapp_service:
-      name: "fooServer"
-      template: "f5.http"
-      parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+      name: "foo-service"
+      template: "f5.http.v1.2.0rc4"
+      parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
       password: "{{ bigip_password }}"
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
   register: result
+
+- name: Assert Create HTTP iApp service from iApp template
+  assert:
+      that:
+          - result|changed
+
+- name: Create HTTP iApp service from iApp template - Idempotent check
+  bigip_iapp_service:
+      name: "foo-service"
+      template: "f5.http.v1.2.0rc4"
+      parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create HTTP iApp service from iApp template - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete HTTP iApp service
+  bigip_iapp_service:
+      name: "foo-service"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete HTTP iApp service
+  assert:
+      that:
+          - result|changed
+
+- name: Delete HTTP iApp service - Idempotent check
+  bigip_iapp_service:
+      name: "foo-service"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete HTTP iApp service - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Create AppSvcs iApp service from iApp template
+  bigip_iapp_service:
+      name: "foo-app-service"
+      template: "appsvcs_integration_v2.0.002"
+      parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create AppSvcs iApp service from iApp template
+  assert:
+      that:
+          - result|changed
+
+- name: Create AppSvcs iApp service from iApp template - Idempotent check
+  bigip_iapp_service:
+      name: "foo-app-service"
+      template: "appsvcs_integration_v2.0.002"
+      parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create AppSvcs iApp service from iApp template - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete AppSvcs iApp service from iApp template
+  bigip_iapp_service:
+      name: "foo-app-service"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete AppSvcs iApp service from iApp template
+  assert:
+      that:
+          - result|changed
+
+- name: Delete AppSvcs iApp service from iApp template - Idempotent check
+  bigip_iapp_service:
+      name: "foo-app-service"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "absent"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Delete AppSvcs iApp service from iApp template - Idempotent check
+  assert:
+      that:
+          - not result|changed

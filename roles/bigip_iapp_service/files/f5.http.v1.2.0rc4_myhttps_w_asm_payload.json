@@ -1,0 +1,162 @@
+{
+  "deviceGroup": "/Common/autoscale-group",
+  "deviceGroupReference": {
+    "link": "https://localhost/mgmt/tm/cm/device-group/~Common~autoscale-group?ver=12.1.1"
+  },
+  "fullPath": "/Common/example_https.app/example_https",
+  "generation": 5420,
+  "inheritedDevicegroup": "true",
+  "inheritedTrafficGroup": "true",
+  "kind": "tm:sys:application:service:servicestate",
+  "name": "example_https",
+  "partition": "Common",
+  "selfLink": "https://localhost/mgmt/tm/sys/application/service/~Common~example_https.app~example_https?ver=12.1.1",
+  "strictUpdates": "enabled",
+  "subPath": "example_https.app",
+  "tables": [
+    {
+      "name": "basic__snatpool_members"
+    },
+    {
+      "name": "net__snatpool_members"
+    },
+    {
+      "name": "optimizations__hosts"
+    },
+    {
+      "columnNames": [
+        "name"
+      ],
+      "name": "pool__hosts",
+      "rows": [
+        {
+          "row": [
+            "demo.f5example.com"
+          ]
+        }
+      ]
+    },
+    {
+      "columnNames": [
+        "addr",
+        "port",
+        "connection_limit"
+      ],
+      "name": "pool__members",
+      "rows": [
+        {
+          "row": [
+            "10.0.0.1",
+            "80",
+            "0"
+          ]
+        },
+        {
+          "row": [
+            "10.0.0.2",
+            "80",
+            "0"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "server_pools__servers"
+    }
+  ],
+  "template": "/Common/f5.http.v1.2.0rc4",
+  "templateModified": "no",
+  "templateReference": {
+    "link": "https://localhost/mgmt/tm/sys/application/template/~Common~f5.http.v1.2.0rc4?ver=12.1.1"
+  },
+  "trafficGroup": "/Common/traffic-group-1",
+  "trafficGroupReference": {
+    "link": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1?ver=12.1.1"
+  },
+  "variables": [
+    {
+      "encrypted": "no",
+      "name": "asm__language",
+      "value": "utf-8"
+    },
+    {
+      "encrypted": "no",
+      "name": "asm__security_logging",
+      "value": "/#do_not_use#"
+    },
+    {
+      "encrypted": "no",
+      "name": "asm__use_asm",
+      "value": "/Common/app-ltm-policy"
+    },
+    {
+      "encrypted": "no",
+      "name": "client__http_compression",
+      "value": "/#create_new#"
+    },
+    {
+      "encrypted": "no",
+      "name": "monitor__monitor",
+      "value": "/#create_new#"
+    },
+    {
+      "encrypted": "no",
+      "name": "monitor__response"
+    },
+    {
+      "encrypted": "no",
+      "name": "monitor__uri",
+      "value": "/"
+    },
+    {
+      "encrypted": "no",
+      "name": "net__client_mode",
+      "value": "wan"
+    },
+    {
+      "encrypted": "no",
+      "name": "net__server_mode",
+      "value": "lan"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__addr",
+      "value": "1.1.1.1"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__pool_to_use",
+      "value": "/#create_new#"
+    },
+    {
+      "encrypted": "no",
+      "name": "pool__port_secure",
+      "value": "443"
+    },
+    {
+      "encrypted": "no",
+      "name": "ssl__cert",
+      "value": "/Common/default.crt"
+    },
+    {
+      "encrypted": "no",
+      "name": "ssl__key",
+      "value": "/Common/default.key"
+    },
+    {
+      "encrypted": "no",
+      "name": "ssl__mode",
+      "value": "client_ssl"
+    },
+    {
+      "encrypted": "no",
+      "name": "ssl_encryption_questions__advanced",
+      "value": "no"
+    },
+    {
+      "encrypted": "no",
+      "name": "ssl_encryption_questions__help",
+      "value": "hide"
+    }
+  ]
+}
