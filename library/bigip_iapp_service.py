@@ -85,6 +85,7 @@ RETURN = '''
 '''
 
 from ansible.module_utils.f5_utils import *
+from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
@@ -121,7 +122,7 @@ class Parameters(AnsibleF5Parameters):
     @property
     def tables(self):
         result = []
-        if self._values['tables'] is None:
+        if not self._values['tables']:
             return None
         tables = self._values['tables']
         for table in tables:
@@ -142,6 +143,7 @@ class Parameters(AnsibleF5Parameters):
                     for row in rows:
                         tmp['rows'].append(dict(row=[str(x) for x in row['row']]))
             result.append(tmp)
+        result = sorted(result, key=lambda k: k['name'])
         return result
 
     @tables.setter
@@ -151,12 +153,20 @@ class Parameters(AnsibleF5Parameters):
     @property
     def variables(self):
         result = []
-        if self._values['variables'] is None:
+        if not self._values['variables']:
             return None
         variables = self._values['variables']
         for variable in variables:
             tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
+            if 'encrypted' not in tmp:
+                # BIG-IP will inject an 'encrypted' key if you don't provide one.
+                # If you don't provide one, then we give you the default 'no', by
+                # default.
+                tmp['encrypted'] = 'no'
+            if 'value' not in tmp:
+                tmp['value'] = ''
             result.append(tmp)
+        result = sorted(result, key=lambda k: k['name'])
         return result
 
     @variables.setter
@@ -166,7 +176,7 @@ class Parameters(AnsibleF5Parameters):
     @property
     def lists(self):
         result = []
-        if self._values['lists'] is None:
+        if not self._values['lists']:
             return None
         lists = self._values['lists']
         for list in lists:
@@ -182,6 +192,7 @@ class Parameters(AnsibleF5Parameters):
                     # for user-supplied values.
                     tmp['value'] = [str(x) for x in list['value']]
             result.append(tmp)
+        result = sorted(result, key=lambda k: k['name'])
         return result
 
     @lists.setter
@@ -288,7 +299,7 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    setattr(self.changes, key, getattr(self.want, key))
+                    setattr(self.changes, key, str(DeepDiff(attr1,attr2)))
                     return True
 
     def update_on_device(self):
