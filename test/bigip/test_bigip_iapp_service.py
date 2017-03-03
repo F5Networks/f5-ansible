@@ -70,7 +70,7 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
 
     def test_module_parameters_keys(self):
-        args = load_fixture('iapp_service_parameters_f5_http.json')
+        args = load_fixture('create_iapp_service_parameters_f5_http.json')
         p = Parameters(args)
 
         # Assert the top-level keys
@@ -79,7 +79,7 @@ class TestParameters(unittest.TestCase):
         assert p.template == '/Common/f5.http'
 
     def test_module_parameters_lists(self):
-        args = load_fixture('iapp_service_parameters_f5_http.json')
+        args = load_fixture('create_iapp_service_parameters_f5_http.json')
         p = Parameters(args)
 
         assert 'lists' in p._values
@@ -95,7 +95,7 @@ class TestParameters(unittest.TestCase):
         assert p.lists[1]['value'][0] == '/Common/net2'
 
     def test_module_parameters_tables(self):
-        args = load_fixture('iapp_service_parameters_f5_http.json')
+        args = load_fixture('create_iapp_service_parameters_f5_http.json')
         p = Parameters(args)
 
         assert 'tables' in p._values
@@ -122,7 +122,7 @@ class TestParameters(unittest.TestCase):
         assert p.tables[1]['rows'][1]['row'][1] == '0'
 
     def test_module_parameters_variables(self):
-        args = load_fixture('iapp_service_parameters_f5_http.json')
+        args = load_fixture('create_iapp_service_parameters_f5_http.json')
         p = Parameters(args)
 
         assert 'variables' in p._values
@@ -199,8 +199,8 @@ class TestManager(unittest.TestCase):
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)
-    def test_create_service(self, mgmt):
-        parameters = load_fixture('iapp_service_parameters_f5_http.json')
+    def test_create_service(self, *args):
+        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
         set_module_args(dict(
             name='foo',
             template='f5.http',
@@ -224,6 +224,40 @@ class TestManager(unittest.TestCase):
         mm.create_on_device = lambda: True
 
         results = mm.exec_module()
+        assert results['changed'] is True
 
-        print(results)
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_update_agent_status_traps(self, *args):
+        parameters = load_fixture('update_iapp_service_parameters_f5_http.json')
+        set_module_args(dict(
+            name='foo',
+            template='f5.http',
+            parameters=parameters,
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
+        current = Parameters(parameters)
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: False
+        mm.exists = lambda: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
         assert results['changed'] is True
