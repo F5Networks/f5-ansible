@@ -29,7 +29,12 @@ The architecture of the modules makes inherent use of the BIG-IP SOAP and REST
 APIs as well as the tmsh API where required.
 
 This repository is an **incubator** for Ansible modules that we would like to
-have upstreamed over the course of time.
+have upstreamed over the course of time. The modules in this repository **may be
+broken due to experimentation or refactoring**.
+
+If you want to download the stable modules, they are shipped with Ansible
+automatically. In-between major releases of Ansible, new `stable modules can
+be found here`_.
 
 These modules are freely provided to the open source community for automating
 BIG-IP device configurations using Ansible. Support for the modules is provided
@@ -112,3 +117,4 @@ in this project.
 .. _License: https://github.com/F5Networks/f5-ansible/blob/master/LICENSE
 .. _Requirements: https://f5-ansible.readthedocs.io/en/devel/usage/requirements.html
 .. _Brnaching: https://f5-ansible.readthedocs.io/en/devel/development/branching.html
+.. _stable modules can be found here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
