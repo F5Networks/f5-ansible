@@ -122,6 +122,11 @@ class Parameters(AnsibleF5Parameters):
         reject='blackhole'
     )
 
+    updatables = [
+        'description', 'gateway_address', 'vlan',
+        'pool', 'mtu', 'reject'
+    ]
+
     @property
     def vlan(self):
         if self._values['vlan'] is None:
@@ -203,7 +208,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
@@ -223,14 +229,15 @@ class ModuleManager(object):
 
     def create(self):
         required_resources = ['pool', 'vlan', 'reject', 'gateway_address']
-
-        if self.client.check_mode:
-            return True
-
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                setattr(self.changes, key, getattr(self.want, key))
         if self.want.destination is None:
             raise F5ModuleError(
                 'destination must be specified when creating a static route'
             )
+        if self.client.check_mode:
+            return True
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
                 "You must specify at least one of "
@@ -240,18 +247,14 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        updateable = [
-            'description', 'gateway_address', 'vlan',
-            'pool', 'mtu', 'reject'
-        ]
-
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    setattr(self.changes, key, getattr(self.want, key))
+                    setattr(self.changes, key, attr1)
                     return True
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
