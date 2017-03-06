@@ -140,6 +140,11 @@ class Parameters(AnsibleF5Parameters):
         contact='sysContact'
     )
 
+    updatables = [
+        'agent_status_traps', 'agent_authentication_traps',
+        'device_warning_traps', 'location', 'contact'
+    ]
+
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -159,19 +164,20 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
     def should_update(self):
-        updateable = Parameters.param_api_map.keys()
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    self.changes._values[key] = getattr(self.want, key)
+                    setattr(self.changes, key, attr1)
                     return True
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
