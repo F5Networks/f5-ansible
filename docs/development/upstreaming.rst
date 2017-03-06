@@ -18,7 +18,7 @@ These modules can only be obtained through the installation steps outlined
 in the `Installation`_ docs.
 
 An incubating module may or may not be working at any point in time. While
-we prefer that you do not break any of them during development, we recognize
+we prefer to not break any of them during development, we recognize
 that sometimes that is part of the process.
 
 .. note::
@@ -30,39 +30,6 @@ that sometimes that is part of the process.
 A module in incubation should have an associated Issue in Github so that
 its progress can be tracked and so that others do not repeat work.
 
-Deprecated modules
-------------------
-
-When a module has been successfully upstreamed, we do not remove it from this
-repository. We do this because we want to maintain a place for the upstreamed
-modules to be modified and hacked upon without concern for breaking the
-stable product.
-
-To denote that a module is deprecated though, we use the standard ansible
-method of prefixing the module name with an underscore (_).
-
-This allows you to visually know which modules are no longer, officially, a
-part of this repository.
-
-Deprecated modules remain candidates for exploration and trying new things.
-If you would like to try something drastic out (that would probably not
-fly with the Ansible core developers) it is recommended that you try it
-here and if it seems like a good change to make, we will attempt to upstream
-it as well.
-
-Tracking upstream
-^^^^^^^^^^^^^^^^^
-
-For modules that are deprecated, there is still the possibility that patches
-will be merged in upstream that we will want to reflect in the deprecated
-modules.
-
-To do this, we periodically rebase the deprecated module on to the tracked
-upstream module; incorporating the changes. With this comes the addition
-of continual testing and ongoing usage internally and externally to make
-sure that the module works, and allows contributors to bolt on major changes
-without affecting the stable module.
-
 Qualifications for upstreaming
 ------------------------------
 
@@ -72,5 +39,28 @@ standards that have been `established for it`_.
 At that point in its development, we will make the request to upstream
 Ansible for the module's inclusion.
 
+Releases
+--------
+
+After a module is upstreamed, there will continue to be a period of time
+that must pass before it is released as part of the core Ansible product.
+
+That release schedule is shown in the `ROADMAP files` near the top of
+each file.
+
+Depending on what version is currently stable, upstreamed modules will be
+part of the next major stable release.
+
+For example.
+
+If 2.3 is the current stable version and a module was upstreamed to core,
+it would not appear as part of `pip install ansible` until version 2.4
+was released.
+
+You can get the modules before that point in time, but you must do so
+manually. The link to the `stable modules is here`_.
+
+.. ROADMAP files: https://github.com/ansible/ansible/tree/devel/docs/docsite/rst/roadmap
 .. established for it: standards
 .. Installation: install
+.. stable modules is here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
