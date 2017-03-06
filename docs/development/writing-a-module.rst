@@ -31,9 +31,7 @@ available for you to use to set these directories up automatically.
 
 .. code-block:: shell
 
-    $> ./scripts/stub-new-module.sh bigip_device_ssh
-
-The script accepts a single argument; the name of your module.
+    $> ./scripts/stub-new-module.py stub --module=bigip_device_ssh
 
 When it finishes running, you will have the necessary files available to
 begin working on your module.
@@ -52,23 +50,14 @@ License header
 
 The first things you you will put in the file is the license header.
 
-Some contributors choose to put their names in there as if that implies that
-they actually have a copyright over the code. For example, you might often
-see something that resembles the following
-
-.. code-block:: yaml
-
-   # (c) 2015, John Smith
-
-As a general rule of thumb, we frown upon that behavior. Instead, we ask
-that you use the common license header and list yourself as an author.
-
 Here is the common license header.
 
 .. code-block:: python
 
    #!/usr/bin/python
    # -*- coding: utf-8 -*-
+   #
+   # Copyright 2016 F5 Networks Inc.
    #
    # This file is part of Ansible
    #
@@ -85,11 +74,28 @@ Here is the common license header.
    # You should have received a copy of the GNU General Public License
    # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-Following this format is done to provide consistency and to ensure that
-there are never any conflicts over whose authority is implied with copyright.
+If the module under development is your original work, then you can
+include your name in the copyright above.
 
-If you are concerned over credit being given where it is due, do not
-worry as we will address that in the next section.
+If you are only contributing an existing module, then it is not necessary
+to include a copyright line at the top. Instead, accepting our CLA is
+sufficient to get code merged into our branch.
+
+The ANSIBLE_METADATA variable
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This variable should be included first in your module. It specifies
+metadata for the module itself. It can always look the same. Here is
+it as would be defined in code.
+
+.. code-block:: python
+
+
+   ANSIBLE_METADATA = {'status': ['preview'],
+                       'supported_by': 'community',
+                       'version': '1.0'}
+
+After the metadata variable comes the `DOCUMENTATION` variable.
 
 The DOCUMENTATION variable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,7 +114,7 @@ Let's look at the code that we will add to our module.
    short_description: Manage the SSHD settings of a BIG-IP
    description:
      - Manage the SSHD settings of a BIG-IP
-   version_added: "2.2"
+   version_added: "2.4"
    options:
      banner:
        description:
@@ -145,38 +151,14 @@ Let's look at the code that we will add to our module.
          - Specifies, when checked C(enabled), that the system accepts SSH
            communications
        required: false
-     password:
-       description:
-         - BIG-IP password
-       required: true
      port:
        description:
          - Port that you want the SSH daemon to run on
        required: false
-     server:
-       description:
-         - BIG-IP host
-       required: true
-     server_port:
-       description:
-         - BIG-IP server port
-       required: false
-       default: 443
-     user:
-       description:
-         - BIG-IP username
-       required: true
-       aliases:
-         - username
-     validate_certs:
-       description:
-         - If C(no), SSL certificates will not be validated. This should only be
-           used on personally controlled sites using self-signed certificates.
-       required: false
-       default: true
    notes:
      - Requires the f5-sdk Python package on the host This is as easy as pip
        install f5-sdk
+   extends_documentation_fragment: f5
    requirements:
      - f5-sdk
    author:
@@ -196,11 +178,19 @@ The keys that one commonly finds are
   * ``notes``
   * ``requirements``
   * ``author``
+  * ``extends_documentation_fragment``
+
+.. note::
+
+    The `extends_documentation_fragment` key is special as it is what will
+    automatically inject the variables `user`, `password`, `server`,
+    `server_port` and `validate_certs` into your documentation. It should
+    be used for all modules.
 
 The EXAMPLES variable
 ~~~~~~~~~~~~~~~~~~~~~
 
-Our examples variable contains the most common use cases for this module.
+The examples variable contains the most common use cases for this module.
 
 I personally think that setting of the banner will be the most common case,
 but future authors are free to add to my examples.
@@ -217,8 +207,8 @@ For this module, our ``EXAMPLES`` variable looks like this.
      bigip_device_sshd:
          banner: "enabled"
          banner_text: "banner text goes here"
-         password: "admin"
-         server: "bigip.localhost.localdomain"
+         password: "secret"
+         server: "lb.mydomain.com"
          user: "admin"
      delegate_to: localhost
 
@@ -226,32 +216,50 @@ For this module, our ``EXAMPLES`` variable looks like this.
      bigip_device_sshd:
          banner: "enabled"
          banner_text: "{{ lookup('file', '/path/to/file') }}"
-         password: "admin"
-         server: "bigip.localhost.localdomain"
+         password: "secret"
+         server: "lb.mydomain.com"
          user: "admin"
      delegate_to: localhost
 
    - name: Set the SSHD service to run on port 2222
      bigip_device_sshd:
-         password: "admin"
+         password: "secret"
          port: 2222
-         server: "bigip.localhost.localdomain"
+         server: "lb.mydomain.com"
          user: "admin"
      delegate_to: localhost
    '''
 
 This variable should be placed __after__ the ``DOCUMENTATION`` variable.
 
+The examples that you provide should always have the following
+
+**delegate_to: localhost**
+
+The BIG-IP modules are intended to run on the Ansible controller only. The
+best practice is to use this `delegate_to:` here so that users get in the
+habit of using it
+
+**common args**
+
+The common args as as follow
+
+  * `password` should always be set to `secret`
+  * `server` should always be set to `lb.mydomain.com`
+  * `user` should always be set to `admin`
+
 The RETURN variable
 ~~~~~~~~~~~~~~~~~~~
 
-The pattern which we follow is that we always return the current state of
-the module's parameters when the module has finished running.
+The pattern which we follow is that we always return what changed in the
+module's parameters when the module has finished running.
 
-The parameters that I am refering to here are the ones that are not considered
-to be the "standard" parameters to the F5 modules.
+The parameters that I am referring to here are the ones that are not considered
+to be the "standard" parameters to the F5 modules. Some exceptions to this rule
+apply. For example, where the `state` variable contains more states than just
+`absent` and `present`, such as in the `bigip_virtual_server` module.
 
-For our module there include
+For our module these include,
 
   * ``banner``
   * ``banner_text``
@@ -269,20 +277,16 @@ our module file.
 The import block
 ~~~~~~~~~~~~~~~~
 
-The next section in our code is the block of code where our imports happen.
+The next section in our code is the block of code where our `import`s happen.
 
-This code usually just involves importing the ``f5-sdk`` library, but may
-also include imports of other libraries if you are working with legacy code.
+This code usually just involves importing the `module_util` helper library, but
+may also include imports of other libraries if you are working with legacy code.
 
 For this module our import block is the following
 
 .. code-block:: python
 
-   try:
-       from f5.bigip import ManagementRoot
-       HAS_F5SDK = True
-   except ImportError:
-       HAS_F5SDK = False
+   from ansible.module_utils.f5_utils import *
 
 Module class
 ~~~~~~~~~~~~
@@ -479,7 +483,7 @@ You can run the flake8 tests via the ``make`` command
 
    make flake8
 
-Before submiting your own module, it is recommended that your module pass
+Before submitting your own module, it is recommended that your module pass
 the `flake8` tests we ship with the repository. We will ask you to update
 your code to meet these requirements if it does not.
 
@@ -500,20 +504,20 @@ not fly.
 Structure of tests
 ^^^^^^^^^^^^^^^^^^
 
+Test file stubs are created for you automatically when you stub a new
+module.
+
 To best show you how testing works, we will reference an existing module
 that provides complete tests; `bigip_device_sshd`.
 
 First, let's look at the layout of a set of tests. A test is composed of
-a role whose name matches the name of the module that is being tested,
-and includes a double underscore prefix.
+a role whose name matches the name of the module that is being tested.
 
 This role is placed in the `roles/` directory.
 
 So, for our example, our test role looks like this.
 
-.. code-block:: bash
-
-   $> mkdir roles/bigip_device_sshd/
+   * `roles/bigip_device_sshd/`
 
 Inside of this role is everything that you would associate with a normal
 role in ansible.
@@ -522,18 +526,10 @@ Consider the following examples.
 
   * if your test requires static files be used, then a `files/` directory
     should be in your role.
-  * if your test requires templated data (for example iRules) for its
+  * if your test requires template data (for example iRules) for its
     input, then a `templates/` directory should be in your role.
   * all roles will perform some work to test the module, so a `tasks/`
     directory should be in your role.
-
-At a minimum, a `tasks/` directory should exist because it is where all
-your tests will be run from.
-
-.. code-block:: bash
-
-   $> mkdir roles/bigip_device_sshd/
-   $> touch roles/bigip_device_sshd/main.yaml
 
 Now let's dig in to what a test should look like.
 
@@ -637,59 +633,15 @@ Now lets look at how you call the test.
 Calling the test
 ----------------
 
-Once the role has been created, it is a simple matter of creating a playbook
-to run it.
+To call the test and run it, this repo includes a `make` command that is
+available for all modules. The name of the make target is the name of your
+module.
 
-The playbooks that run the module tests are located in the `tests/` directory.
-Each playbook in that directory is named after the module that it tests. So,
-for our example, we will have the following file.
+So, for our example, that `make` command would be.
 
-.. code-block:: bash
+  * make bigip_device_ssh
 
-   $> touch tests/bigip_device_sshd.yaml
-
-The contents of this file are boilerplate. For reference, it is best that you
-refer to an existing one. In this case, the contents of
-`tests/bigip_device_dns.yaml` would be a good reference.
-
-.. code-block:: bash
-
-   $> cp tests/bigip_device_dns.yaml tests/bigip_device_sshd.yaml
-
-After copying the file, you only need to change the references from the former
-module to your own module.
-
-An excerpt of that is shown below.
-
-.. code-block:: yaml
-
-   ---
-
-   ...
-
-   - name: Test the bigip_device_dns module
-     hosts: f5-test
-     connection: local
-
-     roles:
-         - bigip_device_dns
-
-Becomes
-
-.. code-block:: yaml
-
-   ---
-
-   ...
-
-   - name: Test the bigip_device_sshd module
-     hosts: f5-test
-     connection: local
-
-     roles:
-         - bigip_device_sshd
-
-Be sure to also change the comments section to reflect your module.
+This command will run the module functional tests for you in debug mode.
 
 Including supplementary information
 -----------------------------------
@@ -698,7 +650,7 @@ If you include files inside of the `files/`, `templates`, or other directories
 in which the content of that file was auto-generated or pulled from a third
 party source, you should include a `README.md` file in your role's directory.
 
-Inside of this file, you can include steps to repreoduce any of the input
+Inside of this file, you can include steps to reproduce any of the input
 items that you include in the role subdirectories.
 
 In addition, this place is also a good location to include references to third
