@@ -26,7 +26,7 @@ docs:
 	cd docs && make html
 
 flake8:
-	flake8 library
+	flake8
 
 ansible-doc:
 	(cd library; \
@@ -65,7 +65,7 @@ clean-coverage:
 	$(shell rm cache/coverage/.coverage*)
 	$(shell rm .coverage)
 
-bigip-%:
+bigip_%:
 	ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml --vault-password-file ./vault.txt -vvvv
 	#flake8 library/${MODULE_TARGET}.py
 
@@ -74,6 +74,9 @@ cov-bigip-%: clean-coverage
 	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml --vault-password-file ./vault.txt
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off" --vault-password-file ./vault.txt
 	flake8 library/${MODULE_TARGET}.py
+
+unit:
+	pytest -s test/
 
 fetch-upstream:
 	curl -o library/bigip_device_dns.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_dns.py
@@ -98,3 +101,6 @@ fetch-upstream:
 	curl -o library/bigip_sys_db.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_sys_db.py
 	curl -o library/bigip_virtual_server.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_virtual_server.py
 	curl -o library/bigip_vlan.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_vlan.py
+
+upgrade-ansible:
+	pip install --upgrade git+https://github.com/ansible/ansible.git
