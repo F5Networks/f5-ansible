@@ -25,7 +25,7 @@ The development of a module will require some effort on your part. Often
 times the countless reviews might seem frustrating, but believe us, we do
 it for good reason.
 
-By becomming involved with developing a module, you're accepting that your
+By becoming involved with developing a module, you're accepting that your
 contribution will probably not be accepted right off the bat. If you're
 willing to work with us though, and understand the direction we're headed
 in, you will more than likely find your module landing here.
@@ -39,18 +39,13 @@ If you develop a module use an out-of-date convention, we will tell you
 so upon review. It is then expected that you take the initiative to fix
 it.
 
-You must be *willing to accept maintenance of the module*. When we deem
-that the module meets our expectations, we will open a PR with Ansible
-and work to get the module merged into the core product.
-
 Part of Ansible's requirements for this is that the people listed in
 the author field (usually those who wrote the module) take responsibility
 for the ongoing maintenance and support of the module.
 
 Understandably this might be a big issue for you, so we are offering to
-assist. When your module is merged to our repo here, we will add a
-modification to the module that lists ourselves as one of the authors
-of the code.
+assist. When your module is merged to our repo here, we lists ourselves
+as one of the authors of the code.
 
 With this in place, and with the addition of us opening the PR with Ansible
 upstream, we think this will be sufficient to meet their needs for ongoing
@@ -61,22 +56,118 @@ by their authors are removed from Ansible.
 What to work on
 ---------------
 
-While module development is the primary focus of most contributors, we
-are also open to accepting documentation efforts, additions to our test
-runner, new ideas for modules, and other bug finding efforts.
+While module development is the primary focus of most contributors, it's
+understandable that you may not know how to write Python, or may not have
+any interest in writing code to begin with.
 
-Also, we take ideas for new Ansible roles that have a focus on BIG-IP/IQ.
+That's ok. Here are some existing things you can do to assist.
 
-You may have seen some of the BIG-IP roles on Ansible Galaxy or in the
-f5devcentral Github organization; yup that's our work too.
+Documentation
+~~~~~~~~~~~~~
 
-This repo here is the foundational work that supports those other efforts.
-We want to see this be a success though, and for the role landscape to grow
-with the module landscape. So opening Issues here for new Role ideas is also
-a great way to contribute.
+This is always needed. I write documentation that focuses on many of the
+moving parts here, but I can't cover it all and will inevitably miss things.
+
+Submitting documentation improvements is encouraged.
+
+Unit tests
+~~~~~~~~~~
+
+The unit tests in the `test/` directory can always use more love. Unit
+tests run fast and so more of them is not a burden on the test runner.
+
+Add more test cases for your particular usage scenarios or any scenarios
+that may have been missed.
+
+I personally only add enough unit tests to be reasonably comfortable that
+the code will execute right. This, unfortunately, does not cover many of
+the functional test cases. So writing unit test versions of functional
+tests is of huge benefit.
+
+New module ideas
+~~~~~~~~~~~~~~~~
+
+We don't have modules to cover all of the ways our products are used.
+If you find that a module is missing from the repo and you think needs
+to be added, I will entertain those ideas on the Github Issues page
+
+New functionality for an existing module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Even the existing modules do not cover all the bells and whistles that
+customers use.
+
+If a module is missing a parameter that you think it should have, raise
+and issue and we will consider it.
+
+Postman collections
+~~~~~~~~~~~~~~~~~~~
+
+The Ansible modules make use of the F5 Python SDK for all of their work.
+In the SDK, all work is accomplished via the product REST APIs and this
+just happens to fit in perfectly with the tool Postman.
+
+If you want to help us work on new modules without involving yourself
+in Python code, a great way to start is to write Postman collections
+for the APIs that configure on the BIG-IP what you want to configure.
+
+If you provide us with the Postman collections, this makes it really
+easy for us to write the Ansible module itself.
+
+This is the approach that many of the F5 teams who do not work in
+software land all day long take because it is super effective. Bonus
+points for collections that address differences in APIs between
+versions of BIG-IP
+
+Finding bugs (via usage)
+~~~~~~~~~~~~~~~~~~~~~~~~
+Using the modules is the best way to iron out bugs. By using the modules
+in the way that **you** expect them to work is a great way to find bugs.
+
+During the development process, we write tests with specific user personas
+in mind. Your usage patterns may not reflect those personas though and
+that might break the module.
+
+Using the modules is the best way to get both code and documentation
+correct. If it's not obvious to you via the documentation about how a
+module works, then I guarantee it is unclear to many more people.
+
+Righting those wrongs helps you and future users.
+
+More example playbooks
+~~~~~~~~~~~~~~~~~~~~~~
+
+Playbooks show people how to make use of the module when paired with
+other modules. Playbooks also are the way that people inevitably use
+all these modules, so if you write playbooks that make use of them,
+this allows people to copy/paste the actual usage for their own benefit.
+
+More roles for f5devcentral
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Ansible's role features provide the opportunity for us to build new
+sets of configuration for an F5 product.
+
+There has been some effort to begin writing role that would be useful
+for different scenarios (such as the `bigip-hardening` role) but this
+effort has not been fully tackle yet.
+
+Anyone can write roles as they are just collections of files, templates,
+modules, and tasks that you are already writing for some purpose.
+
+Writing more roles helps spread the usage of the modules.
+
+More ways if you're at F5
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you're an F5 employee, there are even more ways to help. Refer to
+the *go/ansible* link for more details.
+
+Conclusion
+----------
 
 One final thing that will require effort on your part that, frankly, we
-cannot help with is that of endorsement.
+cannot help with, is that of endorsement.
 
 The Ansible work here is by no means supported by F5. If you want that to
 change, then you will need to initiate that change. Speaking with your SEs,
