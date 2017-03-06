@@ -161,142 +161,142 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
         assert results['changed'] is True
 
-    #def test_create_route_to_pool(self):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='present',
-    #        destination='10.10.10.10',
-    #        pool="test-pool"
-    #    ))
-    #    bigip_static_route._CONNECTION = True
+    # def test_create_route_to_pool(self):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='present',
+    #         destination='10.10.10.10',
+    #         pool="test-pool"
+    #     ))
+    #     bigip_static_route._CONNECTION = True
     #
-    #    module = F5AnsibleModule()
-    #    obj = ModuleManager(module=module)
+    #     module = F5AnsibleModule()
+    #     obj = ModuleManager(module=module)
     #
-    #    # Override methods to force specific logic in the module to happen
-    #    obj.exists = lambda: False
-    #    obj.create_on_device = lambda x: True
-    #    obj.exit_json = lambda x: True
-    #    results = obj.apply_changes()
+    #     # Override methods to force specific logic in the module to happen
+    #     obj.exists = lambda: False
+    #     obj.create_on_device = lambda x: True
+    #     obj.exit_json = lambda x: True
+    #     results = obj.apply_changes()
     #
-    #    assert results['changed'] is True
-    #    assert results['pool'] == 'test-pool'
-    #    assert results['partition'] == 'Common'
+    #     assert results['changed'] is True
+    #     assert results['pool'] == 'test-pool'
+    #     assert results['partition'] == 'Common'
     #
-    #def test_create_route_to_vlan(self):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='present',
-    #        destination='10.10.10.10',
-    #        vlan="test-vlan"
-    #    ))
-    #    bigip_static_route._CONNECTION = True
+    # def test_create_route_to_vlan(self):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='present',
+    #         destination='10.10.10.10',
+    #         vlan="test-vlan"
+    #     ))
+    #     bigip_static_route._CONNECTION = True
     #
-    #    module = F5AnsibleModule()
-    #    obj = ModuleManager(module=module)
+    #     module = F5AnsibleModule()
+    #     obj = ModuleManager(module=module)
     #
-    #    # Override methods to force specific logic in the module to happen
-    #    obj.exists = lambda: False
-    #    obj.create_on_device = lambda x: True
-    #    obj.exit_json = lambda x: True
-    #    results = obj.apply_changes()
+    #     # Override methods to force specific logic in the module to happen
+    #     obj.exists = lambda: False
+    #     obj.create_on_device = lambda x: True
+    #     obj.exit_json = lambda x: True
+    #     results = obj.apply_changes()
     #
-    #    assert results['changed'] is True
-    #    assert results['vlan'] == '/Common/test-vlan'
-    #    assert results['partition'] == 'Common'
+    #     assert results['changed'] is True
+    #     assert results['vlan'] == '/Common/test-vlan'
+    #     assert results['partition'] == 'Common'
     #
-    #def test_update_description(self):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='present',
-    #        description='foo description'
-    #    ))
-    #    bigip_static_route._CONNECTION = True
+    # def test_update_description(self):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='present',
+    #         description='foo description'
+    #     ))
+    #     bigip_static_route._CONNECTION = True
     #
-    #    module = F5AnsibleModule()
-    #    obj = ModuleManager(module=module)
+    #     module = F5AnsibleModule()
+    #     obj = ModuleManager(module=module)
     #
-    #    # Override methods to force specific logic in the module to happen
-    #    current = load_fixture('load_net_route_description.json')
-    #    obj.exists = lambda: True
-    #    obj.update_on_device = lambda x: True
-    #    obj.exit_json = lambda x: True
-    #    obj.read_current_from_device = lambda x: current
-    #    results = obj.apply_changes()
+    #     # Override methods to force specific logic in the module to happen
+    #     current = load_fixture('load_net_route_description.json')
+    #     obj.exists = lambda: True
+    #     obj.update_on_device = lambda x: True
+    #     obj.exit_json = lambda x: True
+    #     obj.read_current_from_device = lambda x: current
+    #     results = obj.apply_changes()
     #
-    #    assert results['changed'] is True
-    #    assert results['description'] == 'foo description'
-    #    assert results['partition'] == 'Common'
+    #     assert results['changed'] is True
+    #     assert results['description'] == 'foo description'
+    #     assert results['partition'] == 'Common'
     #
-    #def test_update_description_idempotent(self):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='present',
-    #        description='asdasd'
-    #    ))
-    #    bigip_static_route._CONNECTION = True
+    # def test_update_description_idempotent(self):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='present',
+    #         description='asdasd'
+    #     ))
+    #     bigip_static_route._CONNECTION = True
     #
-    #    module = F5AnsibleModule()
-    #    obj = ModuleManager(module=module)
+    #     module = F5AnsibleModule()
+    #     obj = ModuleManager(module=module)
     #
-    #    # Override methods to force specific logic in the module to happen
-    #    current = load_fixture('load_net_route_description.json')
-    #    obj.exists = lambda: True
-    #    obj.update_on_device = lambda x: True
-    #    obj.exit_json = lambda x: True
-    #    obj.read_current_from_device = lambda x: current
-    #    results = obj.apply_changes()
+    #     # Override methods to force specific logic in the module to happen
+    #     current = load_fixture('load_net_route_description.json')
+    #     obj.exists = lambda: True
+    #     obj.update_on_device = lambda x: True
+    #     obj.exit_json = lambda x: True
+    #     obj.read_current_from_device = lambda x: current
+    #     results = obj.apply_changes()
     #
-    #    # There is no assert for the description, because it should
-    #    # not have changed
-    #    assert results['changed'] is False
-    #    assert results['partition'] == 'Common'
+    #     # There is no assert for the description, because it should
+    #     # not have changed
+    #     assert results['changed'] is False
+    #     assert results['partition'] == 'Common'
     #
-    #def test_delete(self):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='absent'
-    #    ))
-    #    bigip_static_route._CONNECTION = True
+    # def test_delete(self):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='absent'
+    #     ))
+    #     bigip_static_route._CONNECTION = True
     #
-    #    module = F5AnsibleModule()
-    #    obj = ModuleManager(module=module)
+    #     module = F5AnsibleModule()
+    #     obj = ModuleManager(module=module)
     #
-    #    # Override methods to force specific logic in the module to happen
-    #    obj.exists = Mock()
-    #    obj.exists.side_effect = [True, False]
-    #    obj.remove_from_device = lambda: True
-    #    obj.exit_json = lambda x: True
-    #    results = obj.apply_changes()
+    #     # Override methods to force specific logic in the module to happen
+    #     obj.exists = Mock()
+    #     obj.exists.side_effect = [True, False]
+    #     obj.remove_from_device = lambda: True
+    #     obj.exit_json = lambda x: True
+    #     results = obj.apply_changes()
     #
-    #    assert results['changed'] is True
-    #    assert 'description' not in results
+    #     assert results['changed'] is True
+    #     assert 'description' not in results
     #
-    #@patch('library.bigip_static_route.F5AnsibleModule.fail_json')
-    #def test_invalid_unknown_params(self, mock_module):
-    #    set_module_args(dict(
-    #        name='test-route',
-    #        password='admin',
-    #        server='localhost',
-    #        user='admin',
-    #        state='present',
-    #        foo="bar"
-    #    ))
-    #    bigip_static_route._CONNECTION = True
-    #    module = F5AnsibleModule()
-    #    assert module.fail_json.call_count == 1
+    # @patch('library.bigip_static_route.F5AnsibleModule.fail_json')
+    # def test_invalid_unknown_params(self, mock_module):
+    #     set_module_args(dict(
+    #         name='test-route',
+    #         password='admin',
+    #         server='localhost',
+    #         user='admin',
+    #         state='present',
+    #         foo="bar"
+    #     ))
+    #     bigip_static_route._CONNECTION = True
+    #     module = F5AnsibleModule()
+    #     assert module.fail_json.call_count == 1
