@@ -107,6 +107,10 @@ class Parameters(AnsibleF5Parameters):
         network='network'
     )
 
+    updatables = [
+        'snmp_version', 'community', 'destination', 'port', 'network'
+    ]
+
     @property
     def network(self):
         if self._values['network'] is None:
@@ -171,7 +175,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
@@ -191,10 +196,8 @@ class ModuleManager(object):
         required_resources = [
             'version', 'community', 'destination', 'port', 'network'
         ]
-
         if self.client.check_mode:
             return True
-
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
                 "You must specify at least one of "
@@ -204,15 +207,14 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        updateable = Parameters.api_param_map.keys()
-
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    setattr(self.changes, key, getattr(self.want, key))
+                    setattr(self.changes, key, attr1)
                     return True
+        return False
 
     def update(self):
         self.have = self.read_current_from_device()
