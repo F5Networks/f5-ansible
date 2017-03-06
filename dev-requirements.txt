@@ -7,3 +7,4 @@ bigsuds
 requests
 git+https://github.com/F5Networks/f5-common-python.git
 pytest
+fire
