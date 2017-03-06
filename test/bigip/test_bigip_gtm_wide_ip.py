@@ -84,7 +84,7 @@ class TestParameters(unittest.TestCase):
             name='foo.baz.bar',
             poolLbMode='round-robin'
         )
-        p = Parameters.from_api(args)
+        p = Parameters(args)
         assert p.name == 'foo.baz.bar'
         assert p.lb_method == 'round-robin'
 
@@ -94,7 +94,7 @@ class TestParameters(unittest.TestCase):
             poolLbMode='round-robin'
         )
         with pytest.raises(F5ModuleError) as excinfo:
-            p = Parameters.from_api(args)
+            p = Parameters(args)
             assert p.name == 'foo.baz'
         assert 'The provided name must be a valid FQDN' in str(excinfo)
 
