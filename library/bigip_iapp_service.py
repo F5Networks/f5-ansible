@@ -47,7 +47,7 @@ options:
       - A hash of all the required template variables for the iApp template.
         If your parameters are stored in a file (the more common scenario)
         it is recommended you use either the `file` or `template` lookups
-        to supply the expected parameters
+        to supply the expected parameters.
     required: False
     default: None
   state:
@@ -62,6 +62,9 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+requirements:
+  - f5-sdk
+  - deepdiff
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -73,6 +76,16 @@ EXAMPLES = '''
       name: "foo-service"
       template: "f5.http"
       parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
+
+- name: Upgrade foo-service to v1.2.0rc4 of the f5.http template
+  bigip_iapp_service:
+      name: "foo-service"
+      template: "f5.http.v1.2.0rc4"
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"
@@ -94,7 +107,7 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = [
         'tables', 'variables', 'template', 'lists'
     ]
-    updateables = ['tables', 'variables', 'lists']
+    updatables = ['tables', 'variables', 'lists']
 
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
@@ -257,7 +270,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
@@ -274,10 +288,9 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        updateable = Parameters.updateables
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
-                self.changes._values[key] = getattr(self.want, key)
+                setattr(self.changes, key, getattr(self.want, key))
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -293,14 +306,14 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        updateable = Parameters.updateables
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
                     setattr(self.changes, key, str(DeepDiff(attr1,attr2)))
                     return True
+        return False
 
     def update_on_device(self):
         params = self.want.api_params()
