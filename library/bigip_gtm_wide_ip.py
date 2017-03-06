@@ -108,9 +108,15 @@ from distutils.version import LooseVersion
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        lb_method='poolLbMode'
-    )
+    updatables = ['lb_method', 'state']
+    returnables = ['name', 'lb_method', 'state']
+    api_attributes = ['name', 'poolLbMode']
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        return result
 
     @property
     def lb_method(self):
@@ -153,10 +159,6 @@ class Parameters(AnsibleF5Parameters):
             lb_method = 'round-robin'
         return lb_method
 
-    @lb_method.setter
-    def lb_method(self, value):
-        self._values['lb_method'] = value
-
     @property
     def collection(self):
         type_map = dict(
@@ -178,10 +180,6 @@ class Parameters(AnsibleF5Parameters):
             return None
         return str(self._values['type'])
 
-    @type.setter
-    def type(self, value):
-        self._values['type'] = value
-
     @property
     def name(self):
         if not re.search(r'.*\..*\..*', self._values['name']):
@@ -190,13 +188,17 @@ class Parameters(AnsibleF5Parameters):
             )
         return self._values['name']
 
-    @name.setter
-    def name(self, value):
-        self._value['name'] = value
+    @property
+    def poolLbMode(self):
+        return self.lb_method
+
+    @poolLbMode.setter
+    def poolLbMode(self, value):
+        self.lb_method = value
 
     def api_params(self):
-        result = super(Parameters, self).api_params()
-        result.pop('state', None)
+        for attribute in self.api_attributes:
+            result[attribute] = getattr(self, attribute)
         return result
 
 
@@ -248,7 +250,8 @@ class BaseManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
         return result
@@ -272,13 +275,12 @@ class BaseManager(object):
             return self.create()
 
     def should_update(self):
-        updateable = Parameters.param_api_map.keys()
-        for key in updateable:
+        for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    self.changes._values[key] = getattr(self.want, key)
+                    setattr(self.changes, key, attr1)
                     return True
         return False
 
@@ -313,10 +315,9 @@ class UntypedManager(BaseManager):
         )
 
     def create(self):
-        updateable = Parameters.param_api_map.keys()
-        for key in updateable:
+        for key in Parameters.returnables:
             if getattr(self.want, key) is not None:
-                self.changes._values[key] = getattr(self.want, key)
+                setattr(self.changes, key, getattr(self.want, key))
         if self.client.check_mode:
             return True
         self.create_on_device()
