@@ -32,16 +32,17 @@ options:
       - The module to provision in BIG-IP.
     required: true
     choices:
-      - afm
       - am
-      - sam
+      - afm
       - asm
       - avr
       - fps
       - gtm
+      - ilx
       - lc
       - ltm
       - pem
+      - sam
       - swg
   level:
     description:
@@ -112,19 +113,18 @@ class Parameters(AnsibleF5Parameters):
         level='level'
     )
 
-    def __init__(self, params=None):
-        self._level = None
-        super(Parameters, self).__init__(params)
+    updatables = ['level']
 
     @property
     def level(self):
-        if self._level is None:
+        if self._values['level'] is None:
             return None
-        return str(self._level)
+        return str(self._values['level'])
 
     @level.setter
     def level(self, value):
-        self._level = value
+        self._values['level'] = value
+
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -149,7 +149,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
@@ -174,9 +175,13 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        if self.want.level != self.have.level:
-            self.changes.level = self.want.level
-            return True
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    setattr(self.changes, key, attr1)
+                    return True
         return False
 
     def update_on_device(self):
@@ -226,6 +231,8 @@ class ModuleManager(object):
         while nops < 2:
             if not self._is_mprov_running_on_device():
                 nops += 1
+            else:
+                nops = 0
             time.sleep(5)
 
     def _is_mprov_running_on_device(self):
@@ -246,7 +253,7 @@ class ArgumentSpec(object):
                 required=True,
                 choices=[
                     'afm', 'am', 'sam', 'asm', 'avr', 'fps',
-                    'gtm', 'lc', 'ltm', 'pem', 'swg'
+                    'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx'
                 ]
             ),
             level=dict(
