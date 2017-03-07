@@ -3,7 +3,7 @@ Getting involved
 
 So you want to get involved with this project. Great!
 
-Becomming involved in this project can take a variety of angles. The
+Becoming involved in this project can take a variety of angles. The
 maintainers spend their time camping this repository as well as contributing
 upstream to the Ansible core product. We can be reached on either forum.
 
