@@ -98,7 +98,16 @@ author:
 '''
 
 EXAMPLES = '''
-
+- name: Create static route with gateway address
+  bigip_static_route:
+      destination: "10.10.10.10"
+      gateway_address: "10.2.2.3"
+      name: "test-route
+      password: "secret"
+      server: "lb.mydomain.come"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -116,9 +125,6 @@ class Parameters(AnsibleF5Parameters):
         vlan='tmInterface',
         gateway_address='gw',
         destination='network',
-        pool='pool',
-        description='description',
-        mtu='mtu',
         reject='blackhole'
     )
 
@@ -126,6 +132,29 @@ class Parameters(AnsibleF5Parameters):
         'description', 'gateway_address', 'vlan',
         'pool', 'mtu', 'reject'
     ]
+
+    returnables = [
+        'vlan', 'gateway_address', 'destination', 'pool', 'descriptiom',
+        'reject'
+    ]
+
+    api_attributes = [
+        'tmInterface', 'gw', 'network', 'blackhole'
+    ]
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_none(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_none(result)
+        return result
 
     @property
     def vlan(self):
