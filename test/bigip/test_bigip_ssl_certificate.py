@@ -32,7 +32,8 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Client
 )
 from library.bigip_ssl_certificate import (
-    Parameters,
+    KeyParameters,
+    CertParameters,
     ModuleManager,
     ArgumentSpec
 )
@@ -66,76 +67,98 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
-    def test_module_parameters(self):
+    def test_module_parameters_key(self):
+        key_content = load_fixture('create_insecure_key1.key')
         args = dict(
-            name='foo',
-            snmp_version='1',
-            community='public',
-            destination='10.10.10.10',
-            port=1000,
-            network='other',
+            key_content=key_content,
+            name="cert1",
+            partition="Common",
+            state="present",
             password='password',
             server='localhost',
             user='admin'
         )
-        p = Parameters(args)
-        assert p.name == 'foo'
-        assert p.snmp_version == '1'
-        assert p.community == 'public'
-        assert p.destination == '10.10.10.10'
-        assert p.port == '1000'
-        assert p.network == 'other'
+        p = KeyParameters(args)
+        assert p.name == 'cert1'
+        assert p.key_filename == 'cert1.key'
+        assert '-----BEGIN RSA PRIVATE KEY-----' in p.key_content
+        assert '-----END RSA PRIVATE KEY-----' in p.key_content
+        assert p.key_checksum == '91bdddcf0077e2bb2a0258aae2ae3117be392e83'
+        assert p.state == 'present'
+        assert p.user == 'admin'
+        assert p.server == 'localhost'
+        assert p.password == 'password'
+        assert p.partition == 'Common'
 
-    def test_api_parameters(self):
+    def test_module_parameters_cert(self):
+        cert_content = load_fixture('create_insecure_cert1.crt')
         args = dict(
-            name='foo',
-            community='public',
-            host='10.10.10.10',
-            network='other',
-            version=1,
-            port=1000
-        )
-        p = Parameters.from_api(args)
-        assert p.name == 'foo'
-        assert p.snmp_version == '1'
-        assert p.community == 'public'
-        assert p.destination == '10.10.10.10'
-        assert p.port == '1000'
-        assert p.network == 'other'
-
-
-class TestManager(unittest.TestCase):
-
-    def setUp(self):
-        self.spec = ArgumentSpec()
-
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
-    def test_create_trap(self, *args):
-        set_module_args(dict(
-            name='foo',
-            snmp_version='1',
-            community='public',
-            destination='10.10.10.10',
-            port=1000,
-            network='other',
+            cert_content=cert_content,
+            name="cert1",
+            partition="Common",
+            state="present",
             password='password',
             server='localhost',
             user='admin'
-        ))
-
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
+        p = CertParameters(args)
+        assert p.name == 'cert1'
+        assert p.cert_filename == 'cert1.crt'
+        assert 'Signature Algorithm' in p.cert_content
+        assert '-----BEGIN CERTIFICATE-----' in p.cert_content
+        assert '-----END CERTIFICATE-----' in p.cert_content
+        assert p.cert_checksum == '1e55aa57ee166a380e756b5aa4a835c5849490fe'
+        assert p.state == 'present'
+        assert p.user == 'admin'
+        assert p.server == 'localhost'
+        assert p.password == 'password'
+        assert p.partition == 'Common'
 
-        # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+#    def test_api_parameters(self):
+#        args = dict(
+#            name='foo',
+#            community='public',
+#            host='10.10.10.10',
+#            network='other',
+#            version=1,
+#            port=1000
+#        )
+#        p = Parameters(args)
+#        assert p.name == 'foo'
 
-        results = mm.exec_module()
 
-        assert results['changed'] is True
+#class TestManager(unittest.TestCase):
+#
+#    def setUp(self):
+#        self.spec = ArgumentSpec()
+#
+#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+#           return_value=True)
+#    def test_create_trap(self, *args):
+#        set_module_args(dict(
+#            name='foo',
+#            snmp_version='1',
+#            community='public',
+#            destination='10.10.10.10',
+#            port=1000,
+#            network='other',
+#            password='password',
+#            server='localhost',
+#            user='admin'
+#        ))
+#
+#        client = AnsibleF5Client(
+#            argument_spec=self.spec.argument_spec,
+#            supports_check_mode=self.spec.supports_check_mode,
+#            f5_product_name=self.spec.f5_product_name
+#        )
+#        mm = ModuleManager(client)
+#
+#        # Override methods to force specific logic in the module to happen
+#        mm.exit_json = lambda x: False
+#        mm.create_on_device = lambda: True
+#        mm.exists = lambda: False
+#
+#        results = mm.exec_module()
+#
+#        assert results['changed'] is True
