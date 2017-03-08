@@ -132,18 +132,41 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        agent_status_traps='agentTrap',
-        agent_authentication_traps='authTrap',
-        device_warning_traps='bigipTraps',
-        location='sysLocation',
-        contact='sysContact'
-    )
+    api_map = {
+        'agentTrap': 'agent_status_traps',
+        'authTrap': 'agent_authentication_traps',
+        'bigipTraps': 'device_warning_traps',
+        'sysLocation': 'location',
+        'sysContact': 'contact'
+    }
 
     updatables = [
         'agent_status_traps', 'agent_authentication_traps',
         'device_warning_traps', 'location', 'contact'
     ]
+
+    returnables = [
+        'agent_status_traps', 'agent_authentication_traps',
+        'device_warning_traps', 'location', 'contact'
+    ]
+
+    api_attributes = [
+        'agentTrap', 'authTrap', 'bigipTraps', 'sysLocation', 'sysContact'
+    ]
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self.filter_params(result)
+        return result
 
 
 class ModuleManager(object):
@@ -151,7 +174,18 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -170,13 +204,9 @@ class ModuleManager(object):
         return result
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
         return False
 
     def update(self):
@@ -240,9 +270,12 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
