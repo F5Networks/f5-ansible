@@ -95,7 +95,7 @@ class TestParameters(unittest.TestCase):
             version=1,
             port=1000
         )
-        p = Parameters.from_api(args)
+        p = Parameters(args)
         assert p.name == 'foo'
         assert p.snmp_version == '1'
         assert p.community == 'public'
