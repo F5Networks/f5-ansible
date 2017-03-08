@@ -21,7 +21,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Create virtual server
+- name: Issue 53 - Create virtual server
   assert:
       that:
           - result|changed
@@ -45,7 +45,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Create virtual server - Idempotent check
+- name: Issue 53 - Create virtual server - Idempotent check
   assert:
       that:
           - not result|changed
