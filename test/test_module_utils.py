@@ -59,7 +59,7 @@ class TestRegular(unittest.TestCase):
 
 class TestKeysWithPunctuation(unittest.TestCase):
     class Foo(AnsibleF5Parameters):
-        api_params = {
+        api_map = {
             'dns.proxy.__iter__': 'bar'
         }
         @property
@@ -169,3 +169,49 @@ class TestReferenceAnother(unittest.TestCase):
         test = TestReferenceAnother.Foo(args)
         assert test.lb_method == 'bob'
         assert test.poolLbMode == 'bob'
+
+
+class TestMissingAttrSetter(unittest.TestCase):
+    class Foo(AnsibleF5Parameters):
+        @property
+        def reject(self):
+            return self._values['reject']
+
+        @property
+        def destination(self):
+            return self._values['destination']
+
+    def test_run(self):
+        args = dict(
+            name='test-route',
+            password='admin',
+            server='localhost',
+            user='admin',
+            state='present',
+            destination='10.10.10.10',
+            reject='yes'
+        )
+        test = TestMissingAttrSetter.Foo(args)
+        assert test.destination == '10.10.10.10'
+        assert test.reject == 'yes'
+
+class TestAssureNoInstanceAttributes(unittest.TestCase):
+    class Foo(AnsibleF5Parameters):
+        @property
+        def reject(self):
+            return self._values['reject']
+
+    def test_run(self):
+        args = dict(
+            name='test-route',
+            password='admin',
+            server='localhost',
+            user='admin',
+            state='present',
+            destination='10.10.10.10',
+            reject='yes'
+        )
+        test = TestAssureNoInstanceAttributes.Foo(args)
+        assert test.destination == '10.10.10.10'
+        assert test.reject == 'yes'
+        assert 'destination' not in dir(test)
