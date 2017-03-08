@@ -43,7 +43,7 @@ options:
        - disabled
   name_servers:
     description:
-      - A list of name serverz that the system uses to validate DNS lookups
+      - A list of name servers that the system uses to validate DNS lookups
   forwarders:
     description:
       - A list of BIND servers that the system can use to perform DNS lookups
@@ -122,13 +122,38 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        cache='dns.cache',
-        forwarders='dns.proxy.__iter__',
-        name_servers='nameServers',
-        search='search',
-        ip_version='include'
-    )
+    api_map = {
+        'dns.cache': 'cache',
+        'dns.proxy.__iter__': 'forwarders',
+        'nameServers': 'name_servers',
+        'include': 'ip_version'
+    }
+
+    api_attributes = [
+        'nameServers', 'search', 'include'
+    ]
+
+    updatables = [
+        'cache', 'forwarders', 'name_servers', 'search', 'ip_version'
+    ]
+
+    returnables = [
+        'cache', 'forwarders', 'name_servers', 'search', 'ip_version'
+    ]
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self.filter_params(result)
+        return result
 
     @property
     def search(self):
@@ -139,10 +164,6 @@ class Parameters(AnsibleF5Parameters):
             result.append(str(server))
         return result
 
-    @search.setter
-    def search(self, value):
-        self._values['search'] = value
-
     @property
     def name_servers(self):
         result = []
@@ -152,10 +173,6 @@ class Parameters(AnsibleF5Parameters):
             result.append(str(server))
         return result
 
-    @name_servers.setter
-    def name_servers(self, value):
-        self._values['name_servers'] = value
-
     @property
     def cache(self):
         if str(self._values['cache']) in ['enabled', 'enable']:
@@ -163,19 +180,10 @@ class Parameters(AnsibleF5Parameters):
         else:
             return 'disable'
 
-    @cache.setter
-    def cache(self, value):
-        self._values['cache'] = value
-
     @property
     def dhcp(self):
         valid = ['enable', 'enabled']
-
         return True if self._values['dhcp'] in valid else False
-
-    @dhcp.setter
-    def dhcp(self, value):
-        self._values['dhcp'] = value
 
     @property
     def forwarders(self):
@@ -200,26 +208,24 @@ class Parameters(AnsibleF5Parameters):
         else:
             return None
 
-    @ip_version.setter
-    def ip_version(self, value):
-        self._values['ip_version'] = value
-
-    def api_params(self):
-        result = super(Parameters, self).api_params()
-
-        # Remove items that are simple keys. This allows the more complex
-        # set of parameters be returned as the api params.
-        result.pop('dns.cache', None)
-        result.pop('dns.proxy.__iter__', None)
-        return result
-
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -237,7 +243,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        #result.update(**self.changes.to_dict())
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
@@ -272,14 +279,10 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        for key in self.want.param_api_map.keys():
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, getattr(self.want, key))
-                    return True
-
+        self._update_changed_options()
+        if self.changes:
+            return True
+        return False
 
     def update_on_device(self):
         params = self.want.api_params()
