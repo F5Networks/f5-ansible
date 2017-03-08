@@ -104,7 +104,7 @@ class TestParameters(unittest.TestCase):
             sysLocation='Lunar orbit',
             sysContact='Alice@foo.org',
         )
-        p = Parameters.from_api(args)
+        p = Parameters(args)
         assert p.agent_status_traps == 'enabled'
         assert p.agent_authentication_traps == 'enabled'
         assert p.device_warning_traps == 'enabled'
@@ -117,7 +117,7 @@ class TestParameters(unittest.TestCase):
             authTrap='disabled',
             bigipTraps='disabled',
         )
-        p = Parameters.from_api(args)
+        p = Parameters(args)
         assert p.agent_status_traps == 'disabled'
         assert p.agent_authentication_traps == 'disabled'
         assert p.device_warning_traps == 'disabled'
