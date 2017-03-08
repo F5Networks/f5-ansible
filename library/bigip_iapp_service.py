@@ -102,34 +102,24 @@ from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = None
     returnables = []
     api_attributes = [
         'tables', 'variables', 'template', 'lists'
     ]
     updatables = ['tables', 'variables', 'lists']
 
-    def __init__(self, params=None):
-        self._values = defaultdict(lambda: None)
-        if params:
-            for k,v in iteritems(params):
-                setattr(self, k, v)
-
-    def from_api(self):
-        raise F5ModuleError(
-            "from_api is deprecated"
-        )
-
-    def api_params(self):
-        result = dict()
-        for attr in self.api_attributes:
-            result[attr] = getattr(self, attr)
-        return self._filter_params(result)
-
     def to_return(self):
         result = {}
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self.filter_params(result)
         return result
 
     @property
@@ -254,6 +244,25 @@ class ModuleManager(object):
         self.want = Parameters(self.client.module.params)
         self.changes = Parameters()
 
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = str(DeepDiff(attr1,attr2))
+        if changed:
+            self.changes = Parameters(changed)
+
     def exec_module(self):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
@@ -288,9 +297,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                setattr(self.changes, key, getattr(self.want, key))
+        self._set_changed_options()
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -306,13 +313,9 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, str(DeepDiff(attr1,attr2)))
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
         return False
 
     def update_on_device(self):
