@@ -116,6 +116,14 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self.filter_params(result)
         return result
 
     @property
@@ -159,6 +167,10 @@ class Parameters(AnsibleF5Parameters):
             lb_method = 'round-robin'
         return lb_method
 
+    @lb_method.setter
+    def lb_method(self, value):
+        self._values['lb_method'] = value
+
     @property
     def collection(self):
         type_map = dict(
@@ -196,11 +208,6 @@ class Parameters(AnsibleF5Parameters):
     def poolLbMode(self, value):
         self.lb_method = value
 
-    def api_params(self):
-        for attribute in self.api_attributes:
-            result[attribute] = getattr(self, attribute)
-        return result
-
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -232,7 +239,26 @@ class BaseManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -275,13 +301,9 @@ class BaseManager(object):
             return self.create()
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
         return False
 
     def update(self):
@@ -315,9 +337,7 @@ class UntypedManager(BaseManager):
         )
 
     def create(self):
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                setattr(self.changes, key, getattr(self.want, key))
+        self._set_changed_options()
         if self.client.check_mode:
             return True
         self.create_on_device()
