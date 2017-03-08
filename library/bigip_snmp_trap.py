@@ -99,15 +99,17 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        snmp_version='version',
-        community='community',
-        destination='host',
-        port='port',
-        network='network'
-    )
+    api_map = {
+        'version': 'snmp_version',
+        'community': 'community',
+        'host': 'destination'
+    }
 
     updatables = [
+        'snmp_version', 'community', 'destination', 'port', 'network'
+    ]
+
+    returnables = [
         'snmp_version', 'community', 'destination', 'port', 'network'
     ]
 
@@ -121,29 +123,11 @@ class Parameters(AnsibleF5Parameters):
         else:
             return network
 
-    @network.setter
-    def network(self, value):
-        self._values['network'] = value
-
-    @classmethod
-    def from_api(cls, params):
-        for key,value in iteritems(cls.param_api_map):
-            param = params.pop(value, None)
-            if param is not None:
-                param = str(param)
-            params[key] = param
-        p = cls(params)
-        return p
-
     @property
     def port(self):
         if self._values['port'] is None:
             return None
         return str(self._values['port'])
-
-    @port.setter
-    def port(self, value):
-        self._values['port'] = value
 
     def api_params(self):
         params = super(Parameters, self).api_params()
@@ -157,7 +141,26 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -196,6 +199,8 @@ class ModuleManager(object):
         required_resources = [
             'version', 'community', 'destination', 'port', 'network'
         ]
+
+        self._set_changed_options()
         if self.client.check_mode:
             return True
         if all(getattr(self.want, v) is None for v in required_resources):
@@ -207,13 +212,9 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
         return False
 
     def update(self):
