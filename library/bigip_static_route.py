@@ -30,7 +30,7 @@ version_added: 2.3
 options:
   name:
     description:
-      - Name of the static route
+      - Name of the static route.
     required: True
   description:
     description:
@@ -121,12 +121,12 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        vlan='tmInterface',
-        gateway_address='gw',
-        destination='network',
-        reject='blackhole'
-    )
+    api_map = {
+        'tmInterface': 'vlan',
+        'gw': 'gateway_address',
+        'network': 'destination',
+        'blackhole': 'reject'
+    }
 
     updatables = [
         'description', 'gateway_address', 'vlan',
@@ -146,14 +146,14 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
-        result = self._filter_none(result)
+        result = self._filter_params(result)
         return result
 
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
             result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_none(result)
+        result = self.filter_params(result)
         return result
 
     @property
@@ -164,10 +164,6 @@ class Parameters(AnsibleF5Parameters):
             return self._values['vlan']
         else:
             return '/{0}/{1}'.format(self.partition, self._values['vlan'])
-
-    @vlan.setter
-    def vlan(self, value):
-        self._values['vlan'] = value
 
     @property
     def gateway_address(self):
@@ -181,10 +177,6 @@ class Parameters(AnsibleF5Parameters):
                 "The provided gateway_address is not an IP address"
             )
 
-    @gateway_address.setter
-    def gateway_address(self, value):
-        self._values['gateway_address'] = value
-
     @property
     def reject(self):
         if self._values['reject'] in BOOLEANS_TRUE:
@@ -192,10 +184,6 @@ class Parameters(AnsibleF5Parameters):
         else:
             # None is the value accepted by the API
             return None
-
-    @reject.setter
-    def reject(self, value):
-        self._values['reject'] = value
 
     @property
     def destination(self):
@@ -209,17 +197,32 @@ class Parameters(AnsibleF5Parameters):
                 "The provided destination is not an IP address"
             )
 
-    @destination.setter
-    def destination(self, value):
-        self._values['destination'] = value
-
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -258,31 +261,25 @@ class ModuleManager(object):
 
     def create(self):
         required_resources = ['pool', 'vlan', 'reject', 'gateway_address']
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                setattr(self.changes, key, getattr(self.want, key))
+        self._set_changed_options()
         if self.want.destination is None:
             raise F5ModuleError(
                 'destination must be specified when creating a static route'
             )
-        if self.client.check_mode:
-            return True
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
                 "You must specify at least one of "
                 + ', '.join(required_resources)
             )
+        if self.client.check_mode:
+            return True
         self.create_on_device()
         return True
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
         return False
 
     def update(self):
@@ -315,9 +312,8 @@ class ModuleManager(object):
         result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
-        ).to_dict()
-        result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        ).properties
+        return Parameters(result)
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -405,9 +401,12 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
