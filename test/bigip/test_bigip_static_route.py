@@ -80,7 +80,7 @@ class TestParameters(unittest.TestCase):
             tmInterface="foo",
             gw="10.10.10.10"
         )
-        p = Parameters.from_api(args)
+        p = Parameters(args)
         assert p.vlan == '/Common/foo'
         assert p.gateway_address == '10.10.10.10'
 
