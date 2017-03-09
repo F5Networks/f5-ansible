@@ -1,10 +1,19 @@
-pep8
-pyflakes
-flake8
-nose
+# Foundational code that supports all the modules
 paramiko
 bigsuds
 requests
 git+https://github.com/F5Networks/f5-common-python.git
+
+# Used for testing modules
+pep8
+pyflakes
+flake8
 pytest
+nose
+
+# Used for stubbing new modules (./scripts/stub-new-module.py)
 fire
+
+# Used for documentation building (make docs)
+sphinx
+sphinx_rtd_theme
