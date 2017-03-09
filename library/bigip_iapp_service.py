@@ -91,6 +91,26 @@ EXAMPLES = '''
       state: "present"
       user: "admin"
   delegate_to: localhost
+
+- name: Configure a service using parameters in YAML
+  bigip_iapp_service:
+      name: "tests"
+      template: "web_frontends"
+      password: "admin"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+      user: "admin"
+      parameters:
+          variables:
+              - name: "var__vs_address"
+                value: "1.1.1.1"
+              - name: "pm__apache_servers_for_http"
+                value: "2.2.2.1:80"
+              - name: "pm__apache_servers_for_https"
+                value: "2.2.2.2:80"
+  delegate_to: localhost
 '''
 
 RETURN = '''
