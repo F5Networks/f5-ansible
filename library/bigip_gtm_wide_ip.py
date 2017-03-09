@@ -47,7 +47,7 @@ options:
         domain name (FQDN). You can also use the alias C(wide_ip) but this
         is deprecated and will be removed in a future Ansible version.
     required: True
-    aliases
+    aliases:
       - wide_ip
   type:
     description:
