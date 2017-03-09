@@ -469,6 +469,8 @@ class ModuleManager(object):
                     changed[key] = attr1
         if changed:
             self.changes = Parameters(changed)
+            return True
+        return False
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -555,8 +557,8 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        self._update_changed_options()
-        if self.changes:
+        result = self._update_changed_options()
+        if result:
             return True
         return False
 
