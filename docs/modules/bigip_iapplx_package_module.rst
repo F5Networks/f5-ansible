@@ -61,13 +61,19 @@ Options
 
 
 
+Examples
+--------
 
+ ::
+
+    
 
 
 Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the remote host. This is as easy as pip install f5-sdk
+.. note:: https://localhost:10443/mgmt/shared/iapp/global-installed-packages/
 
 
     

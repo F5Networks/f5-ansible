@@ -1,8 +1,8 @@
-.. _bigip_hostname:
+.. _iworkflow_license_pool_member:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_license_pool_member - Manages members in a license pool.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manages members in a license pool. By adding and removing members from a pool, you will implicitly be licensing and unlicensing them.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 2.2.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,17 +39,23 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
+    <td>device<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Hostname or IP address of the device to manage in iWorkflow.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
+            <tr>
+    <td>pool<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>The license pool that you want to add the member to.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -61,6 +68,12 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>Whether the managed device should exist, or not, in iWorkflow.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -83,40 +96,8 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
-          user: "admin"
-      delegate_to: localhost
+    
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----

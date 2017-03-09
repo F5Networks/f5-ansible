@@ -1,8 +1,8 @@
-.. _bigip_hostname:
+.. _iworkflow_managed_device:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_managed_device - Manipulate cloud managed devices in iWorkflow.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manipulate cloud managed devices in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 1.5.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,17 +39,23 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
+    <td>device<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Hostname or IP address of the device to manage in iWorkflow.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
+            <tr>
+    <td>password_credential<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Password of the user provided in <code>username_credential</code>.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -62,11 +69,23 @@ Options
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
             <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>Whether the managed device should exist, or not, in iWorkflow.</div></td></tr>
+            <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
+            <tr>
+    <td>username_credential<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Username credential used to log in to the remote device's REST interface. Note that this is usually different from the credential used to log into the CLI of the device.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
@@ -83,40 +102,16 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
+    - name: Discover a BIG-IP device with hostname lb.mydomain.com
+      iworkflow_device:
+          device: "lb.mydomain.com
+          username_credential: "admin"
+          password_credential: "admin"
+          password: "secret"
+          server: "mgmt.mydomain.com"
           user: "admin"
       delegate_to: localhost
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----

@@ -1,8 +1,8 @@
-.. _bigip_snat_pool:
+.. _bigip_snmp:
 
 
-bigip_snat_pool - Manage SNAT pools on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_snmp - Manipulate general SNMP settings on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_snat_pool - Manage SNAT pools on a BIG-IP.
 Synopsis
 --------
 
-Manage SNAT pools on a BIG-IP.
+Manipulate general SNMP settings on a BIG-IP.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 2.2.0
+  * ansible >= 2.3.0
 
 
 Options
@@ -38,24 +39,35 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>append<br/><div style="font-size: small;"></div></td>
+    <td>agent_authentication_traps<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>When <code>yes</code>, will only add members to the SNAT pool. When <code>no</code>, will replace the existing member list with the provided member list.</div></td></tr>
+    <td>None</td>
+        <td><ul><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>When <code>enabled</code>, ensures that the system sends authentication warning traps to the trap destinations. This is usually disabled by default on a BIG-IP.</div></td></tr>
             <tr>
-    <td>members<br/><div style="font-size: small;"></div></td>
+    <td>agent_status_traps<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>When <code>enabled</code>, ensures that the system sends a trap whenever the SNMP agent starts running or stops running. This is usually enabled by default on a BIG-IP.</div></td></tr>
+            <tr>
+    <td>contact<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>List of members to put in the SNAT pool. When a <code>state</code> of present is provided, this parameter is required. Otherwise, it is optional.</div></br>
-        <div style="font-size: small;">aliases: member<div></td></tr>
+        <td><div>Specifies the name of the person who administers the SNMP service for this system.</div></td></tr>
             <tr>
-    <td>name<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
+    <td>device_warning_traps<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul><li>enabled</li><li>disabled</li></ul></td>
+        <td><div>When <code>enabled</code>, ensures that the system sends device warning traps to the trap destinations. This is usually enabled by default on a BIG-IP.</div></td></tr>
+            <tr>
+    <td>location<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
         <td><ul></ul></td>
-        <td><div>The name of the SNAT pool.</div></td></tr>
+        <td><div>Specifies the description of this system's physical location.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -74,12 +86,6 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the SNAT pool should exist or not.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -102,47 +108,22 @@ Examples
 
  ::
 
-    - name: Add the SNAT pool 'my-snat-pool'
-      bigip_snat_pool:
+    - name: Set snmp contact
+      bigip_snmp:
+          contact: "Joe User"
+          password: "secret"
           server: "lb.mydomain.com"
           user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
+          validate_certs: "false"
       delegate_to: localhost
     
-    - name: Change the SNAT pool's members to a single member
-      bigip_snat_pool:
+    - name: Set snmp location
+      bigip_snmp:
+          location: "US West 1"
+          password: "secret"
           server: "lb.mydomain.com"
           user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          member: "30.30.30.30"
-      delegate_to: localhost
-    
-    - name: Append a new list of members to the existing pool
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
-      delegate_to: localhost
-    
-    - name: Remove the SNAT pool 'my-snat-pool'
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "johnd"
-          state: "absent"
+          validate_certs: "false"
       delegate_to: localhost
 
 Return Values
@@ -162,11 +143,39 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> members </td>
-        <td> ['List of members that are part of the SNAT pool.'] </td>
-        <td align=center> changed and success </td>
-        <td align=center> list </td>
-        <td align=center> ['10.10.10.10'] </td>
+        <td> agent_status_traps </td>
+        <td> Value that the agent status traps was set to. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
+    </tr>
+            <tr>
+        <td> contact </td>
+        <td> The new value for the person who administers SNMP on the device. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> Joe User </td>
+    </tr>
+            <tr>
+        <td> location </td>
+        <td> The new value for the system's physical location. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> US West 1a </td>
+    </tr>
+            <tr>
+        <td> device_warning_traps </td>
+        <td> Value that the warning status traps was set to. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
+    </tr>
+            <tr>
+        <td> agent_authentication_traps </td>
+        <td> Value that the authentication status traps was set to. </td>
+        <td align=center>  </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
     </tr>
         
     </table>
@@ -175,8 +184,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
-.. note:: Requires the netaddr Python package on the host. This is as easy as pip install netaddr
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

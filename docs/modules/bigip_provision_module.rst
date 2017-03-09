@@ -15,13 +15,13 @@ bigip_provision - Manage BIG-IP module provisioning
 Synopsis
 --------
 
-Manage BIG-IP module provisioning. This module will only provision at the standard levels of Dedicated, Nominal, and Minimum. While iControl SOAP additionally supports a Custom level, this level is not supported by this module.
+Manage BIG-IP module provisioning. This module will only provision at the standard levels of Dedicated, Nominal, and Minimum.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -47,44 +47,44 @@ Options
     <td>module<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul><li>afm</li><li>am</li><li>sam</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>lc</li><li>ltm</li><li>pem</li><li>swg</li></ul></td>
+        <td><ul><li>am</li><li>afm</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>ilx</li><li>lc</li><li>ltm</li><li>pem</li><li>sam</li><li>swg</li></ul></td>
         <td><div>The module to provision in BIG-IP.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The BIG-IP host.</div></td></tr>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>The BIG-IP server port.</div></td></tr>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, unprovisions the module.</div></td></tr>
+        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, deprovision the module.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
         </table>
     </br>
 
@@ -120,6 +120,8 @@ Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+.. note:: This module only works reliably on BIG-IP versions >= 13.1.
+.. note:: After you provision something you should
 
 
     

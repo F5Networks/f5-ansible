@@ -1,8 +1,8 @@
-.. _bigip_hostname:
+.. _iworkflow_tenant:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_tenant - Manage tenants in iWorkflow.
++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manage tenants in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 2.2.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,11 +39,35 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
+    <td>contact_address<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>An optional contact address associated with the tenant.</div></td></tr>
+            <tr>
+    <td>contact_email<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>An optional contact email address associated with the tenant.</div></td></tr>
+            <tr>
+    <td>contact_phone<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>An optional contact phone number associated with the tenant.</div></td></tr>
+            <tr>
+    <td>description<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>An optional description for the tenant.</div></td></tr>
+            <tr>
+    <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Name of the tenant that you want to create in iWorkflow.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -61,6 +86,12 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>Whether the managed device should exist, or not, in iWorkflow.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -83,45 +114,14 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
-          user: "admin"
-      delegate_to: localhost
+    
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+.. note:: Tenants are not useful unless you associate them with a connector using the ``iworkflow_tenant_connector`` module.
 
 
     

@@ -38,7 +38,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retires as expired.</div><div>The <em>commands</em> argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return. This can be done on a command by command basis. The complex argument supports the keywords <code>command</code> and <code>output</code> where <code>command</code> is the command to run and <code>output</code> is 'text' or 'oneline'.</div></td></tr>
+        <td><div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retires as expired.</div><div>The <em>commands</em> argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return. This can be done on a command by command basis. The complex argument supports the keywords <code>command</code> and <code>output</code> where <code>command</code> is the command to run and <code>output</code> is 'text' or 'one-line'.</div></td></tr>
             <tr>
     <td>interval<br/><div style="font-size: small;"></div></td>
     <td>no</td>

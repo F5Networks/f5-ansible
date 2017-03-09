@@ -1,8 +1,8 @@
-.. _bigip_hostname:
+.. _iworkflow_license_pool:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_license_pool - Manage license pools in iWorkflow.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manage license pools in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 1.5.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,11 +39,23 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
+    <td>accept_eula<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Specifies that you accept the EULA that is part of iWorkflow. Note that this is required to activate the license pool. If this is not specified, or it is set to <code>no</code>, then the pool will remain in a state of limbo until you specify to accept the EULA.</div></td></tr>
+            <tr>
+    <td>base_key<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Key that the license server uses to verify the functionality that you are entitled to license.</div></td></tr>
+            <tr>
+    <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Name of the license pool to create</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -61,6 +74,12 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>Whether the license pool should exist, or not. A state of <code>present</code> will attempt to activate the license pool if <code>accept_eula</code> is set to <code>yes</code>.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -83,40 +102,8 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
-          user: "admin"
-      delegate_to: localhost
+    
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----

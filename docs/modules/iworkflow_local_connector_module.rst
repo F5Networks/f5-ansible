@@ -1,8 +1,8 @@
-.. _bigip_hostname:
+.. _iworkflow_bigip_connector:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_bigip_connector - Manipulate cloud BIG-IP connectors in iWorkflow.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,14 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manipulate cloud BIG-IP connectors in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 1.5.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,11 +39,11 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
+    <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Name of the connector to create</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -61,6 +62,12 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the cloud connector exists. When <code>absent</code>, ensures that the cloud connector does not exist.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -83,40 +90,16 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
+    - name: Create cloud connector named Private Cloud
+      iworkflow_bigip_connector:
+          name: "Private Cloud"
+          username_credential: "admin"
+          password_credential: "admin"
+          password: "secret"
+          server: "mgmt.mydomain.com"
           user: "admin"
       delegate_to: localhost
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----

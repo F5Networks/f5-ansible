@@ -1,8 +1,8 @@
-.. _bigip_snat_pool:
+.. _bigip_static_route:
 
 
-bigip_snat_pool - Manage SNAT pools on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_static_route - Manipulate static routes on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -15,13 +15,13 @@ bigip_snat_pool - Manage SNAT pools on a BIG-IP.
 Synopsis
 --------
 
-Manage SNAT pools on a BIG-IP.
+Manipulate static routes on a BIG-IP.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 1.5.0
 
 
 Options
@@ -38,30 +38,53 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>When <code>yes</code>, will only add members to the SNAT pool. When <code>no</code>, will replace the existing member list with the provided member list.</div></td></tr>
-            <tr>
-    <td>members<br/><div style="font-size: small;"></div></td>
+    <td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>List of members to put in the SNAT pool. When a <code>state</code> of present is provided, this parameter is required. Otherwise, it is optional.</div></br>
-        <div style="font-size: small;">aliases: member<div></td></tr>
+        <td><div>Descriptive text that identifies the route.</div></td></tr>
+            <tr>
+    <td>destination<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies an IP address, and netmask, for the static entry in the routing table. When <code>state</code> is <code>present</code>, this value is required.</div></td></tr>
+            <tr>
+    <td>gateway_address<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the router for the system to use when forwarding packets to the destination host or network. Also known as the next-hop router address. This can be either an IPv4 or IPv6 address. When it is an IPv6 address that starts with <code>FE80:</code>, the address will be treated as a link-local address. This requires that the <code>vlan</code> parameter also be supplied.</div></td></tr>
+            <tr>
+    <td>mtu<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies a specific maximum transmission unit (MTU).</div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The name of the SNAT pool.</div></td></tr>
+        <td><div>Name of the static route.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
+            <tr>
+    <td>pool<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the pool through which the system forwards packets to the destination.</div></td></tr>
+            <tr>
+    <td>reject<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies that the system drops packets sent to the destination.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -79,7 +102,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the SNAT pool should exist or not.</div></td></tr>
+        <td><div>When <code>present</code>, ensures that the cloud connector exists. When <code>absent</code>, ensures that the cloud connector does not exist.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -92,6 +115,12 @@ Options
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+            <tr>
+    <td>vlan<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the VLAN or Tunnel through which the system forwards packets to the destination. When <code>gateway_address</code> is a link-local IPv6 address, this value is required</div></td></tr>
         </table>
     </br>
 
@@ -102,80 +131,22 @@ Examples
 
  ::
 
-    - name: Add the SNAT pool 'my-snat-pool'
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
+    - name: Create static route with gateway address
+      bigip_static_route:
+          destination: "10.10.10.10"
+          gateway_address: "10.2.2.3"
+          name: "test-route
           password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
-      delegate_to: localhost
-    
-    - name: Change the SNAT pool's members to a single member
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
+          server: "lb.mydomain.come"
           user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          member: "30.30.30.30"
-      delegate_to: localhost
-    
-    - name: Append a new list of members to the existing pool
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
-      delegate_to: localhost
-    
-    - name: Remove the SNAT pool 'my-snat-pool'
-      bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "johnd"
-          state: "absent"
+          validate_certs: "no"
       delegate_to: localhost
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> members </td>
-        <td> ['List of members that are part of the SNAT pool.'] </td>
-        <td align=center> changed and success </td>
-        <td align=center> list </td>
-        <td align=center> ['10.10.10.10'] </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 .. note:: Requires the netaddr Python package on the host. This is as easy as pip install netaddr
 
 

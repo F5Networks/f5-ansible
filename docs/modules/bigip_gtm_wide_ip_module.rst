@@ -1,8 +1,8 @@
 .. _bigip_gtm_wide_ip:
 
 
-bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip.
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.0
 
@@ -15,13 +15,13 @@ bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
 Synopsis
 --------
 
-Manages F5 BIG-IP GTM wide ip
+Manages F5 BIG-IP GTM wide ip.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
+  * f5-sdk
 
 
 Options
@@ -41,44 +41,57 @@ Options
     <td>lb_method<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul><li>return_to_dns</li><li>null</li><li>round_robin</li><li>ratio</li><li>topology</li><li>static_persist</li><li>global_availability</li><li>vs_capacity</li><li>least_conn</li><li>lowest_rtt</li><li>lowest_hops</li><li>packet_rate</li><li>cpu</li><li>hit_ratio</li><li>qos</li><li>bps</li><li>drop_packet</li><li>explicit_ip</li><li>connection_rate</li><li>vs_score</li></ul></td>
-        <td><div>LB method of wide ip</div></td></tr>
+        <td><ul><li>round-robin</li><li>ratio</li><li>topology</li><li>global-availability</li></ul></td>
+        <td><div>Specifies the load balancing method used to select a pool in this wide IP. This setting is relevant only when multiple pools are configured for a wide IP.</div></td></tr>
+            <tr>
+    <td>name<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Wide IP name. This name must be formatted as a fully qualified domain name (FQDN). You can also use the alias <code>wide_ip</code> but this is deprecated and will be removed in a future Ansible version.</div></br>
+        <div style="font-size: small;">aliases: wide_ip<div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP.</div></td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The BIG-IP host.</div></td></tr>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
             <tr>
     <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
         <td><ul></ul></td>
-        <td><div>The BIG-IP server port.</div></td></tr>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"> (added in 2.4)</div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li><li>disabled</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the Wide IP exists and is enabled. When <code>absent</code>, ensures that the Wide IP has been removed. When <code>disabled</code>, ensures that the Wide IP exists and is disabled.</div></td></tr>
+            <tr>
+    <td>type<br/><div style="font-size: small;"> (added in 2.4)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>a</li><li>aaaa</li><li>cname</li><li>mx</li><li>naptr</li><li>srv</li></ul></td>
+        <td><div>Specifies the type of wide IP. GTM wide IPs need to be keyed by query type in addition to name, since pool members need different attributes depending on the response RDATA they are meant to supply. This value is required if you are using BIG-IP versions &gt;= 12.0.0.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device.</div></td></tr>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
-            <tr>
-    <td>wide_ip<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>Wide IP name</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
         </table>
     </br>
 
@@ -89,23 +102,20 @@ Examples
 
  ::
 
-      - name: Set lb method
-        local_action: >
-          bigip_gtm_wide_ip
-          server=192.0.2.1
-          user=admin
-          password=mysecret
-          lb_method=round_robin
-          wide_ip=my-wide-ip.example.com
+    - name: Set lb method
+      bigip_gtm_wide_ip:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          lb_method: "round-robin"
+          name: "my-wide-ip.example.com"
+      delegate_to: localhost
 
 
 Notes
 -----
 
-.. note:: Requires BIG-IP software version >= 11.4
-.. note:: F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
-.. note:: Best run as a local_action in your playbook
-.. note:: Tested with manager and above account privilege level
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
     

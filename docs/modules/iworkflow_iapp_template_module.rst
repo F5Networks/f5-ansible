@@ -1,10 +1,10 @@
-.. _bigip_hostname:
+.. _iworkflow_iapp_template:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_iapp_template - Manages iApp templates
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,13 +15,9 @@ bigip_hostname - Manage the hostname of a BIG-IP.
 Synopsis
 --------
 
-Manage the hostname of a BIG-IP.
+Manages TCL iApp services on a BIG-IP.
 
 
-Requirements (on host that executes module)
--------------------------------------------
-
-  * f5-sdk
 
 
 Options
@@ -38,11 +34,23 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>hostname<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
+    <td>device<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
         <td><ul></ul></td>
-        <td><div>Hostname of the BIG-IP host.</div></td></tr>
+        <td><div>Managed BIG-IP that you want to get template JSON from. Either one of <code>managed_device</code> or <code>template</code> must be provided.</div></td></tr>
+            <tr>
+    <td>max_bigip_version<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>asdasd</div></td></tr>
+            <tr>
+    <td>min_bigip_version<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>asdasd</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -61,6 +69,30 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div></td></tr>
+            <tr>
+    <td>template<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>A JSON representation of the iApp template that was imported into iWorkflow.</div></td></tr>
+            <tr>
+    <td>template_content<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>The contents of a valid iApp template in a tmpl file. This iApp Template should be versioned and tested for compatibility with iWorkflow Tenant Services and a BIG-IP version of 11.5.3.2 or later.</div></td></tr>
+            <tr>
+    <td>unsupported_bigip_versions<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>asdasd</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -83,40 +115,17 @@ Examples
 
  ::
 
-    - name: Set the hostname of the BIG-IP
-      bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
+    - name: Create HTTP iApp service from iApp template
+      bigip_iapp_template:
+          name: "foo-service"
+          template: "f5.http"
+          parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "present"
           user: "admin"
       delegate_to: localhost
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> hostname </td>
-        <td> The new hostname of the device </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> big-ip01.internal </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----
