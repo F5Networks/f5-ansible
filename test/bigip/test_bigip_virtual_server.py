@@ -244,14 +244,15 @@ class TestParameters(unittest.TestCase):
                p.profiles_server_side
         assert '/Common/net1' in p.enabled_vlans
 
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+        return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
-    def test_create_service(self, *args):
+    def test_create_virtual_server(self, *args):
         set_module_args(dict(
             all_profiles=[
                 'http', 'clientssl'
@@ -283,40 +284,77 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
-#
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_update_agent_status_traps(self, *args):
-#        parameters = load_fixture('update_iapp_service_parameters_f5_http.json')
-#        set_module_args(dict(
-#            name='foo',
-#            template='f5.http',
-#            parameters=parameters,
-#            state='present',
-#            password='passsword',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        # Configure the parameters that would be returned by querying the
-#        # remote device
-#        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
-#        current = Parameters(parameters)
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: False
-#        mm.exists = lambda: True
-#        mm.update_on_device = lambda: True
-#        mm.read_current_from_device = lambda: current
-#
-#        results = mm.exec_module()
-#        assert results['changed'] is True
-#
+
+    def test_delete_virtual_server(self, *args):
+        set_module_args(dict(
+            all_profiles=[
+                'http', 'clientssl'
+            ],
+            description="Test Virtual Server",
+            destination="10.10.10.10",
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            snat="Automap",
+            state="absent",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+        assert results['changed'] is False
+
+    def test_enable_vs_that_is_already_enabled(self, *args):
+        set_module_args(dict(
+            all_profiles=[
+                'http', 'clientssl'
+            ],
+            description="Test Virtual Server",
+            destination="10.10.10.10",
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            snat="Automap",
+            state="absent",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(
+            dict(
+                agent_status_traps='disabled'
+            )
+        )
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.exists = lambda: False
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+        assert results['changed'] is False
