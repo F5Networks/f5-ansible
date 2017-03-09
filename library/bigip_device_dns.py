@@ -152,7 +152,7 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for api_attribute in self.api_attributes:
             result[api_attribute] = getattr(self, api_attribute)
-        result = self.filter_params(result)
+        result = self._filter_params(result)
         return result
 
     @property

@@ -98,7 +98,6 @@ RETURN = '''
 
 '''
 
-import json
 
 from ansible.module_utils.f5_utils import *
 from deepdiff import DeepDiff
@@ -106,15 +105,16 @@ from distutils.version import LooseVersion
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = None
     returnables = [
         'min_bigip_version', 'max_bigip_version', 'unsupported_bigip_versions'
     ]
+
     api_attributes = [
         'templateContent', 'deviceForJSONTransformation', 'template',
         'minSupportedBIGIPVersion', 'maxSupportedBIGIPVersion',
         'unsupportedBIGIPVersions'
     ]
+
     updatables = [
         'template_content', 'min_bigip_version'
     ]
@@ -125,28 +125,21 @@ class Parameters(AnsibleF5Parameters):
             for k,v in iteritems(params):
                 setattr(self, k, v)
 
-    def from_api(self):
-        raise F5ModuleError(
-            "from_api is deprecated"
-        )
-
-    def api_params(self):
-        result = dict()
-        for attr in self.api_attributes:
-            result[attr] = getattr(self, attr)
-        return self._filter_params(result)
-
     def to_return(self):
         result = {}
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
         return result
 
     @property
-    def min_bigip_version(self):
-
-
-    @min_bigip_version.setter
     def min_bigip_version(self, value):
         absolute_minimum = LooseVersion('11.5.3.2')
         version = LooseVersion(value)
@@ -177,7 +170,26 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = str(DeepDiff(attr1,attr2))
+        if changed:
+            self.changes = Parameters(changed)
 
     def exec_module(self):
         if not HAS_F5SDK:
@@ -212,9 +224,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                setattr(self.changes, key, getattr(self.want, key))
+
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -230,13 +240,10 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, str(DeepDiff(attr1,attr2)))
-                    return True
+        self._update_changed_options()
+        if self.changes:
+            return True
+        return False
 
     def update_on_device(self):
         params = self.want.api_params()
