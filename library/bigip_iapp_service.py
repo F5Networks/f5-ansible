@@ -337,6 +337,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
+        params['execute-action'] = 'definition'
         resource = self.client.api.tm.sys.application.services.service.load(
             name=self.want.name,
             partition=self.want.partition
