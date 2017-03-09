@@ -120,9 +120,6 @@ class BigIpHostnameManager(object):
         result = dict()
 
         changed = self.apply_to_running_config()
-        if changed:
-            self.save_running_config()
-
         result.update(**self.changed_params)
         result.update(dict(changed=changed))
         return result
@@ -133,9 +130,6 @@ class BigIpHostnameManager(object):
             return self.present()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
-
-    def save_running_config(self):
-        self.api.tm.sys.config.exec_cmd('save')
 
 
 class BigIpHostnameModuleConfig(object):
