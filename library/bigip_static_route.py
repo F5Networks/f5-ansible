@@ -40,8 +40,8 @@ options:
   destination:
     description:
       - Specifies an IP address, and netmask, for the static entry in the
-        routing table.
-    required: When C(state) is C(present)
+        routing table. When C(state) is C(present), this value is required.
+    required: False
     default: None
   gateway_address:
     description:
@@ -56,9 +56,9 @@ options:
   vlan:
     description:
       - Specifies the VLAN or Tunnel through which the system forwards packets
-        to the destination.
-    required:
-      - When C(gateway_address) is a link-local IPv6 address.
+        to the destination. When C(gateway_address) is a link-local IPv6
+        address, this value is required
+    required: False
     default: None
   pool:
     description:
