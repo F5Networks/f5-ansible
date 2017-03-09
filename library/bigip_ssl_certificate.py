@@ -343,11 +343,10 @@ class BaseManager(object):
                     changed[key] = attr1
         if changed:
             self.changes = Parameters(changed)
+            return True
+        return False
 
     def exec_module(self):
-        if not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required")
-
         changed = False
         result = dict()
         state = self.want.state
@@ -381,13 +380,9 @@ class BaseManager(object):
             return self.create()
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        result = self._update_changed_options()
+        if result:
+            return True
         return False
 
     def update(self):
@@ -598,6 +593,9 @@ class ArgumentSpec(object):
 
 
 def main():
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
+
     spec = ArgumentSpec()
 
     client = AnsibleF5Client(
