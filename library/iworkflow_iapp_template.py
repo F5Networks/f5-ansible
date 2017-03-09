@@ -226,7 +226,6 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-
         if self.client.check_mode:
             return True
         self.create_on_device()
