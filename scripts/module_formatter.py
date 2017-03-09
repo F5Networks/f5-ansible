@@ -152,7 +152,7 @@ def list_modules(module_dir, depth=0):
         mod_path_only = os.path.dirname(module_path[len(module_dir):])
 
         # directories (core, extras)
-        for new_cat in mod_path_only.split('/')[1:]:
+        for new_cat in ['network', 'f5']:
             if new_cat not in category:
                 category[new_cat] = dict()
             category = category[new_cat]
