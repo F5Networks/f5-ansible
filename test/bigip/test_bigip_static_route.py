@@ -127,13 +127,14 @@ class TestParameters(unittest.TestCase):
         assert p.destination == '10.10.10.10/32'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
+
     def test_create_blackhole(self, *args):
         set_module_args(dict(
             name='test-route',
