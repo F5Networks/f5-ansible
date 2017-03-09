@@ -1,0 +1,165 @@
+cli admin-partitions {
+    update-partition Common
+}
+
+sys application template web_frontends {
+
+    actions {
+        definition {
+
+            implementation {
+                set cfg { 
+ltm pool apache_servers_for_http {
+    __pm__apache_servers_for_http__
+    monitor http 
+}
+
+ltm pool apache_servers_for_https {
+    __pm__apache_servers_for_https__
+    monitor http
+}
+
+ltm rule disable_compression {
+when HTTP_REQUEST {
+	if { [class match [IP::client_addr] equals "local_departments" ] } {
+		COMPRESS::disable
+	}
+}
+}
+
+ltm data-group internal local_departments {
+    records {
+        10.0.1.0/24 {
+            data finance
+        }
+        10.0.2.0/24 {
+            data it
+        }
+        10.0.3.0/24 {
+            data engineering
+        }
+    }
+    type ip
+}
+
+ltm virtual vip_apache {
+    destination __vs_address__:80
+    description "HTTP virtual server"
+    ip-protocol tcp
+    mask 255.255.255.255
+    pool apache_servers_for_http
+    profiles {
+        httpcompression { }
+        custom-tcp-lan-optimized {
+            context serverside
+        }
+        custom-tcp-wan-optimized {
+            context clientside
+        }
+        custom-http-frontends { }
+    }
+    rules {
+        disable_compression
+    }
+    source 0.0.0.0/0
+    translate-address enabled
+    translate-port enabled
+}
+
+ltm virtual vip_apache-ssl {
+    destination __vs_address__:443
+    description "HTTPS virtual server"
+    ip-protocol tcp
+    mask 255.255.255.255
+    pool apache_servers_for_https
+    profiles {
+        httpcompression { }
+        custom-tcp-lan-optimized {
+            context serverside
+        }
+        custom-tcp-wan-optimized {
+            context clientside
+        }
+        custom-http-frontends { }
+    }
+    rules {
+        disable_compression
+    }
+    source 0.0.0.0/0
+    source-address-translation {
+        type automap
+    }
+    translate-address enabled
+    translate-port enabled
+}
+
+ltm profile http custom-http-frontends {
+    defaults-from http
+    enforcement {
+        max-header-count 64
+        max-header-size 32768
+        unknown-method reject
+    }
+    insert-xforwarded-for enabled
+    proxy-type reverse
+    server-agent-name MyCompany.com
+}
+ltm profile tcp custom-tcp-lan-optimized {
+    defaults-from tcp-lan-optimized
+}
+ltm profile tcp custom-tcp-wan-optimized {
+    congestion-control westwood
+    defaults-from tcp-wan-optimized
+    early-retransmit enabled
+    ecn enabled
+    fast-open enabled
+    syn-max-retrans 5
+} }
+                set cfg [string map "__vs_address__ ${::var__vs_address} __pm__apache_servers_for_http__ {} __pm__apache_servers_for_https__ {} __app_service__ $tmsh::app_name.app/$tmsh::app_name " $cfg]
+                set fileId [open /var/tmp/web_frontends.cfg "w"]
+                puts -nonewline $fileId $cfg
+                close $fileId
+
+                
+                tmsh::load sys config merge file /var/tmp/web_frontends.cfg
+
+
+                if {[string length ${::pm__apache_servers_for_http}] > 0} {
+                   set cmd "tmsh::modify ltm pool apache_servers_for_http { members replace-all-with { ${::pm__apache_servers_for_http} } }"
+                   puts "$cmd"
+                   eval $cmd
+                }
+                if {[string length ${::pm__apache_servers_for_https}] > 0} {
+                   set cmd "tmsh::modify ltm pool apache_servers_for_https { members replace-all-with { ${::pm__apache_servers_for_https} } }"
+                   puts "$cmd"
+                   eval $cmd
+                }
+
+
+            }
+
+            presentation {
+
+                include "/Common/f5.apl_common"
+                section var {
+                        string vs_address display "large" validator "IpAddress"
+                }
+
+                section pm {
+                        string apache_servers_for_http display "xxlarge"
+                        string apache_servers_for_https display "xxlarge"
+                }
+                text {
+                        var "General variables"
+                        var.vs_address "Address used for the HTTP and HTTPS virtual servers"
+
+                        pm "Pool members"
+                        pm.apache_servers_for_http "Apache servers for HTTP"
+                        pm.apache_servers_for_https "Apache servers for HTTPS"
+
+                }
+            } 
+            role-acl { admin manager resource-admin }
+        }
+    }
+}

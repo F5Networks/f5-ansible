@@ -1,0 +1,57 @@
+---
+
+- name: Create HTTP iApp template
+  bigip_iapp_template:
+      content: "{{ lookup('file', item) }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  with_items:
+      - web_frontends.iapp
+  register: result
+
+- name: Configure a service based on an existing iApp
+  bigip_iapp_service:
+      name: "tests"
+      template: "web_frontends"
+      password: "admin"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+      user: "admin"
+      parameters:
+          variables:
+              - name: "var__vs_address"
+                value: "1.1.1.1"
+              - name: "pm__apache_servers_for_http"
+                value: "2.2.2.1:80"
+              - name: "pm__apache_servers_for_https"
+                value: "2.2.2.2:80"
+  delegate_to: localhost
+
+- name: Remove web_frontends service
+  bigip_iapp_service:
+      name: "tests"
+      password: "admin"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+      user: "admin"
+  delegate_to: localhost
+
+- name: Create HTTP iApp template
+  bigip_iapp_template:
+      name: "tests"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  with_items:
+      - web_frontends.iapp
+  register: result
