@@ -45,15 +45,15 @@ options:
         to run and the output format to return. This can be done
         on a command by command basis. The complex argument supports
         the keywords C(command) and C(output) where C(command) is the
-        command to run and C(output) is 'text' or 'oneline'.
+        command to run and C(output) is 'text' or 'one-line'.
     required: true
   wait_for:
     description:
       - Specifies what to evaluate from the output of the command
         and what conditionals to apply.  This argument will cause
         the task to wait for a particular conditional to be true
-        before moving forward.   If the conditional is not true
-        by the configured retries, the task fails.  See examples.
+        before moving forward. If the conditional is not true
+        by the configured retries, the task fails. See examples.
     required: false
     default: null
     aliases: ['waitfor']
@@ -61,9 +61,9 @@ options:
   match:
     description:
       - The I(match) argument is used in conjunction with the
-        I(wait_for) argument to specify the match policy.  Valid
-        values are C(all) or C(any).  If the value is set to C(all)
-        then all conditionals in the I(wait_for) must be satisfied.  If
+        I(wait_for) argument to specify the match policy. Valid
+        values are C(all) or C(any). If the value is set to C(all)
+        then all conditionals in the I(wait_for) must be satisfied. If
         the value is set to C(any) then only one of the values must be
         satisfied.
     required: false
@@ -72,7 +72,7 @@ options:
   retries:
     description:
       - Specifies the number of retries a command should by tried
-        before it is considered failed.  The command is run on the
+        before it is considered failed. The command is run on the
         target device every retry and evaluated against the I(wait_for)
         conditionals.
     required: false
@@ -80,52 +80,52 @@ options:
   interval:
     description:
       - Configures the interval in seconds to wait between retries
-        of the command.  If the command does not pass the specified
+        of the command. If the command does not pass the specified
         conditional, the interval indicates how to long to wait before
         trying the command again.
     required: false
     default: 1
+notes:
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+  - Requires Ansible >= 2.3.
+requirements:
+  - f5-sdk >= 2.2.3
+extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
-# Note: examples below use the following provider dict to handle
-#       transport and authentication to the node.
-vars:
-  cli:
-    host: "{{ inventory_hostname }}"
-    username: admin
-    password: admin
-    transport: cli
-
 - name: run show version on remote devices
-<<<<<<< HEAD
   bigip_command:
     commands: show sys version
-    provider: "{{ cli }}"
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
 
 - name: run show version and check to see if output contains BIG-IP
   bigip_command:
     commands: show sys version
-=======
-  bigip_command:
-    commands: show sys version
-    provider: "{{ cli }}"
-
-- name: run show version and check to see if output contains BIG-IP
-  bigip_command:
-    commands: show sys version
->>>>>>> master
     wait_for: result[0] contains BIG-IP
-    provider: "{{ cli }}"
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
 
 - name: run multiple commands on remote nodes
    bigip_command:
     commands:
       - show sys version
       - list ltm virtual
-    provider: "{{ cli }}"
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
 
 - name: run multiple commands and evaluate the output
   bigip_command:
@@ -135,14 +135,22 @@ vars:
     wait_for:
       - result[0] contains BIG-IP
       - result[1] contains my-vs
-    provider: "{{ cli }}"
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
 
 - name: tmsh prefixes will automatically be handled
   bigip_command:
     commands:
       - show sys version
       - tmsh list ltm virtual
-    provider: "{{ cli }}"
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -165,160 +173,213 @@ failed_conditions:
     sample: ['...', '...']
 '''
 
+import time
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_cli import *
-from ansible.module_utils.basic import get_exception
-from ansible.module_utils.network import NetworkModule, NetworkError
-from ansible.module_utils.netcli import CommandRunner
+from ansible.module_utils.f5_utils import *
 from ansible.module_utils.netcli import AddCommandError, FailedConditionsError
-from ansible.module_utils.netcli import FailedConditionalError, AddConditionError
 from ansible.module_utils.six import string_types
-
+from ansible.module_utils.netcli import Conditional
+from ansible.module_utils.network_common import ComplexList
+from ansible.module_utils.network_common import to_list
+from collections import deque
 
 VALID_KEYS = ['command', 'output', 'prompt', 'response']
-VALID_CONFIG_MODES = ['modify', 'delete', 'add']
-
-def to_lines(stdout):
-    for item in stdout:
-        if isinstance(item, string_types):
-            item = str(item).split('\n')
-        yield item
 
 
-def parse_commands(module):
-    for cmd in module.params['commands']:
+class Parameters(AnsibleF5Parameters):
+    returnables = ['stdout', 'stdout_lines', 'warnings']
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    @property
+    def commands(self):
+        commands = deque(self._values['commands'])
+        commands.appendleft(
+            'tmsh modify cli preference pager disabled'
+        )
+        commands = map(self._ensure_tmsh_prefix, list(commands))
+        return commands
+
+    def _ensure_tmsh_prefix(self, cmd):
         cmd = cmd.strip()
-
-        if isinstance(cmd, basestring):
-            cmd = dict(command=cmd, output=None)
-        elif 'command' not in cmd:
-            module.fail_json(msg='command keyword argument is required')
-        elif cmd.get('output') not in [None, 'text', 'oneline']:
-            module.fail_json(msg='invalid output specified for command')
-        elif not set(cmd.keys()).issubset(VALID_KEYS):
-            module.fail_json(msg='unknown keyword specified')
-
-        yield cmd
+        if cmd[0:5] != 'tmsh ':
+            cmd = 'tmsh ' + cmd.strip()
+        return cmd
 
 
-def is_config_mode_command(cmd):
-    if all(cmd['command'].startswith(x) for x in VALID_CONFIG_MODES):
-        return True
-    return False
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.want = Parameters(self.client.module.params)
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _to_lines(self, stdout):
+        lines = list()
+        for item in stdout:
+            if isinstance(item, string_types):
+                item = str(item).split('\n')
+            lines.append(item)
+        return lines
+
+    def _is_valid_mode(self, cmd):
+        valid_configs = [
+            'tmsh list', 'tmsh show',
+            'tmsh modify cli preference pager disabled'
+        ]
+        if any(cmd.startswith(x) for x in valid_configs):
+            return True
+        return False
+
+    def exec_module(self):
+        result = dict()
+
+        try:
+            self.execute()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        result.update(**self.changes.to_return())
+        result.update(dict(changed=False))
+        return result
+
+    def execute(self):
+        warnings = list()
+
+        commands = self.parse_commands(warnings)
+
+        wait_for = self.want.wait_for or list()
+        retries = self.want.retries
+
+        conditionals = [Conditional(c) for c in wait_for]
+
+        while retries > 0:
+            responses = self.execute_on_device(commands)
+
+            for item in list(conditionals):
+                if item(responses):
+                    if self.want.match == 'any':
+                        return item
+                    conditionals.remove(item)
+
+            if not conditionals:
+                break
+
+            time.sleep(self.want.interval)
+            retries -= 1
+        else:
+            failed_conditions = [item.raw for item in conditionals]
+            errmsg = 'One or more conditional statements have not been satisfied'
+            raise FailedConditionsError(errmsg, failed_conditions)
+
+        self.changes = Parameters({
+            'stdout': responses,
+            'stdout_lines': self._to_lines(responses),
+            'warnings': warnings
+        })
+
+    def parse_commands(self, warnings):
+        results = []
+        commands = list(deque(set(self.want.commands)))
+        spec = dict(
+            command=dict(key=True),
+            output=dict(
+                default='text',
+                choices=['text', 'one-line']
+            ),
+        )
+
+        transform = ComplexList(spec, self.client.module)
+        commands = transform(commands)
+
+        for index, item in enumerate(commands):
+            if not self._is_valid_mode(item['command']):
+                warnings.append(
+                    'Using "write" commands is not idempotent. You should use '
+                    'a module that is specifically made for that. If such a '
+                    'module does not exist, then please file a bug. The command '
+                    'in question is "%s..."' % item['command'][0:40]
+                )
+                continue
+
+            if item['output'] == 'one-line' and 'one-line' not in item['command']:
+                item['command'] += ' one-line'
+            elif item['output'] == 'text' and 'one-line' in item['command']:
+                item['command'] = item['command'].replace('one-line', '')
+            results.append(item)
+        return results
+
+    def execute_on_device(self, commands):
+        responses = []
+        for item in to_list(commands):
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs='-c "{0}"'.format(item['command'])
+            )
+            if hasattr(output, 'commandResult'):
+                responses.append(str(output.commandResult))
+        return responses
 
 
-def strip_tmsh_prefix(cmd):
-    if cmd['command'][0:4] == 'tmsh':
-        cmd['command'] = cmd['command'][4:].strip()
-    return cmd
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            commands=dict(
+                type='list',
+                required=True
+            ),
+            wait_for=dict(
+                type='list',
+                aliases=['waitfor']
+            ),
+            match=dict(
+                default='all',
+                choices=['any', 'all']
+            ),
+            retries=dict(
+                default=10,
+                type='int'
+            ),
+            interval=dict(
+                default=1,
+                type='int'
+            )
+        )
+        self.f5_product_name = 'bigip'
+
 
 def main():
-    spec = dict(
-        # { command: <str>, output: <str>, prompt: <str>, response: <str> }
-        commands=dict(type='list', required=True),
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
 
-        wait_for=dict(type='list', aliases=['waitfor']),
-        match=dict(default='all', choices=['any', 'all']),
+    spec = ArgumentSpec()
 
-        retries=dict(default=10, type='int'),
-        interval=dict(default=1, type='int')
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
     )
 
-    module = NetworkModule(argument_spec=spec,
-                           supports_check_mode=True)
-
-    commands = list(parse_commands(module))
-    conditionals = module.params['wait_for'] or list()
-
-    warnings = list()
-
-    runner = CommandRunner(module)
-
     try:
-        # This tries to detect command mode.
-        runner.add_command('tmsh')
-        runner.run()
-        shell = "bash"
-    except NetworkError:
-        shell = "tmsh"
-
-    # Resets the runner because raised exceptions do not remove the
-    # erroneous commands
-    module.disconnect()
-    runner.commands = []
-    runner.module.cli._commands = []
-
-    if shell == 'tmsh':
-        disable_pager = dict(
-            output=None,
-            command='modify cli preference pager disabled'
-        )
-        runner.add_command(**disable_pager)
-    else:
-        disable_pager = dict(
-            output=None,
-            command='tmsh modify cli preference pager disabled'
-        )
-        runner.add_command(**disable_pager)
-
-    for cmd in commands:
-        cmd = strip_tmsh_prefix(cmd)
-
-        if module.check_mode and not is_config_mode_command(cmd):
-            warnings.append('only show or list commands are supported when '
-                            'using check mode, not executing `%s`'
-                            % cmd['command'])
-        else:
-            if is_config_mode_command(cmd):
-                module.fail_json(msg='bigip_command does not support running '
-                                     'config mode commands. Please use '
-                                     'bigip_config instead')
-            try:
-                if shell == 'bash':
-                    cmd['command'] = 'tmsh ' + cmd['command']
-                runner.add_command(**cmd)
-            except AddCommandError:
-                warnings.append('Duplicate command detected: %s' % cmd)
-
-    try:
-        for item in conditionals:
-            runner.add_conditional(item)
-    except AddConditionError:
-        exc = get_exception()
-        module.fail_json(msg=str(exc), condition=exc.condition)
-
-    runner.retries = module.params['retries']
-    runner.interval = module.params['interval']
-    runner.match = module.params['match']
-
-    try:
-        runner.run()
-    except FailedConditionsError:
-        exc = get_exception()
-        module.fail_json(msg=str(exc), failed_conditions=exc.failed_conditions)
-    except FailedConditionalError:
-        exc = get_exception()
-        module.fail_json(msg=str(exc), failed_conditional=exc.failed_conditional)
-    except NetworkError:
-        exc = get_exception()
-        module.fail_json(msg=str(exc), **exc.kwargs)
-
-    result = dict(changed=False)
-
-    result['stdout'] = list()
-    for cmd in commands:
-        try:
-            output = runner.get_command(cmd['command'], cmd.get('output'))
-        except ValueError:
-            output = 'command not executed due to check_mode, see warnings'
-        result['stdout'].append(output)
-
-    result['warnings'] = warnings
-    result['stdout_lines'] = list(to_lines(result['stdout']))
-
-    module.exit_json(**result)
-
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except (FailedConditionsError, AttributeError) as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
+

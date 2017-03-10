@@ -1,3 +1,98 @@
 ---
 
-- include: issue-54.yaml
+- name: Create pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      password: "{{ bigip_password }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      state: "present"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Run single command
+  bigip_command:
+      commands:
+          - "tmsh show sys version"
+  register: result
+
+- name: Assert Run single command
+  assert:
+      that:
+          - result.stdout_lines|length == 1
+
+- name: Run multiple commands
+  bigip_command:
+      commands:
+          - "tmsh show sys clock"
+          - "tmsh list auth"
+  register: result
+
+- name: Assert Run multiple commands
+  assert:
+      that:
+          - result.stdout_lines|length == 2
+
+- name: Run command mising tmsh
+  bigip_command:
+      commands:
+          - "show sys clock"
+  register: result
+
+- name: Assert Run command mising tmsh
+  assert:
+      that:
+          - result.stdout_lines|length == 1
+
+- name: Run multiple commands, one missing tmsh
+  bigip_command:
+      commands:
+          - "tmsh show sys clock"
+          - "list auth"
+  register: result
+
+- name: Assert Run multiple commands, one missing tmsh
+  assert:
+      that:
+          - result.stdout_lines|length == 2
+
+- name: Wait for something
+  bigip_command:
+      commands:
+          - "tmsh show sys clock"
+      wait_for:
+          - result[0] contains Sys::Clock
+  register: result
+
+- name: Assert Wait for something
+  assert:
+      that:
+          - result.stdout_lines|length == 1
+
+- name: Run modify commands
+  bigip_command:
+      commands:
+          - "tmsh modify ltm policy {{ policy_name }} create-draft"
+          - tmsh modify ltm policy Drafts/"{{ policy_name }}" { rules add { "{{ policy }}" { actions add { 0 { forward select pool "{{ pool_name }}" } } conditions add { 0 { http-uri path starts-with values { /"{{ policy }}" } } } ordinal 50 } } }
+          - "publish ltm policy Drafts/{{ policy_name }}"
+  register: result
+
+- name: Assert Run modify commands
+  assert:
+      that:
+          - result.stdout_lines|length == 0
+
+- name: Run modify commands with a show command
+  bigip_command:
+      commands:
+          - "tmsh modify ltm policy {{ policy_name }} create-draft"
+          - tmsh modify ltm policy Drafts/"{{ policy_name }}" { rules add { "{{ policy }}" { actions add { 0 { forward select pool "{{ pool_name }}" } } conditions add { 0 { http-uri path starts-with values { /"{{ policy }}" } } } ordinal 50 } } }
+          - "publish ltm policy Drafts/{{ policy_name }}"
+          - "tmsh show sys clock"
+  register: result
+
+- name: Assert Run modify commands with a show command
+  assert:
+      that:
+          - "'Sys::Clock' in result.stdout_lines[0][1]"
+          - result.stdout_lines|length == 1
