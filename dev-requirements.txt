@@ -3,6 +3,7 @@ paramiko
 bigsuds
 requests
 git+https://github.com/F5Networks/f5-common-python.git
+git+https://github.com/ansible/ansible.git
 
 # Used for testing modules
 pep8
