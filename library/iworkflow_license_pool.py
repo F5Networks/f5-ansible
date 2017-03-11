@@ -110,6 +110,17 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    @property
+    def name(self):
+        if self._values['name'] is None:
+            return None
+        name = str(self._values['name']).strip()
+        if name == '':
+            raise F5ModuleError(
+                "You must specify a name for this module"
+            )
+        return name
+
 
 class ModuleManager(object):
     def __init__(self, client):
