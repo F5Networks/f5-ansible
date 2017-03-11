@@ -26,11 +26,11 @@ module: iworkflow_bigip_connector
 short_description: Manipulate cloud BIG-IP connectors in iWorkflow.
 description:
   - Manipulate cloud BIG-IP connectors in iWorkflow.
-version_added: 2.3
+version_added: 2.4
 options:
   name:
     description:
-      - Name of the connector to create
+      - Name of the connector to create.
     required: True
   state:
     description:
@@ -56,10 +56,8 @@ EXAMPLES = '''
 - name: Create cloud connector named Private Cloud
   iworkflow_bigip_connector:
       name: "Private Cloud"
-      username_credential: "admin"
-      password_credential: "admin"
       password: "secret"
-      server: "mgmt.mydomain.com"
+      server: "iwf.mydomain.com"
       user: "admin"
   delegate_to: localhost
 '''
@@ -68,106 +66,33 @@ RETURN = '''
 
 '''
 
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.f5_utils import *
 
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+class Parameters(AnsibleF5Parameters):
+    returnables = ['name']
+    api_attributes = ['description']
+    updatables = ['description']
 
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
-
-
-class iWorkflowBigIpConnectorParams(object):
-    name = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded_keys)
-
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
-
-        Code take from https://www.djangosnippets.org/snippets/2281/
-
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
-            try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
         return result
 
 
-class iWorkflowBigIpConnectorModule(AnsibleModule):
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowBigIpConnectorModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
-
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowBigIpConnectorModule):
-            instance.params = iWorkflowBigIpConnectorParams.from_module(
-                self.params
-            )
-        else:
-            super(iWorkflowBigIpConnectorModule, self).__set__(instance, value)
-
-    def init_meta_args(self):
-        args = dict(
+        self.argument_spec = dict(
             name=dict(required=True),
             state=dict(
                 required=False,
@@ -175,42 +100,43 @@ class iWorkflowBigIpConnectorModule(AnsibleModule):
                 choices=['absent', 'present']
             )
         )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
+        self.f5_product_name = 'iworkflow'
 
 
-class iWorkflowBigIpConnectorManager(object):
-    params = iWorkflowBigIpConnectorParams()
-    current = iWorkflowBigIpConnectorParams()
-    module = iWorkflowBigIpConnectorModule()
-
-    def __init__(self):
-        self.api = None
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
         self.changes = None
-        self.config = None
 
-    def apply_changes(self):
-        """Apply the user's changes to the device
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
 
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
 
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
+    def exec_module(self):
+        changed = False
         result = dict()
-        state = self.params.state
+        state = self.want.state
 
         try:
-            self.api = connect_to_f5(**self.params.__dict__)
             if state == "present":
                 changed = self.present()
             elif state == "absent":
@@ -218,8 +144,7 @@ class iWorkflowBigIpConnectorManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.params.difference(self.current)
-        result.update(**changes)
+        result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
@@ -232,112 +157,113 @@ class iWorkflowBigIpConnectorManager(object):
 
         :return:
         """
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
+        collection = self.client.api.cm.cloud.connectors.locals.get_collection()
+        for item in collection:
+            if item.displayName != "BIG-IP":
                 continue
-            if connector.name != self.params.name:
+            if item.name != self.want.name:
                 continue
             return True
         return False
 
     def present(self):
         if self.exists():
-            return self.update_bigip_connector()
+            return self.update()
         else:
-            return self.create_bigip_connector()
+            return self.create()
 
-    def create_bigip_connector(self):
-        if self.module.check_mode:
+    def create(self):
+        self._set_changed_options()
+        if self.client.check_mode:
             return True
-        self.create_bigip_connector_on_device()
+        self.create_on_device()
         return True
 
-    def update_bigip_connector(self):
-        changed = False
-        current = self.read_current()
-        if self.description_changed(current):
-            changed = True
-        if self.name_changed(current):
-            changed = True
-
-        if not changed:
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
             return False
-
-        if self.module.check_mode:
+        if self.client.check_mode:
             return True
-        self.update_local_connector_on_device(current)
+        self.update_on_device()
         return True
 
-    def update_local_connector_on_device(self, current):
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
+    def update_on_device(self):
         pass
 
-    def read_current(self):
+    def read_current_from_device(self):
         connector = None
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
+        collection = self.api.cm.cloud.connectors.locals.get_collection()
+        for item in collection:
+            if item.displayName != "BIG-IP":
                 continue
-            if connector.name != self.params.name:
+            if item.name != self.want.name:
                 continue
+            connector = item
             break
         if not connector:
             return None
-        current = iWorkflowBigIpConnectorParams()
-        current.owner_machine_id = str(connector.ownerMachineId)
-        current.connector_id = str(connector.connectorId)
-        if hasattr(current, 'displayName'):
-            current.display_name = str(connector.displayName)
-        if hasattr(current, 'name'):
-            current.name = str(connector.name)
-        self.current = current
-        return self.current
+        result = connector.properties
+        return Parameters(result)
 
-    def create_bigip_connector_on_device(self):
+    def create_on_device(self):
+        params = self.want.api_params()
         self.api.cm.cloud.connectors.locals.local.create(
-            name=self.params.name
+            name=self.want.name,
+            **params
         )
-        return True
 
     def absent(self):
         if self.exists():
-            return self.remove_bigip_connector()
+            return self.remove()
         return False
 
-    def remove_bigip_connector(self):
-        if self.module.check_mode:
+    def remove(self):
+        if self.client.check_mode:
             return True
-        self.remove_bigip_connector_from_device()
+        self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the BIG-IP connector")
         return True
 
-    def remove_bigip_connector_from_device(self):
-        connector = None
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
+    def remove_from_device(self):
+        resource = None
+        collection = self.api.cm.cloud.connectors.locals.get_collection()
+        for item in collection:
+            if item.displayName != "BIG-IP":
                 continue
-            if connector.name != self.params.name:
+            if item.name != self.want.name:
                 continue
+            resource = item
             break
-        if connector:
-            connector.delete()
+        if resource:
+            resource.delete()
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowBigIpConnectorModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = iWorkflowBigIpConnectorManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
