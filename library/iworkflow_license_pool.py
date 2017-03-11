@@ -111,36 +111,12 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class ArgumentSpec(object):
-    def __init__(self):
-        self.supports_check_mode = True
-        self.argument_spec = dict(
-            accept_eula=dict(
-                type='bool',
-                default=None,
-                choices=BOOLEANS
-            ),
-            base_key=dict(
-                required=False
-            ),
-            name=dict(
-                required=True
-            ),
-            state=dict(
-                required=False,
-                default='present',
-                choices=['absent', 'present']
-            )
-        )
-        self.f5_product_name = 'iworkflow'
-
-
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -241,6 +217,7 @@ class ModuleManager(object):
         return self._wait_for_license_pool_state_to_activate(resource)
 
     def create(self):
+        self._set_changed_options()
         if self.client.check_mode:
             return True
         if self.want.base_key is None:
@@ -250,7 +227,7 @@ class ModuleManager(object):
         self.create_on_device()
         return True
 
-    def read_current(self):
+    def read_current_from_device(self):
         collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
                 params="$filter=name+eq+'{0}'".format(self.want.name)
@@ -289,7 +266,7 @@ class ModuleManager(object):
             return self.remove()
         return False
 
-    def remove_license_pool(self):
+    def remove(self):
         if self.client.check_mode:
             return True
         self.remove_from_device()
@@ -306,6 +283,31 @@ class ModuleManager(object):
         resource = collection.pop()
         if resource:
             resource.delete()
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            accept_eula=dict(
+                type='bool',
+                default=None,
+                choices=BOOLEANS
+            ),
+            base_key=dict(
+                required=False,
+                no_log=True
+            ),
+            name=dict(
+                required=True
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
+            )
+        )
+        self.f5_product_name = 'iworkflow'
 
 
 def main():
