@@ -43,8 +43,7 @@ class ModuleStubber(object):
             self._top_level, self._module
         )
 
-        playbook_content = """
----
+        playbook_content = """---
 
 # Test the {module} module
 #
