@@ -18,3 +18,6 @@ docs/_build/
 docs/_modules/modules_by_category.rst
 docs/_modules/list_of_*.rst
 docs/_modules/*_module.rst
+
+
+inventory/group_vars/secret.yaml
