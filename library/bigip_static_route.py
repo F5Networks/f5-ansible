@@ -308,10 +308,11 @@ class ModuleManager(object):
         result.modify(**params)
 
     def read_current_from_device(self):
-        result = self.client.api.tm.net.routes.route.load(
+        resource = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
-        ).properties
+        )
+        result = resource.properties
         return Parameters(result)
 
     def create_on_device(self):
