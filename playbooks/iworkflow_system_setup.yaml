@@ -28,8 +28,4 @@
   connection: local
 
   roles:
-<<<<<<< HEAD
-      - __iworkflow_system_setup
-=======
       - iworkflow_system_setup
->>>>>>> master

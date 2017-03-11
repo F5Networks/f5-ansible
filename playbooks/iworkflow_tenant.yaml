@@ -28,8 +28,4 @@
   connection: local
 
   roles:
-<<<<<<< HEAD
-      - __iworkflow_tenant
-=======
       - iworkflow_tenant
->>>>>>> master
