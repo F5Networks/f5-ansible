@@ -28,59 +28,12 @@
   gather_facts: false
   connection: local
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-  roles:
-      - __bigip_command
-=======
-  vars:
-      cli:
-          host: "{{ inventory_hostname }}"
-          username: root
-          password: default
-          port: 2200
+  environment:
+      F5_SERVER: "{{ inventory_hostname }}"
+      F5_USER: "root"
+      F5_PASSWORD: "default"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "no"
 
   roles:
       - bigip_command
-
-- name: Test the bigip_command module, user credentials with tmsh
-  hosts: f5-test
-  gather_facts: false
-  connection: local
-
-  vars:
-      cli:
-          host: "{{ inventory_hostname }}"
-          username: vagrant
-          password: vagrant
-          port: 2200
-
-  roles:
-      - bigip_command
-
-- name: Test the bigip_command module, user credentials TACACS
-  hosts: f5-test
-  gather_facts: false
-  connection: local
-
-  vars:
-      cli:
-          host: "{{ inventory_hostname }}"
-          username: f5user1
-          password: letmein
-          port: 2222
-
-  roles:
-      - role: bigip_command
->>>>>>> Stashed changes
-=======
-  vars:
-      cli:
-          host: "{{ inventory_hostname }}"
-          username: root
-          password: default
-          port: 2222
-
-  roles:
-      - bigip_command
->>>>>>> master
