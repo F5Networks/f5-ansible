@@ -30,14 +30,14 @@ version_added: 2.3
 options:
   name:
     description:
-      - Name of the license pool to create
-    required: true
+      - Name of the license pool to create.
+    required: True
   state:
     description:
       - Whether the license pool should exist, or not. A state of C(present)
         will attempt to activate the license pool if C(accept_eula) is set
         to C(yes).
-    required: false
+    required: False
     default: present
     choices:
       - present
@@ -45,14 +45,22 @@ options:
   base_key:
     description:
       - Key that the license server uses to verify the functionality that
-        you are entitled to license.
+        you are entitled to license. This option is required if you are
+        creating a new license.
+    required: False
+    default: None
   accept_eula:
     description:
       - Specifies that you accept the EULA that is part of iWorkflow. Note
         that this is required to activate the license pool. If this is not
         specified, or it is set to C(no), then the pool will remain in a state
-        of limbo until you specify to accept the EULA.
-    required: true
+        of limbo until you choose to accept the EULA. This option is required
+        when either updating a license. It is also suggested that you provide
+        it when creating a license, but if you do not, the license will remain
+        inactive and you will have to run this module again with this option
+        set to C(yes) to activate it.
+    required: False
+    default: None
     choices:
       - yes
       - no
@@ -76,109 +84,37 @@ RETURN = '''
 
 import time
 
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
-
-
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5_utils import *
 
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+class Parameters(AnsibleF5Parameters):
+    returnables = []
+    api_attributes = [
+        'baseRegKey', 'state', 'licenseText', 'totalDeviceLicenses',
+        'freeDeviceLicenses'
+    ]
+    updatables = []
 
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
 
-class iWorkflowLicensePoolParams(object):
-    name = None
-    base_key = None
-    state = None
-    license_text = None
-    total_device_licenses = None
-    free_device_licenses = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded_keys)
-
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
-
-        Code take from https://www.djangosnippets.org/snippets/2281/
-
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
-            try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
         return result
 
 
-class iWorkflowLicensePoolModule(AnsibleModule):
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowLicensePoolModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
-
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowLicensePoolModule):
-            instance.params = iWorkflowLicensePoolParams.from_module(self.params)
-        else:
-            super(iWorkflowLicensePoolModule, self).__set__(instance, value)
-
-    def init_meta_args(self):
-        args = dict(
+        self.argument_spec = dict(
             accept_eula=dict(
                 type='bool',
                 default=None,
@@ -196,42 +132,53 @@ class iWorkflowLicensePoolModule(AnsibleModule):
                 choices=['absent', 'present']
             )
         )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
+        self.f5_product_name = 'iworkflow'
 
 
-class iWorkflowLicensePoolManager(object):
-    params = iWorkflowLicensePoolParams()
-    current = iWorkflowLicensePoolParams()
-    module = iWorkflowLicensePoolModule()
-
-    def __init__(self):
-        self.api = None
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
         self.changes = None
-        self.config = None
 
-    def apply_changes(self):
-        """Apply the user's changes to the device
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
 
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
 
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
+    def _pool_is_licensed(self):
+        if self.have.state == 'LICENSED':
+            return True
+        return False
 
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
+    def _pool_is_unlicensed_eula_unaccepted(self, current):
+        if current.state != 'LICENSED' and not self.want.accept_eula:
+            return True
+        return False
+
+    def exec_module(self):
+        changed = False
         result = dict()
-        state = self.params.state
+        state = self.want.state
 
         try:
-            self.api = connect_to_f5(**self.params.__dict__)
             if state == "present":
                 changed = self.present()
             elif state == "absent":
@@ -239,20 +186,19 @@ class iWorkflowLicensePoolManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.params.difference(self.current)
-        result.update(**changes)
+        result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
         return result
 
     def exists(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
+        collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
+                params="$filter=name+eq+'{0}'".format(self.want.name)
             )
         )
-        if len(pools) == 1:
+        if len(collection) == 1:
             return True
-        elif len(pools) == 0:
+        elif len(collection) == 0:
             return False
         else:
             raise F5ModuleError(
@@ -261,97 +207,68 @@ class iWorkflowLicensePoolManager(object):
 
     def present(self):
         if self.exists():
-            return self.update_license_pool()
+            return self.update()
         else:
-            return self.create_license_pool()
+            return self.create()
 
-    def pool_is_licensed(self, current):
-        if current.state == 'LICENSED':
-            return True
-        return False
-
-    def pool_is_unlicensed_eula_unaccepted(self, current):
-        if current.state != 'LICENSED' and not self.params.accept_eula:
-            return True
-        return False
-
-    def update_license_pool(self):
-        current = self.read_current()
-        if self.pool_is_licensed(current):
+    def should_update(self):
+        if self._pool_is_licensed():
             return False
-        if self.pool_is_unlicensed_eula_unaccepted(current):
-            raise F5ModuleError(
-                "You must accept the license EULA with the accept_eula parameter"
-            )
-        if self.module.check_mode:
-            return True
-        self.reactivate_license_pool_on_device()
+        if self._pool_is_unlicensed_eula_unaccepted():
+            return False
         return True
 
-    def reactivate_license_pool_on_device(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
+    def update_on_device(self):
+        collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
+                params="$filter=name+eq+'{0}'".format(self.want.name)
             )
         )
-        pool = pools.pop()
-        pool.modify(
+        resource = collection.pop()
+        resource.modify(
             state='RELICENSE',
             method='AUTOMATIC'
         )
-        return self.wait_for_license_pool_state_to_activate(pool)
+        return self._wait_for_license_pool_state_to_activate(resource)
 
-    def create_license_pool(self):
-        if self.module.check_mode:
+    def create(self):
+        if self.client.check_mode:
             return True
-        if self.params.base_key is None:
+        if self.want.base_key is None:
             raise F5ModuleError(
                 "You must specify a 'base_key' when creating a license pool"
             )
-        if self.params.accept_eula in BOOLEANS_FALSE:
-            raise F5ModuleError(
-                "You must accept the EULA before creating a license pool."
-            )
-        self.create_license_pool_on_device()
+        self.create_on_device()
         return True
 
     def read_current(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
+        collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
+                params="$filter=name+eq+'{0}'".format(self.want.name)
             )
         )
-        pool = pools.pop()
+        resource = collection.pop()
+        result = resource.properties
+        return Parameters(result)
 
-        current = iWorkflowLicensePoolParams()
-        current.name = str(pool.name)
-        if hasattr(pool, 'baseRegKey'):
-            current.base_key = str(pool.baseRegKey)
-        if hasattr(pool, 'state'):
-            current.state = str(pool.state)
-        if hasattr(pool, 'licenseText'):
-            current.license_text = str(pool.licenseText)
-        if hasattr(pool, 'totalDeviceLicenses'):
-            current.total_device_licenses = str(pool.totalDeviceLicenses)
-        if hasattr(pool, 'freeDeviceLicenses'):
-            current.free_device_licenses = str(pool.freeDeviceLicenses)
-        self.current = current
-        return self.current
-
-    def create_license_pool_on_device(self):
-        if self.params.base_key is None:
-            raise F5ModuleError(
-                "You must accept the EULA with the 'accept_eula' option "
-                "when creating a new license pool."
-            )
-        pool = self.api.cm.shared.licensing.pools_s.pool.create(
-            name=self.params.name,
-            baseRegKey=self.params.base_key,
+    def create_on_device(self):
+        resource = self.client.api.cm.shared.licensing.pools_s.pool.create(
+            name=self.want.name,
+            baseRegKey=self.want.base_key,
             method="AUTOMATIC"
         )
-        return self.wait_for_license_pool_state_to_activate(pool)
+        return self._wait_for_license_pool_state_to_activate(resource)
 
-    def wait_for_license_pool_state_to_activate(self, pool):
+    def _wait_for_license_pool_state_to_activate(self, pool):
         error_values = ['EXPIRED', 'FAILED']
         # Wait no more than 5 minutes
         for x in range(1, 30):
@@ -369,40 +286,46 @@ class iWorkflowLicensePoolManager(object):
 
     def absent(self):
         if self.exists():
-            return self.remove_license_pool()
+            return self.remove()
         return False
 
     def remove_license_pool(self):
-        if self.module.check_mode:
+        if self.client.check_mode:
             return True
-        self.remove_license_pool_from_device()
+        self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the license pool")
         return True
 
-    def remove_license_pool_from_device(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
+    def remove_from_device(self):
+        collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
+                params="$filter=name+eq+'{0}'".format(self.want.name)
             )
         )
-        pool = pools.pop()
-        pool.delete()
+        resource = collection.pop()
+        if resource:
+            resource.delete()
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowLicensePoolModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = iWorkflowLicensePoolManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
