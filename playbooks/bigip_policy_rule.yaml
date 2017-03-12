@@ -1,0 +1,31 @@
+---
+
+# Test the bigip_policy_rule module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_policy_rule module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, playbooks/bigip_policy_rule.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_policy_rule module
+#
+#    ansible-playbook -i notahost, playbooks/bigip_policy_rule.yaml
+#
+# Tested platforms:
+#
+#    - NA
+#
+
+- name: Test the bigip_policy_rule module
+  hosts: f5-test
+  connection: local
+
+  roles:
+      - bigip_policy_rule
