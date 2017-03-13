@@ -354,19 +354,6 @@ class ModuleManager(object):
         result.pop('_meta_data', None)
         return Parameters(result)
 
-    def format_params(self, params):
-        result = dict()
-        for k,v in iteritems(self.module.params):
-            if k in params and params[k] is not None:
-                result[k] = str(params[k])
-            else:
-                result[k] = v
-        source = result.get('parameters_src', None)
-        content = result.get('parameters', None)
-        if source or content:
-            result['content'] = self.get_iapp_template_source(source, content)
-        return result
-
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.sys.application.services.service.create(
