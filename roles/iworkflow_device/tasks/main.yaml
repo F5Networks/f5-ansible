@@ -1,0 +1,26 @@
+---
+
+- name: Discover BIG-IP
+  iworkflow_device:
+      device: "{{ device_ip }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      username_credential: "{{ bigip_username }}"
+      password_credential: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+  delegate_to: localhost
+
+#- name: Remove discovered BIG-IP
+#  iworkflow_device:
+#      device: "{{ device_ip }}"
+#      server: "{{ inventory_hostname }}"
+#      server_port: "{{ iworkflow_port }}"
+#      user: "{{ iworkflow_username }}"
+#      password: "{{ iworkflow_password }}"
+#      validate_certs: "{{ validate_certs }}"
+#      state: "absent"
+#  delegate_to: localhost
+#
