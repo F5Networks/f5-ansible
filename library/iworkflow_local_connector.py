@@ -108,7 +108,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -199,7 +199,7 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         connector = None
-        collection = self.api.cm.cloud.connectors.locals.get_collection()
+        collection = self.client.api.cm.cloud.connectors.locals.get_collection()
         for item in collection:
             if item.displayName != "BIG-IP":
                 continue
@@ -214,7 +214,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.api.cm.cloud.connectors.locals.local.create(
+        self.client.api.cm.cloud.connectors.locals.local.create(
             name=self.want.name,
             **params
         )
@@ -234,7 +234,7 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         resource = None
-        collection = self.api.cm.cloud.connectors.locals.get_collection()
+        collection = self.client.api.cm.cloud.connectors.locals.get_collection()
         for item in collection:
             if item.displayName != "BIG-IP":
                 continue
