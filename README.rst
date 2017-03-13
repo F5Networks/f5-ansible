@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|slack badge| |docs badge|
+|docs badge|
 
 Introduction
 ------------
@@ -99,10 +99,6 @@ to Ansible_CLA@f5.com prior to their code submission being included
 in this project.
 
 
-.. |slack badge| image:: https://f5ansible.herokuapp.com/badge.svg
-    :target: https://f5ansible.herokuapp.com/
-    :alt: Slack
-
 .. |docs badge| image:: https://readthedocs.org/projects/f5-ansible/badge/?version=devel
     :target: http://f5-ansible.readthedocs.io/en/devel/
     :alt: Documentation
@@ -116,5 +112,5 @@ in this project.
 .. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
 .. _License: https://github.com/F5Networks/f5-ansible/blob/master/LICENSE
 .. _Requirements: https://f5-ansible.readthedocs.io/en/devel/usage/requirements.html
-.. _Brnaching: https://f5-ansible.readthedocs.io/en/devel/development/branching.html
+.. _Branching: https://f5-ansible.readthedocs.io/en/devel/development/branching.html
 .. _stable modules can be found here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
