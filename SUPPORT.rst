@@ -9,8 +9,9 @@ For code bugs or other issues, you should open a Github issue here.
 
 Additionally, You can come discuss/lurk in our Slack channel if you're interested.
 
-The link to the Slack channel can be found by clicking the "slack" badge in the README
-found on the `main repository page`_
+There is also the option of joining our Slack channel where you can ask questions
+there. The channel is by invite only. To request an invite, send email to myself
+(t.rupp@f5.com) and I will provide the invite.
 
 If you have a question, please prefix it with "@channel" so that I can see it.
 
