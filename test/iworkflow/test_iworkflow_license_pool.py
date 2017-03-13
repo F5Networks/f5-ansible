@@ -72,10 +72,16 @@ class TestParameters(unittest.TestCase):
 
     def test_module_parameters(self):
         args = dict(
-            name="lic-pool",
+            name='lic-pool',
+            base_key='00000-11111-22222-33333-4444444',
+            state='present',
+            accept_eula='yes'
         )
         p = Parameters(args)
         assert p.name == 'lic-pool'
+        assert p.base_key == '00000-11111-22222-33333-4444444'
+        assert p.state == 'present'
+        assert p.accept_eula == 'yes'
 
     def test_module_parameters_empty_name(self):
         args = dict(
@@ -87,43 +93,39 @@ class TestParameters(unittest.TestCase):
         assert 'You must specify a name for this module' in str(e)
 
     def test_api_parameters(self):
-        args = dict(
-            name="lic-pool"
-        )
+        args = load_fixture('load_license_pool.json')
         p = Parameters(args)
-        assert p.name == 'lic-pool'
+        assert p.name == 'asdf'
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestManager(unittest.TestCase):
 
-#class TestManager(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.spec = ArgumentSpec()
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_create_service(self, *args):
-#        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
-#        set_module_args(dict(
-#            name='foo',
-#            template='f5.http',
-#            parameters=parameters,
-#            state='present',
-#            password='passsword',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: True
-#        mm.exists = lambda: False
-#        mm.create_on_device = lambda: True
-#
-#        results = mm.exec_module()
-#        assert results['changed'] is True
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_license_pool(self, *args):
+        set_module_args(dict(
+            name='lic-pool',
+            base_key='00000-11111-22222-33333-4444444',
+            state='present',
+            accept_eula='yes',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.exists = lambda: False
+        mm.create_on_device = lambda: True
+
+        results = mm.exec_module()
+        assert results['changed'] is True
