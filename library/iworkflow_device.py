@@ -26,7 +26,7 @@ module: iworkflow_managed_device
 short_description: Manipulate cloud managed devices in iWorkflow.
 description:
   - Manipulate cloud managed devices in iWorkflow.
-version_added: 2.3
+version_added: 2.4
 options:
   device:
     description:
@@ -78,170 +78,79 @@ RETURN = '''
 '''
 
 import time
-
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.f5_utils import *
 
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'restFrameworkVersion': 'rest_framework_version',
+        'managementAddress': 'management_address',
+        'httpsPort': 'https_port',
+        'address': 'device',
+        'machineId': 'machine_id',
+        'deviceUri': 'device_uri'
+    }
+    returnables = []
 
+    api_attributes = []
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+    updatables = []
 
-
-class iWorkflowManagedDeviceParams(object):
-    device = None
-    username_credential = None
-    password_credential = None
-    uuid = None
-    hostname = None
-    version = None
-    product = None
-    edition = None
-    build = None
-    rest_framework_version = None
-    management_address = None
-    device_uri = None
-    machine_id = None
-    state = None
-    https_port = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs',
-            'username_credential', 'password_credential'
-        ]
-        return self._difference(self, obj, excluded_keys)
-
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
-
-        Code take from https://www.djangosnippets.org/snippets/2281/
-
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
-            try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
         return result
 
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
 
-class iWorkflowManagedDeviceModule(AnsibleModule):
-    def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowManagedDeviceModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            required_if=[
-                ['state', 'present', ['device', 'username_credential', 'password_credential']]
-            ]
-        )
-
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowManagedDeviceModule):
-            instance.params = iWorkflowManagedDeviceParams.from_module(
-                self.params
-            )
-        else:
-            super(iWorkflowManagedDeviceModule, self).__set__(instance, value)
-
-    def init_meta_args(self):
-        args = dict(
-            device=dict(default=None),
-            username_credential=dict(default=None),
-            password_credential=dict(default=None),
-            state=dict(
-                required=False,
-                default='present',
-                choices=['absent', 'present']
-            )
-        )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
+    @property
+    def hostname(self):
+        if self._values['hostname'] is None:
+            return None
+        return str(self._values['hostname'])
 
 
-class iWorkflowManagedDeviceManager(object):
-    params = iWorkflowManagedDeviceParams()
-    current = iWorkflowManagedDeviceParams()
-    module = iWorkflowManagedDeviceModule()
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
 
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
 
-    def apply_changes(self):
-        """Apply the user's changes to the device
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
 
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
-
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
+    def exec_module(self):
+        changed = False
         result = dict()
-        state = self.params.state
+        state = self.want.state
 
         try:
-            self.api = connect_to_f5(**self.params.__dict__)
             if state == "present":
                 changed = self.present()
             elif state == "absent":
@@ -249,16 +158,16 @@ class iWorkflowManagedDeviceManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.params.difference(self.current)
+        changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
     def exists(self):
-        dg = self.api.shared.resolver.device_groups
+        dg = self.client.api.shared.resolver.device_groups
         devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
             requests_params=dict(
-                params="$filter=address+eq+'{0}'".format(self.params.device)
+                params="$filter=address+eq+'{0}'".format(self.want.device)
             )
         )
 
@@ -275,101 +184,108 @@ class iWorkflowManagedDeviceManager(object):
         if self.exists():
             return False
         else:
-            return self.create_managed_device()
+            return self.create()
 
-    def create_managed_device(self):
-        if self.module.check_mode:
+    def create(self):
+        if self.client.check_mode:
             return True
-        self.create_managed_device_on_device()
+        self.create_on_device()
         return True
 
-    def read_current(self):
-        dg = self.api.shared.resolver.device_groups
-        devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
+    def read_current_from_device(self):
+        dg = self.client.api.shared.resolver.device_groups
+        collection = dg.cm_cloud_managed_devices.devices_s.get_collection(
             requests_params=dict(
-                params="$filter=address+eq+'{0}'".format(self.params.device)
+                params="$filter=address+eq+'{0}'".format(self.want.device)
             )
         )
-        device = devices.pop()
+        resource = collection.pop()
+        result = resource.properties
+        return Parameters(result)
 
-        current = iWorkflowManagedDeviceParams()
-        current.uuid = str(device.uuid)
-        current.device_uri = str(device.deviceUri)
-        current.machine_id = str(device.machineId)
-        current.state = str(device.state)
-        current.device = str(device.address)
-        current.https_port = int(device.httpsPort)
-        current.version = str(device.version)
-        current.product = str(device.product)
-        current.edition = str(device.edition)
-        current.build = str(device.build)
-        current.rest_framework_version = str(device.restFrameworkVersion)
-        current.management_address = str(device.managementAddress)
-
-        if hasattr(device, 'hostname'):
-            current.hostname = str(device.hostname)
-
-        self.current = current
-        return self.current
-
-    def create_managed_device_on_device(self):
-        dg = self.api.shared.resolver.device_groups
-        device = dg.cm_cloud_managed_devices.devices_s.device.create(
-            address=self.params.device,
-            userName=self.params.username_credential,
-            password=self.params.password_credential,
+    def create_on_device(self):
+        dg = self.client.api.shared.resolver.device_groups
+        resource = dg.cm_cloud_managed_devices.devices_s.device.create(
+            address=self.want.device,
+            userName=self.want.username_credential,
+            password=self.want.password_credential,
             automaticallyUpdateFramework=True
         )
-        return self.wait_for_managed_device_state_to_activate(device)
+        return self._wait_for_state_to_activate(resource)
 
-    def wait_for_managed_device_state_to_activate(self, device):
+    def _wait_for_state_to_activate(self, resource):
         error_values = ['POST_FAILED', 'VALIDATION_FAILED']
         # Wait no more than half an hour
         for x in range(1, 180):
-            device.refresh()
-            if device.state == 'ACTIVE':
+            resource.refresh()
+            if resource.state == 'ACTIVE':
                 break
-            elif device.state in error_values:
-                raise F5ModuleError(device.errors)
+            elif resource.state in error_values:
+                raise F5ModuleError(resource.errors)
             time.sleep(10)
 
     def absent(self):
         if self.exists():
-            return self.remove_managed_device()
+            return self.remove()
         return False
 
-    def remove_managed_device(self):
-        if self.module.check_mode:
+    def remove(self):
+        if self.client.check_mode:
             return True
-        self.remove_managed_device_from_device()
+        self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the managed device")
         return True
 
-    def remove_managed_device_from_device(self):
-        dg = self.api.shared.resolver.device_groups
+    def remove_from_device(self):
+        dg = self.client.api.shared.resolver.device_groups
         devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
             requests_params=dict(
-                params="$filter=address+eq+'{0}'".format(self.params.device)
+                params="$filter=address+eq+'{0}'".format(self.want.device)
             )
         )
         device = devices.pop()
         device.delete()
 
 
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            device=dict(default=None),
+            username_credential=dict(default=None),
+            password_credential=dict(default=None, no_log=True),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
+            )
+        )
+        self.required_if=[
+            ['state', 'present', ['device', 'username_credential', 'password_credential']]
+        ]
+        self.f5_product_name = 'iworkflow'
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowManagedDeviceModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name,
+        required_if=spec.required_if
+    )
 
     try:
-        obj = iWorkflowManagedDeviceManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
