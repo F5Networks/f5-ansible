@@ -20,6 +20,12 @@ First, make sure `ansible` is installed.
 
    pip install ansible
 
+.. note:: You should *only* install Ansible from `pip`. While you might
+          find Ansible packaged for your operating system (for instance
+          via `apt`, `yum`, or `brew`, the only official way to get
+          Ansible is via `pip`. We cannot assist you if you have installed
+          it any other way.
+
 You should be able to verify that you are running Ansible by using the
 `--version` argument to the `ansible` command, like so.
 

@@ -21,3 +21,5 @@ docs/_modules/*_module.rst
 
 
 inventory/group_vars/secret.yaml
+
+inventory/hosts

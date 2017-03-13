@@ -80,7 +80,6 @@ class ModuleStubber(object):
         fh.write(playbook_content)
         fh.close()
 
-
     def __stub_library_file(self):
         # Create your new module python file
         library_file = '{0}/library/{1}{2}'.format(
@@ -99,7 +98,6 @@ class ModuleStubber(object):
         with open(fname, 'a'):
             os.utime(fname, times)
 
-
     def __stub_unit_test_file(self):
         if self._module.startswith('bigip'):
             test_dir = 'bigip'
@@ -107,6 +105,11 @@ class ModuleStubber(object):
             test_dir = 'iworkflow'
         elif self._module.startswith('bigiq'):
             test_dir = 'bigiq'
+        test_dir_path = '{0}/test/{1}'.format(
+            self._top_level, test_dir
+        )
+        if not os.path.exists(test_dir_path):
+            os.makedirs(test_dir_path)
         test_file = '{0}/test/{1}/test_{2}{3}'.format(
             self._top_level, test_dir, self._module, self._extension
         )

@@ -312,8 +312,6 @@ class ModuleManager(object):
                     'module does not exist, then please file a bug. The command '
                     'in question is "%s..."' % item['command'][0:40]
                 )
-                continue
-
             if item['output'] == 'one-line' and 'one-line' not in item['command']:
                 item['command'] += ' one-line'
             elif item['output'] == 'text' and 'one-line' in item['command']:
