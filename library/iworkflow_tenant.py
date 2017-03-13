@@ -81,112 +81,158 @@ RETURN = '''
 
 '''
 
-import time
 
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.f5_utils import *
 
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'addressContact': 'address'
+    }
+    returnables = []
 
+    api_attributes = [
+        'description', 'addressContact', 'phone', 'email'
+    ]
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+    updatables = []
 
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
 
-class iWorkflowTenantParams(object):
-    device = None
-    description = None
-    address = None
-    phone = None
-    email = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded_keys)
-
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
-
-        Code take from https://www.djangosnippets.org/snippets/2281/
-
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
-            try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
         return result
 
 
-class iWorkflowTenantModule(AnsibleModule):
-    def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowTenantModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
 
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowTenantModule):
-            instance.params = iWorkflowTenantParams.from_module(
-                self.params
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
+    def exec_module(self):
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        return result
+
+    def exists(self):
+        collection = self.client.api.cm.cloud.tenants_s.get_collection(
+            requests_params=dict(
+                params="$filter=name+eq+'{0}'".format(self.want.name)
             )
+        )
+        if len(collection) == 1:
+            return True
+        elif len(collection) == 0:
+            return False
         else:
-            super(iWorkflowTenantModule, self).__set__(instance, value)
+            raise F5ModuleError(
+                "Multiple tenants with the provided name were found!"
+            )
 
-    def init_meta_args(self):
-        args = dict(
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def create(self):
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
+    def update(self):
+        pass
+
+    def read_current_from_device(self):
+        collection = self.client.api.cm.cloud.tenants_s.get_collection(
+            requests_params=dict(
+                params="$filter=name+eq+'{0}'".format(self.want.name)
+            )
+        )
+        resource = collection.pop()
+        result = resource.properties
+        return Parameters(result)
+
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.cm.cloud.tenants_s.tenant.create(
+            name=self.want.name,
+            **params
+        )
+        return True
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the tenant")
+        return True
+
+    def remove_from_device(self):
+        collection = self.client.api.cm.cloud.tenants_s.get_collection(
+            requests_params=dict(
+                params="$filter=name+eq+'{0}'".format(self.want.name)
+            )
+        )
+        resource = collection.pop()
+        resource.delete()
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
             name=dict(required=True),
             description=dict(type='str'),
             contact_address=dict(type='str'),
@@ -198,153 +244,27 @@ class iWorkflowTenantModule(AnsibleModule):
                 choices=['absent', 'present']
             )
         )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-
-class iWorkflowTenantManager(object):
-    params = iWorkflowTenantParams()
-    current = iWorkflowTenantParams()
-    module = iWorkflowTenantModule()
-
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
-
-    def apply_changes(self):
-        """Apply the user's changes to the device
-
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
-
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
-        result = dict()
-        state = self.params.state
-
-        try:
-            self.api = connect_to_f5(**self.params.__dict__)
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        changes = self.params.difference(self.current)
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        return result
-
-    def exists(self):
-        tenants = self.api.cm.cloud.tenants_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
-            )
-        )
-
-        if len(tenants) == 1:
-            return True
-        elif len(tenants) == 0:
-            return False
-        else:
-            raise F5ModuleError(
-                "Multiple tenants with the provided name were found!"
-            )
-
-    def present(self):
-        if self.exists():
-            return self.update_tenant()
-        else:
-            return self.create_tenant()
-
-    def create_tenant(self):
-        if self.module.check_mode:
-            return True
-        self.create_tenant_on_device()
-        return True
-
-    def update_tenant(self):
-        pass
-
-    def read_current(self):
-        tenants = self.api.cm.cloud.tenants_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
-            )
-        )
-        tenant = tenants.pop()
-
-        current = iWorkflowTenantParams()
-
-        if hasattr('description', tenant):
-            current.description = str(tenant.description)
-        if hasattr('addressContact', tenant):
-            current.address = str(tenant.addressContact)
-        if hasattr('phone', tenant):
-            current.phone = str(tenant.phone)
-        if hasattr('email', tenant):
-            current.email = str(tenant.email)
-
-        self.current = current
-        return self.current
-
-    def create_tenant_on_device(self):
-        self.api.cm.cloud.tenants_s.tenant.create(
-            name=self.params.name,
-            description=self.params.description,
-            addressContact=self.params.address,
-            phone=self.params.phone,
-            email=self.params.email
-        )
-        return True
-
-    def absent(self):
-        if self.exists():
-            return self.remove_tenant()
-        return False
-
-    def remove_tenant(self):
-        if self.module.check_mode:
-            return True
-        self.remove_tenant_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the tenant")
-        return True
-
-    def remove_tenant_from_device(self):
-        tenants = self.api.cm.cloud.tenants_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.name)
-            )
-        )
-        tenant = tenants.pop()
-        tenant.delete()
+        self.f5_product_name = 'iworkflow'
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowTenantModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = iWorkflowTenantManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
