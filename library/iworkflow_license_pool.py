@@ -60,7 +60,7 @@ options:
         inactive and you will have to run this module again with this option
         set to C(yes) to activate it.
     required: False
-    default: None
+    default: 'no'
     choices:
       - yes
       - no
@@ -89,10 +89,12 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'baseRegKey': 'base_key'
+    }
     returnables = []
     api_attributes = [
-        'baseRegKey', 'state', 'licenseText', 'totalDeviceLicenses',
-        'freeDeviceLicenses'
+        'baseRegKey', 'state'
     ]
     updatables = []
 
@@ -302,7 +304,7 @@ class ArgumentSpec(object):
         self.argument_spec = dict(
             accept_eula=dict(
                 type='bool',
-                default=None,
+                default='no',
                 choices=BOOLEANS
             ),
             base_key=dict(
