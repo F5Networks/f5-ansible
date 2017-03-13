@@ -1,0 +1,113 @@
+---
+
+- name: Create tenant
+  iworkflow_tenant:
+      name: "{{ tenant_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+  register: result
+
+- name: Create connector
+  iworkflow_local_connector:
+      name: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+  register: result
+
+- name: Register connector to tenant
+  iworkflow_tenant_connector:
+      tenant: "{{ tenant_name }}"
+      connector: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+  register: result
+
+- name: Assert Register connector to tenant
+  assert:
+      that:
+          - result|changed
+
+- name: Register connector to tenant - Idempotent check
+  iworkflow_tenant_connector:
+      tenant: "{{ tenant_name }}"
+      connector: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+  register: result
+
+- name: Assert Register connector to tenant - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Unregister connector from tenant
+  iworkflow_tenant_connector:
+      tenant: "{{ tenant_name }}"
+      connector: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Unregister connector from tenant
+  assert:
+      that:
+          - result|changed
+
+- name: Unregister connector from tenant - Idempotent check
+  iworkflow_tenant_connector:
+      tenant: "{{ tenant_name }}"
+      connector: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Assert Unregister connector from tenant - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete connector
+  iworkflow_local_connector:
+      name: "{{ connector_name1 }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
+
+- name: Delete tenant
+  iworkflow_tenant:
+      name: "{{ tenant_name }}"
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ iworkflow_port }}"
+      user: "{{ iworkflow_username }}"
+      password: "{{ iworkflow_password }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "absent"
+  register: result
