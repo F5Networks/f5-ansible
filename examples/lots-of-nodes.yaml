@@ -22,7 +22,7 @@
 #
 
 - name: Create pools from ports
-  hosts: bigip
+  hosts: f5-test
   connection: local
 
   environment:

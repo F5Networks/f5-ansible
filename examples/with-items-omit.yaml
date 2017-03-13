@@ -16,7 +16,7 @@
 #
 
 - name: Setup items that are needed for out VIPs
-  hosts: bigip
+  hosts: f5-test
   connection: local
 
   environment:
@@ -51,7 +51,7 @@
         delegate_to: localhost
 
 - name: Create VIP from inventory that has all vars
-  hosts: bigip
+  hosts: f5-test
   connection: local
 
   environment:
@@ -101,7 +101,7 @@
             var: result
 
 - name: Create VIP from inventory - 'all_rules' and 'persistence_profile' missing
-  hosts: bigip
+  hosts: f5-test
   connection: local
 
   environment:
