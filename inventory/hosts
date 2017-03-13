@@ -1,2 +1,9 @@
 [f5-test]
 localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+
+[bigip]
+localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+
+[secret:children]
+f5-test
+bigip
