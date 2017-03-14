@@ -102,6 +102,10 @@ RETURN = '''
 from ansible.module_utils.f5_utils import *
 from deepdiff import DeepDiff
 from distutils.version import LooseVersion
+from f5.utils.iapp_parser import (
+    IappParser,
+    NonextantTemplateNameException
+)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -118,12 +122,6 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'template_content', 'min_bigip_version'
     ]
-
-    def __init__(self, params=None):
-        self._values = defaultdict(lambda: None)
-        if params:
-            for k,v in iteritems(params):
-                setattr(self, k, v)
 
     def to_return(self):
         result = {}
@@ -150,19 +148,85 @@ class Parameters(AnsibleF5Parameters):
         self._values['min_bigip_version'] = value
 
     @property
-    def template(self):
-        if self._values['template'] is None:
+    def name(self):
+        if self._values['name']:
+            return self._values['name']
+
+        if self._values['template_content']:
+            try:
+                parser = IappParser(self._values['template_content'])
+                return parser._get_template_name()
+            except NonextantTemplateNameException:
+                return F5ModuleError(
+                    "No template name was found in the template"
+                )
+        return None
+
+    @property
+    def tables(self):
+        result = []
+        if not self._values['tables']:
             return None
-        if self._values['template'].startswith("/"+self.partition):
-            return self._values['template']
-        else:
-            return '/{0}/{1}'.format(
-                self.partition, self._values['template']
-            )
+        tables = self._values['tables']
+        for table in tables:
+            tmp = dict()
+            name = table.get('name', None)
+            if name is None:
+                raise F5ModuleError(
+                    "One of the provided tables does not have a name"
+                )
+            tmp['name'] = str(name)
+            columns = table.get('columnNames', None)
+            if columns:
+                tmp['columnNames'] = [str(x) for x in columns]
+                # You cannot have rows without columns
+                rows = table.get('rows', None)
+                if rows:
+                    tmp['rows'] = []
+                    for row in rows:
+                        tmp['rows'].append(dict(row=[str(x) for x in row['row']]))
+            result.append(tmp)
+        result = sorted(result, key=lambda k: k['name'])
+        return result
+
+    @tables.setter
+    def tables(self, value):
+        self._values['tables'] = value
+
+    @property
+    def vars(self):
+        result = []
+        if not self._values['vars']:
+            return None
+        variables = self._values['vars']
+        for variable in variables:
+            tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
+            result.append(tmp)
+        result = sorted(result, key=lambda k: k['name'])
+        return result
+
+    @vars.setter
+    def vars(self, value):
+        self._values['vars'] = value
+
+    @property
+    def template(self):
+        return dict(
+            tables=self.tables,
+            vars=self.variables,
+            sections=self.sections
+        )
 
     @template.setter
     def template(self, value):
-        self._values['template'] = value
+        if value is None:
+            return
+        if 'tables' in value:
+            self.tables = value['tables']
+        if 'vars' in value:
+            self.vars = value['vars']
+        if 'sections' in value:
+            self.sections = value['sections']
 
 
 class ModuleManager(object):
@@ -211,7 +275,7 @@ class ModuleManager(object):
         return result
 
     def exists(self):
-        return self.client.api.tm.sys.application.services.service.exists(
+        return self.client.api.cm.cloud.templates.iapps.iapp.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -245,36 +309,23 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.tm.sys.application.services.service.load(
+        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
             name=self.want.name,
             partition=self.want.partition
         )
         resource.update(**params)
 
     def read_current_from_device(self):
-        result = self.client.api.tm.sys.application.services.service.load(
+        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
             name=self.want.name,
             partition=self.want.partition
-        ).to_dict()
-        result.pop('_meta_data', None)
+        )
+        result = resource.properties
         return Parameters(result)
-
-    def format_params(self, params):
-        result = dict()
-        for k,v in iteritems(self.module.params):
-            if k in params and params[k] is not None:
-                result[k] = str(params[k])
-            else:
-                result[k] = v
-        source = result.get('parameters_src', None)
-        content = result.get('parameters', None)
-        if source or content:
-            result['content'] = self.get_iapp_template_source(source, content)
-        return result
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.tm.sys.application.services.service.create(
+        self.client.api.tm.cm.cloud.templates.iapps.iapp.create(
             name=self.want.name,
             partition=self.want.partition,
             **params
@@ -290,11 +341,11 @@ class ModuleManager(object):
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the iApp service")
+            raise F5ModuleError("Failed to delete the iApp template")
         return True
 
     def remove_from_device(self):
-        resource = self.client.api.tm.sys.application.services.service.load(
+        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
             name=self.want.name,
             partition=self.want.partition
         )
