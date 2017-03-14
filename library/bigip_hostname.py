@@ -42,6 +42,7 @@ requirements:
   - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
+  - Matthew Lam (@mryanlam)
 '''
 
 EXAMPLES = '''
@@ -62,121 +63,148 @@ hostname:
     sample: "big-ip01.internal"
 '''
 
-try:
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.basic import *
+from ansible.module_utils.f5_utils import *
 
+class Parameters(AnsibleF5Parameters):
+    api_attributes = ['hostname']
+    updatables = ['hostname']
+    returnables = ['hostname']
 
-class BigIpHostnameManager(object):
-    def __init__(self, *args, **kwargs):
-        self.changed_params = dict()
-        self.params = kwargs
-        self.api = None
-
-    def connect_to_bigip(self, **kwargs):
-        return ManagementRoot(kwargs['server'],
-                              kwargs['user'],
-                              kwargs['password'],
-                              port=kwargs['server_port'])
-
-    def ensure_hostname_is_present(self):
-        self.changed_params['hostname'] = self.params['hostname']
-
-        if self.params['check_mode']:
-            return True
-
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            r = api.tm.sys.global_settings.load()
-            r.update(hostname=self.params['hostname'])
-
-        if self.hostname_exists():
-            return True
-        else:
-            raise F5ModuleError("Failed to set the hostname")
-
-    def hostname_exists(self):
-        if self.params['hostname'] == self.current_hostname():
-            return True
-        else:
-            return False
-
-    def present(self):
-        if self.hostname_exists():
-            return False
-        else:
-
-            return self.ensure_hostname_is_present()
-
-    def current_hostname(self):
-        r = self.api.tm.sys.global_settings.load()
-        return r.hostname
-
-    def apply_changes(self):
-        result = dict()
-
-        changed = self.apply_to_running_config()
-        result.update(**self.changed_params)
-        result.update(dict(changed=changed))
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
         return result
 
-    def apply_to_running_config(self):
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+    @property
+    def hostname(self):
+        if self._values['hostname'] is None:
+            return None
+        return str(self._values['hostname'])
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = None
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        self.changes = Parameters(changed)
+        if changed:
+            return True
+        return False
+
+    def exec_module(self):
+        changed = False
+        result = dict()
+        state = self.want.state
+
         try:
-            self.api = self.connect_to_bigip(**self.params)
-            return self.present()
+            if state == "present":
+                changed = self.update()
+            elif state == "absent":
+                changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        return result
 
-class BigIpHostnameModuleConfig(object):
+    def read_current_from_device(self):
+        result = dict()
+        global_settings = self.client.api.tm.sys.global_settings.load()
+        if global_settings.hostname is not None:
+            result['hostname'] = global_settings.hostname
+        return Parameters(result)
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
+    def update_on_device(self):
+        params = self.want.api_params()
+        tx = self.client.api.tm.transactions.transaction
+        with BigIpTxContext(tx) as api:
+            r = api.tm.sys.global_settings.load()
+            if self.want.hostname is not None:
+                r.update(hostname=self.want.hostname)
+
+
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-
-        self.initialize_meta_args()
-        self.initialize_argument_spec()
-
-    def initialize_meta_args(self):
-        args = dict(
-            hostname=dict(required=True)
+        self.argument_spec = dict(
+            hostname=dict(
+                required=True,
+                default=None,
+                type='str'
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
+            )
         )
-        self.meta_args = args
-
-    def initialize_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-    def create(self):
-        return AnsibleModule(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
+        self.f5_product_name = 'bigip'
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    config = BigIpHostnameModuleConfig()
-    module = config.create()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = BigIpHostnameManager(
-            check_mode=module.check_mode, **module.params
-        )
-        result = obj.apply_changes()
-
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
-
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
