@@ -22,11 +22,11 @@ ANSIBLE_METADATA = {'status': ['preview'],
                     'version': '1.0'}
 
 DOCUMENTATION = '''
-module: iworkflow_tenant
-short_description: Manage tenants in iWorkflow.
+module: iworkflow_tenant_connector
+short_description: Manage connectors associated with tenants in iWorkflow.
 description:
-  - Manage tenants in iWorkflow.
-version_added: 2.3
+  - Manage connectors associated with tenants in iWorkflow.
+version_added: 2.4
 options:
   connector:
     description:
@@ -65,21 +65,126 @@ RETURN = '''
 
 '''
 
-
+import re
+import sys
+import q
 from ansible.module_utils.f5_utils import *
 
 
+class Connector(object):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.pop('client', None)
+        self._values = defaultdict(lambda: None)
+
+    def update(self, params=None):
+        params = str(params)
+        resource = None
+        collection = self.client.api.cm.cloud.connectors.locals.get_collection()
+        if re.search(r'([0-9-a-z]+\-){4}[0-9-a-z]+', params, re.I):
+            # Handle cases where the REST API sent us self links
+            for connector in collection:
+                if str(connector.displayName) != "BIG-IP":
+                    continue
+                if str(connector.selfLink) != params:
+                    continue
+                resource = connector
+                break
+        else:
+            # Handle the case where a user sends us a list of connector names
+            for connector in collection:
+                if str(connector.displayName) != "BIG-IP":
+                    continue
+                if str(connector.name) != params:
+                    continue
+                resource = connector
+                break
+        if not resource:
+            raise F5ModuleError(
+                "Connector {0} was not found".format(params)
+            )
+        self._values['name'] = resource.name
+        self._values['selfLink'] = resource.selfLink
+
+    @property
+    def name(self):
+        return str(self._values['name'])
+
+    @property
+    def selfLink(self):
+        return str(self._values['selfLink'])
+
+
+class Tenant(object):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.pop('client', None)
+        self._values = defaultdict(lambda: None)
+        self.connectors = []
+
+    def update(self, params=None):
+        # Handle the case where the Ansible user provides a tenant name as string
+        if isinstance(params, basestring):
+            self._values['name'] = params
+            resource = self.client.api.cm.cloud.tenants_s.tenant.load(
+                name=self.name
+            )
+            try:
+                for reference in resource.cloudConnectorReferences:
+                    connector = Connector()
+                    connector.client = self.client
+                    connector.update(reference['link'])
+                    self.connectors.append(connector)
+            except AttributeError:
+                pass
+        else:
+            # Handle the case where the REST API provides a tenant as a dict
+            self._values['name'] = params['name']
+            try:
+                for reference in params['cloudConnectorReferences']:
+                    q.q(reference)
+                    connector = Connector()
+                    connector.client = self.client
+                    connector.update(reference['link'])
+                    self.connectors.append(connector)
+            except AttributeError:
+                pass
+
+    @property
+    def name(self):
+        return str(self._values['name'])
+
+
 class Parameters(AnsibleF5Parameters):
-    api_map = {
-        'addressContact': 'address'
-    }
     returnables = []
+    api_attributes = []
 
-    api_attributes = [
-        'description', 'addressContact', 'phone', 'email'
-    ]
+    def __init__(self, params=None, client=None):
+        self.client = client
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params)
 
-    updatables = []
+    def update(self, params=None):
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -95,34 +200,51 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    @property
+    def tenant(self):
+        return self._values['tenant']
+
+    @tenant.setter
+    def tenant(self, value):
+        tenant = Tenant()
+        tenant.client = self.client
+        tenant.update(value)
+        self._values['tenant'] = tenant
+
+    @property
+    def connector(self):
+        return self._values['connectors']
+
+    @connector.setter
+    def connector(self, connector):
+        result = []
+        conn = Connector()
+        conn.client = self.client
+        conn.update(connector)
+        result.append(conn)
+        self._values['connectors'] = result
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
+
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
+
         self.changes = Parameters()
+        self.changes.client = self.client
 
     def _set_changed_options(self):
         changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
-
-    def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
+        want = set([x.selfLink for x in self.want.tenant.connectors])
+        changed['connections'] = want
+        self.changes = Parameters()
+        self.changes.client = self.client
+        self.changes.update(changed)
+        return True
 
     def exec_module(self):
         changed = False
@@ -134,7 +256,7 @@ class ModuleManager(object):
                 changed = self.present()
             elif state == "absent":
                 changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
+        except IOError as e:
             raise F5ModuleError(str(e))
 
         changes = self.changes.to_return()
@@ -143,81 +265,62 @@ class ModuleManager(object):
         return result
 
     def exists(self):
-        connector = self.get_connector_from_connector_name(
-            self.want.connector
-        )
-        if not connector:
-            raise F5ModuleError(
-                "The specified connector was not found"
-            )
-        tenant = self.get_tenant_from_tenant_name(self.want.tenant)
-        if not tenant:
-            raise F5ModuleError(
-                "The specified tenant was not found"
-            )
-        if not hasattr(tenant, 'cloudConnectorReferences'):
+        if not self.want.tenant.connectors:
             return False
 
-        connector_refs = self.get_selflinks_from_connectors(
-            self.want.connector
-        )
-        for reference in tenant.cloudConnectorReferences:
-            if str(reference['link']) in connector_refs:
-                return True
+        # Getting new sets of parameters here ensures that nothing is
+        # cached when, for example, delete is used.
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
+
+        tcr = set([x.selfLink for x in self.want.tenant.connectors])
+        cr = set([x.selfLink for x in self.want.connectors])
+        if cr.issubset(tcr):
+            return True
         return False
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
             return self.create()
 
-    def update(self):
-        # TODO:  update this to ensure the list of tenants is correct for the connector
-        pass
-
     def create(self):
+        self._set_changed_options()
         if self.client.check_mode:
             return True
         self.create_on_device()
         return True
 
-    def get_connector_from_connector_name(self, name):
-        connector = None
-        connectors = self.client.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
-                continue
-            if connector.name != name:
-                continue
-            break
-        return connector
-
-    def get_tenant_from_tenant_name(self, name):
-        tenants = self.client.api.cm.cloud.tenants_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(name)
-            )
-        )
-        return tenants.pop(0)
-
-    def get_selflinks_from_connectors(self, connectors):
-        links = []
-        for connector in connectors:
-            conn = self.get_connector_from_connector_name(connector)
-            links.append(conn.selfLink)
-        return links
-
     def create_on_device(self):
-        connector_refs = self.get_selflinks_from_connectors(
-            self.want.connector
+        connector_refs = self.to_add()
+        resource = self.client.api.cm.cloud.tenants_s.tenant.load(
+            name=self.want.tenant.name
         )
-        connectors = [dict(link=link) for link in connector_refs]
-        tenant = self.get_tenant_from_tenant_name(
-            self.want.tenant
+        resource.update(
+            cloudConnectorReferences=connector_refs
         )
-        tenant.update(cloudConnectorReferences=connectors)
         return True
+
+    def to_add(self):
+        want = [x.selfLink for x in self.want.connectors]
+        have = [x.selfLink for x in self.want.tenant.connectors]
+        connector_refs = set(want + have)
+        connector_refs = [dict(link=x) for x in connector_refs]
+        return connector_refs
+
+    def read_current_from_device(self):
+        result = dict()
+        resource = self.client.api.cm.cloud.tenants_s.tenant.load(
+            name=self.want.tenant.name
+        )
+        result['tenant'] = resource.properties
+        q.q(result)
+        params = Parameters()
+        params.client = self.client
+        params.update(result)
+        return params
 
     def absent(self):
         if self.exists():
@@ -225,25 +328,28 @@ class ModuleManager(object):
         return False
 
     def remove(self):
+        self.have = self.read_current_from_device()
         if self.client.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the tenant connector")
+            raise F5ModuleError("Failed to delete the tenant connector reference")
         return True
 
     def remove_from_device(self):
-        tenant = self.get_tenant_from_tenant_name(
-            self.want.tenant
+        connector_refs = self.to_remove()
+        resource = self.client.api.cm.cloud.tenants_s.tenant.load(
+            name=self.want.tenant.name
         )
-        current = [x['link'] for x in tenant.cloudConnectorReferences]
-        remove = self.get_selflinks_from_connectors(
-            self.want.connector
-        )
-        result = set(current) - set(remove)
-        connectors = [dict(link=link) for link in result]
-        tenant.update(cloudConnectorReferences=connectors)
+        resource.update(cloudConnectorReferences=connector_refs)
         return True
+
+    def to_remove(self):
+        want = set([x.selfLink for x in self.want.connectors])
+        have = set([x.selfLink for x in self.want.tenant.connectors])
+        connector_refs = set(have - want)
+        connector_refs = [dict(link=x) for x in connector_refs]
+        return connector_refs
 
 
 class ArgumentSpec(object):
@@ -252,7 +358,7 @@ class ArgumentSpec(object):
         self.argument_spec = dict(
             connector=dict(
                 required=True,
-                type='list'
+                type='str'
             ),
             tenant=dict(
                 required=True
