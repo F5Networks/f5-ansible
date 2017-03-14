@@ -63,8 +63,8 @@ hostname:
     sample: "big-ip01.internal"
 '''
 
-from ansible.module_utils.basic import *
 from ansible.module_utils.f5_utils import *
+
 
 class Parameters(AnsibleF5Parameters):
     api_attributes = ['hostname']
@@ -97,7 +97,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -121,15 +121,10 @@ class ModuleManager(object):
         return False
 
     def exec_module(self):
-        changed = False
         result = dict()
-        state = self.want.state
 
         try:
-            if state == "present":
-                changed = self.update()
-            elif state == "absent":
-                changed = self.absent()
+            changed = self.update()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
@@ -139,10 +134,8 @@ class ModuleManager(object):
         return result
 
     def read_current_from_device(self):
-        result = dict()
-        global_settings = self.client.api.tm.sys.global_settings.load()
-        if global_settings.hostname is not None:
-            result['hostname'] = global_settings.hostname
+        resource = self.client.api.tm.sys.global_settings.load()
+        result = resource.properties
         return Parameters(result)
 
     def update(self):
@@ -162,11 +155,8 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        tx = self.client.api.tm.transactions.transaction
-        with BigIpTxContext(tx) as api:
-            r = api.tm.sys.global_settings.load()
-            if self.want.hostname is not None:
-                r.update(hostname=self.want.hostname)
+        resource = self.client.api.tm.sys.global_settings.load()
+        resource.modify(**params)
 
 
 class ArgumentSpec(object):
@@ -177,11 +167,6 @@ class ArgumentSpec(object):
                 required=True,
                 default=None,
                 type='str'
-            ),
-            state=dict(
-                required=False,
-                default='present',
-                choices=['absent', 'present']
             )
         )
         self.f5_product_name = 'bigip'
