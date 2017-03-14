@@ -5,6 +5,9 @@ requests
 git+https://github.com/F5Networks/f5-common-python.git
 git+https://github.com/ansible/ansible.git
 
+# Code that supports some "special" modules
+deepdiff
+
 # Used for testing modules
 pep8
 pyflakes
@@ -12,6 +15,7 @@ flake8
 pytest
 nose
 virtualenvwrapper
+mock
 
 # Used for stubbing new modules (./scripts/stub-new-module.py)
 fire
