@@ -17,9 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-ANSIBLE_METADATA = {'status': ['preview'],
-                    'supported_by': 'community',
-                    'version': '1.0'}
+ANSIBLE_METADATA = {
+    'status': ['preview'],
+    'supported_by': 'community',
+    'metadata_version': '1.0'
+}
 
 DOCUMENTATION = '''
 module: iworkflow_tenant_connector
@@ -153,7 +155,7 @@ class Tenant(object):
         self.connectors = []
 
     def update(self, params=None):
-        # Handle the case where the Ansible user provides a tenant name as string
+        # Handle the case where the Ansible user provides a name as string
         if isinstance(params, basestring):
             self._values['name'] = params
             resource = self._load_resource_by_name()
@@ -166,7 +168,7 @@ class Tenant(object):
             except AttributeError:
                 pass
         else:
-            # Handle the case where the REST API provides a tenant as a dict
+            # Handle the case where the REST API provides a dict
             self._values['name'] = params['name']
             try:
                 for reference in params['cloudConnectorReferences']:
@@ -341,9 +343,8 @@ class ModuleManager(object):
     def to_add(self):
         want = [x.selfLink for x in self.want.connectors]
         have = [x.selfLink for x in self.want.tenant.connectors]
-        connector_refs = set(want + have)
-        connector_refs = [dict(link=x) for x in connector_refs]
-        return connector_refs
+        references = set(want + have)
+        return [dict(link=x) for x in connector_refs]
 
     def read_current_from_device(self):
         result = dict()
@@ -371,19 +372,18 @@ class ModuleManager(object):
         return True
 
     def remove_from_device(self):
-        connector_refs = self.to_remove()
+        references = self.to_remove()
         resource = self.client.api.cm.cloud.tenants_s.tenant.load(
             name=self.want.tenant.name
         )
-        resource.update(cloudConnectorReferences=connector_refs)
+        resource.update(cloudConnectorReferences=references)
         return True
 
     def to_remove(self):
         want = set([x.selfLink for x in self.want.connectors])
         have = set([x.selfLink for x in self.want.tenant.connectors])
-        connector_refs = set(have - want)
-        connector_refs = [dict(link=x) for x in connector_refs]
-        return connector_refs
+        references = set(have - want)
+        return [dict(link=x) for x in references]
 
 
 class ArgumentSpec(object):
