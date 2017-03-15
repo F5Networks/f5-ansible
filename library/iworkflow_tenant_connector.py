@@ -58,7 +58,38 @@ author:
 '''
 
 EXAMPLES = '''
+- name: Register connector to tenant
+  iworkflow_tenant_connector:
+      tenant: "tenant-foo"
+      connector: "connector-foo"
+      server: "iwf.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: "no"
+      state: "present"
 
+- name: Register multiple connectors to tenant
+  iworkflow_tenant_connector:
+      tenant: "tenant-foo"
+      connector: "{{ item }}"
+      server: "iwf.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: "no"
+      state: "present"
+  with_items:
+      - "connector-one"
+      - "connector-two"
+
+- name: Unregister connector from tenant
+  iworkflow_tenant_connector:
+      tenant: "tenant-foo"
+      connector: "connector-foo"
+      server: "iwf.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: "no"
+      state: "absent"
 '''
 
 RETURN = '''
