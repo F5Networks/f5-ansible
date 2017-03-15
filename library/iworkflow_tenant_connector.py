@@ -66,8 +66,6 @@ RETURN = '''
 '''
 
 import re
-import sys
-import q
 from ansible.module_utils.f5_utils import *
 
 
@@ -79,7 +77,7 @@ class Connector(object):
     def update(self, params=None):
         params = str(params)
         resource = None
-        collection = self.client.api.cm.cloud.connectors.locals.get_collection()
+        collection = self._get_connector_collection()
         if re.search(r'([0-9-a-z]+\-){4}[0-9-a-z]+', params, re.I):
             # Handle cases where the REST API sent us self links
             for connector in collection:
@@ -105,6 +103,9 @@ class Connector(object):
         self._values['name'] = resource.name
         self._values['selfLink'] = resource.selfLink
 
+    def _get_connector_collection(self):
+        return self.client.api.cm.cloud.connectors.locals.get_collection()
+
     @property
     def name(self):
         return str(self._values['name'])
@@ -124,9 +125,7 @@ class Tenant(object):
         # Handle the case where the Ansible user provides a tenant name as string
         if isinstance(params, basestring):
             self._values['name'] = params
-            resource = self.client.api.cm.cloud.tenants_s.tenant.load(
-                name=self.name
-            )
+            resource = self._load_resource_by_name()
             try:
                 for reference in resource.cloudConnectorReferences:
                     connector = Connector()
@@ -140,13 +139,18 @@ class Tenant(object):
             self._values['name'] = params['name']
             try:
                 for reference in params['cloudConnectorReferences']:
-                    q.q(reference)
                     connector = Connector()
                     connector.client = self.client
                     connector.update(reference['link'])
                     self.connectors.append(connector)
             except AttributeError:
                 pass
+
+    def _load_resource_by_name(self):
+        resource = self.client.api.cm.cloud.tenants_s.tenant.load(
+            name=self.name
+        )
+        return resource
 
     @property
     def name(self):
@@ -316,7 +320,6 @@ class ModuleManager(object):
             name=self.want.tenant.name
         )
         result['tenant'] = resource.properties
-        q.q(result)
         params = Parameters()
         params.client = self.client
         params.update(result)
