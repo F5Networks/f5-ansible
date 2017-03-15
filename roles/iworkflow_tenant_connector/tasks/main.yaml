@@ -108,7 +108,7 @@
       - "{{ connector_name1 }}"
       - "{{ connector_name2 }}"
 
-- name: Assert Register second connector to tenant
+- name: Assert Register multiple connectors to tenant
   assert:
       that:
           - result|changed
@@ -128,7 +128,7 @@
       - "{{ connector_name1 }}"
       - "{{ connector_name2 }}"
 
-- name: Assert Register second connector to tenant
+- name: Assert Register multiple connectors to tenant - Idempotent check
   assert:
       that:
           - not result|changed
