@@ -1,0 +1,24 @@
+---
+
+# The usage of this module is not idempotent because the supported
+# functionality is all executable. Therefore, you will find no
+# idempotent tests for this module
+
+- name: Save the running BIG-IP configuration to disk
+  bigip_config:
+      save: True
+  register: result
+
+- name: Reset device
+  bigip_config:
+      reset: True
+      save: True
+  register: result
+
+- name: Reset device, load new running configuration, save it
+  bigip_config:
+      reset: True
+      save: True
+      merge_content: "{{ lookup('file', 'bigip.conf') }}"
+      verify: False
+  register: result
