@@ -29,12 +29,9 @@ DOCUMENTATION = '''
 module: bigip_config
 short_description: Manage BIG-IP configuration sections
 description:
-  - Cisco NXOS configurations use a simple block indent file syntax
-    for segmenting configuration into sections. This module provides
-    an implementation for working with NXOS configuration sections in
-    a deterministic way. This module works with either CLI or NXAPI
-    transports.
-version_added: "2.3"
+  - Manages a BIG-IP configuration by allowing TMSH commands that
+    modify running configuration, or,
+version_added: "2.4"
 options:
   save:
     description:
@@ -47,23 +44,285 @@ options:
     choices:
       - yes
       - no
-    required: false
-    default: false
-  load_sys_default:
+    required: False
+    default: False
+  reset:
     description:
-      - Loads the default configuration on the device
+      - Loads the default configuration on the device. If this option
+        is specified, the default configuration will be loaded before
+        any commands or other provided configuration is run.
+    required: False
+    default: False
+  merge_content:
+    description:
+      - Loads the specified configuration that you want to merge into
+        the running configuration. This is equivalent to using the
+        C(tmsh) command C(load sys config from-terminal merge). If
+        you need to read configuration from a file or template, use
+        Ansible's C(file) or C(template) lookup plugins respectively.
+  verify:
+    description:
+      - Validates the specified configuration to see whether they are
+        valid to replace the running configuration. The running
+        configuration will not be changed.
+    required: False
+    default: True
 notes:
-  - Requires the f5-sdk Python package on the remote host. This is as easy as
-    pip install f5-sdk
-extends_documentation_fragment: f5
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+  - Requires Ansible >= 2.3.
 requirements:
-  - f5-sdk
+  - f5-sdk >= 2.2.3
+extends_documentation_fragment: f5
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+EXAMPLES = '''
+- name: run show version on remote devices
+  bigip_command:
+    commands: show sys version
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
+
+- name: run show version and check to see if output contains BIG-IP
+  bigip_command:
+    commands: show sys version
+    wait_for: result[0] contains BIG-IP
+    server: "lb.mydomain.com"
+    password: "secret"
+    user: "admin"
+    validate_certs: "no"
+  delegate_to: localhost
+'''
+
+RETURN = '''
+stdout:
+    description: The set of responses from the commands
+    returned: always
+    type: list
+    sample: ['...', '...']
+
+stdout_lines:
+    description: The value of stdout split into a list
+    returned: always
+    type: list
+    sample: [['...', '...'], ['...'], ['...']]
+'''
+
+import tempfile
+
+from ansible.module_utils.f5_utils import *
+from ansible.module_utils.basic import BOOLEANS
+
+
+class Parameters(AnsibleF5Parameters):
+    def __init__(self, params=None):
+        if self.params:
+            self.update(params)
+
+    def update(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _to_lines(self, stdout):
+        lines = list()
+        for item in stdout:
+            if isinstance(item, string_types):
+                item = str(item).split('\n')
+            lines.append(item)
+        return lines
+
+    def exec_module(self):
+        result = dict()
+
+        try:
+            self.execute()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        result.update(**self.changes.to_return())
+        result.update(dict(changed=False))
+        return result
+
+    def execute(self):
+        responses = []
+        if self.want.reset:
+            response = self.reset()
+            responses.append(response)
+
+        if self.want.merge_content:
+            if self.want.verify:
+                response = self.merge(verify=True)
+                responses.append(response)
+            else:
+                response = self.merge(verify=False)
+                responses.append(response)
+
+        if self.want.save:
+            response = self.save()
+            responses.append(response)
+
+        self.changes = Parameters({
+            'stdout': responses,
+            'stdout_lines': self._to_lines(responses)
+        })
+
+    def reset(self):
+        if self.client.check_mode:
+            return True
+        self.reset_device()
+
+    def reset_device(self):
+        command = 'tmsh load sys config default'
+        output self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        if hasattr(output, 'commandResult'):
+            return str(output.commandResult)
+        return None
+
+    def merge(self, verify=True):
+        temp_name = next(tempfile._get_condidate_names())
+        remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
+
+        self.upload_to_device(temp_name)
+        if self.want.verify:
+            self.merge_on_device(remote_path, True)
+
+        if self.client.check_mode:
+            return True
+
+        response = self.merge_on_device(
+            remote_path=remote_path, verify=verify
+        )
+        self._remove_temporary_file(remote_path=remote_path)
+        return response
+
+    def merge_on_device(self, remote_path, verify=True):
+        result = None
+
+        command = 'tmsh load sys config file {0} merge'.format(
+            remote_path
+        )
+        # Merge the config
+        if verify:
+            command += ' verify'
+        output self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        if hasattr(output, 'commandResult'):
+            result = str(output.commandResult)
+        return result
+
+    def _remove_temporary_file(self, remote_path):
+        command = 'rm {0}'.format(remote_path)
+        self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+
+    def upload_to_device(self, temp_name):
+        template = StringIO(self.want.merge_content)
+        upload = self.client.api.shared.file_transfer.uploads
+        upload.upload_stringio(template, temp_name)
+
+    def save(self):
+        if self.client.check_mode:
+            return True
+        self.save_on_device()
+
+    def save_on_device(self):
+        output = self.client.api.tm.sys.config.exec_cmd('save')
+
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            reset=dict(
+                required=False,
+                default=False,
+                choices=BOOLEANS
+            ),
+            merge_content=dict(
+                required=False,
+                default=None,
+                type='str'
+            ),
+            verify=dict(
+                required=False,
+                default=True,
+                choices=BOOLEANS
+            ),
+            save=dict(
+                required=False,
+                default=False,
+                choices=BOOLEANS
+            )
+        )
+        self.f5_product_name = 'bigip'
+
+
+def main():
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
+
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
+
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except (FailedConditionsError, AttributeError) as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
+
