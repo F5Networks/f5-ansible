@@ -71,6 +71,7 @@ RETURN = '''
 
 '''
 
+import q
 import re
 from ansible.module_utils.f5_utils import *
 
@@ -96,11 +97,12 @@ class Device(object):
         else:
             # Handle the case where a user sends us a list of connector names
             for device in collection:
+                q.q(device.product, device.hostname, params)
                 if str(device.product) != "BIG-IP":
                     continue
 
                 # The supplied device can be in several formats.
-                if str(device.hostname) != params:
+                if str(device.hostname) == params:
                     # Hostname
                     #
                     # The hostname as was detected by iWorkflow. This is the
@@ -109,8 +111,9 @@ class Device(object):
                     #
                     # Example:
                     #     sdb-test-bigip-1.localhost.localdoman
-                    continue
-                elif str(device.address) != params:
+                    resource = device
+                    break
+                elif str(device.address) == params:
                     # Address
                     #
                     # This is the address that iWorkflow discovered the device
@@ -120,31 +123,26 @@ class Device(object):
                     #
                     # Example:
                     #     131.225.23.53
-                    continue
-                elif str(device.managementAddress) != params:
+                    resource = device
+                    break
+                elif str(device.managementAddress) == params:
                     # Management Address
                     #
                     # This is the management address of the BIG-IP.
                     #
                     # Example:
                     #     192.168.10.100
-                    continue
-                resource = connector
-                break
+                    resource = device
+                    break
         if not resource:
             raise F5ModuleError(
                 "Device {0} was not found".format(params)
             )
-        self._values['name'] = resource.name
         self._values['selfLink'] = resource.selfLink
 
     def _get_device_collection(self):
         dg = self.client.api.shared.resolver.device_groups
         return dg.cm_cloud_managed_devices.devices_s.get_collection()
-
-    @property
-    def name(self):
-        return str(self._values['name'])
 
     @property
     def selfLink(self):
