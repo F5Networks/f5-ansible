@@ -185,8 +185,6 @@ from ansible.module_utils.network_common import ComplexList
 from ansible.module_utils.network_common import to_list
 from collections import deque
 
-VALID_KEYS = ['command', 'output', 'prompt', 'response']
-
 
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings']
@@ -218,7 +216,7 @@ class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
