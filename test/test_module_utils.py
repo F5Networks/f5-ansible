@@ -23,8 +23,6 @@ __metaclass__ = type
 
 from ansible.compat.tests import unittest
 from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError,
     AnsibleF5Parameters
 )
 
@@ -62,6 +60,7 @@ class TestKeysWithPunctuation(unittest.TestCase):
         api_map = {
             'dns.proxy.__iter__': 'bar'
         }
+
         @property
         def bar(self):
             return self._values['bar']
@@ -194,6 +193,7 @@ class TestMissingAttrSetter(unittest.TestCase):
         test = TestMissingAttrSetter.Foo(args)
         assert test.destination == '10.10.10.10'
         assert test.reject == 'yes'
+
 
 class TestAssureNoInstanceAttributes(unittest.TestCase):
     class Foo(AnsibleF5Parameters):
