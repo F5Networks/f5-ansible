@@ -113,19 +113,34 @@ stdout_lines:
     sample: [['...', '...'], ['...'], ['...']]
 '''
 
+import os
 import tempfile
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from ansible.module_utils.f5_utils import *
 from ansible.module_utils.basic import BOOLEANS
 
 
 class Parameters(AnsibleF5Parameters):
+    returnables = ['stdout', 'stdout_lines']
+
     def __init__(self, params=None):
-        if self.params:
+        self._values = defaultdict(lambda: None)
+        if params:
             self.update(params)
 
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
     def update(self, params=None):
-        self._values = defaultdict(lambda: None)
         if params:
             for k,v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
@@ -180,7 +195,7 @@ class ModuleManager(object):
             raise F5ModuleError(str(e))
 
         result.update(**self.changes.to_return())
-        result.update(dict(changed=False))
+        result.update(dict(changed=True))
         return result
 
     def execute(self):
@@ -209,11 +224,11 @@ class ModuleManager(object):
     def reset(self):
         if self.client.check_mode:
             return True
-        self.reset_device()
+        return self.reset_device()
 
     def reset_device(self):
         command = 'tmsh load sys config default'
-        output self.client.api.tm.util.bash.exec_cmd(
+        output = self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "{0}"'.format(command)
         )
@@ -222,20 +237,19 @@ class ModuleManager(object):
         return None
 
     def merge(self, verify=True):
-        temp_name = next(tempfile._get_condidate_names())
+        temp_name = next(tempfile._get_candidate_names())
         remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
-
-        self.upload_to_device(temp_name)
-        if self.want.verify:
-            self.merge_on_device(remote_path, True)
+        temp_path = '/tmp/' + temp_name
 
         if self.client.check_mode:
             return True
 
+        self.upload_to_device(temp_name)
+        self.move_on_device(remote_path)
         response = self.merge_on_device(
-            remote_path=remote_path, verify=verify
+            remote_path=temp_path, verify=verify
         )
-        self._remove_temporary_file(remote_path=remote_path)
+        self.remove_temporary_file(remote_path=temp_path)
         return response
 
     def merge_on_device(self, remote_path, verify=True):
@@ -244,10 +258,11 @@ class ModuleManager(object):
         command = 'tmsh load sys config file {0} merge'.format(
             remote_path
         )
-        # Merge the config
+        print command
         if verify:
             command += ' verify'
-        output self.client.api.tm.util.bash.exec_cmd(
+
+        output = self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "{0}"'.format(command)
         )
@@ -255,11 +270,18 @@ class ModuleManager(object):
             result = str(output.commandResult)
         return result
 
-    def _remove_temporary_file(self, remote_path):
-        command = 'rm {0}'.format(remote_path)
-        self.client.api.tm.util.bash.exec_cmd(
+    def remove_temporary_file(self, remote_path):
+        self.client.api.tm.util.unix_rm.exec_cmd(
             'run',
-            utilCmdArgs='-c "{0}"'.format(command)
+            utilCmdArgs=remote_path
+        )
+
+    def move_on_device(self, remote_path):
+        self.client.api.tm.util.unix_mv.exec_cmd(
+            'run',
+            utilCmdArgs='{0} /tmp/{1}'.format(
+                remote_path, os.path.basename(remote_path)
+            )
         )
 
     def upload_to_device(self, temp_name):
@@ -270,10 +292,18 @@ class ModuleManager(object):
     def save(self):
         if self.client.check_mode:
             return True
-        self.save_on_device()
+        return self.save_on_device()
 
     def save_on_device(self):
-        output = self.client.api.tm.sys.config.exec_cmd('save')
+        result = None
+        command = 'tmsh save sys config'
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        if hasattr(output, 'commandResult'):
+            result = str(output.commandResult)
+        return result
 
 
 class ArgumentSpec(object):
@@ -282,6 +312,7 @@ class ArgumentSpec(object):
         self.argument_spec = dict(
             reset=dict(
                 required=False,
+                type='bool',
                 default=False,
                 choices=BOOLEANS
             ),
@@ -291,11 +322,13 @@ class ArgumentSpec(object):
                 type='str'
             ),
             verify=dict(
+                type='bool',
                 required=False,
                 default=True,
                 choices=BOOLEANS
             ),
             save=dict(
+                type='bool',
                 required=False,
                 default=False,
                 choices=BOOLEANS
@@ -320,7 +353,7 @@ def main():
         mm = ModuleManager(client)
         results = mm.exec_module()
         client.module.exit_json(**results)
-    except (FailedConditionsError, AttributeError) as e:
+    except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
