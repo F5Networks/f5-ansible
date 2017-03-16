@@ -99,7 +99,15 @@ RETURN = '''
 '''
 
 import re
-from ansible.module_utils.f5_utils import *
+
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    defaultdict,
+    F5ModuleError,
+    HAS_F5SDK,
+    iteritems
+)
 
 
 class Connector(object):
@@ -202,7 +210,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -344,7 +352,7 @@ class ModuleManager(object):
         want = [x.selfLink for x in self.want.connectors]
         have = [x.selfLink for x in self.want.tenant.connectors]
         references = set(want + have)
-        return [dict(link=x) for x in connector_refs]
+        return [dict(link=x) for x in references]
 
     def read_current_from_device(self):
         result = dict()
@@ -424,6 +432,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
