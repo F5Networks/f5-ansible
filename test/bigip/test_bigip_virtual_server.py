@@ -23,10 +23,9 @@ __metaclass__ = type
 
 import os
 import json
-import yaml
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, Mock
+from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
@@ -46,7 +45,6 @@ fixture_data = {}
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
-
 
 
 def load_fixture(name):
@@ -99,10 +97,8 @@ class TestParameters(unittest.TestCase):
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
         assert {'context': 'all', 'name': 'fix'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'clientssl'} in \
-               p.profiles_server_side
-        assert {'context': 'clientside', 'name': 'ilx'} in \
-               p.profiles_client_side
+        assert {'context': 'serverside', 'name': 'clientssl'} in p.profiles_server_side
+        assert {'context': 'clientside', 'name': 'ilx'} in p.profiles_client_side
         assert '/Common/vlan2' in p.enabled_vlans
 
     def test_module_partition_prefix_parameters(self):
@@ -135,10 +131,8 @@ class TestParameters(unittest.TestCase):
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
         assert {'context': 'all', 'name': 'fix'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'serverssl'} in \
-               p.profiles_server_side
-        assert {'context': 'clientside', 'name': 'ilx'} in \
-               p.profiles_client_side
+        assert {'context': 'serverside', 'name': 'serverssl'} in p.profiles_server_side
+        assert {'context': 'clientside', 'name': 'ilx'} in p.profiles_client_side
         assert '/Common/vlan2' in p.enabled_vlans
 
     def test_api_parameters_variables(self):
@@ -240,13 +234,12 @@ class TestParameters(unittest.TestCase):
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
         assert {'context': 'all', 'name': 'http'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'serverssl'} in \
-               p.profiles_server_side
+        assert {'context': 'serverside', 'name': 'serverssl'} in p.profiles_server_side
         assert '/Common/net1' in p.enabled_vlans
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-        return_value=True)
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):

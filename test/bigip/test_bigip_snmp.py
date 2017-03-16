@@ -25,10 +25,12 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, Mock
+from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client
+)
 from library.bigip_snmp import (
     Parameters,
     ModuleManager,

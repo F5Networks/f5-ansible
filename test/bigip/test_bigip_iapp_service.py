@@ -23,10 +23,9 @@ __metaclass__ = type
 
 import os
 import json
-import yaml
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, Mock
+from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
@@ -46,7 +45,6 @@ fixture_data = {}
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
-
 
 
 def load_fixture(name):
@@ -184,7 +182,7 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.tables[0]['name'] == 'pool__members'
-        assert p.tables[0]['columnNames'] == ['addr','port','connection_limit']
+        assert p.tables[0]['columnNames'] == ['addr', 'port', 'connection_limit']
         assert len(p.tables[0]['rows']) == 2
         assert 'row' in p.tables[0]['rows'][0]
         assert 'row' in p.tables[0]['rows'][1]
@@ -225,7 +223,6 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
-
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)

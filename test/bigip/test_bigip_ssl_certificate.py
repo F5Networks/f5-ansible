@@ -25,17 +25,11 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
 from library.bigip_ssl_certificate import (
     KeyParameters,
-    CertParameters,
-    ModuleManager,
-    ArgumentSpec
+    CertParameters
 )
 
 
@@ -113,52 +107,3 @@ class TestParameters(unittest.TestCase):
         assert p.server == 'localhost'
         assert p.password == 'password'
         assert p.partition == 'Common'
-
-#    def test_api_parameters(self):
-#        args = dict(
-#            name='foo',
-#            community='public',
-#            host='10.10.10.10',
-#            network='other',
-#            version=1,
-#            port=1000
-#        )
-#        p = Parameters(args)
-#        assert p.name == 'foo'
-
-
-#class TestManager(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.spec = ArgumentSpec()
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_create_trap(self, *args):
-#        set_module_args(dict(
-#            name='foo',
-#            snmp_version='1',
-#            community='public',
-#            destination='10.10.10.10',
-#            port=1000,
-#            network='other',
-#            password='password',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: False
-#        mm.create_on_device = lambda: True
-#        mm.exists = lambda: False
-#
-#        results = mm.exec_module()
-#
-#        assert results['changed'] is True
