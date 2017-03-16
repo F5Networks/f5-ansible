@@ -26,7 +26,9 @@ import json
 import pytest
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, Mock
+from ansible.compat.tests.mock import (
+    patch
+)
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
@@ -47,7 +49,6 @@ fixture_data = {}
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
-
 
 
 def load_fixture(name):
@@ -89,13 +90,14 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         with pytest.raises(F5ModuleError) as e:
-            name = p.name
+            assert p.name
         assert 'You must specify a name for this module' in str(e)
 
     def test_api_parameters(self):
         args = load_fixture('load_license_pool.json')
         p = Parameters(args)
         assert p.name == 'asdf'
+
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)

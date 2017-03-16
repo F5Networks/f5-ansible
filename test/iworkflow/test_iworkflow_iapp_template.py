@@ -25,16 +25,10 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
 from library.iworkflow_iapp_template import (
-    Parameters,
-    ModuleManager,
-    ArgumentSpec
+    Parameters
 )
 
 
@@ -45,7 +39,6 @@ fixture_data = {}
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
-
 
 
 def load_fixture(name):
@@ -95,38 +88,3 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.variables[0]['name'] == 'client__http_compression'
-
-
-#class TestManager(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.spec = ArgumentSpec()
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_create_service(self, *args):
-#        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
-#        set_module_args(dict(
-#            name='foo',
-#            template='f5.http',
-#            parameters=parameters,
-#            state='present',
-#            password='passsword',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: True
-#        mm.exists = lambda: False
-#        mm.create_on_device = lambda: True
-#
-#        results = mm.exec_module()
-#        assert results['changed'] is True
