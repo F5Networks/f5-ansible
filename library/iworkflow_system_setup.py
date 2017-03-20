@@ -17,9 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-ANSIBLE_METADATA = {'status': ['preview'],
-                    'supported_by': 'community',
-                    'version': '1.0'}
+ANSIBLE_METADATA = {
+    'status': ['preview'],
+    'supported_by': 'community',
+    'metadata_version': '1.0'
+}
 
 DOCUMENTATION = '''
 module: iworkflow_system_setup
@@ -73,7 +75,7 @@ EXAMPLES = '''
       is_root_password_changed: "no"
       is_system_setup: "yes"
       password: "secret"
-      server: "mgmt.mydomain.com"
+      server: "iwf.mydomain.com"
       user: "admin"
   delegate_to: localhost
 '''
