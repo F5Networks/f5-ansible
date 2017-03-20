@@ -513,7 +513,7 @@ class ModuleManager(object):
                 )
             )
         )
-        return Parameters(result.properties)
+        return Parameters(result.attrs)
 
     def exists(self):
         return self.client.api.tm.ltm.virtuals.virtual.exists(
