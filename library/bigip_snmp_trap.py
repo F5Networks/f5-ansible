@@ -132,10 +132,16 @@ class Parameters(AnsibleF5Parameters):
         return str(self._values['port'])
 
     def api_params(self):
-        params = super(Parameters, self).api_params()
-        if self.network == 'default':
-            params.update({'network': None})
-        return params
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.network == 'default':
+                result['network'] = None
+            elif api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
 
 
 class ModuleManager(object):

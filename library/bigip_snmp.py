@@ -166,7 +166,10 @@ class Parameters(AnsibleF5Parameters):
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
-            result[api_attribute] = getattr(self, api_attribute)
+            if api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
 
