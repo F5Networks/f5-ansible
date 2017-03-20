@@ -359,7 +359,7 @@ class ModuleManager(object):
         resource = self.client.api.cm.cloud.tenants_s.tenant.load(
             name=self.want.tenant.name
         )
-        result['tenant'] = resource.properties
+        result['tenant'] = resource.attrs
         params = Parameters()
         params.client = self.client
         params.update(result)

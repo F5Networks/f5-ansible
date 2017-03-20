@@ -203,7 +203,7 @@ class ModuleManager(object):
             )
         )
         resource = collection.pop()
-        result = resource.properties
+        result = resource.attrs
         return Parameters(result)
 
     def create_on_device(self):
