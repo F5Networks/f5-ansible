@@ -208,7 +208,7 @@ class ModuleManager(object):
             if member.state == 'LICENSED':
                 break
             elif member.state in error_values:
-                raise F5ModuleError(member.errors)
+                raise F5ModuleError(member.errorText)
             time.sleep(10)
 
     def exec_module(self):
