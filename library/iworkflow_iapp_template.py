@@ -101,7 +101,14 @@ RETURN = '''
 '''
 
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    F5ModuleError,
+    HAS_F5SDK,
+    iControlUnexpectedHTTPError,
+    iteritems,
+)
 from deepdiff import DeepDiff
 from distutils.version import LooseVersion
 from f5.utils.iapp_parser import (
@@ -253,7 +260,7 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1,attr2))
+                    changed[key] = str(DeepDiff(attr1, attr2))
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -412,6 +419,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()

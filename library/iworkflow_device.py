@@ -80,7 +80,13 @@ RETURN = '''
 '''
 
 import time
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    F5ModuleError,
+    HAS_F5SDK,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -263,7 +269,7 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             )
         )
-        self.required_if=[
+        self.required_if = [
             ['state', 'present', ['device', 'username_credential', 'password_credential']]
         ]
         self.f5_product_name = 'iworkflow'
@@ -288,6 +294,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
