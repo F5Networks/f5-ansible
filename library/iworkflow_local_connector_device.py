@@ -380,7 +380,7 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "The specified connector was not found"
             )
-        result['connector'] = resource.properties
+        result['connector'] = resource.attrs
         params = Parameters()
         params.client = self.client
         params.update(result)

@@ -274,7 +274,7 @@ class ModuleManager(object):
                 params='$expand=deviceReference'
             )
         )
-        devices = [x.properties for x in collection]
+        devices = [x.attrs for x in collection]
         result = Parameters()
         result.client = self.client
         result.update(dict(

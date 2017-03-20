@@ -217,7 +217,7 @@ class ModuleManager(object):
             break
         if not connector:
             return None
-        result = connector.properties
+        result = connector.attrs
         return Parameters(result)
 
     def create_on_device(self):
