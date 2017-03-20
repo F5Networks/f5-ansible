@@ -87,147 +87,230 @@ RETURN = '''
 import re
 from netaddr import IPNetwork
 
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.basic import BOOLEANS_TRUE
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    F5ModuleError,
+    HAS_F5SDK,
+    iControlUnexpectedHTTPError
+)
 
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'managementIpAddress': 'management_address',
+        'dnsServerAddresses': 'dns_servers',
+        'dnsSearchDomains': 'dns_search_domain',
+        'ntpServerAddresses': 'ntp_servers',
+        'isSystemSetup': 'is_system_setup',
+        'discoveryAddress': 'discovery_address'
+    }
+    returnables = []
+
+    api_attributes = [
+        'managementIpAddress', 'dnsServerAddresses', 'dnsSearchDomains',
+        'ntpServerAddresses'
+    ]
+
+    updatables = [
+        'management_address', 'dns_servers', 'dns_search_domain', 'ntp_servers',
+        'hostname'
+    ]
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
 
 
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+    @property
+    def hostname(self):
+        if self._values['hostname'] is None:
+            return None
+        pattern = r'.*([\w\-]+)\.([\w\-]+).*'
+        matches = re.search(pattern, self._values['hostname'], re.I)
+        if matches:
+            return self._values['hostname']
+        elif self._values['hostname'] == 'iworkflow1':
+            # This is what iWorkflow uses if you dont give it a
+            # hostname
+            return self._values['hostname']
+        raise F5ModuleError(
+            "The provided hostname must be an FQDN"
+        )
 
-
-class F5ManagementAddress(object):
-    _name = 'management_address'
-
-    def __get__(self, instance, owner):
-        return instance.__dict__.get(self._name, None)
-
-    def __set__(self, instance, value):
+    @property
+    def management_address(self):
         try:
-            IPNetwork(value)
-            instance.__dict__[self._name] = value
+            address = IPNetwork(self._values['managment_address'])
+            return str(address.ip)
         except Exception:
             raise F5ModuleError(
                 "The provided management address is not a valid IP address"
             )
 
 
-class F5Hostname(object):
-    _name = 'hostname'
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
 
-    def __get__(self, instance, owner):
-        return instance.__dict__.get(self._name, None)
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
 
-    def __set__(self, instance, value):
-        search = re.search(r'.*([\w\-]+)\.([\w\-]+).*', value, re.I)
-        if search:
-            instance.__dict__[self._name] = value
-        else:
-            raise F5ModuleError(
-                "The provided hostname must be an FQDN"
-            )
+    def exec_module(self):
+        result = dict()
 
+        try:
+            changed = self.update()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
 
-class iWorkflowSystemSetupParams(object):
-    hostname = F5Hostname()
-    management_address = F5ManagementAddress()
-    is_admin_password_changed = None
-    is_root_password_changed = None
-    is_system_setup = None
-    dns_servers = None
-    dns_search_domain = None
-    ntp_servers = None
-    admin_password = None
-    root_password = None
-
-    def difference(self, obj):
-        """Compute difference between one object and another
-
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded_keys)
-
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
-
-        Code take from https://www.djangosnippets.org/snippets/2281/
-
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
-            try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
-
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
-
-        This method accepts a dictionary that is in the form supplied by
-        the
-
-        Args:
-             module: An AnsibleModule object's `params` attribute.
-
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
         return result
 
+    def should_update(self):
+        if self.have.is_system_setup in BOOLEANS_TRUE:
+            return True
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
 
-class iWorkflowSystemSetupModule(AnsibleModule):
-    def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowSystemSetupModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
+        return True
+
+    def read_current_from_device(self):
+        result = dict()
+        s = self.client.api.shared.system.setup.load()
+        result.update(**s.properties)
+        e = self.client.api.shared.system.easy_setup.load()
+        result.update(**e.properties)
+        d = self.client.api.shared.identified_devices.config.discovery.load()
+        result.update(**d.properties)
+        return Parameters(result)
+
+#{u'discoveryAddress': u'10.2.2.2',
+# u'dnsSearchDomains': [u'olympus.f5net.com'],
+# u'dnsServerAddresses': [u'10.0.2.3'],
+# u'generation': 7,
+# u'hostname': u'iworkflow1',
+# u'internalSelfIpAddresses': [],
+# u'kind': u'shared:system:setup:systemsetupworkerstate',
+# u'lastUpdateMicros': 1490011345468959,
+# u'machineId': u'f34e87f5-0494-4707-8dcc-980c7c0cdec3',
+# u'managementIpAddress': u'10.0.2.15/24',
+# u'managementRouteAddress': u'10.0.2.2',
+# u'ntpServerAddresses': [u'pool.ntp.org'],
+# u'selfIpAddresses': [{u'address': u'10.2.2.2/24',
+#                       u'iface': u'1.1',
+#                       u'vlan': u'net1'}],
+# u'selfLink': u'https://localhost/mgmt/shared/system/setup'}
+
+
+
+
+#{
+#    "isSystemSetup": false,
+#    "isAdminPasswordChanged": false,
+#    "isRootPasswordChanged": false,
+#    "generation": 6,
+#    "lastUpdateMicros": 1490009807987472,
+#    "kind": "shared:system:setup:systemsetupworkerstate",
+#    "selfLink": "https://localhost/mgmt/shared/system/setup"
+#}
+
+
+
+
+
+#{
+#    "hostname": "iworkflow1",
+#    "managementIpAddress": "10.0.2.15/24",
+#    "managementRouteAddress": "10.0.2.2",
+#    "internalSelfIpAddresses": [],
+#    "selfIpAddresses": [
+#        {
+#            "address": "10.2.2.2/24",
+#            "vlan": "net1",
+#            "iface": "1.1"
+#        }
+#    ],
+#    "ntpServerAddresses": [
+#        "pool.ntp.org"
+#    ],
+#    "dnsServerAddresses": [
+#        "10.0.2.3"
+#    ],
+#    "dnsSearchDomains": [
+#        "olympus.f5net.com"
+#    ],
+#}
+
+
+#https://localhost:10444/mgmt/shared/identified-devices/config/discovery
+#{
+#    "machineId": "f34e87f5-0494-4707-8dcc-980c7c0cdec3",
+#    "discoveryAddress": "10.2.2.2",
+#  }
+
+
+    def update_on_device(self):
+        params = self.want.api_params()
+        e = self.client.api.shared.system.easy_setup.load()
+        e.modify(**params)
+
+        s = self.client.api.shared.system.setup.load()
+        s.update(
+            isSystemSetup=True,
         )
 
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowSystemSetupModule):
-            instance.params = iWorkflowSystemSetupParams.from_module(self.params)
-        else:
-            super(iWorkflowSystemSetupModule, self).__set__(instance, value)
+        d = self.client.api.shared.identified_devices.config.discovery.load()
+        d.update(
+            discoveryAddress=self.want.discovery_address
+        )
+        return True
 
-    def init_meta_args(self):
-        args = dict(
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
             hostname=dict(
                 required=True
+            ),
+            discovery_address=dict(
+                required=True,
             ),
             management_address=dict(
                 required=True,
@@ -248,139 +331,28 @@ class iWorkflowSystemSetupModule(AnsibleModule):
                 default=['pool.ntp.org']
             )
         )
-        self.meta_args = args
-
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-
-class iWorkflowSystemSetupManager(object):
-    params = iWorkflowSystemSetupParams()
-    current = iWorkflowSystemSetupParams()
-    module = iWorkflowSystemSetupModule()
-
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
-
-    def apply_changes(self):
-        """Apply the user's changes to the device
-
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
-
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
-        result = dict()
-
-        try:
-            self.api = connect_to_f5(**self.params.__dict__)
-            changed = self.present()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        changes = self.params.difference(self.current)
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        return result
-
-    def exists(self):
-        if not self.is_system_setup():
-            return False
-        if not self.iworkflow_device_is_discovered():
-            return False
-        return True
-
-    def is_system_setup(self):
-        s = self.api.shared.system.setup.load()
-        if not hasattr(s, 'isSystemSetup'):
-            return False
-        if s.isSystemSetup in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
-
-    def present(self):
-        if self.exists():
-            return False
-        else:
-            return self.update_system_setup()
-
-    def update_system_setup(self):
-        if self.module.check_mode:
-            return True
-        params = self.get_easy_setup_params()
-        self.update_easy_setup_on_device(params)
-        self.update_system_setup_on_device()
-
-        if not self.iworkflow_device_is_discovered():
-            self.discover_iworkflow_device()
-        return True
-
-    def get_easy_setup_params(self):
-        result = dict()
-        if self.params.hostname:
-            result['hostname'] = self.params.hostname
-        if self.params.management_address:
-            result['managementIpAddress'] = self.params.management_address
-        if self.params.dns_servers:
-            result['dnsServerAddresses'] = self.params.dns_servers
-        if self.params.dns_search_domain:
-            result['dnsSearchDomains'] = self.params.dns_search_domain
-        result['ntpServerAddresses'] = self.params.ntp_servers
-        return result
-
-    def update_system_setup_on_device(self):
-        c = self.api.shared.system.setup.load()
-        c.update(
-            isSystemSetup=True,
-        )
-        return True
-
-    def update_easy_setup_on_device(self, params):
-        c = self.api.shared.system.easy_setup.load()
-        c.modify(**params)
-        return True
-
-    def iworkflow_device_is_discovered(self):
-        d = self.api.shared.identified_devices.config.discovery.load()
-        address = IPNetwork(self.params.management_address)
-        if not hasattr(d, 'discoverAddress'):
-            return False
-        if d.discoveryAddress == str(address.ip):
-            return True
-        return False
-
-    def discover_iworkflow_device(self):
-        d = self.api.shared.identified_devices.config.discovery.load()
-        address = IPNetwork(self.params.management_address)
-        d.update(
-            discoveryAddress=str(address.ip)
-        )
-        return True
+        self.f5_product_name = 'iworkflow'
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowSystemSetupModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = iWorkflowSystemSetupManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
