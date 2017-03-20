@@ -66,9 +66,7 @@ RETURN = '''
 
 '''
 
-import q
 import time
-import sys
 
 from ansible.module_utils.f5_utils import *
 
