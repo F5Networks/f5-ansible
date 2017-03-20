@@ -71,7 +71,6 @@ RETURN = '''
 
 '''
 
-import q
 import re
 from ansible.module_utils.f5_utils import *
 
@@ -97,7 +96,6 @@ class Device(object):
         else:
             # Handle the case where a user sends us a list of connector names
             for device in collection:
-                q.q(device.product, device.hostname, params)
                 if str(device.product) != "BIG-IP":
                     continue
 
@@ -427,9 +425,10 @@ class ArgumentSpec(object):
             connector=dict(
                 required=True
             ),
-            device=dict(
+            devices=dict(
                 type='str',
-                required=True
+                required=True,
+                aliases=['device']
             ),
             state=dict(
                 required=False,
