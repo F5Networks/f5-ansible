@@ -216,7 +216,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _update_changed_options(self):
         changed = {}
@@ -263,7 +263,7 @@ class ModuleManager(object):
             dns['include'] = 4
         result.update(dns)
 
-        return Parameters.from_api(result)
+        return Parameters(result)
 
     def update(self):
         self.have = self.read_current_from_device()
