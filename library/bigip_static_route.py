@@ -94,7 +94,7 @@ notes:
     install netaddr
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.5.0
+    - f5-sdk >= 2.2.3
 author:
     - Tim Rupp (@caphrim007)
 '''
@@ -314,7 +314,7 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         )
-        result = resource.properties
+        result = resource.attrs
         return Parameters(result)
 
     def create_on_device(self):
