@@ -105,6 +105,9 @@ class ModuleStubber(object):
             test_dir = 'iworkflow'
         elif self._module.startswith('bigiq'):
             test_dir = 'bigiq'
+        elif self._module.startswith('wait'):
+            test_dir = 'bigip'
+
         test_dir_path = '{0}/test/{1}'.format(
             self._top_level, test_dir
         )
