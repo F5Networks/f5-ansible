@@ -106,7 +106,11 @@ class Parameters(AnsibleF5Parameters):
         'isSystemSetup': 'is_system_setup',
         'discoveryAddress': 'discovery_address'
     }
-    returnables = []
+
+    returnables = [
+        'management_address', 'dns_servers', 'dns_search_domain', 'ntp_servers',
+        'hostname'
+    ]
 
     api_attributes = [
         'managementIpAddress', 'dnsServerAddresses', 'dnsSearchDomains',
@@ -128,10 +132,12 @@ class Parameters(AnsibleF5Parameters):
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
-            result[api_attribute] = getattr(self, api_attribute)
+            if api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
-
 
     @property
     def hostname(self):
@@ -151,8 +157,10 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def management_address(self):
+        if self._values['management_address'] is None:
+            return None
         try:
-            address = IPNetwork(self._values['managment_address'])
+            address = IPNetwork(self._values['management_address'])
             return str(address.ip)
         except Exception:
             raise F5ModuleError(
@@ -213,77 +221,12 @@ class ModuleManager(object):
     def read_current_from_device(self):
         result = dict()
         s = self.client.api.shared.system.setup.load()
-        result.update(**s.properties)
+        result.update(s.attrs)
         e = self.client.api.shared.system.easy_setup.load()
-        result.update(**e.properties)
+        result.update(e.attrs)
         d = self.client.api.shared.identified_devices.config.discovery.load()
-        result.update(**d.properties)
+        result.update(d.attrs)
         return Parameters(result)
-
-#{u'discoveryAddress': u'10.2.2.2',
-# u'dnsSearchDomains': [u'olympus.f5net.com'],
-# u'dnsServerAddresses': [u'10.0.2.3'],
-# u'generation': 7,
-# u'hostname': u'iworkflow1',
-# u'internalSelfIpAddresses': [],
-# u'kind': u'shared:system:setup:systemsetupworkerstate',
-# u'lastUpdateMicros': 1490011345468959,
-# u'machineId': u'f34e87f5-0494-4707-8dcc-980c7c0cdec3',
-# u'managementIpAddress': u'10.0.2.15/24',
-# u'managementRouteAddress': u'10.0.2.2',
-# u'ntpServerAddresses': [u'pool.ntp.org'],
-# u'selfIpAddresses': [{u'address': u'10.2.2.2/24',
-#                       u'iface': u'1.1',
-#                       u'vlan': u'net1'}],
-# u'selfLink': u'https://localhost/mgmt/shared/system/setup'}
-
-
-
-
-#{
-#    "isSystemSetup": false,
-#    "isAdminPasswordChanged": false,
-#    "isRootPasswordChanged": false,
-#    "generation": 6,
-#    "lastUpdateMicros": 1490009807987472,
-#    "kind": "shared:system:setup:systemsetupworkerstate",
-#    "selfLink": "https://localhost/mgmt/shared/system/setup"
-#}
-
-
-
-
-
-#{
-#    "hostname": "iworkflow1",
-#    "managementIpAddress": "10.0.2.15/24",
-#    "managementRouteAddress": "10.0.2.2",
-#    "internalSelfIpAddresses": [],
-#    "selfIpAddresses": [
-#        {
-#            "address": "10.2.2.2/24",
-#            "vlan": "net1",
-#            "iface": "1.1"
-#        }
-#    ],
-#    "ntpServerAddresses": [
-#        "pool.ntp.org"
-#    ],
-#    "dnsServerAddresses": [
-#        "10.0.2.3"
-#    ],
-#    "dnsSearchDomains": [
-#        "olympus.f5net.com"
-#    ],
-#}
-
-
-#https://localhost:10444/mgmt/shared/identified-devices/config/discovery
-#{
-#    "machineId": "f34e87f5-0494-4707-8dcc-980c7c0cdec3",
-#    "discoveryAddress": "10.2.2.2",
-#  }
-
 
     def update_on_device(self):
         params = self.want.api_params()
