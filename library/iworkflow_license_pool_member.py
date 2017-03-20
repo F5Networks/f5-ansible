@@ -31,16 +31,17 @@ description:
     a pool, you will implicitly be licensing and unlicensing them.
 version_added: 2.3
 options:
-  device:
+  member:
     description:
-      - Hostname or IP address of the device to manage in iWorkflow.
+      - Name of the managed device to add to the license pool.
     required: True
   pool:
     description:
       - The license pool that you want to add the member to.
   state:
     description:
-      - Whether the managed device should exist, or not, in iWorkflow.
+      - Whether the member should exist in the pool (and therefore be licensed)
+        or if it should not (and therefore be unlicensed).
     required: false
     default: present
     choices:
@@ -65,142 +66,118 @@ RETURN = '''
 
 '''
 
+import q
 import time
+import sys
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+from ansible.module_utils.f5_utils import *
+
+
+class Parameters(AnsibleF5Parameters):
+    returnables = []
+    api_attributes = []
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+    @property
+    def devices(self):
+        return self._values['devices']
+
+    @devices.setter
+    def devices(self, value):
+        needs_device_references = False
+        if isinstance(value, basestring):
+            collection = self._get_device_collection()
+            self._values['devices'] = self._get_device_selflinks([str(value)], collection)
+        else:
+            result = []
+
+            for item in value:
+                try:
+                    # Case for the REST API
+                    member = dict(
+                        deviceReference=str(item['deviceReference']['link']),
+                        hostname=str(item['deviceReference']['hostname']),
+                        address=str(item['deviceReference']['address']),
+                        managementAddress=str(item['deviceReference']['managementAddress']),
+                        selfLink=str(item['selfLink'])
+                    )
+                except KeyError:
+                    needs_device_references = True
+                    member = item
+                result.append(member)
+
+            if needs_device_references:
+                collection = self._get_device_collection()
+                self._values['devices'] = self._get_device_selflinks(result, collection)
+            else:
+                self._values['devices'] = result
+
+    def _get_device_selflinks(self, devices, collection):
+        result = []
+        resource = None
+        for device in collection:
+            if str(device.product) != "BIG-IP":
+                continue
+            # The supplied device can be in several formats.
+            if str(device.hostname) in devices:
+                resource = device
+                break
+            elif str(device.address) in devices:
+                resource = device
+                break
+            elif str(device.managementAddress) in devices:
+                resource = device
+                break
+        if not resource:
+            raise F5ModuleError(
+                "Device {0} was not found".format(devices)
+            )
+        result.append(resource.selfLink)
+        return result
+
+    def _get_device_collection(self):
+        dg = self.client.api.shared.resolver.device_groups
+        return dg.cm_cloud_managed_devices.devices_s.get_collection()
 
 
 class ModuleManager(object):
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
 
-    def apply_changes(self):
-        """Apply the user's changes to the device
-
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
-
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
-        result = dict()
-        state = self.params.state
-
-        try:
-            self.api = connect_to_f5(**self.params.__dict__)
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        changes = self.params.difference(self.current)
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        return result
-
-    def exists(self):
-        if not self.pool_exists():
-            raise F5ModuleError(
-                "The specified pool does not exist"
-            )
-        if not self.device_exists():
-            raise F5ModuleError(
-                "The specified device does not exist"
-            )
-        device = self.get_device()
-        pool = self.get_pool()
-        return self.pool_member_exists(pool, device)
-
-    def device_exists(self):
-        dg = self.api.shared.resolver.device_groups
-        devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
+    def _load_pool_by_name(self):
+        collection = self.client.api.cm.shared.licensing.pools_s.get_collection(
             requests_params=dict(
-                params="$filter=address+eq+'{0}'".format(self.params.device)
+                params="$filter=name+eq+'{0}'".format(self.want.pool)
             )
         )
-
-        if len(devices) == 1:
-            return True
-        elif len(devices) == 0:
-            return False
+        if len(collection) == 1:
+            return collection[0]
+        elif len(collection) == 0:
+            raise F5ModuleError(
+                "The specified pool was not found"
+            )
         else:
             raise F5ModuleError(
-                "Multiple managed devices with the provided device address were found!"
+                "Multiple pools with the provided name were found!"
             )
 
-    def pool_exists(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.pool)
-            )
-        )
-
-        if len(pools) == 1:
-            return True
-        elif len(pools) == 0:
-            return False
-        else:
-            raise F5ModuleError(
-                "Multiple license pools with the provided name were found!"
-            )
-
-    def get_pool(self):
-        pools = self.api.cm.shared.licensing.pools_s.get_collection(
-            requests_params=dict(
-                params="$filter=name+eq+'{0}'".format(self.params.pool)
-            )
-        )
-        return pools.pop()
-
-    def get_device(self):
-        dg = self.api.shared.resolver.device_groups
-        devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
-            requests_params=dict(
-                params="$filter=address+eq+'{0}'".format(self.params.device)
-            )
-        )
-        return devices.pop()
-
-    def pool_member_exists(self, pool, device):
-        members = pool.members_s.get_collection()
-        for member in members:
-            if member.deviceReference['link'] == device.selfLink:
-                return True
-        return False
-
-    def present(self):
-        if self.exists():
-            return False
-        else:
-            return self.create_pool_member()
-
-    def create_pool_member(self):
-        if self.module.check_mode:
-            return True
-        self.create_pool_member_on_device()
-        return True
-
-    def create_pool_member_on_device(self):
-        device = self.get_device()
-        pool = self.get_pool()
-        member = pool.members_s.member.create(
-            deviceReference=dict(
-                link=device.selfLink
-            )
-        )
-        return self.wait_for_pool_member_state_to_license(member)
-
-    def wait_for_pool_member_state_to_license(self, member):
+    def _wait_for_pool_member_state_to_license(self, member):
         error_values = ['FAILED']
         # Wait no more than half an hour
         for x in range(1, 180):
@@ -211,55 +188,129 @@ class ModuleManager(object):
                 raise F5ModuleError(member.errors)
             time.sleep(10)
 
-    def absent(self):
-        if self.exists():
-            return self.remove_pool_member()
+    def exec_module(self):
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except IOError as e:
+            raise F5ModuleError(str(e))
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        return result
+
+    def exists(self):
+        if not self.have.devices:
+            return False
+        have_members = set([x.selfLink for x in self.have.devices])
+        want_members = set([x.selfLink for x in self.want.devices])
+        if want_members.issubset(have_members):
+            return True
         return False
 
-    def remove_pool_member(self):
-        if self.module.check_mode:
+    def present(self):
+        self.have = self.read_current_from_device()
+        if self.exists():
+            return False
+        else:
+            return self.create()
+
+    def create(self):
+        if self.client.check_mode:
             return True
-        self.remove_pool_member_from_device()
+        self.create_on_device()
+        return True
+
+    def create_on_device(self):
+        device_refs = self.to_add()
+        pool = self._load_pool_by_name()
+        if not pool:
+            raise F5ModuleError(
+                "Pool disappeared during member licensing."
+            )
+        for member in device_refs:
+            pool.members_s.member.create(
+                deviceReference=dict(
+                    link=member
+                )
+            )
+            self._wait_for_pool_member_state_to_license(member)
+        return True
+
+    def read_current_from_device(self):
+        resource = self._load_pool_by_name()
+        collection = resource.members_s.get_collection(
+            params='$expand=deviceReference'
+        )
+        result = Parameters(dict(
+            pool=self.want.pool,
+            devices=collection
+        ))
+        return result
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to remove the pool member")
         return True
 
-    def remove_pool_member_from_device(self):
-        result = None
-        device = self.get_device()
-        members = pool.members.get_collection()
-        for member in members:
-            if member.deviceReference['link'] != device.selfLink:
-                continue
-            result = member
-        if result:
-            member.delete()
-            return True
-        raise F5ModuleError(
-            "Failed to delete the member from the pool"
-        )
+    def remove_from_device(self):
+        references = self.to_remove()
+        collection = self._load_pool_by_name()
+        for member in collection.members_s.get_collection():
+            if member.selfLink in references:
+                member.delete()
+        return True
 
+    def to_add(self):
+        want = set(self.want.devices)
+        have = set([x['deviceReference'] for x in self.have.devices])
+        return set(want - have)
 
+    def to_remove(self):
+        want = set([x['selfLink'] for x in self.want.devices])
+        have = set([x['deviceReference'] for x in self.want.member])
+        references = set(have - want)
 
-
-
+        # The code that deletes things doesn't know anything about devices,
+        # so you need to supply the member selfLink when doing comparisons
+        # for deletion
+        return [x['selfLink'] for x in self.want.devices
+                if x['deviceReference'] in references]
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            device=dict(default=None),
-            pool=dict(required=True),
+            pool=dict(
+                required=True
+            ),
+            devices=dict(
+                type='str',
+                required=True,
+                aliases=['device']
+            ),
             state=dict(
                 required=False,
                 default='present',
                 choices=['absent', 'present']
             )
         )
-        self.required_if=[
-            ['state', 'absent', ['device', 'username_credential', 'password_credential']]
-        ]
         self.f5_product_name = 'iworkflow'
 
 
@@ -272,8 +323,7 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name,
-        required_if=spec.required_if
+        f5_product_name=spec.f5_product_name
     )
 
     try:
