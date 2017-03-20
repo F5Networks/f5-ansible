@@ -137,7 +137,7 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.global_settings.load()
-        result = resource.properties
+        result = resource.attrs
         return Parameters(result)
 
     def update(self):
@@ -159,6 +159,9 @@ class ModuleManager(object):
         params = self.want.api_params()
         resource = self.client.api.tm.sys.global_settings.load()
         resource.modify(**params)
+        self.client.api.tm.cm.device.run_cmd(
+            'mv', name=self.have.name, target=self.want.name
+        )
 
 
 class ArgumentSpec(object):

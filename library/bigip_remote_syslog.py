@@ -169,7 +169,7 @@ class ModuleManager(object):
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.snmp.load()
-        result = resource.properties
+        result = resource.attrs
         return Parameters(result)
 
 
