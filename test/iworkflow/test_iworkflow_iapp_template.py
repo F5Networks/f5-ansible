@@ -25,9 +25,15 @@ import os
 import json
 
 from ansible.compat.tests import unittest
+from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client
+)
 from library.iworkflow_iapp_template import (
+    ArgumentSpec,
+    ModuleManager,
     Parameters
 )
 
@@ -59,32 +65,76 @@ def load_fixture(name):
     return data
 
 
+class Namespace(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestParameters(unittest.TestCase):
 
-    def test_module_parameters_template(self):
+    def setUp(self):
+        self.loaded_devices = []
+        devices_json = load_fixture('load_cm_cloud_managed_devices.json')
+        for item in devices_json:
+            self.loaded_devices.append(Namespace(**item))
+
+    def test_module_parameters(self, *args):
+        devices_json = load_fixture('load_cm_cloud_managed_devices.json')
         template_content = load_fixture('f5.microsoft_adfs.v1.0.0.tmpl')
-        args = dict(
+        arguments = dict(
             template_content=template_content,
-            template='{}',
-            min_bigip_version='11.5.4.1',
-            max_bigip_version='12.1.1',
-            unsupported_bigip_versions=['11.6.1']
+            device='bigip1'
         )
-        p = Parameters(args)
+        with patch.object(Parameters, '_get_device_collection') as mo:
+            mo.return_value = self.loaded_devices
+            p = Parameters(arguments)
 
-        # Assert the top-level keys
-        assert p.name == 'f5.microsoft_adfs.v1.0.0'
-        assert p.template == '{}'
+            assert p.name == 'f5.microsoft_adfs.v1.0.0'
+            assert p.device == \
+                'https://localhost/mgmt/shared/resolver/device-groups/cm-cloud-managed-devices/devices/d13074df-4f0c-4ed3-baf6-0050fe74695f'  # NOQA
 
-    def test_api_parameters_variables(self):
-        args = dict(
-            variables=[
-                dict(
-                    name="client__http_compression",
-                    encrypted="no",
-                    value="/#create_new#"
-                )
-            ]
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+        self.loaded_devices = []
+        devices_json = load_fixture('load_cm_cloud_managed_devices.json')
+        for item in devices_json:
+            self.loaded_devices.append(Namespace(**item))
+
+    def test_add_device(self, *args):
+        template_content = load_fixture('f5.microsoft_adfs.v1.0.0.tmpl')
+        set_module_args(dict(
+            template_content=template_content,
+            device='bigip1',
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
         )
-        p = Parameters(args)
-        assert p.variables[0]['name'] == 'client__http_compression'
+
+        with patch.object(Parameters, '_get_device_collection') as mo:
+            mo.return_value = self.loaded_devices
+
+            mm = ModuleManager(client)
+
+            # Override methods to force specific logic in the module to happen
+            mm.exit_json = lambda x: True
+            mm.read_current_from_device = lambda: current
+            mm.exists = lambda: False
+            mm.create_on_device = lambda: True
+
+            results = mm.exec_module()
+
+        assert results['changed'] is True

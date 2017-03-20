@@ -100,6 +100,7 @@ RETURN = '''
 
 '''
 
+import q
 
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -109,8 +110,6 @@ from ansible.module_utils.f5_utils import (
     iControlUnexpectedHTTPError,
     iteritems,
 )
-from deepdiff import DeepDiff
-from distutils.version import LooseVersion
 from f5.utils.iapp_parser import (
     IappParser,
     NonextantTemplateNameException
@@ -118,18 +117,14 @@ from f5.utils.iapp_parser import (
 
 
 class Parameters(AnsibleF5Parameters):
-    returnables = [
-        'min_bigip_version', 'max_bigip_version', 'unsupported_bigip_versions'
+    api_attributes = [
+        'templateContent', 'deviceForJSONTransformation'
     ]
 
-    api_attributes = [
-        'templateContent', 'deviceForJSONTransformation', 'template',
-        'minSupportedBIGIPVersion', 'maxSupportedBIGIPVersion',
-        'unsupportedBIGIPVersions'
-    ]
+    returnables = []
 
     updatables = [
-        'template_content', 'min_bigip_version'
+        'template_content',
     ]
 
     def to_return(self):
@@ -147,16 +142,6 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
-    def min_bigip_version(self, value):
-        absolute_minimum = LooseVersion('11.5.3.2')
-        version = LooseVersion(value)
-        if version < absolute_minimum:
-            raise F5ModuleError(
-                "The specified 'min_bigip_version' is not supported by iWorkflow"
-            )
-        self._values['min_bigip_version'] = value
-
-    @property
     def name(self):
         if self._values['name']:
             return self._values['name']
@@ -172,70 +157,40 @@ class Parameters(AnsibleF5Parameters):
         return None
 
     @property
-    def tables(self):
-        result = []
-        if not self._values['tables']:
-            return None
-        tables = self._values['tables']
-        for table in tables:
-            tmp = dict()
-            name = table.get('name', None)
-            if name is None:
-                raise F5ModuleError(
-                    "One of the provided tables does not have a name"
-                )
-            tmp['name'] = str(name)
-            columns = table.get('columnNames', None)
-            if columns:
-                tmp['columnNames'] = [str(x) for x in columns]
-                # You cannot have rows without columns
-                rows = table.get('rows', None)
-                if rows:
-                    tmp['rows'] = []
-                    for row in rows:
-                        tmp['rows'].append(dict(row=[str(x) for x in row['row']]))
-            result.append(tmp)
-        result = sorted(result, key=lambda k: k['name'])
-        return result
+    def device(self):
+        if isinstance(self._values['device'], basestring):
+            collection = self._get_device_collection()
+            return self._get_device_selflink(str(self._values['device']), collection)
+        elif 'deviceForJSONTransformation' in self._values['device']:
+            # Case for the REST API
+            item = self._values['devices']
+            result = dict(
+                deviceReference=str(item['deviceReference']['link']),
+                hostname=str(item['deviceReference']['hostname']),
+                address=str(item['deviceReference']['address']),
+                managementAddress=str(item['deviceReference']['managementAddress']),
+                selfLink=str(item['selfLink'])
+            )
+            return result
 
-    @tables.setter
-    def tables(self, value):
-        self._values['tables'] = value
-
-    @property
-    def vars(self):
-        result = []
-        if not self._values['vars']:
-            return None
-        variables = self._values['vars']
-        for variable in variables:
-            tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
-            result.append(tmp)
-        result = sorted(result, key=lambda k: k['name'])
-        return result
-
-    @vars.setter
-    def vars(self, value):
-        self._values['vars'] = value
-
-    @property
-    def template(self):
-        return dict(
-            tables=self.tables,
-            vars=self.variables,
-            sections=self.sections
+    def _get_device_selflink(self, device, collection):
+        for resource in collection:
+            if str(resource.product) != "BIG-IP":
+                continue
+            # The supplied device can be in several formats.
+            if str(resource.hostname) == device:
+                return str(resource.selfLink)
+            elif str(resource.address) == device:
+                return str(resource.selfLink)
+            elif str(device.managementAddress) == device:
+                return str(resource.selfLink)
+        raise F5ModuleError(
+            "Device {0} was not found".format(device)
         )
 
-    @template.setter
-    def template(self, value):
-        if value is None:
-            return
-        if 'tables' in value:
-            self.tables = value['tables']
-        if 'vars' in value:
-            self.vars = value['vars']
-        if 'sections' in value:
-            self.sections = value['sections']
+    def _get_device_collection(self):
+        dg = self.client.api.shared.resolver.device_groups
+        return dg.cm_cloud_managed_devices.devices_s.get_collection()
 
 
 class ModuleManager(object):
@@ -243,7 +198,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -260,7 +215,7 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1, attr2))
+                    changed[key] = str(DeepDiff(attr1,attr2))
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -329,7 +284,7 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         )
-        result = resource.properties
+        result = resource.attrs
         return Parameters(result)
 
     def create_on_device(self):
@@ -367,25 +322,8 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             template_content=dict(required=True),
-            template=dict(
-                required=False,
-                default=None
-            ),
             device=dict(
                 required=False,
-                default=None
-            ),
-            min_bigip_version=dict(
-                required=False,
-                default=None
-            ),
-            max_bigip_version=dict(
-                required=False,
-                default=None
-            ),
-            unsupported_bigip_versions=dict(
-                required=False,
-                type='list',
                 default=None
             ),
             state=dict(
@@ -419,7 +357,6 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
-
 
 if __name__ == '__main__':
     main()
