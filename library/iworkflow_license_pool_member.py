@@ -71,14 +71,44 @@ import time
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
+    defaultdict,
     F5ModuleError,
-    HAS_F5SDK
+    HAS_F5SDK,
+    iteritems
 )
 
 
 class Parameters(AnsibleF5Parameters):
     returnables = []
     api_attributes = []
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -96,37 +126,25 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def devices(self):
-        return self._values['devices']
-
-    @devices.setter
-    def devices(self, value):
-        needs_device_references = False
-        if isinstance(value, basestring):
+        if isinstance(self._values['devices'], basestring):
             collection = self._get_device_collection()
-            self._values['devices'] = self._get_device_selflinks([str(value)], collection)
-        else:
+            return self._get_device_selflinks([str(self._values['devices'])], collection)
+        elif all('deviceReference' in x for x in self._values['devices']):
+            # Case for the REST API
             result = []
-
-            for item in value:
-                try:
-                    # Case for the REST API
-                    member = dict(
-                        deviceReference=str(item['deviceReference']['link']),
-                        hostname=str(item['deviceReference']['hostname']),
-                        address=str(item['deviceReference']['address']),
-                        managementAddress=str(item['deviceReference']['managementAddress']),
-                        selfLink=str(item['selfLink'])
-                    )
-                except KeyError:
-                    needs_device_references = True
-                    member = item
+            for item in self._values['devices']:
+                member = dict(
+                    deviceReference=str(item['deviceReference']['link']),
+                    hostname=str(item['deviceReference']['hostname']),
+                    address=str(item['deviceReference']['address']),
+                    managementAddress=str(item['deviceReference']['managementAddress']),
+                    selfLink=str(item['selfLink'])
+                )
                 result.append(member)
-
-            if needs_device_references:
-                collection = self._get_device_collection()
-                self._values['devices'] = self._get_device_selflinks(result, collection)
-            else:
-                self._values['devices'] = result
+            return result
+        else:
+            collection = self._get_device_collection()
+            return self._get_device_selflinks(result, collection)
 
     def _get_device_selflinks(self, devices, collection):
         result = []
@@ -160,7 +178,9 @@ class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
         self.changes = Parameters()
 
     def _load_pool_by_name(self):
@@ -212,8 +232,8 @@ class ModuleManager(object):
     def exists(self):
         if not self.have.devices:
             return False
-        have_members = set([x.selfLink for x in self.have.devices])
-        want_members = set([x.selfLink for x in self.want.devices])
+        have_members = set([x['deviceReference'] for x in self.have.devices])
+        want_members = set(self.want.devices)
         if want_members.issubset(have_members):
             return True
         return False
@@ -238,10 +258,10 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Pool disappeared during member licensing."
             )
-        for member in device_refs:
-            pool.members_s.member.create(
+        for device in device_refs:
+            member = pool.members_s.member.create(
                 deviceReference=dict(
-                    link=member
+                    link=device
                 )
             )
             self._wait_for_pool_member_state_to_license(member)
@@ -250,11 +270,16 @@ class ModuleManager(object):
     def read_current_from_device(self):
         resource = self._load_pool_by_name()
         collection = resource.members_s.get_collection(
-            params='$expand=deviceReference'
+            requests_params=dict(
+                params='$expand=deviceReference'
+            )
         )
-        result = Parameters(dict(
+        devices = [x.properties for x in collection]
+        result = Parameters()
+        result.client = self.client
+        result.update(dict(
             pool=self.want.pool,
-            devices=collection
+            devices=devices
         ))
         return result
 
