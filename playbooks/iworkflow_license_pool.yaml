@@ -20,7 +20,7 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 2.1.0
 #
 
 - name: Test the iworkflow_license_pool module
