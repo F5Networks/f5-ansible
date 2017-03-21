@@ -203,43 +203,6 @@ class BigIpLicenseCommon(object):
             debug=True
         )
 
-    def test_license_server(self):
-        server = self.license_server
-        wsdl = self.wsdl
-
-        if wsdl:
-            url = 'file://%s' % wsdl
-        else:
-            url = 'https://%s/license/services/urn:com.f5.license.v5b.ActivationService?wsdl' % server
-
-        try:
-            # Specifying the location here is required because the URLs in the
-            # WSDL for activate specify http but the URL we are querying for
-            # here is https. Something is weird in suds and causes the following
-            # to be returned
-            #
-            #     <h1>/license/services/urn:com.f5.license.v5b.ActivationService</h1>
-            #     <p>Hi there, this is an AXIS service!</p>
-            #     <i>Perhaps there will be a form for invoking the service here...</i>
-            #
-            if self._validate_certs:
-                client = suds.client.Client(url=url, location=url, timeout=10)
-            else:
-                transport = HTTPSTransportNoVerify(
-                    username=self.username,
-                    password=self.password,
-                    timeout=10
-                )
-                client = suds.client.Client(url, timeout=10, transport=transport)
-
-            result = client.service.ping()
-            if result:
-                return True
-            else:
-                return False
-        except SAXParseException:
-            return False
-
     def get_license_activation_status(self):
         """Returns the license status
 
@@ -576,9 +539,8 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             self.dossier = fh.read()
             fh.close()
 
-        lic_server = self.test_license_server()
         lic_status = self.get_license_activation_status()
-        if not lic_server and lic_status == 'STATE_DISABLED':
+        if lic_status == 'STATE_DISABLED':
             raise F5ModuleError(
                 "Could not reach the specified activation server"
                 "to license BIG-IP"
