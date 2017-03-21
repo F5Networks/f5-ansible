@@ -632,7 +632,7 @@ def main():
         module.fail_json(msg="Timed out connecting to the BIG-IP")
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5 import *
+from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
