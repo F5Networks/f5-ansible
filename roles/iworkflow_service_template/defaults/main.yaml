@@ -1,0 +1,5 @@
+---
+
+iapp_name: "appsvcs_integration_v2.0_001"
+device1: "bigip1"
+device_ip: 10.2.2.3
