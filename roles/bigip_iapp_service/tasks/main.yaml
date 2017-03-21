@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure GTM is provisioned
+- name: Ensure ASM is provisioned
   bigip_provision:
       module: "asm"
       password: "{{ bigip_password }}"
