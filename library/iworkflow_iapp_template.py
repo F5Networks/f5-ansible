@@ -32,23 +32,28 @@ description:
   - Manages TCL iApp services on a BIG-IP.
 version_added: "2.4"
 options:
+  name:
+    description:
+      - The name of the iApp template that you want to create on the
+        device. This is usually included in the template itself. This
+        option is typically used in cases where the template no longer
+        exists on disk (to reference) and the C(state) is C(absent).
+    required: False
+    default: None
   template_content:
     description:
       - The contents of a valid iApp template in a tmpl file. This iApp
         Template should be versioned and tested for compatibility with
         iWorkflow Tenant Services and a BIG-IP version of 11.5.3.2 or later.
-    required: True
-    default: None
-  template:
-    description:
-      - A JSON representation of the iApp template that was imported into
-        iWorkflow.
+        This option is only required when creating new template in iWorkflow.
+        When you are deleting iApp templates, you will need to specify either
+        one of C(name) or C(template_content).
     required: False
     default: None
   device:
     description:
-      - Managed BIG-IP that you want to get template JSON from. Either one
-        of C(managed_device) or C(template) must be provided.
+      - Managed BIG-IP that you want to get template JSON from. This option
+        is only required when C(state) is C(present).
     required: False
     default: None
   state:
@@ -60,21 +65,6 @@ options:
     choices:
       - present
       - absent
-  min_bigip_version:
-    description:
-      - asdasd
-    required: False
-    default: None
-  max_bigip_version:
-    description:
-      - asdasd
-    required: False
-    default: None
-  unsupported_bigip_versions:
-    description:
-      - asdasd
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -100,11 +90,13 @@ RETURN = '''
 
 '''
 
+import re
 import q
 
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
+    defaultdict,
     F5ModuleError,
     HAS_F5SDK,
     iControlUnexpectedHTTPError,
@@ -117,6 +109,10 @@ from f5.utils.iapp_parser import (
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'templateContent': 'template_content'
+    }
+
     api_attributes = [
         'templateContent', 'deviceForJSONTransformation'
     ]
@@ -126,6 +122,34 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'template_content',
     ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -144,37 +168,21 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
-    @property
-    def name(self):
-        if self._values['name']:
-            return self._values['name']
+    def _squash_template_name_prefix(self):
+        name = self._get_template_name()
+        pattern = r'sys\s+application\s+template\s+/Common/{0}'.format(name)
+        replace = 'sys application template {0}'.format(name)
+        self._values['template_content'] = re.sub(pattern, replace, self._values['template_content'])
 
-        if self._values['template_content']:
-            try:
-                parser = IappParser(self._values['template_content'])
-                return parser._get_template_name()
-            except NonextantTemplateNameException:
-                return F5ModuleError(
-                    "No template name was found in the template"
-                )
-        return None
+    def _get_template_name(self):
+        parser = IappParser(self._values['template_content'])
+        tmpl = parser.parse_template()
+        return tmpl['name']
 
-    @property
-    def device(self):
-        if isinstance(self._values['device'], basestring):
-            collection = self._get_device_collection()
-            return self._get_device_selflink(str(self._values['device']), collection)
-        elif 'deviceForJSONTransformation' in self._values['device']:
-            # Case for the REST API
-            item = self._values['devices']
-            result = dict(
-                deviceReference=str(item['deviceReference']['link']),
-                hostname=str(item['deviceReference']['hostname']),
-                address=str(item['deviceReference']['address']),
-                managementAddress=str(item['deviceReference']['managementAddress']),
-                selfLink=str(item['selfLink'])
-            )
-            return result
+    def _get_device_collection(self):
+        dg = self.client.api.shared.resolver.device_groups
+        result = dg.cm_cloud_managed_devices.devices_s.get_collection()
+        return result
 
     def _get_device_selflink(self, device, collection):
         for resource in collection:
@@ -191,17 +199,54 @@ class Parameters(AnsibleF5Parameters):
             "Device {0} was not found".format(device)
         )
 
-    def _get_device_collection(self):
-        dg = self.client.api.shared.resolver.device_groups
-        return dg.cm_cloud_managed_devices.devices_s.get_collection()
+    @property
+    def name(self):
+        if self._values['name']:
+            return self._values['name']
+
+        if self._values['template_content']:
+            try:
+                self._squash_template_name_prefix()
+                name = self._get_template_name()
+                self._values['name'] = name
+                return name
+            except NonextantTemplateNameException:
+                return F5ModuleError(
+                    "No template name was found in the template"
+                )
+        return None
+
+    @property
+    def device(self):
+        if isinstance(self._values['device'], basestring):
+            collection = self._get_device_collection()
+            result = self._get_device_selflink(str(self._values['device']), collection)
+            return result
+        elif 'deviceForJSONTransformation' in self._values['device']:
+            # Case for the REST API
+            item = self._values['device']['deviceForJSONTransformation']
+            return str(item['deviceReference']['link'])
+
+    @device.setter
+    def device(self, value):
+        self._values['device'] = value
+
+    @property
+    def deviceForJSONTransformation(self):
+        return dict(
+            link=self.device
+        )
 
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
         self.changes = Parameters()
+        self.changes.client = self.client
 
     def _set_changed_options(self):
         changed = {}
@@ -209,7 +254,9 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -218,9 +265,11 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1,attr2))
+                    changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
             return True
         return False
 
@@ -243,58 +292,29 @@ class ModuleManager(object):
 
     def exists(self):
         return self.client.api.cm.cloud.templates.iapps.iapp.exists(
-            name=self.want.name,
-            partition=self.want.partition
+            name=self.want.name
         )
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
             return self.create()
 
     def create(self):
         if self.client.check_mode:
             return True
+        if self.want.template_content is None:
+            raise F5ModuleError(
+                ""
+            )
         self.create_on_device()
         return True
 
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
-        if self.client.check_mode:
-            return True
-        self.update_on_device()
-        return True
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
-    def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.update(**params)
-
-    def read_current_from_device(self):
-        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return Parameters(result)
-
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.tm.cm.cloud.templates.iapps.iapp.create(
+        self.client.api.cm.cloud.templates.iapps.iapp.create(
             name=self.want.name,
-            partition=self.want.partition,
             **params
         )
 
@@ -313,8 +333,7 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
-            name=self.want.name,
-            partition=self.want.partition
+            name=self.want.name
         )
         if resource:
             resource.delete()
@@ -324,7 +343,11 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            template_content=dict(required=True),
+            name=dict(
+                required=False,
+                default=None
+            ),
+            template_content=dict(required=False),
             device=dict(
                 required=False,
                 default=None
@@ -335,9 +358,6 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             )
         )
-        self.mutually_exclusive = [
-            ['template', 'managed_device']
-        ]
         self.f5_product_name = 'iworkflow'
 
 
@@ -349,7 +369,6 @@ def main():
 
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
-        mutually_exclusive=spec.mutually_exclusive,
         supports_check_mode=spec.supports_check_mode,
         f5_product_name=spec.f5_product_name
     )
