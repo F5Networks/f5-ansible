@@ -1,26 +1,12 @@
 ---
 
-- name: Discover BIG-IP
-  iworkflow_device:
-      device: "{{ device_ip }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
-      user: "{{ iworkflow_username }}"
-      password: "{{ iworkflow_password }}"
-      username_credential: "{{ bigip_username }}"
-      password_credential: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      state: "present"
-  delegate_to: localhost
+- include: setup.yaml
 
-- name: Create iApp template
-  iworkflow_iapp_template:
-      device: "{{ device1 }}"
-      password: "{{ iworkflow_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
+- name: Create iApp Service Template
+  iworkflow_service_template:
+      connector: "cloudInternal"
+      name: "foo-service-1"
+      parameters: "{{ lookup('file', 'appsvcs_integration_v2.0_001.json') }}"
       state: "present"
-      template_content: "{{ lookup('file', 'appsvcs_integration_v2.0_001.tmpl') }}"
       user: "{{ iworkflow_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
