@@ -92,7 +92,7 @@ EXAMPLES = '''
 - name: License BIG-IP using default license options
   bigip_license:
       server: "big-ip.domain.org"
-      username: "admin"
+      user: "admin"
       password: "MyPassword123"
       key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
   delegate_to: localhost
@@ -101,7 +101,7 @@ EXAMPLES = '''
   bigip_license:
       server: "big-ip.domain.org"
       key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
-      username: "admin"
+      user: "admin"
       password: "MyPassword123"
       license_options:
           email: 'joe.user@myplace.com'
@@ -120,7 +120,7 @@ EXAMPLES = '''
 - name: Remove the license from the system
   bigip_license:
       server: "big-ip.domain.org"
-      username: "admin"
+      user: "admin"
       password: "MyPassword123"
       state: "absent"
   delegate_to: localhost
@@ -128,7 +128,7 @@ EXAMPLES = '''
 - name: Update the current license of the BIG-IP
   bigip_license:
       server: "big-ip.domain.org"
-      username: "admin"
+      user: "admin"
       password: "MyPassword123"
       key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
       state: "latest"
