@@ -2,7 +2,7 @@
 
 # @see https://github.com/ansible/ansible-modules-extras/pull/3158
 
-- name: Create pool
+- name: Pull Request 3158 - Create pool
   bigip_pool:
       name: "{{ pool_name }}"
       password: "{{ bigip_password }}"
@@ -13,7 +13,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Create SNAT pool from list of members
+- name: Pull Request 3158 - Create SNAT pool from list of members
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
       password: "{{ bigip_password }}"
@@ -24,7 +24,7 @@
       members: "{{ members_list }}"
   register: result
 
-- name: Add virtual server with custom SNAT pool
+- name: Pull Request 3158 - Add virtual server with custom SNAT pool
   bigip_virtual_server:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -43,12 +43,12 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Add virtual server with custom SNAT pool
+- name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool
   assert:
       that:
           - result|changed
 
-- name: Add virtual server with custom SNAT pool - Idempotent check
+- name: Pull Request 3158 - Add virtual server with custom SNAT pool - Idempotent check
   bigip_virtual_server:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -67,12 +67,12 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Add virtual server with custom SNAT pool - Idempotent check
+- name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool - Idempotent check
   assert:
       that:
           - not result|changed
 
-- name: Set SNAT back to Automap
+- name: Pull Request 3158 - Set SNAT back to Automap
   bigip_virtual_server:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -91,12 +91,12 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Set SNAT back to Autosnat
+- name: Pull Request 3158 - Set SNAT back to Autosnat
   assert:
       that:
           - result|changed
 
-- name: Delete VLAN virtual server
+- name: Pull Request 3158 - Delete VLAN virtual server
   bigip_virtual_server:
       name: "{{ vs_name }}"
       partition: "{{ bigip_partition }}"
@@ -108,7 +108,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Delete SNAT pool
+- name: Pull Request 3158 - Delete SNAT pool
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
       password: "{{ bigip_password }}"
@@ -119,7 +119,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Delete pool
+- name: Pull Request 3158 - Delete pool
   bigip_pool:
       name: "{{ pool_name }}"
       password: "{{ bigip_password }}"

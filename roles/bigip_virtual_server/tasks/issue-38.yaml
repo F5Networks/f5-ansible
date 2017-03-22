@@ -2,7 +2,7 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/38
 
-- name: Create pool
+- name: Issue 38 - Create pool
   bigip_pool:
       name: "test_pool"
       password: "{{ bigip_password }}"
@@ -13,12 +13,12 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Create pool
+- name: Issue 38 - Assert Create pool
   assert:
       that:
           - result|changed
 
-- name: Add virtual server
+- name: Issue 38 - Add virtual server
   bigip_virtual_server:
       destination: "{{ item.lip }}"
       name: "{{ item.lname }}"
@@ -41,7 +41,7 @@
       lip: '1.2.3.5'
       lport: '80'
 
-- name: Delete virtual server
+- name: Issue 38 - Delete virtual server
   bigip_virtual_server:
       destination: "{{ item.lip }}"
       name: "{{ item.lname }}"
@@ -63,7 +63,7 @@
       lip: '1.2.3.5'
       lport: '80'
 
-- name: Delete pool
+- name: Issue 38 - Delete pool
   bigip_pool:
       name: "test_pool"
       password: "{{ bigip_password }}"
@@ -74,7 +74,7 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Assert Delete pool
+- name: Issue 38 - Assert Delete pool
   assert:
       that:
           - result|changed

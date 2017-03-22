@@ -2,7 +2,7 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/57
 
-- name: Create virtual server
+- name: Issue 57 - Create virtual server
   bigip_virtual_server:
       destination: "10.10.10.10"
       port: "443"
@@ -11,33 +11,54 @@
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       name: "testVS"
-      partition: "GEN"
+      all_profiles:
+          - /Common/http
+      partition: "{{ i57_partition }}"
       state: "present"
-      all_rules:
-          - /Common/_sys_https_redirect
-          - /Common/_sys_auth_tacacs
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Issue 57 - Create virtual server
+- name: Issue 57 - Add virtual server rules
   bigip_virtual_server:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       name: "testVS"
-      partition: "GEN"
+      all_profiles:
+          - /Common/http
+      partition: "{{ i57_partition }}"
       state: "present"
       all_rules:
           - /Common/_sys_https_redirect
-          - /Common/_sys_auth_tacacs
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- name: Create virtual server
+- name: Issue 57 - Add virtual server rules
   assert:
       that:
           - result|changed
+
+- name: Issue 57 - Add virtual server rules - Idempotent check
+  bigip_virtual_server:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      name: "testVS"
+      all_profiles:
+          - /Common/http
+      partition: "{{ i57_partition }}"
+      state: "present"
+      all_rules:
+          - /Common/_sys_https_redirect
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 57 - Add virtual server rules - Idepotent check
+  assert:
+      that:
+          - not result|changed
 
 - name: Issue 57 - Delete virtual server
   bigip_virtual_server:
@@ -49,3 +70,9 @@
       state: "absent"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 57 - Delete virtual server
+  assert:
+      that:
+          - result|changed
