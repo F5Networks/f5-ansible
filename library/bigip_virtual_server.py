@@ -199,7 +199,6 @@ deleted:
     sample: "my-virtual-server"
 '''
 
-
 # map of state values
 STATES = {
     'enabled': 'STATE_ENABLED',
@@ -310,6 +309,7 @@ def get_profiles(api, name):
 
 def set_profiles(api, name, profiles_list):
     updated = False
+    profiles_list = list(profiles_list)
     try:
         if profiles_list is None:
             return False
@@ -320,7 +320,7 @@ def set_profiles(api, name, profiles_list):
                 to_add_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
         to_del_profiles = []
         for x in current_profiles:
-            if (x not in profiles_list) and (x != "/Common/tcp"):
+            if x not in profiles_list:
                 to_del_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
         if len(to_del_profiles) > 0:
             api.LocalLB.VirtualServer.remove_profile(
@@ -334,6 +334,11 @@ def set_profiles(api, name, profiles_list):
                 profiles=[to_add_profiles]
             )
             updated = True
+        current_profiles = list(map(lambda x: x['profile_name'], get_profiles(api, name)))
+        if len(current_profiles) == 0:
+            raise F5ModuleError(
+                "Virtual servers must has at least one profile"
+            )
         return updated
     except bigsuds.OperationFailed as e:
         raise Exception('Error on setting profiles : %s' % e)
@@ -772,7 +777,6 @@ def main():
                     # about it!
                     try:
                         vs_create(api, name, destination, port, pool, all_profiles)
-                        set_profiles(api, name, all_profiles)
                         set_policies(api, name, all_policies)
                         set_enabled_vlans(api, name, all_enabled_vlans)
                         set_rules(api, name, all_rules)
