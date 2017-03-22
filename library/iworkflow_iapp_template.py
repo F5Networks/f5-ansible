@@ -69,16 +69,27 @@ notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 extends_documentation_fragment: f5
+requirements:
+    - f5-sdk >= 2.3.0
+    - iWorkflow >= 2.1.0
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
-- name: Create HTTP iApp service from iApp template
-  bigip_iapp_template:
-      name: "foo-service"
-      template: "f5.http"
-      parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+- name: Add AppSvcs Integration to iWorkflow
+  iworkflow_iapp_template:
+      device: "my-bigip-1"
+      template_content: "{{ lookup('file', 'appsvcs_integration_v2.0_001.tmpl') }}"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
+
+- name: Remove AppSvcs Integration from iWorkflow
+  iworkflow_iapp_template:
+      name: "appsvcs_integration_v2.0_001"
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"

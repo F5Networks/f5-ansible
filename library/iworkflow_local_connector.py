@@ -48,7 +48,7 @@ notes:
     install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.5.0
+    - f5-sdk >= 2.3.0
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

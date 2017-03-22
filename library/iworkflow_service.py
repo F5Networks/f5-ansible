@@ -50,7 +50,8 @@ notes:
   - Requires the f5-sdk Python package on the remote host. This is as easy as
     pip install f5-sdk
 requirements:
-  - f5-sdk
+    - f5-sdk >= 2.3.0
+    - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)
 '''
