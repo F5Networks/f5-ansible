@@ -28,7 +28,7 @@ module: iworkflow_system_setup
 short_description: Manage system setup related configuration on iWorkflow
 description:
   - Manage system setup related configuration on iWorkflow.
-version_added: 2.3
+version_added: 2.4
 options:
   hostname:
     description:

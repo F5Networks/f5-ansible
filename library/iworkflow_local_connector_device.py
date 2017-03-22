@@ -28,7 +28,7 @@ module: iworkflow_local_connector_device
 short_description: Manipulate cloud local connector devices in iWorkflow.
 description:
   - Manipulate cloud local connector devices in iWorkflow.
-version_added: 2.3
+version_added: 2.4
 options:
   connector:
     description:

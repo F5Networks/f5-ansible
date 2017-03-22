@@ -28,8 +28,8 @@ module: iworkflow_license_pool_member
 short_description: Manages members in a license pool.
 description:
   - Manages members in a license pool. By adding and removing members from
-    a pool, you will implicitly be licensing and unlicensing them.
-version_added: 2.3
+    a pool, you will implicitly be licensing and un-licensing them.
+version_added: 2.4
 options:
   member:
     description:

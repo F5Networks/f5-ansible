@@ -28,7 +28,7 @@ module: iworkflow_license_pool
 short_description: Manage license pools in iWorkflow.
 description:
   - Manage license pools in iWorkflow.
-version_added: 2.3
+version_added: 2.4
 options:
   name:
     description:

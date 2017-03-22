@@ -30,7 +30,7 @@ module: bigip_dns_record_facts
 short_description: foo
 description:
   - foo
-version_added: "2.2"
+version_added: "2.4"
 options:
   server:
     description:
