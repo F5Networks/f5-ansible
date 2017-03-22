@@ -52,7 +52,7 @@ options:
         This option is required when C(state) is C(present).
     required: False
     default: None
-  cloud:
+  connector:
     description:
       - The cloud connector associated with this Service Template. When creating
         a new Service Template,
@@ -72,7 +72,8 @@ notes:
   - Requires the deepdiff Python package on the Ansible controller host. This
     is as easy as pip install deepdiff.
 requirements:
-  - f5-sdk >= 2.2.3
+    - f5-sdk >= 2.3.0
+    - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)
 '''
@@ -92,10 +93,16 @@ from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'templateName': 'template_name'
+    }
+
     returnables = ['vars']
+
     api_attributes = [
         'overrides', 'templateName', 'parentReference', 'properties'
     ]
+
     updatables = ['tables', 'vars']
 
     def to_return(self):
@@ -276,6 +283,7 @@ class ModuleManager(object):
             name=self.want.name,
         )
         result = resource.attrs
+        result['parameters'] = result.pop('overrides', None)
         return Parameters(result)
 
     def create_on_device(self):
@@ -320,7 +328,7 @@ class ArgumentSpec(object):
                 default=None,
                 type='dict'
             ),
-            cloud=dict(
+            connector=dict(
                 required=False,
                 default=None
             ),
@@ -330,7 +338,7 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             )
         )
-        self.f5_product_name = 'bigip'
+        self.f5_product_name = 'iworkflow'
 
 
 def main():
