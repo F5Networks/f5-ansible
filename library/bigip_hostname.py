@@ -162,8 +162,8 @@ class ModuleManager(object):
         params = self.want.api_params()
         resource = self.client.api.tm.sys.global_settings.load()
         resource.modify(**params)
-        self.client.api.tm.cm.devices.run_cmd(
-            'mv', name=self.have.name, target=self.want.name
+        self.client.api.tm.cm.devices.exec_cmd(
+            'mv', name=self.have.hostname, target=self.want.hostname
         )
 
 
