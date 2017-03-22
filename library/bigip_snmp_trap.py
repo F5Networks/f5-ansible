@@ -136,7 +136,7 @@ class Parameters(AnsibleF5Parameters):
         for api_attribute in self.api_attributes:
             if self.network == 'default':
                 result['network'] = None
-            elif api_attribute in self.api_map:
+            elif self.api_map is not None and api_attribute in self.api_map:
                 result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
                 result[api_attribute] = getattr(self, api_attribute)
