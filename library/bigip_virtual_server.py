@@ -805,24 +805,24 @@ def main():
                 # VS exists
                 if not module.check_mode:
                     # Have a transaction for all the changes
-                    #try:
-                    api.System.Session.start_transaction()
-                    result['changed'] |= set_destination(api, name, fq_name(partition, destination))
-                    result['changed'] |= set_port(api, name, port)
-                    result['changed'] |= set_pool(api, name, pool)
-                    result['changed'] |= set_description(api, name, description)
-                    result['changed'] |= set_snat(api, name, snat)
-                    result['changed'] |= set_profiles(api, name, all_profiles)
-                    result['changed'] |= set_policies(api, name, all_policies)
-                    result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
-                    result['changed'] |= set_rules(api, name, all_rules)
-                    result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
-                    result['changed'] |= set_fallback_persistence_profile(api, partition, name, fallback_persistence_profile)
-                    result['changed'] |= set_state(api, name, state)
-                    result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
-                    api.System.Session.submit_transaction()
-                    #except Exception as e:
-                    #    raise Exception("Error on updating Virtual Server : %s" % str(e))
+                    try:
+                        api.System.Session.start_transaction()
+                        result['changed'] |= set_destination(api, name, fq_name(partition, destination))
+                        result['changed'] |= set_port(api, name, port)
+                        result['changed'] |= set_pool(api, name, pool)
+                        result['changed'] |= set_description(api, name, description)
+                        result['changed'] |= set_snat(api, name, snat)
+                        result['changed'] |= set_profiles(api, name, all_profiles)
+                        result['changed'] |= set_policies(api, name, all_policies)
+                        result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
+                        result['changed'] |= set_rules(api, name, all_rules)
+                        result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
+                        result['changed'] |= set_fallback_persistence_profile(api, partition, name, fallback_persistence_profile)
+                        result['changed'] |= set_state(api, name, state)
+                        result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
+                        api.System.Session.submit_transaction()
+                    except Exception as e:
+                        raise Exception("Error on updating Virtual Server : %s" % str(e))
                 else:
                     # check-mode return value
                     result = {'changed': True}
