@@ -211,7 +211,6 @@ STATUSES = {
     'offline': 'SESSION_STATUS_FORCED_DISABLED'
 }
 
-import q
 
 def vs_exists(api, vs):
     # hack to determine if pool exists
@@ -324,8 +323,6 @@ def set_profiles(api, name, profiles_list):
         for x in current_profiles:
             if (x not in profiles_list) and (x != "/Common/tcp"):
                 to_del_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
-        q.q(to_add_profiles)
-        q.q(to_del_profiles)
         if len(to_del_profiles) > 0:
             api.LocalLB.VirtualServer.remove_profile(
                 virtual_servers=[name],
@@ -817,7 +814,6 @@ def main():
                     result['changed'] |= set_snat(api, name, snat)
                     result['changed'] |= set_profiles(api, name, all_profiles)
                     result['changed'] |= set_policies(api, name, all_policies)
-                    q.q(result['changed'])
                     result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
                     result['changed'] |= set_rules(api, name, all_rules)
                     result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
