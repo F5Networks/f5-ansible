@@ -17,7 +17,7 @@
 - name: Register device to connector
   iworkflow_local_connector_device:
       device: "{{ device_name1 }}"
-      connector: "{{ connector_name }}"
+      connector: "{{ connector_name1 }}"
       state: "present"
   register: result
 
