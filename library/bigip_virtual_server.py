@@ -211,6 +211,7 @@ STATUSES = {
     'offline': 'SESSION_STATUS_FORCED_DISABLED'
 }
 
+import q
 
 def vs_exists(api, vs):
     # hack to determine if pool exists
@@ -309,10 +310,11 @@ def get_profiles(api, name):
 
 def set_profiles(api, name, profiles_list):
     updated = False
-    profiles_list = list(profiles_list)
+
     try:
         if profiles_list is None:
             return False
+        profiles_list = list(profiles_list)
         current_profiles = list(map(lambda x: x['profile_name'], get_profiles(api, name)))
         to_add_profiles = []
         for x in profiles_list:
@@ -320,8 +322,10 @@ def set_profiles(api, name, profiles_list):
                 to_add_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
         to_del_profiles = []
         for x in current_profiles:
-            if x not in profiles_list:
+            if (x not in profiles_list) and (x != "/Common/tcp"):
                 to_del_profiles.append({'profile_context': 'PROFILE_CONTEXT_TYPE_ALL', 'profile_name': x})
+        q.q(to_add_profiles)
+        q.q(to_del_profiles)
         if len(to_del_profiles) > 0:
             api.LocalLB.VirtualServer.remove_profile(
                 virtual_servers=[name],
@@ -355,6 +359,7 @@ def set_policies(api, name, policies_list):
     try:
         if policies_list is None:
             return False
+        policies_list = list(policies_list)
         current_policies = get_policies(api, name)
         to_add_policies = []
         for x in policies_list:
@@ -393,6 +398,7 @@ def set_enabled_vlans(api, name, vlans_enabled_list):
     try:
         if vlans_enabled_list is None:
             return updated
+        vlans_enabled_list = list(vlans_enabled_list)
         current_vlans = get_vlan(api, name)
 
         # Set allowed list back to default ("all")
@@ -682,7 +688,7 @@ def main():
                    choices=['present', 'absent', 'disabled', 'enabled']),
         name=dict(type='str', required=True, aliases=['vs']),
         destination=dict(type='str', aliases=['address', 'ip']),
-        port=dict(type='int', default=None),
+        port=dict(type='str', default=None),
         all_policies=dict(type='list'),
         all_profiles=dict(type='list', default=None),
         all_rules=dict(type='list'),
@@ -723,6 +729,10 @@ def main():
     name = fq_name(partition, module.params['name'])
     destination = module.params['destination']
     port = module.params['port']
+    if port == '' or port is None:
+        port = None
+    else:
+        port = int(port)
     all_profiles = fq_list_names(partition, module.params['all_profiles'])
     all_policies = fq_list_names(partition, module.params['all_policies'])
     all_rules = fq_list_names(partition, module.params['all_rules'])
@@ -798,29 +808,30 @@ def main():
                 # VS exists
                 if not module.check_mode:
                     # Have a transaction for all the changes
-                    try:
-                        api.System.Session.start_transaction()
-                        result['changed'] |= set_destination(api, name, fq_name(partition, destination))
-                        result['changed'] |= set_port(api, name, port)
-                        result['changed'] |= set_pool(api, name, pool)
-                        result['changed'] |= set_description(api, name, description)
-                        result['changed'] |= set_snat(api, name, snat)
-                        result['changed'] |= set_profiles(api, name, all_profiles)
-                        result['changed'] |= set_policies(api, name, all_policies)
-                        result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
-                        result['changed'] |= set_rules(api, name, all_rules)
-                        result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
-                        result['changed'] |= set_fallback_persistence_profile(api, partition, name, fallback_persistence_profile)
-                        result['changed'] |= set_state(api, name, state)
-                        result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
-                        api.System.Session.submit_transaction()
-                    except Exception as e:
-                        raise Exception("Error on updating Virtual Server : %s" % e)
+                    #try:
+                    api.System.Session.start_transaction()
+                    result['changed'] |= set_destination(api, name, fq_name(partition, destination))
+                    result['changed'] |= set_port(api, name, port)
+                    result['changed'] |= set_pool(api, name, pool)
+                    result['changed'] |= set_description(api, name, description)
+                    result['changed'] |= set_snat(api, name, snat)
+                    result['changed'] |= set_profiles(api, name, all_profiles)
+                    result['changed'] |= set_policies(api, name, all_policies)
+                    q.q(result['changed'])
+                    result['changed'] |= set_enabled_vlans(api, name, all_enabled_vlans)
+                    result['changed'] |= set_rules(api, name, all_rules)
+                    result['changed'] |= set_default_persistence_profiles(api, name, default_persistence_profile)
+                    result['changed'] |= set_fallback_persistence_profile(api, partition, name, fallback_persistence_profile)
+                    result['changed'] |= set_state(api, name, state)
+                    result['changed'] |= set_route_advertisement_state(api, destination, partition, route_advertisement_state)
+                    api.System.Session.submit_transaction()
+                    #except Exception as e:
+                    #    raise Exception("Error on updating Virtual Server : %s" % str(e))
                 else:
                     # check-mode return value
                     result = {'changed': True}
 
-    except IOError as e:
+    except Exception as e:
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
