@@ -115,7 +115,7 @@ class Parameters(AnsibleF5Parameters):
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
-            if api_attribute in self.api_map:
+            if self.api_map is not None and api_attribute in self.api_map:
                 result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
                 result[api_attribute] = getattr(self, api_attribute)
