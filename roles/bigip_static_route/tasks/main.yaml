@@ -5,11 +5,6 @@
       destination: "{{ destination1 }}"
       gateway_address: "{{ gateway_address1 }}"
       name: "{{ static_route_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create static route with gateway address
@@ -129,3 +124,6 @@
   assert:
       that:
           - not result|changed
+
+- include: issue-104.yaml
+  tags: issue-104

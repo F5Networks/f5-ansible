@@ -145,6 +145,7 @@ reject:
     sample: "true"
 '''
 
+
 try:
     import netaddr
     HAS_NETADDR = True
@@ -227,6 +228,8 @@ class Parameters(AnsibleF5Parameters):
     def destination(self):
         if self._values['destination'] is None:
             return None
+        if self._values['destination'] == 'default':
+            self._values['destination'] = '0.0.0.0/0'
         try:
             ip = netaddr.IPNetwork(self._values['destination'])
             return '{0}/{1}'.format(ip.ip, ip.prefixlen)
