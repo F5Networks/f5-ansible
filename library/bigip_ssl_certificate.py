@@ -96,7 +96,7 @@ notes:
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 1.5.0
-    - BigIP >= v12
+    - BIG-IP >= v12
 author:
     - Tim Rupp (@caphrim007)
 '''
