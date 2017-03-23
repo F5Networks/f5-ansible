@@ -339,8 +339,6 @@ class ModuleManager(object):
 
         # The 'network' attribute is not updatable
         params.pop('network', None)
-        import q
-        q.q(params)
         result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
