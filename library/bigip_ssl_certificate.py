@@ -136,15 +136,6 @@ cert_name:
         - created
     type: string
     sample: "cert1"
-cert_filename:
-    description:
-        - The name of the SSL certificate. The C(cert_filename) and
-          C(key_filename) will be similar to each other, however the
-          C(cert_filename) will have a C(.crt) extension.
-    returned:
-        - created
-    type: string
-    sample: "cert1.crt"
 key_filename:
     description:
         - The name of the SSL certificate key. The C(key_filename) and
@@ -161,6 +152,20 @@ key_checksum:
         - created
     type: string
     sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
+key_source_path:
+    description: Path on BIG-IP where the source of the key is stored
+    return: created
+    type: string
+    sample: "/var/config/rest/downloads/cert1.key"
+cert_filename:
+    description:
+        - The name of the SSL certificate. The C(cert_filename) and
+          C(key_filename) will be similar to each other, however the
+          C(cert_filename) will have a C(.crt) extension.
+    returned:
+        - created
+    type: string
+    sample: "cert1.crt"
 cert_checksum:
     description: SHA1 checksum of the cert that was provided.
     return:
@@ -173,14 +178,10 @@ cert_source_path:
     return: created
     type: string
     sample: "/var/config/rest/downloads/cert1.crt"
-key_source_path:
-    description: Path on BIG-IP where the source of the key is stored
-    return: created
-    type: string
-    sample: "/var/config/rest/downloads/cert1.key"
 '''
 
 
+import q
 import hashlib
 import StringIO
 import os
@@ -190,23 +191,14 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {
-        'vlan': 'tmInterface',
-        'gateway_address': 'gw',
-        'destination': 'network',
-        'reject': 'blackhole'
-    }
-
-    updatables = [
-        'vlan', 'gateway_address', 'destination', 'pool', 'description',
-        'mtu', 'reject'
-    ]
-
     def to_return(self):
         result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
         return result
 
     def api_params(self):
@@ -229,9 +221,28 @@ class Parameters(AnsibleF5Parameters):
             k.update(data)
         return k.hexdigest()
 
+    @property
+    def checksum(self):
+        if self._values['checksum'] is None:
+            return None
+        pattern = r'SHA1:\d+:(?P<value>[\w+]{40})'
+        matches = re.match(pattern, self._values['checksum'])
+        if matches:
+            return matches.group('value')
+        else:
+            return None
+
 
 class KeyParameters(Parameters):
-    api_attributes = ['passphrase']
+    api_map = {
+        'sourcePath': 'key_source_path'
+    }
+
+    updatables = ['key_source_path']
+
+    returnables = ['key_filename', 'key_checksum', 'key_source_path']
+
+    api_attributes = ['passphrase', 'sourcePath']
 
     @property
     def key_filename(self):
@@ -259,13 +270,24 @@ class KeyParameters(Parameters):
 
     @property
     def key_source_path(self):
-        return 'file://' + os.path.join(
+        result = 'file://' + os.path.join(
             BaseManager.download_path,
             self.key_filename
         )
+        return result
 
 
 class CertParameters(Parameters):
+    api_map = {
+        'sourcePath': 'cert_source_path'
+    }
+
+    updatables = ['cert_source_path']
+
+    returnables = ['cert_filename', 'cert_checksum', 'cert_source_path']
+
+    api_attributes = ['sourcePath']
+
     @property
     def cert_checksum(self):
         if self.cert_content is None:
@@ -282,19 +304,11 @@ class CertParameters(Parameters):
 
     @property
     def cert_source_path(self):
-        return 'file://' + os.path.join(
+        result = 'file://' + os.path.join(
             BaseManager.download_path,
             self.cert_filename
         )
-
-    @property
-    def checksum(self):
-        pattern = r'SHA1:\d+:(?P<value>[\w+]{40})'
-        matches = re.match(pattern, sha1)
-        if matches:
-            return matches.group('value')
-        else:
-            return None
+        return result
 
 
 class ModuleManager(object):
@@ -311,8 +325,10 @@ class ModuleManager(object):
         for manager in managers:
             result = manager.exec_module()
             for k,v in iteritems(result):
-                if k == 'changed' and v is True:
-                    results['changed'] = True
+                q.q(type(manager), k,v)
+                if k == 'changed':
+                    if v is True:
+                        results['changed'] = True
                 else:
                     results[k] = v
         return results
@@ -325,31 +341,11 @@ class ModuleManager(object):
 
 
 class BaseManager(object):
+    download_path = '/var/config/rest/downloads'
+
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.download_path = '/var/config/rest/downloads'
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
-
-    def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
 
     def exec_module(self):
         changed = False
@@ -384,6 +380,13 @@ class BaseManager(object):
         else:
             return self.create()
 
+    def create(self):
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
     def should_update(self):
         result = self._update_changed_options()
         if result:
@@ -417,65 +420,91 @@ class CertificateManager(BaseManager):
     def __init__(self, client):
         super(CertificateManager, self).__init__(client)
         self.want = CertParameters(self.client.module.params)
-        self.changes = None
+        self.changes = CertParameters()
 
-    def create(self):
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
+    def _set_changed_options(self):
+        changed = {}
+        try:
+            for key in CertParameters.returnables:
+                if getattr(self.want, key) is not None:
+                    changed[key] = getattr(self.want, key)
+            if changed:
+                self.changes = CertParameters(changed)
+        except Exception:
+            pass
+
+    def _update_changed_options(self):
+        changed = {}
+        try:
+            for key in CertParameters.updatables:
+                if getattr(self.want, key) is not None:
+                    attr1 = getattr(self.want, key)
+                    attr2 = getattr(self.have, key)
+                    if attr1 != attr2:
+                        changed[key] = attr1
+                if self.want.cert_checksum != self.have.checksum:
+                    q.q(self.have._values)
+                    changed['cert_checksum'] = self.want.cert_checksum
+            q.q(changed)
+            if changed:
+                self.changes = CertParameters(changed)
+                return True
+        except Exception:
+            pass
+        return False
 
     def exists(self):
-        return self.api.tm.sys.file.ssl_certs.ssl_cert.exists(
-            name=self.have.cert_filename,
-            partition=self.have.partition
+        result = self.client.api.tm.sys.file.ssl_certs.ssl_cert.exists(
+            name=self.want.cert_filename,
+            partition=self.want.partition
         )
+        return result
 
     def present(self):
-        if self.want.key_content is None:
-            raise F5ModuleError(
-                "The 'cert_content' option is required when "
-                "state is 'present'"
-            )
+        if self.want.cert_content is None:
+            return False
         return super(CertificateManager, self).present()
 
     def should_update(self):
-        self._update_changed_options()
-        if self.changes:
+        result = self._update_changed_options()
+        if result:
             return True
         return False
 
     def update_on_device(self):
+        cstring = StringIO.StringIO(self.want.cert_content)
+        self.client.api.shared.file_transfer.uploads.upload_stringio(
+            cstring, self.want.cert_filename
+        )
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.have.cert_filename,
-            partition=self.have.partition
+            name=self.want.cert_filename,
+            partition=self.want.partition
         )
         resource.update()
 
     def create_on_device(self):
-        cstring = StringIO.StringIO(self.have.cert_content)
+        cstring = StringIO.StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            cstring, self.have.cert_filename
+            cstring, self.want.cert_filename
         )
         self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
-            sourcePath=self.have.cert_source_path,
-            name=self.have.cert_filename,
-            partition=self.have.partition
+            sourcePath=self.want.cert_source_path,
+            name=self.want.cert_filename,
+            partition=self.want.partition
         )
 
     def read_current_from_device(self):
-        resource = self.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.params.cert_filename,
-            partition=self.params.partition
-        ).to_dict()
-        resource.pop('_meta_data', None)
-        return Parameters(resource)
+        resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
+            name=self.want.cert_filename,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return CertParameters(result)
 
     def remove_from_device(self):
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.params.cert_filename,
-            partition=self.params.partition
+            name=self.want.cert_filename,
+            partition=self.want.partition
         )
         resource.delete()
 
@@ -486,77 +515,96 @@ class KeyManager(BaseManager):
         self.want = KeyParameters(self.client.module.params)
         self.changes = KeyParameters()
 
+    def _set_changed_options(self):
+        changed = {}
+        try:
+            for key in KeyParameters.returnables:
+                if getattr(self.want, key) is not None:
+                    changed[key] = getattr(self.want, key)
+            if changed:
+                self.changes = Parameters(changed)
+        except Exception:
+            pass
+
+    def _update_changed_options(self):
+        changed = {}
+        try:
+            for key in CertParameters.updatables:
+                if getattr(self.want, key) is not None:
+                    attr1 = getattr(self.want, key)
+                    attr2 = getattr(self.have, key)
+                    if attr1 != attr2:
+                        changed[key] = attr1
+                if self.want.key_checksum != self.have.checksum:
+                    changed['key_checksum'] = self.want.key_checksum
+            q.q(changed)
+            if changed:
+                self.changes = CertParameters(changed)
+                return True
+        except Exception:
+            pass
+        return False
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
     def update_on_device(self):
+        kstring = StringIO.StringIO(self.want.key_content)
+        self.client.api.shared.file_transfer.uploads.upload_stringio(
+            kstring, self.want.key_filename
+        )
         resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.have.key_filename,
-            partition=self.have.partition
+            name=self.want.key_filename,
+            partition=self.want.partition
         )
         resource.update()
 
     def exists(self):
-        return self.api.tm.sys.file.ssl_keys.ssl_key.exists(
-            name=self.params.key_filename,
-            partition=self.params.partition
+        result = self.client.api.tm.sys.file.ssl_keys.ssl_key.exists(
+            name=self.want.key_filename,
+            partition=self.want.partition
         )
+        return result
 
     def present(self):
         if self.want.key_content is None:
-            raise F5ModuleError(
-                "The 'key_content' option is required when "
-                "state is 'present'"
-            )
+            return False
         return super(KeyManager, self).present()
 
     def read_current_from_device(self):
-        resource = self.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.params.cert_filename,
-            partition=self.params.partition
-        ).to_dict()
-        resource.pop('_meta_data', None)
-        return Parameters(resource)
+        resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
+            name=self.want.key_filename,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return KeyParameters(result)
 
     def create_on_device(self):
-        kstring = StringIO.StringIO(self.have.key_content)
+        kstring = StringIO.StringIO(self.want.key_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            kstring, self.have.key_filename
+            kstring, self.want.key_filename
         )
-        self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
-            sourcePath=self.have.key_source_path,
-            name=self.have.key_filename,
-            partition=self.have.partition
+        q.q(self.want.api_params())
+        self.client.api.tm.sys.file.ssl_keys.ssl_key.create(
+            sourcePath=self.want.key_source_path,
+            name=self.want.key_filename,
+            partition=self.want.partition
         )
-
-
-
-
-        params = dict(
-            sourcePath="file://" + filepath,
-            name=self.params.key_filename,
-            partition=self.params.partition
-        )
-        if self.params.passphrase:
-            params['passphrase'] = self.params.passphrase
-        else:
-            params['passphrase'] = None
-        api.tm.sys.file.ssl_keys.ssl_key.create(**params)
-        return True
 
     def remove_from_device(self):
         resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.params.key_filename,
-            partition=self.params.partition
+            name=self.want.key_filename,
+            partition=self.want.partition
         )
         resource.delete()
-
-    def key_is_changed(self, current):
-        if current.key_checksum != self.params.key_checksum:
-            return True
-        return False
 
 
 class ArgumentSpec(object):
     def __init__(self):
-        deprecated = ['key_src']
+        deprecated = ['key_src', 'cert_src']
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
