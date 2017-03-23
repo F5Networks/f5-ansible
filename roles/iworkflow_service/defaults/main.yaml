@@ -1,0 +1,7 @@
+---
+
+connector_name1: "foo"
+tenant_name: "tenant-foo"
+iapp_name: "appsvcs_integration_v2.0_001"
+device_name1: "foo.local.com"
+device_ip: "10.2.2.3"
