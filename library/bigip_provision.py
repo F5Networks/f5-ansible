@@ -201,8 +201,7 @@ class ModuleManager(object):
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, str(self.want.module))
         resource = resource.load()
-        result = resource.to_dict()
-        result = result.attrs
+        result = resource.attrs
         return Parameters(result)
 
     def absent(self):
