@@ -539,13 +539,6 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
             self.dossier = fh.read()
             fh.close()
 
-        lic_status = self.get_license_activation_status()
-        if lic_status == 'STATE_DISABLED':
-            raise F5ModuleError(
-                "Could not reach the specified activation server"
-                "to license BIG-IP"
-            )
-
         if not self.dossier:
             self.get_dossier(self.regkey)
             if not self.dossier:
