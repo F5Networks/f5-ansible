@@ -10,7 +10,6 @@
       validate_certs: "{{ validate_certs }}"
   register: result
 
-- debug: var=result
 - name: Assert Change the hostname
   assert:
       that:

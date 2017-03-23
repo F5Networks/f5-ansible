@@ -1,4 +1,4 @@
 ---
 
-valid_hostname: "foo.internal.com"
+valid_hostname: "foo.local.com"
 invalid_hostname: "foo"
