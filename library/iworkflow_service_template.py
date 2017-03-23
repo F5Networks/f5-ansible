@@ -54,10 +54,12 @@ options:
     default: None
   connector:
     description:
-      - The cloud connector associated with this Service Template. When creating
-        a new Service Template,
+      - The cloud connector associated with this Service Template. If you want
+        to have this Service Template associated with all clouds, then specify
+        a C(connector) of C(all). When creating a new Service Template, if no
+        connector is specified, then C(all) clouds will be the default.
     required: False
-    default: "all"
+    default: None
   base_template:
     description:
       - The iApp template that you want to base this Service Template off
@@ -86,15 +88,15 @@ RETURN = '''
 
 '''
 
-import q
-
 from ansible.module_utils.f5_utils import *
 from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'templateName': 'template_name'
+        'templateName': 'name',
+        'properties': 'connector',
+        'overrides': 'parameters'
     }
 
     returnables = ['vars']
@@ -104,6 +106,46 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     updatables = ['tables', 'vars']
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+    def _get_connector_collection(self):
+        return self.client.api.cm.cloud.connectors.locals.get_collection()
+
+    def _get_connector_selflink(self, connector, collection):
+        for resource in collection:
+            if str(resource.displayName) != "BIG-IP":
+                continue
+            if str(resource.name) != connector:
+                continue
+            return str(resource.selfLink)
+        return None
 
     def to_return(self):
         result = {}
@@ -166,7 +208,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         variables = self._values['vars']
         for variable in variables:
-            tmp = dict((str(k), str(v)) for k, v in iteritems(variable))
+            tmp = dict((str(k), v) for k, v in iteritems(variable))
             result.append(tmp)
         result = sorted(result, key=lambda k: k['name'])
         return result
@@ -189,14 +231,62 @@ class Parameters(AnsibleF5Parameters):
         if 'tables' in value:
             self.tables = value['tables']
         if 'vars' in value:
-            self.variables = value['vars']
+            self.vars = value['vars']
+
+    @property
+    def connector(self):
+        connector = None
+        if self._values['connector'] in [None, 'all']:
+            return self._values['connector']
+        elif isinstance(self._values['connector'], basestring):
+            collection = self._get_connector_collection()
+            result = self._get_connector_selflink(str(self._values['connector']), collection)
+            connector = result
+        elif 'provider' in self._values['connector'][0]:
+            # Case for the REST API
+            item = self._values['connector'][0]['provider']
+            connector = str(item)
+        if connector is None:
+            raise F5ModuleError(
+                "The specified connector was not found"
+            )
+        elif connector == 'all':
+            return [
+                dict(
+                    id="cloudConnectorReference",
+                    isRequired=True,
+                    defaultValue=""
+                )
+            ]
+        else:
+            return [
+                dict(
+                    id="cloudConnectorReference",
+                    isRequired=True,
+                    provider=connector
+                )
+            ]
+
+    @property
+    def parentReference(self):
+        return dict(
+            link="https://localhost/mgmt/cm/cloud/templates/iapp/{0}".format(
+                self._values['base_template']
+            )
+        )
+
+    @parentReference.setter
+    def parentReference(self, value):
+        self._values['base_template'] = value['link']
 
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
         self.changes = Parameters()
 
     def _set_changed_options(self):
@@ -205,7 +295,9 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -216,7 +308,9 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = str(DeepDiff(attr1,attr2))
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
             return True
         return False
 
@@ -239,9 +333,10 @@ class ModuleManager(object):
         return result
 
     def exists(self):
-        return self.client.api.cm.cloud.templates.iapps.iapp.exists(
+        result = self.client.api.cm.cloud.provider.templates.iapps.iapp.exists(
             name=self.want.name
         )
+        return result
 
     def present(self):
         if self.exists():
@@ -253,6 +348,10 @@ class ModuleManager(object):
         self._set_changed_options()
         if self.client.check_mode:
             return True
+        if self.want.base_template is None:
+            raise F5ModuleError(
+                "A 'base_template' is required when creating a new Service Template"
+            )
         self.create_on_device()
         return True
 
@@ -273,23 +372,27 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
+        resource = self.client.api.cm.cloud.provider.templates.iapps.iapp.load(
             name=self.want.name
         )
         resource.update(**params)
 
     def read_current_from_device(self):
-        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
+        resource = self.client.api.cm.cloud.provider.templates.iapps.iapp.load(
             name=self.want.name,
         )
         result = resource.attrs
         result['parameters'] = result.pop('overrides', None)
-        return Parameters(result)
+        params = Parameters()
+        params.client = self.client
+        params.update(result)
+
+        return params
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.cm.cloud.templates.iapps.iapp.create(
-            name=self.want.name,
+        self.client.api.cm.cloud.provider.templates.iapps.iapp.create(
+            isF5Example=False,
             **params
         )
 
@@ -307,7 +410,7 @@ class ModuleManager(object):
         return True
 
     def remove_from_device(self):
-        resource = self.client.api.cm.cloud.templates.iapps.iapp.load(
+        resource = self.client.api.cm.cloud.provider.templates.iapps.iapp.load(
             name=self.want.name,
         )
         if resource:

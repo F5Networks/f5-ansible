@@ -2,7 +2,7 @@
   "vars":[
     {
       "name":"extensions__Field1",
-      "description":"Extensions: Field 1",
+      "description":"Extensions: Field One",
       "displayName":"Field1",
       "isRequired":false,
       "provider":""
