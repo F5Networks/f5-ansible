@@ -1,6 +1,7 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
+# Copyright 2017 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
