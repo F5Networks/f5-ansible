@@ -145,7 +145,11 @@ reject:
     sample: "true"
 '''
 
-import netaddr
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 from ansible.module_utils.basic import *
 from ansible.module_utils.f5_utils import *
@@ -428,6 +432,9 @@ class ArgumentSpec(object):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if not HAS_NETADDR:
+        raise F5ModuleError("The python netaddr module is required")
 
     spec = ArgumentSpec()
 
