@@ -170,11 +170,11 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = [
         'vlan', 'gateway_address', 'destination', 'pool', 'description',
-        'reject'
+        'reject', 'mtu'
     ]
 
     api_attributes = [
-        'tmInterface', 'gw', 'network', 'blackhole'
+        'tmInterface', 'gw', 'network', 'blackhole', 'description', 'pool', 'mtu'
     ]
 
     def to_return(self):
@@ -241,7 +241,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -339,6 +339,8 @@ class ModuleManager(object):
 
         # The 'network' attribute is not updatable
         params.pop('network', None)
+        import q
+        q.q(params)
         result = self.client.api.tm.net.routes.route.load(
             name=self.want.name,
             partition=self.want.partition
