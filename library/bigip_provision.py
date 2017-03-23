@@ -115,21 +115,35 @@ from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
-    param_api_map = dict(
-        level='level'
-    )
+    api_attributes = ['level']
 
     updatables = ['level']
+
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
 
     @property
     def level(self):
         if self._values['level'] is None:
             return None
         return str(self._values['level'])
-
-    @level.setter
-    def level(self, value):
-        self._values['level'] = value
 
 
 class ModuleManager(object):
@@ -164,8 +178,7 @@ class ModuleManager(object):
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, self.want.module)
         resource = resource.load()
-        result = resource.to_dict()
-        result.pop('_meta_data', None)
+        result = resource.attrs
         if str(result['level']) == 'none':
             return False
         return True
