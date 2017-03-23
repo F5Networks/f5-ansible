@@ -242,11 +242,11 @@ class ModuleManager(object):
         result.modify(**params)
 
     def read_current_from_device(self):
-        result = self.client.api.tm.sys.snmp.traps_s.trap.load(
+        resource = self.client.api.tm.sys.snmp.traps_s.trap.load(
             name=self.want.name,
             partition=self.want.partition
-        ).to_dict()
-        result.pop('_meta_data', None)
+        )
+        result = resource.attrs
 
         # BIG-IP's value for "default" is that the key does not
         # exist. This conflicts with our purpose of having a key
@@ -256,7 +256,7 @@ class ModuleManager(object):
         # way of saying that the network value is "default"
         if 'network' not in result:
             result['network'] = 'default'
-        return Parameters.from_api(result)
+        return Parameters(result)
 
     def create_on_device(self):
         params = self.want.api_params()

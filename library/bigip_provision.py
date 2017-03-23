@@ -202,8 +202,8 @@ class ModuleManager(object):
         resource = getattr(provision, str(self.want.module))
         resource = resource.load()
         result = resource.to_dict()
-        result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        result = result.attrs
+        return Parameters(result)
 
     def absent(self):
         if self.exists():

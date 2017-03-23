@@ -228,9 +228,9 @@ class ModuleManager(object):
         result.modify(**params)
 
     def read_current_from_device(self):
-        result = self.client.api.tm.sys.snmp.load().to_dict()
-        result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        resource = self.client.api.tm.sys.snmp.load()
+        result = resource.attrs
+        return Parameters(result)
 
 
 class ArgumentSpec(object):

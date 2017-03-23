@@ -356,12 +356,12 @@ class UntypedManager(BaseManager):
         result.modify(**params)
 
     def read_current_from_device(self):
-        result = self.client.api.tm.gtm.wideips.wideip.load(
+        resource = self.client.api.tm.gtm.wideips.wideip.load(
             name=self.want.name,
             partition=self.want.partition
-        ).to_dict()
-        result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        )
+        result = resource.attrs
+        return Parameters(result)
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -422,9 +422,9 @@ class TypedManager(BaseManager):
         result = resource.load(
             name=self.want.name,
             partition=self.want.partition
-        ).to_dict()
-        result.pop('_meta_data', None)
-        return Parameters.from_api(result)
+        )
+        result = result.attrs
+        return Parameters(result)
 
     def create_on_device(self):
         params = self.want.api_params()
