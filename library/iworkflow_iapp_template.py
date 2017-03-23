@@ -102,7 +102,7 @@ RETURN = '''
 '''
 
 import re
-import q
+import time
 
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -324,10 +324,11 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
+        params['name'] = self.want.name
         self.client.api.cm.cloud.templates.iapps.iapp.create(
-            name=self.want.name,
             **params
         )
+        time.sleep(5)
 
     def absent(self):
         if self.exists():
