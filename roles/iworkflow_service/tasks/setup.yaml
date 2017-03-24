@@ -1,5 +1,12 @@
 ---
 
+- name: Provision ASM on the device
+  bigip_provision:
+      module: "asm"
+      password: "{{ bigip_password }}"
+      server_port: "{{ bigip_port }}"
+  register: result
+
 - name: Discover BIG-IP
   iworkflow_device:
       device: "{{ device_ip }}"
@@ -46,7 +53,7 @@
   iworkflow_service_template:
       base_template: "appsvcs_integration_v2.0_001"
       connector: "{{ connector_name1 }}"
-      name: "foo-service-1"
+      name: "foo-service-template-1"
       parameters: "{{ lookup('file', 'appsvcs_integration_v2.0_001.json') }}"
       state: "present"
   register: result
