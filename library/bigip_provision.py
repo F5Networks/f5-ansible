@@ -153,6 +153,19 @@ class ModuleManager(object):
         self.want = Parameters(self.client.module.params)
         self.changes = Parameters()
 
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
     def exec_module(self):
         if not HAS_F5SDK:
             raise F5ModuleError("The python f5-sdk module is required")
@@ -194,13 +207,9 @@ class ModuleManager(object):
         return True
 
     def should_update(self):
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    setattr(self.changes, key, attr1)
-                    return True
+        result = self._update_changed_options()
+        if result:
+            return True
         return False
 
     def update_on_device(self):
@@ -228,14 +237,14 @@ class ModuleManager(object):
         self.remove_from_device()
         self.wait_for_module_provisioning()
         if self.exists():
-            raise F5ModuleError("Failed to deprovision the module")
+            raise F5ModuleError("Failed to de-provision the module")
         return True
 
     def remove_from_device(self):
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, self.want.module)
         resource = resource.load()
-        resource.update({'level': self.want.level})
+        resource.update(level='none')
 
     def wait_for_module_provisioning(self):
         # To prevent things from running forever, the hack is to check
