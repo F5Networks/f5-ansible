@@ -298,14 +298,6 @@ class Parameters(AnsibleF5Parameters):
             )
         )
 
-    @property
-    def tenantTemplateReference(self):
-        return dict(
-            link="https://localhost/mgmt/cm/cloud/tenants/{0}".format(
-                self._values['tenant']
-            )
-        )
-
 
 class ModuleManager(object):
     def __init__(self, client):

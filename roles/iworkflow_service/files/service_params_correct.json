@@ -8,6 +8,10 @@
     {
       "name":"pool__port",
       "value":"900"
+    },
+    {
+      "name":"vs__ProfileClientProtocol",
+      "value":"tcp"
     }
   ]
 }
