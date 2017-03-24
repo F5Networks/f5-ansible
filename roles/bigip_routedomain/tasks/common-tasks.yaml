@@ -3,11 +3,6 @@
 - name: Create route domain
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain
@@ -18,11 +13,6 @@
 - name: Create route domain - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain - Idempotent check
@@ -34,11 +24,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       description: "{{ valid_description }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a description
@@ -50,11 +35,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       description: "{{ valid_description }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a description - Idempotent check
@@ -65,12 +45,7 @@
 - name: Disable strict isolation
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "disabled"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable strict isolation
@@ -81,12 +56,7 @@
 - name: Disable strict isolation - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "disabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable strict isolation - Idempotent check
@@ -97,12 +67,7 @@
 - name: Enable strict isolation
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "enabled"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable strict isolation
@@ -113,12 +78,7 @@
 - name: Enable strict isolation - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "enabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable strict isolation - Idempotent check
@@ -130,11 +90,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       parent: "{{ default_parent }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set parent route domain
@@ -146,11 +101,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       parent: "{{ default_parent }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set parent route domain - Idempotent check
@@ -161,11 +111,6 @@
 - name: Set vlans
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlans: "{{ valid_vlans }}"
   register: result
 
@@ -177,11 +122,6 @@
 - name: Set vlans - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlans: "{{ valid_vlans }}"
   register: result
 
@@ -193,12 +133,7 @@
 - name: Set a single routing protocol, valid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a single routing protocol, valid
@@ -209,12 +144,7 @@
 - name: Set a single routing protocol, valid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a single routing protocol, valid - Idempotent check
@@ -225,12 +155,7 @@
 - name: Set a single routing protocol, invalid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -242,12 +167,7 @@
 - name: Set a single routing protocol, invalid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -259,12 +179,7 @@
 - name: Set a list of routing protocols, valid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a list of routing protocols, valid
@@ -275,12 +190,7 @@
 - name: Set a list of routing protocols, valid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a list of routing protocols, valid - Idempotent check
@@ -291,12 +201,7 @@
 - name: Set a list of routing protocols, invalid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -308,12 +213,7 @@
 - name: Set a list of routing protocols, invalid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -326,11 +226,6 @@
   bigip_routedomain:
       connection_limit: "{{ valid_connection_limit }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set connection limit, valid
@@ -342,11 +237,6 @@
   bigip_routedomain:
       connection_limit: "{{ valid_connection_limit }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set connection limit, valid - Idempotent check
@@ -358,11 +248,6 @@
   bigip_routedomain:
       connection_limit: "{{ invalid_connection_limit }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -375,11 +260,6 @@
   bigip_routedomain:
       connection_limit: "{{ invalid_connection_limit }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -392,11 +272,6 @@
   bigip_routedomain:
       flow_eviction_policy: "{{ valid_flow_eviction_policy }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set flow eviction policy, valid
@@ -408,11 +283,6 @@
   bigip_routedomain:
       flow_eviction_policy: "{{ valid_flow_eviction_policy }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -425,11 +295,6 @@
   bigip_routedomain:
       flow_eviction_policy: "{{ item }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_flow_eviction_policy }}"
@@ -443,11 +308,6 @@
   bigip_routedomain:
       flow_eviction_policy: "{{ item }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_flow_eviction_policy }}"
@@ -461,11 +321,6 @@
   bigip_routedomain:
       bwc_policy: "{{ valid_bwc_policy }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set bandwidth control policy, valid
@@ -477,11 +332,6 @@
   bigip_routedomain:
       bwc_policy: "{{ valid_bwc_policy }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set bandwidth control policy, valid - Idempotent check
@@ -493,11 +343,6 @@
   bigip_routedomain:
       bwc_policy: "{{ item }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_bwc_policy }}"
@@ -511,11 +356,6 @@
   bigip_routedomain:
       bwc_policy: "{{ item }}"
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_bwc_policy }}"
@@ -528,12 +368,7 @@
 - name: Set service policy, valid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       service_policy: "{{ valid_service_policy }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   when: system_info.product_information.product_version >= "12.0.0"
 
@@ -546,12 +381,7 @@
 - name: Set service policy, valid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       service_policy: "{{ valid_service_policy }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   when: system_info.product_information.product_version >= "12.0.0"
 
@@ -564,12 +394,7 @@
 - name: Set service policy, invalid
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       service_policy: "{{ item }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_service_policy }}"
@@ -584,12 +409,7 @@
 - name: Set service policy, invalid - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       service_policy: "{{ item }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_service_policy }}"
@@ -604,12 +424,7 @@
 - name: Delete a route domain
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain
@@ -620,12 +435,7 @@
 - name: Delete a route domain - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain - Idempotent check
@@ -636,12 +446,7 @@
 - name: Delete an unknown route domain
   bigip_routedomain:
       id: "{{ unknown_route_domain }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete an unknown route domain
@@ -652,12 +457,7 @@
 - name: Delete a route domain, invalid
   bigip_routedomain:
       id: "{{ item }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_route_domains }}"
@@ -671,11 +471,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain2 }}"
       parent: "{{ default_parent }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain - all params
@@ -686,12 +481,7 @@
 - name: Delete a route domain - all params
   bigip_routedomain:
       id: "{{ new_routedomain2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain - all params

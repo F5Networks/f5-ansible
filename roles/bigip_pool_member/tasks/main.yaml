@@ -4,12 +4,7 @@
 - name: Create pool
   bigip_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool
@@ -22,17 +17,11 @@
       connection_limit: "{{ connection_limit }}"
       description: "{{ node_description }}"
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       rate_limit: "{{ rate_limit }}"
       ratio: "{{ ratio }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add pool member
@@ -45,17 +34,11 @@
       connection_limit: "{{ connection_limit }}"
       description: "{{ node_description }}"
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       rate_limit: "{{ rate_limit }}"
       ratio: "{{ ratio }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add pool member - Idempotent check
@@ -67,16 +50,10 @@
   bigip_pool_member:
       description: "{{ new_description }}"
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       ratio: "{{ new_ratio }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify pool member ratio and description
@@ -88,16 +65,10 @@
   bigip_pool_member:
       description: "{{ new_description }}"
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       ratio: "{{ new_ratio }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify pool member ratio and description - Idempotent check
@@ -109,16 +80,10 @@
   bigip_pool_member:
       host: "{{ node_host }}"
       monitor_state: "disabled"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       session_state: "disabled"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Force pool member offline
@@ -151,16 +116,10 @@
 - name: Remove pool member from pool, preserve node
   bigip_pool_member:
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       preserve_node: "yes"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove pool member from pool, preserve node
@@ -171,16 +130,10 @@
 - name: Remove pool member from pool, preserve node - Idempotent check
   bigip_pool_member:
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       preserve_node: "yes"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove pool member from pool, preserve node - Idempotent check
@@ -193,28 +146,17 @@
       connection_limit: "{{ connection_limit }}"
       description: "{{ node_description }}"
       host: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
       rate_limit: "{{ rate_limit }}"
       ratio: "{{ ratio }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Delete pool
   bigip_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert delete pool
@@ -225,13 +167,7 @@
 - name: Delete node
   bigip_node:
       name: "{{ node_host }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert delete node
