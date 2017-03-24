@@ -1,13 +1,4 @@
 {
-  "name": "service-1-blue",
-  "template": "/Common/f5.http.v1.2.0rc4",
-  "templateModified": "no",
-  "strictUpdates": "enabled",
-  "partition": "Common",
-  "deviceGroup": "/Common/autoscale-group",
-  "inheritedDevicegroup": "false",
-  "trafficGroup": "/Common/traffic-group-1",
-  "inheritedTrafficGroup": "true",
   "tables": [
     {
       "columnNames": [

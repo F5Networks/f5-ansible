@@ -1,18 +1,4 @@
 {
-  "deviceGroup": "/Common/autoscale-group",
-  "deviceGroupReference": {
-    "link": "https://localhost/mgmt/tm/cm/device-group/~Common~autoscale-group?ver=12.1.1"
-  },
-  "fullPath": "/Common/example_https.app/example_https",
-  "generation": 5420,
-  "inheritedDevicegroup": "true",
-  "inheritedTrafficGroup": "true",
-  "kind": "tm:sys:application:service:servicestate",
-  "name": "example_https",
-  "partition": "Common",
-  "selfLink": "https://localhost/mgmt/tm/sys/application/service/~Common~example_https.app~example_https?ver=12.1.1",
-  "strictUpdates": "enabled",
-  "subPath": "example_https.app",
   "tables": [
     {
       "name": "basic__snatpool_members"
@@ -64,15 +50,6 @@
       "name": "server_pools__servers"
     }
   ],
-  "template": "/Common/f5.http.v1.2.0rc4",
-  "templateModified": "no",
-  "templateReference": {
-    "link": "https://localhost/mgmt/tm/sys/application/template/~Common~f5.http.v1.2.0rc4?ver=12.1.1"
-  },
-  "trafficGroup": "/Common/traffic-group-1",
-  "trafficGroupReference": {
-    "link": "https://localhost/mgmt/tm/cm/traffic-group/~Common~traffic-group-1?ver=12.1.1"
-  },
   "variables": [
     {
       "encrypted": "no",

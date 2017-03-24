@@ -1,11 +1,4 @@
 {
-  "name": "my_https_w_asm_from_url_sample",
-  "template": "appsvcs_integration_v2.1dev-001_001.tmpl",
-  "partition": "Common",
-  "deviceGroup": "none",
-  "trafficGroup": "/Common/traffic-group-local-only",
-  "inheritedDevicegroup": "true",
-  "inheritedTrafficGroup": "true",
   "lists": [],
   "tables": [
     {

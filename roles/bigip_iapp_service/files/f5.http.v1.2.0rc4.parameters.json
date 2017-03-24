@@ -1,7 +1,4 @@
 {
-  "name": "http_example",
-  "partition": "Common",
-  "template": "/Common/f5.http",
   "lists": [
     {
       "name": "irules__irules",
