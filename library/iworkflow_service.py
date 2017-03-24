@@ -389,7 +389,7 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         tenant = self.client.api.cm.cloud.tenants_s.tenant.load(name=self.want.tenant)
-        resource = tenant.services.iapps.iapp
+        resource = tenant.services.iapps.iapp.load(name=self.want.name)
         if resource:
             resource.delete()
 
