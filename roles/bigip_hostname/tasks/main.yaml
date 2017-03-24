@@ -3,11 +3,6 @@
 - name: Change the hostname
   bigip_hostname:
       hostname: "{{ valid_hostname }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change the hostname
@@ -19,11 +14,6 @@
 - name: Change the hostname - Idempotent check
   bigip_hostname:
       hostname: "{{ valid_hostname }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change the hostname - Idempotent check
@@ -34,11 +24,6 @@
 - name: Change the hostname, invalid name
   bigip_hostname:
       hostname: "{{ invalid_hostname }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -50,11 +35,6 @@
 - name: Change the hostname, invalid name - Idempotent check
   bigip_hostname:
       hostname: "{{ invalid_hostname }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
