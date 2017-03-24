@@ -255,7 +255,7 @@ class ModuleManager(object):
         # Sleep a little to let provisioning settle and begin properly
         time.sleep(5)
 
-        while nops < 2:
+        while nops < 4:
             if not self._is_mprov_running_on_device():
                 nops += 1
             else:
