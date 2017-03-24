@@ -351,7 +351,7 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return True
+            return False
         else:
             return self.create()
 
