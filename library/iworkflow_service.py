@@ -346,7 +346,7 @@ class ModuleManager(object):
 
     def exists(self):
         tenant = self.client.api.cm.cloud.tenants_s.tenant.load(name=self.want.tenant)
-        result = tenant.services.iapps.iapp.exists()
+        result = tenant.services.iapps.iapp.exists(name=self.want.name)
         return result
 
     def present(self):
