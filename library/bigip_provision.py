@@ -260,7 +260,7 @@ class ModuleManager(object):
                 nops += 1
             else:
                 nops = 0
-            time.sleep(5)
+            time.sleep(10)
 
     def _is_mprov_running_on_device(self):
         output = self.client.api.tm.util.bash.exec_cmd(
