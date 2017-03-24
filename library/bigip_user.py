@@ -360,6 +360,10 @@ class ModuleManager(object):
         Raise when shell attribute is set to 'bash' with roles set to
         either 'admin' or 'resource-admin'.
 
+        NOTE: Admin and Resource-Admin roles automatically enable access to
+        all partitions, removing any other roles that the user might have
+        had. There are few other roles which do that but those roles,
+        do not allow bash.
         """
         if getattr(self.want, 'shell') == 'none' \
                 and getattr(self.have, 'shell') is None:
@@ -381,11 +385,11 @@ class ModuleManager(object):
                 access_have = []
             if access_want:
                 for access in access_want:
-                    if access not in permit:
+                    if access['role'] not in permit:
                         raise F5ModuleError(err)
             if access_have:
                 for access in access_have:
-                    if access not in permit:
+                    if access['role'] not in permit:
                         raise F5ModuleError(err)
 
     def create(self):

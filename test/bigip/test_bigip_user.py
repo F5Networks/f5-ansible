@@ -402,7 +402,50 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        access = [{'name': 'Common', 'role': 'guest'}]
+        access = [{'name': 'all', 'role': 'admin'}]
+        current = Parameters(
+            dict(
+                user='admin',
+                shell='tmsh',
+                partition_access=access
+            )
+        )
+
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: False
+        mm.update_on_device = lambda: True
+        mm.exists = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['shell'] == 'bash'
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_update_user_shell_to_bash_mutliple_roles(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='bash'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        access = [
+            {'name': 'Common', 'role': 'operator'},
+            {'name': 'all', 'role': 'guest'}
+        ]
         current = Parameters(
             dict(
                 user='admin',
@@ -421,6 +464,7 @@ class TestManager(unittest.TestCase):
 
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
+
         with pytest.raises(F5ModuleError) as error:
-                mm.exec_module()
+            mm.exec_module()
         assert error.value.message == msg
