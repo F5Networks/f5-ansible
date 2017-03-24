@@ -5,11 +5,6 @@
       content: "{{ lookup('template', 'irule-01.tcl') }}"
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule in LTM
@@ -22,11 +17,6 @@
       content: "{{ lookup('template', 'irule-01.tcl') }}"
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule in LTM - Idempotent check
@@ -39,11 +29,6 @@
       content: "{{ lookup('file', 'irule-01.tcl') }}"
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify iRule in LTM
@@ -56,11 +41,6 @@
       content: "{{ lookup('file', 'irule-01.tcl') }}"
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify iRule in LTM - Idempotent check
@@ -72,12 +52,7 @@
   bigip_irule:
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iRule in LTM
@@ -89,12 +64,7 @@
   bigip_irule:
       module: "ltm"
       name: "{{ irule_name_ltm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iRule in LTM - Idempotent check
@@ -107,11 +77,6 @@
       content: "{{ lookup('template', 'irule-02.tcl') }}"
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule in GTM
@@ -124,11 +89,6 @@
       content: "{{ lookup('template', 'irule-02.tcl') }}"
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule in GTM - Idempotent check
@@ -141,11 +101,6 @@
       content: "{{ lookup('file', 'irule-02.tcl') }}"
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify iRule in GTM
@@ -158,11 +113,6 @@
       content: "{{ lookup('file', 'irule-02.tcl') }}"
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify iRule in GTM - Idempotent check
@@ -174,12 +124,7 @@
   bigip_irule:
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iRule in GTM
@@ -191,12 +136,7 @@
   bigip_irule:
       module: "gtm"
       name: "{{ irule_name_gtm }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iRule in GTM - Idempotent check

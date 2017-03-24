@@ -3,11 +3,6 @@
 - name: Enable cache
   bigip_device_dns:
       cache: "enable"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable cache
@@ -18,11 +13,6 @@
 - name: Enable cache - Idempotent check
   bigip_device_dns:
       cache: "enable"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable cache - Idempotent check
@@ -33,11 +23,6 @@
 - name: Disable cache
   bigip_device_dns:
       cache: "disable"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable cache
@@ -48,11 +33,6 @@
 - name: Disable cache - Idempotent check
   bigip_device_dns:
       cache: "disable"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable cache - Idempotent check
@@ -63,11 +43,6 @@
 - name: Enable cache - Incorrect value
   bigip_device_dns:
       cache: "disabled"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -79,11 +54,6 @@
 - name: Set IP version 6
   bigip_device_dns:
       ip_version: "6"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set IP version 6
@@ -94,11 +64,6 @@
 - name: Set IP version 6 - Idempotent check
   bigip_device_dns:
       ip_version: "6"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set IP version 6 - Idempotent check
@@ -108,11 +73,6 @@
 
 - name: Set IP version 4
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       ip_version: "4"
   register: result
 
@@ -123,11 +83,6 @@
 
 - name: Set IP version 4 - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       ip_version: "4"
   register: result
 
@@ -138,11 +93,6 @@
 
 - name: Set Unknown IP version
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       ip_version: "10"
   register: result
   ignore_errors: true
@@ -156,11 +106,6 @@
 # cast the string to a list automatically, making this method valid
 - name: Set a nameserver
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers: "10.10.10.10"
   register: result
   ignore_errors: true
@@ -172,11 +117,6 @@
 
 - name: Set a nameserver
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - "12.12.12.12"
   register: result
@@ -188,11 +128,6 @@
 
 - name: Set a nameserver - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - "12.12.12.12"
   register: result
@@ -204,11 +139,6 @@
 
 - name: Set an empty nameserver
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - ""
   register: result
@@ -220,11 +150,6 @@
 
 - name: Set an empty nameserver - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - ""
   register: result
@@ -236,11 +161,6 @@
 
 - name: Set a list of name servers
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - "10.10.10.10"
           - "11.11.11.11"
@@ -254,11 +174,6 @@
 
 - name: Set a list of name servers - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       name_servers:
           - "10.10.10.10"
           - "11.11.11.11"
@@ -272,11 +187,6 @@
 
 - name: Set a forwarder
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       forwarders:
           - "10.10.10.10"
   register: result
@@ -288,11 +198,6 @@
 
 - name: Set a forwarder - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       forwarders:
           - "10.10.10.10"
   register: result
@@ -304,11 +209,6 @@
 
 - name: Set an empty forwarder
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       forwarders:
           - ""
   register: result
@@ -320,11 +220,6 @@
 
 - name: Set a list of forwarders
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       forwarders:
           - "10.10.10.10"
           - "11.11.11.11"
@@ -338,11 +233,6 @@
 
 - name: Set a list of forwarders - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       forwarders:
           - "10.10.10.10"
           - "11.11.11.11"
@@ -356,11 +246,6 @@
 
 - name: Set a search domain
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       search:
          - "foo.com"
   register: result
@@ -372,11 +257,6 @@
 
 - name: Set a search domain - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       search:
           - "foo.com"
   register: result
@@ -388,11 +268,6 @@
 
 - name: Set an empty search domain
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       search:
           - ""
   register: result
@@ -404,11 +279,6 @@
 
 - name: Set a list of search domains
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       search:
           - "alice.com"
           - "bob.org"
@@ -422,11 +292,6 @@
 
 - name: Set a list of search domains - Idempotent check
   bigip_device_dns:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       search:
           - "alice.com"
           - "bob.org"

@@ -13,6 +13,4 @@ node_monitors_changed:
     - "gateway_icmp"
     - "http"
 node_quorum: 1
-
-
 monitor_type: "and_list"

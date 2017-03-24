@@ -4,12 +4,7 @@
   bigip_irule:
       module: "ltm"
       name: "issue-42"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Create iRule with space at the end
@@ -17,11 +12,6 @@
       content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}\n"
       module: "ltm"
       name: "issue-42"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule with space at the end
@@ -34,11 +24,6 @@
       content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}\n"
       module: "ltm"
       name: "issue-42"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iRule with space at the end - Idempotent check
@@ -50,12 +35,7 @@
   bigip_irule:
       module: "ltm"
       name: "issue-42"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iRule with space at the end - Teardown

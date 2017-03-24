@@ -4,12 +4,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool
@@ -21,12 +16,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool - idempotent check
@@ -38,12 +28,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[0] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_member
@@ -55,12 +40,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[0] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_member - Idempotent check
@@ -72,12 +52,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[1] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_connection_member
@@ -89,12 +64,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[1] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_connection_member - Idempotent check
@@ -106,12 +76,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[2] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, observed_member
@@ -123,12 +88,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[2] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, observed_member - Idempotent check
@@ -140,12 +100,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[3] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, predictive_member
@@ -157,12 +112,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[3] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, predictive_member - Idempotent check
@@ -174,12 +124,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[4] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_node_address
@@ -191,12 +136,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[4] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_node_address - Idempotent check
@@ -208,12 +148,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[5] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_connection_node_address
@@ -225,12 +160,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[5] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_connection_node_address - Idempotent check
@@ -242,12 +172,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[6] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, fastest_node_address
@@ -259,12 +184,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[6] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, fastest_node_address - Idempotent check
@@ -276,12 +196,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[7] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, observed_node_address
@@ -293,12 +208,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[7] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, observed_node_address - Idempotent check
@@ -310,12 +220,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[8] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, predictive_node_address
@@ -327,12 +232,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[8] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, predictive_node_address - Idempotent check
@@ -344,12 +244,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[9] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, dynamic_ratio
@@ -361,12 +256,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[9] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, dynamic_ratio - Idempotent check
@@ -378,12 +268,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[10] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, fastest_app_response
@@ -395,12 +280,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[10] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, fastest_app_response - Idempotent check
@@ -412,12 +292,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[11] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_sessions
@@ -429,12 +304,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[11] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, least_sessions - Idempotent check
@@ -446,12 +316,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[12] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, dynamic_ratio_member
@@ -463,12 +328,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[12] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, dynamic_ratio_member - Idempotent check
@@ -480,12 +340,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[13] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, l3_addr
@@ -497,12 +352,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[13] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, l3_addr - Idempotent check
@@ -514,12 +364,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[14] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, weighted_least_connection_member
@@ -531,12 +376,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[14] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, weighted_least_connection_member - Idempotent check
@@ -548,12 +388,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[15] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, weighted_least_connection_node_address
@@ -565,12 +400,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[15] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, weighted_least_connection_node_address - Idempotent check
@@ -582,12 +412,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[16] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_session
@@ -599,12 +424,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[16] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_session - Idempotent check
@@ -616,12 +436,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[17] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_least_connection_member
@@ -633,12 +448,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[17] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_least_connection_member - Idempotent check
@@ -650,12 +460,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[18] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_least_connection_node_address
@@ -667,12 +472,7 @@
   bigip_pool:
       lb_method: "{{ pool_lb_method_alt[18] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool lb_method, ratio_least_connection_node_address - Idempotent check
@@ -683,13 +483,8 @@
 - name: Change pool reselect_tries
   bigip_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
       reselect_tries: "{{ pool_reselect_tries }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool reselect_tries
@@ -700,12 +495,7 @@
 - name: Delete pool
   bigip_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool
@@ -716,12 +506,7 @@
 - name: Delete pool - idempotent check
   bigip_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool - idempotent check
@@ -734,12 +519,7 @@
       description: "{{ pool_description_1 }}"
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool with description
@@ -752,12 +532,7 @@
       description: "{{ pool_description_1 }}"
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool with description - idempotent check
@@ -770,12 +545,7 @@
       description: "{{ pool_description_2 }}"
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool description
@@ -788,12 +558,7 @@
       description: "{{ pool_description_2 }}"
       lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool description - idempotent check
@@ -805,12 +570,7 @@
   bigip_pool:
       description: "{{ pool_description_2 }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool with description
@@ -822,12 +582,7 @@
   bigip_pool:
       description: "{{ pool_description_2 }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool with description - idempotent check

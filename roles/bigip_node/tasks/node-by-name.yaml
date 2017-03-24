@@ -7,14 +7,8 @@
       monitor_type: "{{ monitor_type }}"
       monitors: "{{ node_monitors }}"
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       quorum: "{{ node_quorum }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create node
@@ -29,14 +23,8 @@
       monitor_type: "{{ monitor_type }}"
       monitors: "{{ node_monitors }}"
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       quorum: "{{ node_quorum }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create node - idempotent check
@@ -48,12 +36,6 @@
   bigip_node:
       description: "new {{ node_description }}"
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert change node description
@@ -64,13 +46,7 @@
 - name: Change session state
   bigip_node:
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       session_state: "disabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert change node session state
@@ -81,13 +57,7 @@
 - name: Delete node
   bigip_node:
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert delete node
@@ -98,13 +68,7 @@
 - name: Delete node - idempotent check
   bigip_node:
       name: "{{ node_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert delete node - idempotent check

@@ -4,12 +4,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['string'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create partition
@@ -21,12 +16,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['string'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create partition - Idempotent check
@@ -39,11 +29,6 @@
       connection: "soap"
       description: "{{ description }}"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change partition description
@@ -56,11 +41,6 @@
       connection: "soap"
       description: "{{ description }}"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change partition description - Idempotent check
@@ -72,12 +52,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['default'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Reset route domain
@@ -89,12 +64,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['string'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change route domain by string
@@ -107,12 +77,7 @@
       connection: "soap"
       description: "{{ description }}"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['string'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change route domain by string - Idempotent check
@@ -124,12 +89,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain: "{{ route_domain['default'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Reset route domain
@@ -141,12 +101,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain_id: "{{ route_domain['integer'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change route domain by integer
@@ -159,12 +114,7 @@
       connection: "soap"
       description: "{{ description }}"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
       route_domain_id: "{{ route_domain['integer'] }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change route domain by integer - Idempotent check
@@ -176,12 +126,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete partition
@@ -193,12 +138,7 @@
   bigip_partition:
       connection: "soap"
       name: "{{ partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete partition - Idempotent check

@@ -4,13 +4,8 @@
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool, type 'a'
@@ -22,13 +17,8 @@
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create pool, 'a' - idempotent check
@@ -40,13 +30,8 @@
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool type 'a' lb_method to ratio
@@ -58,13 +43,8 @@
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Change pool type 'a' lb_method to ratio - Idempotent check
@@ -75,13 +55,8 @@
 - name: Delete pool
   bigip_gtm_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool
@@ -92,13 +67,8 @@
 - name: Delete pool - idempotent check
   bigip_gtm_pool:
       name: "{{ pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
       type: "a"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete pool - idempotent check

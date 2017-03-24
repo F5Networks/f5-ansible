@@ -4,12 +4,7 @@
 
 - name: Get GTM pool facts
   bigip_gtm_facts:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       include: "pool"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Get GTM pool facts
@@ -20,14 +15,9 @@
 
 - name: Get GTM pool facts, many
   bigip_gtm_facts:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       include:
           - "pool"
           - "wide_ip"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Get GTM pool facts, many
@@ -39,13 +29,8 @@
 
 - name: Get GTM pool facts with filter
   bigip_gtm_facts:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       include: "pool"
       filter: '{{ pool_filter }}'
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Get GTM pool facts with filter
@@ -56,13 +41,8 @@
 
 - name: Get GTM pool facts with bad filter
   bigip_gtm_facts:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       include: "pool"
       filter: '{{ pool_filter_bad }}'
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Get GTM pool facts with bad filter

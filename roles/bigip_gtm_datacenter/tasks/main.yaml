@@ -3,11 +3,6 @@
 - name: Create datacenter
   bigip_gtm_datacenter:
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create datacenter
@@ -18,11 +13,6 @@
 - name: Create datacenter - Idepotent check
   bigip_gtm_datacenter:
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create datacenter - Idempotent check
@@ -34,11 +24,6 @@
   bigip_gtm_datacenter:
       name: "{{ dc_name }}"
       location: "{{ valid_location }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter location
@@ -50,11 +35,6 @@
   bigip_gtm_datacenter:
       name: "{{ dc_name }}"
       location: "{{ valid_location }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter location - Idempotent check
@@ -66,11 +46,6 @@
   bigip_gtm_datacenter:
       contact: "{{ valid_contact }}"
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter contact
@@ -82,11 +57,6 @@
   bigip_gtm_datacenter:
       contact: "{{ valid_contact }}"
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter contact - Idempotent check
@@ -98,11 +68,6 @@
   bigip_gtm_datacenter:
       description: "{{ valid_description }}"
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter description
@@ -114,11 +79,6 @@
   bigip_gtm_datacenter:
       description: "{{ valid_description }}"
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set datacenter description - Idempotent check
@@ -130,11 +90,6 @@
   bigip_gtm_datacenter:
       enabled: false
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable datacenter
@@ -146,11 +101,6 @@
   bigip_gtm_datacenter:
       enabled: false
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable datacenter - Idempotent check
@@ -162,11 +112,6 @@
   bigip_gtm_datacenter:
       enabled: true
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable datacenter
@@ -178,11 +123,6 @@
   bigip_gtm_datacenter:
       enabled: true
       name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable datacenter - Idempotent check
@@ -192,13 +132,7 @@
 
 - name: Delete datacenter
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete datacenter
@@ -208,13 +142,7 @@
 
 - name: Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete datacenter - Idempotent check

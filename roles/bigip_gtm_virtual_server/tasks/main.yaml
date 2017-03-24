@@ -3,13 +3,8 @@
 - name: Create virtual server
   bigip_gtm_virtual_server:
       address: "10.10.10.10"
-      password: "{{ bigip_password }}"
       port: 443
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       virtual_server_name: "{{ valid_vs_name }}"
       virtual_server_server: "{{ valid_vs_server }}"
   register: result
@@ -22,13 +17,8 @@
 - name: Create virtual server - Idempotent check
   bigip_gtm_virtual_server:
       address: "10.10.10.10"
-      password: "{{ bigip_password }}"
       port: 443
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       virtual_server_name: "{{ valid_vs_name }}"
       virtual_server_server: "{{ valid_vs_server }}"
   register: result
@@ -40,12 +30,7 @@
 
 - name: Enable virtual server
   bigip_gtm_virtual_server:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "enabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       virtual_server_name: "{{ valid_vs_name }}"
       virtual_server_server: "{{ valid_vs_server }}"
   register: result

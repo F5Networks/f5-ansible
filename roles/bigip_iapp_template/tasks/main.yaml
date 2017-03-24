@@ -3,11 +3,6 @@
 - name: Create iApp template
   bigip_iapp_template:
       content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iApp template
@@ -18,11 +13,6 @@
 - name: Create iApp template - Idempotent check
   bigip_iapp_template:
       content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create iApp template - Idempotent check
@@ -33,12 +23,7 @@
 - name: Delete iApp template
   bigip_iapp_template:
       name: "{{ template_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iApp template
@@ -49,12 +34,7 @@
 - name: Delete iApp template - Idempotent check
   bigip_iapp_template:
       name: "{{ template_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete iApp template - Idempotent check
@@ -65,22 +45,12 @@
 - name: Create list of iApp template
   bigip_iapp_template:
       content: "{{ lookup('file', item) }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   with_items: "{{ template_list }}"
 
 - name: Delete list of iApp template
   bigip_iapp_template:
       name: "{{ item|basename|splitext|first }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   with_items: "{{ template_list }}"

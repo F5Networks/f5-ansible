@@ -1,0 +1,74 @@
+---
+
+- name: Set the SSHD port (int)
+  bigip_device_sshd:
+      port: "{{ port_good[0]|int }}"
+  register: result
+
+- name: Assert Set the SSHD port (int)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD port (int) - Idempotent check
+  bigip_device_sshd:
+      port: "{{ port_good[0]|int }}"
+  register: result
+
+- name: Assert Set the SSHD port (int) - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (string)
+  bigip_device_sshd:
+      port: "{{ port_good[1] }}"
+  register: result
+
+- name: Assert Set the SSHD port (string)
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD port (string) - Idempotent check
+  bigip_device_sshd:
+      port: "{{ port_good[1] }}"
+  register: result
+
+- name: Assert Set the SSHD port (string) - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad int)
+  bigip_device_sshd:
+      port: "{{ port_bad[0] }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad int)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad string)
+  bigip_device_sshd:
+      port: "{{ port_bad[1] }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad string)
+  assert:
+      that:
+          - not result|changed
+
+- name: Set the SSHD port (Bad special chars)
+  bigip_device_sshd:
+      port: "{{ port_bad[2] }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Set the SSHD port (Bad special chars)
+  assert:
+      that:
+          - not result|changed
