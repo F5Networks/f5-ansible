@@ -186,7 +186,6 @@ cert_source_path:
 '''
 
 
-import q
 import hashlib
 import StringIO
 import os
@@ -330,7 +329,6 @@ class ModuleManager(object):
         for manager in managers:
             result = manager.exec_module()
             for k,v in iteritems(result):
-                q.q(type(manager), k,v)
                 if k == 'changed':
                     if v is True:
                         results['changed'] = True
@@ -448,9 +446,7 @@ class CertificateManager(BaseManager):
                     if attr1 != attr2:
                         changed[key] = attr1
                 if self.want.cert_checksum != self.have.checksum:
-                    q.q(self.have._values)
                     changed['cert_checksum'] = self.want.cert_checksum
-            q.q(changed)
             if changed:
                 self.changes = CertParameters(changed)
                 return True
@@ -542,7 +538,6 @@ class KeyManager(BaseManager):
                         changed[key] = attr1
                 if self.want.key_checksum != self.have.checksum:
                     changed['key_checksum'] = self.want.key_checksum
-            q.q(changed)
             if changed:
                 self.changes = CertParameters(changed)
                 return True
@@ -592,7 +587,6 @@ class KeyManager(BaseManager):
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             kstring, self.want.key_filename
         )
-        q.q(self.want.api_params())
         self.client.api.tm.sys.file.ssl_keys.ssl_key.create(
             sourcePath=self.want.key_source_path,
             name=self.want.key_filename,
