@@ -33,7 +33,7 @@ version_added: 2.4
 options:
   name:
     description:
-      - Name of the tenant that you want to create in iWorkflow.
+      - Name of the tenant that you want to manage.
     required: True
   description:
     description:
@@ -57,8 +57,9 @@ options:
     default: None
   state:
     description:
-      - Whether the managed device should exist, or not, in iWorkflow.
-    required: false
+      - When C(state) is C(present), ensures that the tenant exists. When
+        C(state) is C(absent), ensures that the tenant is removed.
+    required: False
     default: present
     choices:
       - present
@@ -108,9 +109,12 @@ class Parameters(AnsibleF5Parameters):
 
     def to_return(self):
         result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
         return result
 
     def api_params(self):
