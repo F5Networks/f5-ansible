@@ -3,21 +3,11 @@
 - name: Ensure GTM is provisioned
   bigip_provision:
       module: "gtm"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       state: "present"
-      validate_certs: "{{ validate_certs }}"
 
 - name: Collect BIG-IP facts
   bigip_facts:
       include: "system_info"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Test BIG-IP versions greater than 12
