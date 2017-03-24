@@ -7,6 +7,8 @@
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
+      partition_access:
+        - "Common:guest"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
@@ -17,7 +19,28 @@
       that:
           - result|changed
 
+# This will fail as update_password is on_create by default.
 - name: Create user on a different partition - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      partition_access:
+        - "Common:guest"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      partition: "{{ partition }}"
+  ignore_errors: true
+  register: result
+
+- name: Assert Create user on a different partition - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Update password for user on a different partition
   bigip_user:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -27,12 +50,13 @@
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
+      update_password: "always"
   register: result
 
-- name: Assert Create user on a different partition - Idempotent check
+- name: Assert Update password for user on a different partition
   assert:
       that:
-          - not result|changed
+          - result|changed
 
 - name: Remove user on different partition
   bigip_user:

@@ -1,4 +1,24 @@
 ---
+# This will fail as we require password attribute
+- name: Create user, no password
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+  ignore_errors: true
+  register: result
+
+# The default setting for update_password is "on_create", so this
+# check should NOT return a "changed" event
+- name: Assert create user, no password
+  assert:
+      that:
+          - not result|changed
 
 - name: Create user
   bigip_user:
@@ -6,16 +26,18 @@
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
   register: result
 
 - name: Assert Create user
   assert:
       that:
           - result|changed
+
 
 - name: Create user - Idempotent check
   bigip_user:
@@ -25,8 +47,6 @@
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: "on_create"
   register: result
 
 - name: Assert Create user - Idempotent check
@@ -34,24 +54,7 @@
       that:
           - not result|changed
 
-- name: Create user, no password - Idempotent check
-  bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      username_credential: "{{ username_credential }}"
-  register: result
-
-# The default setting for update_password is "always", so this
-# check should NOT return a "changed" event
-- name: Assert Create user - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
-- name: Create user with password on_create
+- name: Update user password
   bigip_user:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -60,10 +63,44 @@
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: "always"
   register: result
 
-- name: Assert Create user - Idempotent check
+- name: Assert update user password
+  assert:
+      that:
+          - result|changed
+
+- name: Update user partition access
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      partition_access:
+        - "Common:manager"
+  register: result
+
+- name: Assert Update user partition access
+  assert:
+      that:
+          - result|changed
+
+- name: Update user partition access - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      partition_access:
+        - "Common:manager"
+  register: result
+
+- name: Assert Update user partition access - Idempotent check
   assert:
       that:
           - not result|changed
@@ -95,7 +132,7 @@
       full_name: "{{ full_name }}"
   register: result
 
-- name: Assert Update user full name
+- name: Assert Update user full name - Idempotent check
   assert:
       that:
           - not result|changed
@@ -132,6 +169,24 @@
       that:
           - not result|changed
 
+# This should fail because the user does not have the appropriate role
+- name: Update user shell to bash
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      shell: "bash"
+  ignore_errors: true
+  register: result
+
+- name: Assert Update user shell to bash
+  assert:
+      that:
+          - not result|changed
+
 - name: Update user shell to none
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -148,6 +203,8 @@
       that:
           - result|changed
 
+# This will fail as BIGIP does not return 'shell' attribute if it is already
+# set to 'none'
 - name: Update user shell to none - Idempotent check
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -157,27 +214,11 @@
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "none"
-  register: result
-
-- name: Assert Update user shell to none - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
-# This should fail because the user does not have the appropriate role
-- name: Update user shell to bash
-  bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      username_credential: "{{ username_credential }}"
-      shell: "bash"
   ignore_errors: true
   register: result
 
-- name: Assert Update user shell to bash
+# Due to failure there will be no change
+- name: Assert Update user shell to none - Idempotent check
   assert:
       that:
           - not result|changed
@@ -225,5 +266,5 @@
   register: result
 
 - name: Include version 13 (Daytona) checks
-  include: test-version-13-specific.yaml
+  include: test-post-version-12-specific.yaml
   when: system_info.product_information.product_version >= "13.0.0"
