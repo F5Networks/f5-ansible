@@ -81,7 +81,7 @@ options:
       - absent
   update_password:
     description:
-      - C(always) will allow to update passwords if the user choses to do so.
+      - C(always) will allow to update passwords if the user chooses to do so.
         C(on_create) will only set the password for newly created users.
     required: false
     default: on_create
@@ -365,22 +365,20 @@ class ModuleManager(object):
         had. There are few other roles which do that but those roles,
         do not allow bash.
         """
-        if getattr(self.want, 'shell') == 'none' \
-                and getattr(self.have, 'shell') is None:
-            error = "Attribute 'bash' is already set to 'none' on target " \
-                    "device."
-            raise F5ModuleError(error)
+        if self.have is not None:
+            if self.want.shell == 'none' and self.have.shell is None:
+                error = "Attribute 'bash' is already set to 'none' " \
+                        "on target device."
+                raise F5ModuleError(error)
 
-        if getattr(self.want, 'shell') == 'bash':
+        if self.want.shell == 'bash':
             err = "Shell access is only available to 'admin' or " \
                   "'resource-admin' roles"
             permit = ['admin', 'resource-admin']
-            if self.want is not None:
-                access_want = getattr(self.want, 'partition_access')
-            else:
-                access_want = []
+            access_want = self.want.partition_access
+            # This can occur when we do checks at create
             if self.have is not None:
-                access_have = getattr(self.have, 'partition_access')
+                access_have = self.have.partition_access
             else:
                 access_have = []
             if access_want:
