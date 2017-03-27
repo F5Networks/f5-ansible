@@ -10,6 +10,7 @@
         - "foo:operator"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
+      update_password: "on_create"
       partition: "{{ partition }}"
   register: result
 
@@ -28,6 +29,8 @@
       partition_access:
         - "foo:operator"
       username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
       partition: "{{ partition }}"
   register: result
 
@@ -85,13 +88,32 @@
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
-      update_password: "always"
   register: result
 
 - name: Assert Update password for user on a different partition
   assert:
       that:
           - result|changed
+
+# We should see password not updating here
+- name: Update user password for user on a different partition
+        password_update set to on_create
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
+  register: result
+
+- name: Assert Update user password for user on a different partition
+        password_update set to on_create
+  assert:
+      that:
+          - not result|changed
 
 - name: Remove user on different partition
   bigip_user:

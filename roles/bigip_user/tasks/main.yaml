@@ -1,5 +1,4 @@
 ---
-# This will fail as we require password attribute
 - name: Create user, no password
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -9,13 +8,27 @@
       partition_access:
         - "Common:guest"
       validate_certs: "{{ validate_certs }}"
-      username_credential: "{{ username_credential }}"
-  ignore_errors: true
+      username_credential: "testusernopass"
   register: result
 
-# The default setting for update_password is "on_create", so this
-# check should NOT return a "changed" event
 - name: Assert create user, no password
+  assert:
+      that:
+          - result|changed
+
+- name: Create user, no password - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+  register: result
+
+- name: Assert create user, no password - Idempotent check
   assert:
       that:
           - not result|changed
@@ -31,6 +44,7 @@
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
+      update_password: "on_create"
   register: result
 
 - name: Assert Create user
@@ -47,6 +61,8 @@
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
   register: result
 
 - name: Assert Create user - Idempotent check
@@ -54,6 +70,9 @@
       that:
           - not result|changed
 
+# This is very specific to bigip user, here we always update password if
+# password_credential is present, as default value for password_update is
+# set to always.
 - name: Update user password
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -63,13 +82,30 @@
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "always"
   register: result
 
 - name: Assert update user password
   assert:
       that:
           - result|changed
+
+# We should see password not updating here
+- name: Update user password password_update set to on_create
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
+  register: result
+
+- name: Assert Update user password password_update set to on_create
+  assert:
+      that:
+          - not result|changed
 
 - name: Update user partition access
   bigip_user:
@@ -213,7 +249,6 @@
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "none"
-  ignore_errors: true
   register: result
 
 
@@ -250,6 +285,38 @@
   register: result
 
 - name: Assert Remove user - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove testusernopass user
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+      state: "absent"
+  register: result
+
+- name: Assert Remove testusernopass user
+  assert:
+      that:
+          - result|changed
+
+- name: Remove testusernopass user - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+      state: "absent"
+  register: result
+
+- name: Assert Remove testusernopass user - Idempotent check
   assert:
       that:
           - not result|changed

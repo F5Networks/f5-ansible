@@ -110,6 +110,7 @@ EXAMPLES = '''
       password_credential: "password"
       full_name: "John Doe"
       partition_access: "all:admin"
+      update_password: "on_create"
       state: "present"
   delegate_to: localhost
 - name: Change the user "johnd's" role and shell
@@ -148,7 +149,6 @@ EXAMPLES = '''
       state: "present"
       username_credential: "johnd"
       password_credential: "newsupersecretpassword"
-      update_password: "always"
   delegate_to: localhost
 '''
 
@@ -262,198 +262,14 @@ class Parameters(AnsibleF5Parameters):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
-
-    def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                if self.want.shell == 'bash':
-                    self.validate_shell_parameter()
-                # We only update password on_create
-                if key == 'password_credential':
-                    new_pass = getattr(self.want, key)
-                    if self.want.update_password == 'always':
-                        changed[key] = new_pass
-                    else:
-                        err = "'Update_password' option must be set to " \
-                              "'always' to update password_credential"
-                        raise F5ModuleError(err)
-                else:
-                    # We set the shell parameter to 'none' when bigip does
-                    # not return it.
-                    if self.want.shell == 'none' and self.have.shell is None:
-                        self.have.shell = 'none'
-                    attr1 = getattr(self.want, key)
-                    attr2 = getattr(self.have, key)
-                    if attr1 != attr2:
-                        changed[key] = attr1
-
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
 
     def exec_module(self):
-        changed = False
-        result = dict()
-        state = self.want.state
-
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        changes = self.changes.to_return()
-        result.update(**changes)
-        result.update(dict(changed=changed))
-        return result
-
-    def present(self):
-        if self.exists():
-            return self.update()
+        if self.is_version_less_than_13():
+            manager = UnparitionedManager(self.client)
         else:
-            return self.create()
+            manager = PartitionedManager(self.client)
 
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
-    def validate_create_parameters(self):
-        """Password credentials and partition access are mandatory,
-
-        when creating a user resource.
-        """
-        if self.want.password_credential is None:
-            err = "The 'password_credential' option " \
-                  "is required when creating a resource."
-            raise F5ModuleError(err)
-        if self.want.partition_access is None:
-            err = "The 'partition_access' option " \
-                  "is required when creating a resource."
-            raise F5ModuleError(err)
-
-    def validate_shell_parameter(self):
-        """Method to validate shell parameters.
-
-        Raise when shell attribute is set to 'bash' with roles set to
-        either 'admin' or 'resource-admin'.
-
-        NOTE: Admin and Resource-Admin roles automatically enable access to
-        all partitions, removing any other roles that the user might have
-        had. There are few other roles which do that but those roles,
-        do not allow bash.
-        """
-
-        err = "Shell access is only available to " \
-              "'admin' or 'resource-admin' roles"
-        permit = ['admin', 'resource-admin']
-
-        if self.have is not None:
-            have = self.have.partition_access
-            if not any(r['role'] for r in have if r['role'] in permit):
-                raise F5ModuleError(err)
-
-        # This check is needed if we want to modify shell AND
-        # partition_access attribute.
-        # This check will also trigger on create.
-        if self.want.partition_access is not None:
-            want = self.want.partition_access
-            if not any(r['role'] for r in want if r['role'] in permit):
-                raise F5ModuleError(err)
-
-    def create(self):
-        self.validate_create_parameters()
-        if self.want.shell == 'bash':
-            self.validate_shell_parameter()
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
-        if self.client.check_mode:
-            return True
-        self.update_on_device()
-        return True
-
-    def remove(self):
-        if self.client.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the user")
-        return True
-
-    def remove_from_device(self):
-        if self.is_version_less_than_13:
-            result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name)
-        else:
-            result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name, partition=self.want.partition)
-        if result:
-            result.delete()
-
-    def create_on_device(self):
-        params = self.want.api_params()
-        if self.is_version_less_than_13:
-            self.client.api.tm.auth.users.user.create(**params)
-        else:
-            self.client.api.tm.auth.users.user.create(
-                partition=self.want.partition, **params)
-
-    def exists(self):
-        if self.is_version_less_than_13:
-            return self.client.api.tm.auth.users.user.exists(
-                name=self.want.name)
-        else:
-            return self.client.api.tm.auth.users.user.exists(
-                name=self.want.name, partition=self.want.partition)
-
-    def update_on_device(self):
-        params = self.want.api_params()
-        if self.is_version_less_than_13:
-            result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name)
-        else:
-            result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name, partition=self.want.partition)
-        result.modify(**params)
-
-    def read_current_from_device(self):
-        if self.is_version_less_than_13:
-            temp_result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name)
-        else:
-            temp_result = self.client.api.tm.auth.users.user.load(
-                name=self.want.name, partition=self.want.partition)
-        result = temp_result.attrs
-        return Parameters(result)
+        return manager.exec_module()
 
     def is_version_less_than_13(self):
         """Checks to see if the TMOS version is less than 13
@@ -468,6 +284,223 @@ class ModuleManager(object):
             return True
         else:
             return False
+
+
+class BaseManager(object):
+        def __init__(self, client):
+            self.client = client
+            self.have = None
+            self.want = Parameters(self.client.module.params)
+            self.changes = Parameters()
+
+        def exec_module(self):
+            changed = False
+            result = dict()
+            state = self.want.state
+
+            try:
+                if state == "present":
+                    changed = self.present()
+                elif state == "absent":
+                    changed = self.absent()
+            except iControlUnexpectedHTTPError as e:
+                raise F5ModuleError(str(e))
+
+            changes = self.changes.to_return()
+            result.update(**changes)
+            result.update(dict(changed=changed))
+            return result
+
+        def _set_changed_options(self):
+            changed = {}
+            for key in Parameters.returnables:
+                if getattr(self.want, key) is not None:
+                    changed[key] = getattr(self.want, key)
+            if changed:
+                self.changes = Parameters(changed)
+
+        def _update_changed_options(self):
+            changed = {}
+            for key in Parameters.updatables:
+                if getattr(self.want, key) is not None:
+                    if key == 'password_credential':
+                        new_pass = getattr(self.want, key)
+                        if self.want.update_password == 'always':
+                            changed[key] = new_pass
+                    else:
+                        # We set the shell parameter to 'none' when bigip does
+                        # not return it.
+                        if self.want.shell == 'bash':
+                            self.validate_shell_parameter()
+                        if self.want.shell == 'none' and \
+                                self.have.shell is None:
+                            self.have.shell = 'none'
+                        attr1 = getattr(self.want, key)
+                        attr2 = getattr(self.have, key)
+                        if attr1 != attr2:
+                            changed[key] = attr1
+
+            if changed:
+                self.changes = Parameters(changed)
+                return True
+            return False
+
+        def validate_shell_parameter(self):
+            """Method to validate shell parameters.
+
+            Raise when shell attribute is set to 'bash' with roles set to
+            either 'admin' or 'resource-admin'.
+
+            NOTE: Admin and Resource-Admin roles automatically enable access to
+            all partitions, removing any other roles that the user might have
+            had. There are few other roles which do that but those roles,
+            do not allow bash.
+            """
+
+            err = "Shell access is only available to " \
+                  "'admin' or 'resource-admin' roles"
+            permit = ['admin', 'resource-admin']
+
+            if self.have is not None:
+                have = self.have.partition_access
+                if not any(r['role'] for r in have if r['role'] in permit):
+                    raise F5ModuleError(err)
+
+            # This check is needed if we want to modify shell AND
+            # partition_access attribute.
+            # This check will also trigger on create.
+            if self.want.partition_access is not None:
+                want = self.want.partition_access
+                if not any(r['role'] for r in want if r['role'] in permit):
+                    raise F5ModuleError(err)
+
+        def present(self):
+            if self.exists():
+                return self.update()
+            else:
+                return self.create()
+
+        def absent(self):
+            if self.exists():
+                return self.remove()
+            return False
+
+        def should_update(self):
+            result = self._update_changed_options()
+            if result:
+                return True
+            return False
+
+        def validate_create_parameters(self):
+            """Password credentials and partition access are mandatory,
+
+            when creating a user resource.
+            """
+            if self.want.password_credential and \
+                    self.want.update_password != 'on_create':
+                err = "The 'update_password' option " \
+                      "needs to be set to 'on_create' when creating " \
+                      "a resource with a password."
+                raise F5ModuleError(err)
+            if self.want.partition_access is None:
+                err = "The 'partition_access' option " \
+                      "is required when creating a resource."
+                raise F5ModuleError(err)
+
+        def update(self):
+            self.have = self.read_current_from_device()
+            if not self.should_update():
+                return False
+            if self.client.check_mode:
+                return True
+            self.update_on_device()
+            return True
+
+        def remove(self):
+            if self.client.check_mode:
+                return True
+            self.remove_from_device()
+            if self.exists():
+                raise F5ModuleError("Failed to delete the user")
+            return True
+
+
+class UnparitionedManager(BaseManager):
+    def create(self):
+        self.validate_create_parameters()
+        if self.want.shell == 'bash':
+            self.validate_shell_parameter()
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.auth.users.user.create(**params)
+
+    def update_on_device(self):
+        params = self.want.api_params()
+        result = self.client.api.tm.auth.users.user.load(name=self.want.name)
+        result.modify(**params)
+
+    def read_current_from_device(self):
+        tmp_res = self.client.api.tm.auth.users.user.load(name=self.want.name)
+        result = tmp_res.attrs
+        return Parameters(result)
+
+    def exists(self):
+        return self.client.api.tm.auth.users.user.exists(name=self.want.name)
+
+    def remove_from_device(self):
+        result = self.client.api.tm.auth.users.user.load(name=self.want.name)
+        if result:
+            result.delete()
+
+
+class PartitionedManager(BaseManager):
+    def create(self):
+        self.validate_create_parameters()
+        if self.want.shell == 'bash':
+            self.validate_shell_parameter()
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.auth.users.user.create(
+            partition=self.want.partition, **params
+        )
+
+    def update_on_device(self):
+        params = self.want.api_params()
+        result = self.client.api.tm.auth.users.user.load(
+            name=self.want.name, partition=self.want.partition
+        )
+        result.modify(**params)
+
+    def read_current_from_device(self):
+        tmp_res = self.client.api.tm.auth.users.user.load(
+            name=self.want.name, partition=self.want.partition
+        )
+        result = tmp_res.attrs
+        return Parameters(result)
+
+    def exists(self):
+        return self.client.api.tm.auth.users.user.exists(
+            name=self.want.name, partition=self.want.partition
+        )
+
+    def remove_from_device(self):
+        result = self.client.api.tm.auth.users.user.load(
+            name=self.want.name, partition=self.want.partition
+        )
+        if result:
+            result.delete()
 
 
 class ArgumentSpec(object):
@@ -499,7 +532,7 @@ class ArgumentSpec(object):
             ),
             update_password=dict(
                 required=False,
-                default='on_create',
+                default='always',
                 choices=['always', 'on_create']
             )
         )
