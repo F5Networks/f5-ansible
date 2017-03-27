@@ -5,7 +5,7 @@ Some of the modules in this repository come with Ansible out of the box. Those
 modules are considered "stable".
 
 There are other modules in this repository that do not yet come with Ansible out
-of the box. Thos modules are considered "unstable".
+of the box. Those modules are considered "unstable".
 
 In the tutorials on this site, we generally use only modules that are stable.
 
