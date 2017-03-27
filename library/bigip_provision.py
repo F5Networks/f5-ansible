@@ -256,10 +256,14 @@ class ModuleManager(object):
         time.sleep(5)
 
         while nops < 4:
-            if not self._is_mprov_running_on_device():
-                nops += 1
-            else:
-                nops = 0
+            try:
+                if not self._is_mprov_running_on_device():
+                    nops += 1
+                else:
+                    nops = 0
+            except Exception:
+                # This can be caused by restjavad restarting.
+                pass
             time.sleep(10)
 
     def _is_mprov_running_on_device(self):
