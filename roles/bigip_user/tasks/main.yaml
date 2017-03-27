@@ -203,8 +203,7 @@
       that:
           - result|changed
 
-# This will fail as BIGIP does not return 'shell' attribute if it is already
-# set to 'none'
+
 - name: Update user shell to none - Idempotent check
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -217,7 +216,7 @@
   ignore_errors: true
   register: result
 
-# Due to failure there will be no change
+
 - name: Assert Update user shell to none - Idempotent check
   assert:
       that:

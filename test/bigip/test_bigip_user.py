@@ -370,18 +370,16 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-
         # Override methods to force specific logic in the module to happen
         mm.exit_json = lambda x: False
         mm.update_on_device = lambda: True
         mm.exists = lambda: True
         mm.read_current_from_device = lambda: current
 
-        msg = "Attribute 'bash' is already set to 'none'" \
-              " on target device."
-        with pytest.raises(F5ModuleError) as error:
-                mm.exec_module()
-        assert error.value.message == msg
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert not hasattr(results, 'shell')
 
     @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
            return_value=True)

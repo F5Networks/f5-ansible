@@ -193,7 +193,8 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     api_attributes = [
-        'shell', 'partitionAccess', 'description', 'name', 'password']
+        'shell', 'partitionAccess', 'description', 'name', 'password'
+    ]
 
     @property
     def partition_access(self):
@@ -227,7 +228,7 @@ class Parameters(AnsibleF5Parameters):
                     result.append(access)
                 else:
                     result.append(access)
-            if isinstance(access, str):
+            if isinstance(access, basestring):
                 acl = access.split(':')
                 value = dict(
                     name=acl[0],
@@ -252,8 +253,6 @@ class Parameters(AnsibleF5Parameters):
                     self, self.api_map[api_attribute])
             elif api_attribute == 'password':
                 result[api_attribute] = self._values['password_credential']
-            elif api_attribute == 'name':
-                pass
             else:
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
@@ -271,8 +270,8 @@ class ModuleManager(object):
         changed = {}
         for key in Parameters.updatables:
             if getattr(self.want, key) is not None:
-                # Validate shell parameter
-                self.validate_shell_parameter()
+                if self.want.shell == 'bash':
+                    self.validate_shell_parameter()
                 # We only update password on_create
                 if key == 'password_credential':
                     new_pass = getattr(self.want, key)
@@ -283,6 +282,10 @@ class ModuleManager(object):
                               "'always' to update password_credential"
                         raise F5ModuleError(err)
                 else:
+                    # We set the shell parameter to 'none' when bigip does
+                    # not return it.
+                    if self.want.shell == 'none' and self.have.shell is None:
+                        self.have.shell = 'none'
                     attr1 = getattr(self.want, key)
                     attr2 = getattr(self.have, key)
                     if attr1 != attr2:
@@ -353,10 +356,6 @@ class ModuleManager(object):
     def validate_shell_parameter(self):
         """Method to validate shell parameters.
 
-        Raise when 'none' is being set for shell parameter,
-        only if BIGIP does not return shell attribute in json.
-        This is when the attribute is set to none already.
-
         Raise when shell attribute is set to 'bash' with roles set to
         either 'admin' or 'resource-admin'.
 
@@ -365,34 +364,28 @@ class ModuleManager(object):
         had. There are few other roles which do that but those roles,
         do not allow bash.
         """
-        if self.have is not None:
-            if self.want.shell == 'none' and self.have.shell is None:
-                error = "Attribute 'bash' is already set to 'none' " \
-                        "on target device."
-                raise F5ModuleError(error)
 
-        if self.want.shell == 'bash':
-            err = "Shell access is only available to 'admin' or " \
-                  "'resource-admin' roles"
-            permit = ['admin', 'resource-admin']
-            access_want = self.want.partition_access
-            # This can occur when we do checks at create
-            if self.have is not None:
-                access_have = self.have.partition_access
-            else:
-                access_have = []
-            if access_want:
-                for access in access_want:
-                    if access['role'] not in permit:
-                        raise F5ModuleError(err)
-            if access_have:
-                for access in access_have:
-                    if access['role'] not in permit:
-                        raise F5ModuleError(err)
+        err = "Shell access is only available to " \
+              "'admin' or 'resource-admin' roles"
+        permit = ['admin', 'resource-admin']
+
+        if self.have is not None:
+            have = self.have.partition_access
+            if not any(r['role'] for r in have if r['role'] in permit):
+                raise F5ModuleError(err)
+
+        # This check is needed if we want to modify shell AND
+        # partition_access attribute.
+        # This check will also trigger on create.
+        if self.want.partition_access is not None:
+            want = self.want.partition_access
+            if not any(r['role'] for r in want if r['role'] in permit):
+                raise F5ModuleError(err)
 
     def create(self):
         self.validate_create_parameters()
-        self.validate_shell_parameter()
+        if self.want.shell == 'bash':
+            self.validate_shell_parameter()
         self._set_changed_options()
         if self.client.check_mode:
             return True
@@ -429,11 +422,10 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.want.api_params()
         if self.is_version_less_than_13:
-            self.client.api.tm.auth.users.user.create(name=self.want.name,
-                                                      **params)
+            self.client.api.tm.auth.users.user.create(**params)
         else:
             self.client.api.tm.auth.users.user.create(
-                name=self.want.name, partition=self.want.partition, **params)
+                partition=self.want.partition, **params)
 
     def exists(self):
         if self.is_version_less_than_13:

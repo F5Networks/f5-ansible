@@ -1,5 +1,4 @@
 ---
-
 - name: Create user on a different partition
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -8,7 +7,7 @@
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
       partition_access:
-        - "Common:guest"
+        - "foo:operator"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
@@ -19,7 +18,6 @@
       that:
           - result|changed
 
-# This will fail as update_password is on_create by default.
 - name: Create user on a different partition - Idempotent check
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -28,17 +26,54 @@
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
       partition_access:
-        - "Common:guest"
+        - "foo:operator"
       username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
-  ignore_errors: true
   register: result
 
 - name: Assert Create user on a different partition - Idempotent check
   assert:
       that:
           - not result|changed
+
+- name: Assign multiple roles for the same partition
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      partition_access:
+        - "Common:operator"
+        - "Common:manager"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Assign multiple roles for the same partition
+  assert:
+      that:
+          - result|changed
+
+- name: Modify roles for a different partitions
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      partition_access:
+        - "Common:guest"
+        - "foo:manager"
+      username_credential: "{{ username_credential }}"
+      partition: "{{ partition }}"
+  register: result
+
+- name: Assert Modify roles for a different partitions
+  assert:
+      that:
+          - result|changed
+
 
 - name: Update password for user on a different partition
   bigip_user:
