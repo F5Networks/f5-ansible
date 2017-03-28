@@ -1,4 +1,37 @@
 ---
+- name: Create user, no password
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+  register: result
+
+- name: Assert create user, no password
+  assert:
+      that:
+          - result|changed
+
+- name: Create user, no password - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+  register: result
+
+- name: Assert create user, no password - Idempotent check
+  assert:
+      that:
+          - not result|changed
 
 - name: Create user
   bigip_user:
@@ -6,6 +39,8 @@
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       password: "{{ bigip_password }}"
+      partition_access:
+        - "Common:guest"
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
@@ -16,6 +51,7 @@
   assert:
       that:
           - result|changed
+
 
 - name: Create user - Idempotent check
   bigip_user:
@@ -34,7 +70,10 @@
       that:
           - not result|changed
 
-- name: Create user, no password - Idempotent check
+# This is very specific to bigip user, here we always update password if
+# password_credential is present, as default value for password_update is
+# set to always.
+- name: Update user password
   bigip_user:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -42,16 +81,16 @@
       password: "{{ bigip_password }}"
       validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
   register: result
 
-# The default setting for update_password is "always", so this
-# check should NOT return a "changed" event
-- name: Assert Create user - Idempotent check
+- name: Assert update user password
   assert:
       that:
-          - not result|changed
+          - result|changed
 
-- name: Create user with password on_create
+# We should see password not updating here
+- name: Update user password password_update set to on_create
   bigip_user:
       server: "{{ inventory_hostname }}"
       server_port: "{{ bigip_port }}"
@@ -63,7 +102,41 @@
       update_password: "on_create"
   register: result
 
-- name: Assert Create user - Idempotent check
+- name: Assert Update user password password_update set to on_create
+  assert:
+      that:
+          - not result|changed
+
+- name: Update user partition access
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      partition_access:
+        - "Common:manager"
+  register: result
+
+- name: Assert Update user partition access
+  assert:
+      that:
+          - result|changed
+
+- name: Update user partition access - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      partition_access:
+        - "Common:manager"
+  register: result
+
+- name: Assert Update user partition access - Idempotent check
   assert:
       that:
           - not result|changed
@@ -95,7 +168,7 @@
       full_name: "{{ full_name }}"
   register: result
 
-- name: Assert Update user full name
+- name: Assert Update user full name - Idempotent check
   assert:
       that:
           - not result|changed
@@ -132,6 +205,24 @@
       that:
           - not result|changed
 
+# This should fail because the user does not have the appropriate role
+- name: Update user shell to bash
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      shell: "bash"
+  ignore_errors: true
+  register: result
+
+- name: Assert Update user shell to bash
+  assert:
+      that:
+          - not result|changed
+
 - name: Update user shell to none
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -148,6 +239,7 @@
       that:
           - result|changed
 
+
 - name: Update user shell to none - Idempotent check
   bigip_user:
       server: "{{ inventory_hostname }}"
@@ -159,25 +251,8 @@
       shell: "none"
   register: result
 
+
 - name: Assert Update user shell to none - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
-# This should fail because the user does not have the appropriate role
-- name: Update user shell to bash
-  bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      username_credential: "{{ username_credential }}"
-      shell: "bash"
-  ignore_errors: true
-  register: result
-
-- name: Assert Update user shell to bash
   assert:
       that:
           - not result|changed
@@ -214,6 +289,38 @@
       that:
           - not result|changed
 
+- name: Remove testusernopass user
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+      state: "absent"
+  register: result
+
+- name: Assert Remove testusernopass user
+  assert:
+      that:
+          - result|changed
+
+- name: Remove testusernopass user - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "testusernopass"
+      state: "absent"
+  register: result
+
+- name: Assert Remove testusernopass user - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Collect BIG-IP facts
   bigip_facts:
       include: "system_info"
@@ -225,5 +332,5 @@
   register: result
 
 - name: Include version 13 (Daytona) checks
-  include: test-version-13-specific.yaml
+  include: test-post-version-12-specific.yaml
   when: system_info.product_information.product_version >= "13.0.0"
