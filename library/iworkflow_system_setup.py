@@ -115,7 +115,7 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'managementIpAddress', 'dnsServerAddresses', 'dnsSearchDomains',
-        'ntpServerAddresses'
+        'ntpServerAddresses', 'hostname'
     ]
 
     updatables = [
