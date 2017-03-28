@@ -21,10 +21,14 @@ In your Ansible install directory
 Different systems can put Ansible in different locations. The recommended way
 to install Ansible however (via `pip`) puts the modules here
 
-  * ``/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/`
+  * `/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/`
 
 To install the F5 modules in this repository, you can copy the contents of
 the `library/` directory we provide, into the location mentioned above.
+
+On MacOSX, the following location can be used for the modules:
+
+  * `/Library/Frameworks/Python.framework/Versions/[PYTHON_VERSION]/lib/python[PYTHON_VERSION]/site-packages/ansible/modules/extras/network/f5`
 
 For example,
 
