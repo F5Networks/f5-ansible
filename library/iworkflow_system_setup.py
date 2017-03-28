@@ -63,7 +63,7 @@ notes:
     install netaddr.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.5.0
+    - f5-sdk >= 2.2.2
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)
@@ -162,7 +162,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         try:
             address = IPNetwork(self._values['management_address'])
-            return str(address.ip)
+            return str(address)
         except Exception:
             raise F5ModuleError(
                 "The provided management address is not a valid IP address"
