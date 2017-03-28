@@ -424,18 +424,18 @@ class BaseManager(object):
                 raise F5ModuleError("Failed to delete the user")
             return True
 
+        def create(self):
+            self.validate_create_parameters()
+            if self.want.shell == 'bash':
+                self.validate_shell_parameter()
+            self._set_changed_options()
+            if self.client.check_mode:
+                return True
+            self.create_on_device()
+            return True
+
 
 class UnparitionedManager(BaseManager):
-    def create(self):
-        self.validate_create_parameters()
-        if self.want.shell == 'bash':
-            self.validate_shell_parameter()
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.auth.users.user.create(**params)
@@ -460,16 +460,6 @@ class UnparitionedManager(BaseManager):
 
 
 class PartitionedManager(BaseManager):
-    def create(self):
-        self.validate_create_parameters()
-        if self.want.shell == 'bash':
-            self.validate_shell_parameter()
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.auth.users.user.create(
