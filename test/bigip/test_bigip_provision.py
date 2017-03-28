@@ -77,13 +77,13 @@ class TestParameters(unittest.TestCase):
         assert p.module == 'gtm'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_provision_one_module_default_level(self, *args):
         # Configure the arguments that would be sent to the Ansible module
         set_module_args(dict(
@@ -121,3 +121,27 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+
+    def test_provision_all_modules(self, *args):
+        modules = [
+            'afm', 'am', 'sam', 'asm', 'avr', 'fps',
+            'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx',
+            'apm',
+        ]
+
+        for module in modules:
+            # Configure the arguments that would be sent to the Ansible module
+            set_module_args(dict(
+                module=module,
+                password='passsword',
+                server='localhost',
+                user='admin'
+            ))
+
+            with patch('ansible.module_utils.basic.AnsibleModule.fail_json') as mo:
+                client = AnsibleF5Client(
+                    argument_spec=self.spec.argument_spec,
+                    supports_check_mode=self.spec.supports_check_mode,
+                    f5_product_name=self.spec.f5_product_name
+                )
+                mo.assert_not_called()
