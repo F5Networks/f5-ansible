@@ -40,6 +40,7 @@ options:
     choices:
       - am
       - afm
+      - apm
       - asm
       - avr
       - fps
@@ -284,7 +285,8 @@ class ArgumentSpec(object):
                 required=True,
                 choices=[
                     'afm', 'am', 'sam', 'asm', 'avr', 'fps',
-                    'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx'
+                    'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx',
+                    'apm'
                 ]
             ),
             level=dict(
