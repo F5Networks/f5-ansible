@@ -16,9 +16,5 @@
   iworkflow_license_pool_member:
       device: "{{ device_ip }}"
       pool: "{{ license_pool }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
-      user: "{{ iworkflow_username }}"
-      password: "{{ iworkflow_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "present"
+  register: result

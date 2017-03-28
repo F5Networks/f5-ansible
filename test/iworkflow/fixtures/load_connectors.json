@@ -1,5 +1,4 @@
-{
-  "items": [
+[
     {
       "ownerMachineId": "f34e87f5-0494-4707-8dcc-980c7c0cdec3",
       "cloudConnectorReference": {
@@ -126,9 +125,4 @@
       "kind": "cm:cloud:connectors:cloudconnectorstate",
       "selfLink": "https://localhost/mgmt/cm/cloud/connectors/local/f5532a36-2401-4daa-b796-0176f4972730"
     }
-  ],
-  "generation": 6,
-  "kind": "cm:cloud:connectors:genericconnectorcollectionworkerstate",
-  "lastUpdateMicros": 1489448366009545,
-  "selfLink": "https://localhost/mgmt/cm/cloud/connectors/local"
-}
+]

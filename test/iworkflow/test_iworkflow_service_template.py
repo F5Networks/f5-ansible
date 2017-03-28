@@ -65,18 +65,35 @@ def load_fixture(name):
     return data
 
 
+class Namespace(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+
 class TestParameters(unittest.TestCase):
 
+    def setUp(self):
+        self.loaded_connectors = []
+        connectors_json = load_fixture('load_connectors.json')
+        for item in connectors_json:
+            self.loaded_connectors.append(Namespace(**item))
+
     def test_module_parameters_tables_general(self):
-        args = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
-        p = Parameters(args)
+        fixture = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
+        params = dict(
+            parameters=fixture
+        )
+        p = Parameters(params)
 
         assert 'tables' in p._values
         assert len(p.tables) == 9
 
     def test_module_parameters_tables_first_val(self):
-        args = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
-        p = Parameters(args)
+        fixture = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
+        params = dict(
+            parameters=fixture
+        )
+        p = Parameters(params)
 
         assert 'columns' in p.tables[0]
         assert len(p.tables[0]['columns']) == 1
@@ -93,15 +110,21 @@ class TestParameters(unittest.TestCase):
         assert len(p.tables[0]['rows'][0]) == 1
 
     def test_module_parameters_variables_general(self):
-        args = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
-        p = Parameters(args)
+        fixture = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
+        params = dict(
+            parameters=fixture
+        )
+        p = Parameters(params)
 
         assert 'vars' in p._values
         assert len(p.vars) == 61
 
     def test_module_parameters_variables_first_val(self):
-        args = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
-        p = Parameters(args)
+        fixture = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
+        params = dict(
+            parameters=fixture
+        )
+        p = Parameters(params)
 
         # Assert one configuration value
         assert 'name' in p.vars[0]
@@ -116,8 +139,11 @@ class TestParameters(unittest.TestCase):
         assert p.vars[0]['provider'] == ''
 
     def test_module_parameters_variables_second_val(self):
-        args = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
-        p = Parameters(args)
+        fixture = load_fixture('create_iworkflow_service_template_appsvcs_integration.json')
+        params = dict(
+            parameters=fixture
+        )
+        p = Parameters(params)
 
         # Assert a second configuration value
         assert 'name' in p.vars[1]
@@ -130,6 +156,46 @@ class TestParameters(unittest.TestCase):
         assert p.vars[1]['displayName'] == 'Field2'
         assert p.vars[1]['isRequired'] == 'False'
         assert p.vars[1]['provider'] == ''
+
+    def test_module_parameters_connector(self):
+        params = dict(
+            connector='foo'
+        )
+
+        with patch.object(Parameters, '_get_connector_collection') as mo:
+            mo.return_value = self.loaded_connectors
+            p = Parameters()
+            p.update(params)
+            assert p.connector == 'https://localhost/mgmt/cm/cloud/connectors/local/212301e6-6d01-4509-bfe3-8e372e792fb0'
+
+    def test_module_parameters_base_template(self):
+        params = dict(
+            base_template='foo'
+        )
+        expected = dict(
+            link="https://localhost/mgmt/cm/cloud/templates/iapp/foo"
+        )
+        p = Parameters()
+        p.update(params)
+        assert p.base_template == expected
+
+    def test_module_parameters_properties(self):
+        params = dict(
+            connector='foo'
+        )
+
+        with patch.object(Parameters, '_get_connector_collection') as mo:
+            mo.return_value = self.loaded_connectors
+            p = Parameters()
+            p.update(params)
+            assert len(p.properties) == 1
+            assert 'id' in p.properties[0]
+            assert 'isRequired' in p.properties[0]
+            assert 'provider' in p.properties[0]
+            assert p.properties[0]['id'] == 'cloudConnectorReference'
+            assert p.properties[0]['isRequired'] == True
+            assert p.properties[0]['provider'] == 'https://localhost/mgmt/cm/cloud/connectors/local/212301e6-6d01-4509-bfe3-8e372e792fb0'
+
 
 #    def test_api_parameters_variables(self):
 #        args = dict(

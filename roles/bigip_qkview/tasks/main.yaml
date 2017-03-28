@@ -4,30 +4,28 @@
   bigip_qkview:
       dest: "/tmp/localhost.localdomain.qkview"
 
-- name: Create QKView with options, save it locally
-  bigip_qkview:
-      options:
-          restrict_to_blade: True
-          asm_request_log: True
-          exclude_core: "Exclude core files from output"
-          exclude:
-            - audit
-            - secure
-      dest: "/tmp/localhost.localdomain.qkview"
-
-- name: The whole enchilada
-  bigip_qkview:
-      options:
-          output_name: "my-qkview.qkview"
-          restrict_to_blade: True
-          asm_request_log: True
-          max_file_size: 50000000
-          max_time: 10000
-          complete_information: False
-          exclude_core: True
-          exclude:
-            - audit
-            - secure
-            - bash_history
-      dest: "/tmp/localhost.localdomain.qkview"
+#- name: Create QKView with options, save it locally
+#  bigip_qkview:
+#      options:
+#          restrict_to_blade: True
+#          asm_request_log: True
+#          exclude_core: "Exclude core files from output"
+#          exclude:
+#            - audit
+#            - secure
+#      dest: "/tmp/localhost.localdomain.qkview"
+#
+#- name: The whole enchilada
+#  bigip_qkview:
+#      options:
+#          asm_request_log: True
+#          max_file_size: 50000000
+#          max_time: 10000
+#          complete_information: True
+#          exclude_core: True
+#          exclude:
+#            - audit
+#            - secure
+#            - bash_history
+#      dest: "/tmp/localhost.localdomain.qkview"
 
