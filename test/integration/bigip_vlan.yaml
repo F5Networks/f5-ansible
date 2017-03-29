@@ -38,4 +38,4 @@
       F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-      - bigip_vlan
+      - targets/bigip_vlan
