@@ -230,6 +230,8 @@ class Parameters(AnsibleF5Parameters):
                     result.append(access)
             if isinstance(access, basestring):
                 acl = access.split(':')
+                if acl[0].lower() == 'all':
+                    acl[0] = 'all-partitions'
                 value = dict(
                     name=acl[0],
                     role=acl[1]
