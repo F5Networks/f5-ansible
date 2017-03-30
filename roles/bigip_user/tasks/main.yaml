@@ -321,6 +321,8 @@
       that:
           - not result|changed
 
+- include: issue-113.yaml
+
 - name: Collect BIG-IP facts
   bigip_facts:
       include: "system_info"

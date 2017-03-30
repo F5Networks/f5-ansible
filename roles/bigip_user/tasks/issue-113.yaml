@@ -1,0 +1,71 @@
+---
+
+- name: Create an admin user
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "all:admin"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
+  register: result
+
+- name: Assert Create an admin user
+  assert:
+      that:
+          - result|changed
+
+- name: Create an admin user - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      partition_access:
+        - "all:admin"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      password_credential: "{{ password_credential }}"
+      update_password: "on_create"
+  register: result
+
+- name: Assert Create an admin user - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove the admin user
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove the admin user
+  assert:
+      that:
+          - result|changed
+
+- name: Remove the admin user - Idempotent check
+  bigip_user:
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+      username_credential: "{{ username_credential }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove the admin user - Idempotent check
+  assert:
+      that:
+          - not result|changed
