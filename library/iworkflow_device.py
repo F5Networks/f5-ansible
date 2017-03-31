@@ -80,7 +80,6 @@ RETURN = '''
 
 '''
 
-import q
 import time
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -239,10 +238,8 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        q.q(self.have.errors)
         if self.have.errors:
             if 'not upgrade rest' in str(self.have.errors).lower():
-                q.q('rediscovering')
                 return self.rediscover()
         return False
 
@@ -293,7 +290,6 @@ class ModuleManager(object):
         # Wait no more than half an hour
         for x in range(1, 180):
             resource.refresh()
-            q.q(resource.state)
             if resource.state == 'ACTIVE':
                 break
             elif resource.state in error_values:
