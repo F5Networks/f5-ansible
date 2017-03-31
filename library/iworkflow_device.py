@@ -80,13 +80,16 @@ RETURN = '''
 
 '''
 
+import q
 import time
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
     F5ModuleError,
     HAS_F5SDK,
-    iControlUnexpectedHTTPError
+    iControlUnexpectedHTTPError,
+    iteritems,
+    defaultdict
 )
 
 
@@ -104,6 +107,35 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
 
     updatables = []
+
+    def __init__(self, params=None, client=None):
+        self.client = client
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -167,6 +199,8 @@ class ModuleManager(object):
                 changed = self.present()
             elif state == "absent":
                 changed = self.absent()
+            elif state == "rediscover":
+                changed = self.update()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
@@ -194,7 +228,7 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return False
+            return self.update()
         else:
             return self.create()
 
@@ -202,7 +236,36 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.create_on_device()
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        q.q(self.have.errors)
+        if self.have.errors:
+            if 'not upgrade rest' in str(self.have.errors).lower():
+                q.q('rediscovering')
+                return self.rediscover()
+        return False
+
+    def rediscover(self):
+        self.have = self.read_current_from_device()
+        dg = self.client.api.shared.resolver.device_groups
+        collection = dg.cm_cloud_managed_devices.devices_s.get_collection(
+            requests_params=dict(
+                params="$filter=address+eq+'{0}'".format(self.want.device)
+            )
+        )
+        resource = collection.pop()
+        self.resource = resource
+        self.rediscover_on_device()
+        self._wait_for_state_to_activate(resource)
         return True
+
+    def rediscover_on_device(self):
+        self.resource.modify(
+            userName=self.want.username_credential,
+            password=self.want.password_credential,
+            automaticallyUpdateFramework=True
+        )
 
     def read_current_from_device(self):
         dg = self.client.api.shared.resolver.device_groups
@@ -223,13 +286,14 @@ class ModuleManager(object):
             password=self.want.password_credential,
             automaticallyUpdateFramework=True
         )
-        return self._wait_for_state_to_activate(resource)
+        self._wait_for_state_to_activate(resource)
 
     def _wait_for_state_to_activate(self, resource):
         error_values = ['POST_FAILED', 'VALIDATION_FAILED']
         # Wait no more than half an hour
         for x in range(1, 180):
             resource.refresh()
+            q.q(resource.state)
             if resource.state == 'ACTIVE':
                 break
             elif resource.state in error_values:
@@ -270,11 +334,12 @@ class ArgumentSpec(object):
             state=dict(
                 required=False,
                 default='present',
-                choices=['absent', 'present']
+                choices=['absent', 'present', 'rediscover']
             )
         )
         self.required_if = [
-            ['state', 'present', ['device', 'username_credential', 'password_credential']]
+            ['state', 'present', ['device', 'username_credential', 'password_credential']],
+            ['state', 'rediscover', ['device', 'username_credential', 'password_credential']]
         ]
         self.f5_product_name = 'iworkflow'
 
