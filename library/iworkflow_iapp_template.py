@@ -204,7 +204,7 @@ class Parameters(AnsibleF5Parameters):
                 return str(resource.selfLink)
             elif str(resource.address) == device:
                 return str(resource.selfLink)
-            elif str(device.managementAddress) == device:
+            elif str(resource.managementAddress) == device:
                 return str(resource.selfLink)
         raise F5ModuleError(
             "Device {0} was not found".format(device)
@@ -244,9 +244,10 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def deviceForJSONTransformation(self):
-        return dict(
+        result = dict(
             link=self.device
         )
+        return result
 
 
 class ModuleManager(object):
@@ -385,12 +386,12 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    try:
-        mm = ModuleManager(client)
-        results = mm.exec_module()
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
-        client.module.fail_json(msg=str(e))
+    #try:
+    mm = ModuleManager(client)
+    results = mm.exec_module()
+    client.module.exit_json(**results)
+    #except F5ModuleError as e:
+    #    client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()

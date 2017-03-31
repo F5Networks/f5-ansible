@@ -86,9 +86,7 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     F5ModuleError,
     HAS_F5SDK,
-    iControlUnexpectedHTTPError,
-    iteritems,
-    defaultdict
+    iControlUnexpectedHTTPError
 )
 
 
@@ -106,35 +104,6 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
 
     updatables = []
-
-    def __init__(self, params=None, client=None):
-        self.client = client
-        self._values = defaultdict(lambda: None)
-        if params:
-            self.update(params)
-
-    def update(self, params=None):
-        if params:
-            for k, v in iteritems(params):
-                if self.api_map is not None and k in self.api_map:
-                    map_key = self.api_map[k]
-                else:
-                    map_key = k
-
-                # Handle weird API parameters like `dns.proxy.__iter__` by
-                # using a map provided by the module developer
-                class_attr = getattr(type(self), map_key, None)
-                if isinstance(class_attr, property):
-                    # There is a mapped value for the api_map key
-                    if class_attr.fset is None:
-                        # If the mapped value does not have an associated setter
-                        self._values[map_key] = v
-                    else:
-                        # The mapped value has a setter
-                        setattr(self, map_key, v)
-                else:
-                    # If the mapped value is not a @property
-                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -290,6 +259,7 @@ class ModuleManager(object):
         # Wait no more than half an hour
         for x in range(1, 180):
             resource.refresh()
+            q.q(resource.state)
             if resource.state == 'ACTIVE':
                 break
             elif resource.state in error_values:
