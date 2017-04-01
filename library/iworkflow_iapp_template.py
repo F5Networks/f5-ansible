@@ -386,12 +386,12 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    #try:
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
-    #except F5ModuleError as e:
-    #    client.module.fail_json(msg=str(e))
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()

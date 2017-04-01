@@ -236,8 +236,10 @@ class Parameters(AnsibleF5Parameters):
     @property
     def connector(self):
         connector = None
-        if self._values['connector'] in [None, 'all']:
+        if self._values['connector'] is None:
             return self._values['connector']
+        elif self._values['connector'] == 'all':
+            connector = 'all'
         elif isinstance(self._values['connector'], basestring):
             collection = self._get_connector_collection()
             result = self._get_connector_selflink(str(self._values['connector']), collection)
@@ -251,21 +253,23 @@ class Parameters(AnsibleF5Parameters):
                 "The specified connector was not found"
             )
         elif connector == 'all':
-            return [
+            result = [
                 dict(
                     id="cloudConnectorReference",
                     isRequired=True,
                     defaultValue=""
                 )
             ]
+            return result
         else:
-            return [
+            result = [
                 dict(
                     id="cloudConnectorReference",
                     isRequired=True,
                     provider=connector
                 )
             ]
+            return result
 
     @property
     def parentReference(self):
@@ -346,6 +350,9 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.connector is None:
+            self.want.update({'connector': 'all'})
+
         if self.client.check_mode:
             return True
         if self.want.base_template is None:

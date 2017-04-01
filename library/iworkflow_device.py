@@ -259,7 +259,6 @@ class ModuleManager(object):
         # Wait no more than half an hour
         for x in range(1, 180):
             resource.refresh()
-            q.q(resource.state)
             if resource.state == 'ACTIVE':
                 break
             elif resource.state in error_values:

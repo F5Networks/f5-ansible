@@ -75,7 +75,8 @@ from ansible.module_utils.f5_utils import (
     defaultdict,
     F5ModuleError,
     HAS_F5SDK,
-    iteritems
+    iteritems,
+    defaultdict
 )
 
 
@@ -132,23 +133,31 @@ class Parameters(AnsibleF5Parameters):
     def devices(self):
         if isinstance(self._values['devices'], basestring):
             collection = self._get_device_collection()
-            return self._get_device_selflinks([str(self._values['devices'])], collection)
+            result = self._get_device_selflinks([str(self._values['devices'])], collection)
+            return result
         elif all('deviceReference' in x for x in self._values['devices']):
             # Case for the REST API
             result = []
             for item in self._values['devices']:
-                member = dict(
-                    deviceReference=str(item['deviceReference']['link']),
-                    hostname=str(item['deviceReference']['hostname']),
-                    address=str(item['deviceReference']['address']),
-                    managementAddress=str(item['deviceReference']['managementAddress']),
-                    selfLink=str(item['selfLink'])
-                )
+                member = defaultdict(lambda: None)
+                member['deviceReference'] = str(item['deviceReference']['link'])
+
+                # This can happen when you delete a device without deleting its associated
+                # license from iWorkflow. iWorkflow doesnt clean anythign up. le sigh...
+                if 'hostname' in item['deviceReference']:
+                    member['hostname'] = str(item['deviceReference']['hostname'])
+                if 'address' in item['deviceReference']:
+                    member['address'] = str(item['deviceReference']['address'])
+                if 'managementAddress' in item['deviceReference']:
+                    member['managementAddress'] = str(item['deviceReference']['managementAddress'])
+                if 'selfLink' in item['deviceReference']:
+                    member['selfLink'] = str(item['selfLink'])
                 result.append(member)
             return result
         else:
             collection = self._get_device_collection()
-            return self._get_device_selflinks(result, collection)
+            result = self._get_device_selflinks(self._values['devices'], collection)
+            return result
 
     def _get_device_selflinks(self, devices, collection):
         result = []
