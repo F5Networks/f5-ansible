@@ -23,7 +23,7 @@ class ModuleStubber(object):
     def __stub_roles_dirs(self):
         # Create role containing all of your future functional tests
         for dir in ['defaults', 'tasks']:
-            directory = '{0}/roles/{1}/{2}'.format(
+            directory = '{0}/test/integration/targets/{1}/{2}'.format(
                 self._top_level, self._module, dir
             )
             if not os.path.exists(directory):
@@ -32,14 +32,14 @@ class ModuleStubber(object):
     def __stub_roles_yaml_files(self):
         # Create default vars to contain any playbook variables
         for dir in ['defaults', 'tasks']:
-            defaults_file = '{0}/roles/{1}/{2}/main.yaml'.format(
+            defaults_file = '{0}/test/integration/targets/{1}/{2}/main.yaml'.format(
                 self._top_level, self._module, dir
             )
             self.__touch(defaults_file)
 
     def __stub_playbook_file(self):
         # Stub out the test playbook
-        playbook_file = '{0}/playbooks/{1}.yaml'.format(
+        playbook_file = '{0}/test/integration/{1}.yaml'.format(
             self._top_level, self._module
         )
 
@@ -55,13 +55,13 @@ class ModuleStubber(object):
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/{module}.yaml
+#    ansible-playbook -i notahost, test/integration/{module}.yaml
 #
 # Examples:
 #
 #    Run all tests on the {module} module
 #
-#    ansible-playbook -i notahost, playbooks/{module}.yaml
+#    ansible-playbook -i notahost, test/integration/{module}.yaml
 #
 # Tested platforms:
 #
@@ -115,12 +115,12 @@ class ModuleStubber(object):
         elif self._module.startswith('wait'):
             test_dir = 'bigip'
 
-        test_dir_path = '{0}/test/{1}'.format(
+        test_dir_path = '{0}/test/unit/{1}'.format(
             self._top_level, test_dir
         )
         if not os.path.exists(test_dir_path):
             os.makedirs(test_dir_path)
-        test_file = '{0}/test/{1}/test_{2}{3}'.format(
+        test_file = '{0}/test/unit/{1}/test_{2}{3}'.format(
             self._top_level, test_dir, self._module, self._extension
         )
         self.__touch(test_file)
