@@ -1,7 +1,7 @@
 ---
 
 - name: Create a VIP, pool, pool members and nodes
-  hosts: big-ip01.internal
+  hosts: f5-test
   connection: local
 
   tasks:
@@ -9,31 +9,31 @@
         bigip_pool:
             lb_method: "ratio_member"
             name: "web"
-            password: "admin"
-            server: "big-ip01.internal"
+            password: "{{ bigip_password }}"
+            server: "{{ ansible_host }}"
             slow_ramp_time: "120"
-            user: "admin"
-            validate_certs: "no"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
 
       - name: Create node1
         bigip_node:
             host: "10.10.10.10"
             name: "node-1"
-            password: "admin"
-            server: "big-ip01.internal"
-            user: "admin"
-            validate_certs: "no"
+            password: "{{ bigip_password }}"
+            server: "{{ ansible_hosdt }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
 
       - name: Create node2
         bigip_node:
             host: "10.10.10.20"
             name: "node-2"
-            password: "admin"
-            server: "big-ip01.internal"
-            user: "admin"
-            validate_certs: "no"
+            password: "{{ bigip_password }}"
+            server: "{{ ansible_host }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
 
       - name: Add nodes to pool
@@ -41,12 +41,12 @@
             description: "webserver-1"
             host: "{{ item.host }}"
             name: "{{ item.name }}"
-            password: "admin"
+            password: "{{ bigip_password }}"
             pool: "web"
             port: "80"
-            server: "big-ip01.internal"
-            user: "admin"
-            validate_certs: "no"
+            server: "{{ ansible_host }}"
+            user: "{{ bigip_username }}"
+            validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
         with_items:
             - host: "10.10.10.10"
@@ -58,15 +58,15 @@
         bigip_virtual_server:
             description: "foo-vip"
             destination: "172.16.10.108"
-            password: "admin"
+            password: "{{ bigip_password }}"
             name: "vip-1"
             pool: "web"
             port: "80"
-            server: "big-ip01.internal"
+            server: "{{ ansible_host }}"
             snat: "Automap"
-            user: "admin"
+            user: "{{ bigip_username }}"
             all_profiles:
                 - "http"
                 - "clientssl"
-            validate_certs: "no"
+            validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
