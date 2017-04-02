@@ -9,9 +9,9 @@ MODULE_TARGET = $(shell echo $@ | sed s/cov-// | tr '-' '_')
 .PHONY: docs flake8
 
 all: clean-coverage
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on"
-	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/bigip.yaml
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off"
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on" -vvvv
+	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/bigip.yaml -vvvv
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
 	flake8 library/*.py
 
 all-tests: flake8 ansible-doc
@@ -56,27 +56,25 @@ ansible-doc:
 		$(DOCTEST) -M . bigip_vlan.py; \
 	)
 
-ansible-doc-dev:
-	(cd library; \
-		$(DOCTEST) -M . bigip_qkview_facts.py; \
-	)
-
 clean-coverage:
 	$(shell rm cache/coverage/.coverage*)
 	$(shell rm .coverage)
 
+export ANSIBLE_KEEP_REMOTE_FILES=1
+export ANSIBLE_CONFIG=./test/integration/ansible.cfg
+
 bigip_%:
-	ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml
+	ansible-playbook -i test/integration/inventory/hosts test/integration/${MODULE_TARGET}.yaml
 	#flake8 library/${MODULE_TARGET}.py
 
 iworkflow_%:
-	ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml
+	ansible-playbook -i test/integration/inventory/hosts test/integration/${MODULE_TARGET}.yaml
 	#flake8 library/${MODULE_TARGET}.py
 
 cov-bigip-%: clean-coverage
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=on"
-	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off"
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=on" -vvvv
+	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml -vvvv
+	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off" -vvvv
 	flake8 library/${MODULE_TARGET}.py
 
 unit:
@@ -84,6 +82,7 @@ unit:
 
 clean:
 	rm
+
 fetch-upstream:
 	curl -o library/bigip_device_dns.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_dns.py
 	curl -o library/bigip_device_ntp.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_ntp.py
