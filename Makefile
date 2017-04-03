@@ -64,11 +64,11 @@ export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 
 bigip_%:
-	ansible-playbook -i test/integration/inventory/hosts test/integration/${MODULE_TARGET}.yaml
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml && cd -
 	#flake8 library/${MODULE_TARGET}.py
 
 iworkflow_%:
-	ansible-playbook -i test/integration/inventory/hosts test/integration/${MODULE_TARGET}.yaml
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml && cd -
 	#flake8 library/${MODULE_TARGET}.py
 
 cov-bigip-%: clean-coverage
