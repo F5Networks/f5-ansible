@@ -33,7 +33,7 @@
       host: "{{ node_host }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
-      priority: "10"
+      priority_group: "10"
       state: "present"
   register: result
 
@@ -47,7 +47,7 @@
       host: "{{ node_host }}"
       pool: "{{ pool_name }}"
       port: "{{ node_port }}"
-      priority: "10"
+      priority_group: "10"
       state: "present"
   register: result
 

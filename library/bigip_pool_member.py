@@ -404,7 +404,7 @@ def main():
         rate_limit=dict(type='int'),
         ratio=dict(type='int'),
         preserve_node=dict(type='bool', default=False),
-        priority=dict(type='int')
+        priority_group=dict(type='int')
     )
     argument_spec.update(meta_args)
 
@@ -433,7 +433,7 @@ def main():
     description = module.params['description']
     rate_limit = module.params['rate_limit']
     ratio = module.params['ratio']
-    priority = module.params['priority']
+    priority = module.params['priority_group']
     host = module.params['host']
     address = fq_name(partition, host)
     port = module.params['port']
