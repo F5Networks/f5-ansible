@@ -114,6 +114,8 @@ class ModuleStubber(object):
             test_dir = 'bigiq'
         elif self._module.startswith('wait'):
             test_dir = 'bigip'
+        elif self._module.startswith('f5'):
+            test_dir = 'f5'
 
         test_dir_path = '{0}/test/unit/{1}'.format(
             self._top_level, test_dir
