@@ -53,15 +53,11 @@ options:
     required: False
   content:
     description:
-      - When used instead of 'src', sets the contents of an iApp template
-        directly to the specified value. This is for simple values, but
-        can be used with lookup plugins for anything complex or with
-        formatting. Either one of C(src) or C(content) must be provided.
-  src:
-    description:
-      - The iApp template to interpret and upload to the BIG-IP. Either one
-        of C(src) or C(content) must be provided.
-    required: true
+      - Sets the contents of an iApp template directly to the specified
+        value. This is for simple values, but can be used with lookup
+        plugins for anything complex or with formatting. C(content) must
+        be provided when creating new templates.
+    required: False
   state:
     description:
       - Whether the iRule should exist or not.
@@ -145,10 +141,6 @@ class BigIpiAppTemplateManager(object):
         return result
 
     def present(self):
-        source = self.params['src']
-        content = self.params['content']
-
-        self.set_iapp_template_source(source, content)
         self.set_iapp_template_name(self.params['content'])
 
         if self.iapp_template_exists():
@@ -169,18 +161,6 @@ class BigIpiAppTemplateManager(object):
                 "An iApp template must include a name"
             )
         self.params['name'] = os.path.basename(matches.group('name'))
-
-    def set_iapp_template_source(self, source=None, content=None):
-        if source:
-            with open(source) as fh:
-                result = fh.read()
-        elif content:
-            result = content
-        else:
-            raise F5ModuleError(
-                "Either 'content' or 'src' must be provided"
-            )
-        self.params['content'] = result
 
     def iapp_template_exists(self):
         return self.api.tm.sys.application.templates.template.exists(
@@ -253,8 +233,7 @@ class BigIpiAppTemplateModuleConfig(object):
                 choices=BOOLEANS,
                 required=False
             ),
-            content=dict(required=False, default=None),
-            src=dict(required=False, default=None),
+            content=dict(required=False, default=None)
         )
         self.meta_args = args
 
@@ -265,10 +244,7 @@ class BigIpiAppTemplateModuleConfig(object):
     def create(self):
         return AnsibleModule(
             argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            mutually_exclusive=[
-                ['content', 'src']
-            ]
+            supports_check_mode=self.supports_check_mode
         )
 
 
