@@ -113,6 +113,7 @@ EXAMPLES = '''
       update_password: "on_create"
       state: "present"
   delegate_to: localhost
+
 - name: Change the user "johnd's" role and shell
   bigip_user:
       server: "lb.mydomain.com"
@@ -123,6 +124,7 @@ EXAMPLES = '''
       shell: "tmsh"
       state: "present"
   delegate_to: localhost
+
 - name: Make the user 'johnd' an admin and set to advanced shell
   bigip_user:
       server: "lb.mydomain.com"
@@ -133,6 +135,7 @@ EXAMPLES = '''
       shell: "bash"
       state: "present"
   delegate_to: localhost
+
 - name: Remove the user 'johnd'
   bigip_user:
       server: "lb.mydomain.com"
@@ -141,6 +144,7 @@ EXAMPLES = '''
       name: "johnd"
       state: "absent"
   delegate_to: localhost
+
 - name: Update password
   bigip_user:
       server: "lb.mydomain.com"
