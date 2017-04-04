@@ -47,6 +47,7 @@ options:
     description:
       - A list of name servers that the system uses to validate DNS lookups
   forwarders:
+    deprecated: To set this you must use the GUI or edit named.conf
     description:
       - A list of BIND servers that the system can use to perform DNS lookups
   search:
@@ -60,9 +61,18 @@ options:
     choices:
       - 4
       - 6
+  state:
+    description:
+      - The state of the variable on the system. When C(present), guarantees
+        that an existing variable is set to C(value).
+    required: false
+    default: present
+    choices:
+      - absent
+      - present
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install requests
+    install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk
@@ -97,11 +107,6 @@ name_servers:
     returned: changed
     type: list
     sample: "['192.0.2.10', '172.17.12.10']"
-forwarders:
-    description: List of forwarders that were set
-    returned: changed
-    type: list
-    sample: "['192.0.2.10', '172.17.12.10']"
 search:
     description: List of search domains that were set
     returned: changed
@@ -119,14 +124,13 @@ warnings:
     sample: ['...', '...']
 '''
 
-from ansible.module_utils.basic import *
 from ansible.module_utils.f5_utils import *
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
+        'dhclient.mgmt': 'dhcp',
         'dns.cache': 'cache',
-        'dns.proxy.__iter__': 'forwarders',
         'nameServers': 'name_servers',
         'include': 'ip_version'
     }
@@ -136,11 +140,15 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     updatables = [
-        'cache', 'forwarders', 'name_servers', 'search', 'ip_version'
+        'cache', 'name_servers', 'search', 'ip_version'
     ]
 
     returnables = [
-        'cache', 'forwarders', 'name_servers', 'search', 'ip_version'
+        'cache', 'name_servers', 'search', 'ip_version'
+    ]
+
+    absentables = [
+        'name_servers', 'search'
     ]
 
     def to_return(self):
@@ -195,14 +203,9 @@ class Parameters(AnsibleF5Parameters):
         if self._values['forwarders'] is None:
             return None
         else:
-            return ' '.join(self._values['forwarders'])
-
-    @forwarders.setter
-    def forwarders(self, value):
-        try:
-            self._values['forwarders'] = value.split(' ')
-        except AttributeError:
-            self._values['forwarders'] = value
+            raise F5ModuleError(
+                "The modifying of forwarders is not supported."
+            )
 
     @property
     def ip_version(self):
@@ -253,7 +256,7 @@ class ModuleManager(object):
         return result
 
     def read_current_from_device(self):
-        want_keys = ['dhclient.mgmt', 'dns.cache', 'dns.proxy.__iter__']
+        want_keys = ['dhclient.mgmt', 'dns.cache']
         result = dict()
         dbs = self.client.api.tm.sys.dbs.get_collection()
         for db in dbs:
@@ -293,18 +296,51 @@ class ModuleManager(object):
         tx = self.client.api.tm.transactions.transaction
         with BigIpTxContext(tx) as api:
             cache = api.tm.sys.dbs.db.load(name='dns.cache')
-            proxy = api.tm.sys.dbs.db.load(name='dns.proxy.__iter__')
             dns = api.tm.sys.dns.load()
 
             # Empty values can be supplied, but you cannot supply the
             # None value, so we check for that specifically
             if self.want.cache is not None:
                 cache.update(value=self.want.cache)
-            if self.want.forwarders is not None:
-                proxy.update(value=self.want.forwarders)
             if params:
                 dns.update(**params)
 
+    def _absent_changed_options(self):
+        changed = {}
+        for key in Parameters.absentables:
+            if getattr(self.want, key) is not None:
+                set_want = set(getattr(self.want, key))
+                set_have = set(getattr(self.have, key))
+                set_new = set_have - set_want
+                if set_new != set_have:
+                    changed[key] = list(set_new)
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
+    def should_absent(self):
+        result = self._absent_changed_options()
+        if result:
+            return True
+        return False
+
+    def absent(self):
+        self.have = self.read_current_from_device()
+        if not self.should_absent():
+            return False
+        if self.client.check_mode:
+            return True
+        self.absent_on_device()
+        return True
+
+    def absent_on_device(self):
+        params = self.changes.api_params()
+        tx = self.client.api.tm.transactions.transaction
+        with BigIpTxContext(tx) as api:
+            dns = api.tm.sys.dns.load()
+            dns.update(**params)
+        
 
 class ArgumentSpec(object):
     def __init__(self):
@@ -335,6 +371,11 @@ class ArgumentSpec(object):
                 default=None,
                 choices=[4, 6],
                 type='int'
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
             )
         )
         self.required_one_of = [
@@ -356,9 +397,12 @@ def main():
         required_one_of=spec.required_one_of
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
