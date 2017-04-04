@@ -45,7 +45,7 @@ options:
         as well as specific protocols. This list should contain C(protocol):C(port)
         values.
     required: False
-    default None
+    default: None
   name:
     description:
       - The self IP to create.
