@@ -45,10 +45,6 @@ options:
         and C(route_domain_id) are mutually exclusive.
     required: False
     default: None
-  server:
-    description:
-      - BIG-IP host
-    required: true
   state:
     description:
       - Whether the partition should exist or not
@@ -57,16 +53,6 @@ options:
     choices:
       - present
       - absent
-  user:
-    description:
-      - BIG-IP username
-    required: false
-  validate_certs:
-    description:
-      - If C(no), SSL certificates will not be validated. This should only be
-        used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
 notes:
   - Requires the bigsuds Python package on the host if using the iControl
     interface. This is as easy as pip install bigsuds
