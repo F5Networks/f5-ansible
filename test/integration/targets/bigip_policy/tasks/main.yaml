@@ -1,0 +1,23 @@
+---
+
+- name: Create policy
+  bigip_policy:
+      name: "{{ policy_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create policy
+  assert:
+      that:
+          - result|changed
+
+- name: Create policy - Idempotent check
+  bigip_policy:
+      name: "{{ policy_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create policy - Idempotent check
+  assert:
+      that:
+          - not result|changed
