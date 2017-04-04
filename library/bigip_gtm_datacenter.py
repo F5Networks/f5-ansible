@@ -323,7 +323,7 @@ class BigIpGtmDatacenter(object):
         enabled = self.params['enabled']
 
         if state is None and enabled is None:
-            module.fail_json(msg="Neither 'state' nor 'enabled' set")
+            raise F5ModuleError("Neither 'state' nor 'enabled' set")
 
         try:
             if state == "present":
