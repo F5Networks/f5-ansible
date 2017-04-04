@@ -38,7 +38,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>When used instead of 'src', sets the contents of an iApp template directly to the specified value. This is for simple values, but can be used with lookup plugins for anything complex or with formatting. Either one of <code>src</code> or <code>content</code> must be provided.</div></td></tr>
+        <td><div>Sets the contents of an iApp template directly to the specified value. This is for simple values, but can be used with lookup plugins for anything complex or with formatting. <code>content</code> must be provided when creating new templates.</div></td></tr>
             <tr>
     <td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -69,12 +69,6 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>src<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>The iApp template to interpret and upload to the BIG-IP. Either one of <code>src</code> or <code>content</code> must be provided.</div></td></tr>
             <tr>
     <td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>

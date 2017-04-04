@@ -1,8 +1,8 @@
-.. _bigip_config:
+.. _bigip_qkview:
 
 
-bigip_config - Manage BIG-IP configuration sections
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_qkview - Manage qkviews on the device
++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -15,7 +15,7 @@ bigip_config - Manage BIG-IP configuration sections
 Synopsis
 --------
 
-Manages a BIG-IP configuration by allowing TMSH commands that modify running configuration, or,
+Manages creating and downloading qkviews from a BIG-IP. Various options can be provided when creating qkviews. The qkview is important when dealing with F5 support. It may be required that you upload this qkview to the supported channels during resolution of an SRs that you may have opened.
 
 
 Requirements (on host that executes module)
@@ -38,29 +38,59 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>merge_content<br/><div style="font-size: small;"></div></td>
+    <td>asm_request_log<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>When <code>True</code>, includes the ASM request log data. When <code>False</code>, excludes the ASM request log data.</div></td></tr>
+            <tr>
+    <td>complete_information<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Include complete information in the qkview</div></td></tr>
+            <tr>
+    <td>dest<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Destination on your local filesystem when you want to save the qkview.</div></td></tr>
+            <tr>
+    <td>exclude<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul><li>all</li><li>audit</li><li>secure</li><li>bash_history</li></ul></td>
+        <td><div>Exclude various file from the qkview.</div></td></tr>
+            <tr>
+    <td>exclude_core<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Exclude core files from the qkview</div></td></tr>
+            <tr>
+    <td>filename<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>localhost.localdomain.qkview</td>
+        <td><ul></ul></td>
+        <td><div>Name of the qkview to create on the remote BIG-IP.</div></td></tr>
+            <tr>
+    <td>force<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div></td></tr>
+            <tr>
+    <td>max_file_size<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Loads the specified configuration that you want to merge into the running configuration. This is equivalent to using the <code>tmsh</code> command <code>load sys config from-terminal merge</code>. If you need to read configuration from a file or template, use Ansible's <code>file</code> or <code>template</code> lookup plugins respectively.</div></td></tr>
+        <td><div>Max file size, in bytes, of the qkview to create. By default, no max file size is specified.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>reset<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>Loads the default configuration on the device. If this option is specified, the default configuration will be loaded before any commands or other provided configuration is run.</div></td></tr>
-            <tr>
-    <td>save<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>The <code>save</code> argument instructs the module to save the running-config to startup-config. This operation is performed after any changes are made to the current running config. If no changes are made, the configuration is still saved to the startup config. This option will always cause the module to return changed.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -85,12 +115,6 @@ Options
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
-            <tr>
-    <td>verify<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul></ul></td>
-        <td><div>Validates the specified configuration to see whether they are valid to replace the running configuration. The running configuration will not be changed.</div></td></tr>
         </table>
     </br>
 
@@ -101,23 +125,12 @@ Examples
 
  ::
 
-    - name: run show version on remote devices
-      bigip_command:
-        commands: show sys version
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
-      delegate_to: localhost
-    
-    - name: run show version and check to see if output contains BIG-IP
-      bigip_command:
-        commands: show sys version
-        wait_for: result[0] contains BIG-IP
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+    - name: The whole enchilada
+      bigip_qkview:
+          asm_request_log: "yes"
+          exclude:
+              - all|audit|secure|bash_history|or a list of them, for example, [audit,secure]
+          dest: "/tmp/localhost.localdomain.qkview
       delegate_to: localhost
 
 Return Values
@@ -158,6 +171,7 @@ Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+.. note:: This module does not include the "max time" or "restrict to blade" options.
 .. note:: Requires Ansible >= 2.3.
 
 

@@ -4,7 +4,7 @@
 iworkflow_managed_device - Manipulate cloud managed devices in iWorkflow.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::

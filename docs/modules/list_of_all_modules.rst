@@ -29,9 +29,13 @@ All Modules
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_node2 - Manages F5 BIG-IP LTM nodes <bigip_node2_module>
   bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
+  bigip_policy - Manage BIG-IP partitions <bigip_policy_module>
+  bigip_policy_rule - foo <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
   bigip_provision - Manage BIG-IP module provisioning <bigip_provision_module>
+  bigip_qkview - Manage qkviews on the device <bigip_qkview_module>
+  bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP. <bigip_remote_syslog_module>
   bigip_routedomain - Manage route domains on a BIG-IP <bigip_routedomain_module>
   bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
   bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
@@ -56,17 +60,24 @@ All Modules
   bigip_virtual_server - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>
   bigip_virtual_server2 - Manage LTM virtual servers on a BIG-IP <bigip_virtual_server2_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
+  bigiq_license_pool - foo <bigiq_license_pool_module>
+  bigiq_license_pool_member - foo <bigiq_license_pool_member_module>
+  f5_support_upload - Manage BIG-IP partitions <f5_support_upload_module>
   iworkflow_device - Manipulate cloud managed devices in iWorkflow. <iworkflow_device_module>
   iworkflow_iapp_template - Manages iApp templates <iworkflow_iapp_template_module>
+  iworkflow_license - Manage BIG-IP partitions <iworkflow_license_module>
   iworkflow_license_pool - Manage license pools in iWorkflow. <iworkflow_license_pool_module>
   iworkflow_license_pool_member - Manages members in a license pool. <iworkflow_license_pool_member_module>
   iworkflow_local_connector - Manipulate cloud BIG-IP connectors in iWorkflow. <iworkflow_local_connector_module>
   iworkflow_local_connector_device - Manipulate cloud local connector devices in iWorkflow. <iworkflow_local_connector_device_module>
-  iworkflow_service - foo <iworkflow_service_module>
-  iworkflow_service_template - foo <iworkflow_service_template_module>
+  iworkflow_local_connector_node - Manages L2/L3 configuration of a BIG-IP via iWorkflow. <iworkflow_local_connector_node_module>
+  iworkflow_service - Manages L4/L7 Services on iWorkflow. <iworkflow_service_module>
+  iworkflow_service_template - Manages Service Templates on iWorkflow. <iworkflow_service_template_module>
   iworkflow_system_setup - Manage system setup related configuration on iWorkflow <iworkflow_system_setup_module>
   iworkflow_tenant - Manage tenants in iWorkflow. <iworkflow_tenant_module>
-  iworkflow_tenant_connector - Manage tenants in iWorkflow. <iworkflow_tenant_connector_module>
+  iworkflow_tenant_connector - Manage connectors associated with tenants in iWorkflow. <iworkflow_tenant_connector_module>
+  iworkflow_user - Manage users in iWorkflow. <iworkflow_user_module>
+  wait_for_bigip - Manage BIG-IP partitions <wait_for_bigip_module>
 
 
 

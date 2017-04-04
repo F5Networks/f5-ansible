@@ -1,10 +1,10 @@
-.. _bigip_provision:
+.. _bigip_remote_syslog:
 
 
-bigip_provision - Manage BIG-IP module provisioning
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,13 +15,14 @@ bigip_provision - Manage BIG-IP module provisioning
 Synopsis
 --------
 
-Manage BIG-IP module provisioning. This module will only provision at the standard levels of Dedicated, Nominal, and Minimum.
+Manipulate remote syslog settings on a BIG-IP.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 2.2.0
+  * ansible >= 2.3.0
 
 
 Options
@@ -38,23 +39,29 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>level<br/><div style="font-size: small;"></div></td>
+    <td>local_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>nominal</td>
-        <td><ul><li>dedicated</li><li>nominal</li><li>minimum</li></ul></td>
-        <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not run.</div></td></tr>
-            <tr>
-    <td>module<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul><li>am</li><li>afm</li><li>apm</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>ilx</li><li>lc</li><li>ltm</li><li>pem</li><li>sam</li><li>swg</li></ul></td>
-        <td><div>The module to provision in BIG-IP.</div></td></tr>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the local IP address of the system that is logging.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
+            <tr>
+    <td>remote_host<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>Specifies the IP address, or hostname, for the remote system to which the system sends log messages.</div></td></tr>
+            <tr>
+    <td>remote_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>Specifies the port that the system uses to send messages to the remote logging server. The default is <code>514</code> when the <code>state</code> option is <code>present</code>.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -67,12 +74,6 @@ Options
     <td>443</td>
         <td><ul></ul></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, deprovision the module.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -95,24 +96,23 @@ Examples
 
  ::
 
-    - name: Provision PEM at "nominal" level
-      bigip_provision:
-          server: "lb.mydomain.com"
-          module: "pem"
-          level: "nominal"
+    - name: Add a remote syslog server to log to
+      bigip_remote_syslog:
+          remote_host: "10.10.10.10"
           password: "secret"
+          server: "lb.mydomain.com"
           user: "admin"
-          validate_certs: "no"
+          validate_certs: "false"
       delegate_to: localhost
     
-    - name: Provision a dedicated SWG. This will unprovision every other module
-      bigip_provision:
-          server: "lb.mydomain.com"
-          module: "swg"
+    - name: Add a remote syslog server on a non-standard port to log to
+      bigip_remote_syslog:
+          remote_host: "10.10.10.10"
+          remote_port: "1234"
           password: "secret"
-          level: "dedicated"
+          server: "lb.mydomain.com"
           user: "admin"
-          validate_certs: "no"
+          validate_certs: "false"
       delegate_to: localhost
 
 
@@ -120,8 +120,6 @@ Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-.. note:: This module only works reliably on BIG-IP versions >= 13.1.
-.. note:: After you provision something you should
 
 
     

@@ -4,7 +4,7 @@
 iworkflow_license_pool - Manage license pools in iWorkflow.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -21,7 +21,7 @@ Manage license pools in iWorkflow.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -40,22 +40,22 @@ Options
     </tr>
             <tr>
     <td>accept_eula<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
+    <td>no</td>
+    <td>no</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Specifies that you accept the EULA that is part of iWorkflow. Note that this is required to activate the license pool. If this is not specified, or it is set to <code>no</code>, then the pool will remain in a state of limbo until you specify to accept the EULA.</div></td></tr>
+        <td><div>Specifies that you accept the EULA that is part of iWorkflow. Note that this is required to activate the license pool. If this is not specified, or it is set to <code>no</code>, then the pool will remain in a state of limbo until you choose to accept the EULA. This option is required when either updating a license. It is also suggested that you provide it when creating a license, but if you do not, the license will remain inactive and you will have to run this module again with this option set to <code>yes</code> to activate it.</div></td></tr>
             <tr>
     <td>base_key<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul></ul></td>
-        <td><div>Key that the license server uses to verify the functionality that you are entitled to license.</div></td></tr>
+        <td><div>Key that the license server uses to verify the functionality that you are entitled to license. This option is required if you are creating a new license.</div></td></tr>
             <tr>
     <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Name of the license pool to create</div></td></tr>
+        <td><div>Name of the license pool to create.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>

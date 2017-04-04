@@ -4,7 +4,7 @@
 iworkflow_bigip_connector - Manipulate cloud BIG-IP connectors in iWorkflow.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -21,7 +21,7 @@ Manipulate cloud BIG-IP connectors in iWorkflow.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -43,7 +43,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Name of the connector to create</div></td></tr>
+        <td><div>Name of the connector to create.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -93,10 +93,8 @@ Examples
     - name: Create cloud connector named Private Cloud
       iworkflow_bigip_connector:
           name: "Private Cloud"
-          username_credential: "admin"
-          password_credential: "admin"
           password: "secret"
-          server: "mgmt.mydomain.com"
+          server: "iwf.mydomain.com"
           user: "admin"
       delegate_to: localhost
 

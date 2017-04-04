@@ -18,6 +18,10 @@ Synopsis
 Sends an arbitrary command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
 
 
+Requirements (on host that executes module)
+-------------------------------------------
+
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -44,25 +48,55 @@ Options
     <td>no</td>
     <td>1</td>
         <td><ul></ul></td>
-        <td><div>Configures the interval in seconds to wait between retries of the command.  If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.</div></td></tr>
+        <td><div>Configures the interval in seconds to wait between retries of the command. If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.</div></td></tr>
             <tr>
     <td>match<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>all</td>
         <td><ul></ul></td>
-        <td><div>The <em>match</em> argument is used in conjunction with the <em>wait_for</em> argument to specify the match policy.  Valid values are <code>all</code> or <code>any</code>.  If the value is set to <code>all</code> then all conditionals in the <em>wait_for</em> must be satisfied.  If the value is set to <code>any</code> then only one of the values must be satisfied.</div></td></tr>
+        <td><div>The <em>match</em> argument is used in conjunction with the <em>wait_for</em> argument to specify the match policy. Valid values are <code>all</code> or <code>any</code>. If the value is set to <code>all</code> then all conditionals in the <em>wait_for</em> must be satisfied. If the value is set to <code>any</code> then only one of the values must be satisfied.</div></td></tr>
+            <tr>
+    <td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
             <tr>
     <td>retries<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>10</td>
         <td><ul></ul></td>
-        <td><div>Specifies the number of retries a command should by tried before it is considered failed.  The command is run on the target device every retry and evaluated against the <em>wait_for</em> conditionals.</div></td></tr>
+        <td><div>Specifies the number of retries a command should by tried before it is considered failed. The command is run on the target device every retry and evaluated against the <em>wait_for</em> conditionals.</div></td></tr>
+            <tr>
+    <td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
+            <tr>
+    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td><ul></ul></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
+            <tr>
+    <td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul></ul></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
+            <tr>
+    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
             <tr>
     <td>wait_for<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward.   If the conditional is not true by the configured retries, the task fails.  See examples.</div></br>
+        <td><div>Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward. If the conditional is not true by the configured retries, the task fails. See examples.</div></br>
         <div style="font-size: small;">aliases: waitfor<div></td></tr>
         </table>
     </br>
@@ -74,32 +108,35 @@ Examples
 
  ::
 
-    # Note: examples below use the following provider dict to handle
-    #       transport and authentication to the node.
-    vars:
-      cli:
-        host: "{{ inventory_hostname }}"
-        username: admin
-        password: admin
-        transport: cli
-    
     - name: run show version on remote devices
       bigip_command:
         commands: show sys version
-        provider: "{{ cli }}"
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
     
     - name: run show version and check to see if output contains BIG-IP
       bigip_command:
         commands: show sys version
         wait_for: result[0] contains BIG-IP
-        provider: "{{ cli }}"
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
     
     - name: run multiple commands on remote nodes
        bigip_command:
         commands:
           - show sys version
           - list ltm virtual
-        provider: "{{ cli }}"
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
     
     - name: run multiple commands and evaluate the output
       bigip_command:
@@ -109,14 +146,22 @@ Examples
         wait_for:
           - result[0] contains BIG-IP
           - result[1] contains my-vs
-        provider: "{{ cli }}"
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
     
     - name: tmsh prefixes will automatically be handled
       bigip_command:
         commands:
           - show sys version
           - tmsh list ltm virtual
-        provider: "{{ cli }}"
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
 
 Return Values
 -------------
@@ -159,6 +204,11 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </table>
     </br></br>
 
+Notes
+-----
+
+.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+.. note:: Requires Ansible >= 2.3.
 
 
     

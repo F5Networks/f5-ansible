@@ -4,7 +4,7 @@
 iworkflow_local_connector_device - Manipulate cloud local connector devices in iWorkflow.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -21,7 +21,7 @@ Manipulate cloud local connector devices in iWorkflow.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -45,11 +45,11 @@ Options
         <td><ul></ul></td>
         <td><div>Name of the local connector to add the device(s) to.</div></td></tr>
             <tr>
-    <td>devices<br/><div style="font-size: small;"></div></td>
+    <td>device<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>List of hostname or IP addresses of the devices to associated with the connector. This parameter is required when <code>state</code> is <code>present</code></div></br>
+        <td><div>The Hostname, Self-IP address, or Management Address of the device to associated with the connector. This parameter is required when <code>state</code> is <code>present</code>.</div></br>
         <div style="font-size: small;">aliases: device<div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>

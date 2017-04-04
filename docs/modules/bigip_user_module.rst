@@ -38,12 +38,6 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>yes</code>, will only add groups, not set them to just the list in groups.</div></td></tr>
-            <tr>
     <td>full_name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -52,9 +46,9 @@ Options
             <tr>
     <td>partition_access<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>all:no-access</td>
+    <td>None</td>
         <td><ul></ul></td>
-        <td><div>Specifies the administrative partition to which the user has access. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div></td></tr>
+        <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -66,7 +60,7 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Optionally set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div></td></tr>
+        <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div></td></tr>
             <tr>
     <td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -94,9 +88,9 @@ Options
             <tr>
     <td>update_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>always</td>
+    <td>on_create</td>
         <td><ul><li>always</li><li>on_create</li></ul></td>
-        <td><div><code>always</code> will update passwords if they differ. <code>on_create</code> will only set the password for newly created users.</div></td></tr>
+        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -109,7 +103,7 @@ Options
     <td></td>
         <td><ul></ul></td>
         <td><div>Name of the user to create, remove or modify.</div></br>
-        <div style="font-size: small;">aliases: user<div></td></tr>
+        <div style="font-size: small;">aliases: name<div></td></tr>
             <tr>
     <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
@@ -135,9 +129,9 @@ Examples
           password_credential: "password"
           full_name: "John Doe"
           partition_access: "all:admin"
+          update_password: "on_create"
           state: "present"
       delegate_to: localhost
-    
     - name: Change the user "johnd's" role and shell
       bigip_user:
           server: "lb.mydomain.com"
@@ -148,7 +142,6 @@ Examples
           shell: "tmsh"
           state: "present"
       delegate_to: localhost
-    
     - name: Make the user 'johnd' an admin and set to advanced shell
       bigip_user:
           server: "lb.mydomain.com"
@@ -159,7 +152,6 @@ Examples
           shell: "bash"
           state: "present"
       delegate_to: localhost
-    
     - name: Remove the user 'johnd'
       bigip_user:
           server: "lb.mydomain.com"
@@ -168,7 +160,6 @@ Examples
           name: "johnd"
           state: "absent"
       delegate_to: localhost
-    
     - name: Update password
       bigip_user:
           server: "lb.mydomain.com"
@@ -224,7 +215,7 @@ Notes
 -----
 
 .. note:: Requires the requests Python package on the host. This is as easy as pip install requests
-.. note:: Requires BIG-IP versions >= 13.0.0
+.. note:: Requires BIG-IP versions >= 12.0.0
 
 
     

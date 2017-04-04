@@ -21,7 +21,7 @@ Manipulate static routes on a BIG-IP.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -142,6 +142,67 @@ Examples
           validate_certs: "no"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> destination </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> gateway_address </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> reject </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> vlan </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+            <tr>
+        <td> pool </td>
+        <td> Whether the banner is enabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> true </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

@@ -1,10 +1,10 @@
-.. _bigip_provision:
+.. _iworkflow_user:
 
 
-bigip_provision - Manage BIG-IP module provisioning
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_user - Manage users in iWorkflow.
++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,13 +15,14 @@ bigip_provision - Manage BIG-IP module provisioning
 Synopsis
 --------
 
-Manage BIG-IP module provisioning. This module will only provision at the standard levels of Dedicated, Nominal, and Minimum.
+Manage users in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 2.3.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,17 +39,17 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>level<br/><div style="font-size: small;"></div></td>
+    <td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>nominal</td>
-        <td><ul><li>dedicated</li><li>nominal</li><li>minimum</li></ul></td>
-        <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not run.</div></td></tr>
+    <td>None</td>
+        <td><ul></ul></td>
+        <td><div>An optional description for the user.</div></td></tr>
             <tr>
-    <td>module<br/><div style="font-size: small;"></div></td>
+    <td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul><li>am</li><li>afm</li><li>apm</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>ilx</li><li>lc</li><li>ltm</li><li>pem</li><li>sam</li><li>swg</li></ul></td>
-        <td><div>The module to provision in BIG-IP.</div></td></tr>
+        <td><ul></ul></td>
+        <td><div>Name of the user that you want to manage.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -72,7 +73,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, deprovision the module.</div></td></tr>
+        <td><div>When <code>state</code> is <code>present</code>, ensures that the user exists. When <code>state</code> is <code>absent</code>, ensures that the user is removed.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -95,33 +96,13 @@ Examples
 
  ::
 
-    - name: Provision PEM at "nominal" level
-      bigip_provision:
-          server: "lb.mydomain.com"
-          module: "pem"
-          level: "nominal"
-          password: "secret"
-          user: "admin"
-          validate_certs: "no"
-      delegate_to: localhost
     
-    - name: Provision a dedicated SWG. This will unprovision every other module
-      bigip_provision:
-          server: "lb.mydomain.com"
-          module: "swg"
-          password: "secret"
-          level: "dedicated"
-          user: "admin"
-          validate_certs: "no"
-      delegate_to: localhost
 
 
 Notes
 -----
 
 .. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-.. note:: This module only works reliably on BIG-IP versions >= 13.1.
-.. note:: After you provision something you should
 
 
     

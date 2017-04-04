@@ -4,7 +4,7 @@
 iworkflow_tenant - Manage tenants in iWorkflow.
 +++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -21,7 +21,7 @@ Manage tenants in iWorkflow.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -67,7 +67,7 @@ Options
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Name of the tenant that you want to create in iWorkflow.</div></td></tr>
+        <td><div>Name of the tenant that you want to manage.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -91,7 +91,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the managed device should exist, or not, in iWorkflow.</div></td></tr>
+        <td><div>When <code>state</code> is <code>present</code>, ensures that the tenant exists. When <code>state</code> is <code>absent</code>, ensures that the tenant is removed.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>

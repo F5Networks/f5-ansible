@@ -4,7 +4,7 @@
 iworkflow_system_setup - Manage system setup related configuration on iWorkflow
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -21,7 +21,7 @@ Manage system setup related configuration on iWorkflow.
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 2.2.2
   * iWorkflow >= 2.1.0
 
 
@@ -114,7 +114,7 @@ Examples
           is_root_password_changed: "no"
           is_system_setup: "yes"
           password: "secret"
-          server: "mgmt.mydomain.com"
+          server: "iwf.mydomain.com"
           user: "admin"
       delegate_to: localhost
 

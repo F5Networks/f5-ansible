@@ -4,7 +4,7 @@
 iworkflow_license_pool_member - Manages members in a license pool.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,13 +15,13 @@ iworkflow_license_pool_member - Manages members in a license pool.
 Synopsis
 --------
 
-Manages members in a license pool. By adding and removing members from a pool, you will implicitly be licensing and unlicensing them.
+Manages members in a license pool. By adding and removing members from a pool, you will implicitly be licensing and un-licensing them.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -39,11 +39,11 @@ Options
     <th class="head">comments</th>
     </tr>
             <tr>
-    <td>device<br/><div style="font-size: small;"></div></td>
+    <td>member<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul></ul></td>
-        <td><div>Hostname or IP address of the device to manage in iWorkflow.</div></td></tr>
+        <td><div>Name of the managed device to add to the license pool.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -73,7 +73,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the managed device should exist, or not, in iWorkflow.</div></td></tr>
+        <td><div>Whether the member should exist in the pool (and therefore be licensed) or if it should not (and therefore be unlicensed).</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>

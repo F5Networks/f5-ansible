@@ -18,6 +18,11 @@ Synopsis
 Manages TCL iApp services on a BIG-IP.
 
 
+Requirements (on host that executes module)
+-------------------------------------------
+
+  * f5-sdk >= 2.3.0
+  * iWorkflow >= 2.1.0
 
 
 Options
@@ -38,19 +43,13 @@ Options
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>Managed BIG-IP that you want to get template JSON from. Either one of <code>managed_device</code> or <code>template</code> must be provided.</div></td></tr>
+        <td><div>Managed BIG-IP that you want to get template JSON from. This option is only required when <code>state</code> is <code>present</code>.</div></td></tr>
             <tr>
-    <td>max_bigip_version<br/><div style="font-size: small;"></div></td>
+    <td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>asdasd</div></td></tr>
-            <tr>
-    <td>min_bigip_version<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>asdasd</div></td></tr>
+        <td><div>The name of the iApp template that you want to create on the device. This is usually included in the template itself. This option is typically used in cases where the template no longer exists on disk (to reference) and the <code>state</code> is <code>absent</code>.</div></td></tr>
             <tr>
     <td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -76,23 +75,11 @@ Options
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div></td></tr>
             <tr>
-    <td>template<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>A JSON representation of the iApp template that was imported into iWorkflow.</div></td></tr>
-            <tr>
     <td>template_content<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td>None</td>
-        <td><ul></ul></td>
-        <td><div>The contents of a valid iApp template in a tmpl file. This iApp Template should be versioned and tested for compatibility with iWorkflow Tenant Services and a BIG-IP version of 11.5.3.2 or later.</div></td></tr>
-            <tr>
-    <td>unsupported_bigip_versions<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul></ul></td>
-        <td><div>asdasd</div></td></tr>
+        <td><div>The contents of a valid iApp template in a tmpl file. This iApp Template should be versioned and tested for compatibility with iWorkflow Tenant Services and a BIG-IP version of 11.5.3.2 or later. This option is only required when creating new template in iWorkflow. When you are deleting iApp templates, you will need to specify either one of <code>name</code> or <code>template_content</code>.</div></td></tr>
             <tr>
     <td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -115,11 +102,19 @@ Examples
 
  ::
 
-    - name: Create HTTP iApp service from iApp template
-      bigip_iapp_template:
-          name: "foo-service"
-          template: "f5.http"
-          parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+    - name: Add AppSvcs Integration to iWorkflow
+      iworkflow_iapp_template:
+          device: "my-bigip-1"
+          template_content: "{{ lookup('file', 'appsvcs_integration_v2.0_001.tmpl') }}"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "present"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Remove AppSvcs Integration from iWorkflow
+      iworkflow_iapp_template:
+          name: "appsvcs_integration_v2.0_001"
           password: "secret"
           server: "lb.mydomain.com"
           state: "present"

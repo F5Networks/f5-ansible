@@ -1,10 +1,10 @@
-.. _iworkflow_tenant:
+.. _iworkflow_tenant_connector:
 
 
-iworkflow_tenant - Manage tenants in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_tenant_connector - Manage connectors associated with tenants in iWorkflow.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,13 +15,13 @@ iworkflow_tenant - Manage tenants in iWorkflow.
 Synopsis
 --------
 
-Manage tenants in iWorkflow.
+Manage connectors associated with tenants in iWorkflow.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.0
+  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -96,7 +96,38 @@ Examples
 
  ::
 
+    - name: Register connector to tenant
+      iworkflow_tenant_connector:
+          tenant: "tenant-foo"
+          connector: "connector-foo"
+          server: "iwf.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: "no"
+          state: "present"
     
+    - name: Register multiple connectors to tenant
+      iworkflow_tenant_connector:
+          tenant: "tenant-foo"
+          connector: "{{ item }}"
+          server: "iwf.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: "no"
+          state: "present"
+      with_items:
+          - "connector-one"
+          - "connector-two"
+    
+    - name: Unregister connector from tenant
+      iworkflow_tenant_connector:
+          tenant: "tenant-foo"
+          connector: "connector-foo"
+          server: "iwf.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: "no"
+          state: "absent"
 
 
 Notes
