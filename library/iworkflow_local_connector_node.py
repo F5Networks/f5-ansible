@@ -39,14 +39,10 @@ options:
     description:
       - Name of the local connector to add the device(s) to.
     required: True
-  devices:
+  device:
     description:
-      - List of hostname or IP addresses of the devices to associate with the
-        connector. This parameter is required when C(state) is C(present).
+      - Managed device to create node for.
     required: True
-    default: None
-    aliases:
-      - device
   key_content:
     description:
       - Private key content to use when iWorkflow attempts to communicate with
@@ -77,14 +73,11 @@ options:
         are mutually exclusive. You may use one or the other.
     required: False
     default: None
-  host:
+  hostname:
     description:
-      - The hostname or IP address of the remote BIG-IP that is to be
-        configured.
-    required: True
-    aliases:
-      - address
-      - ip
+      - The hostname that you want to set on the remote managed BIG-IP.
+    required: False
+    default: None
   interfaces:
     description:
       - A list of network interface configuration details that iWorkflow
@@ -96,6 +89,7 @@ options:
         in ascending order that they appear on the device (eth1, eth2, etc).
         This parameter is only required when C(state) is C(present).
     required: False
+    default: None
   state:
     description:
       - When C(present), ensures that the cloud connector exists. When
@@ -126,228 +120,444 @@ RETURN = '''
 
 '''
 
-import os
-from netaddr import IPAddress, AddrFormatError
+import re
+import netaddr
 
-try:
-    from f5.iworkflow import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+import q
 
-
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
-
-
-def connect_to_f5(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token='local')
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    F5ModuleError,
+    HAS_F5SDK,
+    defaultdict,
+    iteritems,
+    iControlUnexpectedHTTPError
+)
 
 
-class F5PrivateKeyContent(object):
-    _name = 'key_content'
+class Device(object):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.pop('client', None)
+        self._values = defaultdict(lambda: None)
 
-    def __get__(self, instance, owner):
-        return instance.__dict__.get(self._name, None)
-
-    def __set__(self, instance, value):
-        instance.__dict__[self._name] = value
-
-
-class F5PrivateKeySource(object):
-    _name = 'key_src'
-
-    def __get__(self, instance, owner):
-        return instance.__dict__.get(self._name, None)
-
-    def __set__(self, instance, value):
-        if not value:
-            return
-        if os.path.exists(value):
-            instance.__dict__[self._name] = value
+    def update(self, params=None):
+        params = str(params)
+        resource = None
+        collection = self._get_device_collection()
+        if re.search(r'([0-9-a-z]+\-){4}[0-9-a-z]+', params, re.I):
+            # Handle cases where the REST API sent us self links
+            for device in collection:
+                if str(device.product) != "BIG-IP":
+                    continue
+                if str(device.selfLink) != params:
+                    continue
+                resource = device
+                break
         else:
+            # Handle the case where a user sends us a list of connector names
+            for device in collection:
+                if str(device.product) != "BIG-IP":
+                    continue
+
+                # The supplied device can be in several formats.
+                if str(device.hostname) == params:
+                    # Hostname
+                    #
+                    # The hostname as was detected by iWorkflow. This is the
+                    # name that iWorkflow displays when you view the Devices
+                    # blade.
+                    #
+                    # Example:
+                    #     sdb-test-bigip-1.localhost.localdoman
+                    resource = device
+                    break
+                elif str(device.address) == params:
+                    # Address
+                    #
+                    # This is the address that iWorkflow discovered the device
+                    # on. This may be the management address, but it could also
+                    # be a Self IP on the BIG-IP. This address is usually
+                    # displayed next to the specific device in the Devices blade
+                    #
+                    # Example:
+                    #     131.225.23.53
+                    resource = device
+                    break
+                elif str(device.managementAddress) == params:
+                    # Management Address
+                    #
+                    # This is the management address of the BIG-IP.
+                    #
+                    # Example:
+                    #     192.168.10.100
+                    resource = device
+                    break
+        if not resource:
             raise F5ModuleError(
-                "The specified key doesnt not exist"
+                "Device {0} was not found".format(params)
             )
-        with open(value, 'r') as fh:
-            instance.key_content = fh.read()
+        self._values['resource'] = resource
+
+    def _get_device_collection(self):
+        dg = self.client.api.shared.resolver.device_groups
+        return dg.cm_cloud_managed_devices.devices_s.get_collection()
+
+    @property
+    def selfLink(self):
+        if self._values['resource'].selfLink is None:
+            return None
+        return str(self._values['resource'].selfLink)
+
+    @property
+    def address(self):
+        if self._values['resource'].address is None:
+            return None
+        return str(self._values['resource'].address)
+
+    @property
+    def hostname(self):
+        if self._values['resource'].hostname is None:
+            return None
+        return str(self._values['resource'].hostname)
 
 
-class iWorkflowBigIpConnectorNodeParams(object):
-    device_ref = None
-    device = None
-    name = None
-    username_credential = None
-    password_credential = None
-    key_src = F5PrivateKeySource()
-    key_content = F5PrivateKeyContent()
-    host = None
-    interfaces = None
+class Connector(object):
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.pop('client', None)
+        self._values = defaultdict(lambda: None)
 
-    def difference(self, obj):
-        """Compute difference between one object and another
+    def update(self, params=None):
+        params = str(params)
+        resource = None
+        collection = self._get_connector_collection()
+        if re.search(r'([0-9-a-z]+\-){4}[0-9-a-z]+', params, re.I):
+            # Handle cases where the REST API sent us self links
+            for connector in collection:
+                if str(connector.displayName) != "BIG-IP":
+                    continue
+                if str(connector.selfLink) != params:
+                    continue
+                resource = connector
+                break
+        else:
+            # Handle the case where a user sends us a list of connector names
+            for connector in collection:
+                if str(connector.displayName) != "BIG-IP":
+                    continue
+                if str(connector.name) != params:
+                    continue
+                resource = connector
+                break
+        if not resource:
+            raise F5ModuleError(
+                "Connector {0} was not found".format(params)
+            )
+        self._values['name'] = resource.name
+        self._values['selfLink'] = resource.selfLink
 
-        :param obj:
-        Returns:
-            Returns a new set with elements in s but not in t (s - t)
-        """
-        excluded_keys = [
-            'password', 'server', 'user', 'server_port', 'validate_certs'
-        ]
-        return self._difference(self, obj, excluded_keys)
+    def _get_connector_collection(self):
+        return self.client.api.cm.cloud.connectors.locals.get_collection()
 
-    def _difference(self, obj1, obj2, excluded_keys):
-        """
+    @property
+    def name(self):
+        return str(self._values['name'])
 
-        Code take from https://www.djangosnippets.org/snippets/2281/
+    @property
+    def selfLink(self):
+        return str(self._values['selfLink'])
 
-        :param obj1:
-        :param obj2:
-        :param excluded_keys:
-        :return:
-        """
-        d1, d2 = obj1.__dict__, obj2.__dict__
-        new = {}
-        for k,v in d1.items():
-            if k in excluded_keys:
-                continue
+
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'ipAddress': 'ip_address',
+        'cloudNodeID': 'cloud_node_id',
+        'networkInterfaces': 'interfaces'
+    }
+    returnables = ['networkInterfaces']
+
+    api_attributes = [
+        'properties', 'ipAddress', 'cloudNodeID', 'networkInterfaces'
+    ]
+
+    updatables = []
+
+    def __init__(self, params=None, client=None):
+        self.client = client
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        q.q(result)
+        result = self._filter_params(result)
+        result['state'] = 'RUNNING'
+        return result
+
+    @property
+    def ip_address(self):
+        return self.device.address
+
+    @property
+    def cloud_node_id(self):
+        # We have to provide this to iWorkflow ourselves, so the standard
+        # protocol is to just make this ID the IP address of the device.
+        return self.device.address
+
+    @property
+    def interfaces(self):
+        result = []
+        for interface in self._values['interfaces']:
+            tmp = {}
+
             try:
-                if v != d2[k]:
-                    new.update({k: d2[k]})
-            except KeyError:
-                new.update({k: v})
-        return new
+                ip = netaddr.IPNetwork(interface['local_address'])
+                local_address = str(ip.ip)
+            except netaddr.core.AddrFormatError:
+                raise F5ModuleError(
+                    "The provided local_address for your network "
+                    "interface is not in an IP address or CIDR format"
+                )
 
-    @classmethod
-    def from_module(cls, module):
-        """Create instance from dictionary of Ansible Module params
+            if 'gateway_address' in interface:
+                tmp['gatewayAddress'] = interface['gateway_address']
+            if 'name' in interface:
+                tmp['name'] = interface['name']
 
-        This method accepts a dictionary that is in the form supplied by
-        the
+            if 'subnet_address' in interface:
+                try:
+                    subnet = interface['subnet_address']
+                    address = '{0}/{1}'.format(local_address, subnet)
+                    ip = netaddr.IPNetwork(address)
+                    # The iWorkflow value for this is the true CIDR address
+                    tmp['subnetAddress'] = str(ip.cidr)
+                    tmp['localAddress'] = local_address
+                except netaddr.core.AddrFormatError:
+                    raise F5ModuleError(
+                        "The provided subnet_address for your network "
+                        "interface is not in an IP address or CIDR format"
+                    )
+            else:
+                tmp['localAddress'] = local_address
+            result.append(tmp)
+        return result
 
-        Args:
-             module: An AnsibleModule object's `params` attribute.
+    @property
+    def hostname(self):
+        if self._values['hostname'] is None:
+            return None
+        return str(self._values['hostname'])
 
-        Returns:
-            A new instance of iWorkflowSystemSetupParams. The attributes
-            of this object are set according to the param data that is
-            supplied by the user.
-        """
-        result = cls()
-        for key in module:
-            setattr(result, key, module[key])
+    @property
+    def connector(self):
+        return self._values['connector']
+
+    @connector.setter
+    def connector(self, value):
+        connector = Connector()
+        connector.client = self.client
+        connector.update(value)
+        self._values['connector'] = connector
+
+    @property
+    def device(self):
+        return self._values['device']
+
+    @device.setter
+    def device(self, value):
+        device = Device()
+        device.client = self.client
+        device.update(value)
+        self._values['device'] = device
+
+    @property
+    def properties(self):
+        result = self._get_base_properties()
+        result += self._set_hostname_property()
+        result += self._set_key_content_property()
+        result += self._set_password_credential_property()
+        result += self._set_mgmt_user_property()
+        result += self._set_device_default_credentials()
+        return result
+
+    def _set_password_credential_property(self):
+        if self.password_credential is None:
+            return []
+        result = [dict(
+            id='DeviceMgmtPassword',
+            provider=self.password_credential
+        )]
+        return result
+
+    def _set_hostname_property(self):
+        if self.hostname is None:
+            return []
+        result = [dict(
+            id='DeviceHostname',
+            provider=self.hostname
+        )]
+        return result
+
+    def _set_key_content_property(self):
+        if self.key_content is None:
+            return []
+        result = [dict(
+            id='KeyPrivate',
+            value=self.key_content
+        )]
+        return result
+
+    def _set_mgmt_user_property(self):
+        if self.username_credential is None:
+            return []
+
+        result = [dict(
+            id='DeviceMgmtUser',
+            provider=self.username_credential
+        )]
+        return result
+
+    def _set_device_default_credentials(self):
+        result = []
+        if self.username_credential == 'admin':
+            result.append(dict(
+                id='BIG-IP-WITH-ADMIN-SSH',
+                provider="true"
+            ))
+            if self.password_credential == 'admin':
+                result.append(dict(
+                    id='DeviceCreatedWithDefaultCredentials',
+                    provider="true"
+                ))
+            else:
+                result.append(dict(
+                    id='DeviceCreatedWithDefaultCredentials',
+                    provider="false"
+                ))
+        elif self.username_credential == 'root':
+            result.append(dict(
+                id='BIG-IP-WITH-ADMIN-SSH',
+                provider="false"
+            ))
+            if self.password_credential == 'default':
+                result.append(dict(
+                    id='DeviceCreatedWithDefaultCredentials',
+                    provider="true"
+                ))
+            else:
+                result.append(dict(
+                    id='DeviceCreatedWithDefaultCredentials',
+                    provider="false"
+                ))
+        else:
+            result.append(dict(
+                id='BIG-IP-WITH-ADMIN-SSH',
+                provider="false"
+            ))
+            result.append(dict(
+                id='DeviceCreatedWithDefaultCredentials',
+                provider="false"
+            ))
+        return result
+
+    def _get_base_properties(self):
+        result = [
+            dict(
+                id="BIG-IP-PROVISIONABLE",
+                provider="true"
+            ),
+            dict(
+                id='BIG-IP',
+                provider="true"
+            ),
+            dict(
+                id='ToBeConfiguredByiWorkflow',
+                provider="true"
+            ),
+            dict(
+                id='DeviceLeaveRootLoginEnabled',
+                provider="false"
+            )
+        ]
         return result
 
 
-class iWorkflowBigIpConnectorNodeModule(AnsibleModule):
-    def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
-        self.supports_check_mode = True
-        self.init_meta_args()
-        self.init_argument_spec()
-        super(iWorkflowBigIpConnectorNodeModule, self).__init__(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            mutually_exclusive=[
-                ['key_src', 'password_credential'],
-                ['key_content', 'password_credential'],
-                ['key_src', 'key_content']
-            ],
-            required_if=[
-                ['state', 'present', ['interfaces']]
-            ]
-        )
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
+        self.changes = Parameters()
 
-    def __set__(self, instance, value):
-        if isinstance(value, iWorkflowBigIpConnectorNodeModule):
-            instance.params = iWorkflowBigIpConnectorNodeParams.from_module(
-                self.params
-            )
-        else:
-            super(iWorkflowBigIpConnectorNodeModule, self).__set__(instance, value)
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
 
-    def init_meta_args(self):
-        args = dict(
-            connector=dict(
-                required=True
-            ),
-            device=dict(
-                required=True
-            ),
-            key_content=dict(
-                type='str',
-                required=False,
-                default=None
-            ),
-            key_src=dict(
-                type='str',
-                required=False,
-                default=None
-            ),
-            username_credential=dict(
-                required=False,
-                default=None
-            ),
-            password_credential=dict(
-                required=False,
-                default=None
-            ),
-            host=dict(
-                required=True
-            ),
-            interfaces=dict(
-                type='list',
-                required=False,
-                default=None
-            ),
-            state=dict(
-                required=False,
-                default='present',
-                choices=['absent', 'present']
-            )
-        )
-        self.meta_args = args
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters()
+            self.changes.client = self.client
+            self.changes.update(changed)
+            return True
+        return False
 
-    def init_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-
-class iWorkflowBigIpConnectorNodeManager(object):
-    params = iWorkflowBigIpConnectorNodeParams()
-    current = iWorkflowBigIpConnectorNodeParams()
-    module = iWorkflowBigIpConnectorNodeModule()
-
-    def __init__(self):
-        self.api = None
-        self.changes = None
-        self.config = None
-
-    def apply_changes(self):
-        """Apply the user's changes to the device
-
-        This method is the primary entry-point to this module. Based on the
-        parameters supplied by the user to the class, this method will
-        determine which `state` needs to be fulfilled and delegate the work
-        to more specialized helper methods.
-
-        Additionally, this method will return the result of applying the
-        changes so that Ansible can communicate this result to the user.
-
-        Raises:
-            F5ModuleError: An error occurred communicating with the device
-        """
+    def exec_module(self):
+        changed = False
         result = dict()
-        state = self.params.state
+        state = self.want.state
 
         try:
-            self.api = connect_to_f5(**self.params.__dict__)
             if state == "present":
                 changed = self.present()
             elif state == "absent":
@@ -355,168 +565,42 @@ class iWorkflowBigIpConnectorNodeManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.params.difference(self.current)
+        changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
     def exists(self):
-        connector = self.connector_exists()
-
-        device_refs = self.get_selflinks_from_device_addresses(
-            self.params.devices
-        )
-        if not hasattr(connector, 'deviceReferences'):
-            return False
-
-        for reference in connector.deviceReferences:
-            if str(reference['link']) in device_refs:
-                return True
         return False
-
-    def connector_exists(self):
-        connector = self.get_connector_from_connector_name(
-            self.params.connector
-        )
-        if not connector:
-            raise F5ModuleError(
-                "The specified connector was not found"
-            )
-        return connector
 
     def present(self):
         if self.exists():
             return False
         else:
-            return self.create_connector_node()
+            return self.create()
 
-    def create_connector_node(self):
-        if self.module.check_mode:
+    def create(self):
+        if self.client.check_mode:
             return True
-        self.create_connector_node_on_device()
+        self.create_on_device()
         return True
 
-    def get_connector_from_connector_name(self, name):
-        connector = None
-        connectors = self.api.cm.cloud.connectors.locals.get_collection()
-        for connector in connectors:
-            if connector.displayName != "BIG-IP":
-                continue
-            if connector.name != name:
-                continue
-            break
-        return connector
-
-    def create_connector_node_on_device(self):
-        params = self.get_connector_node_params()
-        return True
+    def create_on_device(self):
+        params = self.want.api_params()
+        q.q(params)
 
     def get_connector_node_params(self):
         result = dict(
-            state='RUNNING',
-            properties=[
-                dict(
-                    id="BIG-IP-PROVISIONABLE",
-                    provider="true"
-                ),
-                dict(
-                    id='BIG-IP',
-                    provider="true"
-                ),
-                dict(
-                    id='ToBeConfiguredByiWorkflow',
-                    value="true"
-                ),
-                dict(
-                    id='DeviceHostname',
-                    provider=self.params.host
-                ),
-                dict(
-                    id='DeviceLeaveRootLoginEnabled',
-                    provider="false"
-                )
-            ],
-            ipAddress=self.params.device,
-            cloudNodeID=self.params.device,
-            networkInterfaces=self.params.interfaces,
+            ipAddress=self.want.device,
+            cloudNodeID=self.want.device,
+            networkInterfaces=self.want.interfaces,
             isBIGIP=True
         )
-        if self.params.username_credential == 'admin':
-            result['properties'].append(dict(
-                id='BIG-IP-WITH-ADMIN-SSH',
-                provider="true"
-            ))
-            if self.params.password_credential == 'admin':
-                result['properties'].append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="true"
-                ))
-            else:
-                result['properties'].append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="false"
-                ))
-        elif self.params.username_credential == 'root':
-            result['properties'].append(dict(
-                id='BIG-IP-WITH-ADMIN-SSH',
-                provider="false"
-            ))
-            if self.params.password_credential == 'default':
-                result['properties'].append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="true"
-                ))
-            else:
-                result['properties'].append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="false"
-                ))
-        else:
-            result['properties'].append(dict(
-                id='BIG-IP-WITH-ADMIN-SSH',
-                provider="false"
-            ))
-            result['properties'].append(dict(
-                id='DeviceCreatedWithDefaultCredentials',
-                provider="false"
-            ))
 
-        if self.params.key_content:
-            result['properties'].append(dict(
-                id='KeyPrivate',
-                value=self.params.key_content
-            ))
-        if self.params.username_credential:
-            result['properties'].append(dict(
-                id='DeviceMgmtUser',
-                provider=self.params.username_credential
-            ))
-        if self.params.password_credential:
-            result['properties'].append(dict(
-                id='DeviceMgmtPassword',
-                provider=self.params.password_credential
-            ))
+
+
+
         return result
-
-    def get_selflinks_from_device_addresses(self, addrs):
-        links = []
-        dg = self.api.shared.resolver.device_groups
-        for addr in addrs:
-            try:
-                IPAddress(addr)
-                params = dict(
-                    params="$filter=address+eq+'{0}'".format(addr)
-                )
-            except AddrFormatError:
-                params = dict(
-                    params="$filter=hostname+eq+'{0}'".format(addr)
-                )
-            devices = dg.cm_cloud_managed_devices.devices_s.get_collection(
-                requests_params=dict(**params)
-            )
-            device = devices.pop()
-            links.append(device.selfLink)
-        return links
 
     def absent(self):
         if self.exists():
@@ -524,7 +608,7 @@ class iWorkflowBigIpConnectorNodeManager(object):
         return False
 
     def remove_connector_node(self):
-        if self.module.check_mode:
+        if self.client.check_mode:
             return True
         self.remove_connector_node_from_device()
         if self.exists():
@@ -540,19 +624,75 @@ class iWorkflowBigIpConnectorNodeManager(object):
         return True
 
 
+class ArgumentSpec(object):
+    def __init__(self):
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            connector=dict(
+                required=True
+            ),
+            device=dict(
+                required=True
+            ),
+            key_content=dict(
+                type='str',
+                required=False,
+                default=None
+            ),
+            username_credential=dict(
+                required=False,
+                default=None
+            ),
+            password_credential=dict(
+                required=False,
+                default=None
+            ),
+            hostname=dict(
+                required=False,
+                default=None
+            ),
+            interfaces=dict(
+                type='list',
+                required=False,
+                default=None
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['absent', 'present']
+            )
+        )
+
+        self.mutually_exclusive=[
+            ['key_content', 'password_credential'],
+        ]
+        self.required_if=[
+            ['state', 'present', ['interfaces']]
+        ]
+        self.f5_product_name = 'iworkflow'
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    module = iWorkflowBigIpConnectorNodeModule()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name,
+        required_if=spec.required_if,
+        mutually_exclusive=spec.mutually_exclusive
+    )
 
     try:
-        obj = iWorkflowBigIpConnectorNodeManager()
-        obj.module = module
-        result = obj.apply_changes()
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
