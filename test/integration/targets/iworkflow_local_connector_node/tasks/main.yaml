@@ -1,0 +1,39 @@
+---
+
+- name: Discover BIG-IP
+  iworkflow_device:
+      device: "{{ device_ip1 }}"
+      username_credential: "{{ bigip_username }}"
+      password_credential: "{{ bigip_password }}"
+      state: "present"
+
+- name: Create connector
+  iworkflow_local_connector:
+      name: "{{ connector_name }}"
+      state: "present"
+  register: result
+
+- name: Register device to connector
+  iworkflow_local_connector_device:
+      device: "{{ device_ip1 }}"
+      connector: "{{ connector_name }}"
+      state: "present"
+  register: result
+
+- name: Create node from managed device
+  iworkflow_local_connector_node:
+      device: "{{ device_ip1 }}"
+      username_credential: "{{ bigip_username }}"
+      password_credential: "{{ bigip_password }}"
+      state: "present"
+      connector: "{{ connector_name }}"
+      hostname: "{{ device_name1 }}"
+      interfaces:
+          - local_address: 10.0.2.15
+            subnet_address: 255.255.255.0
+
+- name: Remove discovered BIG-IP
+  iworkflow_device:
+      device: "{{ device_ip1 }}"
+      state: "absent"
+  delegate_to: localhost
