@@ -38,7 +38,6 @@ from library.bigip_user import (
     Parameters,
     ModuleManager,
     ArgumentSpec,
-    PartitionedManager,
     UnparitionedManager
 )
 
