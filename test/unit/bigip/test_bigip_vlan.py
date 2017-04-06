@@ -115,6 +115,8 @@ class TestParameters(unittest.TestCase):
         assert p.description == 'fakevlan'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
@@ -132,8 +134,6 @@ class TestManager(unittest.TestCase):
         for item in ifcs_untag:
             self.loaded_vlan_ifc_untag.append(BigIpObj(**item))
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_vlan(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -165,8 +165,6 @@ class TestManager(unittest.TestCase):
         assert results['name'] == 'somevlan'
         assert results['description'] == 'fakevlan'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_vlan_tagged_interface(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -200,8 +198,6 @@ class TestManager(unittest.TestCase):
         assert results['tag'] == 213
         assert results['name'] == 'somevlan'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_vlan_untagged_interface(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -233,8 +229,6 @@ class TestManager(unittest.TestCase):
         assert results['interfaces'] == [{'untagged': True, 'name': '2.1'}]
         assert results['name'] == 'somevlan'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_vlan_tagged_interfaces(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -269,8 +263,6 @@ class TestManager(unittest.TestCase):
         assert results['tag'] == 213
         assert results['name'] == 'somevlan'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_vlan_untagged_interfaces(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -303,8 +295,6 @@ class TestManager(unittest.TestCase):
                                          {'untagged': True, 'name': '1.1'}]
         assert results['name'] == 'somevlan'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_vlan_untag_interface(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -343,8 +333,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['interfaces'] == [{'untagged': True, 'name': '2.1'}]
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_vlan_tag_interface(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -383,8 +371,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['interfaces'] == [{'tagged': True, 'name': '2.1'}]
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_vlan_description(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -423,8 +409,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['description'] == 'changed_that'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_untagged_ifc_raises(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -455,8 +439,6 @@ class TestManager(unittest.TestCase):
 
         assert err.value.message == msg
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_tagged_ifc_raises(self, *args):
         set_module_args(dict(
             name='somevlan',
@@ -488,9 +470,6 @@ class TestManager(unittest.TestCase):
 
         assert err.value.message == msg
 
-
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_parse_return_ifcs_raises(self, *args):
         set_module_args(dict(
             name='somevlan',

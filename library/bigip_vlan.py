@@ -91,6 +91,7 @@ EXAMPLES = '''
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
+
 - name: Set VLAN tag
   bigip_vlan:
       name: "net1"
@@ -100,6 +101,7 @@ EXAMPLES = '''
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
+
 - name: Add VLAN 2345 as tagged to interface 1.1
   bigip_vlan:
       tagged_interface: 1.1
@@ -110,6 +112,7 @@ EXAMPLES = '''
       user: "admin"
       validate_certs: "no"
   delegate_to: localhost
+
 - name: Add VLAN 1234 as tagged to interfaces 1.1 and 1.2
   bigip_vlan:
       tagged_interfaces:
