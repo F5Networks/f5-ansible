@@ -1,23 +1,67 @@
 ---
 
-- name: Create policy
+- name: Create a published policy
   bigip_policy:
-      name: "{{ policy_name }}"
+      name: "{{ policy_name1 }}"
       state: "present"
   register: result
 
-- name: Assert Create policy
+- name: Assert Create a published policy
   assert:
       that:
           - result|changed
 
-- name: Create policy - Idempotent check
+- name: Create a published policy - Idempotent check
   bigip_policy:
-      name: "{{ policy_name }}"
+      name: "{{ policy_name1 }}"
       state: "present"
   register: result
 
-- name: Assert Create policy - Idempotent check
+- name: Assert Create a published policy - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Create a draft policy
+  bigip_policy:
+      name: "{{ policy_name2 }}"
+      state: "draft"
+  register: result
+
+- name: Assert Create a draft policy
+  assert:
+      that:
+          - result|changed
+
+- name: Create a draft policy - Idempotent check
+  bigip_policy:
+      name: "{{ policy_name2 }}"
+      state: "draft"
+  register: result
+
+- name: Assert Create a draft policy - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Draft a published policy
+  bigip_policy:
+      name: "{{ policy_name1 }}"
+      state: "draft"
+  register: result
+
+- name: Assert Draft a published policy
+  assert:
+      that:
+          - result|changed
+
+- name: Draft a published policy - Idempotent check
+  bigip_policy:
+      name: "{{ policy_name1 }}"
+      state: "draft"
+  register: result
+
+- name: Assert Draft a published policy - Idempotent check
   assert:
       that:
           - not result|changed

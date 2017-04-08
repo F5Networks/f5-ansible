@@ -1,6 +1,7 @@
 ---
 
-policy_name: "foo-policy"
+policy_name1: "published-policy"
+policy_name2: "draft-policy"
 policy_description1: "description1"
 policy_description2: "description2"
 strategy1: "first"
