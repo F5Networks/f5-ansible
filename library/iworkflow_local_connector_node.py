@@ -104,6 +104,10 @@ notes:
     install f5-sdk.
   - Requires the netaddr Python package on the host. This is as easy as pip
     install netaddr.
+  - This module does not support updating of existing nodes that were created
+    with a C(cli_password_credential). The onboarding process will change your
+    device's C(cli_username_credential) password, which will prevent you from
+    using this module (without knowing the password) a second time.
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 2.2.0
@@ -594,7 +598,11 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
+            if self.have.currentConfigDeviceTaskReference['status'] == 'FAILED':
+                return self.update()
+            else:
+                # We don't update things that aren't broken.
+                return False
         else:
             return self.create()
 
@@ -611,7 +619,7 @@ class ModuleManager(object):
         self._wait_for_state_to_activate(resource)
 
     def _wait_for_state_to_activate(self, resource):
-        for x in range(180):
+        for x in range(360):
             resource.refresh(
                 requests_params=dict(
                     params='$expand=currentConfigDeviceTaskReference'
@@ -655,8 +663,10 @@ class ModuleManager(object):
             return False
         if self.client.check_mode:
             return True
-        self.update_on_device()
-        return True
+
+        # The only way to update is to delete the existing node and re-post.
+        self.remove()
+        return self.create()
 
     def should_update(self):
         result = self._update_changed_options()
@@ -665,24 +675,12 @@ class ModuleManager(object):
             return True
         return False
 
-    def update_on_device(self):
-        params = self.want.api_params()
-        connector = self.want.connector.resource
-        collection = connector.nodes_s.get_collection(
-            requests_params=dict(
-                params="$filter=ipAddress+eq+'{0}'".format(self.want.device.address)
-            )
-        )
-        resource = collection.pop()
-        resource.update(**params)
-        self._wait_for_state_to_activate(resource)
-
     def absent(self):
         if self.exists():
-            return self.remove_connector_node()
+            return self.remove()
         return False
 
-    def remove_connector_node(self):
+    def remove(self):
         if self.client.check_mode:
             return True
         self.remove_connector_node_from_device()
@@ -692,13 +690,14 @@ class ModuleManager(object):
             )
         return True
 
-    def remove_connector_node_from_device(self):
+    def remove_from_device(self):
         connector = self.want.connector.resource
         collection = connector.nodes_s.get_collection()
         for resource in collection:
             if resource.ipAddress == self.want.device.ip_address:
                 resource.delete()
                 return True
+        return False
 
 
 class ArgumentSpec(object):
