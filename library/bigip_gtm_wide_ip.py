@@ -112,7 +112,7 @@ from distutils.version import LooseVersion
 class Parameters(AnsibleF5Parameters):
     updatables = ['lb_method', 'state']
     returnables = ['name', 'lb_method', 'state']
-    api_attributes = ['name', 'poolLbMode']
+    api_attributes = ['poolLbMode']
 
     def to_return(self):
         result = {}
