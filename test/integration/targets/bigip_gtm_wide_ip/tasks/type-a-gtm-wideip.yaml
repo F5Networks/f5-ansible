@@ -26,6 +26,58 @@
       that:
           - not result|changed
 
+- name: Disable wide IP
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: "disabled"
+      type: "a"
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Disable wide IP
+  assert:
+      that:
+          - result|changed
+
+- name: Disable wide IP - Idempotent check
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: "disabled"
+      type: "a"
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Disable wide IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Enable wide IP
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: "enabled"
+      type: "a"
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Enable wide IP
+  assert:
+      that:
+          - result|changed
+
+- name: Enable wide IP - Idempotent check
+  bigip_gtm_wide_ip:
+      lb_method: "{{ valid_lb_method1 }}"
+      state: "enabled"
+      type: "a"
+      wide_ip: "{{ wide_ip1 }}"
+  register: result
+
+- name: Assert Enable wide IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Set wide IP LB method, valid - ratio
   bigip_gtm_wide_ip:
       lb_method: "{{ valid_lb_method2 }}"

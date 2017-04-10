@@ -68,15 +68,17 @@ options:
     version_added: 2.4
   state:
     description:
-      - When C(present), ensures that the Wide IP exists and is enabled.
-        When C(absent), ensures that the Wide IP has been removed. When
-        C(disabled), ensures that the Wide IP exists and is disabled.
+      - When C(present) or C(enabled), ensures that the Wide IP exists and
+        is enabled. When C(absent), ensures that the Wide IP has been
+        removed. When C(disabled), ensures that the Wide IP exists and is
+        disabled.
     required: False
     default: present
     choices:
       - present
       - absent
       - disabled
+      - enabled
     version_added: 2.4
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -104,15 +106,16 @@ RETURN = '''
 '''
 
 import re
+import q
 
 from ansible.module_utils.f5_utils import *
 from distutils.version import LooseVersion
 
 
 class Parameters(AnsibleF5Parameters):
-    updatables = ['lb_method', 'state']
+    updatables = ['lb_method']
     returnables = ['name', 'lb_method', 'state']
-    api_attributes = ['poolLbMode']
+    api_attributes = ['poolLbMode', 'enabled', 'disabled']
 
     def to_return(self):
         result = {}
@@ -199,6 +202,8 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def name(self):
+        if self._values['name'] is None:
+            return None
         if not re.search(r'.*\..*\..*', self._values['name']):
             raise F5ModuleError(
                 "The provided name must be a valid FQDN"
@@ -212,6 +217,34 @@ class Parameters(AnsibleF5Parameters):
     @poolLbMode.setter
     def poolLbMode(self, value):
         self.lb_method = value
+
+    @property
+    def state(self):
+        if self._values['state'] == 'enabled':
+            return 'present'
+        return self._values['state']
+
+    @property
+    def enabled(self):
+        if self._values['state'] == 'disabled':
+            return False
+        elif self._values['state'] in ['present', 'enabled']:
+            return True
+        elif self._values['enabled'] is True:
+            return True
+        else:
+            return None
+
+    @property
+    def disabled(self):
+        if self._values['state'] == 'disabled':
+            return True
+        elif self._values['state'] in ['present', 'enabled']:
+            return False
+        elif self._values['disabled'] is True:
+            return True
+        else:
+            return None
 
 
 class ModuleManager(object):
@@ -244,7 +277,7 @@ class BaseManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -262,6 +295,12 @@ class BaseManager(object):
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
                     changed[key] = attr1
+
+        if self.want.state == 'disabled' and self.have.enabled:
+            changed['state'] = self.want.state
+        elif self.want.state in ['present', 'enabled'] and self.have.disabled:
+            changed['state'] = self.want.state
+
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -273,7 +312,7 @@ class BaseManager(object):
         state = self.want.state
 
         try:
-            if state == "present":
+            if state in ["present", "disabled"]:
                 changed = self.present()
             elif state == "absent":
                 changed = self.absent()
@@ -393,10 +432,11 @@ class TypedManager(BaseManager):
         wideips = self.client.api.tm.gtm.wideips
         collection = getattr(wideips, self.want.collection)
         resource = getattr(collection, self.want.type)
-        return resource.exists(
+        result = resource.exists(
             name=self.want.name,
             partition=self.want.partition
         )
+        return result
 
     def create(self):
         if self.client.check_mode:
@@ -413,6 +453,7 @@ class TypedManager(BaseManager):
             name=self.want.name,
             partition=self.want.partition
         )
+        q.q(params)
         result.modify(**params)
 
     def read_current_from_device(self):
@@ -482,7 +523,7 @@ class ArgumentSpec(object):
             state=dict(
                 required=False,
                 default='present',
-                choices=['absent', 'present']
+                choices=['absent', 'present', 'enabled', 'disabled']
             )
         )
         self.f5_product_name = 'bigip'
