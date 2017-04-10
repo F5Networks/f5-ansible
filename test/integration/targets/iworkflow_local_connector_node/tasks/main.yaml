@@ -6,6 +6,25 @@
       username_credential: "{{ bigip_username }}"
       password_credential: "{{ bigip_password }}"
       state: "present"
+  register: discovery
+  ignore_errors: true
+
+# Failure usually occurs for two reasons
+#
+#    * because iWorkflow times out uploading an updated REST framework to BIG-IP
+#    * because iWorkflow's clock skew is too great
+#
+- name: Re-discover BIG-IP if first discovery failed
+  iworkflow_device:
+      device: "{{ device_ip1 }}"
+      username_credential: "{{ bigip_username }}"
+      password_credential: "{{ bigip_password }}"
+      state: "rediscover"
+  until: rediscover|success
+  delay: 1
+  retries: 180
+  when: discovery|failed
+  register: rediscover
 
 - name: Create connector
   iworkflow_local_connector:
@@ -23,14 +42,31 @@
 - name: Create node from managed device
   iworkflow_local_connector_node:
       device: "{{ device_ip1 }}"
-      username_credential: "{{ bigip_username }}"
-      password_credential: "{{ bigip_password }}"
+      api_password_credential: "{{ bigip_password }}"
+      cli_username_credential: "{{ username_credential }}"
+      cli_password_credential: "{{ password_credential }}"
       state: "present"
       connector: "{{ connector_name }}"
       hostname: "{{ device_name1 }}"
       interfaces:
-          - local_address: 10.0.2.15
-            subnet_address: 255.255.255.0
+          - local_address: "{{ device_ip1 }}"
+            subnet_address: "{{ subnet_address }}"
+          - local_address: 10.2.2.3
+            subnet_address: 10.2.2.0/24
+            name: "external"
+
+- name: Un-register device from connector
+  iworkflow_local_connector_device:
+      device: "{{ device_ip1 }}"
+      connector: "{{ connector_name }}"
+      state: "absent"
+  register: result
+
+- name: Remove connector
+  iworkflow_local_connector:
+      name: "{{ connector_name }}"
+      state: "absent"
+  register: result
 
 - name: Remove discovered BIG-IP
   iworkflow_device:

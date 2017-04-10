@@ -122,6 +122,7 @@ RETURN = '''
 
 import re
 import netaddr
+import time
 
 import q
 
@@ -255,6 +256,7 @@ class Connector(object):
             )
         self._values['name'] = resource.name
         self._values['selfLink'] = resource.selfLink
+        self._values['resource'] = resource
 
     def _get_connector_collection(self):
         return self.client.api.cm.cloud.connectors.locals.get_collection()
@@ -266,6 +268,10 @@ class Connector(object):
     @property
     def selfLink(self):
         return str(self._values['selfLink'])
+
+    @property
+    def resource(self):
+        return self._values['resource']
 
 
 class Parameters(AnsibleF5Parameters):
@@ -363,8 +369,7 @@ class Parameters(AnsibleF5Parameters):
             if 'subnet_address' in interface:
                 try:
                     subnet = interface['subnet_address']
-                    address = '{0}/{1}'.format(local_address, subnet)
-                    ip = netaddr.IPNetwork(address)
+                    ip = netaddr.IPNetwork(subnet)
                     # The iWorkflow value for this is the true CIDR address
                     tmp['subnetAddress'] = str(ip.cidr)
                     tmp['localAddress'] = local_address
@@ -417,11 +422,11 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _set_password_credential_property(self):
-        if self.password_credential is None:
+        if self.api_password_credential is None:
             return []
         result = [dict(
             id='DeviceMgmtPassword',
-            provider=self.password_credential
+            provider=self.api_password_credential
         )]
         return result
 
@@ -444,23 +449,32 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _set_mgmt_user_property(self):
-        if self.username_credential is None:
+        if self.api_username_credential is None:
             return []
 
+        # iWorkflow 2.1.0 requires that this be 'admin'. If you don't
+        # set this as 'admin', you get the following error in iWorkflow
+        #
+        # VALIDATE_NODE stage FAILED because ... DeviceMgmtUser property
+        # must be ********.  Delete and re-create Node with that property.
+        #
+        # I am leaving this as a function though in case that changes in
+        # the future.
         result = [dict(
             id='DeviceMgmtUser',
-            provider=self.username_credential
+            provider='admin'
         )]
         return result
 
     def _set_device_default_credentials(self):
         result = []
-        if self.username_credential == 'admin':
+        if self.cli_username_credential == 'admin':
             result.append(dict(
                 id='BIG-IP-WITH-ADMIN-SSH',
                 provider="true"
             ))
-            if self.password_credential == 'admin':
+            # TODO: Is this the truth?? wtf does this setting control?
+            if self.api_password_credential == 'admin':
                 result.append(dict(
                     id='DeviceCreatedWithDefaultCredentials',
                     provider="true"
@@ -470,12 +484,12 @@ class Parameters(AnsibleF5Parameters):
                     id='DeviceCreatedWithDefaultCredentials',
                     provider="false"
                 ))
-        elif self.username_credential == 'root':
+        elif self.cli_username_credential == 'root':
             result.append(dict(
                 id='BIG-IP-WITH-ADMIN-SSH',
                 provider="false"
             ))
-            if self.password_credential == 'default':
+            if self.cli_password_credential == 'default':
                 result.append(dict(
                     id='DeviceCreatedWithDefaultCredentials',
                     provider="true"
@@ -571,11 +585,16 @@ class ModuleManager(object):
         return result
 
     def exists(self):
+        connector = self.want.connector.resource
+        collection = connector.nodes_s.get_collection()
+        for resource in collection:
+            if resource.ipAddress == self.want.device.address:
+                return True
         return False
 
     def present(self):
         if self.exists():
-            return False
+            return self.update()
         else:
             return self.create()
 
@@ -587,20 +606,76 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        q.q(params)
+        connector = self.want.connector.resource
+        resource = connector.nodes_s.node.create(**params)
+        self._wait_for_state_to_activate(resource)
 
-    def get_connector_node_params(self):
-        result = dict(
-            ipAddress=self.want.device,
-            cloudNodeID=self.want.device,
-            networkInterfaces=self.want.interfaces,
-            isBIGIP=True
+    def _wait_for_state_to_activate(self, resource):
+        for x in range(180):
+            resource.refresh(
+                requests_params=dict(
+                    params='$expand=currentConfigDeviceTaskReference'
+                )
+            )
+            if not hasattr(resource, 'currentConfigDeviceTaskReference'):
+                pass
+            elif 'status' not in resource.currentConfigDeviceTaskReference:
+                pass
+            elif resource.currentConfigDeviceTaskReference['status'] == 'FINISHED':
+                return
+            elif resource.currentConfigDeviceTaskReference['status'] == 'FAILED':
+                raise F5ModuleError(
+                    str(resource.currentConfigDeviceTaskReference['errorMessage'])
+                )
+            time.sleep(10)
+        raise F5ModuleError(
+            "Timed out waiting 30 minutes for node to finish."
         )
 
+    def read_current_from_device(self):
+        connector = self.want.connector.resource
+        collection = connector.nodes_s.get_collection(
+            requests_params=dict(
+                params="$filter=ipAddress+eq+'{0}'".format(self.want.device.address)
+            )
+        )
+        resource = collection.pop()
+        resource.refresh(
+            requests_params=dict(
+                params='$expand=currentConfigDeviceTaskReference'
+            )
+        )
+        result = resource.attrs
+        q.q(result)
+        return Parameters(result)
 
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
+        return True
 
+    def should_update(self):
+        result = self._update_changed_options()
+        failed = self.have.currentConfigDeviceTaskReference['status'] == 'FAILED'
+        if result or failed:
+            return True
+        return False
 
-        return result
+    def update_on_device(self):
+        params = self.want.api_params()
+        connector = self.want.connector.resource
+        collection = connector.nodes_s.get_collection(
+            requests_params=dict(
+                params="$filter=ipAddress+eq+'{0}'".format(self.want.device.address)
+            )
+        )
+        resource = collection.pop()
+        resource.update(**params)
+        self._wait_for_state_to_activate(resource)
 
     def absent(self):
         if self.exists():
@@ -613,15 +688,17 @@ class ModuleManager(object):
         self.remove_connector_node_from_device()
         if self.exists():
             raise F5ModuleError(
-                "Failed to remove the device from the connector"
+                "Failed to remove the node from the connector"
             )
         return True
 
     def remove_connector_node_from_device(self):
-        connector = self.get_connector_from_connector_name(
-            self.params.connector
-        )
-        return True
+        connector = self.want.connector.resource
+        collection = connector.nodes_s.get_collection()
+        for resource in collection:
+            if resource.ipAddress == self.want.device.ip_address:
+                resource.delete()
+                return True
 
 
 class ArgumentSpec(object):
@@ -639,13 +716,19 @@ class ArgumentSpec(object):
                 required=False,
                 default=None
             ),
-            username_credential=dict(
+            api_password_credential=dict(
+                required=False,
+                default=None,
+                no_log=True
+            ),
+            cli_username_credential=dict(
                 required=False,
                 default=None
             ),
-            password_credential=dict(
+            cli_password_credential=dict(
                 required=False,
-                default=None
+                default=None,
+                no_log=True
             ),
             hostname=dict(
                 required=False,
