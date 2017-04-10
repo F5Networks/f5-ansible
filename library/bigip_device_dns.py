@@ -47,7 +47,7 @@ options:
     description:
       - A list of name servers that the system uses to validate DNS lookups
   forwarders:
-    deprecated: To set this you must use the GUI or edit named.conf
+    deprecated: Deprecated in 2.4. Use the GUI or edit named.conf.
     description:
       - A list of BIND servers that the system can use to perform DNS lookups
   search:
