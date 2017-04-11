@@ -106,7 +106,6 @@ RETURN = '''
 '''
 
 import re
-import q
 
 from ansible.module_utils.f5_utils import *
 from distutils.version import LooseVersion
@@ -453,7 +452,6 @@ class TypedManager(BaseManager):
             name=self.want.name,
             partition=self.want.partition
         )
-        q.q(params)
         result.modify(**params)
 
     def read_current_from_device(self):
