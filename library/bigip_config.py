@@ -79,19 +79,19 @@ author:
 '''
 
 EXAMPLES = '''
-- name: run show version on remote devices
-  bigip_command:
-    commands: show sys version
+- name: Save the running configuration of the BIG-IP
+  bigip_config:
+    save: yes
     server: "lb.mydomain.com"
     password: "secret"
     user: "admin"
     validate_certs: "no"
   delegate_to: localhost
 
-- name: run show version and check to see if output contains BIG-IP
-  bigip_command:
-    commands: show sys version
-    wait_for: result[0] contains BIG-IP
+- name: Reset the BIG-IP configuration, for example, to RMA the device
+  bigip_config:
+    reset: yes
+    save: yes
     server: "lb.mydomain.com"
     password: "secret"
     user: "admin"
@@ -101,7 +101,7 @@ EXAMPLES = '''
 
 RETURN = '''
 stdout:
-    description: The set of responses from the commands
+    description: The set of responses from the options
     returned: always
     type: list
     sample: ['...', '...']
