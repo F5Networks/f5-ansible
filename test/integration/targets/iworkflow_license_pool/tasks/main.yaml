@@ -18,11 +18,6 @@
       accept_eula: "yes"
       name: "{{ license_pool }}"
       base_key: "{{ iworkflow_pool_license }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
-      user: "{{ iworkflow_username }}"
-      password: "{{ iworkflow_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "present"
   register: result
 
@@ -34,11 +29,6 @@
 - name: Delete license pool
   iworkflow_license_pool:
       name: "{{ license_pool }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
-      user: "{{ iworkflow_username }}"
-      password: "{{ iworkflow_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 
@@ -50,11 +40,6 @@
 - name: Delete license pool - Idempotent check
   iworkflow_license_pool:
       name: "{{ license_pool }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ iworkflow_port }}"
-      user: "{{ iworkflow_username }}"
-      password: "{{ iworkflow_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 
