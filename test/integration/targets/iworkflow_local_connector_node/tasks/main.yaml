@@ -42,17 +42,16 @@
 - name: Create node from managed device
   iworkflow_local_connector_node:
       device: "{{ device_ip1 }}"
-      api_password_credential: "{{ bigip_password }}"
-      cli_username_credential: "{{ username_credential }}"
-      cli_password_credential: "{{ password_credential }}"
+      password_credential: "{{ bigip_password }}"
+      username_credential: "{{ bigip_username }}"
       state: "present"
       connector: "{{ connector_name }}"
       hostname: "{{ device_name1 }}"
       interfaces:
-          - local_address: "{{ device_ip1 }}"
-            subnet_address: "{{ subnet_address }}"
-          - local_address: 10.2.2.3
-            subnet_address: 10.2.2.0/24
+          - local_address: "10.0.1.4"
+            subnet_address: "10.0.1.0/24"
+          - local_address: "10.2.2.3"
+            subnet_address: "10.2.2.0/24"
             name: "external"
   register: result
 
@@ -64,17 +63,16 @@
 - name: Create node from managed device - Idempotent check
   iworkflow_local_connector_node:
       device: "{{ device_ip1 }}"
-      api_password_credential: "{{ bigip_password }}"
-      cli_username_credential: "{{ username_credential }}"
-      cli_password_credential: "{{ password_credential }}"
+      password_credential: "{{ bigip_password }}"
+      username_credential: "{{ bigip_username }}"
       state: "present"
       connector: "{{ connector_name }}"
       hostname: "{{ device_name1 }}"
       interfaces:
-          - local_address: "{{ device_ip1 }}"
-            subnet_address: "{{ subnet_address }}"
-          - local_address: 10.2.2.3
-            subnet_address: 10.2.2.0/24
+          - local_address: "10.0.1.4"
+            subnet_address: "10.0.1.0/24"
+          - local_address: "10.2.2.3"
+            subnet_address: "10.2.2.0/24"
             name: "external"
   register: result
 
