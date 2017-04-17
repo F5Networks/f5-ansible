@@ -177,16 +177,15 @@ class ModuleManager(object):
         # Wait no more than half an hour
         resource = self.client.api.tm.cm.sync_status.load()
         for x in range(1, 180):
-            try:
-                resource.refresh()
-                k,v = resource.entries.popitem()
-                status = v['nestedStats']['entries']['status']['description']
-                if status == 'Changes Pending':
-                    pass
-                elif status == 'In Sync':
-                    return
-            except Exception as e:
+            resource.refresh()
+            k,v = resource.entries.popitem()
+            status = v['nestedStats']['entries']['status']['description']
+            if status == 'Changes Pending':
                 pass
+            elif status == 'In Sync':
+                return
+            else:
+                raise F5ModuleError(status)
             time.sleep(3)
 
 
