@@ -63,14 +63,21 @@ options:
     default: None
   username_credential:
     description:
-      - Username that you wish to connect to the remote BIG-IP with over
-        SSH. This parameter is required when C(state) is C(present).
-    required: True
+      - Username used to the remote BIG-IP with over its web API. This
+        parameter is required when C(state) is C(present).
+    required: False
   password_credential:
     description:
       - Password of the user that you wish to connect to the remote BIG-IP
         with over SSH. The C(password_credential) and C(private_key) parameters
         are mutually exclusive. You may use one or the other.
+    required: False
+    default: None
+  device_root_password:
+    description:
+      - If the C(username_credential) is C(root) but the C(password_credential)
+        is not the password of the root user, then this value should be provided.
+        This parameter is only relevant when creating new nodes.
     required: False
     default: None
   hostname:
@@ -81,13 +88,19 @@ options:
   interfaces:
     description:
       - A list of network interface configuration details that iWorkflow
-        should apply to the remote BIG-IP. This list should include the
+        should apply to the remote BIG-IP. This list must include the
         following keys; C(local_address), C(subnet_address). Also, optionally,
         the following keys can be provided C(gateway_address), C(name).
-        The first item in the list is B(always) the management interface
-        of the BIG-IP. All remaining items in the list apply to the interfaces
-        in ascending order that they appear on the device (eth1, eth2, etc).
-        This parameter is only required when C(state) is C(present).
+        One final key, C(virtual_address), can be provided in the event that
+        the cloud provider you are configuring the device on sets a public
+        IP address that forwards traffic to a NAT'd private address.
+        C(virtual_address) can be used in cases such as Azure public IPs,
+        AWS Elastic IP paired with an ENI primary address, and OpenStack's
+        Floating IP. The first item in the list is B(always) the
+        management interface of the BIG-IP. All remaining items in the list
+        apply to the interfaces in ascending order that they appear on the
+        device (eth1, eth2, etc). This parameter is only required when
+        C(state) is C(present).
     required: False
     default: None
   state:
@@ -117,7 +130,47 @@ author:
 '''
 
 EXAMPLES = '''
+- name: Create node from managed device
+  iworkflow_local_connector_node:
+      device: "10.144.128.137"
+      password_credential: "secret"
+      username_credential: "admin"
+      state: "present"
+      connector: "Private OpenStack"
+      hostname: "lb1.example.com"
+      interfaces:
+          - local_address: "10.144.128.137"
+            subnet_address: "10.144.128/24"
+          - local_address: "10.2.0.81"
+            subnet_address: "10.2.0.0/24"
+            name: "internal"
+      server: "iwf.mydomain.com"
+      password: "secret"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
 
+- name: Create node from managed device in Azure
+  iworkflow_local_connector_node:
+      device: "10.144.128.137"
+      password_credential: "secret"
+      username_credential: "admin"
+      device_root_password: "default"
+      state: "present"
+      connector: "Public Azure West US"
+      hostname: "lb1.example.com"
+      interfaces:
+          - local_address: "10.0.2.12"
+            subnet_address: "10.0.2.0/24"
+            virtual_address: "10.144.128.137"
+          - local_address: "10.2.0.81"
+            subnet_address: "10.2.0.0/24"
+            name: "external"
+      server: "iwf.mydomain.com"
+      password: "secret"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -127,8 +180,6 @@ RETURN = '''
 import re
 import netaddr
 import time
-
-import q
 
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -335,7 +386,6 @@ class Parameters(AnsibleF5Parameters):
                 result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
                 result[api_attribute] = getattr(self, api_attribute)
-        q.q(result)
         result = self._filter_params(result)
         result['state'] = 'RUNNING'
         return result
@@ -355,37 +405,76 @@ class Parameters(AnsibleF5Parameters):
         result = []
         for interface in self._values['interfaces']:
             tmp = {}
+            self._update_interface_local_address(interface, tmp)
+            self._update_interface_subnet_address(interface, tmp)
+            self._update_virtual_address(interface, tmp)
+            self._update_gateway_address(interface, tmp)
+            self._update_interface_name(interface, tmp)
+            result.append(tmp)
+        self._validate_name_in_interface(result)
+        return result
 
+    def _update_gateway_address(self, interface, tmp):
+        if 'gateway_address' in interface:
             try:
-                ip = netaddr.IPNetwork(interface['local_address'])
-                local_address = str(ip.ip)
+                ip = netaddr.IPNetwork(interface['gateway_address'])
+                tmp['gatewayAddress'] = str(ip.ip)
             except netaddr.core.AddrFormatError:
                 raise F5ModuleError(
-                    "The provided local_address for your network "
-                    "interface is not in an IP address or CIDR format"
+                    "The provided gateway_address for your network "
+                    "interface is not in an IP address format."
                 )
 
-            if 'gateway_address' in interface:
-                tmp['gatewayAddress'] = interface['gateway_address']
-            if 'name' in interface:
-                tmp['name'] = interface['name']
+    def _update_virtual_address(self, interface, tmp):
+        if 'virtual_address' in interface:
+            try:
+                ip = netaddr.IPNetwork(interface['virtual_address'])
+                tmp['virtualAddress'] = str(ip.ip)
+            except netaddr.core.AddrFormatError:
+                raise F5ModuleError(
+                    "The provided virtual_address for your network "
+                    "interface is not in an IP address format."
+                )
 
-            if 'subnet_address' in interface:
-                try:
-                    subnet = interface['subnet_address']
-                    ip = netaddr.IPNetwork(subnet)
-                    # The iWorkflow value for this is the true CIDR address
-                    tmp['subnetAddress'] = str(ip.cidr)
-                    tmp['localAddress'] = local_address
-                except netaddr.core.AddrFormatError:
-                    raise F5ModuleError(
-                        "The provided subnet_address for your network "
-                        "interface is not in an IP address or CIDR format"
-                    )
-            else:
-                tmp['localAddress'] = local_address
-            result.append(tmp)
-        return result
+    def _update_interface_name(self, interface, tmp):
+        if 'name' in interface:
+            tmp['name'] = interface['name']
+
+    def _validate_name_in_interface(self, result):
+        if any('name' not in x for x in result[1:]):
+            raise F5ModuleError(
+                "All interfaces, except for the first (mgmt), require a name."
+            )
+
+    def _update_interface_local_address(self, interface, tmp):
+        if 'local_address' not in interface:
+            raise F5ModuleError(
+                "local_address is a required key in interfaces."
+            )
+        try:
+            ip = netaddr.IPNetwork(interface['local_address'])
+            tmp['localAddress'] = str(ip.ip)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided local_address for your network "
+                "interface is not in an IP address format."
+            )
+
+    def _update_interface_subnet_address(self, interface, tmp):
+        if 'subnet_address' not in interface:
+            raise F5ModuleError(
+                "subnet_address is a required key in interfaces"
+            )
+        try:
+            subnet = interface['subnet_address']
+            ip = netaddr.IPNetwork(subnet)
+            # The iWorkflow value for this is the true CIDR address
+            tmp['subnetAddress'] = str(ip.cidr)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided subnet_address for your network "
+                "interface is not in a CIDR format"
+            )
 
     @property
     def hostname(self):
@@ -418,19 +507,42 @@ class Parameters(AnsibleF5Parameters):
     @property
     def properties(self):
         result = self._get_base_properties()
+        result += self._set_initial_mgmt_ip()
         result += self._set_hostname_property()
         result += self._set_key_content_property()
         result += self._set_password_credential_property()
         result += self._set_mgmt_user_property()
         result += self._set_device_default_credentials()
+        result += self._set_device_root_password()
+        return result
+
+    def _set_device_root_password(self):
+        if self.device_root_password is None:
+            return []
+        if self.username_credential != 'root':
+            return []
+
+        result =[dict(
+            id='DeviceRootPassword',
+            provider=self.device_root_password
+        )]
+        return result
+
+    def _set_initial_mgmt_ip(self):
+        if self.initial_mgmt_ip is None:
+            return []
+        result = [dict(
+            id='DeviceInitialMgmtIP',
+            provider=self.initial_mgmt_ip
+        )]
         return result
 
     def _set_password_credential_property(self):
-        if self.api_password_credential is None:
+        if self.password_credential is None:
             return []
         result = [dict(
             id='DeviceMgmtPassword',
-            provider=self.api_password_credential
+            provider=self.password_credential
         )]
         return result
 
@@ -453,7 +565,7 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _set_mgmt_user_property(self):
-        if self.api_username_credential is None:
+        if self.username_credential is None:
             return []
 
         # iWorkflow 2.1.0 requires that this be 'admin'. If you don't
@@ -466,52 +578,42 @@ class Parameters(AnsibleF5Parameters):
         # the future.
         result = [dict(
             id='DeviceMgmtUser',
-            provider='admin'
+            provider=self.username_credential
         )]
         return result
 
     def _set_device_default_credentials(self):
         result = []
-        if self.cli_username_credential == 'admin':
+        if self.username_credential == 'admin' and self.device_root_password is None:
             result.append(dict(
                 id='BIG-IP-WITH-ADMIN-SSH',
                 provider="true"
             ))
-            # TODO: Is this the truth?? wtf does this setting control?
-            if self.api_password_credential == 'admin':
-                result.append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="true"
-                ))
-            else:
-                result.append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="false"
-                ))
-        elif self.cli_username_credential == 'root':
-            result.append(dict(
-                id='BIG-IP-WITH-ADMIN-SSH',
-                provider="false"
-            ))
-            if self.cli_password_credential == 'default':
-                result.append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="true"
-                ))
-            else:
-                result.append(dict(
-                    id='DeviceCreatedWithDefaultCredentials',
-                    provider="false"
-                ))
         else:
             result.append(dict(
                 id='BIG-IP-WITH-ADMIN-SSH',
                 provider="false"
             ))
+
+        # This setting controls whether or not SSH auth is used.
+        #
+        # If it is "false" then SSH auth will be tried and the
+        # `key_content` option must be set.
+        if self.password_credential:
+            result.append(dict(
+                id='DeviceCreatedWithDefaultCredentials',
+                provider="true"
+            ))
+        elif self.key_content:
             result.append(dict(
                 id='DeviceCreatedWithDefaultCredentials',
                 provider="false"
             ))
+        else:
+            raise F5ModuleError(
+                "At least one of `password_credential` or `key_content` "
+                "is required."
+            )
         return result
 
     def _get_base_properties(self):
@@ -598,10 +700,12 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            if self.have.currentConfigDeviceTaskReference['status'] == 'FAILED':
-                return self.update()
-            else:
-                # We don't update things that aren't broken.
+            try:
+                if self.have.currentConfigDeviceTaskReference['status'] == 'FAILED':
+                    return self.update()
+            except AttributeError:
+                # We don't update things that aren't broken, and things that completed
+                # successfully. iWorkflow removes this attribute if the task completed.
                 return False
         else:
             return self.create()
@@ -654,7 +758,6 @@ class ModuleManager(object):
             )
         )
         result = resource.attrs
-        q.q(result)
         return Parameters(result)
 
     def update(self):
@@ -710,24 +813,23 @@ class ArgumentSpec(object):
             device=dict(
                 required=True
             ),
+            device_root_password=dict(
+                required=False,
+                default=None
+            ),
             key_content=dict(
                 type='str',
                 required=False,
                 default=None
             ),
-            api_password_credential=dict(
+            password_credential=dict(
                 required=False,
                 default=None,
                 no_log=True
             ),
-            cli_username_credential=dict(
+            username_credential=dict(
                 required=False,
                 default=None
-            ),
-            cli_password_credential=dict(
-                required=False,
-                default=None,
-                no_log=True
             ),
             hostname=dict(
                 required=False,
