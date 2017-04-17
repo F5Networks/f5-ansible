@@ -79,7 +79,15 @@ author:
 '''
 
 EXAMPLES = '''
-
+- name: Sync configuration from device to group
+  bigip_configsync_actions:
+      device_group: "{{ device_group }}"
+      sync_device_to_group: yes
+      server: "lb01.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: no
+  delegate_to: localhost
 '''
 
 RETURN = '''
