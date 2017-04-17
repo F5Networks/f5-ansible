@@ -58,8 +58,8 @@ options:
         that this is required to activate the license pool. If this is not
         specified, or it is set to C(no), then the pool will remain in a state
         of limbo until you choose to accept the EULA. This option is required
-        when either updating a license. It is also suggested that you provide
-        it when creating a license, but if you do not, the license will remain
+        when updating a license. It is also suggested that you provide it when
+        creating a license, but if you do not, the license will remain
         inactive and you will have to run this module again with this option
         set to C(yes) to activate it.
     required: False
@@ -79,7 +79,17 @@ author:
 '''
 
 EXAMPLES = '''
-
+- name: Create license pool
+  iworkflow_license_pool:
+      accept_eula: "yes"
+      name: "my-lic-pool"
+      base_key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+      state: "present"
+      server: "iwf.mydomain.com"
+      password: "secret"
+      user: "admin"
+      validate_certs: "no"
+  delegate_to: localhost
 '''
 
 RETURN = '''
