@@ -361,10 +361,24 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.want.api_params()
         tenant = self.client.api.cm.cloud.tenants_s.tenant.load(name=self.want.tenant)
-        tenant.services.iapps.iapp.create(
+        resource = tenant.services.iapps.iapp.create(
             isF5Example=False,
             **params
         )
+        self._wait_for_state_to_activate(resource)
+
+    def _wait_for_state_to_activate(self, resource):
+        # Wait no more than half an hour
+        for x in range(1, 180):
+            resource.refresh()
+            try:
+                stats = resource.stats.load()
+                attrs = stats.attrs
+                if int(attrs['entries']['health.placement']['value']) == 1:
+                    break
+            except Exception:
+                pass
+            time.sleep(10)
 
     def absent(self):
         if self.exists():
