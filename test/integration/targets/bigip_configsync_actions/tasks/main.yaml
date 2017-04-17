@@ -1,0 +1,6 @@
+---
+
+- name: Sync configuration from device to group
+  bigip_configsync_actions:
+      sync_from_device_to_group: yes
+  delegate_to: localhost
