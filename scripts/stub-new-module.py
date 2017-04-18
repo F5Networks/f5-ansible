@@ -73,11 +73,11 @@ class ModuleStubber(object):
   connection: local
 
   environment:
-      F5_SERVER: "{{ inventory_hostname }}"
-      F5_USER: "{{ bigip_username }}"
-      F5_PASSWORD: "{{ bigip_password }}"
-      F5_SERVER_PORT: "{{ bigip_port }}"
-      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+      F5_SERVER: "{{{{ inventory_hostname }}}}"
+      F5_USER: "{{{{ bigip_username }}}}"
+      F5_PASSWORD: "{{{{ bigip_password }}}}"
+      F5_SERVER_PORT: "{{{{ bigip_port }}}}"
+      F5_VALIDATE_CERTS: "{{{{ validate_certs }}}}"
 
   roles:
       - {module}
