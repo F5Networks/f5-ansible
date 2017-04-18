@@ -150,6 +150,7 @@ class BigIpiAppTemplateManager(object):
 
     def absent(self):
         changed = False
+        self.set_iapp_template_name(self.params['content'])
         if self.iapp_template_exists():
             changed = self.ensure_iapp_template_is_absent()
         return changed
@@ -163,10 +164,14 @@ class BigIpiAppTemplateManager(object):
         self.params['name'] = os.path.basename(matches.group('name'))
 
     def iapp_template_exists(self):
-        return self.api.tm.sys.application.templates.template.exists(
+        import q
+        q.q(self.params['name'])
+        q.q(self.params['partition'])
+        result = self.api.tm.sys.application.templates.template.exists(
             name=self.params['name'],
             partition=self.params['partition']
         )
+        return result
 
     def ensure_iapp_template_is_present(self):
         if self.params['check_mode']:

@@ -54,3 +54,8 @@
       state: "absent"
   register: result
   with_items: "{{ template_list }}"
+
+# Issues on f5-ansible
+- include: issue-126.yaml
+  tags:
+      - issue-126
