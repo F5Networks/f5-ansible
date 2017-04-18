@@ -37,9 +37,9 @@ options:
       - Specifies whether or not to force the uploading of an iApp. This
         module does not handle the case of updating iApps in place. When
         forcing an update, this module will attempt to remove the existing
-        module before uploading the new one. Existing modules cannot be
+        iApp before uploading the new one. Existing iApps cannot be
         removed, even with C(force), if a service has been instantiated
-        from that template.
+        from the iApp template.
     required: False
     default: None
     choices:
@@ -95,14 +95,14 @@ RETURN = '''
 import re
 import os
 
-try:
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
+from ansible.module_utils.basic import BOOLEANS
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 try:
     from StringIO import StringIO
@@ -110,88 +110,113 @@ except ImportError:
     from io import StringIO
 
 
-def connect_to_bigip(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token=True)
+class Parameters(AnsibleF5Parameters):
+    api_attributes = []
+    returnables = []
 
+    @property
+    def name(self):
+        if self._values['name']:
+            return self._values['name']
 
-class BigIpiAppTemplateManager(object):
-    def __init__(self, *args, **kwargs):
-        self.changed_params = dict()
-        self.params = kwargs
-        self.api = None
-        self.pattern = r'sys application template (?P<name>[\w_\.-/]+)\s+{?'
-
-    def apply_changes(self):
-        result = dict()
-        changed = False
-
-        try:
-            self.api = connect_to_bigip(**self.params)
-
-            if self.params['state'] == "present":
-                changed = self.present()
-            elif self.params['state'] == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-
-        result.update(**self.changed_params)
-        result.update(dict(changed=changed))
-        return result
-
-    def present(self):
-        self.set_iapp_template_name(self.params['content'])
-
-        if self.iapp_template_exists():
-            return False
-        else:
-            return self.ensure_iapp_template_is_present()
-
-    def absent(self):
-        changed = False
-        if not self.params['name']:
-            self.set_iapp_template_name(self.params['content'])
-        if self.iapp_template_exists():
-            changed = self.ensure_iapp_template_is_absent()
-        return changed
-
-    def set_iapp_template_name(self, source):
-        matches = re.search(self.pattern, source)
+        pattern = r'sys application template (?P<name>[\w_\.-/]+)\s+{?'
+        matches = re.search(pattern, self.content)
         if not matches:
             raise F5ModuleError(
                 "An iApp template must include a name"
             )
-        self.params['name'] = os.path.basename(matches.group('name'))
+        result = os.path.basename(matches.group('name'))
+        return result
 
-    def iapp_template_exists(self):
-        result = self.api.tm.sys.application.templates.template.exists(
-            name=self.params['name'],
-            partition=self.params['partition']
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def exec_module(self):
+        result = dict()
+        state = self.want.state
+
+        try:
+            if state == "present":
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        return result
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def update(self):
+        if not self.want.force:
+            return False
+        if self.client.check_mode:
+            return True
+        self.absent()
+        return self.create()
+
+    def absent(self):
+        changed = False
+        if self.exists():
+            changed = self.remove()
+        return changed
+
+    def exists(self):
+        result = self.client.api.tm.sys.application.templates.template.exists(
+            name=self.want.name,
+            partition=self.want.partition
         )
         return result
 
-    def ensure_iapp_template_is_present(self):
-        if self.params['check_mode']:
+    def create(self):
+        if self.client.check_mode:
             return True
-        self.create_iapp_template_on_device(self.params)
-        if self.iapp_template_exists():
+        self.create_on_device()
+        if self.exists():
             return True
         else:
             raise F5ModuleError("Failed to create the iApp template")
 
-    def create_iapp_template_on_device(self, params):
-        remote_path = "/var/config/rest/downloads/{0}".format(params['name'])
+    def create_on_device(self):
+        remote_path = "/var/config/rest/downloads/{0}".format(self.want.name)
         load_command = 'tmsh load sys application template {0}'.format(remote_path)
 
-        template = StringIO(params['content'])
+        template = StringIO(self.want.content)
 
-        upload = self.api.shared.file_transfer.uploads
-        upload.upload_stringio(template, self.params['name'])
-        output = self.api.tm.util.bash.exec_cmd(
+        upload = self.client.api.shared.file_transfer.uploads
+        upload.upload_stringio(template, self.want.name)
+        output = self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "{0}"'.format(load_command)
         )
@@ -201,34 +226,26 @@ class BigIpiAppTemplateManager(object):
         if 'Syntax Error' in result:
             raise F5ModuleError(output.commandResult)
 
-    def ensure_iapp_template_is_absent(self):
-        if self.params['check_mode']:
+    def remove(self):
+        if self.client.check_mode:
             return True
-        self.delete_iapp_template_from_device()
-        if self.iapp_template_exists():
+        self.remove_from_device()
+        if self.exists():
             raise F5ModuleError("Failed to delete the iApp template")
         return True
 
-    def delete_iapp_template_from_device(self):
-        tpl = self.api.tm.sys.application.templates.template.load(
-            name=self.params['name'],
-            partition=self.params['partition']
+    def remove_from_device(self):
+        resource = self.client.api.tm.sys.application.templates.template.load(
+            name=self.want.name,
+            partition=self.want.partition
         )
-        tpl.delete()
+        resource.delete()
 
 
-class BigIpiAppTemplateModuleConfig(object):
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-        self.states = ['present', 'absent']
-
-        self.initialize_meta_args()
-        self.initialize_argument_spec()
-
-    def initialize_meta_args(self):
-        args = dict(
+        self.argument_spec = dict(
             name=dict(
                 required=False,
                 default=None
@@ -236,50 +253,44 @@ class BigIpiAppTemplateModuleConfig(object):
             state=dict(
                 type='str',
                 default='present',
-                choices=self.states
+                choices=['present', 'absent']
             ),
             force=dict(
                 choices=BOOLEANS,
                 required=False,
-                default=None
+                default=None,
+                type='bool'
             ),
             content=dict(
                 required=False,
                 default=None
             )
         )
-        self.meta_args = args
-
-    def initialize_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-    def create(self):
-        return AnsibleModule(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
+        self.f5_product_name = 'bigip'
+        self.mutually_exclusive = [
+            ['sync_device_to_group', 'sync_group_to_device']
+        ]
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    config = BigIpiAppTemplateModuleConfig()
-    module = config.create()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name,
+        mutually_exclusive=spec.mutually_exclusive
+    )
 
     try:
-        obj = BigIpiAppTemplateManager(
-            check_mode=module.check_mode, **module.params
-        )
-        result = obj.apply_changes()
-
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
-
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()

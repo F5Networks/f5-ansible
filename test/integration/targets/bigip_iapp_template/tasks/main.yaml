@@ -20,6 +20,17 @@
       that:
           - not result|changed
 
+- name: Force update iApp template
+  bigip_iapp_template:
+      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+      force: yes
+  register: result
+
+- name: Assert Force update iApp template
+  assert:
+      that:
+          - result|changed
+
 - name: Delete iApp template
   bigip_iapp_template:
       name: "{{ template_name }}"
