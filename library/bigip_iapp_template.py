@@ -41,6 +41,7 @@ options:
         removed, even with C(force), if a service has been instantiated
         from that template.
     required: False
+    default: None
     choices:
       - yes
       - no
@@ -51,6 +52,7 @@ options:
         provided as a way to delete templates that you may no longer have
         the source of.
     required: False
+    default None
   content:
     description:
       - Sets the contents of an iApp template directly to the specified
@@ -58,10 +60,11 @@ options:
         plugins for anything complex or with formatting. C(content) must
         be provided when creating new templates.
     required: False
+    default: None
   state:
     description:
       - Whether the iRule should exist or not.
-    required: false
+    required: False
     default: present
     choices:
       - present
@@ -150,7 +153,8 @@ class BigIpiAppTemplateManager(object):
 
     def absent(self):
         changed = False
-        self.set_iapp_template_name(self.params['content'])
+        if not self.params['name']:
+            self.set_iapp_template_name(self.params['content'])
         if self.iapp_template_exists():
             changed = self.ensure_iapp_template_is_absent()
         return changed
@@ -164,9 +168,6 @@ class BigIpiAppTemplateManager(object):
         self.params['name'] = os.path.basename(matches.group('name'))
 
     def iapp_template_exists(self):
-        import q
-        q.q(self.params['name'])
-        q.q(self.params['partition'])
         result = self.api.tm.sys.application.templates.template.exists(
             name=self.params['name'],
             partition=self.params['partition']
@@ -228,7 +229,10 @@ class BigIpiAppTemplateModuleConfig(object):
 
     def initialize_meta_args(self):
         args = dict(
-            name=dict(required=False),
+            name=dict(
+                required=False,
+                default=None
+            ),
             state=dict(
                 type='str',
                 default='present',
@@ -236,9 +240,13 @@ class BigIpiAppTemplateModuleConfig(object):
             ),
             force=dict(
                 choices=BOOLEANS,
-                required=False
+                required=False,
+                default=None
             ),
-            content=dict(required=False, default=None)
+            content=dict(
+                required=False,
+                default=None
+            )
         )
         self.meta_args = args
 
