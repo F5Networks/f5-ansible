@@ -20,17 +20,6 @@
       that:
           - not result|changed
 
-- name: Force update iApp template
-  bigip_iapp_template:
-      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
-      force: yes
-  register: result
-
-- name: Assert Force update iApp template
-  assert:
-      that:
-          - result|changed
-
 - name: Delete iApp template
   bigip_iapp_template:
       name: "{{ template_name }}"
@@ -65,6 +54,10 @@
       state: "absent"
   register: result
   with_items: "{{ template_list }}"
+
+- include: test-force.yaml
+  tags:
+      - test-force
 
 # Issues on f5-ansible
 - include: issue-126.yaml

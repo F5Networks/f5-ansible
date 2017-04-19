@@ -93,7 +93,7 @@ RETURN = '''
 '''
 
 import re
-import os
+import uuid
 
 from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
@@ -101,7 +101,13 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
+    iteritems,
+    defaultdict,
     iControlUnexpectedHTTPError
+)
+from f5.utils.iapp_parser import (
+    IappParser,
+    NonextantTemplateNameException
 )
 
 try:
@@ -114,19 +120,60 @@ class Parameters(AnsibleF5Parameters):
     api_attributes = []
     returnables = []
 
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k,v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
     @property
     def name(self):
         if self._values['name']:
             return self._values['name']
+        if self._values['content']:
+            try:
+                name = self._get_template_name()
+                return name
+            except NonextantTemplateNameException:
+                return F5ModuleError(
+                    "No template name was found in the template"
+                )
+        return None
 
-        pattern = r'sys application template (?P<name>[\w_\.-/]+)\s+{?'
-        matches = re.search(pattern, self.content)
-        if not matches:
-            raise F5ModuleError(
-                "An iApp template must include a name"
-            )
-        result = os.path.basename(matches.group('name'))
+    @property
+    def content(self):
+        if self._values['content'] is None:
+            return None
+        result = self._squash_template_name_prefix()
+        if self._values['name']:
+            result = self._replace_template_name(result)
         return result
+
+    @property
+    def checksum(self):
+        return self._values['tmplChecksum']
 
     def to_return(self):
         result = {}
@@ -148,6 +195,39 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    def _squash_template_name_prefix(self):
+        """Removes the template name prefix
+        
+        The IappParser in the SDK treats the partition prefix as part of
+        the iApp's name. This method removes that partition from the name
+        in the iApp so that comparisons can be done properly and entries
+        can be created properly when using REST.
+        
+        :return string 
+        """
+        pattern = r'sys\s+application\s+template\s+/Common/'
+        replace = 'sys application template '
+        return re.sub(pattern, replace, self._values['content'])
+
+    def _replace_template_name(self, template):
+        """Replaces template name at runtime
+        
+        To allow us to do the switch-a-roo with temporary templates and
+        checksum comparisons, we need to take the template provided to us
+        and change its name to a temporary value so that BIG-IP will create
+        a clone for us.
+        
+        :return string 
+        """
+        pattern = r'sys\s+application\s+template\s+[^ ]+'
+        replace = 'sys application template {0}'.format(self._values['name'])
+        return re.sub(pattern, replace, template)
+
+    def _get_template_name(self):
+        parser = IappParser(self.content)
+        tmpl = parser.parse_template()
+        return tmpl['name']
+
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -157,6 +237,7 @@ class ModuleManager(object):
 
     def exec_module(self):
         result = dict()
+        changed = False
         state = self.want.state
 
         try:
@@ -179,12 +260,37 @@ class ModuleManager(object):
             return self.create()
 
     def update(self):
-        if not self.want.force:
+        self.have = self.read_current_from_device()
+
+        if not self.templates_differ():
             return False
+
+        if not self.want.force and self.template_in_use():
+            return False
+
         if self.client.check_mode:
             return True
-        self.absent()
-        return self.create()
+
+        # The same process used for creating (load) can be used for updating
+        self.create_on_device()
+        return True
+
+    def template_in_use(self):
+        collection = self.client.api.tm.sys.application.services.get_collection()
+        fullname = '{0}/{1}'.format(self.want.partition, self.want.name)
+        for resource in collection:
+            if resource.template == fullname:
+                return True
+        return False
+
+    def read_current_from_device(self):
+        self._generate_template_checksum_on_device()
+        resource = self.client.api.tm.sys.application.templates.template.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return Parameters(result)
 
     def absent(self):
         changed = False
@@ -198,6 +304,53 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         return result
+
+    def templates_differ(self):
+        # BIG-IP can generate checksums of iApps, but the iApp needs to be
+        # on the box to do this. Additionally, the checksum is MD5, but it
+        # is not an MD5 of the entire content of the template. Instead, it
+        # is a hash of some portion of the template that is unknown to me.
+        #
+        # The code below is responsible for uploading the provided template
+        # under a unique name and creating a checksum for it so that that
+        # checksum can be compared to the one of the existing template.
+        #
+        # Using this method we can compare the checksums of the existing
+        # iApp and the iApp that the user is providing to the module.
+        backup = self.want.name
+
+        # Override whatever name may have been provided so that we can
+        # temporarily create a new template to test checksums with
+        self.want.update({
+            'name': 'ansible-{0}'.format(str(uuid.uuid4()))
+        })
+
+        # Create and remove temporary template
+        temp = self._get_temporary_template()
+
+        # Set the template name back to what it was originally so that
+        # any future operations only happen on the real template.
+        self.want.update({
+            'name': backup
+        })
+        if temp.checksum != self.have.checksum:
+            return True
+        return False
+
+    def _get_temporary_template(self):
+        self.create_on_device()
+        temp = self.read_current_from_device()
+        self.remove_from_device()
+        return temp
+
+    def _generate_template_checksum_on_device(self):
+        generate = 'tmsh generate sys application template {0} checksum'.format(
+            self.want.name
+        )
+        self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(generate)
+        )
 
     def create(self):
         if self.client.check_mode:
@@ -223,8 +376,8 @@ class ModuleManager(object):
 
         if hasattr(output, 'commandResult'):
             result = output.commandResult
-        if 'Syntax Error' in result:
-            raise F5ModuleError(output.commandResult)
+            if 'Syntax Error' in result:
+                raise F5ModuleError(output.commandResult)
 
     def remove(self):
         if self.client.check_mode:
