@@ -27,19 +27,30 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_iapp_template
-short_description: Manages TCL iApp templates on a BIG-IP
+short_description: Manages TCL iApp templates on a BIG-IP.
 description:
-  - Manages TCL iApp templates on a BIG-IP
+  - Manages TCL iApp templates on a BIG-IP. This module will allow you to
+    deploy iApp templates to the BIG-IP and manage their lifecycle. The
+    conventional way to use this module is to import new iApps as needed
+    or by extracting the contents of the iApp archive that is provided at
+    downloads.f5.com and then importing all the iApps with this module.
+    This module can also update existing iApps provided that the source
+    of the iApp changed while the name stayed the same. Note however that
+    this module will not reconfigure any services that may have been
+    created using the C(bigip_iapp_service) module. iApps are normally
+    not updated in production. Instead, new versions are deployed and then
+    existing services are changed to consume that new template. As such,
+    the ability to update templates in-place requires the C(force) option
+    to be used.
 version_added: "2.3"
 options:
   force:
     description:
-      - Specifies whether or not to force the uploading of an iApp. This
-        module does not handle the case of updating iApps in place. When
-        forcing an update, this module will attempt to remove the existing
-        iApp before uploading the new one. Existing iApps cannot be
-        removed, even with C(force), if a service has been instantiated
-        from the iApp template.
+      - Specifies whether or not to force the uploading of an iApp. When
+        C(yes), will force update the iApp even if there are iApp services
+        using it. This will not update the running service though. Use
+        C(bigip_iapp_service) to do that. When C(no), will update the iApp
+        only if there are no iApp services using the template.
     required: False
     default: None
     choices:
@@ -81,6 +92,25 @@ EXAMPLES = '''
 - name: Add the iApp contained in template iapp.tmpl
   bigip_iapp_template:
       content: "{{ lookup('template', 'iapp.tmpl') }}"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
+
+- name: Update a template in place
+  bigip_iapp_template:
+      content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
+
+- name: Update a template in place that has existing services created from it.
+  bigip_iapp_template:
+      content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+      force: yes
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"
