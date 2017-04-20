@@ -1,0 +1,44 @@
+---
+
+- name: Create iApp template
+  bigip_iapp_template:
+      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+  register: result
+
+- name: Create service from iApp template
+  bigip_iapp_service:
+      name: "foo-service"
+      template: "good_templ"
+  register: result
+
+- name: Update iApp template
+  bigip_iapp_template:
+      content: "{{ lookup('file', 'basic-iapp-changed.tmpl') }}"
+  register: result
+
+- name: Assert Update iApp template
+  assert:
+      that:
+          - not result|changed
+
+- name: Update iApp template - Idempotent check
+  bigip_iapp_template:
+      content: "{{ lookup('file', 'basic-iapp-changed.tmpl') }}"
+  register: result
+
+- name: Assert Update iApp template - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove service
+  bigip_iapp_service:
+      name: "foo-service"
+      state: "absent"
+  register: result
+
+- name: Remove iApp template
+  bigip_iapp_template:
+      name: "good_templ"
+      state: "absent"
+  register: result

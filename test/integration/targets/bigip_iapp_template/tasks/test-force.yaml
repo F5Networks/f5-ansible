@@ -6,3 +6,6 @@
 - include: test-force-without-service.yaml
   tags:
       - test-force
+- include: test-no-force-with-service.yaml
+  tags:
+      - test-force
