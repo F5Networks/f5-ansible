@@ -28,34 +28,6 @@ docs:
 flake8:
 	flake8
 
-ansible-doc:
-	(cd library; \
-		$(DOCTEST) -M . bigip_command.py; \
-		$(DOCTEST) -M . bigip_device_dns.py; \
-		$(DOCTEST) -M . bigip_device_ntp.py; \
-		$(DOCTEST) -M . bigip_device_sshd.py; \
-		$(DOCTEST) -M . bigip_dns_facts.py; \
-		$(DOCTEST) -M . bigip_dns.py; \
-		$(DOCTEST) -M . bigip_dns_zone.py; \
-		$(DOCTEST) -M . bigip_gtm_datacenter.py; \
-		$(DOCTEST) -M . bigip_hostname.py; \
-		$(DOCTEST) -M . bigip_iapp_service.py; \
-		$(DOCTEST) -M . bigip_iapp_template.py; \
-		$(DOCTEST) -M . bigip_irule.py; \
-		$(DOCTEST) -M . bigip_license.py; \
-		$(DOCTEST) -M . bigip_partition.py; \
-		$(DOCTEST) -M . bigip_provision.py; \
-		$(DOCTEST) -M . bigip_selfip.py; \
-		$(DOCTEST) -M . bigip_service.py; \
-		$(DOCTEST) -M . bigip_software.py; \
-		$(DOCTEST) -M . bigip_sysdb.py; \
-		$(DOCTEST) -M . bigip_ucs_fetch.py; \
-		$(DOCTEST) -M . bigip_ucs.py; \
-		$(DOCTEST) -M . bigip_user_facts.py; \
-		$(DOCTEST) -M . bigip_user.py; \
-		$(DOCTEST) -M . bigip_vlan.py; \
-	)
-
 clean-coverage:
 	$(shell rm cache/coverage/.coverage*)
 	$(shell rm .coverage)
