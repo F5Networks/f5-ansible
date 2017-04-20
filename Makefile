@@ -22,7 +22,7 @@ pylint: pylint-modules
 
 docs:
 	rm docs/modules/* || true
-	python scripts/module_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
+	python scripts/plugin_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
 	cd docs && make html
 
 flake8:
