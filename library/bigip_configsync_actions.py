@@ -81,7 +81,27 @@ author:
 EXAMPLES = '''
 - name: Sync configuration from device to group
   bigip_configsync_actions:
-      device_group: "{{ device_group }}"
+      device_group: "foo-group"
+      sync_device_to_group: yes
+      server: "lb01.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: no
+  delegate_to: localhost
+  
+- name: Sync configuration from group to devices in group
+  bigip_configsync_actions:
+      device_group: "foo-group"
+      sync_group_to_device: yes
+      server: "lb01.mydomain.com"
+      user: "admin"
+      password: "secret"
+      validate_certs: no
+  delegate_to: localhost
+
+- name: Perform an initial sync of a device to a new device group
+  bigip_configsync_actions:
+      device_group: "new-device-group"
       sync_device_to_group: yes
       server: "lb01.mydomain.com"
       user: "admin"
@@ -159,7 +179,20 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "The specified 'device_group' not not exist."
             )
+        if not _validate_sync_to_group_required():
+            raise F5ModuleError(
+                "This device group needs an initial sync. Please use "
+                "'sync_device_to_group'"
+            )
         self.execute()
+
+    def _validate_sync_to_group_required(self):
+        resource = self.client.api.tm.cm.sync_status.load()
+        k,v = resource.entries.popitem()
+        status = v['nestedStats']['entries']['status']['description']
+        if status == 'Awaiting Initial Sync' and self.want.sync_group_to_device:
+            return False
+        return True
 
     def _device_group_exists(self):
         result = self.client.api.tm.cm.device_groups.device_group.exists(
@@ -188,7 +221,17 @@ class ModuleManager(object):
             resource.refresh()
             k,v = resource.entries.popitem()
             status = v['nestedStats']['entries']['status']['description']
-            if status == 'Changes Pending':
+
+            # Changes Pending:
+            #     The existing device has changes made to it that
+            #     need to be sync'd to the group.
+            #
+            # Awaiting Initial Sync:
+            #     This is a new device group and has not had any sync
+            #     done yet. You _must_ `sync_device_to_group` in this
+            #     case.
+            #
+            if status in ['Changes Pending', 'Awaiting Initial Sync']:
                 pass
             elif status == 'In Sync':
                 return
