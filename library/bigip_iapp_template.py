@@ -309,7 +309,7 @@ class ModuleManager(object):
 
     def template_in_use(self):
         collection = self.client.api.tm.sys.application.services.get_collection()
-        fullname = '{0}/{1}'.format(self.want.partition, self.want.name)
+        fullname = '/{0}/{1}'.format(self.want.partition, self.want.name)
         for resource in collection:
             if resource.template == fullname:
                 return True
