@@ -52,6 +52,15 @@ options:
         to supply the expected parameters.
     required: False
     default: None
+  force:
+    description:
+      - Forces the updating of an iApp service even if the parameters to the
+        service have not changed. This option is of particular importance if
+        the iApp template that underlies the service has been updated in-place.
+        This option is equivalent to re-configuring the iApp if that template
+        has changed.
+    required: False
+    default: False
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
@@ -113,13 +122,43 @@ EXAMPLES = '''
               - name: "pm__apache_servers_for_https"
                 value: "2.2.2.2:80"
   delegate_to: localhost
+
+- name: Re-configure a service whose underlying iApp was updated in place
+  bigip_iapp_service:
+      name: "tests"
+      template: "web_frontends"
+      password: "admin"
+      force: yes
+      server: "{{ inventory_hostname }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
+      state: "present"
+      user: "admin"
+      parameters:
+          variables:
+              - name: "var__vs_address"
+                value: "1.1.1.1"
+              - name: "pm__apache_servers_for_http"
+                value: "2.2.2.1:80"
+              - name: "pm__apache_servers_for_https"
+                value: "2.2.2.2:80"
+  delegate_to: localhost
 '''
 
 RETURN = '''
 
 '''
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.basic import BOOLEANS
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iteritems,
+    defaultdict,
+    iControlUnexpectedHTTPError
+)
 from deepdiff import DeepDiff
 
 
@@ -309,10 +348,11 @@ class ModuleManager(object):
         return result
 
     def exists(self):
-        return self.client.api.tm.sys.application.services.service.exists(
+        result = self.client.api.tm.sys.application.services.service.exists(
             name=self.want.name,
             partition=self.want.partition
         )
+        return result
 
     def present(self):
         if self.exists():
@@ -329,7 +369,7 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        if not self.should_update():
+        if not self.should_update() and not self.want.force:
             return False
         if self.client.check_mode:
             return True
@@ -407,6 +447,12 @@ class ArgumentSpec(object):
                 required=False,
                 default='present',
                 choices=['absent', 'present']
+            ),
+            force=dict(
+                required=False,
+                default=False,
+                choices=BOOLEANS,
+                type='bool'
             )
         )
         self.f5_product_name = 'bigip'
