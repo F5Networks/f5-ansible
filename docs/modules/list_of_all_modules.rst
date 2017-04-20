@@ -5,7 +5,9 @@ All Modules
 
   bigip_command - Run arbitrary command on F5 devices <bigip_command_module>
   bigip_config - Manage BIG-IP configuration sections <bigip_config_module>
+  bigip_configsync_actions - Perform different actions related to config-sync. <bigip_configsync_actions_module>
   bigip_device_dns - Manage BIG-IP device DNS settings <bigip_device_dns_module>
+  bigip_device_group - Manage device groups on a BIG-IP. <bigip_device_group_module>
   bigip_device_ntp - Manage NTP servers on a BIG-IP <bigip_device_ntp_module>
   bigip_device_sshd - Manage the SSHD settings of a BIG-IP <bigip_device_sshd_module>
   bigip_dns_record - Manage DNS resource records on a BIG-IP <bigip_dns_record_module>
@@ -20,7 +22,7 @@ All Modules
   bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip. <bigip_gtm_wide_ip_module>
   bigip_hostname - Manage the hostname of a BIG-IP. <bigip_hostname_module>
   bigip_iapp_service - Manages TCL iApp services on a BIG-IP. <bigip_iapp_service_module>
-  bigip_iapp_template - Manages TCL iApp templates on a BIG-IP <bigip_iapp_template_module>
+  bigip_iapp_template - Manages TCL iApp templates on a BIG-IP. <bigip_iapp_template_module>
   bigip_iapplx_package - foo <bigip_iapplx_package_module>
   bigip_irule - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
@@ -29,7 +31,7 @@ All Modules
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_node2 - Manages F5 BIG-IP LTM nodes <bigip_node2_module>
   bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
-  bigip_policy - Manage BIG-IP partitions <bigip_policy_module>
+  bigip_policy - Manage general policy configuration on a BIG-IP. <bigip_policy_module>
   bigip_policy_rule - foo <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
@@ -46,7 +48,7 @@ All Modules
   bigip_snmp_trap - Manipulate SNMP contact information on a BIG-IP. <bigip_snmp_trap_module>
   bigip_snmp_user - foo <bigip_snmp_user_module>
   bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
-  bigip_software_update - Manage the software update settings of a BIG-IP <bigip_software_update_module>
+  bigip_software_update - Manage the software update settings of a BIG-IP. <bigip_software_update_module>
   bigip_ssl_certificate - Import/Delete certificates from BIG-IP <bigip_ssl_certificate_module>
   bigip_static_route - Manipulate static routes on a BIG-IP. <bigip_static_route_module>
   bigip_sys_db - Manage BIG-IP system database variables <bigip_sys_db_module>
@@ -65,7 +67,7 @@ All Modules
   f5_support_upload - Manage BIG-IP partitions <f5_support_upload_module>
   iworkflow_device - Manipulate cloud managed devices in iWorkflow. <iworkflow_device_module>
   iworkflow_iapp_template - Manages iApp templates <iworkflow_iapp_template_module>
-  iworkflow_license - Manage BIG-IP partitions <iworkflow_license_module>
+  iworkflow_license - Manage license of iWorkflow itself. <iworkflow_license_module>
   iworkflow_license_pool - Manage license pools in iWorkflow. <iworkflow_license_pool_module>
   iworkflow_license_pool_member - Manages members in a license pool. <iworkflow_license_pool_member_module>
   iworkflow_local_connector - Manipulate cloud BIG-IP connectors in iWorkflow. <iworkflow_local_connector_module>

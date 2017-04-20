@@ -9,13 +9,13 @@ bigip_dns_record - Manage DNS resource records on a BIG-IP
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manage DNS resource records on a BIG-IP
+* Manage DNS resource records on a BIG-IP
 
 
 Requirements (on host that executes module)
@@ -38,30 +38,26 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP password</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>localhost</td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP host</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the record should exist.  When <code>absent</code>, removes the record.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
+        <td></td>
+        <td><div>BIG-IP username</div>        </td></tr>
         </table>
     </br>
 
@@ -72,6 +68,7 @@ Examples
 
  ::
 
+    
     - name: Add an A record to organization.com zone
       bigip_dns_record:
           user="admin"
@@ -103,15 +100,23 @@ Examples
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
+.. note::
+    - Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

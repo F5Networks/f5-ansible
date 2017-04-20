@@ -9,13 +9,13 @@ bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Retrieve route domain attributes from a BIG-IP
+* Retrieve route domain attributes from a BIG-IP
 
 
 Requirements (on host that executes module)
@@ -37,42 +37,36 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>id<br/><div style="font-size: small;"></div></td>
+                <tr><td>id<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The unique identifying integer representing the route domain.</div></td></tr>
-            <tr>
-    <td>partition<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The unique identifying integer representing the route domain.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
-        <td><ul></ul></td>
-        <td><div>The partition the route domain resides on</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The partition the route domain resides on</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP password</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP host</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP username</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
+        <td></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div>        </td></tr>
         </table>
     </br>
 
@@ -83,6 +77,7 @@ Examples
 
  ::
 
+    
     - name: Get the facts for a route domain
       bigip_routedomain_facts:
           id: "1234"
@@ -179,15 +174,23 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+.. note::
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

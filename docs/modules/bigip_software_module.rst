@@ -9,13 +9,13 @@ bigip_software - Manage BIG-IP software versions and hotfixes
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manage BIG-IP software versions and hotfixes
+* Manage BIG-IP software versions and hotfixes
 
 
 Requirements (on host that executes module)
@@ -38,74 +38,63 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>force<br/><div style="font-size: small;"></div></td>
+                <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div><div>If <code>yes</code> with <code>reuse_inactive_volume</code> is specified and <code>volume</code> is not specified, Software will be installed / activated regardless of current running version to a new or an existing volume.</div></td></tr>
-            <tr>
-    <td>hotfix<br/><div style="font-size: small;"></div></td>
+        <td><div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div><div>If <code>yes</code> with <code>reuse_inactive_volume</code> is specified and <code>volume</code> is not specified, Software will be installed / activated regardless of current running version to a new or an existing volume.</div>        </td></tr>
+                <tr><td>hotfix<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
-        <td><ul></ul></td>
+        <td></td>
         <td><div>The path to an optional Hotfix to install. This parameter requires that the <code>software</code> parameter be specified.</div></br>
-        <div style="font-size: small;">aliases: hotfix_image<div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+    <div style="font-size: small;">aliases: hotfix_image<div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>reuse_inactive_volume<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>reuse_inactive_volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created. For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software. If volume name does not end with numeric character, then add .1 to the current active volume name. When <code>volume</code> is specified, this option will be ignored.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created. For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software. If volume name does not end with numeric character, then add .1 to the current active volume name. When <code>volume</code> is specified, this option will be ignored.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>software<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>software<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
+        <td></td>
         <td><div>The path to the software (base image) to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>.</div></br>
-        <div style="font-size: small;">aliases: base_image<div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+    <div style="font-size: small;">aliases: base_image<div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>activated</td>
         <td><ul><li>absent</li><li>activated</li><li>installed</li><li>present</li></ul></td>
-        <td><div>When <code>installed</code>, ensures that the software is uploaded and installed, on the system. The device is not, however, rebooted into the new software. When <code>activated</code>, ensures that the software is uploaded, installed, and the system is rebooted to the new software. When <code>present</code>, ensures that the software is uploaded. When <code>absent</code>, only the uploaded image will be removed from the system</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div>When <code>installed</code>, ensures that the software is uploaded and installed, on the system. The device is not, however, rebooted into the new software. When <code>activated</code>, ensures that the software is uploaded, installed, and the system is rebooted to the new software. When <code>present</code>, ensures that the software is uploaded. When <code>absent</code>, only the uploaded image will be removed from the system</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
-            <tr>
-    <td>volume<br/><div style="font-size: small;"></div></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                <tr><td>volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The volume to install the software and, optionally, the hotfix to. This parameter is only required when the <code>state</code> is either <code>activated</code> or <code>installed</code>.</div></td></tr>
+        <td></td>
+        <td><div>The volume to install the software and, optionally, the hotfix to. This parameter is only required when the <code>state</code> is either <code>activated</code> or <code>installed</code>.</div>        </td></tr>
         </table>
     </br>
 
@@ -116,6 +105,7 @@ Examples
 
  ::
 
+    
     - name: Remove uploaded hotfix
       bigip_software:
           server: "bigip.localhost.localdomain"
@@ -226,17 +216,25 @@ Examples
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
-.. note:: Requires the isoparser Python package on the host. This can be installed with pip install isoparser
-.. note:: Requires the lxml Python package on the host. This can be installed with pip install lxml
+.. note::
+    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+    - Requires the isoparser Python package on the host. This can be installed with pip install isoparser
+    - Requires the lxml Python package on the host. This can be installed with pip install lxml
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

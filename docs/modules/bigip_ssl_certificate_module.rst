@@ -9,13 +9,13 @@ bigip_ssl_certificate - Import/Delete certificates from BIG-IP
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-This module will import/delete SSL certificates on BIG-IP LTM. Certificates can be imported from certificate and key files on the local disk, in PEM format.
+* This module will import/delete SSL certificates on BIG-IP LTM. Certificates can be imported from certificate and key files on the local disk, in PEM format.
 
 
 Requirements (on host that executes module)
@@ -38,84 +38,71 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>cert_content<br/><div style="font-size: small;"></div></td>
+                <tr><td>cert_content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>When used instead of 'cert_src', sets the contents of a certificate directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div></td></tr>
-            <tr>
-    <td>cert_src<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>When used instead of 'cert_src', sets the contents of a certificate directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+                <tr><td>cert_src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>This is the local filename of the certificate. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div></td></tr>
-            <tr>
-    <td>key_content<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>This is the local filename of the certificate. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+                <tr><td>key_content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>When used instead of 'key_src', sets the contents of a certificate key directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div></td></tr>
-            <tr>
-    <td>key_src<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>When used instead of 'key_src', sets the contents of a certificate key directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+                <tr><td>key_src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>This is the local filename of the private key. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div></td></tr>
-            <tr>
-    <td>name<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>This is the local filename of the private key. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+                <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>SSL Certificate Name.  This is the cert/key pair name used when importing a certificate/key into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div></td></tr>
-            <tr>
-    <td>partition<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>SSL Certificate Name.  This is the cert/key pair name used when importing a certificate/key into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP partition to use when adding/deleting certificate.</div></td></tr>
-            <tr>
-    <td>passphrase<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP partition to use when adding/deleting certificate.</div>        </td></tr>
+                <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Passphrase on certificate private key</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Passphrase on certificate private key</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Certificate and key state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div>Certificate and key state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -126,6 +113,7 @@ Examples
 
  ::
 
+    
     - name: Import PEM Certificate from local disk
       bigip_ssl_certificate:
           name: "certificate-name"
@@ -229,16 +217,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-.. note:: This module does not behave like other modules that you might include in roles where referencing files or templates first looks in the role's files or templates directory. To have it behave that way, use the Ansible file or template lookup (see Examples). The lookups behave as expected in a role context.
+.. note::
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - This module does not behave like other modules that you might include in roles where referencing files or templates first looks in the role's files or templates directory. To have it behave that way, use the Ansible file or template lookup (see Examples). The lookups behave as expected in a role context.
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

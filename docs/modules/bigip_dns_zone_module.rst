@@ -9,13 +9,13 @@ bigip_dns_zone - Manages DNS zones on a BIG-IP
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-This module manages DNS zones described in the iControl Management documentation
+* This module manages DNS zones described in the iControl Management documentation
 
 
 Requirements (on host that executes module)
@@ -38,43 +38,37 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>options<br/><div style="font-size: small;"></div></td>
+                <tr><td>options<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>A sequence of options for the view</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>A sequence of options for the view</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP password</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP host</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the record should exist.  When <code>absent</code>, removes the record.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
+        <td></td>
         <td><div>BIG-IP username</div></br>
-        <div style="font-size: small;">aliases: username<div></td></tr>
-            <tr>
-    <td>zone<br/><div style="font-size: small;"></div></td>
+    <div style="font-size: small;">aliases: username<div>        </td></tr>
+                <tr><td>zone<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The name of the zone</div></td></tr>
+        <td></td>
+        <td><div>The name of the zone</div>        </td></tr>
         </table>
     </br>
 
@@ -85,6 +79,7 @@ Examples
 
  ::
 
+    
     - name: Add a view, named "internal", to organization.com zone
       local_action:
           module: bigip_view
@@ -102,16 +97,24 @@ Examples
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
-.. note:: https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
+.. note::
+    - Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
+    - https://devcentral.f5.com/wiki/iControl.Management__Zone.ashx
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

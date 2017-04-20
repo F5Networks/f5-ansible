@@ -9,13 +9,13 @@ bigip_user - Manage user accounts and user attributes on a BIG-IP.
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manage user accounts and user attributes on a BIG-IP.
+* Manage user accounts and user attributes on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -37,79 +37,67 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>full_name<br/><div style="font-size: small;"></div></td>
+                <tr><td>full_name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Full name of the user.</div></td></tr>
-            <tr>
-    <td>partition_access<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Full name of the user.</div>        </td></tr>
+                <tr><td>partition_access<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>password_credential<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>shell<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>shell<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul><li>bash</li><li>none</li><li>tmsh</li></ul></td>
-        <td><div>Optionally set the users shell.</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+        <td><div>Optionally set the users shell.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the account should exist or not, taking action if the state is different from what is stated.</div></td></tr>
-            <tr>
-    <td>update_password<br/><div style="font-size: small;"></div></td>
+        <td><div>Whether the account should exist or not, taking action if the state is different from what is stated.</div>        </td></tr>
+                <tr><td>update_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>on_create</td>
         <td><ul><li>always</li><li>on_create</li></ul></td>
-        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>username_credential<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>username_credential<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
+        <td></td>
         <td><div>Name of the user to create, remove or modify.</div></br>
-        <div style="font-size: small;">aliases: name<div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <div style="font-size: small;">aliases: name<div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -120,6 +108,7 @@ Examples
 
  ::
 
+    
     - name: Add the user 'johnd' as an admin
       bigip_user:
           server: "lb.mydomain.com"
@@ -132,6 +121,7 @@ Examples
           update_password: "on_create"
           state: "present"
       delegate_to: localhost
+    
     - name: Change the user "johnd's" role and shell
       bigip_user:
           server: "lb.mydomain.com"
@@ -142,6 +132,7 @@ Examples
           shell: "tmsh"
           state: "present"
       delegate_to: localhost
+    
     - name: Make the user 'johnd' an admin and set to advanced shell
       bigip_user:
           server: "lb.mydomain.com"
@@ -152,6 +143,7 @@ Examples
           shell: "bash"
           state: "present"
       delegate_to: localhost
+    
     - name: Remove the user 'johnd'
       bigip_user:
           server: "lb.mydomain.com"
@@ -160,6 +152,7 @@ Examples
           name: "johnd"
           state: "absent"
       delegate_to: localhost
+    
     - name: Update password
       bigip_user:
           server: "lb.mydomain.com"
@@ -214,16 +207,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the requests Python package on the host. This is as easy as pip install requests
-.. note:: Requires BIG-IP versions >= 12.0.0
+.. note::
+    - Requires the requests Python package on the host. This is as easy as pip install requests
+    - Requires BIG-IP versions >= 12.0.0
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

@@ -9,13 +9,13 @@ bigip_device_sshd - Manage the SSHD settings of a BIG-IP
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manage the SSHD settings of a BIG-IP
+* Manage the SSHD settings of a BIG-IP
 
 
 Requirements (on host that executes module)
@@ -37,78 +37,66 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>allow<br/><div style="font-size: small;"></div></td>
+                <tr><td>allow<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>all</li><li>IP address, such as 172.27.1.10</li><li>IP range, such as 172.27.*.* or 172.27.0.0/255.255.0.0</li></ul></td>
-        <td><div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div></td></tr>
-            <tr>
-    <td>banner<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>        </td></tr>
+                <tr><td>banner<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Whether to enable the banner or not.</div></td></tr>
-            <tr>
-    <td>banner_text<br/><div style="font-size: small;"></div></td>
+        <td><div>Whether to enable the banner or not.</div>        </td></tr>
+                <tr><td>banner_text<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div></td></tr>
-            <tr>
-    <td>inactivity_timeout<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>        </td></tr>
+                <tr><td>inactivity_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div></td></tr>
-            <tr>
-    <td>log_level<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div>        </td></tr>
+                <tr><td>log_level<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>debug</li><li>debug1</li><li>debug2</li><li>debug3</li><li>error</li><li>fatal</li><li>info</li><li>quiet</li><li>verbose</li></ul></td>
-        <td><div>Specifies the minimum SSHD message level to include in the system log.</div></td></tr>
-            <tr>
-    <td>login<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies the minimum SSHD message level to include in the system log.</div>        </td></tr>
+                <tr><td>login<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>port<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Port that you want the SSH daemon to run on.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Port that you want the SSH daemon to run on.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -119,6 +107,7 @@ Examples
 
  ::
 
+    
     - name: Set the banner for the SSHD service from a string
       bigip_device_sshd:
           banner: "enabled"
@@ -220,16 +209,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk.
-.. note:: Requires BIG-IP version 12.0.0 or greater
+.. note::
+    - Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk.
+    - Requires BIG-IP version 12.0.0 or greater
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

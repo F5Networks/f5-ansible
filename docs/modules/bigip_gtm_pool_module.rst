@@ -9,13 +9,13 @@ bigip_gtm_pool - Manages F5 BIG-IP GTM pools.
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manages F5 BIG-IP GTM pools.
+* Manages F5 BIG-IP GTM pools.
 
 
 Requirements (on host that executes module)
@@ -38,78 +38,66 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>alternate_lb_method<br/><div style="font-size: small;"></div></td>
+                <tr><td>alternate_lb_method<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul><li>round-robin</li><li>return-to-dns</li><li>none</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>packet-rate</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries if the <code>preferred_lb_method</code> is unsuccessful in picking a pool.</div></td></tr>
-            <tr>
-    <td>fallback_ip<br/><div style="font-size: small;"></div></td>
+        <td><div>The load balancing mode that the system tries if the <code>preferred_lb_method</code> is unsuccessful in picking a pool.</div>        </td></tr>
+                <tr><td>fallback_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
-        <td><ul></ul></td>
-        <td><div>Specifies the IPv4, or IPv6 address of the server to which the system directs requests when it cannot use one of its pools to do so. Note that the system uses the fallback IP only if you select the <code>fallback_ip</code> load balancing method.</div></td></tr>
-            <tr>
-    <td>fallback_lb_method<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries if both the <code>preferred_lb_method</code> and <code>alternate_lb_method</code>s are unsuccessful in picking a pool.</div></td></tr>
-            <tr>
-    <td>name<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>Name of the GTM pool.</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>preferred_lb_method<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Specifies the IPv4, or IPv6 address of the server to which the system directs requests when it cannot use one of its pools to do so. Note that the system uses the fallback IP only if you select the <code>fallback_ip</code> load balancing method.</div>        </td></tr>
+                <tr><td>fallback_lb_method<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>
         <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries first.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td><div>The load balancing mode that the system tries if both the <code>preferred_lb_method</code> and <code>alternate_lb_method</code>s are unsuccessful in picking a pool.</div>        </td></tr>
+                <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>Name of the GTM pool.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>preferred_lb_method<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>None</td>
+        <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
+        <td><div>The load balancing mode that the system tries first.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>state<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Pool member state. When <code>present</code>, ensures that the pool is created and enabled. When <code>absent</code>, ensures that the pool is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool is enabled or disabled (respectively) on the remote device.</div></td></tr>
-            <tr>
-    <td>type<br/><div style="font-size: small;"></div></td>
+        <td><div>Pool member state. When <code>present</code>, ensures that the pool is created and enabled. When <code>absent</code>, ensures that the pool is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool is enabled or disabled (respectively) on the remote device.</div>        </td></tr>
+                <tr><td>type<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>a</li><li>aaaa</li><li>cname</li><li>mx</li><li>naptr</li><li>srv</li></ul></td>
-        <td><div>The type of GTM pool that you want to create. On BIG-IP releases prior to version 12, this parameter is not supported.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td><div>The type of GTM pool that you want to create. On BIG-IP releases prior to version 12, this parameter is not supported.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -120,6 +108,7 @@ Examples
 
  ::
 
+    
       - name: Disable pool
         bigip_gtm_pool:
             server: "lb.mydomain.com"
@@ -159,16 +148,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
-.. note:: Requires the netaddr Python package on the host. This is as easy as pip install netaddr
+.. note::
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

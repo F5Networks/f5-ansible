@@ -9,13 +9,13 @@ bigip_ucs_fetch - Fetches a UCS file from remote nodes
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-This module is used for fetching UCS files from remote machines and storing them locally in a file tree, organized by hostname. Note that this module is written to transfer UCS files that might not be present, so a missing remote UCS won't be an error unless fail_on_missing is set to 'yes'.
+* This module is used for fetching UCS files from remote machines and storing them locally in a file tree, organized by hostname. Note that this module is written to transfer UCS files that might not be present, so a missing remote UCS won't be an error unless fail_on_missing is set to 'yes'.
 
 
 Requirements (on host that executes module)
@@ -38,72 +38,61 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>backup<br/><div style="font-size: small;"></div></td>
+                <tr><td>backup<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.</div></td></tr>
-            <tr>
-    <td>create_on_missing<br/><div style="font-size: small;"></div></td>
+        <td><div>Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.</div>        </td></tr>
+                <tr><td>create_on_missing<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
-        <td><div>Creates the UCS based on the value of <code>src</code> if the file does not already exist on the remote system.</div></td></tr>
-            <tr>
-    <td>dest<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Creates the UCS based on the value of <code>src</code> if the file does not already exist on the remote system.</div>        </td></tr>
+                <tr><td>dest<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>A directory to save the UCS file into.</div></td></tr>
-            <tr>
-    <td>encryption_password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>A directory to save the UCS file into.</div>        </td></tr>
+                <tr><td>encryption_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Password to use to encrypt the UCS file if desired</div></td></tr>
-            <tr>
-    <td>fail_on_missing<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Password to use to encrypt the UCS file if desired</div>        </td></tr>
+                <tr><td>fail_on_missing<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>Make the module fail if the UCS file on the remote system is missing.</div></td></tr>
-            <tr>
-    <td>force<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>Make the module fail if the UCS file on the remote system is missing.</div>        </td></tr>
+                <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
-        <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP password</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP password</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP host</div></td></tr>
-            <tr>
-    <td>src<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP host</div>        </td></tr>
+                <tr><td>src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>temporary file name</td>
-        <td><ul></ul></td>
-        <td><div>The name of the UCS file to create on the remote server for downloading</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The name of the UCS file to create on the remote server for downloading</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>BIG-IP username</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>BIG-IP username</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div></td></tr>
+        <td></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div>        </td></tr>
         </table>
     </br>
 
@@ -114,6 +103,7 @@ Examples
 
  ::
 
+    
     - name: Download a new UCS
       bigip_ucs_fetch:
           server: "bigip.localhost.localdomain"
@@ -223,16 +213,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
-.. note:: BIG-IP provides no way to get a checksum of the UCS files on the system via any interface except, perhaps, logging in directly to the box (which would not support appliance mode). Therefore, the best this module can do is check for the existence of the file on disk; no checksumming.
+.. note::
+    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+    - BIG-IP provides no way to get a checksum of the UCS files on the system via any interface except, perhaps, logging in directly to the box (which would not support appliance mode). Therefore, the best this module can do is check for the existence of the file on disk; no checksumming.
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

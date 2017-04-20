@@ -1,8 +1,8 @@
-.. _iworkflow_tenant:
+.. _bigip_configsync_actions:
 
 
-iworkflow_tenant - Manage tenants in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++
+bigip_configsync_actions - Perform different actions related to config-sync.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -15,14 +15,13 @@ iworkflow_tenant - Manage tenants in iWorkflow.
 Synopsis
 --------
 
-* Manage tenants in iWorkflow.
+* Allows one to run different config-sync actions. These actions allow you to manually sync your configuration across multiple BIG-IPs when those devices are in an HA pair.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.3.0
-  * iWorkflow >= 2.1.0
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -38,31 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>contact_address<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td></td>
-        <td><div>An optional contact address associated with the tenant.</div>        </td></tr>
-                <tr><td>contact_email<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td></td>
-        <td><div>An optional contact email address associated with the tenant.</div>        </td></tr>
-                <tr><td>contact_phone<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td></td>
-        <td><div>An optional contact phone number associated with the tenant.</div>        </td></tr>
-                <tr><td>description<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td></td>
-        <td><div>An optional description for the tenant.</div>        </td></tr>
-                <tr><td>name<br/><div style="font-size: small;"></div></td>
+                <tr><td>device_group<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Name of the tenant that you want to manage.</div>        </td></tr>
+        <td><div>The device group that you want to perform config-sync actions on.</div>        </td></tr>
+                <tr><td>overwrite_config<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Indicates that the sync operation overwrites the configuration on the target.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -78,11 +62,16 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
+                <tr><td>sync_device_to_group<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>When <code>state</code> is <code>present</code>, ensures that the tenant exists. When <code>state</code> is <code>absent</code>, ensures that the tenant is removed.</div>        </td></tr>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Specifies that the system synchronizes configuration data from this device to other members of the device group. This option is mutually exclusive with the <code>sync_group_to_device</code> option.</div>        </td></tr>
+                <tr><td>sync_group_to_device<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Specifies that the system synchronizes configuration data from the group to this device. This option is mutually exclusive with the <code>sync_device_to_group</code> options.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -104,7 +93,35 @@ Examples
  ::
 
     
+    - name: Sync configuration from device to group
+      bigip_configsync_actions:
+          device_group: "foo-group"
+          sync_device_to_group: yes
+          server: "lb01.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: no
+      delegate_to: localhost
+      
+    - name: Sync configuration from group to devices in group
+      bigip_configsync_actions:
+          device_group: "foo-group"
+          sync_group_to_device: yes
+          server: "lb01.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: no
+      delegate_to: localhost
     
+    - name: Perform an initial sync of a device to a new device group
+      bigip_configsync_actions:
+          device_group: "new-device-group"
+          sync_device_to_group: yes
+          server: "lb01.mydomain.com"
+          user: "admin"
+          password: "secret"
+          validate_certs: no
+      delegate_to: localhost
 
 
 Notes
@@ -112,7 +129,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Tenants are not useful unless you associate them with a connector using the ``iworkflow_tenant_connector`` module.
+    - Requires Ansible >= 2.3.
 
 
 

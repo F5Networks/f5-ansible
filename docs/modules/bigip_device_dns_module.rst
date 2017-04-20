@@ -9,13 +9,13 @@ bigip_device_dns - Manage BIG-IP device DNS settings
 
 .. contents::
    :local:
-   :depth: 1
+   :depth: 2
 
 
 Synopsis
 --------
 
-Manage BIG-IP device DNS settings
+* Manage BIG-IP device DNS settings
 
 
 Requirements (on host that executes module)
@@ -37,66 +37,61 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-            <tr>
-    <td>cache<br/><div style="font-size: small;"></div></td>
+                <tr><td>cache<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>disable</td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Specifies whether the system caches DNS lookups or performs the operation each time a lookup is needed. Please note that this applies only to Access Policy Manager features, such as ACLs, web application rewrites, and authentication.</div></td></tr>
-            <tr>
-    <td>forwarders<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies whether the system caches DNS lookups or performs the operation each time a lookup is needed. Please note that this applies only to Access Policy Manager features, such as ACLs, web application rewrites, and authentication.</div>        </td></tr>
+                <tr><td>forwarders<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div></td></tr>
-            <tr>
-    <td>ip_version<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div>        </td></tr>
+                <tr><td>ip_version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>4</li><li>6</li></ul></td>
-        <td><div>Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.</div></td></tr>
-            <tr>
-    <td>name_servers<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.</div>        </td></tr>
+                <tr><td>name_servers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of name servers that the system uses to validate DNS lookups</div></td></tr>
-            <tr>
-    <td>password<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>A list of name servers that the system uses to validate DNS lookups</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div></td></tr>
-            <tr>
-    <td>search<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>search<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>A list of domains that the system searches for local domain lookups, to resolve local host names.</div></td></tr>
-            <tr>
-    <td>server<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>A list of domains that the system searches for local domain lookups, to resolve local host names.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div></td></tr>
-            <tr>
-    <td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+        <td></td>
+        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td>443</td>
-        <td><ul></ul></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div></td></tr>
-            <tr>
-    <td>user<br/><div style="font-size: small;"></div></td>
+        <td></td>
+        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>absent</li><li>present</li></ul></td>
+        <td><div>The state of the variable on the system. When <code>present</code>, guarantees that an existing variable is set to <code>value</code>.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
-        <td><ul></ul></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div></td></tr>
-            <tr>
-    <td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div></td></tr>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -107,6 +102,7 @@ Examples
 
  ::
 
+    
     - name: Set the DNS settings on the BIG-IP
       bigip_device_dns:
           name_servers:
@@ -145,20 +141,6 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
     </tr>
             <tr>
-        <td> search </td>
-        <td> List of search domains that were set </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
-    </tr>
-            <tr>
-        <td> warnings </td>
-        <td> The list of warnings (if any) generated by module based on arguments </td>
-        <td align=center> always </td>
-        <td align=center> list </td>
-        <td align=center> ['...', '...'] </td>
-    </tr>
-            <tr>
         <td> ip_version </td>
         <td> IP version that was set that DNS will specify IP addresses in </td>
         <td align=center> changed </td>
@@ -166,8 +148,8 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> 4 </td>
     </tr>
             <tr>
-        <td> forwarders </td>
-        <td> List of forwarders that were set </td>
+        <td> search </td>
+        <td> List of search domains that were set </td>
         <td align=center> changed </td>
         <td align=center> list </td>
         <td align=center> ['192.0.2.10', '172.17.12.10'] </td>
@@ -179,6 +161,13 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> string </td>
         <td align=center> enabled </td>
     </tr>
+            <tr>
+        <td> warnings </td>
+        <td> The list of warnings (if any) generated by module based on arguments </td>
+        <td align=center> always </td>
+        <td align=center> list </td>
+        <td align=center> ['...', '...'] </td>
+    </tr>
         
     </table>
     </br></br>
@@ -186,15 +175,23 @@ Common return values are documented here :doc:`common_return_values`, the follow
 Notes
 -----
 
-.. note:: Requires the f5-sdk Python package on the host. This is as easy as pip install requests
+.. note::
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
-    
-This is an Extras Module
-------------------------
 
-For more information on what this means please read :doc:`modules_extra`
+Status
+~~~~~~
 
-    
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`developing_test_pr` and :doc:`developing_modules`.
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
+
+
+For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
