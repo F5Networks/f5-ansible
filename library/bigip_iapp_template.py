@@ -301,8 +301,10 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
 
+        self._remove_iapp_checksum()
         # The same process used for creating (load) can be used for updating
         self.create_on_device()
+        self._generate_template_checksum_on_device()
         return True
 
     def template_in_use(self):
@@ -334,6 +336,21 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         return result
+
+    def _remove_iapp_checksum(self):
+        """Removes the iApp tmplChecksum
+        
+        This is required for updating in place or else the load command will
+        fail with a "AppTemplate ... content does not match the checksum"
+        error.
+        
+        :return: 
+        """
+        resource = self.client.api.tm.sys.application.templates.template.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        resource.modify(tmplChecksum=None)
 
     def templates_differ(self):
         # BIG-IP can generate checksums of iApps, but the iApp needs to be
