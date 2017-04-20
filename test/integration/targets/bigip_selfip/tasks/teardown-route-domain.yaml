@@ -3,10 +3,6 @@
 - name: Remove VLANs
   bigip_vlan:
       name: "{{ item }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
   with_items:
@@ -15,12 +11,7 @@
 - name: Remove route domain
   bigip_routedomain:
       id: "{{ selfip_rd }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Remove Create route domain

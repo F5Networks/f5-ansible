@@ -2,13 +2,8 @@
 
 - name: Upload 12.0.0 base image
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload 12.0.0 base image
@@ -18,13 +13,8 @@
 
 - name: Upload 12.0.0 base image - Idempotent check
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload 12.0.0 base image - Idempotent check
@@ -35,12 +25,7 @@
 - name: Upload 12.0.0 HF1 hotfix image
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload 12.0.0 HF1 hotfix image
@@ -51,12 +36,7 @@
 - name: Upload 12.0.0 HF1 hotfix image - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload 12.0.0 HF1 hotfix image - Idempotent check
@@ -66,13 +46,8 @@
 
 - name: Remove uploaded 12.0.0 base image
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded 12.0.0 base image
@@ -82,13 +57,8 @@
 
 - name: Remove uploaded 12.0.0 base image - Idempotent check
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded 12.0.0 base image - Idempotent check
@@ -99,12 +69,7 @@
 - name: Remove uploaded 12.0.0 HF1 hotfix image
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded 12.0.0 HF1 hotfix image
@@ -115,12 +80,7 @@
 - name: Remove uploaded 12.0.0 HF1 hotfix image - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded 12.0.0 HF1 hotfix image - Idempotent check
@@ -131,13 +91,8 @@
 - name: Upload base image and hotfix
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload base image and hotfix
@@ -148,13 +103,8 @@
 - name: Upload base image and hotfix - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Upload base image and hotfix - Idempotent check
@@ -165,13 +115,8 @@
 - name: Remove uploaded base image and hotfix
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded base image and hotfix
@@ -182,13 +127,8 @@
 - name: Remove uploaded base image and hotfix - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Remove uploaded base image and hotfix - Idempotent check
@@ -198,13 +138,8 @@
 
 - name: Install (upload, install) base image
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "installed"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -215,13 +150,8 @@
 
 - name: Install (upload, install) base image - Idempotent check
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "installed"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -233,13 +163,8 @@
 - name: Install (upload, install) base image and hotfix
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "installed"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -251,13 +176,8 @@
 - name: Install (upload, install) base image and hotfix - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "installed"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -268,13 +188,8 @@
 
 - name: Activate (upload, install, reboot) base image
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "activated"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -285,14 +200,9 @@
 
 - name: Activate (upload, install, reboot, reuse_inactive_volume) base image
   bigip_software:
-      password: "{{ bigip_password }}"
       reuse_inactive_volume: True
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "activated"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Activate (upload, install, reboot) base image
@@ -302,13 +212,8 @@
 
 - name: Activate (upload, install, reboot) base image - Idempotent check
   bigip_software:
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "activated"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_new }}"
   register: result
 
@@ -320,13 +225,8 @@
 - name: Activate (upload, install, reboot) base image and hotfix
   bigip_software:
       hotfix: "{{ iso_hostfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "activated"
-      user: "{{ bigip_user }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_old }}"
   register: result
 
@@ -338,13 +238,8 @@
 - name: Activate (upload, install, reboot) base image and hotfix - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       software: "{{ iso_base }}"
       state: "activated"
-      user: "{{ bigip_user }}"
-      validate_certs: "{{ validate_certs }}"
       volume: "{{ volume_old }}"
   register: result
 

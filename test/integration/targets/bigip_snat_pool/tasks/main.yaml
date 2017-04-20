@@ -3,11 +3,6 @@
 - name: Create SNAT pool from list of members
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ members_list }}"
   register: result
 
@@ -19,11 +14,6 @@
 - name: Create SNAT pool from list of members - Idempotent check
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ members_list }}"
   register: result
 
@@ -35,11 +25,6 @@
 - name: Set SNAT pool to single member
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_individual }}"
   register: result
 
@@ -51,11 +36,6 @@
 - name: Set SNAT pool to single member - Idempotent check
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_individual }}"
   register: result
 
@@ -68,11 +48,6 @@
   bigip_snat_pool:
       append: "yes"
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_append_list }}"
   register: result
 
@@ -85,11 +60,6 @@
   bigip_snat_pool:
       append: "yes"
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_append_list }}"
   register: result
 
@@ -102,11 +72,6 @@
   bigip_snat_pool:
       append: "yes"
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_append_individual }}"
   register: result
 
@@ -119,11 +84,6 @@
   bigip_snat_pool:
       append: "yes"
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_append_individual }}"
   register: result
 
@@ -136,11 +96,6 @@
   bigip_snat_pool:
       append: "yes"
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       members: "{{ member_append_list }}"
   register: result
 
@@ -152,11 +107,6 @@
 - name: Delete a SNAT pool
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 
@@ -168,11 +118,6 @@
 - name: Delete a SNAT pool - Idempotent check
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 

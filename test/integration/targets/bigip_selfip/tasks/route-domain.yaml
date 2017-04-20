@@ -7,11 +7,6 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
       route_domain: "{{ selfip_rd }}"
   register: result
@@ -26,11 +21,6 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
       route_domain: "{{ selfip_rd }}"
   register: result
@@ -43,12 +33,7 @@
 - name: Delete Self IP, specify a Route Domain
   bigip_selfip:
       name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       route_domain: "{{ selfip_rd }}"
   register: result
 
@@ -60,12 +45,7 @@
 - name: Delete Self IP, specify a Route Domain - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       route_domain: "{{ selfip_rd }}"
   register: result
 

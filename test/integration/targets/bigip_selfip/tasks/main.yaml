@@ -8,11 +8,6 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
   register: result
 
@@ -26,11 +21,6 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
   register: result
 
@@ -43,11 +33,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan2 }}"
   register: result
 
@@ -60,11 +45,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan2 }}"
   register: result
 
@@ -77,11 +57,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set Self IP netmask
@@ -93,11 +68,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set Self IP netmask - Idempotent check
@@ -109,11 +79,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service: "{{ allowed_services_single }}"
   register: result
 
@@ -126,11 +91,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service: "{{ allowed_services_single }}"
   register: result
 
@@ -143,11 +103,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service: "{{ allowed_services_multi }}"
   register: result
 
@@ -160,11 +115,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service: "{{ allowed_services_multi }}"
   register: result
 
@@ -177,11 +127,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "all"
   register: result
@@ -195,11 +140,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "all"
   register: result
@@ -213,11 +153,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "default"
   register: result
@@ -231,11 +166,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "default"
   register: result
@@ -249,11 +179,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "none"
   register: result
@@ -267,11 +192,6 @@
   bigip_selfip:
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       allow_service:
           - "none"
   register: result
@@ -284,12 +204,7 @@
 - name: Delete Self IP
   bigip_selfip:
       name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete Self IP
@@ -300,12 +215,7 @@
 - name: Delete Self IP - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete Self IP - Idempotent check
@@ -318,12 +228,7 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       traffic_group: "{{ default_traffic_group }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
   register: result
 
@@ -337,12 +242,7 @@
       address: "{{ selfip }}"
       name: "{{ selfip_name }}"
       netmask: "{{ selfip_netmask }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       traffic_group: "{{ default_traffic_group }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlan: "{{ selfip_vlan }}"
   register: result
 
@@ -354,12 +254,7 @@
 - name: Delete Self IP that specified traffic group
   bigip_selfip:
       name: "{{ selfip_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete Self IP that specified traffic group

@@ -8,11 +8,6 @@
       network: "{{ network1 }}"
       port: "{{ port1 }}"
       snmp_version: "{{ version1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create snmp v1 trap
@@ -28,11 +23,6 @@
       network: "{{ network1 }}"
       port: "{{ port1 }}"
       snmp_version: "{{ version1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create snmp v1 trap - Idempotent check
@@ -44,11 +34,6 @@
   bigip_snmp_trap:
       community: "{{ community2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp community
@@ -60,11 +45,6 @@
   bigip_snmp_trap:
       community: "{{ community2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp community - Idempotent check
@@ -76,11 +56,6 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp destination to a hostname
@@ -92,11 +67,6 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp destination to a hostname - Idempotent check
@@ -107,12 +77,7 @@
 - name: Set snmp port
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
       port: "{{ port2 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp port
@@ -123,12 +88,7 @@
 - name: Set snmp port - Idempotent check
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
       port: "{{ port2 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp port - Idempotent check
@@ -140,11 +100,6 @@
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
       network: "{{ network2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp network to default
@@ -156,11 +111,6 @@
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
       network: "{{ network2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp network to default - Idempotent check
@@ -172,11 +122,6 @@
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
       network: "{{ network3 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp network to other
@@ -188,11 +133,6 @@
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
       network: "{{ network3 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set snmp network to other - Idempotent check
@@ -203,11 +143,6 @@
 - name: Set snmp version to 2c
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       snmp_version: "{{ version2 }}"
   register: result
 
@@ -219,11 +154,6 @@
 - name: Set snmp version to 2c - Idempotent check
   bigip_snmp_trap:
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       snmp_version: "{{ version2 }}"
   register: result
 
@@ -236,11 +166,6 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 
@@ -253,11 +178,6 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 

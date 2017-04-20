@@ -3,11 +3,6 @@
 - name: Create VLAN 1
   bigip_vlan:
       name: "{{ selfip_vlan }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create VLAN 1
@@ -18,11 +13,6 @@
 - name: Create VLAN 2
   bigip_vlan:
       name: "{{ selfip_vlan2 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create VLAN 2

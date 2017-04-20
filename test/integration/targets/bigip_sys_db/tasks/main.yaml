@@ -3,11 +3,6 @@
 - name: Set setup.run variable "on"
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
@@ -19,11 +14,6 @@
 - name: Set setup.run variable "on" - Idempotent check
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
@@ -35,11 +25,6 @@
 - name: Set setup.run variable "off"
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
@@ -51,11 +36,6 @@
 - name: Set setup.run variable "off" - Idempotent check
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
@@ -67,12 +47,7 @@
 - name: Reset setup.run variable
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "reset"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
@@ -84,12 +59,7 @@
 - name: Reset setup.run variable - Idempotent check
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "reset"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
@@ -101,11 +71,6 @@
 - name: No value and no reset
   bigip_sys_db:
       key: "{{ bigip_sys_db_key_1 }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   failed_when: result|success
