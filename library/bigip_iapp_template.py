@@ -63,7 +63,7 @@ options:
         provided as a way to delete templates that you may no longer have
         the source of.
     required: False
-    default None
+    default: None
   content:
     description:
       - Sets the contents of an iApp template directly to the specified
