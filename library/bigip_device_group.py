@@ -109,6 +109,8 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+  - This module is primarily used as a component of configuring HA pairs of
+    BIG-IP devices.
   - Requires BIG-IP >= 12.1.x.
   - Requires Ansible >= 2.3.
 requirements:
@@ -119,7 +121,24 @@ author:
 '''
 
 EXAMPLES = '''
+- name: Create a sync-only device group
+  bigip_device_group:
+      name: "foo-group"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
 
+- name: Create a sync-only device group with auto-sync enabled
+  bigip_device_group:
+      name: "foo-group"
+      auto_sync: "yes"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  delegate_to: localhost
 '''
 
 RETURN = '''
