@@ -179,7 +179,7 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "The specified 'device_group' not not exist."
             )
-        if not _validate_sync_to_group_required():
+        if not self._validate_sync_to_group_required():
             raise F5ModuleError(
                 "This device group needs an initial sync. Please use "
                 "'sync_device_to_group'"
