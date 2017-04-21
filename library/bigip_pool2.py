@@ -28,9 +28,9 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_pool
-short_description: "Manages F5 BIG-IP LTM pools"
+short_description: Manages F5 BIG-IP LTM pools.
 description:
-  - Manages F5 BIG-IP LTM pools via iControl REST API
+  - Manages F5 BIG-IP LTM pools via iControl REST API.
 version_added: 1.2
 author:
   - Tim Rupp (@caphrim007)
@@ -40,40 +40,36 @@ notes:
   - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python)
   - Best run as a local_action in your playbook
 requirements:
-  - bigsuds
+  - f5-sdk
 options:
   description:
     description:
       - Specifies descriptive text that identifies the pool.
-    required: false
+    required: False
     version_added: "2.3"
   state:
     description:
-      - Pool/pool member state
-    required: false
+      - Pool/pool member state.
+    required: False
     default: present
     choices:
       - present
       - absent
-    aliases: []
-  name:
+   name:
     description:
       - Pool name
-    required: true
-    default: null
-    choices: []
+    required: True
+    default: None
     aliases:
       - pool
   partition:
     description:
-      - Partition of pool/pool member
-    required: false
+      - Partition of pool/pool member.
+    required: False
     default: 'Common'
-    choices: []
-    aliases: []
   lb_method:
     description:
-      - Load balancing method
+      - Load balancing method.
     version_added: "1.3"
     required: False
     default: 'round_robin'
@@ -98,76 +94,62 @@ options:
       - ratio_session
       - ratio_least_connection_member
       - ratio_least_connection_node_address
-    aliases: []
   monitor_type:
     description:
       - Monitor rule type when monitors > 1
     version_added: "1.3"
     required: False
-    default: null
+    default: None
     choices: ['and_list', 'm_of_n']
-    aliases: []
   quorum:
     description:
-      - Monitor quorum value when monitor_type is m_of_n
+      - Monitor quorum value when C(monitor_type) is C(m_of_n).
     version_added: "1.3"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   monitors:
     description:
       - Monitor template name list. Always use the full path to the monitor.
     version_added: "1.3"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   slow_ramp_time:
     description:
       - Sets the ramp-up time (in seconds) to gradually ramp up the load on
-        newly added or freshly detected up pool members
+        newly added or freshly detected up pool members.
     version_added: "1.3"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   reselect_tries:
     description:
       - Sets the number of times the system tries to contact a pool member
-        after a passive failure
+        after a passive failure.
     version_added: "2.2"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   service_down_action:
     description:
-      - Sets the action to take when node goes down in pool
+      - Sets the action to take when node goes down in pool.
     version_added: "1.3"
     required: False
-    default: null
+    default: None
     choices:
       - none
       - reset
       - drop
       - reselect
-    aliases: []
   host:
     description:
-      - "Pool member IP"
+      - Pool member IP.
     required: False
-    default: null
-    choices: []
+    default: None
     aliases:
       - address
   port:
     description:
-      - Pool member port
+      - Pool member port.
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
 extends_documentation_fragment: f5
 '''
 
@@ -193,6 +175,7 @@ EXAMPLES = '''
       name: "my-pool"
       partition: "Common"
       lb_method: "round_robin"
+  delegate_to: localhost
 
 - name: Add pool member
   bigip_pool:
@@ -204,6 +187,7 @@ EXAMPLES = '''
       partition: "Common"
       host: "{{ ansible_default_ipv4["address"] }}"
       port: 80
+  delegate_to: localhost
 
 - name: Remove pool member from pool
   bigip_pool:
@@ -215,6 +199,7 @@ EXAMPLES = '''
       partition: "Common"
       host: "{{ ansible_default_ipv4["address"] }}"
       port: 80
+  delegate_to: localhost
 
 - name: Delete pool
   bigip_pool:
@@ -224,6 +209,7 @@ EXAMPLES = '''
       state: "absent"
       name: "my-pool"
       partition: "Common"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -236,16 +222,17 @@ from netaddr import IPAddress, AddrFormatError
 class Parameters(AnsibleF5Parameters):
 
     api_map = {
-        'loadBalancingMode': 'lb_method', 'slowRampTime': 'slow_ramp_time',
+        'loadBalancingMode': 'lb_method',
+        'slowRampTime': 'slow_ramp_time',
         'reselectTries': 'reselect_tries',
         'serviceDownAction': 'service_down_action'
-               }
+    }
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'host', 'port', 'slow_ramp_time',
         'reselect_tries'
-                    ]
+    ]
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
@@ -306,7 +293,7 @@ class Parameters(AnsibleF5Parameters):
                     and_list.append('and')
                     and_list.append(m)
             result = ' '.join(and_list)
-        if monitor_type == 'm_of_n':
+        elif monitor_type == 'm_of_n':
             min_list = list()
             prefix = 'min' + ' ' + str(quorum) + ' ' + 'of' + ' ' + '{'
             min_list.append(prefix)
@@ -451,8 +438,9 @@ class ModuleManager(object):
 
     def update(self):
         self.have, members, poolres = self.read_current_from_device()
-        if self._member_does_not_exist(members):
-            self.create_member_on_device(poolres)
+        if not self.client.check_mode:
+            if self._member_does_not_exist(members):
+                self.create_member_on_device(poolres)
         if not self.should_update():
             return False
         if self.client.check_mode:
@@ -478,39 +466,49 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.ltm.pools.pool.create(
-            partition=self.want.partition, **params)
+            partition=self.want.partition, **params
+        )
 
     def create_member_on_device(self, poolres):
-        poolres.members_s.members.create(name=self.want.member_name,
-                                         partition=self.want.partition)
+        poolres.members_s.members.create(
+            name=self.want.member_name,
+            partition=self.want.partition
+        )
 
     def update_on_device(self):
         params = self.want.api_params()
         result = self.client.api.tm.ltm.pools.pool.load(
-            name=self.want.name, partition=self.want.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
         result.modify(**params)
 
     def exists(self):
         return self.client.api.tm.ltm.pools.pool.exists(
-            name=self.want.name, partition=self.want.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def remove_from_device(self):
         result = self.client.api.tm.ltm.pools.pool.load(
-            name=self.want.name, partition=self.want.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
-        member = result.members_s.members.load(name=self.want.member_name,
-                                               partition=self.want.partition)
+        member = result.members_s.members.load(
+            name=self.want.member_name,
+            partition=self.want.partition
+        )
         if member:
             member.delete()
             self.delete_node_on_device()
+
         if result:
             result.delete()
 
     def read_current_from_device(self):
         tmp_res = self.client.api.tm.ltm.pools.pool.load(
-            name=self.want.name, partition=self.want.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
         members = tmp_res.members_s.get_collection()
 
@@ -519,7 +517,9 @@ class ModuleManager(object):
 
     def delete_node_on_device(self):
         node = self.client.api.tm.ltm.nodes.node.load(
-            name=self.want.host, partition=self.want.partition)
+            name=self.want.host,
+            partition=self.want.partition
+        )
         try:
             node.delete()
         except iControlUnexpectedHTTPError as e:
@@ -587,7 +587,7 @@ class ArgumentSpec(object):
                 choices=[
                     'none', 'reset',
                     'drop', 'reselect'
-                    ],
+                ],
                 default=None
             ),
             description=dict(
@@ -603,7 +603,7 @@ class ArgumentSpec(object):
                 required=False,
                 default=None,
                 type='int'
-            )
+                )
             )
         self.f5_product_name = 'bigip'
 
