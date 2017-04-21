@@ -52,6 +52,7 @@ The main documentation for the modules is organized into a couple sections:
    development/tests
    development/architecture
    development/code-conventions
-   development/buildenvironments
    development/upstreaming
    development/writing-a-module
+   development/deprecating_code.rst
+   development/design_decisions.rst
