@@ -2,6 +2,8 @@
 
 import fire
 import os
+import shutil
+
 
 class ModuleStubber(object):
     def __init__(self):
@@ -19,6 +21,52 @@ class ModuleStubber(object):
         self.__stub_library_file()
         self.__stub_module_documentation()
         self.__stub_unit_test_file()
+
+    def unstub(self, module):
+        self._module, self._extension = os.path.splitext(module)
+        if self._extension == '':
+            self._extension = '.py'
+        try:
+            for dir in ['defaults', 'tasks']:
+                directory = '{0}/test/integration/targets/{1}/{2}'.format(
+                    self._top_level, self._module, dir
+                )
+                shutil.rmtree(directory)
+        except Exception:
+            pass
+
+        try:
+            playbook_file = '{0}/test/integration/{1}.yaml'.format(
+                self._top_level, self._module
+            )
+            os.remove(playbook_file)
+        except Exception:
+            pass
+
+        try:
+            library_file = '{0}/library/{1}{2}'.format(
+                self._top_level, self._module, self._extension
+            )
+            os.remove(library_file)
+        except Exception:
+            pass
+
+        try:
+            documentation_file = '{0}/docs/modules/{1}.rst'.format(
+                self._top_level, self._module
+            )
+            os.remove(documentation_file)
+        except Exception:
+            pass
+
+        try:
+            test_dir = self.__get_test_dir()
+            test_file = '{0}/test/unit/{1}/test_{2}{3}'.format(
+                self._top_level, test_dir, self._module, self._extension
+            )
+            os.remove(test_file)
+        except Exception:
+            pass
 
     def __stub_roles_dirs(self):
         # Create role containing all of your future functional tests
@@ -106,16 +154,7 @@ class ModuleStubber(object):
             os.utime(fname, times)
 
     def __stub_unit_test_file(self):
-        if self._module.startswith('bigip'):
-            test_dir = 'bigip'
-        elif self._module.startswith('iworkflow'):
-            test_dir = 'iworkflow'
-        elif self._module.startswith('bigiq'):
-            test_dir = 'bigiq'
-        elif self._module.startswith('wait'):
-            test_dir = 'bigip'
-        elif self._module.startswith('f5'):
-            test_dir = 'f5'
+        test_dir = self.__get_test_dir()
 
         test_dir_path = '{0}/test/unit/{1}'.format(
             self._top_level, test_dir
@@ -126,6 +165,19 @@ class ModuleStubber(object):
             self._top_level, test_dir, self._module, self._extension
         )
         self.__touch(test_file)
+
+    def __get_test_dir(self):
+        if self._module.startswith('bigip'):
+            test_dir = 'bigip'
+        elif self._module.startswith('iworkflow'):
+            test_dir = 'iworkflow'
+        elif self._module.startswith('bigiq'):
+            test_dir = 'bigiq'
+        elif self._module.startswith('wait'):
+            test_dir = 'bigip'
+        elif self._module.startswith('f5'):
+            test_dir = 'f5'
+        return test_dir
 
 
 def main():
