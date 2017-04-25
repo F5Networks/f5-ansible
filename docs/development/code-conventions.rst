@@ -600,3 +600,47 @@ This allows you to not have to overthink the inclusion of your example.
          key: "setup.run"
          state: "reset"
      delegate_to: localhost
+
+Assign before returning
+^^^^^^^^^^^^^^^^^^^^^^^
+
+To enable easier debugging when something goes wrong, ensure that you assign values
+**before** you return those values.
+
+**GOOD**
+
+.. code-block:: python
+
+   def exists(self):
+       result = self.client.api.tm.gtm.pools.pool.exists(
+           name=self.want.name,
+           partition=self.want.partition
+       )
+       return result
+
+**BAD**
+
+.. code-block:: python
+
+   def exists(self):
+       return self.client.api.tm.gtm.pools.pool.exists(
+           name=self.want.name,
+           partition=self.want.partition
+       )
+
+The reason that the above **BAD** example is considered bad is that when it comes time
+to debug the value of a variable, it requires that you change the code to do an
+assignment operation anyway.
+
+For example, using `q` to debug the value of the above requires that you implicitly
+assign the value of the API call before you do this,
+
+.. code-block:: python
+
+   ...
+   result = self.client.api....
+   q.q(result)
+   ...
+
+When the code does not do a assignment, then you are required to change the code before
+you are able to debug the code.
