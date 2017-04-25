@@ -23,8 +23,20 @@
 <!---
 Paste a list of BIG-IP versions this was tested on.
 This is usually reflected in the playbook that runs the functional test.
+
+Check the tested versions
 -->
-*
+- [ ] 11.6.1 (BIGIP-11.6.1.0.0.317)
+- [ ] 12.0.0 (BIGIP-12.0.0.0.0.606)
+- [ ] 12.1.0 (BIGIP-12.1.0.0.0.1434)
+- [ ] 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
+- [ ] 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
+- [ ] 12.1.1 (BIGIP-12.1.1.0.0.184)
+- [ ] 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
+- [ ] 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
+- [ ] 12.1.2 (BIGIP-12.1.2.0.0.249)
+- [ ] 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] 13.0.0 (BIGIP-13.0.0.0.0.1645)
 
 ##### CHECKLIST
 <!---
