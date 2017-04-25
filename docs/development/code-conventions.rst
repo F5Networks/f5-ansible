@@ -644,3 +644,39 @@ assign the value of the API call before you do this,
 
 When the code does not do a assignment, then you are required to change the code before
 you are able to debug the code.
+
+Fixed Github issues should have an associated issue-xxxxx.yaml file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When a developer takes on a new issue that requires changes to code to get working,
+these changes should be tested with a new functional test yaml file located in the
+module's `test/integration/PRODUCT/targets` directory.
+
+For example.
+
+Consider the `Github Issue 59`_ which is relevant to the `bigip_virtual_server` module.
+
+The developer needed to add new code to the module. So to verify that the new code is
+tested, the developer should add a new file to the module's `targets` directory here
+
+  * `test/functional/bigip/bigip_virtual_server/tasks`
+
+The name of the file should be
+
+  * `issue-59.yaml`
+
+And inside of the file should be any and all work that is required to,
+
+  * Setup the test
+  * Perform the test
+  * Teardown the test
+
+Any issues that are reported on github should follow the same pattern, however the
+filenames of those modules should be
+
+  * `ansible-xxxxx.yaml`
+
+So-as not to step on the numeric namespace that is used natively in the `f5-ansible`
+repository.
+
+.. _Github Issue 59: https://github.com/F5Networks/f5-ansible/issues/59
