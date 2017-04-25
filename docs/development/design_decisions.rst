@@ -43,42 +43,23 @@ choice. And in those cases, you must handle the versioning of it yourself.
 The company had decided to put all their effort into REST
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When the REST pattern of API development became popular, F5 rushed to put some
-work into making a REST wrapper around `tmsh`. That is what you have today; basically
-a wrapper around sys calls to `tmsh`.
+When the REST pattern of API development became popular, F5 put some work into
+making a REST wrapper around `tmsh`. That is what you have today; a wrapper around
+calls to `tmsh`.
 
 To understand why the REST API is where the company has put more effort, you need
 to understand the history of the SOAP API at F5.
 
-It is surprisingly difficult for a team to develop for the SOAP API. When teams are
-inherently backlogged already in work for a release, it's hard to convince they
-(except to make it a requirement in the feature-tracker) to spend even more time
-trying to figure out this SOAP thing.
+It is surprisingly difficult for a team to develop for the SOAP API. The REST API
+is easier to code for. Additionally, the REST APIs curiously map almost directly
+to the `tmsh` command you would use. Coincidence? Hardly. Remember, it's `tmsh`.
 
-So what happened? They didn't.
-
-F5's culture prevents something like that aforementioned feature-tracker req from
-happening. When you toss in the difficulty of adding SOAP functionality to your
-feature, what you have is a perfect storm of "nope".
-
-The REST API, for all it's skeletons, is several orders of magnitude easy to code
-for. Additionally, the REST APIs curiously map almost directly to the `tmsh` command
-you would use. Coincidence? Hardly. It's shelling out to `tmsh`.
-
-So when you consider that "the world" was hyped on REST APIs and F5's architects
-made the REST API easy for a team to code to than the SOAP API, what you have is
-the company unofficially going all-in on REST.
-
-There is still new functionality being added to SOAP, but all of the engineers at
+There is still new functionality being added to SOAP, but most of the engineers at
 F5 are focused on providing REST functionality.
 
 * It's natively built into most all programming languages
 * It's more easily supported in our future javascript-based iAppLX effort
 * It's pretty close to native `tmsh`
-
-This leads me my next point. The REST API is actually not the final word in F5's
-API efforts as there is work underway to provide an ODATA API. I am not sure
-what this means for the future of REST.
 
 SSH on BIG-IP can cause auth errors when under heavy load
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -133,8 +114,8 @@ This constraint is relevant to the developers who actually code these modules. F
 the first iteration of the modules, what I refer to 1st-gen, the modules were written
 by primarily two people who were not F5 employees.
 
-For the 2nd-gen modules, they were all written by one guy; me, and F5 employee. This was
-when F5 put more skin in the Ansible game.
+For the 2nd-gen modules, they were all written by one guy; me, an F5 employee. This was
+when F5 began put more skin in the Ansible game.
 
 For the 3rd-gen modules, they were written primarily by myself and one other F5 employee.
 Then, they were tested and promoted by several other F5 employees.
@@ -142,10 +123,10 @@ Then, they were tested and promoted by several other F5 employees.
 The reason that I bring these points up is to emphasize just how __few__ people are
 actually working on the modules that you are using.
 
-There is no "Ansible team" at F5. Due to our limited resources, I placed a priority on
+There is no "Ansible team" at F5. Due to my limited resources, I placed a priority on
 ease-of-development and testing. I needed to churn reliable product out at a rather
 fast pace compared to the pace that all other F5 products are released. My timeline
-was weeks; not bi-yearly.
+was weeks, not bi-yearly like BIG-IP releases.
 
 SOAP has different APIs for every configuration point. Literally. If you need to set
 the description of a Virtual Server, you need to use the `set_description`_ API, but
@@ -212,8 +193,7 @@ things in common.
 I didnt want this to be the same story with the Python SDK that had been developed
 by the OpenStack team. Since the OpenStack integration was a project at F5 that had
 real resources dedicated to it, and the OpenStack integration relied implicitly on
-the Python SDK, it was safe-enough to consider the Python SDK supported by internal
-engineers.
+the Python SDK, it was safe-enough to consider the Python SDK "supported".
 
 I wanted to further re-enforce the need to keep this SDK alive though, so I chose
 to build all the Ansible modules to use it. My hope was that if one project (OpenStack)
@@ -221,14 +201,9 @@ had resources dedicated to it, then maybe I could get a second major project (An
 to also get resources dedicated to it to give the SDK a greater chance of surviving.
 
 I also wanted to focus developer effort and expertise instead of fragmenting it
-unnecessarily. Since so many teams __had__ repeated this SDK exercise, I wanted to ensure
-that __this__ SDK covered all their bases. So this included supporting more APIs than
-any team ever had, as well as supporting more products (BIG-IQ and iWorkflow) than
-any team ever had.
-
-My goal was that more engineers contributing to this SDK would negate the need for
-fragmenting this development effort and that we would ultimately be building everything
-off of this one SDK and dog-fooding it appropriately.
+unnecessarily. My goal was that more engineers contributing to this SDK would negate
+the need for fragmenting this development effort and that we would ultimately be building
+everything off of this one SDK and dog-fooding it appropriately.
 
 REST was also chosen because native ability to speak "REST via HTTP" is built into
 all programming languages these days. We were using Python in this case, but it is
@@ -294,7 +269,7 @@ or, direct SSH communication.
 The people working on this codebase work with REST and the SDK every day
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The F5 Boulder office began the trend of SDK development with their work on our Openstack
+The F5 OpenStack team began the trend of SDK development with their work on our Openstack
 integration. This progressed to include my adopting their work in Ansible. Today, the
 people who are working on Ansible modules are the same developers who were initially
 working on the F5 Python SDK.
@@ -305,7 +280,7 @@ integrate it into their testing procedures.
 So as you can see, the majority of the new work being done at F5 is being done by people
 who are familiar with REST.
 
-There is a sizable amount of preexisting work in test harnesses and other stuff at F5
+There is a sizable amount of pre-existing work in test harnesses and other stuff at F5
 that is based on SSH, but the experts that were involved in writing that have since
 left the company and no expertise exists to further develop it; nor do those teams want
 to put further development into it.
