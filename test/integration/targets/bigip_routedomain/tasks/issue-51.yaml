@@ -5,12 +5,7 @@
 - name: Create route domain
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain
@@ -21,12 +16,7 @@
 - name: Create route domain - Idempotent check
   bigip_routedomain:
       id: "{{ new_routedomain }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain - Idempotent check
@@ -38,12 +28,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       description: "{{ valid_description }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a description
@@ -56,11 +41,6 @@
       id: "{{ new_routedomain }}"
       description: "{{ valid_description }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a description - Idempotent check
@@ -72,12 +52,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "disabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable strict isolation
@@ -89,12 +64,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "disabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable strict isolation - Idempotent check
@@ -106,12 +76,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "enabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable strict isolation
@@ -123,12 +88,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       strict: "enabled"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable strict isolation - Idempotent check
@@ -141,11 +101,6 @@
       id: "{{ new_routedomain }}"
       parent: "{{ new_parent }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set parent route domain
@@ -158,11 +113,6 @@
       id: "{{ new_routedomain }}"
       parent: "{{ new_parent }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set parent route domain - Idempotent check
@@ -174,11 +124,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlans: "{{ i51_vlan_valid }}"
   register: result
 
@@ -191,11 +136,6 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       vlans: "{{ i51_vlan_valid }}"
   register: result
 
@@ -208,12 +148,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a single routing protocol, valid
@@ -225,12 +160,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a single routing protocol, valid - Idempotent check
@@ -242,12 +172,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -260,12 +185,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocol }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -278,12 +198,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a list of routing protocols, valid
@@ -295,12 +210,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ valid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set a list of routing protocols, valid - Idempotent check
@@ -312,12 +222,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -330,12 +235,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
       routing_protocol: "{{ invalid_routing_protocols }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -349,11 +249,6 @@
       connection_limit: "{{ valid_connection_limit }}"
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set connection limit, valid
@@ -366,11 +261,6 @@
       connection_limit: "{{ valid_connection_limit }}"
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set connection limit, valid - Idempotent check
@@ -383,11 +273,6 @@
       connection_limit: "{{ invalid_connection_limit }}"
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -401,11 +286,6 @@
       connection_limit: "{{ invalid_connection_limit }}"
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
 
@@ -418,12 +298,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain
@@ -435,12 +310,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain - Idempotent check
@@ -452,12 +322,7 @@
   bigip_routedomain:
       id: "{{ unknown_route_domain }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete an unknown route domain
@@ -469,12 +334,7 @@
   bigip_routedomain:
       id: "{{ item }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   ignore_errors: true
   with_items: "{{ invalid_route_domains }}"
@@ -489,11 +349,6 @@
       id: "{{ new_routedomain2 }}"
       parent: "{{ new_parent }}"
       partition: "{{ new_partition }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create route domain - all params
@@ -505,12 +360,7 @@
   bigip_routedomain:
       id: "{{ new_routedomain2 }}"
       partition: "{{ new_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete a route domain - all params
