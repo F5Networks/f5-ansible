@@ -3,13 +3,7 @@
 - name: Add virtual address
   bigip_virtual_address:
       address: "{{ va_address }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual address
@@ -20,13 +14,7 @@
 - name: Add virtual address - Idempotent check
   bigip_virtual_address:
       address: "{{ va_address }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual address - Idempotent check
@@ -37,13 +25,7 @@
 - name: Delete virtual address
   bigip_virtual_address:
       address: "{{ va_address }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete virtual address
@@ -54,13 +36,7 @@
 - name: Delete virtual address - Idempotent check
   bigip_virtual_address:
       address: "{{ va_address }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete virtual address - Idempotent check

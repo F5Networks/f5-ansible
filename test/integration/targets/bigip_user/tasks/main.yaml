@@ -1,13 +1,8 @@
 ---
 - name: Create user, no password
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       partition_access:
         - "Common:guest"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "testusernopass"
   register: result
 
@@ -18,13 +13,8 @@
 
 - name: Create user, no password - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       partition_access:
         - "Common:guest"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "testusernopass"
   register: result
 
@@ -35,13 +25,8 @@
 
 - name: Create user
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       partition_access:
         - "Common:guest"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       update_password: "on_create"
@@ -55,11 +40,6 @@
 
 - name: Create user - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       update_password: "on_create"
@@ -75,11 +55,6 @@
 # set to always.
 - name: Update user password
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
   register: result
@@ -92,11 +67,6 @@
 # We should see password not updating here
 - name: Update user password password_update set to on_create
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       update_password: "on_create"
@@ -109,11 +79,6 @@
 
 - name: Update user partition access
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       partition_access:
         - "Common:manager"
@@ -126,11 +91,6 @@
 
 - name: Update user partition access - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       partition_access:
         - "Common:manager"
@@ -143,11 +103,6 @@
 
 - name: Update user full name
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       full_name: "{{ full_name }}"
   register: result
@@ -159,11 +114,6 @@
 
 - name: Update user full name - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       full_name: "{{ full_name }}"
   register: result
@@ -175,11 +125,6 @@
 
 - name: Update user shell to tmsh
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "tmsh"
   register: result
@@ -191,11 +136,6 @@
 
 - name: Update user shell to tmsh - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "tmsh"
   register: result
@@ -208,11 +148,6 @@
 # This should fail because the user does not have the appropriate role
 - name: Update user shell to bash
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "bash"
   ignore_errors: true
@@ -225,11 +160,6 @@
 
 - name: Update user shell to none
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "none"
   register: result
@@ -239,18 +169,11 @@
       that:
           - result|changed
 
-
 - name: Update user shell to none - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       shell: "none"
   register: result
-
 
 - name: Assert Update user shell to none - Idempotent check
   assert:
@@ -259,11 +182,6 @@
 
 - name: Remove user
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       state: "absent"
   register: result
@@ -275,11 +193,6 @@
 
 - name: Remove user - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       state: "absent"
   register: result
@@ -291,11 +204,6 @@
 
 - name: Remove testusernopass user
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "testusernopass"
       state: "absent"
   register: result
@@ -307,11 +215,6 @@
 
 - name: Remove testusernopass user - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "testusernopass"
       state: "absent"
   register: result
@@ -326,11 +229,6 @@
 - name: Collect BIG-IP facts
   bigip_facts:
       include: "system_info"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Include version 13 (Daytona) checks

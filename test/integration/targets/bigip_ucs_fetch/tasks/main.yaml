@@ -3,11 +3,7 @@
 - name: Create a UCS
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_name }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create a UCS
@@ -18,11 +14,7 @@
 - name: Create the same UCS, default force
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_name }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create the same UCS, default force
@@ -34,11 +26,7 @@
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_name }}"
       force: "no"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_name }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create a UCS, do not force
@@ -50,11 +38,7 @@
   bigip_ucs_fetch:
       backup: "yes"
       dest: "/tmp/{{ ucs_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_name }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create a UCS, leave a backup
@@ -72,11 +56,7 @@
   bigip_ucs_fetch:
       create_on_missing: "no"
       dest: "/tmp/{{ ucs_missing }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_missing }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Fetch a missing UCS
@@ -88,11 +68,7 @@
   bigip_ucs_fetch:
       fail_on_missing: "yes"
       dest: "/tmp/{{ ucs_missing }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_missing }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   ignore_errors: true
   register: result
 
@@ -105,11 +81,7 @@
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_missing }}"
       encryption_password: "admin"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
       src: "{{ ucs_missing }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create a UCS with encryption password

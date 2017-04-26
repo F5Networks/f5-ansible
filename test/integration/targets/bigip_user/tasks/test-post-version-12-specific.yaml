@@ -1,11 +1,6 @@
 ---
 - name: Create user on a different partition
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       partition_access:
         - "foo:operator"
       username_credential: "{{ username_credential }}"
@@ -21,11 +16,6 @@
 
 - name: Create user on a different partition - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       partition_access:
         - "foo:operator"
       username_credential: "{{ username_credential }}"
@@ -41,11 +31,6 @@
 
 - name: Assign multiple roles for the same partition
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       partition_access:
         - "Common:operator"
@@ -60,11 +45,6 @@
 
 - name: Modify roles for a different partitions
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       partition_access:
         - "Common:guest"
         - "foo:manager"
@@ -80,11 +60,6 @@
 
 - name: Update password for user on a different partition
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       partition: "{{ partition }}"
@@ -99,11 +74,6 @@
 - name: Update user password for user on a different partition
         password_update set to on_create
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       update_password: "on_create"
@@ -117,11 +87,6 @@
 
 - name: Remove user on different partition
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       state: "absent"
       partition: "{{ partition }}"
@@ -134,11 +99,6 @@
 
 - name: Remove user on different partition - Idempotent check
   bigip_user:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       username_credential: "{{ username_credential }}"
       state: "absent"
       partition: "{{ partition }}"
