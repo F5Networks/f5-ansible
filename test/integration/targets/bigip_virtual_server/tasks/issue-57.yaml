@@ -6,24 +6,15 @@
   bigip_virtual_server:
       destination: "10.10.10.10"
       port: "443"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "testVS"
       all_profiles:
           - /Common/http
       partition: "{{ i57_partition }}"
       state: "present"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 57 - Add virtual server rules
   bigip_virtual_server:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "testVS"
       all_profiles:
           - /Common/http
@@ -31,7 +22,6 @@
       state: "present"
       all_rules:
           - /Common/_sys_https_redirect
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 57 - Add virtual server rules
@@ -41,10 +31,6 @@
 
 - name: Issue 57 - Add virtual server rules - Idempotent check
   bigip_virtual_server:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "testVS"
       all_profiles:
           - /Common/http
@@ -52,7 +38,6 @@
       state: "present"
       all_rules:
           - /Common/_sys_https_redirect
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 57 - Add virtual server rules - Idepotent check
@@ -64,12 +49,7 @@
   bigip_virtual_server:
       name: "testVS"
       partition: "{{ i57_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 57 - Delete virtual server

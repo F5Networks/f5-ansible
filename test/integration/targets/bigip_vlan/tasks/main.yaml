@@ -6,11 +6,6 @@
 - name: Create VLAN
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create VLAN
@@ -21,11 +16,6 @@
 - name: Create VLAN - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Create VLAN - Idempotent check
@@ -36,12 +26,7 @@
 - name: Set VLAN tag, int
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag1 }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tag, int
@@ -52,12 +37,7 @@
 - name: Set VLAN tag, int - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag1 }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tag, int - Idempotent check
@@ -68,12 +48,7 @@
 - name: Set VLAN tag, string
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag2 }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tag, string
@@ -84,12 +59,7 @@
 - name: Set VLAN tag, string - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag2 }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tag, string - Idempotent check
@@ -101,11 +71,6 @@
   bigip_vlan:
       description: "{{ vlan_description1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN description
@@ -117,11 +82,6 @@
   bigip_vlan:
       description: "{{ vlan_description1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN description - Idempotent check
@@ -133,11 +93,6 @@
   bigip_vlan:
       tagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tagged interfaces
@@ -149,11 +104,6 @@
   bigip_vlan:
       tagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN tagged interfaces - Idempotent check
@@ -165,11 +115,6 @@
   bigip_vlan:
       untagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN untagged interfaces
@@ -181,11 +126,6 @@
   bigip_vlan:
       untagged_interfaces: "{{ vlan_interfaces1 }}"
       name: "{{ vlan_name }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Set VLAN untagged interfaces - Idempotent check
@@ -196,10 +136,6 @@
 - name: Remove VLAN
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
 
@@ -211,11 +147,6 @@
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
       state: "absent"
   register: result
 
@@ -230,10 +161,6 @@
 - name: Create VLAN, tagged interfaces
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
@@ -245,10 +172,6 @@
 - name: Create VLAN, tagged interfaces - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
@@ -261,10 +184,6 @@
   bigip_vlan:
       tagged_interfaces: "{{ vlan_interfaces }}"
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
 
@@ -277,10 +196,6 @@
   bigip_vlan:
       description: "{{ vlan_description }}"
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
   register: result
 
 - name: Assert Create VLAN, description
@@ -292,10 +207,6 @@
   bigip_vlan:
       description: "{{ vlan_description }}"
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
   register: result
 
 - name: Assert Create VLAN, description - Idempotent check
@@ -306,10 +217,6 @@
 - name: Remove VLAN, description
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
 
@@ -321,11 +228,7 @@
 - name: Create VLAN, tag
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
   register: result
 
 - name: Assert Create VLAN, tag
@@ -336,11 +239,7 @@
 - name: Create VLAN, tag - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       tag: "{{ vlan_tag }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
   register: result
 
 - name: Assert Create VLAN, tag - Idempotent check
@@ -351,10 +250,6 @@
 - name: Remove VLAN, tag
   bigip_vlan:
       name: "{{ vlan_name }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
 

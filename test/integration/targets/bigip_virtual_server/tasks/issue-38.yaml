@@ -5,12 +5,7 @@
 - name: Issue 38 - Create pool
   bigip_pool:
       name: "test_pool"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 38 - Assert Create pool
@@ -22,16 +17,10 @@
   bigip_virtual_server:
       destination: "{{ item.lip }}"
       name: "{{ item.lname }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ item.lport }}"
       pool: "{{ item.lpool|default(omit) }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "Automap"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   with_items:
     - lname: 'VS_HTTP1'
       lip: '1.2.3.4'
@@ -45,15 +34,9 @@
   bigip_virtual_server:
       destination: "{{ item.lip }}"
       name: "{{ item.lname }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ item.lport }}"
       pool: "{{ item.lpool|default(omit) }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   with_items:
     - lname: 'VS_HTTP1'
       lip: '1.2.3.4'
@@ -66,12 +49,7 @@
 - name: Issue 38 - Delete pool
   bigip_pool:
       name: "test_pool"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 38 - Assert Delete pool

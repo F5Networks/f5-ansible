@@ -6,15 +6,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual server
@@ -28,15 +22,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual server - Idempotent check
@@ -47,14 +35,8 @@
 - name: Modify port of the Virtual Server
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify port of the Virtual Server
@@ -65,14 +47,8 @@
 - name: Modify port of the Virtual Server - Idempotent check
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Modify port of the Virtual Server - Idempotent check
@@ -84,15 +60,9 @@
   bigip_virtual_server:
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
       route_advertisement_state: "enabled"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable route advertisement
@@ -104,15 +74,9 @@
   bigip_virtual_server:
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
       route_advertisement_state: "enabled"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Enable route advertisement - Idempotent check
@@ -124,15 +88,9 @@
   bigip_virtual_server:
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
       route_advertisement_state: "disabled"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable route advertisement
@@ -144,15 +102,9 @@
   bigip_virtual_server:
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port2 }}"
       route_advertisement_state: "disabled"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Disable route advertisement - Idempotent check
@@ -163,13 +115,7 @@
 - name: Delete virtual server
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete virtual server
@@ -180,13 +126,7 @@
 - name: Delete virtual server - Idempotent check
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete virtual server - Idempotent check
@@ -200,15 +140,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual server for VLAN test
@@ -222,15 +156,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       enabled_vlans: "{{ enabled_vlans }}"
   register: result
 
@@ -245,15 +173,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       enabled_vlans: "{{ enabled_vlans }}"
   register: result
 
@@ -268,15 +190,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       enabled_vlans: "ALL"
   register: result
 
@@ -291,15 +207,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       enabled_vlans: "ALL"
   register: result
 
@@ -311,13 +221,7 @@
 - name: Delete VLAN virtual server
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete VLAN virtual server
@@ -331,15 +235,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Add virtual server again
@@ -348,15 +246,9 @@
       description: "{{ vs_description }}"
       destination: "{{ node_host }}"
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: "{{ vs_port1 }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       snat: "{{ vs_snat1 }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Add virtual server again
@@ -367,13 +259,7 @@
 - name: Delete virtual server with empty port
   bigip_virtual_server:
       name: "{{ vs_name }}"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
       port: ""
   register: result
 

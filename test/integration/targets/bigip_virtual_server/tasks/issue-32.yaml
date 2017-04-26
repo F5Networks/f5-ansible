@@ -5,12 +5,7 @@
 - name: Issue 32 - Create pool
   bigip_pool:
       name: "mypool"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
 
 - name: Issue 32 - Create virtual server
   bigip_virtual_server:
@@ -23,12 +18,7 @@
       all_profiles:
           - tcp
           - http
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 32 - Create virtual server
@@ -47,12 +37,7 @@
       all_profiles:
           - tcp
           - http
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "present"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 32 - Create virtual server - Idempotent check
@@ -64,25 +49,14 @@
   bigip_virtual_server:
       destination: "1.1.1.1"
       name: "myvip"
-      partition: "{{ bigip_partition }}"
-      password: "{{ bigip_password }}"
       port: 80
       pool: "mypool"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
 
 - name: Issue 32 - Delete pool
   bigip_pool:
       name: "test_pool"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 32 - Assert Delete pool

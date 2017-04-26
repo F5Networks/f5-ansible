@@ -6,18 +6,12 @@
   bigip_virtual_server:
       destination: "10.10.10.10"
       port: "80"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "issue59"
-      partition: "{{ bigip_partition }}"
       state: "present"
       all_profiles:
           - http
       all_policies:
           - /Common/policy1
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 59 - Create virtual server
@@ -29,18 +23,12 @@
   bigip_virtual_server:
       destination: "10.10.10.10"
       port: "80"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "issue59"
-      partition: "{{ bigip_partition }}"
       state: "present"
       all_profiles:
           - http
       all_policies:
           - /Common/policy1
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 59 - Create virtual server - Idempotent check
@@ -50,16 +38,10 @@
 
 - name: Issue 59 - Delete virtual server
   bigip_virtual_server:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "issue59"
-      partition: "{{ bigip_partition }}"
       state: "absent"
       all_policies:
           - /Common/policy1
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 59 - Delete virtual server
@@ -69,16 +51,10 @@
 
 - name: Issue 59 - Delete virtual server - Idempotent check
   bigip_virtual_server:
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       name: "issue59"
-      partition: "{{ bigip_partition }}"
       state: "absent"
       all_policies:
           - /Common/policy1
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Issue 59 - Delete virtual server - Idempotent check

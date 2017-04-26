@@ -3,10 +3,6 @@
 - name: Remove Self IPs
   bigip_selfip:
       name: "{{ item }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
   with_items:
@@ -16,10 +12,6 @@
 - name: Remove VLANs
   bigip_vlan:
       name: "{{ item }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
       state: "absent"
   register: result
   with_items:
