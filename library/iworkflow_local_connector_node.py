@@ -815,7 +815,8 @@ class ArgumentSpec(object):
             ),
             device_root_password=dict(
                 required=False,
-                default=None
+                default=None,
+                no_log=True
             ),
             key_content=dict(
                 type='str',
