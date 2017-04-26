@@ -63,7 +63,7 @@
       value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
-- name: Assert Reset setup.run variable - Idempotent checl
+- name: Assert Reset setup.run variable - Idempotent check
   assert:
       that:
           - not result|changed
