@@ -295,7 +295,7 @@ class Parameters(AnsibleF5Parameters):
             result = ' '.join(and_list)
         elif monitor_type == 'm_of_n':
             min_list = list()
-            prefix = 'min {0} of {'.format(str(quorum))
+            prefix = 'min {0} of {{'.format(str(quorum))
             min_list.append(prefix)
             for m in monitors:
                 min_list.append(m)
