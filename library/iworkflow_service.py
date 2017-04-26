@@ -210,21 +210,37 @@ class Parameters(AnsibleF5Parameters):
                     "One of the provided tables does not have a name"
                 )
             tmp['name'] = str(name)
-            columns = table.get('columns', None)
+            columns = table.get('columnNames', None)
             if columns:
-                tmp['columns'] = []
+                tmp['columnNames'] = []
                 for column in columns:
-                    tmp['columns'].append(
+                    tmp['columnNames'].append(
                         dict((str(k),str(v)) for k,v in iteritems(column))
                     )
                 # You cannot have rows without columns
                 rows = table.get('rows', None)
                 if rows:
-                    tmp['rows'] = []
+                    tmp['rows'] = list(list())
                     for row in rows:
-                        tmp['rows'].append([str(x) for x in row])
+                        # This looks weird, but iWorkflow puts the "many" rows
+                        # into a single row. The actual payload looks like this
+                        #
+                        # "rows": [
+                        #   [
+                        #     "12.0.1.11",
+                        #     "80"
+                        #   ],
+                        #   [
+                        #     "12.0.1.12"
+                        #   ]
+                        # ]
+                        tmp['rows'][0].append([str(x) for x in row])
             description = table.get('description', None)
-            tmp['description'] = str(description)
+            if description:
+                tmp['description'] = str(description)
+            section = table.get('section', None)
+            if section:
+                tmp['section'] = str(section)
             result.append(tmp)
         result = sorted(result, key=lambda k: k['name'])
         return result
@@ -292,11 +308,12 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def tenantTemplateReference(self):
-        return dict(
+        result = dict(
             link="https://localhost/mgmt/cm/cloud/tenant/templates/iapp/{0}".format(
                 self._values['service_template']
             )
         )
+        return result
 
 
 class ModuleManager(object):
