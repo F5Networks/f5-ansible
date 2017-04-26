@@ -3,10 +3,5 @@
 - name: Collect BIG-IP facts, address class
   bigip_facts:
       include: "{{ item }}"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
   with_items: "{{ valid_includes }}"
