@@ -391,9 +391,15 @@ class ModuleManager(object):
             try:
                 stats = resource.stats.load()
                 attrs = stats.attrs
-                if int(attrs['entries']['health.placement']['value']) == 1:
+                placement = int(attrs['entries']['health.placement']['value'])
+                description = str(attrs['entries']['health.placement']['description'])
+                if placement == 1:
                     break
-            except Exception:
+                elif placement == 0 and 'Failed' in description:
+                    raise F5ModuleError(
+                        str(resource.error)
+                    )
+            except KeyError:
                 pass
             time.sleep(10)
 
