@@ -1,0 +1,23 @@
+---
+
+- name: Set the SSHD allow string to a specific IP
+  bigip_device_sshd:
+      allow:
+          - "{{ allow[0] }}"
+  register: result
+
+- name: Assert Set the SSHD allow string to a specific IP
+  assert:
+      that:
+          - result|changed
+
+- name: Set the SSHD allow string to a specific IP - Idempotent check
+  bigip_device_sshd:
+      allow:
+          - "{{ allow[0] }}"
+  register: result
+
+- name: Assert Set the SSHD allow string to a specific IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
