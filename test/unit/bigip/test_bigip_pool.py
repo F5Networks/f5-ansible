@@ -256,7 +256,6 @@ class TestManager(unittest.TestCase):
             mm.exec_module()
         assert err.value.message == msg
 
-
     def test_create_pool_monitor_type_missing(self, *args):
         set_module_args(dict(
             pool='fake_pool',
@@ -521,3 +520,127 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is False
+
+    def test_create_pool_monitor_and_list_no_partition(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            monitor_type='and_list',
+            monitors=['tcp', 'http'],
+            server='localhost',
+            password='password',
+            user='admin'
+
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_pool'
+        assert results['monitors'] == ['/Common/tcp', '/Common/http']
+        assert results['monitor_type'] == 'and_list'
+        assert results['monitor'] == '/Common/tcp and /Common/http'
+
+    def test_create_pool_monitor_m_of_n_no_partition(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            monitor_type='m_of_n',
+            quorum=1,
+            monitors=['tcp', 'http'],
+            server='localhost',
+            password='password',
+            user='admin'
+
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_pool'
+        assert results['monitors'] == ['/Common/tcp', '/Common/http']
+        assert results['monitor_type'] == 'm_of_n'
+        assert results['monitor'] == 'min 1 of { /Common/tcp /Common/http }'
+
+    def test_create_pool_monitor_and_list_custom_partition(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            partition='Testing',
+            monitor_type='and_list',
+            monitors=['tcp', 'http'],
+            server='localhost',
+            password='password',
+            user='admin'
+
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_pool'
+        assert results['monitors'] == ['/Testing/tcp', '/Testing/http']
+        assert results['monitor_type'] == 'and_list'
+        assert results['monitor'] == '/Testing/tcp and /Testing/http'
+
+    def test_create_pool_monitor_m_of_n_custom_partition(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            partition='Testing',
+            monitor_type='m_of_n',
+            quorum=1,
+            monitors=['tcp', 'http'],
+            server='localhost',
+            password='password',
+            user='admin'
+
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_pool'
+        assert results['monitors'] == ['/Testing/tcp', '/Testing/http']
+        assert results['monitor_type'] == 'm_of_n'
+        assert results['monitor'] == 'min 1 of { /Testing/tcp /Testing/http }'

@@ -109,7 +109,8 @@ options:
     default: None
   monitors:
     description:
-      - Monitor template name list. Always use the full path to the monitor.
+      - Monitor template name list. If full path is not provided,
+        it will be appended by the set partition name.
     version_added: "1.3"
     required: False
     default: None
@@ -237,7 +238,8 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'host', 'port', 'monitor',
-        'slow_ramp_time', 'reselect_tries', 'name', 'member_name'
+        'slow_ramp_time', 'reselect_tries', 'name', 'member_name',
+        'partition'
     ]
 
     api_attributes = [
@@ -255,16 +257,27 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def monitors(self):
-        monitors = self._values['monitors']
+        part = '/' + self.partition
+        monitors = list()
+        monitor_list = self._values['monitors']
         monitor_type = self._values['monitor_type']
         error1 = "The 'monitor_type' parameter cannot be empty when " \
                  "'monitors' parameter is specified."
         error2 = "The 'monitor' parameter cannot be empty when " \
                  "'monitor_type' parameter is specified"
-        if monitors is not None and monitor_type is None:
+        if monitor_list is not None and monitor_type is None:
             raise F5ModuleError(error1)
-        if monitors is None and monitor_type is not None:
+        elif monitor_list is None and monitor_type is not None:
             raise F5ModuleError(error2)
+        elif monitor_list is None:
+            return None
+
+        for m in monitor_list:
+            if not m.startswith(part):
+                m = '/{0}/{1}'.format(self.partition, m)
+
+            monitors.append(m)
+
         return monitors
 
     @property
@@ -295,7 +308,7 @@ class Parameters(AnsibleF5Parameters):
             result = ' '.join(and_list)
         elif monitor_type == 'm_of_n':
             min_list = list()
-            prefix = 'min {0} of {'.format(str(quorum))
+            prefix = 'min {0} of {{'.format(str(quorum))
             min_list.append(prefix)
             for m in monitors:
                 min_list.append(m)
