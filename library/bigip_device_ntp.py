@@ -27,9 +27,9 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_device_ntp
-short_description: Manage NTP servers on a BIG-IP
+short_description: Manage NTP servers on a BIG-IP.
 description:
-  - Manage NTP servers on a BIG-IP
+  - Manage NTP servers on a BIG-IP.
 version_added: "2.2"
 options:
   ntp_servers:
@@ -274,7 +274,8 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        f5_product_name=spec.f5_product_name,
+        required_one_of=spec.required_one_of
     )
 
     try:
