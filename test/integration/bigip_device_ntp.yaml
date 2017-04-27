@@ -20,11 +20,13 @@
 #
 # Tested platforms:
 #
+#    - 11.5.4 HF1
 #    - 11.6.0
-#    - 12.0.0
+#    - 11.6.1 HF1
+#    - 12.0.0 HF1
 #    - 12.1.0
 #    - 12.1.0 HF1
-#
+#    - 12.1.2
 
 - name: Test the bigip_device_ntp module
   hosts: f5-test
