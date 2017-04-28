@@ -154,6 +154,23 @@ EXAMPLES = '''
       username_credential: "johnd"
       password_credential: "newsupersecretpassword"
   delegate_to: localhost
+
+# Note that the second time this task runs, it would fail because
+# The password has been changed. Therefore, it is recommended that
+# you either,
+#
+#   * Put this in its own playbook that you run when you need to
+#   * Put this task in a `block`
+#   * Include `ignore_errors` on this task
+- name: Change the Admin password
+  bigip_user:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      username_credential: "admin"
+      password_credential: "NewSecretPassword"
+  delegate_to: localhost
 '''
 
 RETURN = '''
