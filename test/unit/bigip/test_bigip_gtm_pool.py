@@ -33,6 +33,8 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     F5ModuleError
 )
+
+# from ansible.modules.network.f5.bigip_gtm_pool import (
 from library.bigip_gtm_pool import (
     Parameters,
     ModuleManager,

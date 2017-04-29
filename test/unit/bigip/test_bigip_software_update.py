@@ -31,6 +31,8 @@ from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client
 )
+
+# from ansible.modules.network.f5.bigip_software_update import (
 from library.bigip_software_update import (
     Parameters,
     ModuleManager,

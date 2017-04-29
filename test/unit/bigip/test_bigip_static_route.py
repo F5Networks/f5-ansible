@@ -31,16 +31,16 @@ from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client
 )
+
+# from ansible.modules.network.f5.bigip_static_route import (
 from library.bigip_static_route import (
     Parameters,
     ModuleManager,
     ArgumentSpec
 )
 
-
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
-
 
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
