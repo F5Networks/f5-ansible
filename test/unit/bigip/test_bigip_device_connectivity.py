@@ -90,4 +90,37 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.multicast_port == 1010
-        assert p.
+        assert p.multicast_address == '10.10.10.10'
+        assert p.multicast_interface == 'eth0'
+        assert p.failover_multicast is True
+        assert p.mirror_primary_address == '1.2.3.4'
+        assert p.mirror_secondary_address == '5.6.7.8'
+        assert p.config_sync_ip == '4.3.2.1'
+        assert len(p.unicast_failover) == 1
+        assert 'effectiveIp' in p.unicast_failover[0]
+        assert 'effectivePort' in p.unicast_failover[0]
+        assert 'port' in p.unicast_failover[0]
+        assert 'ip' in p.unicast_failover[0]
+        assert p.unicast_failover[0]['effectiveIp'] == '20.20.20.20'
+        assert p.unicast_failover[0]['ip'] == '20.20.20.20'
+        assert p.unicast_failover[0]['port'] == 1234
+        assert p.unicast_failover[0]['effectivePort'] == 1234
+
+    def test_api_parameters(self):
+        params = load_fixture('load_tm_cm_device.json')
+        p = Parameters(params)
+        assert p.multicast_port == 62960
+        assert p.multicast_address == '224.0.0.245'
+        assert p.multicast_interface == 'eth0'
+        assert p.mirror_primary_address == '10.2.2.2'
+        assert p.mirror_secondary_address == '10.2.3.2'
+        assert p.config_sync_ip == '10.2.2.2'
+        assert len(p.unicast_failover) == 2
+        assert 'effectiveIp' in p.unicast_failover[0]
+        assert 'effectivePort' in p.unicast_failover[0]
+        assert 'port' in p.unicast_failover[0]
+        assert 'ip' in p.unicast_failover[0]
+        assert p.unicast_failover[0]['effectiveIp'] == '10.0.2.15'
+        assert p.unicast_failover[0]['ip'] == '10.0.2.15'
+        assert p.unicast_failover[0]['port'] == 1026
+        assert p.unicast_failover[0]['effectivePort'] == 1026
