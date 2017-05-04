@@ -183,6 +183,8 @@ class Parameters(AnsibleF5Parameters):
     @property
     def config_sync_ip(self):
         result = self._get_validated_ip_address('config_sync_ip')
+        if result == 'any6':
+            result = "none"
         return result
 
     @property
@@ -206,6 +208,8 @@ class Parameters(AnsibleF5Parameters):
     def unicast_failover(self):
         if self._values['unicast_failover'] is None:
             return None
+        if self._values['unicast_failover'] == ['none']:
+            return []
         result = []
         for item in self._values['unicast_failover']:
             address = item.get('address', None)
@@ -309,8 +313,11 @@ class Changes(Parameters):
 
     @property
     def unicast_failover(self):
-        if self._values['unicast_failover']:
+        if self._values['unicast_failover'] is None:
+            return None
+        elif self._values['unicast_failover']:
             return self._values['unicast_failover']
+        return "none"
 
     @property
     def failover_multicast(self):
