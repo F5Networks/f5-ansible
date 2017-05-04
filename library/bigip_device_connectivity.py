@@ -26,11 +26,13 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: bigip_device_mirroring
-short_description: Manage device mirroring settings on a BIG-IP.
+module: bigip_device_connectivity
+short_description: Manages device IP configuration settings for HA on a BIG-IP.
 description:
-  - Manages device mirroring settings on a BIG-IP. These settings are
-    related to the IP address configuration of the devices to mirror to.
+  - Manages device IP configuration settings for HA on a BIG-IP. Each BIG-IP device
+    has synchronization and failover connectivity information (IP addresses) that
+    you define as part of HA pairing or clustering. This module allows you to configure
+    that information.
 version_added: "2.4"
 options:
   config_sync_ip:
@@ -38,13 +40,13 @@ options:
       - Local IP address that the system uses for ConfigSync operations.
     default: None
     required: False
-  primary_mirror_address:
+  mirror_primary_address:
     description:
       - Specifies the primary IP address for the system to use to mirror
         connections.
     required: False
     default: None
-  secondary_mirror_address:
+  mirror_secondary_address:
     description:
       - Specifies the secondary IP address for the system to use to mirror
         connections.
@@ -55,7 +57,38 @@ options:
       - Desired addresses to use for failover operations. Options C(address)
         and C(port) are supported with dictionary structure where C(address) is the
         local IP address that the system uses for failover operations. Port
-        specifies the port that the system uses for failover operations.
+        specifies the port that the system uses for failover operations. If C(port)
+        is not specified, the default value C(1026) will be used.
+    required: False
+    default: None
+  failover_multicast:
+    description:
+      - When C(yes), ensures that the Failover Multicast configuration is enabled
+        and if no further multicast configuration is provided, ensures that
+        C(multicast_interface), C(multicast_address) and C(multicast_port) are
+        the defaults specified in each option's description. When C(no), ensures
+        that Failover Multicast configuration is disabled.
+    required: False
+    default: None
+  multicast_interface:
+    description:
+      - Interface over which the system sends multicast messages associated
+        with failover. When C(failover_multicast) is C(yes) and this option is
+        not provided, a default of C(eth0) will be used.
+    required: False
+    default: None
+  multicast_address:
+    description:
+      - IP address for the system to send multicast messages associated with
+        failover. When C(failover_multicast) is C(yes) and this option is not
+        provided, a default of C(224.0.0.245) will be used.
+    required: False
+    default: None
+  multicast_port:
+    description:
+      - Port for the system to send multicast messages associated with
+        failover. When C(failover_multicast) is C(yes) and this option is not
+        provided, a default of C(62960) will be used.
     required: False
     default: None
 notes:
@@ -73,32 +106,15 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Set mirroring settings for HA
-  bigip_device_mirroring:
-      primary_mirror_address: 10.0.2.15
-      secondary_mirror_address: 10.2.2.3
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-  delegate_to: localhost
 
-- name: Remove mirroring setting for secondary address
-  bigip_device_mirroring:
-      secondary_mirror_address: "none"
-      name: "foo-group"
-      auto_sync: "yes"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-  delegate_to: localhost
 '''
 
 RETURN = '''
 
 '''
 
+from netaddr import IPAddress, AddrFormatError
 from ansible.module_utils.basic import BOOLEANS
-from ansible.module_utils.basic import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -110,73 +126,143 @@ from ansible.module_utils.f5_utils import (
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'mirrorIp': 'mirror_ip',
-        'mirrorSecondaryIp': 'mirror_secondary_ip'
+        'configsyncIp': 'config_sync_ip',
+        'multicastInterface': 'multicast_interface',
+        'multicastIp': 'multicast_address',
+        'multicastPort': 'multicast_port',
+        'mirrorIp': 'mirror_primary_address',
+        'mirrorSecondaryIp': 'mirror_secondary_address'
     }
     api_attributes = [
-        'saveOnAutoSync', 'fullLoadOnSync', 'description', 'type', 'autoSync',
-        'incrementalConfigSyncSizeMax'
+        'configsyncIp', 'multicastInterface', 'multicastIp', 'multicastPort',
+        'mirrorIp', 'mirrorSecondaryIp', 'unicastAddress'
     ]
     returnables = [
-        'mirror_ip', 'mirror_secondary_ip'
+        'config_sync_ip', 'multicast_interface', 'multicast_address',
+        'multicast_port', 'mirror_primary_address', 'mirror_secondary_address',
+        'failover_multicast', 'unicast_failover'
     ]
     updatables = [
-        'mirror_ip', 'mirror_secondary_ip'
+        'config_sync_ip', 'multicast_interface', 'multicast_address',
+        'multicast_port', 'mirror_primary_address', 'mirror_secondary_address',
+        'failover_multicast', 'unicast_failover'
     ]
 
-    @property
-    def save_on_auto_sync(self):
-        if self._values['save_on_auto_sync'] is None:
-            return None
-        elif self._values['save_on_auto_sync'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
+    DEFAULT_UNICAST_FAILOVER_PORT=1026
 
     @property
-    def auto_sync(self):
-        if self._values['auto_sync'] is None:
+    def multicast_port(self):
+        if self._values['multicast_port'] is None:
             return None
-        elif self._values['auto_sync'] in [True, 'enabled']:
-            return 'enabled'
-        else:
-            return 'disabled'
+        return int(self._values['multicast_port'])
 
     @property
-    def full_sync(self):
-        if self._values['full_sync'] is None:
-            return None
-        elif self._values['full_sync'] in BOOLEANS_TRUE:
-            return True
-        else:
-            return False
-
-    @property
-    def max_incremental_sync_size(self):
-        if not self.full_sync and self._values['max_incremental_sync_size'] is not None:
-            if self._values['__warnings'] is None:
-                self._values['__warnings'] = []
-            self._values['__warnings'].append(
-                [
-                    dict(
-                        msg='"max_incremental_sync_size has no effect if "full_sync" is not true',
-                        version='2.4'
-                    )
-                ]
-            )
-        if self._values['max_incremental_sync_size'] is None:
-            return None
-        return int(self._values['max_incremental_sync_size'])
-
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
+    def multicast_address(self):
+        result = self._get_validated_ip_address('multicast_address')
         return result
+
+    @property
+    def mirror_primary_address(self):
+        result = self._get_validated_ip_address('mirror_primary_address')
+        return result
+
+    @property
+    def mirror_secondary_address(self):
+        result = self._get_validated_ip_address('mirror_secondary_address')
+        return result
+
+    @property
+    def managementIp(self):
+        result = self._values['management_ip']
+        return result
+
+    @managementIp.setter
+    def managementIp(self, value):
+        self._values['management_ip'] = value
+
+    @property
+    def config_sync_ip(self):
+        result = self._get_validated_ip_address('config_sync_ip')
+        return result
+
+    @property
+    def unicastAddress(self):
+        return self.unicast_failover
+
+    @unicastAddress.setter
+    def unicastAddress(self, value):
+        result = []
+        for item in value:
+            if item['ip'] == 'management-ip':
+                del item['ip']
+                item['address'] = self._values['management_ip']
+            else:
+                item['address'] = item.pop('ip')
+            result.append(item)
+        if result:
+            self._values['unicast_failover'] = result
+
+    @property
+    def unicast_failover(self):
+        if self._values['unicast_failover'] is None:
+            return None
+        result = []
+        for item in self._values['unicast_failover']:
+            address = item.get('address', None)
+            port = item.get('port', None)
+            address = self._validate_unicast_failover_address(address)
+            port = self._validate_unicast_failover_port(port)
+            result.append(
+                dict(
+                    effectiveIp=address,
+                    effectivePort=port,
+                    ip=address,
+                    port=port
+                )
+            )
+        if result:
+            return result
+        else:
+            return None
+
+    def _validate_unicast_failover_port(self, port):
+        try:
+            result = int(port)
+        except ValueError:
+            raise F5ModuleError(
+                "The provided 'port' for unicast failover is not a valid number"
+            )
+        except TypeError:
+            result = self.DEFAULT_UNICAST_FAILOVER_PORT
+        return result
+
+    def _validate_unicast_failover_address(self, address):
+        try:
+            result = IPAddress(address)
+            return str(result)
+        except KeyError:
+            raise F5ModuleError(
+                "An 'address' must be supplied when configuring unicast failover"
+            )
+        except AddrFormatError:
+            raise F5ModuleError(
+                "'address' field in unicast failover is not a valid IP address"
+            )
+
+    def _get_validated_ip_address(self, address):
+        if self._values[address] is None:
+            return None
+        elif self._values[address] in ["none", "any6", '']:
+            return "any6"
+        try:
+            IPAddress(self._values[address])
+            return self._values[address]
+        except AddrFormatError:
+            raise F5ModuleError(
+                "The specified '{0}' is not a valid IP address".format(
+                    address
+                )
+            )
 
     def api_params(self):
         result = {}
@@ -188,20 +274,57 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+        except Exception:
+            pass
+        result = self._filter_params(result)
+        return result
+
+
+class Changes(Parameters):
+    @property
+    def mirror_primary_address(self):
+        if self._values['mirror_primary_address'] == 'any6':
+            return "none"
+        else:
+            return self._values['mirror_primary_address']
+
+    @property
+    def mirror_secondary_address(self):
+        if self._values['mirror_secondary_address'] == 'any6':
+            return "none"
+        else:
+            return self._values['mirror_secondary_address']
+
+    @property
+    def multicast_address(self):
+        if self._values['multicast_address'] == 'any6':
+            return "none"
+        else:
+            return self._values['multicast_address']
+
+    @property
+    def unicast_failover(self):
+        if self._values['unicast_failover']:
+            return self._values['unicast_failover']
+
+    @property
+    def failover_multicast(self):
+        values = ['multicast_address', 'multicast_interface', 'multicast_port']
+        if all(self._values[x] in [None, 'any6'] for x in values):
+            return None
+        return True
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
+        self.changes = Changes()
 
     def _update_changed_options(self):
         changed = {}
@@ -212,7 +335,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             return True
         return False
 
@@ -229,37 +352,13 @@ class ModuleManager(object):
 
         try:
             if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
+                changed = self.update()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations(result)
-        return result
-
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
-
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            return self.create()
-
-    def exists(self):
-        result = self.client.api.tm.cm.device_groups.device_group.exists(
-            name=self.want.name,
-            partition=self.want.partition
-        )
         return result
 
     def update(self):
@@ -275,24 +374,7 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the device group")
         return True
-
-    def create(self):
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
-    def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.cm.device_groups.device_group.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
-        )
 
     def update_on_device(self):
         params = self.want.api_params()
@@ -302,65 +384,60 @@ class ModuleManager(object):
         )
         resource.modify(**params)
 
-    def absent(self):
-        if self.exists():
-            return self.remove()
-        return False
-
-    def remove_from_device(self):
-        resource = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        if resource:
-            resource.delete()
-
     def read_current_from_device(self):
-        resource = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.name,
-            partition=self.want.partition
+        collection = self.client.api.tm.cm.devices.get_collection()
+        for resource in collection:
+            if resource.selfDevice == 'true':
+                result = resource.attrs
+                return Parameters(result)
+        raise F5ModuleError(
+            "The host device was not found."
         )
-        result = resource.attrs
-        return Parameters(result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            type=dict(
+            multicast_port=dict(
                 required=False,
                 default=None,
-                choices=['sync-failover', 'sync-only']
+                type='int'
             ),
-            description=dict(
+            multicast_address=dict(
                 required=False,
                 default=None
             ),
-            auto_sync=dict(
-                required=False,
-                default=None,
-                type='bool',
-                choices=BOOLEANS
-            ),
-            save_on_auto_sync=dict(
-                required=False,
-                default=None,
-                type='bool',
-                choices=BOOLEANS
-            ),
-            full_sync=dict(
-                required=False,
-                default=None,
-                type='bool',
-                choices=BOOLEANS
-            ),
-            name=dict(
-                required=True
-            ),
-            max_incremental_sync_size=dict(
+            multicast_interface=dict(
                 required=False,
                 default=None
+            ),
+            failover_multicast=dict(
+                required=False,
+                default=None,
+                choices=BOOLEANS
+            ),
+            unicast_failover=dict(
+                required=False,
+                default=None,
+                type='list'
+            ),
+            mirror_primary_address=dict(
+                required=False,
+                default=None
+            ),
+            mirror_secondary_address=dict(
+                required=False,
+                default=None
+            ),
+            config_sync_ip=dict(
+                required=False,
+                default=None
+            ),
+            state=dict(
+                required=False,
+                default='present',
+                choices=['present']
             )
         )
         self.f5_product_name = 'bigip'
