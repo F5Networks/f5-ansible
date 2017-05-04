@@ -1,23 +1,80 @@
 ---
 
-- name: Set the SSHD allow string to a specific IP
-  bigip_device_sshd:
-      allow:
-          - "{{ allow[0] }}"
+- name: Set initial device connectivity
+  bigip_device_connectivity:
+      config_sync_ip: "{{ config_sync_ip }}"
+      mirror_primary_address: "{{ mirror_primary_address }}"
+      mirror_secondary_address: "{{ mirror_secondary_address }}"
+      unicast_failover:
+          - address: "10.2.2.2"
+          - address: "10.2.3.2"
+      failover_multicast: "yes"
+      multicast_interface: "eth0"
+      multicast_address: "224.0.0.245"
+      multicast_port: "62960"
   register: result
 
-- name: Assert Set the SSHD allow string to a specific IP
+- name: Assert Set initial device connectivity
   assert:
       that:
           - result|changed
 
-- name: Set the SSHD allow string to a specific IP - Idempotent check
-  bigip_device_sshd:
-      allow:
-          - "{{ allow[0] }}"
+- name: Set initial device connectivity - Idempotent check
+  bigip_device_connectivity:
+      config_sync_ip: "{{ config_sync_ip }}"
+      mirror_primary_address: "{{ mirror_primary_address }}"
+      mirror_secondary_address: "{{ mirror_secondary_address }}"
+      unicast_failover:
+          - address: "10.2.2.2"
+          - address: "10.2.3.2"
+      failover_multicast: "yes"
+      multicast_interface: "eth0"
+      multicast_address: "224.0.0.245"
+      multicast_port: "62960"
   register: result
 
-- name: Assert Set the SSHD allow string to a specific IP - Idempotent check
+- name: Assert Set initial device connectivity - Idempotent check
   assert:
       that:
           - not result|changed
+
+- name: Unset multicast
+  bigip_device_connectivity:
+      failover_multicast: "no"
+  register: result
+
+- name: Unset multicast
+  assert:
+      that:
+          - result|changed
+
+- name: Unset multicast - Idempotent check
+  bigip_device_connectivity:
+      failover_multicast: "no"
+  register: result
+
+- name: Unset multicast - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Unset unicast failover
+  bigip_device_connectivity:
+      unicast_failover: "none"
+  register: result
+
+- name: Unset multicast
+  assert:
+      that:
+          - result|changed
+
+- name: Unset unicast failover - Idempotent check
+  bigip_device_connectivity:
+      unicast_failover: "none"
+  register: result
+
+- name: Unset multicast - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
