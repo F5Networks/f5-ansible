@@ -23,13 +23,15 @@ __metaclass__ = type
 
 import os
 import json
+import pytest
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
+    AnsibleF5Client,
+    F5ModuleError
 )
 
 # from ansible.modules.network.f5.bigip_device_connectivity import (
@@ -251,6 +253,35 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['multicast_address'] == 'none'
         assert len(results.keys()) == 2
+
+    def test_set_multicast_port_negative(self, *args):
+        set_module_args(dict(
+            multicast_port=-1,
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(load_fixture('load_tm_cm_device.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        with pytest.raises(F5ModuleError) as ex:
+            results = mm.exec_module()
+
+        assert 'must be between' in str(ex)
 
     def test_set_multicast_address(self, *args):
         set_module_args(dict(

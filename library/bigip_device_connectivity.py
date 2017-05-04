@@ -88,7 +88,8 @@ options:
     description:
       - Port for the system to send multicast messages associated with
         failover. When C(failover_multicast) is C(yes) and this option is not
-        provided, a default of C(62960) will be used.
+        provided, a default of C(62960) will be used. This value must be between
+        0 and 65535.
     required: False
     default: None
 notes:
@@ -110,7 +111,49 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+changed:
+    description: Denotes if the F5 configuration was updated.
+    returned: always
+    type: bool
+config_sync_ip:
+    description: The new value of the C(config_sync_ip) setting.
+    returned: changed
+    type: string
+    sample: "10.1.1.1" or "none"
+mirror_primary_address:
+    description: The new value of the C(mirror_primary_address) setting.
+    returned: changed
+    type: string
+    sample: "10.1.1.2" or "none"
+mirror_secondary_address:
+    description: The new value of the C(mirror_secondary_address) setting.
+    return: changed
+    type: string
+    sample: "10.1.1.3" or "none"
+unicast_failover:
+    description: The new value of the C(unicast_failover) setting.
+    return: changed
+    type: list
+    sample" [{'address': '10.1.1.2', 'port': 1026}]
+failover_multicast:
+    description: Whether a failover multicast attribute has been changed or not.
+    return: changed
+    type: bool
+multicast_interface:
+    description: The new value of the C(multicast_interface) setting.
+    return: changed
+    type: string
+    sample: "eth0"
+multicast_address:
+    description: The new value of the C(multicast_address) setting.
+    return: changed
+    type: string
+    sample: "224.0.0.245"
+multicast_port:
+    description: The new value of the C(multicast_port) setting.
+    return: changed
+    type: string
+    sample: 1026
 '''
 
 from netaddr import IPAddress, AddrFormatError
@@ -154,20 +197,37 @@ class Parameters(AnsibleF5Parameters):
     def multicast_port(self):
         if self._values['multicast_port'] is None:
             return None
-        return int(self._values['multicast_port'])
+        result = int(self._values['multicast_port'])
+        if result < 0 or result > 65535:
+            raise F5ModuleError(
+                "The specified 'multicast_port' must be between 0 and 65535."
+            )
+        return result
 
     @property
     def multicast_address(self):
+        if self._values['multicast_address'] is None:
+            return None
+        elif self._values['multicast_address'] in ["none", "any6", '']:
+            return "any6"
         result = self._get_validated_ip_address('multicast_address')
         return result
 
     @property
     def mirror_primary_address(self):
+        if self._values['mirror_primary_address'] is None:
+            return None
+        elif self._values['mirror_primary_address'] in ["none", "any6", '']:
+            return "any6"
         result = self._get_validated_ip_address('mirror_primary_address')
         return result
 
     @property
     def mirror_secondary_address(self):
+        if self._values['mirror_secondary_address'] is None:
+            return None
+        elif self._values['mirror_secondary_address'] in ["none", "any6", '']:
+            return "any6"
         result = self._get_validated_ip_address('mirror_secondary_address')
         return result
 
@@ -182,9 +242,11 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def config_sync_ip(self):
+        if self._values['config_sync_ip'] is None:
+            return None
+        elif self._values['config_sync_ip'] in ["none", '']:
+            return "none"
         result = self._get_validated_ip_address('config_sync_ip')
-        if result == 'any6':
-            result = "none"
         return result
 
     @property
@@ -254,10 +316,6 @@ class Parameters(AnsibleF5Parameters):
             )
 
     def _get_validated_ip_address(self, address):
-        if self._values[address] is None:
-            return None
-        elif self._values[address] in ["none", "any6", '']:
-            return "any6"
         try:
             IPAddress(self._values[address])
             return self._values[address]
