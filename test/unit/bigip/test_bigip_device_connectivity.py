@@ -282,3 +282,63 @@ class TestManager(unittest.TestCase):
         assert results['multicast_address'] == '10.1.1.1'
         assert results['failover_multicast'] == True
         assert len(results.keys()) == 3
+
+    def test_unset_unicast_failover(self, *args):
+        set_module_args(dict(
+            unicast_failover="none",
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(load_fixture('load_tm_cm_device.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['unicast_failover'] == 'none'
+        assert len(results.keys()) == 2
+
+    def test_unset_config_sync_ip(self, *args):
+        set_module_args(dict(
+            config_sync_ip="none",
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(load_fixture('load_tm_cm_device.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['config_sync_ip'] == 'none'
+        assert len(results.keys()) == 2
