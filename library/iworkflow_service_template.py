@@ -90,6 +90,7 @@ RETURN = '''
 
 from ansible.module_utils.f5_utils import *
 from deepdiff import DeepDiff
+import copy
 
 
 class Parameters(AnsibleF5Parameters):
@@ -169,16 +170,16 @@ class Parameters(AnsibleF5Parameters):
         result = []
         if not self._values['tables']:
             return None
-        tables = self._values['tables']
+        tables = copy.deepcopy(self._values['tables'])
         for table in tables:
             tmp = dict()
-            name = table.get('name', None)
+            name = table.pop('name', None)
             if name is None:
                 raise F5ModuleError(
                     "One of the provided tables does not have a name"
                 )
             tmp['name'] = str(name)
-            columns = table.get('columns', None)
+            columns = table.pop('columns', None)
             if columns:
                 tmp['columns'] = []
                 for column in columns:
@@ -186,13 +187,16 @@ class Parameters(AnsibleF5Parameters):
                         dict((str(k),str(v)) for k,v in iteritems(column))
                     )
                 # You cannot have rows without columns
-                rows = table.get('rows', None)
+                rows = table.pop('rows', None)
                 if rows:
                     tmp['rows'] = []
                     for row in rows:
                         tmp['rows'].append([str(x) for x in row])
-            description = table.get('description', None)
-            tmp['description'] = str(description)
+
+            # For the remaining items in the table dict, add them to the tmp
+            # dictionary
+            tmp.update(table)
+
             result.append(tmp)
         result = sorted(result, key=lambda k: k['name'])
         return result
@@ -273,6 +277,12 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def parentReference(self):
+        if not self._parent_template_exists():
+            raise F5ModuleError(
+                "The specified base_template '{0}' not not exist".format(
+                    self.base_template
+                )
+            )
         return dict(
             link="https://localhost/mgmt/cm/cloud/templates/iapp/{0}".format(
                 self._values['base_template']
@@ -282,6 +292,12 @@ class Parameters(AnsibleF5Parameters):
     @parentReference.setter
     def parentReference(self, value):
         self._values['base_template'] = value['link']
+
+    def _parent_template_exists(self):
+        result = self.client.api.cm.cloud.templates.iapps.iapp.exists(
+            name=self.base_template
+        )
+        return result
 
 
 class ModuleManager(object):
