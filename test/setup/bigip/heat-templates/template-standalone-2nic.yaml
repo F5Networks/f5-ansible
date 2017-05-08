@@ -34,6 +34,11 @@ parameters:
     description: The image to be used on the compute instance.
     constraints:
       - custom_constraint: glance.image
+  use_config_drive:
+    type: boolean
+    label: Use Config Drive
+    description: Use config drive to provider meta and user data.
+    default: false
   ve_flavor:
     type: string
     label: F5 VE Flavor
@@ -179,6 +184,15 @@ resources:
     properties:
       network: { get_resource: network_2_network }
       security_groups: [{ get_resource: bigip_data_security_group }]
+  wait_handle:
+    type: OS::Heat::WaitConditionHandle
+  wait_condition:
+    type: OS::Heat::WaitCondition
+    properties:
+      handle: { get_resource: wait_handle }
+      count: 1
+      # Wait no more than 30 minutes
+      timeout: 1800
   ve_instance:
     type: OS::Nova::Server
     properties:
@@ -190,6 +204,7 @@ resources:
         - port: { get_resource: network_1_port }
         - port: { get_resource: network_2_port }
       user_data_format: RAW
+      config_drive: { get_param: use_config_drive }
       user_data:
         str_replace:
           params:
@@ -199,6 +214,7 @@ resources:
             __default_gateway__: { get_param: default_gateway }
             __network_1_name__: { get_param: network_1_name }
             __network_2_name__: { get_param: network_2_name }
+            wc_notify: { get_attr: [wait_handle, curl_cli] }
           template: |
             {
                "bigip": {
@@ -259,9 +275,12 @@ resources:
                                "is_mirror_secondary": "false"
                            }
                        }
-                   }
+                   },
+                   "wait_condition_notify": "wc_notify --insecure --data-binary '{\"status\": \"SUCCESS\"}'"
                }
             }
+
+
 
 outputs:
   ve_instance_name:

@@ -241,9 +241,8 @@ resources:
                   tmsh create net self ${NETWORK_1_NAME}_self address ${NETWORK_1_ADDRESS}/${NETWORK_1_PREFIX} vlan ${NETWORK_1_NAME} allow-service all
 
                   tmsh save /sys config
-                  echo wc_notify >> /tmp/notify
 
-                  wc_notify --data-binary '{"status": "SUCCESS"}'
+                  wc_notify --insecure --data-binary '{"status": "SUCCESS"}'
 
               - path: /config/cloud/onboard_config_vars
                 permissions: 0755
