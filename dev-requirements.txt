@@ -23,3 +23,7 @@ fire
 # Used for documentation building (make docs)
 sphinx
 sphinx_rtd_theme
+
+# For standing up test infrastructure
+shade
+os-client-config
