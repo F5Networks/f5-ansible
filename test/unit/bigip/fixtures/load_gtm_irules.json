@@ -1,7 +1,4 @@
-{
-  "kind": "tm:gtm:rule:rulecollectionstate",
-  "selfLink": "https://localhost/mgmt/tm/gtm/rule?ver=12.1.2",
-  "items": [
+[
     {
       "kind": "tm:gtm:rule:rulestate",
       "name": "asdf",
@@ -21,4 +18,3 @@
       "apiAnonymous": "when LB_SELECTED {\n   # Capture IP address chosen by WIP load balancing\n   set wipHost [LB::server addr]\n}\n\nwhen LB_FAILED {\n   set wipHost [LB::server addr]\n}"
     }
   ]
-}
