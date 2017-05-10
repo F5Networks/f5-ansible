@@ -51,6 +51,9 @@ options:
       - Loads the default configuration on the device. If this option
         is specified, the default configuration will be loaded before
         any commands or other provided configuration is run.
+    choices:
+      - yes
+      - no
     required: False
     default: False
   merge_content:
@@ -60,6 +63,8 @@ options:
         C(tmsh) command C(load sys config from-terminal merge). If
         you need to read configuration from a file or template, use
         Ansible's C(file) or C(template) lookup plugins respectively.
+    required: False
+    default: None
   verify:
     description:
       - Validates the specified configuration to see whether they are
@@ -67,6 +72,9 @@ options:
         configuration will not be changed.
     required: False
     default: True
+    choices:
+      - yes
+      - no
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -258,7 +266,6 @@ class ModuleManager(object):
         command = 'tmsh load sys config file {0} merge'.format(
             remote_path
         )
-        print command
         if verify:
             command += ' verify'
 
