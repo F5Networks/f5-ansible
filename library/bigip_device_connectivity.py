@@ -107,7 +107,16 @@ author:
 '''
 
 EXAMPLES = '''
-
+- name: Configure device connectivity for standard HA pair
+  bigip_device_connectivity:
+      config_sync_ip: "10.1.30.1"
+      mirror_primary_address: "10.1.30.1"
+      unicast_failover:
+          - address: "10.1.30.1"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -119,22 +128,22 @@ config_sync_ip:
     description: The new value of the C(config_sync_ip) setting.
     returned: changed
     type: string
-    sample: "10.1.1.1" or "none"
+    sample: "10.1.1.1"
 mirror_primary_address:
     description: The new value of the C(mirror_primary_address) setting.
     returned: changed
     type: string
-    sample: "10.1.1.2" or "none"
+    sample: "10.1.1.2"
 mirror_secondary_address:
     description: The new value of the C(mirror_secondary_address) setting.
     return: changed
     type: string
-    sample: "10.1.1.3" or "none"
+    sample: "10.1.1.3"
 unicast_failover:
     description: The new value of the C(unicast_failover) setting.
     return: changed
     type: list
-    sample" [{'address': '10.1.1.2', 'port': 1026}]
+    sample: [{'address': '10.1.1.2', 'port': 1026}]
 failover_multicast:
     description: Whether a failover multicast attribute has been changed or not.
     return: changed
