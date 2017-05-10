@@ -153,7 +153,13 @@ except ImportError:
     HAS_NETADDR = False
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
