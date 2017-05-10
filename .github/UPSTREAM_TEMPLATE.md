@@ -56,6 +56,7 @@ Ensure all the following are complete
 `DOCUMENTATION`
 - [ ] Module code conforms to coding standards (v3). This includes a `Parameters` class, `ModuleManager` class, and `ArgumentSpec` class.
 - [ ] Module code passes `tox -e flake -- library/MODULE_NAME.py`
+- [ ] Unit test code passes `tox -e flake -- test/unit/PRODUCT/test_MODULE_NAME.py`
 - [ ] Module includes GPL3 license at top of the file and F5 Networks copyright.
 
 ##### SUMMARY
