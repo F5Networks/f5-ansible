@@ -5,3 +5,9 @@
       device_group: "{{ device_group }}"
       sync_device_to_group: yes
   delegate_to: localhost
+
+- name: Sync configuration from group to device
+  bigip_configsync_actions:
+      device_group: "{{ device_group }}"
+      sync_group_to_device: yes
+  delegate_to: localhost
