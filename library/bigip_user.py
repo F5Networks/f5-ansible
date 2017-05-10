@@ -193,8 +193,15 @@ shell:
     sample: "tmsh"
 '''
 
-from ansible.module_utils.f5_utils import *
 from distutils.version import LooseVersion
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError,
+    iteritems
+)
 
 
 class Parameters(AnsibleF5Parameters):
