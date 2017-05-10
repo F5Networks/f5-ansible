@@ -203,7 +203,7 @@ class Parameters(AnsibleF5Parameters):
             'tmsh modify cli preference pager disabled'
         )
         commands = map(self._ensure_tmsh_prefix, list(commands))
-        return commands
+        return list(commands)
 
     def _ensure_tmsh_prefix(self, cmd):
         cmd = cmd.strip()
@@ -217,14 +217,6 @@ class ModuleManager(object):
         self.client = client
         self.want = Parameters(self.client.module.params)
         self.changes = Parameters()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
 
     def _to_lines(self, stdout):
         lines = list()
