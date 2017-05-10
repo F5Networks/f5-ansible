@@ -55,7 +55,7 @@ options:
     choices:
       - present
       - absent
-   name:
+  name:
     description:
       - Pool name
     required: True
