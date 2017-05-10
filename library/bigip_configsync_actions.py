@@ -88,7 +88,7 @@ EXAMPLES = '''
       password: "secret"
       validate_certs: no
   delegate_to: localhost
-  
+
 - name: Sync configuration from group to devices in group
   bigip_configsync_actions:
       device_group: "foo-group"
@@ -188,7 +188,7 @@ class ModuleManager(object):
 
     def _validate_sync_to_group_required(self):
         resource = self.client.api.tm.cm.sync_status.load()
-        k,v = resource.entries.popitem()
+        k, v = resource.entries.popitem()
         status = v['nestedStats']['entries']['status']['description']
         if status == 'Awaiting Initial Sync' and self.want.sync_group_to_device:
             return False
@@ -219,7 +219,7 @@ class ModuleManager(object):
         resource = self.client.api.tm.cm.sync_status.load()
         for x in range(1, 180):
             resource.refresh()
-            k,v = resource.entries.popitem()
+            k, v = resource.entries.popitem()
             status = v['nestedStats']['entries']['status']['description']
 
             # Changes Pending:
@@ -288,6 +288,6 @@ def main():
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
 
+
 if __name__ == '__main__':
     main()
-
