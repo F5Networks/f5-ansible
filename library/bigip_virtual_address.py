@@ -34,21 +34,21 @@ version_added: "2.3"
 options:
   address:
     description:
-      - Virtual address
-    required: true
+      - Virtual address. This value cannot be modified after it is set.
+    required: True
     aliases:
       - name
   netmask:
     description:
       - Netmask of the provided virtual address. This value cannot be
         modified after it is set.
-    required: false
+    required: False
     default: 255.255.255.255
   connection_limit:
     description:
       - Specifies the number of concurrent connections that the system
         allows on this virtual address.
-    required: false
+    required: False
     default: None
   arp_state:
     description:
@@ -60,6 +60,7 @@ options:
     choices:
       - enabled
       - disabled
+    default: None
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
@@ -70,6 +71,7 @@ options:
     choices:
       - enabled
       - disabled
+    default: None
   icmp_echo:
     description:
       - Specifies how the systems sends responses to (ICMP) echo requests
@@ -85,6 +87,7 @@ options:
       - enabled
       - disabled
       - selective
+    default: None
   state:
     description:
       - The virtual address state. If C(absent), an attempt to delete the
@@ -93,7 +96,7 @@ options:
         the virtual address and enables it. If C(enabled), enable the virtual
         address if it exists. If C(disabled), create the virtual address if
         needed, and set state to C(disabled).
-    required: false
+    required: False
     default: present
     choices:
       - present
@@ -111,7 +114,7 @@ options:
       - always
       - when_all_available
       - when_any_available
-    required: false
+    required: False
     default: None
   use_route_advertisement:
     description:
@@ -121,11 +124,13 @@ options:
     choices:
       - yes
       - no
-    required: false
+    required: False
     default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+  - Requires the netaddr Python package on the host. This is as easy as pip
+    install netaddr.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -134,12 +139,12 @@ author:
 EXAMPLES = '''
 - name: Add virtual address
   bigip_virtual_address:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: present
-      partition: Common
-      address: 10.10.10.10
+      server: "lb.mydomain.net"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      partition: "Common"
+      address: "10.10.10.10"
   delegate_to: localhost
 '''
 
@@ -148,267 +153,305 @@ RETURN = '''
 '''
 
 try:
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-
-    HAS_F5SDK = True
+    import netaddr
+    HAS_NETADDR = True
 except ImportError:
-    HAS_F5SDK = False
+    HAS_NETADDR = False
+
+from ansible.module_utils.basic import BOOLEANS
+from ansible.module_utils.basic import BOOLEANS_TRUE
+from ansible.module_utils.basic import BOOLEANS_FALSE
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError,
+    iteritems
+)
 
 
-class BigIpVirtualAddressManager(object):
-    def __init__(self, *args, **kwargs):
-        self.changed_params = dict()
-        self.params = kwargs
-        self.api = None
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'routeAdvertisement': 'use_route_advertisement',
+        'autoDelete': 'auto_delete',
+        'icmpEcho': 'icmp_echo',
+        'connectionLimit': 'connection_limit',
+        'serverScope': 'advertise_route',
+        'mask': 'netmask',
+        'arp': 'arp_state'
+    }
 
-    def apply_changes(self):
-        result = dict()
+    updatables = [
+        'use_route_advertisement', 'auto_delete', 'icmp_echo', 'connection_limit',
+        'arp_state', 'enabled', 'advertise_route'
+    ]
+
+    returnables = [
+        'use_route_advertisement', 'auto_delete', 'icmp_echo', 'connection_limit',
+        'netmask', 'arp_state', 'address', 'state'
+    ]
+
+    api_attributes = [
+        'routeAdvertisement', 'autoDelete', 'icmpEcho', 'connectionLimit',
+        'advertiseRoute', 'arp', 'mask', 'enabled', 'serverScope'
+    ]
+
+    @property
+    def advertise_route(self):
+        if self._values['advertise_route'] is None:
+            return None
+        elif self._values['advertise_route'] in ['any', 'when_any_available']:
+            return 'any'
+        elif self._values['advertise_route'] in ['all', 'when_all_available']:
+            return 'all'
+        elif self._values['advertise_route'] in ['none', 'always']:
+            return 'none'
+
+    @property
+    def connection_limit(self):
+        if self._values['connection_limit'] is None:
+            return None
+        return int(self._values['connection_limit'])
+
+    @property
+    def use_route_advertisement(self):
+        if self._values['use_route_advertisement'] is None:
+            return None
+        elif self._values['use_route_advertisement'] in BOOLEANS_TRUE:
+            return 'enabled'
+        elif self._values['use_route_advertisement'] == 'enabled':
+            return 'enabled'
+        else:
+            return 'disabled'
+
+    @property
+    def enabled(self):
+        if self._values['state'] in ['enabled', 'present']:
+            return 'yes'
+        elif self._values['enabled'] in BOOLEANS_TRUE:
+            return 'yes'
+        elif self._values['state'] == 'disabled':
+            return 'no'
+        elif self._values['enabled'] in BOOLEANS_FALSE:
+            return 'no'
+        else:
+            return None
+
+    @property
+    def address(self):
+        if self._values['address'] is None:
+            return None
+        try:
+            ip = netaddr.IPAddress(self._values['address'])
+            return str(ip)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided 'address' is not a valid IP address"
+            )
+
+    @property
+    def netmask(self):
+        if self._values['netmask'] is None:
+            return None
+        try:
+            ip = netaddr.IPAddress(self._values['netmask'])
+            return str(ip)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided 'netmask' is not a valid IP address"
+            )
+
+    @property
+    def auto_delete(self):
+        if self._values['auto_delete'] is None:
+            return None
+        elif self._values['auto_delete'] in BOOLEANS_TRUE:
+            return True
+        elif self._values['auto_delete'] == 'enabled':
+            return True
+        else:
+            return False
+
+    @property
+    def state(self):
+        if self.enabled == 'yes' and self._values['state'] != 'present':
+            return 'enabled'
+        elif self.enabled == 'no':
+            return 'disabled'
+        else:
+            return self._values['state']
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if api_attribute in self.api_map:
+                result[api_attribute] = getattr(
+                    self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
+    def exec_module(self):
         changed = False
+        result = dict()
+        state = self.want.state
 
         try:
-            self.api = self.connect_to_bigip(**self.params)
-
-            if self.params['state'] == "present":
+            if state in ['present', 'enabled', 'disabled']:
                 changed = self.present()
-            elif self.params['state'] == "absent":
+            elif state == "absent":
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changed_params)
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
     def present(self):
-        if self.virtual_address_exists():
-            return self.update_virtual_address()
+        if self.exists():
+            return self.update()
         else:
-            return self.ensure_virtual_address_is_present()
+            return self.create()
 
     def absent(self):
         changed = False
-        if self.virtual_address_exists():
-            changed = self.ensure_virtual_address_is_absent()
+        if self.exists():
+            changed = self.remove()
         return changed
 
-    def connect_to_bigip(self, **kwargs):
-        return ManagementRoot(kwargs['server'],
-                              kwargs['user'],
-                              kwargs['password'],
-                              port=kwargs['server_port'])
+    def read_current_from_device(self):
+        resource = self.client.api.tm.ltm.virtual_address_s.virtual_address.load(
+            name=self.want.address,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return Parameters(result)
 
-    def read_virtual_address_information(self):
-        address = self.load_virtual_address()
-        return self.format_virtual_address_information(address)
-
-    def format_virtual_address_information(self, address):
-        result = dict()
-        result['name'] = str(address.name)
-        result['address'] = str(address.address)
-        result['netmask'] = str(address.mask)
-        if hasattr(address, 'arp'):
-            result['arp'] = str(address.arp)
-        if hasattr(address, 'autoDelete'):
-            result['auto_delete'] = str(address.autoDelete)
-        if hasattr(address, 'connectionLimit'):
-            result['connection_limit'] = str(address.connectionLimit)
-        if hasattr(address, 'enabled'):
-            result['enabled'] = str(address.enabled)
-        if hasattr(address, 'icmpEcho'):
-            result['icmp_echo'] = str(address.icmpEcho)
-        if hasattr(address, 'autoDelete'):
-            result['auto_delete'] = str(address.autoDelete)
-        if hasattr(address, 'routeAdvertisement'):
-            result['use_route_advertisement'] = str(address.routeAdvertisement)
-        if hasattr(address, 'advertiseRoute'):
-            advertise_route = str(advertiseRoute)
-            if advertise_route == 'any':
-                result['advertise_route'] = 'when_any_available'
-            elif advertise_route == 'all':
-                result['advertise_route'] = 'when_all_available'
-            elif advertise_route == 'none':
-                result['advertise_route'] = 'always'
+    def exists(self):
+        result = self.client.api.tm.ltm.virtual_address_s.virtual_address.exists(
+            name=self.want.address,
+            partition=self.want.partition
+        )
         return result
 
-    def load_virtual_address(self):
-        return self.api.tm.ltm.virtual_address_s.virtual_address.load(
-            name=self.params['address'],
-            partition=self.params['partition']
-        )
-
-    def virtual_address_exists(self):
-        return self.api.tm.ltm.virtual_address_s.virtual_address.exists(
-            name=self.params['address'],
-            partition=self.params['partition']
-        )
-
-    def update_virtual_address(self):
-        params = self.get_changed_parameters()
-        if params:
-            self.changed_params = camel_dict_to_snake_dict(params)
-            if self.params['check_mode']:
-                return True
-        else:
+    def update(self):
+        self.have = self.read_current_from_device()
+        if self.want.netmask is not None:
+            if self.have.netmask != self.want.netmask:
+                raise F5ModuleError(
+                    "The netmask cannot be changed. Delete and recreate"
+                    "the virtual address if you need to do this."
+                )
+        if self.want.address is not None:
+            if self.have.address != self.want.address:
+                raise F5ModuleError(
+                    "The address cannot be changed. Delete and recreate"
+                    "the virtual address if you need to do this."
+                )
+        if not self.should_update():
             return False
-        params['name'] = self.params['address']
-        params['partition'] = self.params['partition']
-        self.update_virtual_address_on_device(params)
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
         return True
 
-    def update_virtual_address_on_device(self, params):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            address = api.tm.ltm.virtual_address_s.virtual_address.load(
-                name=self.params['address'],
-                partition=self.params['partition']
-            )
-            address.modify(**params)
+    def update_on_device(self):
+        params = self.want.api_params()
+        resource = self.client.api.tm.ltm.virtual_address_s.virtual_address.load(
+            name=self.want.address,
+            partition=self.want.partition
+        )
+        resource.modify(**params)
 
-    def get_changed_parameters(self):
-        result = dict()
-        current = self.read_virtual_address_information()
-        if self.is_connection_limit_changed(current):
-            result['connectionLimit'] = self.params['connection_limit']
-        if self.is_arp_state_changed(current):
-            result['arp'] = self.params['arp_state']
-        if self.is_auto_delete_changed(current):
-            result['autoDelete'] = self.params['auto_delete']
-        if self.is_icmp_echo_changed(current):
-            result['icmpEcho'] = self.params['icmp_echo']
-        if self.is_advertise_route_changed(current):
-            result['serverScope'] = self.params['advertise_route']
-        if self.is_use_route_advertisement_changed(current):
-            result['routeAdvertisement'] = self.params['use_route_advertisement']
-        return result
-
-    def is_connection_limit_changed(self, current):
-        limit = self.params['connection_limit']
-        if limit is None:
-            return False
-        if 'limit' not in current:
+    def create(self):
+        self._set_changed_options()
+        if self.client.check_mode:
             return True
-        if limit != current['connection_limit']:
-            return True
-        else:
-            return False
-
-    def is_arp_state_changed(self, current):
-        state = self.params['arp_state']
-        if state is None:
-            return False
-        if 'state' not in current:
-            return True
-        if state != current['arp_state']:
-            return True
-        else:
-            return False
-
-    def is_auto_delete_changed(self, current):
-        auto_delete = self.params['auto_delete']
-        if auto_delete is None:
-            return False
-        if 'auto_delete' not in current:
-            return True
-        if auto_delete != current['auto_delete']:
-            return True
-        else:
-            return False
-
-    def is_icmp_echo_changed(self, current):
-        icmp = self.params['icmp_echo']
-        if icmp is None:
-            return False
-        if 'icmp_echo' not in current:
-            return True
-        if icmp != current['icmp_echo']:
-            return True
-        else:
-            return False
-
-    def is_advertise_route_changed(self, current):
-        route = self.params['advertise_route']
-        if route is None:
-            return False
-        if 'advertise_route' not in current:
-            return True
-        if route != current['advertise_route']:
-            return True
-        else:
-            return False
-
-    def is_use_route_advertisement_changed(self, current):
-        route = self.params['use_route_advertisement']
-        if route is None:
-            return False
-        if 'use_route_advertisement' not in current:
-            return True
-        if route != current['use_route_advertisement']:
-            return True
-        else:
-            return False
-
-    def ensure_virtual_address_is_present(self):
-        params = self.get_virtual_address_creation_parameters()
-        self.changed_params = camel_dict_to_snake_dict(params)
-        if self.params['check_mode']:
-            return True
-        self.create_virtual_address_on_device(params)
-        if self.virtual_address_exists():
+        self.create_on_device()
+        if self.exists():
             return True
         else:
             raise F5ModuleError("Failed to create the virtual address")
 
-    def get_virtual_address_creation_parameters(self):
-        result = dict(
-            name=self.params['address'],
-            partition=self.params['partition']
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.ltm.virtual_address_s.virtual_address.create(
+            name=self.want.address,
+            partition=self.want.partition,
+            address=self.want.address,
+            **params
         )
-        return result
 
-    def create_virtual_address_on_device(self, params):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            api.tm.ltm.virtual_address_s.virtual_address.create(**params)
-
-    def ensure_virtual_address_is_absent(self):
-        if self.params['check_mode']:
+    def remove(self):
+        if self.client.check_mode:
             return True
-        self.delete_virtual_address_from_device()
-        if self.virtual_address_exists():
+        self.remove_from_device()
+        if self.exists():
             raise F5ModuleError("Failed to delete the virtual address")
         return True
 
-    def delete_virtual_address_from_device(self):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            address = api.tm.ltm.virtual_address_s.virtual_address.load(
-                name=self.params['address'],
-                partition=self.params['partition']
-            )
-            address.delete()
+    def remove_from_device(self):
+        resource = self.client.api.tm.ltm.virtual_address_s.virtual_address.load(
+            name=self.want.address,
+            partition=self.want.partition
+        )
+        resource.delete()
 
 
-class BigIpVirtualAddressModuleConfig(object):
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-        self.states = ['present', 'absent', 'disabled', 'enabled']
-        self.advertise_route_states = [
-            'always', 'when_all_available', 'when_any_available'
-        ]
-
-        self.initialize_meta_args()
-        self.initialize_argument_spec()
-
-    def initialize_meta_args(self):
-        args = dict(
+        self.argument_spec = dict(
             state=dict(
                 type='str',
                 default='present',
-                choices=self.states
+                choices=['present', 'absent', 'disabled', 'enabled']
             ),
             address=dict(
                 type='str',
@@ -420,61 +463,58 @@ class BigIpVirtualAddressModuleConfig(object):
                 default='255.255.255.255',
                 required=False
             ),
-            connection_limit=dict(required=False),
+            connection_limit=dict(
+                required=False,
+                default=None,
+                type='int'
+            ),
             arp_state=dict(
                 choices=['enabled', 'disabled'],
-                required=False
+                required=False,
+                default=None
             ),
             auto_delete=dict(
                 required=False,
-                choices=['enabled', 'disabled']
+                choices=['enabled', 'disabled'],
+                default=None
             ),
             icmp_echo=dict(
                 required=False,
-                choices=['enabled', 'disabled', 'selective']
+                choices=['enabled', 'disabled', 'selective'],
+                default=None
             ),
             advertise_route=dict(
                 required=False,
-                choices=self.advertise_route_states
+                choices=['always', 'when_all_available', 'when_any_available'],
+                default=None
             ),
             use_route_advertisement=dict(
                 required=False,
-                choices=BOOLEANS
+                choices=BOOLEANS,
+                default=None
             )
         )
-        self.meta_args = args
-
-    def initialize_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-    def create(self):
-        return AnsibleModule(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
+        self.f5_product_name = 'bigip'
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
-    config = BigIpVirtualAddressModuleConfig()
-    module = config.create()
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
 
     try:
-        obj = BigIpVirtualAddressManager(
-            check_mode=module.check_mode, **module.params
-        )
-        result = obj.apply_changes()
-
-        module.exit_json(**result)
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
-
-from ansible.module_utils.basic import *
-from ansible.module_utils.ec2 import camel_dict_to_snake_dict
-from ansible.module_utils.f5_utils import *
+        client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
     main()
