@@ -25,7 +25,7 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
@@ -199,25 +199,30 @@ class TestManager(unittest.TestCase):
 
     def test_create_blackhole(self, *args):
         set_module_args(dict(
-            name='test-route',
+            state='present',
+            address='1.1.1.1',
+            netmask='2.2.2.2',
+            connection_limit='10',
+            arp_state='enabled',
+            auto_delete='enabled',
+            icmp_echo='enabled',
+            advertise_route='always',
+            use_route_advertisement='yes',
             password='admin',
             server='localhost',
             user='admin',
-            state='present',
-            destination='10.10.10.10',
-            reject='yes'
         ))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
-            mutually_exclusive=self.spec.mutually_exclusive,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exists = lambda: False
+        mm.exists = Mock()
+        mm.exists.side_effect = [False, True]
         mm.create_on_device = lambda: True
         mm.exit_json = lambda x: True
 
