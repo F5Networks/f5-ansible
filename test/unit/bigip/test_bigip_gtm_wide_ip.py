@@ -34,14 +34,20 @@ from ansible.module_utils.f5_utils import (
     F5ModuleError
 )
 
-# from ansible.modules.network.f5.bigip_gtm_wide_ip import (
-from library.bigip_gtm_wide_ip import (
-    Parameters,
-    ModuleManager,
-    ArgumentSpec,
-    UntypedManager
-)
-
+try:
+    from library.bigip_gtm_wide_ip import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec,
+        UntypedManager
+    )
+except ImportError:
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec,
+        UntypedManager
+    )
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -63,7 +69,7 @@ def load_fixture(name):
 
     try:
         data = json.loads(data)
-    except:
+    except Exception:
         pass
 
     fixture_data[path] = data

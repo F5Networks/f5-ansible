@@ -23,7 +23,6 @@ __metaclass__ = type
 
 import os
 import json
-import pytest
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, mock_open, MagicMock
@@ -34,15 +33,22 @@ from ansible.module_utils.f5_utils import (
     F5ModuleError
 )
 
-# from ansible.modules.network.f5.bigip_pool2 import (
-from library.bigip_irule import (
-    Parameters,
-    ModuleManager,
-    ArgumentSpec,
-    GtmManager,
-    LtmManager
-)
-
+try:
+    from library.bigip_irule import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec,
+        GtmManager,
+        LtmManager
+    )
+except ImportError:
+    from ansible.modules.network.f5.bigip_irule import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec,
+        GtmManager,
+        LtmManager
+    )
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}

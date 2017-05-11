@@ -34,13 +34,18 @@ from ansible.module_utils.f5_utils import (
     F5ModuleError
 )
 
-# from ansible.modules.network.f5.bigip_device_connectivity import (
-from library.bigip_command import (
-    Parameters,
-    ModuleManager,
-    ArgumentSpec
-)
-
+try:
+    from library.bigip_command import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec
+    )
+except ImportError:
+    from ansible.modules.network.f5.bigip_device_connectivity import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec
+    )
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
@@ -56,7 +61,7 @@ def load_fixture(name):
         data = f.read()
     try:
         data = json.loads(data)
-    except:
+    except Exception:
         pass
     return data
 

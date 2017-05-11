@@ -28,12 +28,16 @@ from ansible.compat.tests import unittest
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 
-# from ansible.modules.network.f5.bigip_ssl_certificate import (
-from library.bigip_ssl_certificate import (
-    KeyParameters,
-    CertParameters
-)
-
+try:
+    from library.bigip_ssl_certificate import (
+        KeyParameters,
+        CertParameters
+    )
+except ImportError:
+    from ansible.modules.network.f5.bigip_ssl_certificate import (
+        KeyParameters,
+        CertParameters
+    )
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -55,7 +59,7 @@ def load_fixture(name):
 
     try:
         data = json.loads(data)
-    except:
+    except Exception:
         pass
 
     fixture_data[path] = data

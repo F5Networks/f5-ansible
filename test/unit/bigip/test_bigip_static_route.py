@@ -32,12 +32,18 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Client
 )
 
-# from ansible.modules.network.f5.bigip_static_route import (
-from library.bigip_static_route import (
-    Parameters,
-    ModuleManager,
-    ArgumentSpec
-)
+try:
+    from library.bigip_static_route import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec
+    )
+except ImportError:
+    from ansible.modules.network.f5.bigip_static_route import (
+        Parameters,
+        ModuleManager,
+        ArgumentSpec
+    )
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -58,7 +64,7 @@ def load_fixture(name):
 
     try:
         data = json.loads(data)
-    except:
+    except Exception:
         pass
 
     fixture_data[path] = data
