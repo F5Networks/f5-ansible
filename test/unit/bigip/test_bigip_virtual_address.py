@@ -197,7 +197,7 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_blackhole(self, *args):
+    def test_create_virtual_address(self, *args):
         set_module_args(dict(
             state='present',
             address='1.1.1.1',
