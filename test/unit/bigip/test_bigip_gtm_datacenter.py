@@ -206,6 +206,34 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['enabled'] is True
 
+    def test_idempotent_disable_datacenter(self, *args):
+        set_module_args(dict(
+            state='disabled',
+            password='admin',
+            server='localhost',
+            user='admin',
+            name='foo'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        current = Parameters(load_fixture('load_gtm_datacenter_disabled.json'))
+
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = lambda: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+        assert results['changed'] is False
+        assert results['enabled'] is False
+
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
@@ -235,7 +263,6 @@ class TestLegacyManager(unittest.TestCase):
         mm.exists = Mock()
         mm.exists.side_effect = [False, True]
         mm.create_on_device = lambda: True
-        mm.exit_json = lambda x: True
 
         results = mm.exec_module()
         assert results['changed'] is True
@@ -262,7 +289,6 @@ class TestLegacyManager(unittest.TestCase):
         mm.exists = Mock()
         mm.exists.side_effect = [False, True]
         mm.create_on_device = lambda: True
-        mm.exit_json = lambda x: True
 
         results = mm.exec_module()
         assert results['changed'] is True
