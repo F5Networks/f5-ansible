@@ -152,24 +152,20 @@ class Parameters(AnsibleF5Parameters):
             if self._values['__warnings'] is None:
                 self._values['__warnings'] = []
             self._values['__warnings'].append(
-                [
-                    dict(
-                        msg='The provided lb_method is deprecated',
-                        version='2.4'
-                    )
-                ]
+                dict(
+                    msg='The provided lb_method is deprecated',
+                    version='2.4'
+                )
             )
             lb_method = 'global-availability'
         elif lb_method == 'round_robin':
             if self._values['__warnings'] is None:
                 self._values['__warnings'] = []
             self._values['__warnings'].append(
-                [
-                    dict(
-                        msg='The provided lb_method is deprecated',
-                        version='2.4'
-                    )
-                ]
+                dict(
+                    msg='The provided lb_method is deprecated',
+                    version='2.4'
+                )
             )
             lb_method = 'round-robin'
         return lb_method
@@ -321,11 +317,15 @@ class BaseManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations(result)
+        self._announce_deprecations()
         return result
 
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
+    def _announce_deprecations(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__warnings', [])
+        if self.have:
+            warnings += self.have._values.get('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
                 msg=warning['msg'],
