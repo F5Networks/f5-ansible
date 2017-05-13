@@ -88,7 +88,7 @@
 
 - name: Disable datacenter
   bigip_gtm_datacenter:
-      enabled: false
+      state: "disabled"
       name: "{{ dc_name }}"
   register: result
 
@@ -99,7 +99,7 @@
 
 - name: Disable datacenter - Idepotent check
   bigip_gtm_datacenter:
-      enabled: false
+      state: "disabled"
       name: "{{ dc_name }}"
   register: result
 
@@ -110,7 +110,7 @@
 
 - name: Enable datacenter
   bigip_gtm_datacenter:
-      enabled: true
+      state: "enabled"
       name: "{{ dc_name }}"
   register: result
 
@@ -121,7 +121,7 @@
 
 - name: Enable datacenter - Idepotent check
   bigip_gtm_datacenter:
-      enabled: true
+      state: "enabled"
       name: "{{ dc_name }}"
   register: result
 
@@ -132,6 +132,7 @@
 
 - name: Delete datacenter
   bigip_gtm_datacenter:
+      name: "{{ dc_name }}"
       state: "absent"
   register: result
 
@@ -142,6 +143,7 @@
 
 - name: Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
+      name: "{{ dc_name }}"
       state: "absent"
   register: result
 
@@ -149,3 +151,5 @@
   assert:
       that:
           - not result|changed
+
+- include: legacy.yaml

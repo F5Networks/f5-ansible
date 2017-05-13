@@ -1,0 +1,77 @@
+---
+
+- name: Legacy - Create datacenter
+  bigip_gtm_datacenter:
+      name: "{{ dc_name }}"
+  register: result
+
+- name: Assert Legacy - Create datacenter
+  assert:
+      that:
+          - result|changed
+
+- name: Legacy - Disable datacenter
+  bigip_gtm_datacenter:
+      enabled: false
+      name: "{{ dc_name }}"
+  register: result
+
+- name: Assert Legacy - Disable datacenter
+  assert:
+      that:
+          - result|changed
+
+- name: Legacy - Disable datacenter - Idepotent check
+  bigip_gtm_datacenter:
+      enabled: false
+      name: "{{ dc_name }}"
+  register: result
+
+- name: Assert Legacy - Disable datacenter - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Legacy - Enable datacenter
+  bigip_gtm_datacenter:
+      enabled: true
+      name: "{{ dc_name }}"
+  register: result
+
+- name: Assert Legacy - Enable datacenter
+  assert:
+      that:
+          - result|changed
+
+- name: Legacy - Enable datacenter - Idepotent check
+  bigip_gtm_datacenter:
+      enabled: true
+      name: "{{ dc_name }}"
+  register: result
+
+- name: Assert Legacy - Enable datacenter - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Legacy - Delete datacenter
+  bigip_gtm_datacenter:
+      name: "{{ dc_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Legacy - Delete datacenter
+  assert:
+      that:
+          - result|changed
+
+- name: Legacy - Delete datacenter - Idepotent check
+  bigip_gtm_datacenter:
+      name: "{{ dc_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Legacy - Delete datacenter - Idempotent check
+  assert:
+      that:
+          - not result|changed
