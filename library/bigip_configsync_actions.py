@@ -111,12 +111,13 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+# only common fields returned
 '''
 
 import time
 
 from ansible.module_utils.basic import BOOLEANS
+from ansible.module_utils.basic import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -136,6 +137,29 @@ class Parameters(AnsibleF5Parameters):
             return 'to-group'
         else:
             return 'from-group'
+
+    @property
+    def sync_device_to_group(self):
+        result = self._cast_to_bool(self._values['sync_device_to_group'])
+        return result
+
+    @property
+    def sync_group_to_device(self):
+        result = self._cast_to_bool(self._values['sync_group_to_device'])
+        return result
+
+    @property
+    def overwrite_config(self):
+        result = self._cast_to_bool(self._values['overwrite_config'])
+        return result
+
+    def _cast_to_bool(self, value):
+        if value is None:
+            return None
+        elif value in BOOLEANS_TRUE:
+            return True
+        else:
+            return False
 
     def to_return(self):
         result = {}
@@ -179,20 +203,19 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "The specified 'device_group' not not exist."
             )
-        if not self._validate_sync_to_group_required():
+        if self._sync_to_group_required():
             raise F5ModuleError(
                 "This device group needs an initial sync. Please use "
                 "'sync_device_to_group'"
             )
         self.execute()
 
-    def _validate_sync_to_group_required(self):
-        resource = self.client.api.tm.cm.sync_status.load()
-        k, v = resource.entries.popitem()
-        status = v['nestedStats']['entries']['status']['description']
+    def _sync_to_group_required(self):
+        resource = self.read_current_from_device()
+        status = self._get_status_from_resource(resource)
         if status == 'Awaiting Initial Sync' and self.want.sync_group_to_device:
-            return False
-        return True
+            return True
+        return False
 
     def _device_group_exists(self):
         result = self.client.api.tm.cm.device_groups.device_group.exists(
@@ -216,11 +239,9 @@ class ModuleManager(object):
 
     def _wait_for_sync(self):
         # Wait no more than half an hour
-        resource = self.client.api.tm.cm.sync_status.load()
+        resource = self.read_current_from_device()
         for x in range(1, 180):
-            resource.refresh()
-            k, v = resource.entries.popitem()
-            status = v['nestedStats']['entries']['status']['description']
+            status = self._get_status_from_resource(resource)
 
             # Changes Pending:
             #     The existing device has changes made to it that
@@ -238,6 +259,16 @@ class ModuleManager(object):
             else:
                 raise F5ModuleError(status)
             time.sleep(3)
+
+    def read_current_from_device(self):
+        result = self.client.api.tm.cm.sync_status.load()
+        return result
+
+    def _get_status_from_resource(self, resource):
+        resource.refresh()
+        k, v = resource.entries.popitem()
+        status = v['nestedStats']['entries']['status']['description']
+        return status
 
 
 class ArgumentSpec(object):
