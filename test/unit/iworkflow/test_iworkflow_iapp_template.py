@@ -81,7 +81,6 @@ class TestParameters(unittest.TestCase):
             self.loaded_devices.append(Namespace(**item))
 
     def test_module_parameters(self, *args):
-        devices_json = load_fixture('load_cm_cloud_managed_devices.json')
         template_content = load_fixture('f5.microsoft_adfs.v1.0.0.tmpl')
         arguments = dict(
             template_content=template_content,
@@ -131,7 +130,6 @@ class TestManager(unittest.TestCase):
 
             # Override methods to force specific logic in the module to happen
             mm.exit_json = lambda x: True
-            mm.read_current_from_device = lambda: current
             mm.exists = lambda: False
             mm.create_on_device = lambda: True
 

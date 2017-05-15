@@ -27,9 +27,7 @@ import json
 from ansible.compat.tests import unittest
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from library.iworkflow_tenant_connector import (
-    Parameters,
-)
+from library.iworkflow_tenant_connector import Parameters
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -52,7 +50,7 @@ def load_fixture(name):
 
     try:
         data = json.loads(data)
-    except:
+    except Exception:
         pass
 
     fixture_data[path] = data

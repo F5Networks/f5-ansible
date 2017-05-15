@@ -28,9 +28,8 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+
 from library.iworkflow_service_template import (
     Parameters,
     ModuleManager,
@@ -193,128 +192,126 @@ class TestParameters(unittest.TestCase):
             assert 'isRequired' in p.properties[0]
             assert 'provider' in p.properties[0]
             assert p.properties[0]['id'] == 'cloudConnectorReference'
-            assert p.properties[0]['isRequired'] == True
+            assert p.properties[0]['isRequired'] is True
             assert p.properties[0]['provider'] == 'https://localhost/mgmt/cm/cloud/connectors/local/212301e6-6d01-4509-bfe3-8e372e792fb0'
 
+    def test_api_parameters_variables(self):
+        args = dict(
+            variables=[
+                dict(
+                    name="client__http_compression",
+                    encrypted="no",
+                    value="/#create_new#"
+                )
+            ]
+        )
+        p = Parameters(args)
+        assert p.variables[0]['name'] == 'client__http_compression'
 
-#    def test_api_parameters_variables(self):
-#        args = dict(
-#            variables=[
-#                dict(
-#                    name="client__http_compression",
-#                    encrypted="no",
-#                    value="/#create_new#"
-#                )
-#            ]
-#        )
-#        p = Parameters(args)
-#        assert p.variables[0]['name'] == 'client__http_compression'
-#
-#    def test_api_parameters_tables(self):
-#        args = dict(
-#            tables=[
-#                {
-#                    "name": "pool__members",
-#                    "columnNames": [
-#                        "addr",
-#                        "port",
-#                        "connection_limit"
-#                    ],
-#                    "rows": [
-#                        {
-#                            "row": [
-#                                "12.12.12.12",
-#                                "80",
-#                                "0"
-#                            ]
-#                        },
-#                        {
-#                            "row": [
-#                                "13.13.13.13",
-#                                "443",
-#                                10
-#                            ]
-#                        }
-#                    ]
-#                }
-#            ]
-#        )
-#        p = Parameters(args)
-#        assert p.tables[0]['name'] == 'pool__members'
-#        assert p.tables[0]['columnNames'] == ['addr', 'port', 'connection_limit']
-#        assert len(p.tables[0]['rows']) == 2
-#        assert 'row' in p.tables[0]['rows'][0]
-#        assert 'row' in p.tables[0]['rows'][1]
-#        assert p.tables[0]['rows'][0]['row'] == ['12.12.12.12', '80', '0']
-#        assert p.tables[0]['rows'][1]['row'] == ['13.13.13.13', '443', '10']
+    def test_api_parameters_tables(self):
+        args = dict(
+            tables=[
+                {
+                    "name": "pool__members",
+                    "columnNames": [
+                        "addr",
+                        "port",
+                        "connection_limit"
+                    ],
+                    "rows": [
+                        {
+                            "row": [
+                                "12.12.12.12",
+                                "80",
+                                "0"
+                            ]
+                        },
+                        {
+                            "row": [
+                                "13.13.13.13",
+                                "443",
+                                10
+                            ]
+                        }
+                    ]
+                }
+            ]
+        )
+        p = Parameters(args)
+        assert p.tables[0]['name'] == 'pool__members'
+        assert p.tables[0]['columnNames'] == ['addr', 'port', 'connection_limit']
+        assert len(p.tables[0]['rows']) == 2
+        assert 'row' in p.tables[0]['rows'][0]
+        assert 'row' in p.tables[0]['rows'][1]
+        assert p.tables[0]['rows'][0]['row'] == ['12.12.12.12', '80', '0']
+        assert p.tables[0]['rows'][1]['row'] == ['13.13.13.13', '443', '10']
 
 
-#class TestManager(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.spec = ArgumentSpec()
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_create_service(self, *args):
-#        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
-#        set_module_args(dict(
-#            name='foo',
-#            template='f5.http',
-#            parameters=parameters,
-#            state='present',
-#            password='passsword',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: True
-#        mm.exists = lambda: False
-#        mm.create_on_device = lambda: True
-#
-#        results = mm.exec_module()
-#        assert results['changed'] is True
-#
-#    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#           return_value=True)
-#    def test_update_agent_status_traps(self, *args):
-#        parameters = load_fixture('update_iapp_service_parameters_f5_http.json')
-#        set_module_args(dict(
-#            name='foo',
-#            template='f5.http',
-#            parameters=parameters,
-#            state='present',
-#            password='passsword',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        # Configure the parameters that would be returned by querying the
-#        # remote device
-#        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
-#        current = Parameters(parameters)
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: False
-#        mm.exists = lambda: True
-#        mm.update_on_device = lambda: True
-#        mm.read_current_from_device = lambda: current
-#
-#        results = mm.exec_module()
-#        assert results['changed'] is True
-#
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_create_service(self, *args):
+        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
+        set_module_args(dict(
+            name='foo',
+            template='f5.http',
+            parameters=parameters,
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: True
+        mm.exists = lambda: False
+        mm.create_on_device = lambda: True
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+
+    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+           return_value=True)
+    def test_update_agent_status_traps(self, *args):
+        parameters = load_fixture('update_iapp_service_parameters_f5_http.json')
+        set_module_args(dict(
+            name='foo',
+            template='f5.http',
+            parameters=parameters,
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
+        current = Parameters(parameters)
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: False
+        mm.exists = lambda: True
+        mm.update_on_device = lambda: True
+        mm.read_current_from_device = lambda: current
+
+        results = mm.exec_module()
+        assert results['changed'] is True
