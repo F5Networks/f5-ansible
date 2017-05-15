@@ -434,12 +434,13 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(client)
 
-        current = (Parameters(
+        current = (
+            Parameters(
                 load_fixture('load_ltm_pool.json')
-                ),
+            ),
             [],
             {},
-            )
+        )
 
         mm.exit_json = lambda x: False
         mm.update_on_device = lambda: True
@@ -472,12 +473,13 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(client)
 
-        current = (Parameters(
+        current = (
+            Parameters(
                 load_fixture('load_ltm_pool.json')
-                ),
-                   self.loaded_members,
-                   {},
-            )
+            ),
+            self.loaded_members,
+            {},
+        )
 
         mm.exit_json = lambda x: False
         mm.update_on_device = lambda: True
@@ -510,12 +512,13 @@ class TestManager(unittest.TestCase):
         )
         mm = ModuleManager(client)
 
-        current = (Parameters(
+        current = (
+            Parameters(
                 load_fixture('load_ltm_pool.json')
-                ),
-                   self.loaded_members,
-                   {},
-            )
+            ),
+            self.loaded_members,
+            {},
+        )
 
         mm.exit_json = lambda x: False
         mm.update_on_device = lambda: True

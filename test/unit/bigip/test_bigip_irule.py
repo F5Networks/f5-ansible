@@ -25,13 +25,10 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, mock_open, MagicMock
+from ansible.compat.tests.mock import patch, mock_open
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
     from library.bigip_irule import (

@@ -123,7 +123,7 @@ class TestManager(unittest.TestCase):
         # this forced sleeping can cause these tests to take 15
         # or more seconds to run. This is deliberate.
         mm._is_mprov_running_on_device = Mock()
-        mm._is_mprov_running_on_device.side_effect = [True, False, False]
+        mm._is_mprov_running_on_device.side_effect = [True, False, False, False, False]
 
         results = mm.exec_module()
 
@@ -146,7 +146,7 @@ class TestManager(unittest.TestCase):
             ))
 
             with patch('ansible.module_utils.basic.AnsibleModule.fail_json') as mo:
-                client = AnsibleF5Client(
+                AnsibleF5Client(
                     argument_spec=self.spec.argument_spec,
                     supports_check_mode=self.spec.supports_check_mode,
                     f5_product_name=self.spec.f5_product_name

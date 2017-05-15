@@ -39,7 +39,6 @@ try:
         Parameters,
         ModuleManager,
         ArgumentSpec,
-        PartitionedManager,
         UnparitionedManager
     )
 except ImportError:
@@ -47,7 +46,6 @@ except ImportError:
         Parameters,
         ModuleManager,
         ArgumentSpec,
-        PartitionedManager,
         UnparitionedManager
     )
 

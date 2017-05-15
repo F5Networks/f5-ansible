@@ -48,6 +48,7 @@ except ImportError:
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
 
+
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)
@@ -90,7 +91,7 @@ class TestParameters(unittest.TestCase):
         assert p.netmask == '2.2.2.2'
         assert p.connection_limit == 10
         assert p.arp_state == 'enabled'
-        assert p.auto_delete == True
+        assert p.auto_delete is True
         assert p.icmp_echo == 'enabled'
         assert p.advertise_route == 'none'
         assert p.use_route_advertisement == 'enabled'
@@ -101,7 +102,7 @@ class TestParameters(unittest.TestCase):
         assert p.name == '1.1.1.1'
         assert p.address == '1.1.1.1'
         assert p.arp_state == 'enabled'
-        assert p.auto_delete == True
+        assert p.auto_delete is True
         assert p.connection_limit == 0
         assert p.state == 'enabled'
         assert p.icmp_echo == 'enabled'
@@ -142,7 +143,7 @@ class TestParameters(unittest.TestCase):
             auto_delete='disabled'
         )
         p = Parameters(args)
-        assert p.auto_delete == False
+        assert p.auto_delete is False
 
     def test_module_parameters_arp_state_disabled(self):
         args = dict(

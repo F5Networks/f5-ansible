@@ -322,11 +322,11 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
             mm = ModuleManager(client)
 
-            current = (Parameters(
-                load_fixture('load_vlan.json')
+            current = (
+                Parameters(
+                    load_fixture('load_vlan.json')
                 ),
-                       ifcs,
-
+                ifcs
             )
 
             mm.exit_json = lambda x: False
@@ -360,11 +360,11 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
             mm = ModuleManager(client)
 
-            current = (Parameters(
-                load_fixture('load_vlan.json')
+            current = (
+                Parameters(
+                    load_fixture('load_vlan.json')
                 ),
-                       ifcs,
-
+                ifcs
             )
 
             mm.exit_json = lambda x: False
@@ -398,11 +398,11 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
             mm = ModuleManager(client)
 
-            current = (Parameters(
-                load_fixture('update_vlan_description.json')
+            current = (
+                Parameters(
+                    load_fixture('update_vlan_description.json')
                 ),
-                       ifcs,
-
+                ifcs
             )
 
             mm.exit_json = lambda x: False
@@ -505,4 +505,3 @@ class TestManager(unittest.TestCase):
                 mm.exec_module()
 
         assert err.value.message == msg
-

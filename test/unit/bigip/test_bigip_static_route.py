@@ -48,6 +48,7 @@ except ImportError:
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
 
+
 def set_module_args(args):
     args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
     basic._ANSIBLE_ARGS = to_bytes(args)

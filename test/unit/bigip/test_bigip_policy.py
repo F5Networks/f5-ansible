@@ -142,38 +142,39 @@ class TestParameters(unittest.TestCase):
         assert p.description == 'asdf asdf asdf'
         assert p.strategy == '/Common/asdf'
 
-#@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-#       return_value=True)
-#class TestManager(unittest.TestCase):
-#
-#    def setUp(self):
-#        self.spec = ArgumentSpec()
-#
-#    def test_create_trap(self, *args):
-#        set_module_args(dict(
-#            name='foo',
-#            snmp_version='1',
-#            community='public',
-#            destination='10.10.10.10',
-#            port=1000,
-#            network='other',
-#            password='password',
-#            server='localhost',
-#            user='admin'
-#        ))
-#
-#        client = AnsibleF5Client(
-#            argument_spec=self.spec.argument_spec,
-#            supports_check_mode=self.spec.supports_check_mode,
-#            f5_product_name=self.spec.f5_product_name
-#        )
-#        mm = ModuleManager(client)
-#
-#        # Override methods to force specific logic in the module to happen
-#        mm.exit_json = lambda x: False
-#        mm.create_on_device = lambda: True
-#        mm.exists = lambda: False
-#
-#        results = mm.exec_module()
-#
-#        assert results['changed'] is True
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_trap(self, *args):
+        set_module_args(dict(
+            name='foo',
+            snmp_version='1',
+            community='public',
+            destination='10.10.10.10',
+            port=1000,
+            network='other',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exit_json = lambda x: False
+        mm.create_on_device = lambda: True
+        mm.exists = lambda: False
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
