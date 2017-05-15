@@ -680,3 +680,15 @@ So-as not to step on the numeric namespace that is used natively in the `f5-ansi
 repository.
 
 .. _Github Issue 59: https://github.com/F5Networks/f5-ansible/issues/59
+
+RETURN value when there is no return
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The correct way to set a RETURN variable whose module has no returnable things
+is like this according to `bcoca`.
+
+.. raw::
+
+   RETURN = '''
+   # only common fields returned
+   '''
