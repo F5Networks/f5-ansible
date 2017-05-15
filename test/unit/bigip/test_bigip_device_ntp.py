@@ -105,19 +105,20 @@ class TestModuleManager(unittest.TestCase):
 
     def test_update_ntp_servers(self, *args):
         ntp = ['10.1.1.1', '10.1.1.2']
-        set_module_args(dict(
-            ntp_servers=ntp,
-            server='localhost',
-            user='admin',
-            password='password'
+        set_module_args(
+            dict(
+                ntp_servers=ntp,
+                server='localhost',
+                user='admin',
+                password='password'
             )
         )
 
         # Configure the parameters that would be returned by querying the
         # remote device
         current = Parameters(
-                load_fixture('load_ntp.json')
-            )
+            load_fixture('load_ntp.json')
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -136,19 +137,20 @@ class TestModuleManager(unittest.TestCase):
         assert results['ntp_servers'] == ntp
 
     def test_update_timezone(self, *args):
-        set_module_args(dict(
-            timezone='Arctic/Longyearbyen',
-            server='localhost',
-            user='admin',
-            password='password'
+        set_module_args(
+            dict(
+                timezone='Arctic/Longyearbyen',
+                server='localhost',
+                user='admin',
+                password='password'
             )
         )
 
         # Configure the parameters that would be returned by querying the
         # remote device
         current = Parameters(
-                load_fixture('load_ntp.json')
-            )
+            load_fixture('load_ntp.json')
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -168,20 +170,21 @@ class TestModuleManager(unittest.TestCase):
 
     def test_update_ntp_servers_and_timezone(self, *args):
         ntp = ['10.1.1.1', '10.1.1.2']
-        set_module_args(dict(
-            ntp_servers=ntp,
-            timezone='Arctic/Longyearbyen',
-            server='localhost',
-            user='admin',
-            password='password'
+        set_module_args(
+            dict(
+                ntp_servers=ntp,
+                timezone='Arctic/Longyearbyen',
+                server='localhost',
+                user='admin',
+                password='password'
             )
         )
 
         # Configure the parameters that would be returned by querying the
         # remote device
         current = Parameters(
-                load_fixture('load_ntp.json')
-            )
+            load_fixture('load_ntp.json')
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -202,21 +205,22 @@ class TestModuleManager(unittest.TestCase):
 
     def test_absent_ntp_servers(self, *args):
         ntp = []
-        set_module_args(dict(
-            ntp_servers=ntp,
-            timezone='America/Los_Angeles',
-            server='localhost',
-            user='admin',
-            password='password',
-            state='absent'
+        set_module_args(
+            dict(
+                ntp_servers=ntp,
+                timezone='America/Los_Angeles',
+                server='localhost',
+                user='admin',
+                password='password',
+                state='absent'
             )
         )
 
         # Configure the parameters that would be returned by querying the
         # remote device
         current = Parameters(
-                load_fixture('load_ntp.json')
-            )
+            load_fixture('load_ntp.json')
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -236,20 +240,21 @@ class TestModuleManager(unittest.TestCase):
         assert not hasattr(results, 'timezone')
 
     def test_absent_timezone(self, *args):
-        set_module_args(dict(
-            timezone='',
-            server='localhost',
-            user='admin',
-            password='password',
-            state='absent'
+        set_module_args(
+            dict(
+                timezone='',
+                server='localhost',
+                user='admin',
+                password='password',
+                state='absent'
             )
         )
 
         # Configure the parameters that would be returned by querying the
         # remote device
         current = Parameters(
-                load_fixture('load_ntp.json')
-            )
+            load_fixture('load_ntp.json')
+        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,

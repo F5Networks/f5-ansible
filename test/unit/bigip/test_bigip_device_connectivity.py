@@ -284,7 +284,7 @@ class TestManager(unittest.TestCase):
         mm.read_current_from_device = lambda: current
 
         with pytest.raises(F5ModuleError) as ex:
-            results = mm.exec_module()
+            mm.exec_module()
 
         assert 'must be between' in str(ex)
 
@@ -316,7 +316,7 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['multicast_address'] == '10.1.1.1'
-        assert results['failover_multicast'] == True
+        assert results['failover_multicast'] is True
         assert len(results.keys()) == 3
 
     def test_unset_unicast_failover(self, *args):

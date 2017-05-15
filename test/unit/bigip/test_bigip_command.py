@@ -23,15 +23,13 @@ __metaclass__ = type
 
 import os
 import json
-import pytest
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
+    AnsibleF5Client
 )
 
 try:
