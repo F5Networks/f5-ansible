@@ -205,7 +205,7 @@ class Parameters(AnsibleF5Parameters):
     def vlan(self):
         if self._values['vlan'] is None:
             return None
-        if self._values['vlan'].startswith(self.partition):
+        if self._values['vlan'].startswith('/' + self.partition):
             return self._values['vlan']
         else:
             return '/{0}/{1}'.format(self.partition, self._values['vlan'])

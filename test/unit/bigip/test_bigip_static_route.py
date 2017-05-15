@@ -133,6 +133,15 @@ class TestParameters(unittest.TestCase):
         p = Parameters(args)
         assert p.destination == '10.10.10.10/32'
 
+    def test_vlan_with_partition(self):
+        args = dict(
+            vlan="/Common/foo",
+            gateway_address="10.10.10.10"
+        )
+        p = Parameters(args)
+        assert p.vlan == '/Common/foo'
+        assert p.gateway_address == '10.10.10.10'
+
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
