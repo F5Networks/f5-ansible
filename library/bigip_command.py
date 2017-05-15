@@ -177,8 +177,12 @@ failed_conditions:
 
 import time
 
-from ansible.module_utils.f5_utils import *
-from ansible.module_utils.netcli import AddCommandError, FailedConditionsError
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.netcli import FailedConditionsError
 from ansible.module_utils.six import string_types
 from ansible.module_utils.netcli import Conditional
 from ansible.module_utils.network_common import ComplexList
@@ -370,6 +374,6 @@ def main():
     except (FailedConditionsError, AttributeError) as e:
         client.module.fail_json(msg=str(e))
 
+
 if __name__ == '__main__':
     main()
-
