@@ -144,11 +144,17 @@ class Parameters(AnsibleF5Parameters):
     api_map = {}
 
     updatables = [
-        'location', 'description', 'contact', 'enabled'
+        'location', 'description', 'contact',
+
+        # TODO: Remove this method in v2.5
+        'enabled'
     ]
 
     returnables = [
-        'location', 'description', 'contact', 'enabled'
+        'location', 'description', 'contact',
+
+        # TODO: Remove this method in v2.5
+        'enabled'
     ]
 
     api_attributes = [
@@ -159,12 +165,16 @@ class Parameters(AnsibleF5Parameters):
     def disabled(self):
         if self._values['state'] == 'disabled':
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['disabled'] in BOOLEANS_TRUE:
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['disabled'] in BOOLEANS_FALSE:
             return False
+        # TODO: Remove this method in v2.5
         elif self._values['enabled'] in BOOLEANS_FALSE:
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['enabled'] in BOOLEANS_TRUE:
             return False
         elif self._values['state'] == 'enabled':
@@ -176,12 +186,16 @@ class Parameters(AnsibleF5Parameters):
     def enabled(self):
         if self._values['state'] == 'enabled':
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['enabled'] in BOOLEANS_TRUE:
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['enabled'] in BOOLEANS_FALSE:
             return False
+        # TODO: Remove this method in v2.5
         elif self._values['disabled'] in BOOLEANS_FALSE:
             return True
+        # TODO: Remove this method in v2.5
         elif self._values['disabled'] in BOOLEANS_TRUE:
             return False
         elif self._values['state'] == 'disabled':
@@ -198,6 +212,7 @@ class Parameters(AnsibleF5Parameters):
         else:
             return self._values['state']
 
+    # TODO: Remove this method in v2.5
     @state.setter
     def state(self, value):
         self._values['state'] = value
