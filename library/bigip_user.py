@@ -211,13 +211,11 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'partition_access', 'full_name',
-        'shell', 'password_credential'
+        'partition_access', 'full_name', 'shell', 'password_credential'
     ]
 
     returnables = [
-        'shell', 'partition_access', 'full_name', 'password_credential',
-        'username_credential'
+        'shell', 'partition_access', 'full_name', 'username_credential'
     ]
 
     api_attributes = [
@@ -496,31 +494,63 @@ class PartitionedManager(BaseManager):
             partition=self.want.partition, **params
         )
 
+    def _read_one_resource_from_collection(self):
+        collection = self.client.api.tm.auth.users.get_collection(
+            requests_params=dict(
+                params="$filter=partition+eq+'{0}'".format(self.want.partition)
+            )
+        )
+        collection = [x for x in collection if x.name == self.want.name]
+        if len(collection) == 1:
+            resource = collection.pop()
+            return resource
+        elif len(collection) == 0:
+            raise F5ModuleError(
+                "No accounts with the provided name were found"
+            )
+        else:
+            raise F5ModuleError(
+                "Multiple users with the provided name were found!"
+            )
+
     def update_on_device(self):
         params = self.want.api_params()
-        result = self.client.api.tm.auth.users.user.load(
-            name=self.want.name, partition=self.want.partition
-        )
-        result.modify(**params)
+        try:
+            resource = self._read_one_resource_from_collection()
+            resource.modify(**params)
+        except iControlUnexpectedHTTPError as ex:
+            # TODO: Patch this in the F5 SDK so that I dont need this check
+            if 'updated successfully' not in str(ex):
+                raise F5ModuleError(
+                    "Failed to update the specified user"
+                )
 
     def read_current_from_device(self):
-        tmp_res = self.client.api.tm.auth.users.user.load(
-            name=self.want.name, partition=self.want.partition
-        )
-        result = tmp_res.attrs
+        resource = self._read_one_resource_from_collection()
+        result = resource.attrs
         return Parameters(result)
 
     def exists(self):
-        return self.client.api.tm.auth.users.user.exists(
-            name=self.want.name, partition=self.want.partition
+        collection = self.client.api.tm.auth.users.get_collection(
+            requests_params=dict(
+                params="$filter=partition+eq+'{0}'".format(self.want.partition)
+            )
         )
+        collection = [x for x in collection if x.name == self.want.name]
+        if len(collection) == 1:
+            result = True
+        elif len(collection) == 0:
+            result = False
+        else:
+            raise F5ModuleError(
+                "Multiple users with the provided name were found!"
+            )
+        return result
 
     def remove_from_device(self):
-        result = self.client.api.tm.auth.users.user.load(
-            name=self.want.name, partition=self.want.partition
-        )
-        if result:
-            result.delete()
+        resource = self._read_one_resource_from_collection()
+        if resource:
+            resource.delete()
 
 
 class ArgumentSpec(object):

@@ -35,19 +35,17 @@ from ansible.module_utils.f5_utils import (
 )
 
 try:
-    from library.bigip_user import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        UnparitionedManager
-    )
+    from library.bigip_user import Parameters
+    from library.bigip_user import ModuleManager
+    from library.bigip_user import ArgumentSpec
+    from library.bigip_user import UnparitionedManager
+    from library.bigip_user import PartitionedManager
 except ImportError:
-    from ansible.modules.network.f5.bigip_user import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        UnparitionedManager
-    )
+    from ansible.modules.network.f5.bigip_user import Parameters
+    from ansible.modules.network.f5.bigip_user import ModuleManager
+    from ansible.modules.network.f5.bigip_user import ArgumentSpec
+    from ansible.modules.network.f5.bigip_user import UnparitionedManager
+    from ansible.modules.network.f5.bigip_user import PartitionedManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -112,13 +110,13 @@ class TestParameters(unittest.TestCase):
         assert p.shell == 'none'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user(self, *args):
         access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
@@ -139,20 +137,18 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is True
         assert results['partition_access'] == access
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user_no_password(self, *args):
         access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
@@ -171,20 +167,18 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is True
         assert results['partition_access'] == access
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user_raises(self, *args):
         access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
@@ -204,23 +198,21 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
         msg = "The 'update_password' option " \
               "needs to be set to 'on_create' when creating " \
               "a resource with a password."
 
         with pytest.raises(F5ModuleError) as err:
-            upm.exec_module()
+            pm.exec_module()
         assert err.value.message == msg
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user_partition_access_raises(self, *args):
         set_module_args(dict(
             username_credential='someuser',
@@ -237,22 +229,20 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
         msg = "The 'partition_access' option " \
               "is required when creating a resource."
 
         with pytest.raises(F5ModuleError) as err:
-            upm.exec_module()
+            pm.exec_module()
         assert err.value.message == msg
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user_shell_bash(self, *args):
         access = [{'name': 'all', 'role': 'admin'}]
         set_module_args(dict(
@@ -274,20 +264,18 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is True
         assert results['partition_access'] == access
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_user_shell_not_permitted_raises(self, *args):
         access = [{'name': 'Common', 'role': 'guest'}]
         set_module_args(dict(
@@ -309,23 +297,21 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.create_on_device = lambda: True
-        upm.exists = lambda: False
+        pm = PartitionedManager(client)
+        pm.create_on_device = lambda: True
+        pm.exists = lambda: False
 
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
 
         with pytest.raises(F5ModuleError) as err:
-            upm.exec_module()
+            pm.exec_module()
         assert err.value.message == msg
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
-    def test_update_user_password(self, *args):
+    def test_update_user_password_no_pass(self, *args):
         set_module_args(dict(
             username_credential='someuser',
             password_credential='testpass',
@@ -342,31 +328,55 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        access = [{'name': 'Common', 'role': 'guest'}]
-        current = Parameters(
-            dict(
-                shell='tmsh',
-                partition_access=access
-            )
-        )
+        current = Parameters(load_fixture('load_auth_user_no_pass.json'))
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.exists = lambda: True
-        upm.update_on_device = lambda: True
-        upm.read_current_from_device = lambda: current
+        pm = PartitionedManager(client)
+        pm.exists = lambda: True
+        pm.update_on_device = lambda: True
+        pm.read_current_from_device = lambda: current
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is True
-        assert results['password_credential'] == 'testpass'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
+    def test_update_user_password_with_pass(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(load_fixture('load_auth_user_with_pass.json'))
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: False
+        mm.exit_json = lambda x: False
+
+        pm = PartitionedManager(client)
+        pm.exists = lambda: True
+        pm.update_on_device = lambda: True
+        pm.read_current_from_device = lambda: current
+
+        results = pm.exec_module()
+
+        assert results['changed'] is True
+
     def test_update_user_shell_to_none(self, *args):
         set_module_args(dict(
             username_credential='someuser',
@@ -393,21 +403,19 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.exists = lambda: True
-        upm.update_on_device = lambda: True
-        upm.read_current_from_device = lambda: current
+        pm = PartitionedManager(client)
+        pm.exists = lambda: True
+        pm.update_on_device = lambda: True
+        pm.read_current_from_device = lambda: current
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is True
         assert results['shell'] == 'none'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_user_shell_to_none_shell_attribute_missing(self, *args):
         set_module_args(dict(
             username_credential='someuser',
@@ -435,21 +443,19 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_less_than_13 = lambda: True
+        mm.is_version_less_than_13 = lambda: False
         mm.exit_json = lambda x: False
 
-        upm = UnparitionedManager(client)
-        upm.exists = lambda: True
-        upm.update_on_device = lambda: True
-        upm.read_current_from_device = lambda: current
+        pm = PartitionedManager(client)
+        pm.exists = lambda: True
+        pm.update_on_device = lambda: True
+        pm.read_current_from_device = lambda: current
 
-        results = upm.exec_module()
+        results = pm.exec_module()
 
         assert results['changed'] is False
         assert not hasattr(results, 'shell')
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_user_shell_to_bash(self, *args):
         set_module_args(dict(
             username_credential='someuser',
@@ -491,8 +497,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['shell'] == 'bash'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_user_shell_to_bash_mutliple_roles(self, *args):
         set_module_args(dict(
             username_credential='someuser',
@@ -538,3 +542,411 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as error:
             upm.exec_module()
         assert error.value.message == msg
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestLegacyManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_user(self, *args):
+        access = [{'name': 'Common', 'role': 'guest'}]
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            partition_access=access,
+            server='localhost',
+            password='password',
+            user='admin',
+            update_password='on_create'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+        assert results['partition_access'] == access
+
+    def test_create_user_no_password(self, *args):
+        access = [{'name': 'Common', 'role': 'guest'}]
+        set_module_args(dict(
+            username_credential='someuser',
+            partition_access=access,
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+        assert results['partition_access'] == access
+
+    def test_create_user_raises(self, *args):
+        access = [{'name': 'Common', 'role': 'guest'}]
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            partition_access=access,
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        msg = "The 'update_password' option " \
+              "needs to be set to 'on_create' when creating " \
+              "a resource with a password."
+
+        with pytest.raises(F5ModuleError) as err:
+            upm.exec_module()
+        assert err.value.message == msg
+
+    def test_create_user_partition_access_raises(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        msg = "The 'partition_access' option " \
+              "is required when creating a resource."
+
+        with pytest.raises(F5ModuleError) as err:
+            upm.exec_module()
+        assert err.value.message == msg
+
+    def test_create_user_shell_bash(self, *args):
+        access = [{'name': 'all', 'role': 'admin'}]
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            partition_access=access,
+            password='password',
+            server='localhost',
+            update_password='on_create',
+            user='admin',
+            shell='bash'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+        assert results['partition_access'] == access
+
+    def test_create_user_shell_not_permitted_raises(self, *args):
+        access = [{'name': 'Common', 'role': 'guest'}]
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            partition_access=access,
+            update_password='on_create',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='bash'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.create_on_device = lambda: True
+        upm.exists = lambda: False
+
+        msg = "Shell access is only available to 'admin' or " \
+              "'resource-admin' roles"
+
+        with pytest.raises(F5ModuleError) as err:
+            upm.exec_module()
+        assert err.value.message == msg
+
+    def test_update_user_password(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password_credential='testpass',
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        access = [{'name': 'Common', 'role': 'guest'}]
+        current = Parameters(
+            dict(
+                shell='tmsh',
+                partition_access=access
+            )
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.exists = lambda: True
+        upm.update_on_device = lambda: True
+        upm.read_current_from_device = lambda: current
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_update_user_shell_to_none(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='none'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = Parameters(
+            dict(
+                user='admin',
+                shell='tmsh'
+            )
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.exists = lambda: True
+        upm.update_on_device = lambda: True
+        upm.read_current_from_device = lambda: current
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+        assert results['shell'] == 'none'
+
+    def test_update_user_shell_to_none_shell_attribute_missing(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='none'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        access = [{'name': 'Common', 'role': 'guest'}]
+        current = Parameters(
+            dict(
+                user='admin',
+                partition_access=access
+            )
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.exists = lambda: True
+        upm.update_on_device = lambda: True
+        upm.read_current_from_device = lambda: current
+
+        results = upm.exec_module()
+
+        assert results['changed'] is False
+        assert not hasattr(results, 'shell')
+
+    def test_update_user_shell_to_bash(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='bash'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        access = [{'name': 'all', 'role': 'admin'}]
+        current = Parameters(
+            dict(
+                user='admin',
+                shell='tmsh',
+                partition_access=access
+            )
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.exists = lambda: True
+        upm.update_on_device = lambda: True
+        upm.read_current_from_device = lambda: current
+
+        results = upm.exec_module()
+
+        assert results['changed'] is True
+        assert results['shell'] == 'bash'
+
+    def test_update_user_shell_to_bash_mutliple_roles(self, *args):
+        set_module_args(dict(
+            username_credential='someuser',
+            password='password',
+            server='localhost',
+            user='admin',
+            shell='bash'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        access = [
+            {'name': 'Common', 'role': 'operator'},
+            {'name': 'all', 'role': 'guest'}
+        ]
+        current = Parameters(
+            dict(
+                user='admin',
+                shell='tmsh',
+                partition_access=access
+            )
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_13 = lambda: True
+        mm.exit_json = lambda x: False
+
+        upm = UnparitionedManager(client)
+        upm.exists = lambda: True
+        upm.update_on_device = lambda: True
+        upm.read_current_from_device = lambda: current
+
+        msg = "Shell access is only available to 'admin' or " \
+              "'resource-admin' roles"
+
+        with pytest.raises(F5ModuleError) as error:
+            upm.exec_module()
+        assert error.value.message == msg
+

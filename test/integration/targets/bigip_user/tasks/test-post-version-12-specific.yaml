@@ -71,16 +71,15 @@
           - result|changed
 
 # We should see password not updating here
-- name: Update user password for user on a different partition
-        password_update set to on_create
+- name: Update user password for user on a different partition password_update set to on_create
   bigip_user:
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
       update_password: "on_create"
+      partition: "{{ partition }}"
   register: result
 
-- name: Assert Update user password for user on a different partition
-        password_update set to on_create
+- name: Assert Update user password for user on a different partition password_update set to on_create
   assert:
       that:
           - not result|changed
