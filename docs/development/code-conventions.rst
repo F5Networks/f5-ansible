@@ -692,3 +692,14 @@ is like this according to `bcoca`.
    RETURN = '''
    # only common fields returned
    '''
+
+Excluding code from unit test coverage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ansible's test runner makes use of `pytest`, so the acceptable way of excluding
+lines from code coverage is documented here.
+
+  * http://coverage.readthedocs.io/en/coverage-4.2/excluding.html
+
+The cases where you would want to use this include the various `*_on_device` and
+`*_from_device` methods in modules that make direct calls to the remote BIG-IPs.
