@@ -1,0 +1,6 @@
+---
+
+- name: Remove partition
+  bigip_command:
+      commands:
+          - "tmsh delete auth partition foo"

@@ -1,4 +1,7 @@
 ---
+
+- include: setup.yaml
+
 - name: Create user, no password
   bigip_user:
       partition_access:
@@ -234,3 +237,5 @@
 - name: Include version 13 (Daytona) checks
   include: test-post-version-12-specific.yaml
   when: system_info.product_information.product_version >= "13.0.0"
+
+- include: teardown.yaml
