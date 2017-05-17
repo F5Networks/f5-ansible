@@ -949,4 +949,3 @@ class TestLegacyManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as error:
             upm.exec_module()
         assert error.value.message == msg
-

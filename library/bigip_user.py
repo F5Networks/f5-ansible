@@ -199,8 +199,7 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
-    iControlUnexpectedHTTPError,
-    iteritems
+    iControlUnexpectedHTTPError
 )
 
 
@@ -607,6 +606,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
