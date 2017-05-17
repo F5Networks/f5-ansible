@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2017 F5 Networks Inc.
@@ -30,7 +30,7 @@ module: bigip_user
 short_description: Manage user accounts and user attributes on a BIG-IP.
 description:
   - Manage user accounts and user attributes on a BIG-IP.
-version_added: "2.2"
+version_added: "2.4"
 options:
   full_name:
     description:
@@ -69,7 +69,6 @@ options:
         be an existing partition or the value 'all'.
     required: false
     default: None
-    type: list
   state:
     description:
       - Whether the account should exist or not, taking action if the state is
