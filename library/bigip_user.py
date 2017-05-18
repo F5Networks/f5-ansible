@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2017 F5 Networks Inc.
@@ -252,7 +252,7 @@ class Parameters(AnsibleF5Parameters):
                     result.append(access)
                 else:
                     result.append(access)
-            if isinstance(access, basestring):
+            if isinstance(access, str):
                 acl = access.split(':')
                 if acl[0].lower() == 'all':
                     acl[0] = 'all-partitions'

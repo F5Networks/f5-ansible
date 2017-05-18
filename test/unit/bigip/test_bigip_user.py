@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2017 F5 Networks Inc.
@@ -21,9 +20,16 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import sys
+import pytest
+
+if sys.version_info < (2, 7):
+    from nose.plugins.skip import SkipTest
+    raise SkipTest("test_bigip_user.py requires Python >= 2.7")
+
 import os
 import json
-import pytest
+
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
@@ -207,9 +213,9 @@ class TestManager(unittest.TestCase):
               "needs to be set to 'on_create' when creating " \
               "a resource with a password."
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             pm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_create_user_partition_access_raises(self, *args):
         set_module_args(dict(
@@ -237,9 +243,9 @@ class TestManager(unittest.TestCase):
         msg = "The 'partition_access' option " \
               "is required when creating a resource."
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             pm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_create_user_shell_bash(self, *args):
         access = [{'name': 'all', 'role': 'admin'}]
@@ -305,9 +311,9 @@ class TestManager(unittest.TestCase):
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             pm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_update_user_password_no_pass(self, *args):
         set_module_args(dict(
@@ -537,9 +543,9 @@ class TestManager(unittest.TestCase):
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
 
-        with pytest.raises(F5ModuleError) as error:
+        with pytest.raises(F5ModuleError) as ex:
             upm.exec_module()
-        assert error.value.message == msg
+        assert str(ex.value) == msg
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -641,9 +647,9 @@ class TestLegacyManager(unittest.TestCase):
               "needs to be set to 'on_create' when creating " \
               "a resource with a password."
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             upm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_create_user_partition_access_raises(self, *args):
         set_module_args(dict(
@@ -671,9 +677,9 @@ class TestLegacyManager(unittest.TestCase):
         msg = "The 'partition_access' option " \
               "is required when creating a resource."
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             upm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_create_user_shell_bash(self, *args):
         access = [{'name': 'all', 'role': 'admin'}]
@@ -739,9 +745,9 @@ class TestLegacyManager(unittest.TestCase):
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
 
-        with pytest.raises(F5ModuleError) as err:
+        with pytest.raises(F5ModuleError) as ex:
             upm.exec_module()
-        assert err.value.message == msg
+        assert str(ex.value) == msg
 
     def test_update_user_password(self, *args):
         set_module_args(dict(
@@ -944,6 +950,6 @@ class TestLegacyManager(unittest.TestCase):
         msg = "Shell access is only available to 'admin' or " \
               "'resource-admin' roles"
 
-        with pytest.raises(F5ModuleError) as error:
+        with pytest.raises(F5ModuleError) as ex:
             upm.exec_module()
-        assert error.value.message == msg
+        assert str(ex.value) == msg
