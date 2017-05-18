@@ -20,6 +20,12 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+import sys
+
+if sys.version_info < (2, 7):
+    from nose.plugins.skip import SkipTest
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
+
 import os
 import json
 import pytest
