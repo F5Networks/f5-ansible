@@ -26,7 +26,6 @@ This is usually reflected in the playbook that runs the functional test.
 
 Check the tested versions
 -->
-- [ ] 11.6.1 (BIGIP-11.6.1.0.0.317)
 - [ ] 12.0.0 (BIGIP-12.0.0.0.0.606)
 - [ ] 12.1.0 (BIGIP-12.1.0.0.0.1434)
 - [ ] 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
