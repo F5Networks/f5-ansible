@@ -41,22 +41,40 @@ Check the tested versions
 <!---
 Ensure all the following are complete
 -->
-- [ ] Playbook exists to do functional tests
-- [ ] Docs exist and build correctly (`make docs`)
-- [ ] Role directory with functional tests exists
-- [ ] Unit tests in `tests/unit` for the product exist
-- [ ] `TestParameters` unit test class exists and has content
-- [ ] `TestManager` unit test class exists and has contents
+#### Module code related
 - [ ] Module code has `EXAMPLES`
 - [ ] Module code has `DOCUMENTATION`
 - [ ] Module code has `RETURN`
 - [ ] Module code has `ANSIBLE_METADATA`
+- [ ] Module code conforms to coding standards (v3). This includes a `Parameters` class, `ModuleManager` class, and `ArgumentSpec` class.
+- [ ] Module includes GPL3 license at top of the file and F5 Networks copyright.
+- [ ] Module imports are not `from *`
+
+#### Integration test related
+- [ ] Playbook exists to do functional tests
+- [ ] Role directory with functional tests exists
 - [ ] Module code has been tested on major releases post 12.x. If a major release cannot be supported, document "why" in the `notes` section of the module 
 `DOCUMENTATION`
-- [ ] Module code conforms to coding standards (v3). This includes a `Parameters` class, `ModuleManager` class, and `ArgumentSpec` class.
+
+#### Unit test related
+- [ ] Unit tests in `tests/unit` for the product exist
+- [ ] `TestParameters` unit test class exists and has content
+- [ ] `TestManager` unit test class exists and has contents
+
+#### QC related
 - [ ] Module code passes `tox -e flake -- library/MODULE_NAME.py`
 - [ ] Unit test code passes `tox -e flake -- test/unit/PRODUCT/test_MODULE_NAME.py`
-- [ ] Module includes GPL3 license at top of the file and F5 Networks copyright.
+
+#### Docs related
+- [ ] Docs exist and build correctly (`make docs`)
+- [ ] Docs have been merged to `f5-ansible` so they can be rebuilt by ReadTheDocs.
+
+#### Upstream vendor related
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.6 MODULE_NAME.py`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.7 MODULE_NAME.py`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.5 MODULE_NAME.py`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.6 MODULE_NAME.py`
+
 
 ##### SUMMARY
 <!--- Explain the problem briefly -->
