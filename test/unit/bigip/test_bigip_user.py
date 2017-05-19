@@ -30,7 +30,6 @@ if sys.version_info < (2, 7):
 import os
 import json
 
-
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
