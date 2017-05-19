@@ -520,8 +520,8 @@ class ModuleManager(object):
 
     def exists(self):
         return self.client.api.tm.ltm.virtuals.virtual.exists(
-            name=self.have.name,
-            partition=self.have.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def update(self):
