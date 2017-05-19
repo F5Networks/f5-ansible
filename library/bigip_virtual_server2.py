@@ -519,10 +519,11 @@ class ModuleManager(object):
         return Parameters(result.attrs)
 
     def exists(self):
-        return self.client.api.tm.ltm.virtuals.virtual.exists(
+        result = self.client.api.tm.ltm.virtuals.virtual.exists(
             name=self.want.name,
             partition=self.want.partition
         )
+        return result
 
     def update(self):
         self.have = self.read_current_from_device()
