@@ -61,7 +61,9 @@ options:
     default: None
   network:
     description:
-      - Specifies the trap network.
+      - Specifies the name of the trap network. This option is not supported in
+        versions of BIG-IP < 12.1.0. If used on versions < 12.1.0, it will simply
+        be ignored.
     required: False
     default: None
     choices:
@@ -81,6 +83,9 @@ notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
   - This module only supports version v1 and v2c of SNMP.
+  - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because
+    the platform did not support that option until 12.1.0. If used on versions
+    < 12.1.0, it will simply be ignored.
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 2.2.0
@@ -90,14 +95,69 @@ author:
 '''
 
 EXAMPLES = '''
+- name: Create snmp v1 trap
+  bigip_snmp_trap:
+      community: "general"
+      destination: "1.2.3.4"
+      name: "my-trap1"
+      network: "management"
+      port: "9000"
+      snmp_version: "1"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+  delegate_to: localhost
 
+- name: Create snmp v2 trap
+  bigip_snmp_trap:
+      community: "general"
+      destination: "5.6.7.8"
+      name: "my-trap2"
+      network: "default"
+      port: "7000"
+      snmp_version: "2c"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+  delegate_to: localhost
 '''
 
 RETURN = '''
-
+snmp_version:
+    description: The new C(snmp_version) configured on the remote device.
+    returned: changed and success
+    type: string
+    sample: "2c"
+community:
+    description: The new C(community) name for the trap destination.
+    returned: changed and success
+    type: list
+    sample: "secret"
+destination:
+    description: The new address for the trap destination in either IP or hostname form.
+    returned: changed and success
+    type: string
+    sample: "1.2.3.4"
+port:
+    description: The new C(port) of the trap destination.
+    returned: changed and success
+    type: string
+    sample: "900"
+network:
+    description: The new name of the network the SNMP trap is on.
+    returned: changed and success
+    type: string
+    sample: "management"
 '''
 
-from ansible.module_utils.f5_utils import *
+from distutils.version import LooseVersion
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -107,6 +167,37 @@ class Parameters(AnsibleF5Parameters):
         'host': 'destination'
     }
 
+    @property
+    def snmp_version(self):
+        if self._values['snmp_version'] is None:
+            return None
+        return str(self._values['snmp_version'])
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        return int(self._values['port'])
+
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
+        return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+
+class NetworkedParameters(Parameters):
     updatables = [
         'snmp_version', 'community', 'destination', 'port', 'network'
     ]
@@ -115,6 +206,10 @@ class Parameters(AnsibleF5Parameters):
         'snmp_version', 'community', 'destination', 'port', 'network'
     ]
 
+    api_attributes = {
+        'version', 'community', 'host', 'port', 'network'
+    }
+
     @property
     def network(self):
         if self._values['network'] is None:
@@ -122,55 +217,60 @@ class Parameters(AnsibleF5Parameters):
         network = str(self._values['network'])
         if network == 'management':
             return 'mgmt'
+        elif network == 'default':
+            return ''
         else:
             return network
 
+
+class NonNetworkedParameters(Parameters):
+    updatables = [
+        'snmp_version', 'community', 'destination', 'port'
+    ]
+
+    returnables = [
+        'snmp_version', 'community', 'destination', 'port'
+    ]
+
+    api_attributes = {
+        'version', 'community', 'host', 'port'
+    }
+
     @property
-    def port(self):
-        if self._values['port'] is None:
-            return None
-        return str(self._values['port'])
-
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.network == 'default':
-                result['network'] = None
-            elif self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
-
+    def network(self):
+        return None
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
+    def exec_module(self):
+        if self.is_version_non_networked():
+            manager = NonNetworkedManager(self.client)
+        else:
+            manager = NetworkedManager(self.client)
 
-    def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-        if changed:
-            self.changes = Parameters(changed)
+        return manager.exec_module()
+
+    def is_version_non_networked(self):
+        """Checks to see if the TMOS version is less than 13
+
+        Anything less than BIG-IP 13.x does not support users
+        on different partitions.
+
+        :return: Bool
+        """
+        version = self.client.api.tmos_version
+        if LooseVersion(version) < LooseVersion('12.1.0'):
             return True
-        return False
+        else:
+            return False
+
+
+class BaseManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
 
     def exec_module(self):
         changed = False
@@ -191,10 +291,11 @@ class ModuleManager(object):
         return result
 
     def exists(self):
-        return self.client.api.tm.sys.snmp.traps_s.trap.exists(
+        result = self.client.api.tm.sys.snmp.traps_s.trap.exists(
             name=self.want.name,
             partition=self.want.partition
         )
+        return result
 
     def present(self):
         if self.exists():
@@ -203,17 +304,13 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        required_resources = [
-            'version', 'community', 'destination', 'port', 'network'
-        ]
-
         self._set_changed_options()
         if self.client.check_mode:
             return True
-        if all(getattr(self.want, v) is None for v in required_resources):
+        if all(getattr(self.want, v) is None for v in self.required_resources):
             raise F5ModuleError(
                 "You must specify at least one of "
-                + ', '.join(required_resources)
+                ', '.join(self.required_resources)
             )
         self.create_on_device()
         return True
@@ -240,23 +337,6 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result.modify(**params)
-
-    def read_current_from_device(self):
-        resource = self.client.api.tm.sys.snmp.traps_s.trap.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-
-        # BIG-IP's value for "default" is that the key does not
-        # exist. This conflicts with our purpose of having a key
-        # not exist (which we equate to "i dont want to change that"
-        # therefore, if we load the information from BIG-IP and
-        # find that there is no 'network' key, that is BIG-IP's
-        # way of saying that the network value is "default"
-        if 'network' not in result:
-            result['network'] = 'default'
-        return Parameters(result)
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -288,6 +368,95 @@ class ModuleManager(object):
             result.delete()
 
 
+class NetworkedManager(BaseManager):
+    def __init__(self, client):
+        super(NetworkedManager, self).__init__(client)
+        self.required_resources = [
+            'version', 'community', 'destination', 'port', 'network'
+        ]
+        self.want = NetworkedParameters(self.client.module.params)
+        self.changes = NetworkedParameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in NetworkedParameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = NetworkedParameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in NetworkedParameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = NetworkedParameters(changed)
+            return True
+        return False
+
+    def read_current_from_device(self):
+        resource = self.client.api.tm.sys.snmp.traps_s.trap.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        self._ensure_network(result)
+        return NetworkedParameters(result)
+
+    def _ensure_network(self, result):
+        # BIG-IP's value for "default" is that the key does not
+        # exist. This conflicts with our purpose of having a key
+        # not exist (which we equate to "i dont want to change that"
+        # therefore, if we load the information from BIG-IP and
+        # find that there is no 'network' key, that is BIG-IP's
+        # way of saying that the network value is "default"
+        if 'network' not in result:
+            result['network'] = 'default'
+
+
+class NonNetworkedManager(BaseManager):
+    def __init__(self, client):
+        super(NonNetworkedManager, self).__init__(client)
+        self.required_resources = [
+            'version', 'community', 'destination', 'port'
+        ]
+        self.want = NonNetworkedParameters(self.client.module.params)
+        self.changes = NonNetworkedParameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in NonNetworkedParameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = NonNetworkedParameters(changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in NonNetworkedParameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = NonNetworkedParameters(changed)
+            return True
+        return False
+
+    def read_current_from_device(self):
+        resource = self.client.api.tm.sys.snmp.traps_s.trap.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return NonNetworkedParameters(result)
+
+
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
@@ -298,7 +467,7 @@ class ArgumentSpec(object):
             snmp_version=dict(
                 required=False,
                 default=None,
-                choices=['1','2c']
+                choices=['1', '2c']
             ),
             community=dict(
                 required=False,
@@ -341,6 +510,7 @@ def main():
     mm = ModuleManager(client)
     results = mm.exec_module()
     client.module.exit_json(**results)
+
 
 if __name__ == '__main__':
     main()

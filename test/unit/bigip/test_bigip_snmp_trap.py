@@ -30,25 +30,25 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, DEFAULT
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_snmp_trap import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_snmp_trap import NetworkedParameters
+    from library.bigip_snmp_trap import NonNetworkedParameters
+    from library.bigip_snmp_trap import ModuleManager
+    from library.bigip_snmp_trap import NetworkedManager
+    from library.bigip_snmp_trap import NonNetworkedManager
+    from library.bigip_snmp_trap import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_snmp_trap import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_snmp_trap import NetworkedParameters
+    from ansible.modules.network.f5.bigip_snmp_trap import NonNetworkedParameters
+    from ansible.modules.network.f5.bigip_snmp_trap import ModuleManager
+    from ansible.modules.network.f5.bigip_snmp_trap import NetworkedManager
+    from ansible.modules.network.f5.bigip_snmp_trap import NonNetworkedManager
+    from ansible.modules.network.f5.bigip_snmp_trap import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -78,7 +78,7 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
-    def test_module_parameters(self):
+    def test_module_networked_parameters(self):
         args = dict(
             name='foo',
             snmp_version='1',
@@ -90,13 +90,33 @@ class TestParameters(unittest.TestCase):
             server='localhost',
             user='admin'
         )
-        p = Parameters(args)
+        p = NetworkedParameters(args)
         assert p.name == 'foo'
         assert p.snmp_version == '1'
         assert p.community == 'public'
         assert p.destination == '10.10.10.10'
-        assert p.port == '1000'
+        assert p.port == 1000
         assert p.network == 'other'
+
+    def test_module_non_networked_parameters(self):
+        args = dict(
+            name='foo',
+            snmp_version='1',
+            community='public',
+            destination='10.10.10.10',
+            port=1000,
+            network='other',
+            password='password',
+            server='localhost',
+            user='admin'
+        )
+        p = NonNetworkedParameters(args)
+        assert p.name == 'foo'
+        assert p.snmp_version == '1'
+        assert p.community == 'public'
+        assert p.destination == '10.10.10.10'
+        assert p.port == 1000
+        assert p.network is None
 
     def test_api_parameters(self):
         args = dict(
@@ -107,22 +127,22 @@ class TestParameters(unittest.TestCase):
             version=1,
             port=1000
         )
-        p = Parameters(args)
+        p = NetworkedParameters(args)
         assert p.name == 'foo'
         assert p.snmp_version == '1'
         assert p.community == 'public'
         assert p.destination == '10.10.10.10'
-        assert p.port == '1000'
+        assert p.port == 1000
         assert p.network == 'other'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_trap(self, *args):
         set_module_args(dict(
             name='foo',
@@ -141,13 +161,57 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_non_networked = lambda: False
         mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
 
-        results = mm.exec_module()
+        patches = dict(
+            create_on_device=DEFAULT,
+            exists=DEFAULT
+        )
+        with patch.multiple(NetworkedManager, **patches) as mo:
+            mo['create_on_device'].side_effect = lambda: True
+            mo['exists'].side_effect = lambda: False
+            results = mm.exec_module()
 
         assert results['changed'] is True
+        assert results['port'] == 1000
+        assert results['snmp_version'] == '1'
+
+    def test_create_trap_non_network(self, *args):
+        set_module_args(dict(
+            name='foo',
+            snmp_version='1',
+            community='public',
+            destination='10.10.10.10',
+            port=1000,
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_non_networked = lambda: True
+        mm.exit_json = lambda x: False
+
+        patches = dict(
+            create_on_device=DEFAULT,
+            exists=DEFAULT
+        )
+        with patch.multiple(NonNetworkedManager, **patches) as mo:
+            mo['create_on_device'].side_effect = lambda: True
+            mo['exists'].side_effect = lambda: False
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['port'] == 1000
+        assert results['snmp_version'] == '1'
