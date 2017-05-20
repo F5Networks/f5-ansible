@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_command
-short_description: Run arbitrary command on F5 devices
+short_description: Run arbitrary command on F5 devices.
 description:
   - Sends an arbitrary command to an BIG-IP node and returns the results
     read from the device. This module includes an argument that will cause
@@ -48,7 +48,7 @@ options:
         on a command by command basis. The complex argument supports
         the keywords C(command) and C(output) where C(command) is the
         command to run and C(output) is 'text' or 'one-line'.
-    required: true
+    required: True
   wait_for:
     description:
       - Specifies what to evaluate from the output of the command
@@ -56,8 +56,8 @@ options:
         the task to wait for a particular conditional to be true
         before moving forward. If the conditional is not true
         by the configured retries, the task fails. See examples.
-    required: false
-    default: null
+    required: False
+    default: None
     aliases: ['waitfor']
     version_added: "2.2"
   match:
@@ -68,7 +68,7 @@ options:
         then all conditionals in the I(wait_for) must be satisfied. If
         the value is set to C(any) then only one of the values must be
         satisfied.
-    required: false
+    required: False
     default: all
     version_added: "2.2"
   retries:
@@ -77,7 +77,7 @@ options:
         before it is considered failed. The command is run on the
         target device every retry and evaluated against the I(wait_for)
         conditionals.
-    required: false
+    required: False
     default: 10
   interval:
     description:
@@ -85,7 +85,7 @@ options:
         of the command. If the command does not pass the specified
         conditional, the interval indicates how to long to wait before
         trying the command again.
-    required: false
+    required: False
     default: 1
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
