@@ -33,22 +33,16 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_command import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_command import Parameters
+    from library.bigip_command import ModuleManager
+    from library.bigip_command import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_connectivity import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_device_connectivity import Parameters
+    from ansible.modules.network.f5.bigip_device_connectivity import ModuleManager
+    from ansible.modules.network.f5.bigip_device_connectivity import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 

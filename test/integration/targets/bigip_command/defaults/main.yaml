@@ -1,5 +1,2 @@
 ---
 
-policy_name: "foo"
-policy: "bar"
-pool_name: "foo_pool"

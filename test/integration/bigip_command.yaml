@@ -20,20 +20,28 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 12.0.0
+#    - 12.1.0
+#    - 12.1.0 HF1
+#    - 12.1.0 HF2
+#    - 12.1.1
+#    - 12.1.1 HF1
+#    - 12.1.1 HF2
+#    - 12.1.2
+#    - 12.1.2 HF1
+#    - 13.0.0
 #
 
-- name: Test the bigip_command module, root credentials with bash
+- name: Test the bigip_command module
   hosts: f5-test
-  gather_facts: false
   connection: local
 
   environment:
       F5_SERVER: "{{ inventory_hostname }}"
-      F5_USER: "root"
-      F5_PASSWORD: "default"
+      F5_USER: "{{ bigip_username }}"
+      F5_PASSWORD: "{{ bigip_password }}"
       F5_SERVER_PORT: "{{ bigip_port }}"
-      F5_VALIDATE_CERTS: "no"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
       - bigip_command
