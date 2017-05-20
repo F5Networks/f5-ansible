@@ -24,11 +24,11 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
-module: bigip_snmp_contact
-short_description: Manipulate SNMP contact information on a BIG-IP.
+module: bigip_snmp_trap
+short_description: Manipulate SNMP trap information on a BIG-IP.
 description:
-  - Manipulate SNMP contact information on a BIG-IP.
-version_added: 2.3
+  - Manipulate SNMP trap information on a BIG-IP.
+version_added: 2.4
 options:
   name:
     description:
@@ -88,10 +88,10 @@ notes:
     < 12.1.0, it will simply be ignored.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 2.2.0
-    - ansible >= 2.3.0
+  - f5-sdk >= 2.2.0
+  - ansible >= 2.3.0
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -206,9 +206,9 @@ class NetworkedParameters(Parameters):
         'snmp_version', 'community', 'destination', 'port', 'network'
     ]
 
-    api_attributes = {
+    api_attributes = [
         'version', 'community', 'host', 'port', 'network'
-    }
+    ]
 
     @property
     def network(self):
@@ -232,13 +232,14 @@ class NonNetworkedParameters(Parameters):
         'snmp_version', 'community', 'destination', 'port'
     ]
 
-    api_attributes = {
+    api_attributes = [
         'version', 'community', 'host', 'port'
-    }
+    ]
 
     @property
     def network(self):
         return None
+
 
 class ModuleManager(object):
     def __init__(self, client):
