@@ -40,9 +40,9 @@ try:
     from library.bigip_command import ModuleManager
     from library.bigip_command import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_device_connectivity import Parameters
-    from ansible.modules.network.f5.bigip_device_connectivity import ModuleManager
-    from ansible.modules.network.f5.bigip_device_connectivity import ArgumentSpec
+    from ansible.modules.network.f5.bigip_command import Parameters
+    from ansible.modules.network.f5.bigip_command import ModuleManager
+    from ansible.modules.network.f5.bigip_command import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
