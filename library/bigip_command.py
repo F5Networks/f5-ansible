@@ -41,7 +41,7 @@ options:
         configured provider. The resulting output from the command
         is returned. If the I(wait_for) argument is provided, the
         module is not returned until the condition is satisfied or
-        the number of retires as expired.
+        the number of retries as expired.
       - The I(commands) argument also accepts an alternative form
         that allows for complex values that specify the command
         to run and the output format to return. This can be done
@@ -59,7 +59,6 @@ options:
     required: False
     default: None
     aliases: ['waitfor']
-    version_added: "2.2"
   match:
     description:
       - The I(match) argument is used in conjunction with the
@@ -70,7 +69,6 @@ options:
         satisfied.
     required: False
     default: all
-    version_added: "2.2"
   retries:
     description:
       - Specifies the number of retries a command should by tried
@@ -119,7 +117,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: run multiple commands on remote nodes
-   bigip_command:
+  bigip_command:
     commands:
       - show sys version
       - list ltm virtual
