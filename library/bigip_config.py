@@ -27,10 +27,15 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_config
-short_description: Manage BIG-IP configuration sections
+short_description: Manage BIG-IP configuration sections.
 description:
   - Manages a BIG-IP configuration by allowing TMSH commands that
-    modify running configuration, or,
+    modify running configuration, or merge SCF formatted files intp
+    the running configuration. Additionally, this module is of
+    significant importence because it allows you to save your running
+    configuration to disk. Since the F5 module only manipulate running
+    configuration, it is important that you utilize this module to save
+    that running config.
 version_added: "2.4"
 options:
   save:
@@ -44,8 +49,7 @@ options:
     choices:
       - yes
       - no
-    required: False
-    default: False
+    default: no
   reset:
     description:
       - Loads the default configuration on the device. If this option
@@ -54,8 +58,7 @@ options:
     choices:
       - yes
       - no
-    required: False
-    default: False
+    default: no
   merge_content:
     description:
       - Loads the specified configuration that you want to merge into
@@ -63,18 +66,16 @@ options:
         C(tmsh) command C(load sys config from-terminal merge). If
         you need to read configuration from a file or template, use
         Ansible's C(file) or C(template) lookup plugins respectively.
-    required: False
     default: None
   verify:
     description:
       - Validates the specified configuration to see whether they are
         valid to replace the running configuration. The running
         configuration will not be changed.
-    required: False
-    default: True
     choices:
       - yes
       - no
+    default: yes
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -320,7 +321,7 @@ class ArgumentSpec(object):
             reset=dict(
                 required=False,
                 type='bool',
-                default=False,
+                default='no',
                 choices=BOOLEANS
             ),
             merge_content=dict(
@@ -331,13 +332,13 @@ class ArgumentSpec(object):
             verify=dict(
                 type='bool',
                 required=False,
-                default=True,
+                default='yes',
                 choices=BOOLEANS
             ),
             save=dict(
                 type='bool',
                 required=False,
-                default=False,
+                default='no',
                 choices=BOOLEANS
             )
         )
