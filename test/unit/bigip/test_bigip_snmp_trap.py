@@ -30,7 +30,7 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, DEFAULT
+from ansible.compat.tests.mock import patch, DEFAULT, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -164,16 +164,16 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_non_networked = lambda: False
-        mm.exit_json = lambda x: False
+        mm.is_version_non_networked = Mock(return_value=False)
+        mm.exit_json = Mock(return_value=False)
 
         patches = dict(
             create_on_device=DEFAULT,
             exists=DEFAULT
         )
         with patch.multiple(NetworkedManager, **patches) as mo:
-            mo['create_on_device'].side_effect = lambda: True
-            mo['exists'].side_effect = lambda: False
+            mo['create_on_device'].side_effect = Mock(return_value=True)
+            mo['exists'].side_effect = Mock(return_value=False)
             results = mm.exec_module()
 
         assert results['changed'] is True
@@ -200,16 +200,16 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.is_version_non_networked = lambda: True
-        mm.exit_json = lambda x: False
+        mm.is_version_non_networked = Mock(return_value=True)
+        mm.exit_json = Mock(return_value=False)
 
         patches = dict(
             create_on_device=DEFAULT,
             exists=DEFAULT
         )
         with patch.multiple(NonNetworkedManager, **patches) as mo:
-            mo['create_on_device'].side_effect = lambda: True
-            mo['exists'].side_effect = lambda: False
+            mo['create_on_device'].side_effect = Mock(return_value=True)
+            mo['exists'].side_effect = Mock(return_value=False)
             results = mm.exec_module()
 
         assert results['changed'] is True
