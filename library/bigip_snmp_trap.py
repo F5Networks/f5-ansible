@@ -38,34 +38,24 @@ options:
     description:
       - Specifies to which Simple Network Management Protocol (SNMP) version
         the trap destination applies.
-    required: False
-    default: None
     choices:
       - 1
       - 2c
   community:
     description:
       - Specifies the community name for the trap destination.
-    required: False
-    default: None
   destination:
     description:
       - Specifies the address for the trap destination. This can be either an
         IP address or a hostname.
-    required: False
-    default: None
   port:
     description:
       - Specifies the port for the trap destination.
-    required: False
-    default: None
   network:
     description:
       - Specifies the name of the trap network. This option is not supported in
         versions of BIG-IP < 12.1.0. If used on versions < 12.1.0, it will simply
         be ignored.
-    required: False
-    default: None
     choices:
       - other
       - management
@@ -74,7 +64,6 @@ options:
     description:
       - When C(present), ensures that the cloud connector exists. When
         C(absent), ensures that the cloud connector does not exist.
-    required: False
     default: present
     choices:
       - present
