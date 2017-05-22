@@ -270,8 +270,6 @@ class BigIpSelfIp(object):
                                   port=kwargs['server_port'])
 
     def present(self):
-        changed = False
-
         if self.exists():
             changed = self.update()
         else:
@@ -311,7 +309,6 @@ class BigIpSelfIp(object):
         if hasattr(r, 'address'):
             p['route_domain'] = str(None)
             if '%' in r.address:
-                ipaddr = []
                 ipaddr = r.address.split('%', 1)
                 rdmask = ipaddr[1].split('/', 1)
                 r.address = "%s/%s" % (ipaddr[0], rdmask[1])
