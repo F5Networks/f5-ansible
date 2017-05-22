@@ -30,7 +30,7 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -102,9 +102,8 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.execute_on_device = lambda x: 'foo'
+        mm.execute_on_device = Mock(return_value='foo')
 
         results = mm.exec_module()
 
-        assert results['changed'] is False
+        assert results['changed'] is True

@@ -56,8 +56,6 @@ options:
         the task to wait for a particular conditional to be true
         before moving forward. If the conditional is not true
         by the configured retries, the task fails. See examples.
-    required: False
-    default: None
     aliases: ['waitfor']
   match:
     description:
@@ -67,7 +65,6 @@ options:
         then all conditionals in the I(wait_for) must be satisfied. If
         the value is set to C(any) then only one of the values must be
         satisfied.
-    required: False
     default: all
   retries:
     description:
@@ -75,7 +72,6 @@ options:
         before it is considered failed. The command is run on the
         target device every retry and evaluated against the I(wait_for)
         conditionals.
-    required: False
     default: 10
   interval:
     description:
@@ -83,7 +79,6 @@ options:
         of the command. If the command does not pass the specified
         conditional, the interval indicates how to long to wait before
         trying the command again.
-    required: False
     default: 1
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -246,7 +241,7 @@ class ModuleManager(object):
             raise F5ModuleError(str(e))
 
         result.update(**self.changes.to_return())
-        result.update(dict(changed=False))
+        result.update(dict(changed=True))
         return result
 
     def execute(self):
@@ -258,6 +253,9 @@ class ModuleManager(object):
         retries = self.want.retries
 
         conditionals = [Conditional(c) for c in wait_for]
+
+        if self.client.check_mode:
+            return
 
         while retries > 0:
             responses = self.execute_on_device(commands)
