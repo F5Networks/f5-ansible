@@ -165,7 +165,6 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
         mm.is_version_non_networked = Mock(return_value=False)
-        mm.exit_json = Mock(return_value=False)
 
         patches = dict(
             create_on_device=DEFAULT,
@@ -201,7 +200,6 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
         mm.is_version_non_networked = Mock(return_value=True)
-        mm.exit_json = Mock(return_value=False)
 
         patches = dict(
             create_on_device=DEFAULT,
