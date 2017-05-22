@@ -30,7 +30,7 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import (
@@ -38,17 +38,13 @@ from ansible.module_utils.f5_utils import (
 )
 
 try:
-    from library.bigip_snat_pool import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_snat_pool import Parameters
+    from library.bigip_snat_pool import ModuleManager
+    from library.bigip_snat_pool import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_snat_pool import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_snat_pool import Parameters
+    from ansible.modules.network.f5.bigip_snat_pool import ModuleManager
+    from ansible.modules.network.f5.bigip_snat_pool import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -82,29 +78,24 @@ class TestParameters(unittest.TestCase):
         args = dict(
             name='my-snat-pool',
             state='present',
-            members=['10.10.10.10', '20.20.20.20']
+            members=['10.10.10.10', '20.20.20.20'],
+            partition='Common'
         )
         p = Parameters(args)
         assert p.name == 'my-snat-pool'
         assert p.state == 'present'
         assert len(p.members) == 2
-        assert '10.10.10.10' in p.members
-        assert '20.20.20.20' in p.members
+        assert '/Common/10.10.10.10' in p.members
+        assert '/Common/20.20.20.20' in p.members
 
     def test_api_parameters(self):
         args = dict(
-            agentTrap='enabled',
-            authTrap='enabled',
-            bigipTraps='enabled',
-            sysLocation='Lunar orbit',
-            sysContact='Alice@foo.org',
+            members=['/Common/10.10.10.10', '/foo/20.20.20.20']
         )
         p = Parameters(args)
-        assert p.agent_status_traps == 'enabled'
-        assert p.agent_authentication_traps == 'enabled'
-        assert p.device_warning_traps == 'enabled'
-        assert p.location == 'Lunar orbit'
-        assert p.contact == 'Alice@foo.org'
+        assert len(p.members) == 2
+        assert '/Common/10.10.10.10' in p.members
+        assert '/Common/20.20.20.20' in p.members
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -114,21 +105,15 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_update_agent_status_traps(self, *args):
+    def test_create_snat_pool(self, *args):
         set_module_args(dict(
-            agent_status_traps='enabled',
+            name='my-snat-pool',
+            state='present',
+            members=['10.10.10.10', '20.20.20.20'],
             password='passsword',
             server='localhost',
             user='admin'
         ))
-
-        # Configure the parameters that would be returned by querying the
-        # remote device
-        current = Parameters(
-            dict(
-                agent_status_traps='disabled'
-            )
-        )
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -138,11 +123,103 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.exists = Mock()
+        mm.exists.side_effect = [False, True]
+        mm.create_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['agent_status_traps'] == 'enabled'
+        assert len(results['members']) == 2
+        assert '/Common/10.10.10.10' in results['members']
+        assert '/Common/20.20.20.20' in results['members']
+
+    def test_create_snat_pool_idempotent(self, *args):
+        set_module_args(dict(
+            name='asdasd',
+            state='present',
+            members=['1.1.1.1', '2.2.2.2'],
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_snatpool.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock()
+        mm.exists.side_effect = [True, True]
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+
+    def test_update_snat_pool(self, *args):
+        set_module_args(dict(
+            name='asdasd',
+            state='present',
+            members=['30.30.30.30'],
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_snatpool.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.update_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=True)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert len(results['members']) == 1
+        assert '/Common/30.30.30.30' in results['members']
+
+    def test_append_member_idempotent(self, *args):
+        # TODO: Remove in 2.5
+        set_module_args(dict(
+            name='asdasd',
+            state='present',
+            members=['1.1.1.1'],
+            append=True,
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_snatpool.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.update_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=True)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
