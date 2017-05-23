@@ -33,22 +33,16 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_configsync_actions import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_configsync_actions import Parameters
+    from library.bigip_configsync_actions import ModuleManager
+    from library.bigip_configsync_actions import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_configsync_actions import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_configsync_actions import Parameters
+    from ansible.modules.network.f5.bigip_configsync_actions import ModuleManager
+    from ansible.modules.network.f5.bigip_configsync_actions import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -128,11 +122,10 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: False
-        mm._device_group_exists = lambda: True
-        mm._sync_to_group_required = lambda: False
-        mm.execute_on_device = lambda: True
-        mm.read_current_from_device = lambda: None
+        mm._device_group_exists = Mock(return_value=True)
+        mm._sync_to_group_required = Mock(return_value=False)
+        mm.execute_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=None)
 
         mm._get_status_from_resource = Mock()
         mm._get_status_from_resource.side_effect = [
