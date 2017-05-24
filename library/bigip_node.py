@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# (c) 2013, Matt Hite <mhite@hotmail.com>
+# Copyright 2016 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
@@ -27,94 +27,85 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_node
-short_description: "Manages F5 BIG-IP LTM nodes"
+short_description: Manages F5 BIG-IP LTM nodes
 description:
-  - "Manages F5 BIG-IP LTM nodes via iControl SOAP API"
+  - Manages F5 BIG-IP LTM nodes via iControl SOAP API.
 version_added: "1.4"
-author:
-  - Matt Hite (@mhite)
-  - Tim Rupp (@caphrim007)
-notes:
-  - "Requires BIG-IP software version >= 11"
-  - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-  - "Best run as a local_action in your playbook"
-requirements:
-  - bigsuds
 options:
   state:
     description:
-      - Pool member state
+      - Specifies the current state of the node. C(enabled) (All traffic
+        allowed), specifies that system sends traffic to this node regardless
+        of the node's state. C(disabled) (Only persistent or active connections
+        allowed), Specifies that the node can handle only persistent or
+        active connections. C(offline) (Only active connections allowed),
+        Specifies that the node can handle only active connections. In all
+        cases except C(absent), the node will be created if it does not yet
+        exist.
     required: true
     default: present
-    choices: ['present', 'absent']
-    aliases: []
-  session_state:
-    description:
-      - Set new session availability status for node
-    version_added: "1.9"
-    required: false
-    default: null
-    choices: ['enabled', 'disabled']
-    aliases: []
-  monitor_state:
-    description:
-      - Set monitor availability status for node
-    version_added: "1.9"
-    required: false
-    default: null
-    choices: ['enabled', 'disabled']
-    aliases: []
-  partition:
-    description:
-      - Partition
-    required: false
-    default: 'Common'
-    choices: []
-    aliases: []
+    choices:
+      - present
+      - absent
+      - enabled
+      - disabled
+      - offline
   name:
     description:
-      - "Node name"
-    required: false
-    default: null
-    choices: []
-  monitor_type:
-    description:
-      - Monitor rule type when monitors > 1
-    version_added: "2.2"
+      - Specifies the name of the node.
     required: False
-    default: null
-    choices: ['and_list', 'm_of_n']
-    aliases: []
+    default: None
+  availability_requirement:
+    description:
+      - Specifies, if you activate more than one health monitor, the number
+        of health monitors that must receive successful responses in order
+        for the node to be considered available. The default is C(all).
+    version_added: "2.2"
+    default: C(and_list)
+    required: False
+    choices:
+      - all
+      - at_least
+    aliases:
+      - monitor_type
   quorum:
     description:
-      - Monitor quorum value when monitor_type is m_of_n
+      - Monitor quorum value when C(monitor_type) is C(at_least).
     version_added: "2.2"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   monitors:
     description:
-      - Monitor template name list. Always use the full path to the monitor.
+      - Specifies the health monitors that the system currently uses to
+        monitor this node.
     version_added: "2.2"
     required: False
-    default: null
-    choices: []
-    aliases: []
+    default: None
   host:
     description:
-      - "Node IP. Required when state=present and node does not exist. Error when state=absent."
+      - Node IP. Required when C(state) is present and node does not exist.
+        Error when C(state) is equal to C(absent).
     required: true
-    default: null
-    choices: []
-    aliases: ['address', 'ip']
+    default: None
+    aliases:
+      - address
+      - ip
   description:
     description:
-      - "Node description."
-    required: false
-    default: null
-    choices: []
+      - Specifies descriptive text that identifies the node.
+    required: False
+    default: None
+notes:
+  - Requires BIG-IP software version >= 11
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
+  - Requires the netaddr Python package on the host. This is as easy as
+    pip install netaddr
 extends_documentation_fragment: f5
+requirements:
+  - f5-sdk
+author:
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
@@ -127,13 +118,7 @@ EXAMPLES = '''
       partition: "Common"
       host: "10.20.30.40"
       name: "10.20.30.40"
-
-# Note that the BIG-IP automatically names the node using the
-# IP address specified in previous play's host parameter.
-# Future plays referencing this node no longer use the host
-# parameter but instead use the name parameter.
-# Alternatively, you could have specified a name with the
-# name parameter when state=present.
+  delegate_to: localhost
 
 - name: Add node with a single 'ping' monitor
   bigip_node:
@@ -145,7 +130,7 @@ EXAMPLES = '''
       host: "10.20.30.40"
       name: "mytestserver"
       monitors:
-        - /Common/icmp
+          - /Common/icmp
   delegate_to: localhost
 
 - name: Modify node description
@@ -167,302 +152,453 @@ EXAMPLES = '''
       state: "absent"
       partition: "Common"
       name: "10.20.30.40"
-
-# The BIG-IP GUI doesn't map directly to the API calls for "Node ->
-# General Properties -> State". The following states map to API monitor
-# and session states.
-#
-# Enabled (all traffic allowed):
-# monitor_state=enabled, session_state=enabled
-# Disabled (only persistent or active connections allowed):
-# monitor_state=enabled, session_state=disabled
-# Forced offline (only active connections allowed):
-# monitor_state=disabled, session_state=disabled
-#
-# See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
+  delegate_to: localhost
 
 - name: Force node offline
   bigip_node:
       server: "lb.mydomain.com"
       user: "admin"
-      password: "mysecret"
-      state: "present"
-      session_state: "disabled"
-      monitor_state: "disabled"
+      password: "secret"
+      state: "disabled"
       partition: "Common"
       name: "10.20.30.40"
+  delegate_to: localhost
 '''
 
+RETURN = '''
+members:
+    description:
+      - List of members that are part of the SNAT pool.
+    returned: changed and success
+    type: list
+    sample: "['10.10.10.10']"
+'''
 
-def node_exists(api, address):
-    # hack to determine if node exists
-    result = False
-    try:
-        api.LocalLB.NodeAddressV2.get_object_status(nodes=[address])
-        result = True
-    except bigsuds.OperationFailed as e:
-        if "was not found" in str(e):
-            result = False
+import re
+
+try:
+    from f5.bigip.contexts import TransactionContextManager
+    from f5.bigip import ManagementRoot
+    from icontrol.session import iControlUnexpectedHTTPError
+
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
+try:
+    import bigsuds
+    HAS_BIGSUDS = True
+except ImportError:
+    HAS_BIGSUDS = False
+
+try:
+    from netaddr import IPAddress, AddrFormatError
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
+
+
+class F5Connector(object):
+    __instance = None
+
+    def __call__(self, *args, **kwargs):
+        if self.__instance:
+            return self.__instance
         else:
-            # genuine exception
-            raise
-    return result
+            if HAS_F5SDK:
+                self.__instance = F5RestConnector(**kwargs)
+            elif HAS_BIGSUDS:
+                self.__instance = F5SoapConnector(**kwargs)
+            else:
+                raise F5ModuleError(
+                    "No API connector was found"
+                )
 
 
-def create_node_address(api, address, name):
-    try:
-        api.LocalLB.NodeAddressV2.create(
-            nodes=[name],
-            addresses=[address],
-            limits=[0]
+class BigIpNodeUpdater(object):
+    def __call__(self, *args, **kwargs):
+        tx = self.client.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            req = api.tm.ltm.nodes.node.load(
+                name=node.name,
+                partition=node.partition
+            )
+            req.modify(**kwargs)
+
+
+class BigIpNodeDeleter(object):
+    def __call__(self, *args, **kwargs):
+        tx = self.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            req = api.tm.ltm.nodes.node.load(
+                name=node.name, partition=node.partition
+            )
+            req.delete()
+
+
+class BigIpNodeLoader(object):
+    def __call__(self, *args, **kwargs):
+        return F5Connector.tm.ltm.nodes.node.load(
+            name=node.name, partition=node.partition
         )
-        result = True
-        desc = ""
-    except bigsuds.OperationFailed as e:
-        if "already exists" in str(e):
-            result = False
-            desc = "referenced name or IP already in use"
+
+
+class ModuleConfig(object):
+
+    def __init__(self):
+        # Initial parameter values
+        self.states = [
+            'absent', 'present', 'enabled', 'disabled', 'offline'
+        ]
+        self.monitor_type_choices = ['all', 'at_least']
+        self.host_choices = ['address', 'ip']
+
+        # Initial Ansible Module parameter values
+        self.supports_check_mode = True
+        self.required_together=[
+            ['availability_requirement', 'monitors'],
+            ['quorum', 'monitors']
+        ]
+        self.required_if = [
+            'availability_requirement', 'at_least', ['quorum']
+        ]
+
+    def init_meta_args(self, **kwargs):
+        args = dict(
+            name=dict(required=True),
+            host=dict(aliases=kwargs['host_choices']),
+            description=dict(),
+            availability_requirement=dict(
+                choices=kwargs['monitor_type_choices']
+            ),
+            quorum=dict(type='int'),
+            monitors=dict(type='list'),
+            state=dict(
+                choices=kwargs['states'],
+                default='present'
+            )
+        )
+        return args
+
+    def init_argument_spec(self, meta_args=None):
+        argument_spec = f5_argument_spec()
+        if meta_args:
+            argument_spec.update(meta_args)
+        return argument_spec
+
+    def create(self):
+        meta_args = self.init_meta_args(
+            host_choices=self.host_choices,
+            monitor_type_choices=self.monitor_type_choices,
+            states=self.states
+        )
+        argument_spec = self.init_argument_spec(meta_args)
+        return AnsibleModule(
+            argument_spec=argument_spec,
+            supports_check_mode=self.supports_check_mode,
+            required_together=self.required_together,
+            required_if=self.required_if
+        )
+
+
+class DeviceState(object):
+    def __init__(self, **kwargs):
+        self._values = dict(
+            state=None,
+            session=None
+        )
+        self._valid_sessions = [
+            'user-disabled', 'user-enabled'
+        ]
+        self._valid_states = [
+            'user-down'
+        ]
+        state = kwargs.pop('state', None)
+        session = kwargs.pop('session', None)
+        self.update(state=state, session=session)
+
+    def update(self, state=None, session=None):
+        if session in self._valid_sessions or session is None:
+            self._values['session'] = session
+        if state in self._valid_states or state is None:
+            self._values['state'] = state
+
+    def from_param_state(cls, param_state):
+        pass
+
+
+class ParamState(object):
+    def __init__(self):
+        self._values = dict(
+            state=None
+        )
+        self._valid_states = [
+            'offline','enabled','disabled'
+        ]
+
+    def update(self, state=None):
+        if state in self._valid_states or state is None:
+            self._values['state'] = state
+        """
+        if state == 'offline':
+            self._values['session'] = 'user-disabled'
+            self._values['state'] = 'user-down'
+        elif state == 'enabled':
+            self._values['session'] = 'user-enabled'
+            self._values['state'] = None
+        elif state == 'disabled':
+            self._values['session'] = 'user-disabled'
+            self._values['state'] = None
+        """
+
+    @classmethod
+    def as_device_state(cls, param_state):
+        device_state = cls()
+        device_state.update()
+
+
+class MonitorAdapter(object):
+
+    def __init__(self, **kwargs):
+        self.pattern = r'^min\s(\d+)\s+of'
+        self._quorum = None
+        self._requirements = None
+        self._monitors = None
+        self.quorum = kwargs.pop('quorum', None)
+        self.requirements = kwargs.pop('requirements', None)
+
+    @property
+    def requirements(self):
+        return self._value
+
+    @requirements.setter
+    def requirements(self, value):
+        matches = re.match(self.pattern, value)
+        if matches:
+            if matches:
+                self._requirements = "at_least"
+            else:
+                self._requirements = "all"
+
+    @property
+    def quorum(self):
+        return self._quorum
+
+    @quorum.setter
+    def quorum(self, value):
+        try:
+            self._quorum = int(value)
+        except (TypeError) as ex:
+            matches = re.match(self.pattern, value)
+            if matches:
+                self._quorum = int(matches.group(1))
+
+    @property
+    def monitors(self):
+        return self._monitors
+
+    @monitors.setter
+    def monitors(self, value):
+        self._monitors = value
+
+
+class BigIpNode(object):
+
+    def __init__(self, **kwargs):
+        self.address = kwargs.pop('address', None)
+        self.description = kwargs.pop('description', None)
+        self.monitor = kwargs.pop('monitor', None)
+        self.name = kwargs.pop('name', None)
+        self.partition = kwargs.pop('partition', None)
+        self.state = kwargs.pop('state', None)
+
+    @classmethod
+    def from_device(cls, name, partition):
+        device = BigIpNodeLoader()
+        settings = device()
+
+    def from_params(self):
+        pass
+
+
+class BigIpNodeFacade(object):
+    def __init__(self, *args, **kwargs):
+        self.changed_params = dict()
+        self.params = kwargs
+        self.api = None
+
+    def apply_changes(self):
+        result = dict()
+        try:
+            if self.config['state'] == 'absent':
+                changed = self.absent()
+            else:
+                changed = self.present()
+        except iControlUnexpectedHTTPError as e:
+            raise F5ModuleError(str(e))
+        result.update(**changed)
+        result.update(dict(changed=changed))
+        return result
+
+    def present(self):
+        if self.node_exists():
+            return self.update_node()
         else:
-            # genuine exception
-            raise
-    return (result, desc)
+            return self.ensure_node_is_present()
 
+    def absent(self):
+        changed = False
+        if self.node_exists():
+            changed = ensure_node_is_absent()
+        return changed
 
-def get_node_address(api, name):
-    return api.LocalLB.NodeAddressV2.get_address(nodes=[name])[0]
-
-
-def delete_node_address(api, address):
-    try:
-        api.LocalLB.NodeAddressV2.delete_node_address(nodes=[address])
-        result = True
-        desc = ""
-    except bigsuds.OperationFailed as e:
-        if "is referenced by a member of pool" in str(e):
-            result = False
-            desc = "node referenced by pool"
+    def update_node(self, node):
+        params = self.set_changed_parameters()
+        if params:
+            self.changed_params = camel_dict_to_snake_dict(params)
+            if self.params['check_mode']:
+                return True
         else:
-            # genuine exception
-            raise
-    return (result, desc)
+            return False
+        self.update_node_on_device(node)
+        return True
 
+    def ensure_node_is_absent(self, node, check_mode):
+        if check_mode:
+            return True
+        self.delete_node_from_device(name, partition)
+        if self.node_exists(name, partition):
+            raise F5ModuleError("Failed to delete the node")
+        return True
 
-def set_node_description(api, name, description):
-    api.LocalLB.NodeAddressV2.set_description(nodes=[name],
-                                              descriptions=[description])
+    def ensure_node_is_present(self, node):
+        if self.params['host'] is None:
+            F5ModuleError(
+                "host parameter required when state is equal to present"
+            )
+        params = self.get_node_creation_parameters()
+        self.changed_params = camel_dict_to_snake_dict(params)
+        if self.params['check_mode']:
+            return True
+        self.create_node_on_device(params)
+        if self.node_exists():
+            return True
+        else:
+            raise F5ModuleError("Failed to create the node")
 
+    def format_node_information(self, node):
+        result = dict(
+            name=str(node.name),
+            state=format_current_state(node.session, node.cache)
+        )
+        if hasattr(node, 'monitor'):
+            result['monitors'] = self.format_current_monitors(node.monitor)
+            result['quorum'] = self.format_current_quorum(node.monitor)
+            result['availability_req'] = self.format_current_availability_req(node.monitor)
+        return result
 
-def get_node_description(api, name):
-    return api.LocalLB.NodeAddressV2.get_description(nodes=[name])[0]
+    def set_changed_parameters(self):
+        result = dict()
+        params = self.get_supplied_parameters()
+        current = self.read_node_information()
+        if self.is_description_changed(current, params['description']):
+            result['description'] = params['description']
+        if self.is_state_changed(current):
+            result.update(**self.get_changed_state())
+        if (self.are_monitors_changed(current) or
+                self.is_quorum_changed(current) or
+                self.is_availability_req_changed(current)):
+            result['monitor'] = self.format_monitor_parameter()
+        return result
 
+    def are_monitors_changed(self, current):
+        if self.params['monitors'] is None:
+            return False
+        if 'monitors' not in current:
+            return True
+        if set(self.params['monitors']) != set(current['monitors']):
+            return True
+        else:
+            return False
 
-def set_node_session_enabled_state(api, name, session_state):
-    session_state = "STATE_%s" % session_state.strip().upper()
-    api.LocalLB.NodeAddressV2.set_session_enabled_state(nodes=[name],
-                                                        states=[session_state])
+    def is_description_changed(self, current, description):
+        if description is None:
+            return False
+        if 'description' not in current:
+            return True
+        if description != current['description']:
+            return True
+        else:
+            return False
 
+    def is_state_changed(self, current):
+        if self.params['state'] != current['state']:
+            return True
+        else:
+            return False
 
-def get_node_session_status(api, name):
-    result = api.LocalLB.NodeAddressV2.get_session_status(nodes=[name])[0]
-    result = result.split("SESSION_STATUS_")[-1].lower()
-    return result
+    def is_availability_req_changed(self, current):
+        if self.params['availability_req'] is None:
+            return False
+        if 'availability_req' not in current:
+            return True
+        if self.params['availability_req'] != current['availability_req']:
+            return True
+        else:
+            return False
 
+    def get_node_creation_parameters(self):
+        result = dict(
+            name=self.params['name'],
+            address=self.params['host'],
+            partition=self.params['partition']
+        )
+        if self.params['description']:
+            result['description'] = self.params['description']
+        if self.params['monitors']:
+            result['monitor'] = self.format_monitor_parameter()
+        return result
 
-def set_node_monitor_state(api, name, monitor_state):
-    monitor_state = "STATE_%s" % monitor_state.strip().upper()
-    api.LocalLB.NodeAddressV2.set_monitor_state(nodes=[name],
-                                                states=[monitor_state])
+    def format_monitor_parameter(self):
+        if len(self.params['monitors']) == 1:
+            return 'default'
+        return self.format_monitor_param_with_quorum()
 
-
-def get_node_monitor_status(api, name):
-    result = api.LocalLB.NodeAddressV2.get_monitor_status(nodes=[name])[0]
-    result = result.split("MONITOR_STATUS_")[-1].lower()
-    return result
-
-
-def get_monitors(api, name):
-    result = api.LocalLB.NodeAddressV2.get_monitor_rule(nodes=[name])[0]
-    monitor_type = result['type'].split("MONITOR_RULE_TYPE_")[-1].lower()
-    quorum = result['quorum']
-    monitor_templates = result['monitor_templates']
-    return (monitor_type, quorum, monitor_templates)
-
-
-def set_monitors(api, name, monitor_type, quorum, monitor_templates):
-    monitor_type = "MONITOR_RULE_TYPE_%s" % monitor_type.strip().upper()
-    monitor_rule = {'type': monitor_type, 'quorum': quorum, 'monitor_templates': monitor_templates}
-    api.LocalLB.NodeAddressV2.set_monitor_rule(nodes=[name],
-                                               monitor_rules=[monitor_rule])
+    def format_monitor_param_with_quorum(self):
+        monitors = self.params['monitors']
+        quorum = self.params['quorum']
+        partition = self.params['partition']
+        availability = self.params['availability_requirement']
+        if quorum > len(monitors):
+            raise F5ModuleError(
+                "The quorum number cannot exceed the number of monitors"
+            )
+        tmp = ['/{0}/{1}'.format(partition, x) for x in monitors]
+        if availability == 'at_least':
+            return "min {0} of {1}".format(quorum,' '.join(tmp))
+        else:
+            return ' and '.join(tmp)
 
 
 def main():
-    monitor_type_choices = ['and_list', 'm_of_n']
+    if not HAS_NETADDR:
+        raise F5ModuleError("The python netaddr module is required")
 
-    argument_spec = f5_argument_spec()
-
-    meta_args = dict(
-        session_state=dict(type='str', choices=['enabled', 'disabled']),
-        monitor_state=dict(type='str', choices=['enabled', 'disabled']),
-        name=dict(type='str', required=True),
-        host=dict(type='str', aliases=['address', 'ip']),
-        description=dict(type='str'),
-        monitor_type=dict(type='str', choices=monitor_type_choices),
-        quorum=dict(type='int'),
-        monitors=dict(type='list')
-    )
-    argument_spec.update(meta_args)
-
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True
-    )
-
-    if module.params['validate_certs']:
-        import ssl
-        if not hasattr(ssl, 'SSLContext'):
-            module.fail_json(msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task')
-
-    server = module.params['server']
-    server_port = module.params['server_port']
-    user = module.params['user']
-    password = module.params['password']
-    state = module.params['state']
-    partition = module.params['partition']
-    validate_certs = module.params['validate_certs']
-
-    session_state = module.params['session_state']
-    monitor_state = module.params['monitor_state']
-    host = module.params['host']
-    name = module.params['name']
-    address = fq_name(partition, name)
-    description = module.params['description']
-    monitor_type = module.params['monitor_type']
-    if monitor_type:
-        monitor_type = monitor_type.lower()
-    quorum = module.params['quorum']
-    monitors = module.params['monitors']
-    if monitors:
-        monitors = []
-        for monitor in module.params['monitors']:
-                monitors.append(fq_name(partition, monitor))
-
-    # sanity check user supplied values
-    if state == 'absent' and host is not None:
-        module.fail_json(msg="host parameter invalid when state=absent")
-
-    if monitors:
-        if len(monitors) == 1:
-            # set default required values for single monitor
-            quorum = 0
-            monitor_type = 'single'
-        elif len(monitors) > 1:
-            if not monitor_type:
-                module.fail_json(msg="monitor_type required for monitors > 1")
-            if monitor_type == 'm_of_n' and not quorum:
-                module.fail_json(msg="quorum value required for monitor_type m_of_n")
-            if monitor_type != 'm_of_n':
-                quorum = 0
-    elif monitor_type:
-        # no monitors specified but monitor_type exists
-        module.fail_json(msg="monitor_type require monitors parameter")
-    elif quorum is not None:
-        # no monitors specified but quorum exists
-        module.fail_json(msg="quorum requires monitors parameter")
+    config = ModuleConfig()
+    module = config.create()
 
     try:
-        api = bigip_api(server, user, password, validate_certs, port=server_port)
-        result = {'changed': False}  # default
+        obj = BigIpNodeFacade(
+            check_mode=module.check_mode, **module.params
+        )
+        result = obj.apply_changes()
 
-        if state == 'absent':
-            if node_exists(api, address):
-                if not module.check_mode:
-                    deleted, desc = delete_node_address(api, address)
-                    if not deleted:
-                        module.fail_json(msg="unable to delete: %s" % desc)
-                    else:
-                        result = {'changed': True}
-                else:
-                    # check-mode return value
-                    result = {'changed': True}
-
-        elif state == 'present':
-            if not node_exists(api, address):
-                if host is None:
-                    module.fail_json(msg="host parameter required when "
-                                         "state=present and node does not exist")
-                if not module.check_mode:
-                    created, desc = create_node_address(api, address=host, name=address)
-                    if not created:
-                        module.fail_json(msg="unable to create: %s" % desc)
-                    else:
-                        result = {'changed': True}
-                    if session_state is not None:
-                        set_node_session_enabled_state(api, address,
-                                                       session_state)
-                        result = {'changed': True}
-                    if monitor_state is not None:
-                        set_node_monitor_state(api, address, monitor_state)
-                        result = {'changed': True}
-                    if description is not None:
-                        set_node_description(api, address, description)
-                        result = {'changed': True}
-                    if monitors:
-                        set_monitors(api, address, monitor_type, quorum, monitors)
-                else:
-                    # check-mode return value
-                    result = {'changed': True}
-            else:
-                # node exists -- potentially modify attributes
-                if host is not None:
-                    if get_node_address(api, address) != host:
-                        module.fail_json(msg="Changing the node address is "
-                                             "not supported by the API; "
-                                             "delete and recreate the node.")
-                if session_state is not None:
-                    session_status = get_node_session_status(api, address)
-                    if session_state == 'enabled' and \
-                       session_status == 'forced_disabled':
-                        if not module.check_mode:
-                            set_node_session_enabled_state(api, address,
-                                                           session_state)
-                        result = {'changed': True}
-                    elif session_state == 'disabled' and \
-                            session_status != 'force_disabled':
-                        if not module.check_mode:
-                            set_node_session_enabled_state(api, address,
-                                                           session_state)
-                        result = {'changed': True}
-                if monitor_state is not None:
-                    monitor_status = get_node_monitor_status(api, address)
-                    if monitor_state == 'enabled' and \
-                       monitor_status == 'forced_down':
-                        if not module.check_mode:
-                            set_node_monitor_state(api, address,
-                                                   monitor_state)
-                        result = {'changed': True}
-                    elif monitor_state == 'disabled' and \
-                            monitor_status != 'forced_down':
-                        if not module.check_mode:
-                            set_node_monitor_state(api, address,
-                                                   monitor_state)
-                        result = {'changed': True}
-                if description is not None:
-                    if get_node_description(api, address) != description:
-                        if not module.check_mode:
-                            set_node_description(api, address, description)
-                        result = {'changed': True}
-                if monitors:
-                    t_monitor_type, t_quorum, t_monitor_templates = get_monitors(api, address)
-                    if (t_monitor_type != monitor_type) or (t_quorum != quorum) or (set(t_monitor_templates) != set(monitors)):
-                        if not module.check_mode:
-                            set_monitors(api, address, monitor_type, quorum, monitors)
-                        result = {'changed': True}
-    except Exception as e:
-        module.fail_json(msg="received exception: %s" % e)
-
-    module.exit_json(**result)
+        module.exit_json(**result)
+    except F5ModuleError as e:
+        module.fail_json(msg=str(e))
 
 from ansible.module_utils.basic import *
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
