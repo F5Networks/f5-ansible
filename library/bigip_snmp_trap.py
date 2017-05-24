@@ -78,7 +78,6 @@ notes:
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk >= 2.2.0
-  - ansible >= 2.3.0
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -455,29 +454,15 @@ class ArgumentSpec(object):
                 required=True
             ),
             snmp_version=dict(
-                required=False,
-                default=None,
                 choices=['1', '2c']
             ),
-            community=dict(
-                required=False,
-                default=None
-            ),
-            destination=dict(
-                required=False,
-                default=None
-            ),
-            port=dict(
-                required=False,
-                default=None
-            ),
+            community=dict(),
+            destination=dict(),
+            port=dict(),
             network=dict(
-                required=False,
-                default=None,
                 choices=['other', 'management', 'default']
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )
