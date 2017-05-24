@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
+# Copyright 2017 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
@@ -158,7 +158,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -197,7 +197,7 @@ class ModuleManager(object):
     def _to_lines(self, stdout):
         lines = list()
         for item in stdout:
-            if isinstance(item, string_types):
+            if isinstance(item, str):
                 item = str(item).split('\n')
             lines.append(item)
         return lines
@@ -364,6 +364,6 @@ def main():
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
 
+
 if __name__ == '__main__':
     main()
-
