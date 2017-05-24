@@ -196,7 +196,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
 
 
 

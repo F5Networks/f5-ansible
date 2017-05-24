@@ -1,8 +1,8 @@
 .. _bigip_config:
 
 
-bigip_config - Manage BIG-IP configuration sections
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_config - Manage BIG-IP configuration sections.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -15,7 +15,7 @@ bigip_config - Manage BIG-IP configuration sections
 Synopsis
 --------
 
-* Manages a BIG-IP configuration by allowing TMSH commands that modify running configuration, or,
+* Manages a BIG-IP configuration by allowing TMSH commands that modify running configuration, or merge SCF formatted files intp the running configuration. Additionally, this module is of significant importence because it allows you to save your running configuration to disk. Since the F5 module only manipulate running configuration, it is important that you utilize this module to save that running config.
 
 
 Requirements (on host that executes module)
@@ -50,7 +50,7 @@ Options
                 <tr><td>reset<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Loads the default configuration on the device. If this option is specified, the default configuration will be loaded before any commands or other provided configuration is run.</div>        </td></tr>
                 <tr><td>save<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -80,7 +80,7 @@ Options
                 <tr><td>verify<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Validates the specified configuration to see whether they are valid to replace the running configuration. The running configuration will not be changed.</div>        </td></tr>
         </table>
     </br>

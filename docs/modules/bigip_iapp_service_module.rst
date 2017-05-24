@@ -50,7 +50,7 @@ Options
         <td><div>The name of the iApp service that you want to deploy.</div>        </td></tr>
                 <tr><td>parameters<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -75,7 +75,7 @@ Options
         <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div>        </td></tr>
                 <tr><td>template<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The iApp template from which to instantiate a new service. This template must exist on your BIG-IP before you can successfully create a service. This parameter is required if the <code>state</code> parameter is <code>present</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
@@ -167,6 +167,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires the deepdiff Python package on the host. This is as easy as pip install f5-sdk.
 
 
 

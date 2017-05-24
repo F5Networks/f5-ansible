@@ -102,7 +102,7 @@ Examples
           password: "secret"
           validate_certs: no
       delegate_to: localhost
-      
+    
     - name: Sync configuration from group to devices in group
       bigip_configsync_actions:
           device_group: "foo-group"

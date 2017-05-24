@@ -1,8 +1,8 @@
 .. _bigip_device_ntp:
 
 
-bigip_device_ntp - Manage NTP servers on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_ntp - Manage NTP servers on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_device_ntp - Manage NTP servers on a BIG-IP
 Synopsis
 --------
 
-* Manage NTP servers on a BIG-IP
+* Manage NTP servers on a BIG-IP.
 
 
 Requirements (on host that executes module)

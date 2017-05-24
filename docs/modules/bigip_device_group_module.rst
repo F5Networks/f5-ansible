@@ -57,11 +57,6 @@ Options
     <td>None</td>
         <td></td>
         <td><div>Specifies the size of the changes cache for incremental sync. For example, using the default, if you make more than 1024 KB worth of incremental changes, the system performs a full synchronization operation. Using incremental synchronization operations can reduce the per-device sync/load time for configuration changes. This setting is relevant only when <code>full_sync</code> is <code>false</code>.</div>        </td></tr>
-                <tr><td>members<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>None</td>
-        <td></td>
-        <td><div>Provides a list of devices to add to the group. These devices must have been previously added as trusted peers using the <code>bigip_cmi_device_trust</code> module.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -113,15 +108,23 @@ Examples
  ::
 
     
-    - name: Create a sync-only device group with two members
+    - name: Create a sync-only device group
       bigip_device_group:
           name: "foo-group"
           password: "secret"
           server: "lb.mydomain.com"
           state: "present"
           user: "admin"
-          members:
-              - 
+      delegate_to: localhost
+    
+    - name: Create a sync-only device group with auto-sync enabled
+      bigip_device_group:
+          name: "foo-group"
+          auto_sync: "yes"
+          password: "secret"
+          server: "lb.mydomain.com"
+          state: "present"
+          user: "admin"
       delegate_to: localhost
 
 
@@ -130,7 +133,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - This module is primarily used
+    - This module is primarily used as a component of configuring HA pairs of BIG-IP devices.
     - Requires BIG-IP >= 12.1.x.
     - Requires Ansible >= 2.3.
 

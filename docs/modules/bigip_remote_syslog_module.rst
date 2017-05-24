@@ -22,7 +22,6 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 2.2.0
-  * ansible >= 2.3.0
 
 
 Options
@@ -40,7 +39,7 @@ Options
     </tr>
                 <tr><td>local_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the local IP address of the system that is logging.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -55,7 +54,7 @@ Options
         <td><div>Specifies the IP address, or hostname, for the remote system to which the system sends log messages.</div>        </td></tr>
                 <tr><td>remote_port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the port that the system uses to send messages to the remote logging server. The default is <code>514</code> when the <code>state</code> option is <code>present</code>.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -114,6 +113,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
 
 
 

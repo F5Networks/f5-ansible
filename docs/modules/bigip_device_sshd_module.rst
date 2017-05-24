@@ -1,8 +1,8 @@
 .. _bigip_device_sshd:
 
 
-bigip_device_sshd - Manage the SSHD settings of a BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_sshd - Manage the SSHD settings of a BIG-IP.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_device_sshd - Manage the SSHD settings of a BIG-IP
 Synopsis
 --------
 
-* Manage the SSHD settings of a BIG-IP
+* Manage the SSHD settings of a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -44,27 +44,27 @@ Options
         <td><div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>        </td></tr>
                 <tr><td>banner<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Whether to enable the banner or not.</div>        </td></tr>
                 <tr><td>banner_text<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
         <td><div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>        </td></tr>
                 <tr><td>inactivity_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
         <td><div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div>        </td></tr>
                 <tr><td>log_level<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul><li>debug</li><li>debug1</li><li>debug2</li><li>debug3</li><li>error</li><li>fatal</li><li>info</li><li>quiet</li><li>verbose</li></ul></td>
         <td><div>Specifies the minimum SSHD message level to include in the system log.</div>        </td></tr>
                 <tr><td>login<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -74,7 +74,7 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
         <td><div>Port that you want the SSH daemon to run on.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>

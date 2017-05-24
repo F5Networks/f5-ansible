@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>When <code>yes</code>, will only add members to the SNAT pool. When <code>no</code>, will replace the existing member list with the provided member list.</div>        </td></tr>
+        <td><div>When <code>yes</code>, will only add members to the SNAT pool. When <code>no</code>, will replace the existing member list with the provided member list.</div><div>Deprecated in 2.4. Specify your member list all at once using <code>members</code> instead.</div>        </td></tr>
                 <tr><td>members<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>None</td>

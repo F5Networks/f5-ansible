@@ -1,8 +1,8 @@
 .. _bigip_pool:
 
 
-bigip_pool - Manages F5 BIG-IP LTM pools
-++++++++++++++++++++++++++++++++++++++++
+bigip_pool - Manages F5 BIG-IP LTM pools.
++++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -14,13 +14,13 @@ bigip_pool - Manages F5 BIG-IP LTM pools
 Synopsis
 --------
 
-* Manages F5 BIG-IP LTM pools via iControl SOAP API
+* Manages F5 BIG-IP LTM pools via iControl REST API.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
+  * f5-sdk
 
 
 Options
@@ -43,28 +43,28 @@ Options
         <td><div>Specifies descriptive text that identifies the pool.</div>        </td></tr>
                 <tr><td>host<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Pool member IP</div></br>
+        <td><div>Pool member IP.</div></br>
     <div style="font-size: small;">aliases: address<div>        </td></tr>
                 <tr><td>lb_method<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td>round_robin</td>
         <td><ul><li>round_robin</li><li>ratio_member</li><li>least_connection_member</li><li>observed_member</li><li>predictive_member</li><li>ratio_node_address</li><li>least_connection_node_address</li><li>fastest_node_address</li><li>observed_node_address</li><li>predictive_node_address</li><li>dynamic_ratio</li><li>fastest_app_response</li><li>least_sessions</li><li>dynamic_ratio_member</li><li>l3_addr</li><li>weighted_least_connection_member</li><li>weighted_least_connection_node_address</li><li>ratio_session</li><li>ratio_least_connection_member</li><li>ratio_least_connection_node_address</li></ul></td>
-        <td><div>Load balancing method</div>        </td></tr>
+        <td><div>Load balancing method.</div>        </td></tr>
                 <tr><td>monitor_type<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul><li>and_list</li><li>m_of_n</li></ul></td>
         <td><div>Monitor rule type when monitors &gt; 1</div>        </td></tr>
                 <tr><td>monitors<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Monitor template name list. Always use the full path to the monitor.</div>        </td></tr>
+        <td><div>Monitor template name list. If full path is not provided, it will be appended by the set partition name.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td></td>
+    <td>None</td>
         <td></td>
         <td><div>Pool name</div></br>
     <div style="font-size: small;">aliases: pool<div>        </td></tr>
@@ -72,7 +72,7 @@ Options
     <td>no</td>
     <td>Common</td>
         <td></td>
-        <td><div>Partition of pool/pool member</div>        </td></tr>
+        <td><div>Partition of pool/pool member.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -80,19 +80,19 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Pool member port</div>        </td></tr>
+        <td><div>Pool member port.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Monitor quorum value when monitor_type is m_of_n</div>        </td></tr>
+        <td><div>Monitor quorum value when <code>monitor_type</code> is <code>m_of_n</code>.</div>        </td></tr>
                 <tr><td>reselect_tries<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Sets the number of times the system tries to contact a pool member after a passive failure</div>        </td></tr>
+        <td><div>Sets the number of times the system tries to contact a pool member after a passive failure.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -105,19 +105,19 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td><ul><li>none</li><li>reset</li><li>drop</li><li>reselect</li></ul></td>
-        <td><div>Sets the action to take when node goes down in pool</div>        </td></tr>
+        <td><div>Sets the action to take when node goes down in pool.</div>        </td></tr>
                 <tr><td>slow_ramp_time<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Sets the ramp-up time (in seconds) to gradually ramp up the load on newly added or freshly detected up pool members</div>        </td></tr>
+        <td><div>Sets the ramp-up time (in seconds) to gradually ramp up the load on newly added or freshly detected up pool members.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Pool/pool member state</div>        </td></tr>
+        <td><div>Pool/pool member state.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -160,6 +160,7 @@ Examples
           name: "my-pool"
           partition: "Common"
           lb_method: "round_robin"
+      delegate_to: localhost
     
     - name: Add pool member
       bigip_pool:
@@ -171,6 +172,7 @@ Examples
           partition: "Common"
           host: "{{ ansible_default_ipv4["address"] }}"
           port: 80
+      delegate_to: localhost
     
     - name: Remove pool member from pool
       bigip_pool:
@@ -182,6 +184,7 @@ Examples
           partition: "Common"
           host: "{{ ansible_default_ipv4["address"] }}"
           port: 80
+      delegate_to: localhost
     
     - name: Delete pool
       bigip_pool:
@@ -191,6 +194,7 @@ Examples
           state: "absent"
           name: "my-pool"
           partition: "Common"
+      delegate_to: localhost
 
 
 Notes
@@ -198,7 +202,7 @@ Notes
 
 .. note::
     - Requires BIG-IP software version >= 11
-    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
+    - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python)
     - Best run as a local_action in your playbook
 
 

@@ -1,8 +1,8 @@
 .. _bigip_command:
 
 
-bigip_command - Run arbitrary command on F5 devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_command - Run arbitrary command on F5 devices.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -41,13 +41,13 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retires as expired.</div><div>The <em>commands</em> argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return. This can be done on a command by command basis. The complex argument supports the keywords <code>command</code> and <code>output</code> where <code>command</code> is the command to run and <code>output</code> is 'text' or 'one-line'.</div>        </td></tr>
+        <td><div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retries as expired.</div><div>The <em>commands</em> argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return. This can be done on a command by command basis. The complex argument supports the keywords <code>command</code> and <code>output</code> where <code>command</code> is the command to run and <code>output</code> is 'text' or 'one-line'.</div>        </td></tr>
                 <tr><td>interval<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>1</td>
         <td></td>
         <td><div>Configures the interval in seconds to wait between retries of the command. If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.</div>        </td></tr>
-                <tr><td>match<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+                <tr><td>match<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>all</td>
         <td></td>
@@ -82,7 +82,7 @@ Options
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
-                <tr><td>wait_for<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+                <tr><td>wait_for<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
@@ -119,7 +119,7 @@ Examples
       delegate_to: localhost
     
     - name: run multiple commands on remote nodes
-       bigip_command:
+      bigip_command:
         commands:
           - show sys version
           - list ltm virtual

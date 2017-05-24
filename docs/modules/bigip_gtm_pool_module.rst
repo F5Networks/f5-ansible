@@ -109,14 +109,22 @@ Examples
  ::
 
     
-      - name: Disable pool
-        bigip_gtm_pool:
-            server: "lb.mydomain.com"
-            user: "admin"
-            password: "secret"
-            state: "disabled"
-            pool: "my_pool"
-        delegate_to: localhost
+    - name: Create a GTM pool
+      bigip_gtm_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          name: "my_pool"
+      delegate_to: localhost
+    
+    - name: Disable pool
+      bigip_gtm_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "disabled"
+          name: "my_pool"
+      delegate_to: localhost
 
 Return Values
 -------------
@@ -136,7 +144,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 
         <tr>
         <td> changed </td>
-        <td> Denotes if the F5 configuration was updated </td>
+        <td> Denotes if the F5 configuration was updated. </td>
         <td align=center> always </td>
         <td align=center> bool </td>
         <td align=center>  </td>

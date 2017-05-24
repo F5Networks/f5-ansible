@@ -4,7 +4,7 @@
 bigip_iapp_template - Manages TCL iApp templates on a BIG-IP.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -35,17 +35,17 @@ Options
     </tr>
                 <tr><td>content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Sets the contents of an iApp template directly to the specified value. This is for simple values, but can be used with lookup plugins for anything complex or with formatting. <code>content</code> must be provided when creating new templates.</div>        </td></tr>
                 <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Specifies whether or not to force the uploading of an iApp. When <code>yes</code>, will force update the iApp even if there are iApp services using it. This will not update the running service though. Use <code>bigip_iapp_service</code> to do that. When <code>no</code>, will update the iApp only if there are no iApp services using the template.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The name of the iApp template that you want to delete. This option is only available when specifying a <code>state</code> of <code>absent</code> and is provided as a way to delete templates that you may no longer have the source of.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>

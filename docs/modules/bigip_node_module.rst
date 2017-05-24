@@ -15,13 +15,13 @@ bigip_node - Manages F5 BIG-IP LTM nodes
 Synopsis
 --------
 
-* Manages F5 BIG-IP LTM nodes via iControl SOAP API
+* Manages F5 BIG-IP LTM nodes via iControl SOAP API.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
+  * f5-sdk
 
 
 Options
@@ -37,42 +37,33 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>availability_requirement<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>C(and_list)</td>
+        <td><ul><li>all</li><li>at_least</li></ul></td>
+        <td><div>Specifies, if you activate more than one health monitor, the number of health monitors that must receive successful responses in order for the node to be considered available. The default is <code>all</code>.</div></br>
+    <div style="font-size: small;">aliases: monitor_type<div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Node description.</div>        </td></tr>
+        <td><div>Specifies descriptive text that identifies the node.</div>        </td></tr>
                 <tr><td>host<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Node IP. Required when state=present and node does not exist. Error when state=absent.</div></br>
+        <td><div>Node IP. Required when <code>state</code> is present and node does not exist. Error when <code>state</code> is equal to <code>absent</code>.</div></br>
     <div style="font-size: small;">aliases: address, ip<div>        </td></tr>
-                <tr><td>monitor_state<br/><div style="font-size: small;"> (added in 1.9)</div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Set monitor availability status for node</div>        </td></tr>
-                <tr><td>monitor_type<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>and_list</li><li>m_of_n</li></ul></td>
-        <td><div>Monitor rule type when monitors &gt; 1</div>        </td></tr>
                 <tr><td>monitors<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Monitor template name list. Always use the full path to the monitor.</div>        </td></tr>
+        <td><div>Specifies the health monitors that the system currently uses to monitor this node.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Node name</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>Partition</div>        </td></tr>
+        <td><div>Specifies the name of the node.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -80,9 +71,9 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td></td>
+    <td>None</td>
         <td></td>
-        <td><div>Monitor quorum value when monitor_type is m_of_n</div>        </td></tr>
+        <td><div>Monitor quorum value when <code>monitor_type</code> is <code>at_least</code>.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -93,16 +84,11 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>session_state<br/><div style="font-size: small;"> (added in 1.9)</div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Set new session availability status for node</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Pool member state</div>        </td></tr>
+        <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li><li>offline</li></ul></td>
+        <td><div>Specifies the current state of the node. <code>enabled</code> (All traffic allowed), specifies that system sends traffic to this node regardless of the node's state. <code>disabled</code> (Only persistent or active connections allowed), Specifies that the node can handle only persistent or active connections. <code>offline</code> (Only active connections allowed), Specifies that the node can handle only active connections. In all cases except <code>absent</code>, the node will be created if it does not yet exist.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -133,13 +119,7 @@ Examples
           partition: "Common"
           host: "10.20.30.40"
           name: "10.20.30.40"
-    
-    # Note that the BIG-IP automatically names the node using the
-    # IP address specified in previous play's host parameter.
-    # Future plays referencing this node no longer use the host
-    # parameter but instead use the name parameter.
-    # Alternatively, you could have specified a name with the
-    # name parameter when state=present.
+      delegate_to: localhost
     
     - name: Add node with a single 'ping' monitor
       bigip_node:
@@ -151,7 +131,7 @@ Examples
           host: "10.20.30.40"
           name: "mytestserver"
           monitors:
-            - /Common/icmp
+              - /Common/icmp
       delegate_to: localhost
     
     - name: Modify node description
@@ -173,39 +153,52 @@ Examples
           state: "absent"
           partition: "Common"
           name: "10.20.30.40"
-    
-    # The BIG-IP GUI doesn't map directly to the API calls for "Node ->
-    # General Properties -> State". The following states map to API monitor
-    # and session states.
-    #
-    # Enabled (all traffic allowed):
-    # monitor_state=enabled, session_state=enabled
-    # Disabled (only persistent or active connections allowed):
-    # monitor_state=enabled, session_state=disabled
-    # Forced offline (only active connections allowed):
-    # monitor_state=disabled, session_state=disabled
-    #
-    # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
+      delegate_to: localhost
     
     - name: Force node offline
       bigip_node:
           server: "lb.mydomain.com"
           user: "admin"
-          password: "mysecret"
-          state: "present"
-          session_state: "disabled"
-          monitor_state: "disabled"
+          password: "secret"
+          state: "disabled"
           partition: "Common"
           name: "10.20.30.40"
+      delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> members </td>
+        <td> ['List of members that are part of the SNAT pool.'] </td>
+        <td align=center> changed and success </td>
+        <td align=center> list </td>
+        <td align=center> ['10.10.10.10'] </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
     - Requires BIG-IP software version >= 11
-    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
-    - Best run as a local_action in your playbook
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
 
 
 

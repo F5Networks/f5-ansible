@@ -52,11 +52,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the iRule.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>The partition to create the iRule on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -154,20 +149,6 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> changed and success, when provided </td>
         <td align=center> string </td>
         <td align=center> /opt/src/irules/example1.tcl </td>
-    </tr>
-            <tr>
-        <td> partition </td>
-        <td> The partition in which the iRule was managed </td>
-        <td align=center> changed and success </td>
-        <td align=center> string </td>
-        <td align=center> Common </td>
-    </tr>
-            <tr>
-        <td> name </td>
-        <td> The name of the iRule that was managed </td>
-        <td align=center> changed and success </td>
-        <td align=center> string </td>
-        <td align=center> my-irule </td>
     </tr>
             <tr>
         <td> module </td>

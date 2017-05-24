@@ -4,7 +4,7 @@
 bigip_user - Manage user accounts and user attributes on a BIG-IP.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -44,7 +44,7 @@ Options
         <td><div>Full name of the user.</div>        </td></tr>
                 <tr><td>partition_access<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -54,7 +54,7 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -69,7 +69,7 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>shell<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>bash</li><li>none</li><li>tmsh</li></ul></td>
         <td><div>Optionally set the users shell.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
@@ -161,6 +161,23 @@ Examples
           state: "present"
           username_credential: "johnd"
           password_credential: "newsupersecretpassword"
+      delegate_to: localhost
+    
+    # Note that the second time this task runs, it would fail because
+    # The password has been changed. Therefore, it is recommended that
+    # you either,
+    #
+    #   * Put this in its own playbook that you run when you need to
+    #   * Put this task in a `block`
+    #   * Include `ignore_errors` on this task
+    - name: Change the Admin password
+      bigip_user:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          username_credential: "admin"
+          password_credential: "NewSecretPassword"
       delegate_to: localhost
 
 Return Values
