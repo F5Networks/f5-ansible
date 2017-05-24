@@ -34,25 +34,19 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_gtm_wide_ip import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        UntypedManager
-    )
+    from library.bigip_gtm_wide_ip import Parameters
+    from library.bigip_gtm_wide_ip import ModuleManager
+    from library.bigip_gtm_wide_ip import ArgumentSpec
+    from library.bigip_gtm_wide_ip import UntypedManager
 except ImportError:
-    from ansible.modules.network.f5.bigip_gtm_wide_ip import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        UntypedManager
-    )
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import Parameters
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleManager
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -133,16 +127,15 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.version_is_less_than_12 = lambda: True
-        mm.get_manager = lambda x: tm
-
         # Override methods in the specific type of manager
         tm = UntypedManager(client)
-        tm.exists = lambda: False
-        tm.create_on_device = lambda: True
+        tm.exists = Mock(return_value=False)
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=True)
+        mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
 
@@ -168,16 +161,15 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.version_is_less_than_12 = lambda: False
-        mm.get_manager = lambda x: tm
-
         # Override methods in the specific type of manager
         tm = UntypedManager(client)
-        tm.exists = lambda: False
-        tm.create_on_device = lambda: True
+        tm.exists = Mock(return_value=False)
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
 
@@ -203,16 +195,15 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.version_is_less_than_12 = lambda: False
-        mm.get_manager = lambda x: tm
-
         # Override methods in the specific type of manager
         tm = UntypedManager(client)
-        tm.exists = lambda: False
-        tm.create_on_device = lambda: True
+        tm.exists = Mock(return_value=False)
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
 
@@ -238,16 +229,15 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.version_is_less_than_12 = lambda: False
-        mm.get_manager = lambda x: tm
-
         # Override methods in the specific type of manager
         tm = UntypedManager(client)
-        tm.exists = lambda: False
-        tm.create_on_device = lambda: True
+        tm.exists = Mock(return_value=False)
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
 
