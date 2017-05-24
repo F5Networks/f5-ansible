@@ -30,26 +30,19 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_config import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_config import Parameters
+    from library.bigip_config import ModuleManager
+    from library.bigip_config import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_config import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
-
+    from ansible.modules.network.f5.bigip_config import Parameters
+    from ansible.modules.network.f5.bigip_config import ModuleManager
+    from ansible.modules.network.f5.bigip_config import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
@@ -113,13 +106,13 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.reset_device = lambda: True
-        mm.upload_to_device = lambda x: True
-        mm.move_on_device = lambda x: True
-        mm.merge_on_device = lambda *args, **kwargs: True
-        mm.remove_temporary_file = lambda **kwargs: True
-        mm.save_on_device = lambda: True
+        mm.exit_json = Mock(return_value=True)
+        mm.reset_device = Mock(return_value=True)
+        mm.upload_to_device = Mock(return_value=True)
+        mm.move_on_device = Mock(return_value=True)
+        mm.merge_on_device = Mock(return_value=True)
+        mm.remove_temporary_file = Mock(return_value=True)
+        mm.save_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
