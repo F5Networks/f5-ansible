@@ -28,6 +28,7 @@ DOCUMENTATION = '''
 ---
 module: bigip_virtual_server
 short_description: "Manages F5 BIG-IP LTM virtual servers"
+deprecated: Deprecated in 2.4. Use the bigip_virtual_server module instead.
 description:
   - "Manages F5 BIG-IP LTM virtual servers via iControl SOAP API"
 version_added: "2.1"
