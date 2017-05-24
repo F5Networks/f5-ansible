@@ -31,16 +31,18 @@ import json
 
 from ansible.compat.tests import unittest
 from ansible.module_utils import basic
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils._text import to_bytes
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_iapp_template import (
-        Parameters
-    )
+    from library.bigip_iapp_template import Parameters
+    from library.bigip_iapp_template import ModuleManager
+    from library.bigip_iapp_template import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_iapp_template import (
-        Parameters
-    )
+    from ansible.modules.network.f5.bigip_iapp_template import Parameters
+    from ansible.modules.network.f5.bigip_iapp_template import ArgumentSpec
+    from ansible.modules.network.f5.bigip_iapp_template import ModuleManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -77,3 +79,35 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.name == 'foo.iapp'
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_iapp_template(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            content=load_fixture('basic-iapp.tmpl'),
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
