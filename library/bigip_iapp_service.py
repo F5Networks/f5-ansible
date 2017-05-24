@@ -42,16 +42,12 @@ options:
         template must exist on your BIG-IP before you can successfully
         create a service. This parameter is required if the C(state)
         parameter is C(present).
-    required: False
-    default: None
   parameters:
     description:
       - A hash of all the required template variables for the iApp template.
         If your parameters are stored in a file (the more common scenario)
         it is recommended you use either the `file` or `template` lookups
         to supply the expected parameters.
-    required: False
-    default: None
   force:
     description:
       - Forces the updating of an iApp service even if the parameters to the
@@ -59,19 +55,19 @@ options:
         the iApp template that underlies the service has been updated in-place.
         This option is equivalent to re-configuring the iApp if that template
         has changed.
-    required: False
     default: False
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
         When C(absent), ensures that the iApp service has been removed.
-    required: False
     default: present
     choices:
       - present
       - absent
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+  - Requires the deepdiff Python package on the host. This is as easy as pip
     install f5-sdk.
 requirements:
   - f5-sdk
@@ -146,7 +142,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+# only common fields returned
 '''
 
 from ansible.module_utils.basic import BOOLEANS
@@ -163,7 +159,7 @@ from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
-    returnables = ['variables']
+    returnables = []
     api_attributes = [
         'tables', 'variables', 'template', 'lists'
     ]
@@ -434,22 +430,15 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(required=True),
-            template=dict(
-                required=False,
-                default=None
-            ),
+            template=dict(),
             parameters=dict(
-                required=False,
-                default=None,
                 type='dict'
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             ),
             force=dict(
-                required=False,
                 default=False,
                 choices=BOOLEANS,
                 type='bool'

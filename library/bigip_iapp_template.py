@@ -42,7 +42,7 @@ description:
     existing services are changed to consume that new template. As such,
     the ability to update templates in-place requires the C(force) option
     to be used.
-version_added: "2.3"
+version_added: "2.4"
 options:
   force:
     description:
@@ -51,8 +51,6 @@ options:
         using it. This will not update the running service though. Use
         C(bigip_iapp_service) to do that. When C(no), will update the iApp
         only if there are no iApp services using the template.
-    required: False
-    default: None
     choices:
       - yes
       - no
@@ -62,20 +60,15 @@ options:
         is only available when specifying a C(state) of C(absent) and is
         provided as a way to delete templates that you may no longer have
         the source of.
-    required: False
-    default: None
   content:
     description:
       - Sets the contents of an iApp template directly to the specified
         value. This is for simple values, but can be used with lookup
         plugins for anything complex or with formatting. C(content) must
         be provided when creating new templates.
-    required: False
-    default: None
   state:
     description:
       - Whether the iRule should exist or not.
-    required: False
     default: present
     choices:
       - present
@@ -119,7 +112,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+# only common fields returned
 '''
 
 import re
@@ -446,25 +439,16 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            name=dict(
-                required=False,
-                default=None
-            ),
+            name=dict(),
             state=dict(
-                type='str',
                 default='present',
                 choices=['present', 'absent']
             ),
             force=dict(
                 choices=BOOLEANS,
-                required=False,
-                default=None,
                 type='bool'
             ),
-            content=dict(
-                required=False,
-                default=None
-            )
+            content=dict()
         )
         self.f5_product_name = 'bigip'
         self.mutually_exclusive = [
