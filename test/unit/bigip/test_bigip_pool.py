@@ -31,26 +31,20 @@ import json
 import pytest
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_pool2 import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-    )
+    from library.bigip_pool import Parameters
+    from library.bigip_pool import ModuleManager
+    from library.bigip_pool import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_pool2 import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-    )
+    from ansible.modules.network.f5.bigip_pool import Parameters
+    from ansible.modules.network.f5.bigip_pool import ModuleManager
+    from ansible.modules.network.f5.bigip_pool import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -121,7 +115,6 @@ class TestParameters(unittest.TestCase):
             slowRampTime=200,
             reselectTries=5,
             serviceDownAction='drop'
-
         )
 
         p = Parameters(args)
@@ -165,7 +158,6 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
         mm.create_on_device = lambda: True
         mm.exists = lambda: False
 
@@ -198,9 +190,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -228,9 +219,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         msg = "'this.will.fail' is not a valid IP address"
 
@@ -257,9 +247,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         msg = "The provided port '98741' must be between 0 and 65535"
 
@@ -286,9 +275,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         msg = "The 'monitor_type' parameter cannot be empty when " \
               "'monitors' parameter is specified."
@@ -316,9 +304,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         msg = "The 'monitor' parameter cannot be empty when " \
               "'monitor_type' parameter is specified"
@@ -347,9 +334,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         msg = "Quorum value must be specified with monitor_type 'm_of_n'."
         with pytest.raises(F5ModuleError) as err:
@@ -376,9 +362,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -408,9 +393,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -447,10 +431,9 @@ class TestManager(unittest.TestCase):
             {},
         )
 
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.exists = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.update_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
 
         results = mm.exec_module()
 
@@ -486,11 +469,10 @@ class TestManager(unittest.TestCase):
             {},
         )
 
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.exists = lambda: True
-        mm.read_current_from_device = lambda: current
-        mm.create_member_on_device = lambda x: True
+        mm.update_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.create_member_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
@@ -525,11 +507,10 @@ class TestManager(unittest.TestCase):
             {},
         )
 
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.exists = lambda: True
-        mm.read_current_from_device = lambda: current
-        mm.create_member_on_device = lambda x: True
+        mm.update_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.create_member_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
@@ -553,9 +534,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -584,9 +564,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -615,9 +594,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
@@ -647,9 +625,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 

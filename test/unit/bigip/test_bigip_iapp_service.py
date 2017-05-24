@@ -30,25 +30,19 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_iapp_service import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_iapp_service import Parameters
+    from library.bigip_iapp_service import ModuleManager
+    from library.bigip_iapp_service import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_iapp_service import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_iapp_service import Parameters
+    from ansible.modules.network.f5.bigip_iapp_service import ModuleManager
+    from ansible.modules.network.f5.bigip_iapp_service import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -229,9 +223,8 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.exists = lambda: False
-        mm.create_on_device = lambda: True
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
         assert results['changed'] is True
@@ -263,10 +256,9 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: False
-        mm.exists = lambda: True
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.exists = Mock(return_value=True)
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
 
         results = mm.exec_module()
         assert results['changed'] is True

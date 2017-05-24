@@ -36,21 +36,17 @@ from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_irule import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        GtmManager,
-        LtmManager
-    )
+    from library.bigip_irule import Parameters
+    from library.bigip_irule import ModuleManager
+    from library.bigip_irule import ArgumentSpec
+    from library.bigip_irule import GtmManager
+    from library.bigip_irule import LtmManager
 except ImportError:
-    from ansible.modules.network.f5.bigip_irule import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-        GtmManager,
-        LtmManager
-    )
+    from ansible.modules.network.f5.bigip_irule import Parameters
+    from ansible.modules.network.f5.bigip_irule import ModuleManager
+    from ansible.modules.network.f5.bigip_irule import ArgumentSpec
+    from ansible.modules.network.f5.bigip_irule import GtmManager
+    from ansible.modules.network.f5.bigip_irule import LtmManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -167,7 +163,6 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
         results = mm.exec_module()
 
         assert results['changed'] is True
@@ -194,7 +189,6 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
         results = mm.exec_module()
 
         assert results['changed'] is True
@@ -222,7 +216,6 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
         results = mm.exec_module()
 
         assert results['changed'] is True

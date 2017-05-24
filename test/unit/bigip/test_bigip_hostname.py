@@ -36,17 +36,13 @@ from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_hostname import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_hostname import Parameters
+    from library.bigip_hostname import ModuleManager
+    from library.bigip_hostname import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_hostname import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_hostname import Parameters
+    from ansible.modules.network.f5.bigip_hostname import ModuleManager
+    from ansible.modules.network.f5.bigip_hostname import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -114,9 +110,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
 
         results = mm.exec_module()
 
