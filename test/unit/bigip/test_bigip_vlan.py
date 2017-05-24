@@ -31,26 +31,20 @@ import json
 import pytest
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_vlan import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-    )
+    from library.bigip_vlan import Parameters
+    from library.bigip_vlan import ModuleManager
+    from library.bigip_vlan import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_vlan import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec,
-    )
+    from ansible.modules.network.f5.bigip_vlan import Parameters
+    from ansible.modules.network.f5.bigip_vlan import ModuleManager
+    from ansible.modules.network.f5.bigip_vlan import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -166,9 +160,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             results = mm.exec_module()
 
@@ -198,9 +191,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             results = mm.exec_module()
 
@@ -230,9 +222,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             results = mm.exec_module()
 
@@ -262,9 +253,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             results = mm.exec_module()
 
@@ -295,9 +285,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             results = mm.exec_module()
 
@@ -334,10 +323,9 @@ class TestManager(unittest.TestCase):
                 ifcs
             )
 
-            mm.exit_json = lambda x: False
-            mm.update_on_device = lambda: True
-            mm.exists = lambda: True
-            mm.read_current_from_device = lambda: current
+            mm.update_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=True)
+            mm.read_current_from_device = Mock(return_value=current)
 
             results = mm.exec_module()
 
@@ -372,10 +360,9 @@ class TestManager(unittest.TestCase):
                 ifcs
             )
 
-            mm.exit_json = lambda x: False
-            mm.update_on_device = lambda: True
-            mm.exists = lambda: True
-            mm.read_current_from_device = lambda: current
+            mm.update_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=True)
+            mm.read_current_from_device = Mock(return_value=current)
 
             results = mm.exec_module()
 
@@ -410,10 +397,9 @@ class TestManager(unittest.TestCase):
                 ifcs
             )
 
-            mm.exit_json = lambda x: False
-            mm.update_on_device = lambda: True
-            mm.exists = lambda: True
-            mm.read_current_from_device = lambda: current
+            mm.update_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=True)
+            mm.read_current_from_device = Mock(return_value=current)
 
             results = mm.exec_module()
 
@@ -441,9 +427,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
@@ -472,9 +457,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = self.loaded_ifcs
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
@@ -502,9 +486,8 @@ class TestManager(unittest.TestCase):
             obj.return_value = []
 
             mm = ModuleManager(client)
-            mm.exit_json = lambda x: False
-            mm.create_on_device = lambda: True
-            mm.exists = lambda: False
+            mm.create_on_device = Mock(return_value=True)
+            mm.exists = Mock(return_value=False)
 
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()

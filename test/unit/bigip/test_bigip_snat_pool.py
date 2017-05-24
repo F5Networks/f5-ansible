@@ -33,9 +33,7 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
     from library.bigip_snat_pool import Parameters
@@ -123,8 +121,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exists = Mock()
-        mm.exists.side_effect = [False, True]
+        mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
@@ -154,8 +151,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exists = Mock()
-        mm.exists.side_effect = [True, True]
+        mm.exists = Mock(side_effect=[True, True])
         mm.read_current_from_device = Mock(return_value=current)
 
         results = mm.exec_module()

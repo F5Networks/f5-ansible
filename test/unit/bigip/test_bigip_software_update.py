@@ -34,13 +34,9 @@ from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 
 try:
-    from library.bigip_software_update import (
-        Parameters
-    )
+    from library.bigip_software_update import Parameters
 except ImportError:
-    from ansible.modules.network.f5.bigip_software_update import (
-        Parameters
-    )
+    from ansible.modules.network.f5.bigip_software_update import Parameters
 
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')

@@ -33,22 +33,16 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_provision import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_provision import Parameters
+    from library.bigip_provision import ModuleManager
+    from library.bigip_provision import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_provision import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_provision import Parameters
+    from ansible.modules.network.f5.bigip_provision import ModuleManager
+    from ansible.modules.network.f5.bigip_provision import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -121,14 +115,12 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
 
         # this forced sleeping can cause these tests to take 15
         # or more seconds to run. This is deliberate.
-        mm._is_mprov_running_on_device = Mock()
-        mm._is_mprov_running_on_device.side_effect = [True, False, False, False, False]
+        mm._is_mprov_running_on_device = Mock(side_effect=[True, False, False, False, False])
 
         results = mm.exec_module()
 
