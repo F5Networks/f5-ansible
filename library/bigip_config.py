@@ -130,7 +130,15 @@ try:
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError,
+    iteritems,
+    defaultdict
+)
 from ansible.module_utils.basic import BOOLEANS
 
 
@@ -319,25 +327,18 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             reset=dict(
-                required=False,
                 type='bool',
                 default='no',
                 choices=BOOLEANS
             ),
-            merge_content=dict(
-                required=False,
-                default=None,
-                type='str'
-            ),
+            merge_content=dict(),
             verify=dict(
                 type='bool',
-                required=False,
                 default='yes',
                 choices=BOOLEANS
             ),
             save=dict(
                 type='bool',
-                required=False,
                 default='no',
                 choices=BOOLEANS
             )
