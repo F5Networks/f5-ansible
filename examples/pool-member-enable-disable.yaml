@@ -61,15 +61,6 @@
             pool: "{{ pool_name }}"
             port: "{{ node_port }}"
             session_state: "disabled"
-            state: "present"
-        register: result
-
-      - name: Force pool member offline
-        bigip_pool_member:
-            host: "{{ node_host }}"
-            pool: "{{ pool_name }}"
-            port: "{{ node_port }}"
-            session_state: "disabled"
             monitor_state: "disabled"
             state: "present"
         register: result
