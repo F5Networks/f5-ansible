@@ -329,10 +329,11 @@ class ModuleManager(object):
     def exec_module(self):
         manager1 = self.get_manager('certificate')
         manager2 = self.get_manager('key')
-        return self.execute_managers([manager1, manager2])
+        result = self.execute_managers([manager1, manager2])
+        return result
 
     def execute_managers(self, managers):
-        results = {}
+        results = dict(changed=False)
         for manager in managers:
             result = manager.exec_module()
             for k,v in iteritems(result):
