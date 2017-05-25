@@ -1,15 +1,9 @@
 ---
 
-# Example of using a range of ports to define a number of pools
+# Example of forcing pool members offline
 #
-# This example shows you several examples of how you can use
-# Ansible's sequence iterators to create many pools automatically
-# without having to spell out each port that you want a pool to
-# service.
-#
-# Warning. This playbook will create 3000 pools on your BIG-IP.
-# Want to delete those 3000 pools? Set the `state` of the tasks
-# to "absent".
+# This example shows you how you can force a pool member offline
+# by disabling its session and monitor states
 #
 # Requirements:
 #
