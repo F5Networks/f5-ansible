@@ -1,6 +1,7 @@
 ltm virtual /Common/bar10 {
     destination /Common/10.10.10.10:80
     ip-protocol tcp
+    description "my description"
     mask 255.255.255.255
     profiles {
         /Common/http

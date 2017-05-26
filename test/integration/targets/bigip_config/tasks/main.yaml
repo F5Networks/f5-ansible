@@ -19,6 +19,20 @@
   bigip_config:
       reset: True
       save: True
-      merge_content: "{{ lookup('file', 'bigip.conf') }}"
+      merge_content: "{{ lookup('file', 'bigip.scf') }}"
       verify: False
   register: result
+
+- name: Ensure virtual server description is same as in SCF file
+  bigip_virtual_server:
+      description: "my description"
+      destination: "10.10.10.10"
+      name: "bar10"
+      port: "80"
+      state: "present"
+  register: result
+
+- name: Assert Ensure virtual server description is same as in SCF file
+  assert:
+      that:
+          - not result|changed
