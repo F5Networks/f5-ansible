@@ -1,5 +1,3 @@
-.. _cla_landing:
-
 F5 Networks Contributor License Agreement
 =========================================
 
