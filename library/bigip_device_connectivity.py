@@ -452,11 +452,14 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.name,
-            partition=self.want.partition
+        collection = self.client.api.tm.cm.devices.get_collection()
+        for resource in collection:
+            if resource.selfDevice == 'true':
+                resource.modify(**params)
+                return
+        raise F5ModuleError(
+            "The host device was not found."
         )
-        resource.modify(**params)
 
     def read_current_from_device(self):
         collection = self.client.api.tm.cm.devices.get_collection()
