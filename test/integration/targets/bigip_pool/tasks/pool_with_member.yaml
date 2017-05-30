@@ -1,0 +1,40 @@
+---
+
+- name: Create pool with member
+  bigip_pool:
+      lb_method: "{{ pool_lb_method }}"
+      host: "1.1.1.1"
+      port: "443"
+      name: "{{ pool_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create pool with member
+  assert:
+      that:
+          - result|changed
+
+- name: Create pool with member - idempotent check
+  bigip_pool:
+      lb_method: "{{ pool_lb_method }}"
+      host: "1.1.1.1"
+      port: "443"
+      name: "{{ pool_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create pool with member - idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete pool with member
+  bigip_pool:
+      name: "{{ pool_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Delete pool with member
+  assert:
+      that:
+          - result|changed
