@@ -149,6 +149,13 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
+    def force_full_push(self):
+        if self.overwrite_config:
+            return 'force-full-load-push'
+        else:
+            return ''
+
+    @property
     def overwrite_config(self):
         result = self._cast_to_bool(self._values['overwrite_config'])
         return result
@@ -228,9 +235,10 @@ class ModuleManager(object):
         self._wait_for_sync()
 
     def execute_on_device(self):
-        sync_cmd = 'config-sync {0} {1}'.format(
+        sync_cmd = 'config-sync {0} {1} {2}'.format(
             self.want.direction,
-            self.want.device_group
+            self.want.device_group,
+            self.want.force_full_push
         )
         self.client.api.tm.cm.exec_cmd(
             'run',
