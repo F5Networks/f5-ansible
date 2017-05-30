@@ -281,6 +281,7 @@ class Parameters(AnsibleF5Parameters):
         lb_map = {
             'ratio_node_address': 'ratio-node',
             'dynamic_ratio': 'dynamic-ratio-node',
+            'least_connection_member': 'least-connections-member',
             'least_connection_node_address': 'least-connections-node',
             'fastest_node_address': 'fastest-node',
             'observed_node_address': 'observed-node',
@@ -550,6 +551,10 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.create_on_device()
+        if self.want.member_name:
+            self.have, members, poolres = self.read_current_from_device()
+            if self._member_does_not_exist(members):
+                self.create_member_on_device(poolres)
         return True
 
     def create_on_device(self):
@@ -625,7 +630,7 @@ class ArgumentSpec(object):
         self.lb_choice_deprecated = [
             'round_robin',
             'ratio_member',
-            'least_connections_member',
+            'least_connection_member',
             'observed_member',
             'predictive_member',
             'ratio_node_address',

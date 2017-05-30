@@ -199,9 +199,19 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        current = (
+            Parameters(
+                load_fixture('load_ltm_pool.json')
+            ),
+            self.loaded_members,
+            {},
+        )
+
         mm = ModuleManager(client)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.create_member_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
