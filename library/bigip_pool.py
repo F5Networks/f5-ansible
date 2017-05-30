@@ -45,95 +45,66 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the pool.
-    required: False
     version_added: "2.3"
-  state:
-    description:
-      - Pool/pool member state.
-    required: False
-    default: present
-    choices:
-      - present
-      - absent
   name:
     description:
       - Pool name
     required: True
-    default: None
     aliases:
       - pool
-  partition:
-    description:
-      - Partition of pool/pool member.
-    required: False
-    default: 'Common'
   lb_method:
     description:
-      - Load balancing method.
+      - Load balancing method. When creating a new pool, if this value is not
+        specified, the default of C(round-robin) will be used.
     version_added: "1.3"
-    required: False
-    default: 'round_robin'
     choices:
-      - round_robin
-      - ratio_member
-      - least_connection_member
-      - observed_member
-      - predictive_member
-      - ratio_node_address
-      - least_connection_node_address
-      - fastest_node_address
-      - observed_node_address
-      - predictive_node_address
-      - dynamic_ratio
-      - fastest_app_response
-      - least_sessions
-      - dynamic_ratio_member
-      - l3_addr
-      - weighted_least_connection_member
-      - weighted_least_connection_node_address
-      - ratio_session
-      - ratio_least_connection_member
-      - ratio_least_connection_node_address
+      - dynamic-ratio-member
+      - dynamic-ratio-node
+      - fastest-app-response
+      - fastest-node
+      - least-connections-member
+      - least-connections-node
+      - least-sessions
+      - observed-member
+      - observed-node
+      - predictive-member
+      - predictive-node
+      - ratio-least-connections-member
+      - ratio-least-connections-node
+      - ratio-member
+      - ratio-node
+      - ratio-session
+      - round-robin
+      - weighted-least-connections-member
+      - weighted-least-connections-nod
   monitor_type:
     description:
       - Monitor rule type when monitors > 1
     version_added: "1.3"
-    required: False
-    default: None
     choices: ['and_list', 'm_of_n']
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
     version_added: "1.3"
-    required: False
-    default: None
   monitors:
     description:
-      - Monitor template name list. If full path is not provided,
-        it will be appended by the set partition name.
+      - Monitor template name list. If the partition is not provided as part of
+        the monitor name, then the C(partition) option will be used instead.
     version_added: "1.3"
-    required: False
-    default: None
   slow_ramp_time:
     description:
       - Sets the ramp-up time (in seconds) to gradually ramp up the load on
         newly added or freshly detected up pool members.
     version_added: "1.3"
-    required: False
-    default: None
   reselect_tries:
     description:
       - Sets the number of times the system tries to contact a pool member
         after a passive failure.
     version_added: "2.2"
-    required: False
-    default: None
   service_down_action:
     description:
       - Sets the action to take when node goes down in pool.
     version_added: "1.3"
-    required: False
-    default: None
     choices:
       - none
       - reset
@@ -142,15 +113,13 @@ options:
   host:
     description:
       - Pool member IP.
-    required: False
-    default: None
+    deprecated: '2.4'
     aliases:
       - address
   port:
     description:
       - Pool member port.
-    required: False
-    default: None
+    deprecated: '2.4'
 extends_documentation_fragment: f5
 '''
 
@@ -214,14 +183,69 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
+monitor_type:
+    description: The contact that was set on the datacenter.
+    returned: changed
+    type: string
+    sample: "admin@root.local"
+quorum:
+    description: The quorum that was set on the pool
+    returned: changed
+    type: int
+    sample: 2
+monitors:
+    description: Monitors set on the pool.
+    returned: changed
+    type: list
+    sample: ['/Common/http', '/Common/gateway_icmp']
+service_down_action:
+    description: Service down action that is set on the pool.
+    returned: changed
+    type: string
+    sample: "reset"
+description:
+    description: Description set on the pool.
+    returned: changed
+    type: string
+    sample: "Pool of web servers"
+lb_method:
+    description: The LB method set for the pool.
+    returned: changed
+    type: string
+    sample: "round-robin"
+host:
+    description: IP of pool member included in pool.
+    returned: changed
+    type: string
+    sample: "10.10.10.10"
+port:
+    description: Port of pool member included in pool.
+    returned: changed
+    type: int
+    sample: 80
+slow_ramp_time:
+    description: The new value that is set for the slow ramp-up time.
+    returned: changed
+    type: int
+    sample: 500
+reselect_tries:
+    description: The new value that is set for the number of tries to contact member
+    returned: changed
+    type: int
+    sample: 10
 '''
 
-from ansible.module_utils.f5_utils import *
 from netaddr import IPAddress, AddrFormatError
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
-
     api_map = {
         'loadBalancingMode': 'lb_method',
         'slowRampTime': 'slow_ramp_time',
@@ -231,15 +255,13 @@ class Parameters(AnsibleF5Parameters):
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'host', 'port', 'slow_ramp_time',
-        'reselect_tries'
+        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries'
     ]
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'host', 'port', 'monitor',
-        'slow_ramp_time', 'reselect_tries', 'name', 'member_name',
-        'partition'
+        'description', 'lb_method', 'host', 'port', 'slow_ramp_time',
+        'reselect_tries'
     ]
 
     api_attributes = [
@@ -247,13 +269,46 @@ class Parameters(AnsibleF5Parameters):
          'reselectTries', 'serviceDownAction'
     ]
 
+    def __init__(self, params=None):
+        super(Parameters, self).__init__(params)
+        self._values['__warnings'] = []
+
     @property
     def lb_method(self):
-        rawvalue = self._values['lb_method']
-        if rawvalue is None:
+        lb_map = {
+            'ratio_node_address': 'ratio-node',
+            'dynamic_ratio': 'dynamic-ratio-node',
+            'least_connection_node_address': 'least-connections-node',
+            'fastest_node_address': 'fastest-node',
+            'observed_node_address': 'observed-node',
+            'predictive_node_address': 'predictive-node',
+            'weighted_least_connection_member': 'weighted-least-connections-member',
+            'weighted_least_connection_node_address': 'weighted-least-connections-node',
+            'ratio_least_connection_member': 'ratio-least-connections-member',
+            'ratio_least_connection_node_address': 'ratio-least-connections-node'
+        }
+        lb_method = self._values['lb_method']
+        if lb_method is None:
             return None
-        value = rawvalue.replace('_', '-')
-        return value
+
+        spec = ArgumentSpec()
+        if lb_method in spec.lb_choice_removed:
+            raise F5ModuleError(
+                "The provided lb_method is not supported"
+            )
+        if lb_method in spec.lb_choice_deprecated:
+            self._values['__warnings'].append(
+                dict(
+                    msg='The provided lb_method is deprecated',
+                    version='2.4'
+                )
+            )
+            lb_method = lb_map.get(lb_method, lb_method.replace('_', '-'))
+        try:
+            assert lb_method in spec.lb_choice
+        except AssertionError:
+            raise F5ModuleError('Provided lb_method is unknown')
+        return lb_method
 
     @property
     def monitors(self):
@@ -275,7 +330,6 @@ class Parameters(AnsibleF5Parameters):
         for m in monitor_list:
             if not m.startswith(part):
                 m = '/{0}/{1}'.format(self.partition, m)
-
             monitors.append(m)
 
         return monitors
@@ -306,7 +360,7 @@ class Parameters(AnsibleF5Parameters):
                     and_list.append('and')
                     and_list.append(m)
             result = ' '.join(and_list)
-        elif monitor_type == 'm_of_n':
+        else:
             min_list = list()
             prefix = 'min {0} of {{'.format(str(quorum))
             min_list.append(prefix)
@@ -365,8 +419,9 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for api_attribute in self.api_attributes:
             if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self,
-                                                self.api_map[api_attribute])
+                result[api_attribute] = getattr(
+                    self, self.api_map[api_attribute]
+                )
             else:
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
@@ -396,7 +451,20 @@ class ModuleManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations()
         return result
+
+    def _announce_deprecations(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__warnings', [])
+        if self.have:
+            warnings += self.have._values.get('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def _set_changed_options(self):
         changed = {}
@@ -507,15 +575,15 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         )
-        member = result.members_s.members.load(
-            name=self.want.member_name,
-            partition=self.want.partition
-        )
-        if member:
-            member.delete()
-            self.delete_node_on_device()
-
-        if result:
+        if self.want.member_name and self.want.port and self.want.pool:
+            member = result.members_s.members.load(
+                name=self.want.member_name,
+                partition=self.want.partition
+            )
+            if member:
+                member.delete()
+                self.delete_node_on_device()
+        else:
             result.delete()
 
     def read_current_from_device(self):
@@ -529,12 +597,12 @@ class ModuleManager(object):
         return Parameters(result), members, tmp_res
 
     def delete_node_on_device(self):
-        node = self.client.api.tm.ltm.nodes.node.load(
+        resource = self.client.api.tm.ltm.nodes.node.load(
             name=self.want.host,
             partition=self.want.partition
         )
         try:
-            node.delete()
+            resource.delete()
         except iControlUnexpectedHTTPError as e:
             # If we cannot remove it, it is in use, it is up to user to delete
             # it later.
@@ -546,17 +614,52 @@ class ModuleManager(object):
 
 class ArgumentSpec(object):
     def __init__(self):
-        self.lb_choice = [
-            'round_robin', 'ratio_member', 'least_connection_member',
-            'observed_member', 'predictive_member', 'ratio_node_address',
-            'least_connection_node_address', 'fastest_node_address',
-            'observed_node_address', 'predictive_node_address',
-            'dynamic_ratio', 'fastest_app_response', 'least_sessions',
-            'dynamic_ratio_member', 'l3_addr', 'ratio_session'
-            'weighted_least_connection_member', 'ratio_least_connection_member'
+        self.lb_choice_deprecated = [
+            'round_robin',
+            'ratio_member',
+            'least_connections_member',
+            'observed_member',
+            'predictive_member',
+            'ratio_node_address',
+            'least_connection_node_address',
+            'fastest_node_address',
+            'observed_node_address',
+            'predictive_node_address',
+            'dynamic_ratio',
+            'fastest_app_response',
+            'least_sessions',
+            'dynamic_ratio_member',
+            'ratio_session',
+            'weighted_least_connection_member',
+            'ratio_least_connection_member',
             'weighted_least_connection_node_address',
             'ratio_least_connection_node_address'
         ]
+        self.lb_choice_removed = [
+            'l3_addr'
+        ]
+        self.lb_choice = [
+            'dynamic-ratio-member',
+            'dynamic-ratio-node',
+            'fastest-app-response',
+            'fastest-node',
+            'least-connections-member',
+            'least-connections-node',
+            'least-sessions',
+            'observed-member',
+            'observed-node',
+            'predictive-member',
+            'predictive-node',
+            'ratio-least-connections-member',
+            'ratio-least-connections-node',
+            'ratio-member',
+            'ratio-node',
+            'ratio-session',
+            'round-robin',
+            'weighted-least-connections-member',
+            'weighted-least-connections-node'
+        ]
+        lb_choices = self.lb_choice_removed + self.lb_choice + self.lb_choice_deprecated
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
@@ -564,60 +667,41 @@ class ArgumentSpec(object):
                 aliases=['pool']
             ),
             lb_method=dict(
-                required=False,
-                choices=self.lb_choice,
-                default=None
+                choices=lb_choices
             ),
             monitor_type=dict(
-                required=False,
                 choices=[
                     'and_list', 'm_of_n'
-                ],
-                default=None
+                ]
             ),
             quorum=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             monitors=dict(
-                required=False,
-                default=None,
                 type='list'
             ),
             slow_ramp_time=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             reselect_tries=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             service_down_action=dict(
-                required=False,
                 choices=[
                     'none', 'reset',
                     'drop', 'reselect'
-                ],
-                default=None
+                ]
             ),
-            description=dict(
-                required=False,
-                default=None,
-            ),
+            description=dict(),
             host=dict(
-                required=False,
                 aliases=['address'],
-                default=None
+                removed_in_version='2.4'
             ),
             port=dict(
-                required=False,
-                default=None,
-                type='int'
-                )
+                type='int',
+                removed_in_version='2.4'
             )
+        )
         self.f5_product_name = 'bigip'
 
 
