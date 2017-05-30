@@ -235,6 +235,8 @@ reselect_tries:
     sample: 10
 '''
 
+import re
+import os
 from netaddr import IPAddress, AddrFormatError
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -255,13 +257,14 @@ class Parameters(AnsibleF5Parameters):
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries'
+        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
+        'host', 'port'
     ]
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'host', 'port', 'slow_ramp_time',
-        'reselect_tries'
+        'reselect_tries', 'monitor', 'member_name', 'name', 'partition'
     ]
 
     api_attributes = [
@@ -312,7 +315,6 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def monitors(self):
-        part = '/' + self.partition
         monitors = list()
         monitor_list = self._values['monitors']
         monitor_type = self._values['monitor_type']
@@ -328,8 +330,14 @@ class Parameters(AnsibleF5Parameters):
             return None
 
         for m in monitor_list:
-            if not m.startswith(part):
+            if re.match(r'\/\w+\/\w+', m):
+                m = '/{0}/{1}'.format(self.partition, os.path.basename(m))
+            elif re.match(r'\w+', m):
                 m = '/{0}/{1}'.format(self.partition, m)
+            else:
+                raise F5ModuleError(
+                    "Unknown monitor format '%s'".format(m)
+                )
             monitors.append(m)
 
         return monitors

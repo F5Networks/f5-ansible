@@ -82,7 +82,6 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         m = ['/Common/Fake', '/Common/Fake2']
         args = dict(
-            lb_method='obscure_hypenated_fake_method',
             monitor_type='m_of_n',
             monitors=m,
             quorum=1,
@@ -94,7 +93,6 @@ class TestParameters(unittest.TestCase):
         )
 
         p = Parameters(args)
-        assert p.lb_method == 'obscure-hypenated-fake-method'
         assert p.monitor_type == 'm_of_n'
         assert p.quorum == 1
         assert p.monitors == m
@@ -109,7 +107,6 @@ class TestParameters(unittest.TestCase):
     def test_api_parameters(self):
         m = ['/Common/Fake', '/Common/Fake2']
         args = dict(
-            loadBalancingMode='obscure_hypenated_fake_method',
             monitor_type='and_list',
             monitors=m,
             slowRampTime=200,
@@ -118,11 +115,26 @@ class TestParameters(unittest.TestCase):
         )
 
         p = Parameters(args)
-        assert p.lb_method == 'obscure-hypenated-fake-method'
         assert p.monitor == '/Common/Fake and /Common/Fake2'
         assert p.slow_ramp_time == 200
         assert p.reselect_tries == 5
         assert p.service_down_action == 'drop'
+
+    def test_unknown_module_lb_method(self):
+        args = dict(
+            lb_method='obscure_hyphenated_fake_method',
+        )
+        with pytest.raises(F5ModuleError):
+            p = Parameters(args)
+            assert p.lb_method == 'foo'
+
+    def test_unknown_api_lb_method(self):
+        args = dict(
+            loadBalancingMode='obscure_hypenated_fake_method'
+        )
+        with pytest.raises(F5ModuleError):
+            p = Parameters(args)
+            assert p.lb_method == 'foo'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -148,7 +160,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -180,7 +191,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -209,7 +219,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -237,7 +246,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -265,7 +273,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -294,7 +301,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -324,7 +330,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -352,7 +357,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -383,7 +387,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -412,8 +415,7 @@ class TestManager(unittest.TestCase):
             monitors=['/Common/http', '/Common/tcp'],
             server='localhost',
             password='password',
-            user='admin',
-
+            user='admin'
         ))
 
         client = AnsibleF5Client(
@@ -450,8 +452,7 @@ class TestManager(unittest.TestCase):
             port=8080,
             server='localhost',
             password='password',
-            user='admin',
-
+            user='admin'
         ))
 
         client = AnsibleF5Client(
@@ -488,8 +489,7 @@ class TestManager(unittest.TestCase):
             port=80,
             server='localhost',
             password='password',
-            user='admin',
-
+            user='admin'
         ))
 
         client = AnsibleF5Client(
@@ -524,7 +524,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -554,7 +553,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -584,7 +582,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
@@ -615,7 +612,6 @@ class TestManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin'
-
         ))
 
         client = AnsibleF5Client(
