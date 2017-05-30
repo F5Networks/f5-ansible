@@ -260,7 +260,11 @@ class ModuleManager(object):
             #     done yet. You _must_ `sync_device_to_group` in this
             #     case.
             #
-            if status in ['Changes Pending', 'Awaiting Initial Sync']:
+            # Not All Devices Synced:
+            #     A device group will go into this state immediately
+            #     after starting the sync and stay until all devices finish.
+            #
+            if status in ['Changes Pending', 'Awaiting Initial Sync', 'Not All Devices Synced']:
                 pass
             elif status == 'In Sync':
                 return
