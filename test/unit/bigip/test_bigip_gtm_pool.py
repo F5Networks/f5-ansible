@@ -40,11 +40,13 @@ try:
     from library.bigip_gtm_pool import ModuleManager
     from library.bigip_gtm_pool import ArgumentSpec
     from library.bigip_gtm_pool import UntypedManager
+    from library.bigip_gtm_pool import TypedManager
 except ImportError:
     from ansible.modules.network.f5.bigip_gtm_pool import Parameters
     from ansible.modules.network.f5.bigip_gtm_pool import ModuleManager
     from ansible.modules.network.f5.bigip_gtm_pool import ArgumentSpec
     from ansible.modules.network.f5.bigip_gtm_pool import UntypedManager
+    from ansible.modules.network.f5.bigip_gtm_pool import TypedManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -132,18 +134,17 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         tm = UntypedManager(client)
         tm.exists = Mock(side_effect=[False, True])
-        tm.create_on_device = Mock(side_effect=True)
+        tm.create_on_device = Mock(return_value=True)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
         mm.version_is_less_than_12 = Mock(return_value=True)
         mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['name'] == 'foo'
-        assert results['state'] == 'present'
         assert results['preferred_lb_method'] == 'round-robin'
 
     def test_create_pool_post_v12(self, *args):
@@ -163,7 +164,7 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = UntypedManager(client)
+        tm = TypedManager(client)
         tm.exists = Mock(side_effect=[False, True])
         tm.create_on_device = Mock(return_value=True)
 
@@ -171,12 +172,11 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
         mm.version_is_less_than_12 = Mock(return_value=False)
         mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['name'] == 'foo'
-        assert results['state'] == 'present'
         assert results['preferred_lb_method'] == 'round-robin'
 
     def test_delete_pool_post_v12(self, *args):
@@ -196,7 +196,7 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = UntypedManager(client)
+        tm = TypedManager(client)
         tm.exists = Mock(side_effect=[True, False])
         tm.remove_from_device = Mock(return_value=True)
 
@@ -204,6 +204,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
         mm.version_is_less_than_12 = Mock(return_value=False)
         mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
 
         results = mm.exec_module()
 
