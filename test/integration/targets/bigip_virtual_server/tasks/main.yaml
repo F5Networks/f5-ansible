@@ -240,29 +240,6 @@
       state: "present"
   register: result
 
-- name: Add virtual server again
-  bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
-  register: result
-
-- name: Assert Add virtual server again
-  assert:
-      that:
-          - result|changed
-
-- name: Delete virtual server with empty port
-  bigip_virtual_server:
-      name: "{{ vs_name }}"
-      state: "absent"
-      port: ""
-  register: result
-
 # Tests for different issues filed on Github
 - include: issue-38.yaml
   tags: issue-38
