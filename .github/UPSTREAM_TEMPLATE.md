@@ -59,7 +59,7 @@ Ensure all the following are complete
 #### Unit test related
 - [ ] Unit tests in `tests/unit` for the product exist
 - [ ] `TestParameters` unit test class exists and has content
-- [ ] `TestManager` unit test class exists and has contents
+- [ ] `TestManager` unit test class exists and has content
 
 #### QC related
 - [ ] Module code passes `tox -e flake -- library/MODULE_NAME.py`
@@ -70,10 +70,12 @@ Ensure all the following are complete
 - [ ] Docs have been merged to `f5-ansible` so they can be rebuilt by ReadTheDocs.
 
 #### Upstream vendor related
+(this must be done inside of Ansible's source tree)
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.6 MODULE_NAME.py`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.7 MODULE_NAME.py`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.5 MODULE_NAME.py`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.6 MODULE_NAME.py`
+- [ ] Module code in Ansible repo passes `ansible-test sanity --test validate-modules`
 
 
 ##### SUMMARY
