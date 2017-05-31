@@ -62,7 +62,7 @@ Ensure all the following are complete
 #### Unit test related
 - [ ] Unit tests in `tests/unit` for the product exist
 - [ ] `TestParameters` unit test class exists and has content
-- [ ] `TestManager` unit test class exists and has content
+- [ ] `TestManager` unit test class (or `*Managers` if required) exists and has content
 
 #### QC related
 - [ ] Module code passes `tox -e flake -- library/MODULE_NAME.py`
