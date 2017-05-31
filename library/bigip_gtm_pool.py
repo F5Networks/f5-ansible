@@ -132,9 +132,9 @@ options:
     required: True
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
-    pip install f5-sdk
+    pip install f5-sdk.
   - Requires the netaddr Python package on the host. This is as easy as
-    pip install netaddr
+    pip install netaddr.
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk
