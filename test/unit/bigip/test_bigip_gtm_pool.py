@@ -111,12 +111,12 @@ class TestParameters(unittest.TestCase):
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-class TestManager(unittest.TestCase):
+class TestUntypedManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_pool_pre_v12(self, *args):
+    def test_create_pool(self, *args):
         set_module_args(dict(
             name='foo',
             preferred_lb_method='round-robin',
@@ -147,7 +147,83 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['preferred_lb_method'] == 'round-robin'
 
-    def test_create_pool_post_v12(self, *args):
+    def test_update_pool(self, *args):
+        set_module_args(dict(
+            name='foo',
+            preferred_lb_method='topology',
+            alternate_lb_method='drop-packet',
+            fallback_lb_method='cpu',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        current = Parameters(load_fixture('load_gtm_pool_untyped_default.json'))
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = Mock(side_effect=[True, True])
+        tm.update_on_device = Mock(return_value=True)
+        tm.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=True)
+        mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['preferred_lb_method'] == 'topology'
+        assert results['alternate_lb_method'] == 'drop-packet'
+        assert results['fallback_lb_method'] == 'cpu'
+
+    def test_delete_pool(self, *args):
+        set_module_args(dict(
+            name='foo',
+            state='absent',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        tm = UntypedManager(client)
+        tm.exists = Mock(side_effect=[True, False])
+        tm.remove_from_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=True)
+        mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestTypedManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_pool(self, *args):
         set_module_args(dict(
             name='foo',
             preferred_lb_method='round-robin',
@@ -179,7 +255,46 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['preferred_lb_method'] == 'round-robin'
 
-    def test_delete_pool_post_v12(self, *args):
+    def test_update_pool(self, *args):
+        set_module_args(dict(
+            name='foo',
+            preferred_lb_method='topology',
+            alternate_lb_method='drop-packet',
+            fallback_lb_method='cpu',
+            type='a',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        current = Parameters(load_fixture('load_gtm_pool_a_default.json'))
+
+        # Override methods in the specific type of manager
+        tm = TypedManager(client)
+        tm.exists = Mock(side_effect=[True, True])
+        tm.update_on_device = Mock(return_value=True)
+        tm.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=tm)
+        mm.gtm_provisioned = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['preferred_lb_method'] == 'topology'
+        assert results['alternate_lb_method'] == 'drop-packet'
+        assert results['fallback_lb_method'] == 'cpu'
+
+    def test_delete_pool(self, *args):
         set_module_args(dict(
             name='foo',
             type='a',
