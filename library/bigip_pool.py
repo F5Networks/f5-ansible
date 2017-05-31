@@ -337,7 +337,7 @@ class Parameters(AnsibleF5Parameters):
                 m = '/{0}/{1}'.format(self.partition, m)
             else:
                 raise F5ModuleError(
-                    "Unknown monitor format '%s'".format(m)
+                    "Unknown monitor format '{0}'".format(m)
                 )
             monitors.append(m)
 
