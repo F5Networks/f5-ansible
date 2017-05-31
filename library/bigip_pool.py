@@ -36,9 +36,9 @@ author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
 notes:
-  - Requires BIG-IP software version >= 11
-  - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python)
-  - Best run as a local_action in your playbook
+  - Requires BIG-IP software version >= 11.
+  - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
+  - Best run as a local_action in your playbook.
 requirements:
   - f5-sdk
 options:
@@ -79,7 +79,7 @@ options:
       - weighted-least-connections-nod
   monitor_type:
     description:
-      - Monitor rule type when monitors > 1
+      - Monitor rule type when C(monitors) > 1.
     version_added: "1.3"
     choices: ['and_list', 'm_of_n']
   quorum:
@@ -268,8 +268,8 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     api_attributes = [
-         'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
-         'reselectTries', 'serviceDownAction'
+        'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
+        'reselectTries', 'serviceDownAction'
     ]
 
     def __init__(self, params=None):
@@ -303,7 +303,7 @@ class Parameters(AnsibleF5Parameters):
         if lb_method in spec.lb_choice_deprecated:
             self._values['__warnings'].append(
                 dict(
-                    msg='The provided lb_method is deprecated',
+                    msg="The provided lb_method '{0}' is deprecated".format(lb_method),
                     version='2.4'
                 )
             )
@@ -736,6 +736,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
