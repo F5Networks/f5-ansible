@@ -160,7 +160,7 @@ Examples
           state: "present"
           name: "my-pool"
           partition: "Common"
-          host: "{{ ansible_default_ipv4["address"] }}"
+          host: "{{ ansible_default_ipv4['address'] }}"
           port: 80
       delegate_to: localhost
     
@@ -172,7 +172,7 @@ Examples
           state: "absent"
           name: "my-pool"
           partition: "Common"
-          host: "{{ ansible_default_ipv4["address"] }}"
+          host: "{{ ansible_default_ipv4['address'] }}"
           port: 80
       delegate_to: localhost
     

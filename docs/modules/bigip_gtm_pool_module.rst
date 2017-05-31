@@ -4,7 +4,7 @@
 bigip_gtm_pool - Manages F5 BIG-IP GTM pools.
 +++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -40,17 +40,17 @@ Options
     </tr>
                 <tr><td>alternate_lb_method<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>round-robin</li><li>return-to-dns</li><li>none</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>packet-rate</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
         <td><div>The load balancing mode that the system tries if the <code>preferred_lb_method</code> is unsuccessful in picking a pool.</div>        </td></tr>
                 <tr><td>fallback_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the IPv4, or IPv6 address of the server to which the system directs requests when it cannot use one of its pools to do so. Note that the system uses the fallback IP only if you select the <code>fallback_ip</code> load balancing method.</div>        </td></tr>
                 <tr><td>fallback_lb_method<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
         <td><div>The load balancing mode that the system tries if both the <code>preferred_lb_method</code> and <code>alternate_lb_method</code>s are unsuccessful in picking a pool.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -65,7 +65,7 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>preferred_lb_method<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
         <td><div>The load balancing mode that the system tries first.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -87,7 +87,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>a</li><li>aaaa</li><li>cname</li><li>mx</li><li>naptr</li><li>srv</li></ul></td>
-        <td><div>The type of GTM pool that you want to create. On BIG-IP releases prior to version 12, this parameter is not supported.</div>        </td></tr>
+        <td><div>The type of GTM pool that you want to create. On BIG-IP releases prior to version 12, this parameter is not required. On later versions of BIG-IP, this is a required parameter.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -143,11 +143,32 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> changed </td>
-        <td> Denotes if the F5 configuration was updated. </td>
-        <td align=center> always </td>
-        <td align=center> bool </td>
-        <td align=center>  </td>
+        <td> alternate_lb_method </td>
+        <td> New alternate load balancing method for the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> drop-packet </td>
+    </tr>
+            <tr>
+        <td> fallback_lb_method </td>
+        <td> New fallback load balancing method for the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> fewest-hops </td>
+    </tr>
+            <tr>
+        <td> fallback_ip </td>
+        <td> New fallback IP used when load balacing using the C(fallback_ip) method. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 10.10.10.10 </td>
+    </tr>
+            <tr>
+        <td> preferred_lb_method </td>
+        <td> New preferred load balancing method for the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> topology </td>
     </tr>
         
     </table>
@@ -157,8 +178,8 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
 
 
 
