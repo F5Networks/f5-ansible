@@ -68,7 +68,7 @@ F5
   bigip_view - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
   bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP <bigip_virtual_address_module>
   bigip_virtual_server (D) - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>
-  bigip_virtual_server - Manage LTM virtual servers on a BIG-IP <bigip_virtual_server_module>
+  bigip_virtual_server - Manage LTM virtual servers on a BIG-IP. <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
   bigiq_license_pool - foo <bigiq_license_pool_module>
   bigiq_license_pool_member - foo <bigiq_license_pool_member_module>

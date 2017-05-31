@@ -1,8 +1,8 @@
 .. _bigip_virtual_server:
 
 
-bigip_virtual_server - Manage LTM virtual servers on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_virtual_server - Manage LTM virtual servers on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.1
 
@@ -40,12 +40,12 @@ Options
     </tr>
                 <tr><td>default_persistence_profile<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Default Profile which manages the session persistence.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Virtual server description.</div>        </td></tr>
                 <tr><td>destination<br/><div style="font-size: small;"></div></td>
@@ -56,12 +56,12 @@ Options
     <div style="font-size: small;">aliases: address, ip<div>        </td></tr>
                 <tr><td>enabled_vlans<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>List of VLANs to be enabled. When a VLAN named <code>ALL</code> is used, all VLANs will be allowed. VLANs can be specified with or without the leading partition. If the partition is not specified in the VLAN, then the `partition` option of this module will be used.</div>        </td></tr>
                 <tr><td>irules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>List of rules to be applied in priority order.</div></br>
     <div style="font-size: small;">aliases: all_rules<div>        </td></tr>
@@ -78,23 +78,23 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Default pool for the virtual server.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div>        </td></tr>
                 <tr><td>profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be used by the virtual server. The module will delegate to the device whether the specified profile list is valid or not.</div></br>
     <div style="font-size: small;">aliases: all_profiles<div>        </td></tr>
                 <tr><td>route_advertisement_state<br/><div style="font-size: small;"> (added in 2.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Enable route advertisement for destination.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -109,7 +109,7 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>None</li><li>Automap</li><li>Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT with the specific pool</li></ul></td>
         <td><div>Source network address policy.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>

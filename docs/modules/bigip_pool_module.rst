@@ -43,36 +43,31 @@ Options
         <td><div>Specifies descriptive text that identifies the pool.</div>        </td></tr>
                 <tr><td>host<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Pool member IP.</div></br>
     <div style="font-size: small;">aliases: address<div>        </td></tr>
                 <tr><td>lb_method<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>round_robin</td>
-        <td><ul><li>round_robin</li><li>ratio_member</li><li>least_connection_member</li><li>observed_member</li><li>predictive_member</li><li>ratio_node_address</li><li>least_connection_node_address</li><li>fastest_node_address</li><li>observed_node_address</li><li>predictive_node_address</li><li>dynamic_ratio</li><li>fastest_app_response</li><li>least_sessions</li><li>dynamic_ratio_member</li><li>l3_addr</li><li>weighted_least_connection_member</li><li>weighted_least_connection_node_address</li><li>ratio_session</li><li>ratio_least_connection_member</li><li>ratio_least_connection_node_address</li></ul></td>
-        <td><div>Load balancing method.</div>        </td></tr>
+    <td></td>
+        <td><ul><li>dynamic-ratio-member</li><li>dynamic-ratio-node</li><li>fastest-app-response</li><li>fastest-node</li><li>least-connections-member</li><li>least-connections-node</li><li>least-sessions</li><li>observed-member</li><li>observed-node</li><li>predictive-member</li><li>predictive-node</li><li>ratio-least-connections-member</li><li>ratio-least-connections-node</li><li>ratio-member</li><li>ratio-node</li><li>ratio-session</li><li>round-robin</li><li>weighted-least-connections-member</li><li>weighted-least-connections-nod</li></ul></td>
+        <td><div>Load balancing method. When creating a new pool, if this value is not specified, the default of <code>round-robin</code> will be used.</div>        </td></tr>
                 <tr><td>monitor_type<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>and_list</li><li>m_of_n</li></ul></td>
-        <td><div>Monitor rule type when monitors &gt; 1</div>        </td></tr>
+        <td><div>Monitor rule type when <code>monitors</code> &gt; 1.</div>        </td></tr>
                 <tr><td>monitors<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>Monitor template name list. If full path is not provided, it will be appended by the set partition name.</div>        </td></tr>
+        <td><div>Monitor template name list. If the partition is not provided as part of the monitor name, then the <code>partition</code> option will be used instead.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Pool name</div></br>
     <div style="font-size: small;">aliases: pool<div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>Partition of pool/pool member.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -80,17 +75,17 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Pool member port.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Monitor quorum value when <code>monitor_type</code> is <code>m_of_n</code>.</div>        </td></tr>
                 <tr><td>reselect_tries<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Sets the number of times the system tries to contact a pool member after a passive failure.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -105,19 +100,14 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>none</li><li>reset</li><li>drop</li><li>reselect</li></ul></td>
         <td><div>Sets the action to take when node goes down in pool.</div>        </td></tr>
                 <tr><td>slow_ramp_time<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Sets the ramp-up time (in seconds) to gradually ramp up the load on newly added or freshly detected up pool members.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Pool/pool member state.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -196,14 +186,103 @@ Examples
           partition: "Common"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> monitors </td>
+        <td> Monitors set on the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/http', '/Common/gateway_icmp'] </td>
+    </tr>
+            <tr>
+        <td> lb_method </td>
+        <td> The LB method set for the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> round-robin </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> Description set on the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Pool of web servers </td>
+    </tr>
+            <tr>
+        <td> slow_ramp_time </td>
+        <td> The new value that is set for the slow ramp-up time. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 500 </td>
+    </tr>
+            <tr>
+        <td> service_down_action </td>
+        <td> Service down action that is set on the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> reset </td>
+    </tr>
+            <tr>
+        <td> port </td>
+        <td> Port of pool member included in pool. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 80 </td>
+    </tr>
+            <tr>
+        <td> host </td>
+        <td> IP of pool member included in pool. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 10.10.10.10 </td>
+    </tr>
+            <tr>
+        <td> reselect_tries </td>
+        <td> The new value that is set for the number of tries to contact member </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10 </td>
+    </tr>
+            <tr>
+        <td> monitor_type </td>
+        <td> The contact that was set on the datacenter. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> admin@root.local </td>
+    </tr>
+            <tr>
+        <td> quorum </td>
+        <td> The quorum that was set on the pool </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 11
-    - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python)
-    - Best run as a local_action in your playbook
+    - Requires BIG-IP software version >= 11.
+    - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
+    - Best run as a local_action in your playbook.
 
 
 
