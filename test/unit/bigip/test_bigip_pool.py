@@ -245,7 +245,7 @@ class TestManager(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             mm.exec_module()
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_create_pool_invalid_port(self, *args):
         set_module_args(dict(
@@ -272,7 +272,7 @@ class TestManager(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             mm.exec_module()
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_create_pool_monitor_type_missing(self, *args):
         set_module_args(dict(
@@ -300,7 +300,7 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_create_pool_monitors_missing(self, *args):
         set_module_args(dict(
@@ -328,7 +328,7 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_create_pool_quorum_missing(self, *args):
         set_module_args(dict(
@@ -356,7 +356,7 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as err:
             mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_create_pool_monitor_and_list(self, *args):
         set_module_args(dict(
