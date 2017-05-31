@@ -78,7 +78,6 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - Requires Ansible >= 2.3.
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
@@ -327,19 +326,16 @@ class ArgumentSpec(object):
         self.argument_spec = dict(
             reset=dict(
                 type='bool',
-                default='no',
-                choices=BOOLEANS
+                default=False
             ),
             merge_content=dict(),
             verify=dict(
                 type='bool',
-                default='yes',
-                choices=BOOLEANS
+                default=True
             ),
             save=dict(
                 type='bool',
-                default='no',
-                choices=BOOLEANS
+                default=True
             )
         )
         self.f5_product_name = 'bigip'
