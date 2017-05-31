@@ -113,13 +113,13 @@ options:
   host:
     description:
       - Pool member IP.
-    deprecated: '2.4'
+    deprecated: Deprecated in 2.4. Use the bigip_pool_member module instead.
     aliases:
       - address
   port:
     description:
       - Pool member port.
-    deprecated: '2.4'
+    deprecated: Deprecated in 2.4. Use the bigip_pool_member module instead.
 extends_documentation_fragment: f5
 '''
 
@@ -155,7 +155,7 @@ EXAMPLES = '''
       state: "present"
       name: "my-pool"
       partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
+      host: "{{ ansible_default_ipv4['address'] }}"
       port: 80
   delegate_to: localhost
 
@@ -167,7 +167,7 @@ EXAMPLES = '''
       state: "absent"
       name: "my-pool"
       partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
+      host: "{{ ansible_default_ipv4['address'] }}"
       port: 80
   delegate_to: localhost
 
