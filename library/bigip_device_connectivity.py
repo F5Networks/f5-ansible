@@ -38,20 +38,14 @@ options:
   config_sync_ip:
     description:
       - Local IP address that the system uses for ConfigSync operations.
-    default: None
-    required: False
   mirror_primary_address:
     description:
       - Specifies the primary IP address for the system to use to mirror
         connections.
-    required: False
-    default: None
   mirror_secondary_address:
     description:
       - Specifies the secondary IP address for the system to use to mirror
         connections.
-    required: False
-    default: None
   unicast_failover:
     description:
       - Desired addresses to use for failover operations. Options C(address)
@@ -59,8 +53,6 @@ options:
         local IP address that the system uses for failover operations. Port
         specifies the port that the system uses for failover operations. If C(port)
         is not specified, the default value C(1026) will be used.
-    required: False
-    default: None
   failover_multicast:
     description:
       - When C(yes), ensures that the Failover Multicast configuration is enabled
@@ -68,37 +60,31 @@ options:
         C(multicast_interface), C(multicast_address) and C(multicast_port) are
         the defaults specified in each option's description. When C(no), ensures
         that Failover Multicast configuration is disabled.
-    required: False
-    default: None
+    choices:
+      - yes
+      - no
   multicast_interface:
     description:
       - Interface over which the system sends multicast messages associated
         with failover. When C(failover_multicast) is C(yes) and this option is
         not provided, a default of C(eth0) will be used.
-    required: False
-    default: None
   multicast_address:
     description:
       - IP address for the system to send multicast messages associated with
         failover. When C(failover_multicast) is C(yes) and this option is not
         provided, a default of C(224.0.0.245) will be used.
-    required: False
-    default: None
   multicast_port:
     description:
       - Port for the system to send multicast messages associated with
         failover. When C(failover_multicast) is C(yes) and this option is not
         provided, a default of C(62960) will be used. This value must be between
         0 and 65535.
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
   - Requires BIG-IP >= 12.1.x.
-  - Requires Ansible >= 2.3.
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
@@ -477,42 +463,20 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             multicast_port=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
-            multicast_address=dict(
-                required=False,
-                default=None
-            ),
-            multicast_interface=dict(
-                required=False,
-                default=None
-            ),
+            multicast_address=dict(),
+            multicast_interface=dict(),
             failover_multicast=dict(
-                required=False,
-                default=None,
-                choices=BOOLEANS
+                type='bool'
             ),
             unicast_failover=dict(
-                required=False,
-                default=None,
                 type='list'
             ),
-            mirror_primary_address=dict(
-                required=False,
-                default=None
-            ),
-            mirror_secondary_address=dict(
-                required=False,
-                default=None
-            ),
-            config_sync_ip=dict(
-                required=False,
-                default=None
-            ),
+            mirror_primary_address=dict(),
+            mirror_secondary_address=dict(),
+            config_sync_ip=dict(),
             state=dict(
-                required=False,
                 default='present',
                 choices=['present']
             )
