@@ -1,5 +1,9 @@
 ---
 
+- name: Provision GTM on the device
+  bigip_provision:
+      module: "gtm"
+
 - name: Test type 'A' GTM pools
   include: type-a-gtm-pools.yaml
 
