@@ -202,6 +202,10 @@ from ansible.module_utils.f5_utils import (
 
 
 class Parameters(AnsibleF5Parameters):
+    def __init__(self, params=None):
+        super(Parameters, self).__init__(params)
+    self._values['__warnings'] = []
+
     def to_return(self):
         result = {}
         try:
@@ -270,9 +274,19 @@ class KeyParameters(Parameters):
         return self._get_hash(self.key_content)
 
     @property
-    def key_src(self, value):
+    def key_src(self):
+        if self._values['key_src'] is None:
+            return None
+
+        self._values['__warnings'].append(
+            dict(
+                msg="The key_src param is deprecated",
+                version='2.4'
+            )
+        )
+
         try:
-            with open(value) as fh:
+            with open(self._values['key_src']) as fh:
                 self.key_content = fh.read()
         except IOError:
             raise F5ModuleError(
@@ -312,6 +326,26 @@ class CertParameters(Parameters):
             return fname + '.crt'
         else:
             return self.name
+
+    @property
+    def cert_src(self):
+        if self._values['cert_src'] is None:
+            return None
+
+        self._values['__warnings'].append(
+            dict(
+                msg="The cert_src param is deprecated",
+                version='2.4'
+            )
+        )
+
+        try:
+            with open(self._value['cert_src']) as fh:
+                self.cert_content = fh.read()
+        except IOError:
+            raise F5ModuleError(
+                "The specified 'cert_src' does not exist"
+            )
 
     @property
     def cert_source_path(self):
@@ -374,11 +408,15 @@ class BaseManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations(result)
+        self._announce_deprecations()
         return result
 
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
+    def _announce_deprecations(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__warnings', [])
+        if self.have:
+            warnings += self.have._values.get('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
                 msg=warning['msg'],
@@ -611,32 +649,22 @@ class KeyManager(BaseManager):
 
 class ArgumentSpec(object):
     def __init__(self):
-        deprecated = ['key_src', 'cert_src']
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
-                type='str',
                 required=True
             ),
-            cert_content=dict(
-                type='str',
-                default=None
-            ),
+            cert_content=dict(),
             cert_src=dict(
                 type='path',
-                default=None
+                removed_in_version='2.4'
             ),
-            key_content=dict(
-                type='str',
-                default=None
-            ),
+            key_content=dict(),
             key_src=dict(
                 type='path',
-                default=None
+                removed_in_version='2.4'
             ),
             passphrase=dict(
-                type='str',
-                default=None,
                 no_log=True
             ),
             state=dict(
