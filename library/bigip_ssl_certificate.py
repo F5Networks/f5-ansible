@@ -204,7 +204,7 @@ from ansible.module_utils.f5_utils import (
 class Parameters(AnsibleF5Parameters):
     def __init__(self, params=None):
         super(Parameters, self).__init__(params)
-    self._values['__warnings'] = []
+        self._values['__warnings'] = []
 
     def to_return(self):
         result = {}
@@ -460,8 +460,6 @@ class BaseManager(object):
         if self.client.check_mode:
             return True
         self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the Wide IP")
         return True
 
 
@@ -519,9 +517,9 @@ class CertificateManager(BaseManager):
         return False
 
     def update_on_device(self):
-        cstring = StringIO.StringIO(self.want.cert_content)
+        content = StringIO.StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            cstring, self.want.cert_filename
+            content, self.want.cert_filename
         )
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
             name=self.want.cert_filename,
@@ -530,9 +528,9 @@ class CertificateManager(BaseManager):
         resource.update()
 
     def create_on_device(self):
-        cstring = StringIO.StringIO(self.want.cert_content)
+        content = StringIO.StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            cstring, self.want.cert_filename
+            content, self.want.cert_filename
         )
         self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
             sourcePath=self.want.cert_source_path,
@@ -554,6 +552,11 @@ class CertificateManager(BaseManager):
             partition=self.want.partition
         )
         resource.delete()
+
+    def remove(self):
+        super(CertificateManager, self).remove()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the certificate")
 
 
 class KeyManager(BaseManager):
@@ -598,9 +601,9 @@ class KeyManager(BaseManager):
         return False
 
     def update_on_device(self):
-        kstring = StringIO.StringIO(self.want.key_content)
+        content = StringIO.StringIO(self.want.key_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            kstring, self.want.key_filename
+            content, self.want.key_filename
         )
         resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
             name=self.want.key_filename,
@@ -629,9 +632,9 @@ class KeyManager(BaseManager):
         return KeyParameters(result)
 
     def create_on_device(self):
-        kstring = StringIO.StringIO(self.want.key_content)
+        content = StringIO.StringIO(self.want.key_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            kstring, self.want.key_filename
+            content, self.want.key_filename
         )
         self.client.api.tm.sys.file.ssl_keys.ssl_key.create(
             sourcePath=self.want.key_source_path,
@@ -645,6 +648,11 @@ class KeyManager(BaseManager):
             partition=self.want.partition
         )
         resource.delete()
+
+    def remove(self):
+        super(KeyManager, self).remove()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the key")
 
 
 class ArgumentSpec(object):
