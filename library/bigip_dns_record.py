@@ -67,12 +67,12 @@ author:
 EXAMPLES = '''
 - name: Add an A record to organization.com zone
   bigip_dns_record:
-      user="admin"
-      password="secret"
-      hostname="lb.mydomain.com"
-      type="A"
-      zone="organization.com"
-      state="present"
+      user: "admin"
+      password: "secret"
+      hostname: "lb.mydomain.com"
+      type: "A"
+      zone: "organization.com"
+      state: "present"
       options:
           hostname: "elliot.organization.com"
           ip_address: "10.1.1.1"
@@ -82,7 +82,7 @@ EXAMPLES = '''
   local_action:
       module: bigip_dns_record
       user: "admin"
-      password: "admin"
+      password: "secret"
       hostname: "lb.mydomain.com"
       type: "A"
       zone: "organization.com"
@@ -134,10 +134,6 @@ def get_resource_record(module):
         return AResourceRecord(module)
     elif rtype == 'CNAME':
         return AResourceRecord(module)
-
-
-class ResourceRecordException(Exception):
-    pass
 
 
 class ResourceRecord(object):
