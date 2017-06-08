@@ -103,6 +103,39 @@ Examples
           name: "my-wide-ip.example.com"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> state </td>
+        <td> The new state of the wide IP. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> disabled </td>
+    </tr>
+            <tr>
+        <td> lb_method </td>
+        <td> The new load balancing method used by the wide IP. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> topology </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

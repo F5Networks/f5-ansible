@@ -200,7 +200,6 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Requires Ansible >= 2.3.
 
 
 

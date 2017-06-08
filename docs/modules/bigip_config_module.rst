@@ -15,7 +15,7 @@ bigip_config - Manage BIG-IP configuration sections.
 Synopsis
 --------
 
-* Manages a BIG-IP configuration by allowing TMSH commands that modify running configuration, or merge SCF formatted files intp the running configuration. Additionally, this module is of significant importence because it allows you to save your running configuration to disk. Since the F5 module only manipulate running configuration, it is important that you utilize this module to save that running config.
+* Manages a BIG-IP configuration by allowing TMSH commands that modify running configuration, or merge SCF formatted files into the running configuration. Additionally, this module is of significant importance because it allows you to save your running configuration to disk. Since the F5 module only manipulate running configuration, it is important that you utilize this module to save that running config.
 
 
 Requirements (on host that executes module)
@@ -106,6 +106,15 @@ Examples
       bigip_config:
         reset: yes
         save: yes
+        server: "lb.mydomain.com"
+        password: "secret"
+        user: "admin"
+        validate_certs: "no"
+      delegate_to: localhost
+    
+    - name: Load an SCF configuration
+      bigip_config:
+        merge_content: "{{ lookup('file', '/path/to/config.scf') }}"
         server: "lb.mydomain.com"
         password: "secret"
         user: "admin"

@@ -39,37 +39,37 @@ Options
     </tr>
                 <tr><td>config_sync_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Local IP address that the system uses for ConfigSync operations.</div>        </td></tr>
                 <tr><td>failover_multicast<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
-        <td></td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>When <code>yes</code>, ensures that the Failover Multicast configuration is enabled and if no further multicast configuration is provided, ensures that <code>multicast_interface</code>, <code>multicast_address</code> and <code>multicast_port</code> are the defaults specified in each option's description. When <code>no</code>, ensures that Failover Multicast configuration is disabled.</div>        </td></tr>
                 <tr><td>mirror_primary_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the primary IP address for the system to use to mirror connections.</div>        </td></tr>
                 <tr><td>mirror_secondary_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the secondary IP address for the system to use to mirror connections.</div>        </td></tr>
                 <tr><td>multicast_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>IP address for the system to send multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>224.0.0.245</code> will be used.</div>        </td></tr>
                 <tr><td>multicast_interface<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Interface over which the system sends multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>eth0</code> will be used.</div>        </td></tr>
                 <tr><td>multicast_port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Port for the system to send multicast messages associated with failover. When <code>failover_multicast</code> is <code>yes</code> and this option is not provided, a default of <code>62960</code> will be used. This value must be between 0 and 65535.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -89,7 +89,7 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>unicast_failover<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
@@ -214,7 +214,6 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module is primarily used as a component of configuring HA pairs of BIG-IP devices.
     - Requires BIG-IP >= 12.1.x.
-    - Requires Ansible >= 2.3.
 
 
 
