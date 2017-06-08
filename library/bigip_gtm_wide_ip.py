@@ -57,7 +57,6 @@ options:
         type in addition to name, since pool members need different attributes
         depending on the response RDATA they are meant to supply. This value
         is required if you are using BIG-IP versions >= 12.0.0.
-    required: False
     choices:
       - a
       - aaaa
@@ -72,7 +71,6 @@ options:
         is enabled. When C(absent), ensures that the Wide IP has been
         removed. When C(disabled), ensures that the Wide IP exists and is
         disabled.
-    required: False
     default: present
     choices:
       - present
@@ -102,12 +100,27 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
+lb_method:
+    description: The new load balancing method used by the wide IP.
+    returned: changed
+    type: string
+    sample: "topology"
+state:
+    description: The new state of the wide IP.
+    returned: changed
+    type: string
+    sample: "disabled"
 '''
 
 import re
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 from distutils.version import LooseVersion
 
 
@@ -256,7 +269,7 @@ class ModuleManager(object):
     def get_manager(self, type):
         if type == 'typed':
             return TypedManager(self.client)
-        elif type =='untyped':
+        elif type == 'untyped':
             return UntypedManager(self.client)
 
     def version_is_less_than_12(self):
@@ -515,7 +528,7 @@ class ArgumentSpec(object):
                 required=False,
                 default=None,
                 choices=[
-                    'a','aaaa','cname','mx','naptr','srv'
+                    'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
                 ]
             ),
             state=dict(
@@ -545,6 +558,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()

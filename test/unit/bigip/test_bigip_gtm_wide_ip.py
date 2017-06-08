@@ -42,11 +42,13 @@ try:
     from library.bigip_gtm_wide_ip import ModuleManager
     from library.bigip_gtm_wide_ip import ArgumentSpec
     from library.bigip_gtm_wide_ip import UntypedManager
+    from library.bigip_gtm_wide_ip import TypedManager
 except ImportError:
     from ansible.modules.network.f5.bigip_gtm_wide_ip import Parameters
     from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleManager
     from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
     from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
+    from ansible.modules.network.f5.bigip_gtm_wide_ip import TypedManager
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -106,13 +108,13 @@ class TestParameters(unittest.TestCase):
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-        return_value=True)
-class TestManager(unittest.TestCase):
+       return_value=True)
+class TestUntypedManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_wideip_pre_v12(self, *args):
+    def test_create_wideip(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
             lb_method='round-robin',
@@ -144,7 +146,15 @@ class TestManager(unittest.TestCase):
         assert results['state'] == 'present'
         assert results['lb_method'] == 'round-robin'
 
-    def test_create_wideip_post_v12(self, *args):
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestTypedManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_wideip(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
             lb_method='round-robin',
@@ -160,7 +170,7 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = UntypedManager(client)
+        tm = TypedManager(client)
         tm.exists = Mock(return_value=False)
         tm.create_on_device = Mock(return_value=True)
 
