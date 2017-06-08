@@ -105,13 +105,13 @@ class TestParameters(unittest.TestCase):
         assert 'The provided name must be a valid FQDN' in str(excinfo)
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+        return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_wideip_pre_v12(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
@@ -144,8 +144,6 @@ class TestManager(unittest.TestCase):
         assert results['state'] == 'present'
         assert results['lb_method'] == 'round-robin'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_wideip_post_v12(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
@@ -178,8 +176,6 @@ class TestManager(unittest.TestCase):
         assert results['state'] == 'present'
         assert results['lb_method'] == 'round-robin'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_wideip_deprecated_lb_method1(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
@@ -212,8 +208,6 @@ class TestManager(unittest.TestCase):
         assert results['state'] == 'present'
         assert results['lb_method'] == 'round-robin'
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_wideip_deprecated_lb_method2(self, *args):
         set_module_args(dict(
             name='foo.baz.bar',
