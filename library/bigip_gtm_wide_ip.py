@@ -355,6 +355,13 @@ class BaseManager(object):
         else:
             return self.create()
 
+    def create(self):
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        return True
+
     def should_update(self):
         result = self._update_changed_options()
         if result:
@@ -390,13 +397,6 @@ class UntypedManager(BaseManager):
             name=self.want.name,
             partition=self.want.partition
         )
-
-    def create(self):
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
 
     def update_on_device(self):
         params = self.want.api_params()
@@ -449,12 +449,6 @@ class TypedManager(BaseManager):
             partition=self.want.partition
         )
         return result
-
-    def create(self):
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
 
     def update_on_device(self):
         params = self.want.api_params()

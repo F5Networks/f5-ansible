@@ -158,6 +158,7 @@ class TestTypedManager(unittest.TestCase):
         set_module_args(dict(
             name='foo.baz.bar',
             lb_method='round-robin',
+            type='a',
             password='passsword',
             server='localhost',
             user='admin'
@@ -190,6 +191,7 @@ class TestTypedManager(unittest.TestCase):
         set_module_args(dict(
             name='foo.baz.bar',
             lb_method='round_robin',
+            type='a',
             password='passsword',
             server='localhost',
             user='admin'
@@ -202,7 +204,7 @@ class TestTypedManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = UntypedManager(client)
+        tm = TypedManager(client)
         tm.exists = Mock(return_value=False)
         tm.create_on_device = Mock(return_value=True)
 
@@ -222,6 +224,7 @@ class TestTypedManager(unittest.TestCase):
         set_module_args(dict(
             name='foo.baz.bar',
             lb_method='global_availability',
+            type='a',
             password='passsword',
             server='localhost',
             user='admin'
@@ -234,7 +237,7 @@ class TestTypedManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = UntypedManager(client)
+        tm = TypedManager(client)
         tm.exists = Mock(return_value=False)
         tm.create_on_device = Mock(return_value=True)
 
