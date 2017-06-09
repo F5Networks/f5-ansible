@@ -111,3 +111,81 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+
+    def test_update_iapp_template(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            content=load_fixture('basic-iapp.tmpl'),
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        current1 = Parameters(load_fixture('load_sys_application_template_w_new_checksum.json'))
+        current2 = Parameters(load_fixture('load_sys_application_template_w_old_checksum.json'))
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, True])
+        mm.create_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current1)
+        mm.template_in_use = Mock(return_value=False)
+        mm._get_temporary_template = Mock(return_value=current2)
+        mm._remove_iapp_checksum = Mock(return_value=None)
+        mm._generate_template_checksum_on_device = Mock(return_value=None)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_delete_iapp_template(self, *args):
+        set_module_args(dict(
+            content=load_fixture('basic-iapp.tmpl'),
+            password='passsword',
+            server='localhost',
+            user='admin',
+            state='absent'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, False])
+        mm.remove_from_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_delete_iapp_template_idempotent(self, *args):
+        set_module_args(dict(
+            content=load_fixture('basic-iapp.tmpl'),
+            password='passsword',
+            server='localhost',
+            user='admin',
+            state='absent'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, False])
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
