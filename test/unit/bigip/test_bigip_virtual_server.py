@@ -30,25 +30,25 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
+from ansible.compat.tests.mock import patch, Mock, DEFAULT
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_virtual_server2 import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from library.bigip_virtual_server import VirtualAddressParameters
+    from library.bigip_virtual_server import VirtualServerParameters
+    from library.bigip_virtual_server import ModuleManager
+    from library.bigip_virtual_server import VirtualServerManager
+    from library.bigip_virtual_server import VirtualAddressManager
+    from library.bigip_virtual_server import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_virtual_server2 import (
-        Parameters,
-        ModuleManager,
-        ArgumentSpec
-    )
+    from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressParameters
+    from ansible.modules.network.f5.bigip_virtual_server import VirtualServerParameters
+    from ansible.modules.network.f5.bigip_virtual_server import ModuleManager
+    from ansible.modules.network.f5.bigip_virtual_server import VirtualServerManager
+    from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressManager
+    from ansible.modules.network.f5.bigip_virtual_server import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -97,7 +97,7 @@ class TestParameters(unittest.TestCase):
             profiles_client_side=['ilx'],
             enabled_vlans=['vlan2']
         )
-        p = Parameters(args)
+        p = VirtualServerParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
@@ -131,7 +131,7 @@ class TestParameters(unittest.TestCase):
             profiles_client_side=['ilx'],
             enabled_vlans=['/Common/vlan2']
         )
-        p = Parameters(args)
+        p = VirtualServerParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
@@ -238,7 +238,7 @@ class TestParameters(unittest.TestCase):
                 ]
             }
         }
-        p = Parameters(args)
+        p = VirtualServerParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
@@ -280,14 +280,17 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.exists = lambda: False
-        mm.create_on_device = lambda: True
+        patches = dict(
+            exists=Mock(return_value=False),
+            create_on_device=Mock(return_value=True)
+        )
 
-        results = mm.exec_module()
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
+
         assert results['changed'] is True
 
     def test_delete_virtual_server(self, *args):
@@ -313,13 +316,16 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.exists = lambda: False
+        patches = dict(
+            exists=Mock(return_value=False)
+        )
 
-        results = mm.exec_module()
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
+
         assert results['changed'] is False
 
     def test_enable_vs_that_is_already_enabled(self, *args):
@@ -342,7 +348,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = Parameters(
+        current = VirtualServerParameters(
             dict(
                 agent_status_traps='disabled'
             )
@@ -353,13 +359,165 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        mm.exit_json = lambda x: True
-        mm.exists = lambda: False
-        mm.update_on_device = lambda: True
-        mm.read_current_from_device = lambda: current
+        patches = dict(
+            exists=Mock(return_value=False),
+            update_on_device=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=current)
+        )
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
 
-        results = mm.exec_module()
+        assert results['changed'] is False
+
+    def test_modify_port(self, *args):
+        set_module_args(dict(
+            name="my-virtual-server",
+            partition="Common",
+            password="secret",
+            port="10443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        patches = dict(
+            exists=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=current),
+            update_on_device=Mock(return_value=True)
+        )
+
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_modify_port_idempotent(self, *args):
+        set_module_args(dict(
+            name="my-virtual-server",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        patches = dict(
+            exists = Mock(return_value=True),
+            read_current_from_device = Mock(return_value=current)
+        )
+
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
+
+        assert results['changed'] is False
+
+    def test_modify_vlans_idempotent(self, *args):
+        set_module_args(dict(
+            name="my-virtual-server",
+            partition="Common",
+            password="secret",
+            enabled_vlans=[
+                "net1"
+            ],
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = VirtualServerParameters(load_fixture('load_ltm_virtual_2.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        patches = dict(
+            exists = Mock(return_value=True),
+            read_current_from_device = Mock(return_value=current)
+        )
+
+        with patch.multiple(VirtualServerManager, **patches) as vsm:
+            mm = ModuleManager(client)
+            results = mm.exec_module()
+
+        assert results['changed'] is False
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestDeprecatedAnsible24Manager(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_modify_port_idempotent(self, *args):
+        set_module_args(dict(
+            destination="10.10.10.10",
+            name="my-virtual-server",
+            route_advertisement_state="enabled",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        vsm_current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+        vam_current = VirtualAddressParameters(load_fixture('load_ltm_virtual_1_address.json'))
+        vsm_patches = dict(
+            exists=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=vsm_current)
+        )
+        vam_patches = dict(
+            exists=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=vam_current)
+        )
+
+        with patch.multiple(VirtualServerManager, **vsm_patches):
+            with patch.multiple(VirtualAddressManager, **vam_patches):
+                mm = ModuleManager(client)
+                results = mm.exec_module()
+
         assert results['changed'] is False

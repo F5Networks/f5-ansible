@@ -125,6 +125,7 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+        assert results['level'] == 'nominal'
 
     def test_provision_all_modules(self, *args):
         modules = [
