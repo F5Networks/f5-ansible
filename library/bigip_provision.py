@@ -27,11 +27,11 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_provision
-short_description: Manage BIG-IP module provisioning
+short_description: Manage BIG-IP module provisioning.
 description:
   - Manage BIG-IP module provisioning. This module will only provision at the
     standard levels of Dedicated, Nominal, and Minimum.
-version_added: "2.3"
+version_added: "2.4"
 options:
   module:
     description:
@@ -58,7 +58,6 @@ options:
         For example, changing one module to C(dedicated) requires setting all
         others to C(none). Setting the level of a module to C(none) means that
         the module is not run.
-    required: false
     default: nominal
     choices:
       - dedicated
@@ -70,8 +69,7 @@ options:
         guarantees that the specified module is provisioned at the requested
         level provided that there are sufficient resources on the device (such
         as physical RAM) to support the provisioned module. When C(absent),
-        deprovision the module.
-    required: false
+        de-provision the module.
     default: present
     choices:
       - present
@@ -79,8 +77,6 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - This module only works reliably on BIG-IP versions >= 13.1.
-  - After you provision something you should
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
@@ -110,13 +106,29 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+RETURN = '''
+level:
+    description: The new provisioning level of the module.
+    returned: changed
+    type: string
+    sample: "minimum"
+'''
+
 import time
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
     api_attributes = ['level']
+
+    returnables = ['level']
 
     updatables = ['level']
 
@@ -305,6 +317,9 @@ class ArgumentSpec(object):
 
 
 def main():
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
+
     spec = ArgumentSpec()
 
     client = AnsibleF5Client(
@@ -314,9 +329,13 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
