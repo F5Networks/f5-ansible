@@ -352,7 +352,7 @@ class ModuleManager(object):
         # is a hash of some portion of the template that is unknown to me.
         #
         # The code below is responsible for uploading the provided template
-        # under a unique name and creating a checksum for it so that that
+        # under a unique name and creating a checksum for it so that the
         # checksum can be compared to the one of the existing template.
         #
         # Using this method we can compare the checksums of the existing
