@@ -1,10 +1,10 @@
 .. _bigip_provision:
 
 
-bigip_provision - Manage BIG-IP module provisioning
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_provision - Manage BIG-IP module provisioning.
+++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -66,7 +66,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, deprovision the module.</div>        </td></tr>
+        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, de-provision the module.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -108,14 +108,38 @@ Examples
           validate_certs: "no"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> level </td>
+        <td> The new provisioning level of the module. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> minimum </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - This module only works reliably on BIG-IP versions >= 13.1.
-    - After you provision something you should
 
 
 

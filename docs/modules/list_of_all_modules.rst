@@ -37,7 +37,7 @@ All Modules
   bigip_pool - Manages F5 BIG-IP LTM pools. <bigip_pool_module>
   bigip_pool (D) - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
-  bigip_provision - Manage BIG-IP module provisioning <bigip_provision_module>
+  bigip_provision - Manage BIG-IP module provisioning. <bigip_provision_module>
   bigip_qkview - Manage qkviews on the device <bigip_qkview_module>
   bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP. <bigip_remote_syslog_module>
   bigip_routedomain - Manage route domains on a BIG-IP <bigip_routedomain_module>
