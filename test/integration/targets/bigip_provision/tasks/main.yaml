@@ -66,7 +66,7 @@
 - name: Assert Provision two modules
   assert:
       that:
-          - result|changed
+          - not result|changed
 
 - name: Deprovision first module
   bigip_provision:
