@@ -150,7 +150,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -220,13 +220,13 @@ class Parameters(AnsibleF5Parameters):
 
     def _squash_template_name_prefix(self):
         """Removes the template name prefix
-        
+
         The IappParser in the SDK treats the partition prefix as part of
         the iApp's name. This method removes that partition from the name
         in the iApp so that comparisons can be done properly and entries
         can be created properly when using REST.
-        
-        :return string 
+
+        :return string
         """
         pattern = r'sys\s+application\s+template\s+/Common/'
         replace = 'sys application template '
@@ -234,13 +234,13 @@ class Parameters(AnsibleF5Parameters):
 
     def _replace_template_name(self, template):
         """Replaces template name at runtime
-        
+
         To allow us to do the switch-a-roo with temporary templates and
         checksum comparisons, we need to take the template provided to us
         and change its name to a temporary value so that BIG-IP will create
         a clone for us.
-        
-        :return string 
+
+        :return string
         """
         pattern = r'sys\s+application\s+template\s+[^ ]+'
         replace = 'sys application template {0}'.format(self._values['name'])
@@ -332,12 +332,12 @@ class ModuleManager(object):
 
     def _remove_iapp_checksum(self):
         """Removes the iApp tmplChecksum
-        
+
         This is required for updating in place or else the load command will
         fail with a "AppTemplate ... content does not match the checksum"
         error.
-        
-        :return: 
+
+        :return:
         """
         resource = self.client.api.tm.sys.application.templates.template.load(
             name=self.want.name,
@@ -475,6 +475,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
