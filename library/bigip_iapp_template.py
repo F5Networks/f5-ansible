@@ -129,7 +129,6 @@ from ansible.module_utils.f5_utils import (
     iControlUnexpectedHTTPError
 )
 from f5.utils.iapp_parser import (
-    IappParser,
     NonextantTemplateNameException
 )
 
@@ -150,7 +149,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k, v in iteritems(params):
+            for k,v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -180,7 +179,7 @@ class Parameters(AnsibleF5Parameters):
                 name = self._get_template_name()
                 return name
             except NonextantTemplateNameException:
-                return F5ModuleError(
+                raise F5ModuleError(
                     "No template name was found in the template"
                 )
         return None
@@ -247,9 +246,18 @@ class Parameters(AnsibleF5Parameters):
         return re.sub(pattern, replace, template)
 
     def _get_template_name(self):
-        parser = IappParser(self.content)
-        tmpl = parser.parse_template()
-        return tmpl['name']
+        # There is a bug in the iApp parser in the F5 SDK that prevents us from
+        # using it in all cases to get the name of an iApp. So we'll use this
+        # pattern for now and file a bug with the F5 SDK
+        pattern = r'sys\s+application\s+template\s+(?P<path>\/\w+\/)?(?P<name>[\w.]+)'
+        matches = re.search(pattern, self.content)
+        try:
+            result = matches.group('name')
+        except IndexError:
+            result = None
+        if result:
+            return result
+        raise NonextantTemplateNameException
 
 
 class ModuleManager(object):
@@ -352,7 +360,7 @@ class ModuleManager(object):
         # is a hash of some portion of the template that is unknown to me.
         #
         # The code below is responsible for uploading the provided template
-        # under a unique name and creating a checksum for it so that the
+        # under a unique name and creating a checksum for it so that that
         # checksum can be compared to the one of the existing template.
         #
         # Using this method we can compare the checksums of the existing
@@ -475,7 +483,6 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
-
 
 if __name__ == '__main__':
     main()
