@@ -87,15 +87,12 @@ class TestParameters(unittest.TestCase):
 
         )
 
-        with patch.object(Parameters, 'use_iso') as obj:
-            obj.return_value = True
-
-            p = Parameters(args)
-            assert p.volume == 'HD1.1'
-            assert p.software == '/var/fake/software_iso.iso'
-            assert p.hotfix == '/var/fake/hotfix_iso.iso'
-            assert p.force == 'yes'
-            assert p.reuse_inactive_volume == 'yes'
+        p = Parameters(args)
+        assert p.volume == 'HD1.1'
+        assert p.software == '/var/fake/software_iso.iso'
+        assert p.hotfix == '/var/fake/hotfix_iso.iso'
+        assert p.force == 'yes'
+        assert p.reuse_inactive_volume == 'yes'
 
     def test_api_parameters(self):
         args = dict(
@@ -104,8 +101,14 @@ class TestParameters(unittest.TestCase):
             software='/var/fake/software_iso.iso'
         )
 
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
+        # Override methods to force specific logic in the module to happen
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = False
 
             tmp = [{'create-volume': True}, {'reboot': True}]
             p = Parameters(args)
@@ -172,9 +175,14 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
@@ -203,9 +211,14 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
@@ -234,9 +247,14 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = False
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
@@ -246,6 +264,9 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -272,13 +293,13 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
                         _list_volumes=DEFAULT,
                         _delete_volume_on_device=DEFAULT)
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = True
             patched['_list_volumes'].return_value = self.loaded_volumes_2
             patched['_delete_volume_on_device'].return_value = True
 
@@ -290,6 +311,9 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -318,13 +342,13 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
                         _list_volumes=DEFAULT,
                         _delete_volume_on_device=DEFAULT)
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = False
             patched['_list_volumes'].return_value = self.loaded_volumes_trimmed
             patched['_delete_volume_on_device'].return_value = True
 
@@ -336,6 +360,9 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -364,7 +391,7 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
+        with patch.object(Parameters, '_check_active_volume') as obj:
             obj.return_value = False
 
             mm = ModuleManager(client)
@@ -378,6 +405,8 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -406,13 +435,13 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
                         _list_volumes=DEFAULT,
                         _delete_volume_on_device=DEFAULT)
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = False
             patched['_list_volumes'].return_value = self.loaded_volumes
             patched['_delete_volume_on_device'].return_value = True
 
@@ -427,6 +456,8 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -455,20 +486,19 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
                         _list_volumes=DEFAULT,
                         _delete_volume_on_device=DEFAULT)
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = False
             patched['_list_volumes'].return_value = self.loaded_volumes_trimmed
             patched['_delete_volume_on_device'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes_trimmed
-            mm.list_images_on_device = lambda: self.loaded_images_after_upload
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
@@ -476,6 +506,9 @@ class TestManager(unittest.TestCase):
             mm.wait_for_software_install_on_device = lambda: True
             mm.wait_for_device_reboot = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
+            mm.list_images_on_device = lambda: self.loaded_images_after_upload
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -503,16 +536,24 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes
             mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
+            mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
 
         with pytest.raises(F5ModuleError) as err:
             msg = 'Base image of version: 12.0.0 must exist to install this ' \
@@ -536,17 +577,25 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes_2
             mm.image_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -573,23 +622,29 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
                         _list_volumes=DEFAULT,
-                        _delete_volume_on_device=DEFAULT)
+                        _delete_volume_on_device=DEFAULT
+                        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
             patched['_list_volumes'].return_value = self.loaded_volumes_2
             patched['_delete_volume_on_device'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes_2
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -616,23 +671,28 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
                         _list_volumes=DEFAULT,
                         _delete_volume_on_device=DEFAULT)
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = False
+            patched['_volume_exists'].return_value = True
             patched['_list_volumes'].return_value = self.loaded_volumes_trimmed
             patched['_delete_volume_on_device'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes_trimmed
+            mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -660,20 +720,27 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes
             mm.list_images_on_device = lambda: self.loaded_images_after_upload
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
             mm.install_hotfix_on_device = lambda: True
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -702,13 +769,16 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
                         _list_volumes=DEFAULT,
-                        _delete_volume_on_device=DEFAULT)
+                        _delete_volume_on_device=DEFAULT
+                        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
             patched['_list_volumes'].return_value = self.loaded_volumes
             patched['_delete_volume_on_device'].return_value = True
 
@@ -716,12 +786,14 @@ class TestManager(unittest.TestCase):
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes
             mm.list_images_on_device = lambda: self.loaded_images_after_upload
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
             mm.install_hotfix_on_device = lambda: True
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -750,13 +822,16 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_is_volume_active=DEFAULT,
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
                         _list_volumes=DEFAULT,
-                        _delete_volume_on_device=DEFAULT)
+                        _delete_volume_on_device=DEFAULT
+                        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
-            patched['_is_volume_active'].return_value = False
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
             patched['_list_volumes'].return_value = self.loaded_volumes_trimmed
             patched['_delete_volume_on_device'].return_value = True
 
@@ -764,12 +839,14 @@ class TestManager(unittest.TestCase):
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes_trimmed
             mm.list_images_on_device = lambda: self.loaded_images_after_upload
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
             mm.install_image_on_device = lambda: True
             mm.install_hotfix_on_device = lambda: True
             mm.wait_for_software_install_on_device = lambda: True
             mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
 
             results = mm.exec_module()
             assert results['changed'] is True
@@ -797,16 +874,24 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
+        to_patch = dict(_check_active_volume=DEFAULT,
+                        _volume_exists=DEFAULT,
+                        )
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_is_volume_active') as obj:
-            obj.return_value = False
+        with patch.multiple(Parameters, **to_patch) as patched:
+            patched['_check_active_volume'].return_value = True
+            patched['_volume_exists'].return_value = True
 
             mm = ModuleManager(client)
             mm.exit_json = lambda x: False
             mm.list_volumes_on_device = lambda: self.loaded_volumes
             mm.list_images_on_device = lambda: self.loaded_images
+            mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
             mm.image_exists_on_device = lambda: False
             mm.hotfix_exists_on_device = lambda: False
+            mm.upload_to_device = lambda x: True
+            mm.wait_for_images = lambda x, h=True: True
 
         with pytest.raises(F5ModuleError) as err:
             msg = 'Base image of version: 12.0.0 must exist to install this ' \
@@ -893,6 +978,9 @@ class TestManager(unittest.TestCase):
         mm.exit_json = lambda x: False
         mm.image_exists_on_device = lambda: False
         mm.upload_to_device = lambda x: True
+        mm.list_images_on_device = lambda: self.loaded_images
+        mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
+        mm.wait_for_images = lambda x: True
 
         results = mm.exec_module()
         assert results['changed'] is True
@@ -921,7 +1009,11 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
         mm.exit_json = lambda x: False
         mm.image_exists_on_device = lambda: False
+        mm.hotfix_exists_on_device = lambda: False
         mm.upload_to_device = lambda x: True
+        mm.list_images_on_device = lambda: self.loaded_images
+        mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
+        mm.wait_for_images = lambda x, h=True: True
 
         results = mm.exec_module()
         assert results['changed'] is True
@@ -931,3 +1023,72 @@ class TestManager(unittest.TestCase):
         assert results['state'] == 'present'
         assert results['hotfix'] == self.iso_hf1
 
+    def test_upload_software_hotfix_local_src(self, *args):
+        set_module_args(dict(
+            software=self.iso2,
+            hotfix=self.iso_hf1,
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.image_exists_on_device = lambda: False
+        mm.hotfix_exists_on_device = lambda: False
+        mm.upload_to_device = lambda x: True
+        mm.list_images_on_device = lambda: self.loaded_images
+        mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
+        mm.wait_for_images = lambda x, h=True: True
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['force'] is False
+        assert results['remote_src'] is False
+        assert results['reuse_inactive_volume'] is False
+        assert results['state'] == 'present'
+        assert results['hotfix'] == self.iso_hf1
+        assert results['software'] == self.iso2
+
+    def test_upload_software_hotfix_software_exists_local_src(self, *args):
+        set_module_args(dict(
+            software=self.iso2,
+            hotfix=self.iso_hf1,
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = lambda x: False
+        mm.image_exists_on_device = lambda: True
+        mm.hotfix_exists_on_device = lambda: False
+        mm.upload_to_device = lambda x: True
+        mm.list_images_on_device = lambda: self.loaded_images
+        mm.list_hotfixes_on_device = lambda: self.loaded_hotfixes
+        mm.wait_for_images = lambda x, h=True: True
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['force'] is False
+        assert results['remote_src'] is False
+        assert results['reuse_inactive_volume'] is False
+        assert results['state'] == 'present'
+        assert results['hotfix'] == self.iso_hf1
+        assert results['software'] == self.iso2

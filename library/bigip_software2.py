@@ -120,12 +120,12 @@ class Parameters(AnsibleF5Parameters):
         create = self._values['create_volume']
         opt = list()
 
-        if state == 'activated' or state == 'installed':
-            if create:
-                opt.append({'create-volume': True})
+        if create:
+            opt.append({'create-volume': True})
 
         if state == 'activated':
             opt.append({'reboot': True})
+
         return opt
 
     @property
@@ -135,21 +135,24 @@ class Parameters(AnsibleF5Parameters):
         reuse = self._values['reuse_inactive_volume']
 
         if state == 'activated' or state == 'installed':
-            if volume is None:
-                if reuse:
-                    volume = self._get_next_available_volume(True)
+            if volume is not None:
+                if not self._volume_exists(volume):
+                    self._values['create_volume'] = True
+                    return volume
                 else:
-                    err = "You must specify a volume."
-                    raise F5ModuleError(err)
+                    self._check_active_volume(volume)
+                    return volume
 
-            if self._is_volume_active(volume):
-                err = "Cannot install software or " \
-                      "hotfixes to active volumes."
-                raise F5ModuleError(err)
-
-            self._values['create_volume'] = True
-
-        return volume
+            if volume is None:
+                if state == 'activated' or state == 'installed':
+                    if reuse:
+                        volume = self._get_next_available_volume(True)
+                        return volume
+                    else:
+                        err = "You must specify a volume."
+                        raise F5ModuleError(err)
+        else:
+            return volume
 
     @property
     def version(self):
@@ -203,7 +206,7 @@ class Parameters(AnsibleF5Parameters):
                 self._values['secure'] = True
                 return name
             else:
-                err = 'Only remote HTTP sources are supported.'
+                err = 'Only remote HTTP or HTTPS sources are supported.'
                 raise F5ModuleError(err)
 
     def set_info(self, name, hotfix=False):
@@ -221,7 +224,6 @@ class Parameters(AnsibleF5Parameters):
         content = self._find_iso_content(iso)
         content = io.BytesIO(content)
         context = etree.iterparse(content)
-
         for action, elem in context:
             if elem.text:
                 text = elem.text
@@ -258,6 +260,12 @@ class Parameters(AnsibleF5Parameters):
         return self.self.client.api.tm.sys.software.volumes.volume.exists(
             name=volume)
 
+    def _check_active_volume(self, volume):
+        v = self._load_volume(volume)
+        if hasattr(v, 'active') and v.active is True:
+            err = "Cannot install software or hotfixes to active volumes."
+            raise F5ModuleError(err)
+
     def _load_hotfix(self, hotfix_name):
         info = self.client.api.tm.sys.software.hotfix_s.hotfix.load(
             name=hotfix_name)
@@ -267,14 +275,6 @@ class Parameters(AnsibleF5Parameters):
         info = self.client.api.tm.sys.software.images.image.load(
             name=software_name)
         return info
-
-    def _is_volume_active(self, volume):
-        if self._volume_exists(volume):
-            vol = self._load_volume(volume)
-            if hasattr(vol, 'active') and vol.active is True:
-                return True
-        else:
-            return False
 
     def _get_next_available_volume(self, delete_target=False):
         target_volume = None
@@ -307,7 +307,9 @@ class Parameters(AnsibleF5Parameters):
         sleep_interval = 0.25
         volume_name = volume.name
 
-        if self._is_volume_active(volume.name):
+        try:
+            self._check_active_volume(volume.name)
+        except F5ModuleError:
             return False
 
         volume.delete()
@@ -482,24 +484,28 @@ class ModuleManager(object):
             self.wait_for_images(image_list)
 
     def exists(self):
-        result = False
         forced = self.want.forced
         software_path = self.want.software
         hotfix_path = self.want.hotfix
 
+        if forced:
+            return False
+
         if software_path and hotfix_path:
             if self.image_exists_on_device() and \
              self.hotfix_exists_on_device():
-                result = True
-        if hotfix_path:
+                return True
+
+        elif hotfix_path:
             if self.hotfix_exists_on_device():
-                result = True
-        if software_path:
+                return True
+
+        elif software_path:
             if self.image_exists_on_device():
-                result = True
-        if forced:
-            result = False
-        return result
+                return True
+
+        else:
+            return False
 
     def activate(self):
         self._update_changed_options()
@@ -523,8 +529,8 @@ class ModuleManager(object):
             if hasattr(volume, 'active') and volume.active is True:
                 return True
 
-    def wait_for_images(self, list, hotfix=False):
-        current = len(list)
+    def wait_for_images(self, count, hotfix=False):
+        current = len(count)
         if hotfix:
             while True:
                 if len(self.list_hotfixes_on_device()) != current:
@@ -557,6 +563,16 @@ class ModuleManager(object):
                 return True
         else:
             return False
+
+    def software_on_volume(self):
+        volumes = self.list_volumes_on_device()
+        version = self.want.version
+        build = self.want.build
+        for volume in volumes:
+            if hasattr(volume, 'version') and hasattr(volume, 'build'):
+                if volume.version == version and volume.build == build:
+                    tmp_res = volume.attrs
+                    return Parameters(tmp_res), volume
 
     def install_image_on_device(self):
         params = self.want.api_params()
@@ -641,15 +657,6 @@ class ModuleManager(object):
     def run_command_on_device(self, cmd):
         self.client.api.tm.util.bash.exec_cmd('run', utilCmdArgs=cmd)
 
-    def software_on_volume(self):
-        volumes = self.list_volumes_on_device()
-        version = self.want.version
-        build = self.want.build
-        for volume in volumes:
-            if volume.version == version and volume.build == build:
-                tmp_res = volume.attrs
-                return Parameters(tmp_res), volume
-
     def wait_for_device_reboot(self):
         volume = self.want.volume
         while True:
@@ -666,14 +673,18 @@ class ModuleManager(object):
                 pass
 
     def wait_for_software_install_on_device(self):
+        # We need to delay this slightly in case the the volume needs to be
+        # created first
+        time.sleep(5)
+        progress = self.load_volume_on_device()
         while True:
-            time.sleep(5)
-            status = self.load_volume_on_device()
-            progress = status.refresh()
-            if 'complete' in progress.status:
+            time.sleep(10)
+            progress.refresh()
+            status = progress.status
+            if 'complete' in status:
                 break
-            elif 'failed' in progress.status:
-                raise F5ModuleError(progress)
+            elif 'failed' in status:
+                raise F5ModuleError(status)
 
 
 class ArgumentSpec(object):
