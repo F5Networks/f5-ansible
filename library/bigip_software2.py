@@ -125,7 +125,6 @@ class Parameters(AnsibleF5Parameters):
 
         if state == 'activated':
             opt.append({'reboot': True})
-
         return opt
 
     @property
@@ -257,7 +256,7 @@ class Parameters(AnsibleF5Parameters):
         return vol
 
     def _volume_exists(self, volume):
-        return self.self.client.api.tm.sys.software.volumes.volume.exists(
+        return self.client.api.tm.sys.software.volumes.volume.exists(
             name=volume)
 
     def _check_active_volume(self, volume):
@@ -646,8 +645,9 @@ class ModuleManager(object):
         return result
 
     def reboot_volume_on_device(self):
-        cmd = [{'volume': self.want.volume}]
-        self.client.api.tm.software.volumes.exec_cmd('reboot', options=cmd)
+        self.client.api.tm.sys.software.volumes.exec_cmd(
+            'reboot', volume=self.want.volume
+            )
 
     def load_volume_on_device(self):
         volume = self.client.api.tm.sys.software.volumes.volume.load(
@@ -657,16 +657,22 @@ class ModuleManager(object):
     def run_command_on_device(self, cmd):
         self.client.api.tm.util.bash.exec_cmd('run', utilCmdArgs=cmd)
 
+    def _device_reconnect(self):
+        self.client.api = self.client._get_mgmt_root(
+            'bigip', **self.client._connect_params)
+
     def wait_for_device_reboot(self):
-        volume = self.want.volume
+        vol = self.want.volume
         while True:
             time.sleep(5)
             try:
-                status = self.list_volumes_on_device()
-                volumes = [str(x.name) for x in status if x.active is True]
-                if volume in volumes:
+                self._device_reconnect()
+                volume = self.client.api.tm.sys.software.volumes.volume.load(
+                    name=vol
+                )
+                if hasattr(volume, 'active') and volume.active is True:
                     break
-            except Exception:
+            except Exception as ex:
                 # Handle all exceptions because if the system is offline (for a
                 # reboot) the REST client will raise exceptions about
                 # connections
