@@ -234,8 +234,7 @@ class ModuleManager(object):
         :return: Bool
         """
         version = self.client.api.tmos_version
-        if LooseVersion(version) < LooseVersion('18.0.0'):
-            # Yes, 18, because it'll take that long to get this approved...
+        if LooseVersion(version) < LooseVersion('14.0.0'):
             return True
         else:
             return False
