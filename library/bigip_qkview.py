@@ -391,42 +391,29 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             filename=dict(
-                required=False,
                 default='localhost.localdomain.qkview'
             ),
             asm_request_log=dict(
                 type='bool',
-                required=False,
                 default=False,
-                choices=BOOLEANS
             ),
             max_file_size=dict(
                 type='int',
-                required=False,
-                default=None
             ),
             complete_information=dict(
-                required=False,
                 default=False,
-                type='bool',
-                choices=BOOLEANS
+                type='bool'
             ),
             exclude_core=dict(
-                required=False,
                 default=False,
-                type='bool',
-                choices=BOOLEANS
+                type='bool'
             ),
             force=dict(
-                required=False,
                 default=True,
-                type='bool',
-                choices=BOOLEANS
+                type='bool'
             ),
             exclude=dict(
                 type='list',
-                required=False,
-                default=None,
                 choices=['all', 'audit', 'secure', 'bash_history']
             ),
             dest=dict(
