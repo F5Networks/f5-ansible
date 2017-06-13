@@ -94,27 +94,27 @@ EXAMPLES = '''
 RETURN = '''
 agent_status_traps:
     description: Value that the agent status traps was set to.
-    return: changed
+    returned: changed
     type: string
     sample: "enabled"
 agent_authentication_traps:
     description: Value that the authentication status traps was set to.
-    return: changed
+    returned: changed
     type: string
     sample: "enabled"
 device_warning_traps:
     description: Value that the warning status traps was set to.
-    return: changed
+    returned: changed
     type: string
     sample: "enabled"
 contact:
     description: The new value for the person who administers SNMP on the device.
-    return: changed
+    returned: changed
     type: string
     sample: Joe User
 location:
     description: The new value for the system's physical location.
-    return: changed
+    returned: changed
     type: string
     sample: "US West 1a"
 '''
