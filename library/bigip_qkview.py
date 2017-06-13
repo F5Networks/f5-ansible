@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_qkview
-short_description: Manage qkviews on the device
+short_description: Manage qkviews on the device.
 description:
   - Manages creating and downloading qkviews from a BIG-IP. Various
     options can be provided when creating qkviews. The qkview is important
@@ -39,18 +39,16 @@ options:
   filename:
     description:
       - Name of the qkview to create on the remote BIG-IP.
-    required: False
     default: "localhost.localdomain.qkview"
   dest:
     description:
       - Destination on your local filesystem when you want to save the qkview.
-    required: true
+    required: True
   asm_request_log:
     description:
       - When C(True), includes the ASM request log data. When C(False),
         excludes the ASM request log data.
-    required: False
-    default: False
+    default: no
     choices:
       - yes
       - no
@@ -58,29 +56,24 @@ options:
     description:
       - Max file size, in bytes, of the qkview to create. By default, no max
         file size is specified.
-    required: False
     default: 0
   complete_information:
     description:
-      - Include complete information in the qkview
-    required: False
-    default: True
+      - Include complete information in the qkview.
+    default: yes
     choices:
       - yes
       - no
   exclude_core:
     description:
-      - Exclude core files from the qkview
-    required: False
-    default: False
+      - Exclude core files from the qkview.
+    default: no
     choices:
       - yes
       - no
   exclude:
     description:
       - Exclude various file from the qkview.
-    required: False
-    default: None
     choices:
       - all
       - audit
@@ -91,7 +84,6 @@ options:
       - If C(no), the file will only be transferred if the destination does not
         exist.
     default: yes
-    required: False
     choices:
       - yes
       - no
@@ -99,7 +91,6 @@ notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
   - This module does not include the "max time" or "restrict to blade" options.
-  - Requires Ansible >= 2.3.
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
