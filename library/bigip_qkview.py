@@ -219,11 +219,17 @@ class ModuleManager(object):
         self.client = client
 
     def exec_module(self):
-        if self.is_version_less_than_13_1():
-            manager = MadmLocationManager(self.client)
+        if self.is_version_less_than_14():
+            manager = self.get_manager('madm')
         else:
-            manager = BulkLocationManager(self.client)
+            manager = self.get_manager('bulk')
         return manager.exec_module()
+
+    def get_manager(self, type):
+        if type == 'madm':
+            return MadmLocationManager(self.client)
+        elif type == 'bulk':
+            return BulkLocationManager(self.client)
 
     def is_version_less_than_14(self):
         """Checks to see if the TMOS version is less than 14
