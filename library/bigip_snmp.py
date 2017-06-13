@@ -233,29 +233,17 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.choices = ['enabled', 'disabled']
         self.argument_spec = dict(
-            contact=dict(
-                required=False,
-                default=None
-            ),
+            contact=dict(),
             agent_status_traps=dict(
-                required=False,
-                default=None,
                 choices=self.choices
             ),
             agent_authentication_traps=dict(
-                required=False,
-                default=None,
                 choices=self.choices
             ),
             device_warning_traps=dict(
-                required=False,
-                default=None,
                 choices=self.choices
             ),
-            location=dict(
-                required=False,
-                default=None
-            )
+            location=dict()
         )
         self.f5_product_name = 'bigip'
 
