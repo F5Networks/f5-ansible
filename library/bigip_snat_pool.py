@@ -283,9 +283,6 @@ class ModuleManager(object):
                 continue
             else:
                 changed[k] = change
-        import q
-        q.q(changed)
-
         if changed:
             self.changes = Parameters(changed)
             return True
