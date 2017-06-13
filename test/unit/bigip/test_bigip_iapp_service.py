@@ -135,14 +135,14 @@ class TestParameters(unittest.TestCase):
         # Assert one configuration value
         assert 'name' in p.variables[0]
         assert 'value' in p.variables[0]
-        assert p.variables[0]['name'] == 'afm__policy'
+        assert p.variables[0]['name'] == 'afm__dos_security_profile'
         assert p.variables[0]['value'] == '/#do_not_use#'
 
         # Assert a second configuration value
-        assert 'name' in p.variables[0]
-        assert 'value' in p.variables[0]
-        assert p.variables[0]['name'] == 'afm__policy'
-        assert p.variables[0]['value'] == '/#do_not_use#'
+        assert 'name' in p.variables[1]
+        assert 'value' in p.variables[1]
+        assert p.variables[1]['name'] == 'afm__policy'
+        assert p.variables[1]['value'] == '/#do_not_use#'
 
     def test_api_parameters_variables(self):
         args = dict(
