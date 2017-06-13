@@ -38,10 +38,14 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 try:
     from library.bigip_policy import Parameters
     from library.bigip_policy import ModuleManager
+    from library.bigip_policy import SimpleTrafficPolicyManager
+    from library.bigip_policy import ComplexTrafficPolicyManager
     from library.bigip_policy import ArgumentSpec
 except ImportError:
     from ansible.modules.network.f5.bigip_policy import Parameters
     from ansible.modules.network.f5.bigip_policy import ModuleManager
+    from ansible.modules.network.f5.bigip_policy import SimpleTrafficPolicyManager
+    from ansible.modules.network.f5.bigip_policy import ComplexTrafficPolicyManager
     from ansible.modules.network.f5.bigip_policy import ArgumentSpec
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
@@ -144,19 +148,16 @@ class TestParameters(unittest.TestCase):
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-class TestManager(unittest.TestCase):
+class TestSimpleTrafficPolicyManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_trap(self, *args):
+    def test_create_policy(self, *args):
         set_module_args(dict(
-            name='foo',
-            snmp_version='1',
-            community='public',
-            destination='10.10.10.10',
-            port=1000,
-            network='other',
+            name="Policy-Foo",
+            state='present',
+            strategy='best',
             password='password',
             server='localhost',
             user='admin'
@@ -167,11 +168,16 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
-        mm = ModuleManager(client)
+
+        # Override methods in the specific type of manager
+        tm = SimpleTrafficPolicyManager(client)
+        tm.exists = Mock(return_value=False)
+        tm.create_on_device = Mock(return_value=True)
 
         # Override methods to force specific logic in the module to happen
-        mm.create_on_device = Mock(return_value=True)
-        mm.exists = Mock(return_value=False)
+        mm = ModuleManager(client)
+        mm.version_is_less_than_12 = Mock(return_value=True)
+        mm.get_manager = Mock(return_value=tm)
 
         results = mm.exec_module()
 
