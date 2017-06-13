@@ -219,23 +219,26 @@ class ModuleManager(object):
         self.client = client
 
     def exec_module(self):
-        version = self.client.api.tmos_version
-        if LooseVersion(version) <= LooseVersion('13.0.0'):
-            manager = self.get_manager('madm')
+        if self.is_version_less_than_13_1():
+            manager = MadmLocationManager(self.client)
         else:
-            manager = self.get_manager('bulk')
+            manager = BulkLocationManager(self.client)
         return manager.exec_module()
 
-    def get_manager(self, type):
-        if type == 'bulk':
-            return BulkLocationManager(self.client)
-        elif type =='madm':
-            return MadmLocationManager(self.client)
+    def is_version_less_than_14(self):
+        """Checks to see if the TMOS version is less than 14
+
+        Anything less than BIG-IP 13.x does not support users
+        on different partitions.
+
+        :return: Bool
+        """
+        version = self.client.api.tmos_version
+        if LooseVersion(version) < LooseVersion('18.0.0'):
+            # Yes, 18, because it'll take that long to get this approved...
+            return True
         else:
-            raise F5ModuleError(
-                "The version of BIG-IP in use is not supported "
-                "by this module."
-            )
+            return False
 
 
 class BaseManager(object):
