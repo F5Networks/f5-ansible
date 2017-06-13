@@ -175,7 +175,7 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
         assert results['changed'] is True
 
-    def test_create_route_to_pool(self):
+    def test_create_route_to_pool(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -201,9 +201,8 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['pool'] == 'test-pool'
-        assert results['partition'] == 'Common'
 
-    def test_create_route_to_vlan(self):
+    def test_create_route_to_vlan(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -229,9 +228,8 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['vlan'] == '/Common/test-vlan'
-        assert results['partition'] == 'Common'
 
-    def test_update_description(self):
+    def test_update_description(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -250,7 +248,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        current = load_fixture('load_net_route_description.json')
+        current = Parameters(load_fixture('load_net_route_description.json'))
         mm.exists = Mock(return_value=True)
         mm.update_on_device = Mock(return_value=True)
         mm.read_current_from_device = Mock(return_value=current)
@@ -258,9 +256,8 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['description'] == 'foo description'
-        assert results['partition'] == 'Common'
 
-    def test_update_description_idempotent(self):
+    def test_update_description_idempotent(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -279,7 +276,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
 
         # Override methods to force specific logic in the module to happen
-        current = load_fixture('load_net_route_description.json')
+        current = Parameters(load_fixture('load_net_route_description.json'))
         mm.exists = Mock(return_value=True)
         mm.update_on_device = Mock(return_value=True)
         mm.read_current_from_device = Mock(return_value=current)
@@ -288,9 +285,8 @@ class TestManager(unittest.TestCase):
         # There is no assert for the description, because it should
         # not have changed
         assert results['changed'] is False
-        assert results['partition'] == 'Common'
 
-    def test_delete(self):
+    def test_delete(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -315,7 +311,7 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert 'description' not in results
 
-    def test_invalid_unknown_params(self, mock_module):
+    def test_invalid_unknown_params(self, *args):
         set_module_args(dict(
             name='test-route',
             password='admin',
@@ -324,12 +320,12 @@ class TestManager(unittest.TestCase):
             state='present',
             foo="bar"
         ))
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            mutually_exclusive=self.spec.mutually_exclusive,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
-        )
-        mm = ModuleManager(client)
-        #module = F5AnsibleModule()
-        #assert module.fail_json.call_count == 1
+        with patch('ansible.module_utils.f5_utils.AnsibleModule.fail_json') as mo:
+            mo.return_value = True
+            AnsibleF5Client(
+                argument_spec=self.spec.argument_spec,
+                mutually_exclusive=self.spec.mutually_exclusive,
+                supports_check_mode=self.spec.supports_check_mode,
+                f5_product_name=self.spec.f5_product_name
+            )
+            assert mo.call_count == 1
