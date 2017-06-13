@@ -154,6 +154,11 @@ auto_sync:
     returned: changed
     type: bool
     sample: true
+max_incremental_sync_size:
+    description: The new sync size of the device group
+    returned: changed
+    type: int
+    sample: 1000
 '''
 
 from ansible.module_utils.basic import BOOLEANS
@@ -179,7 +184,8 @@ class Parameters(AnsibleF5Parameters):
         'incrementalConfigSyncSizeMax'
     ]
     returnables = [
-        'save_on_auto_sync', 'full_sync', 'description', 'type', 'auto_sync'
+        'save_on_auto_sync', 'full_sync', 'description', 'type', 'auto_sync',
+        'max_incremental_sync_size'
     ]
     updatables = [
         'save_on_auto_sync', 'full_sync', 'description', 'auto_sync',
@@ -251,11 +257,20 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class Changes(Parameters):
+    @property
+    def auto_sync(self):
+        if self._values['auto_sync'] in BOOLEANS_TRUE:
+            return True
+        else:
+            return False
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def _set_changed_options(self):
         changed = {}
@@ -263,7 +278,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -274,7 +289,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             return True
         return False
 
