@@ -28,12 +28,14 @@ if sys.version_info < (2, 7):
 
 import os
 import json
+import pytest
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigip_device_dns import Parameters
@@ -86,7 +88,6 @@ class TestParameters(unittest.TestCase):
         p = Parameters(args)
         assert p.cache == 'disable'
         assert p.name_servers == ['10.10.10.10', '11.11.11.11']
-        assert p.forwarders == '12.12.12.12 13.13.13.13'
         assert p.search == ['14.14.14.14', '15.15.15.15']
 
         # BIG-IP considers "ipv4" to be an empty value
@@ -98,6 +99,15 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.ip_version == 'options inet6'
+
+    def test_ensure_forwards_raises_exception(self):
+        args = dict(
+            forwarders=['12.12.12.12', '13.13.13.13'],
+        )
+        p = Parameters(args)
+        with pytest.raises(F5ModuleError) as ex:
+            foo = p.forwarders
+        assert 'The modifying of forwarders is not supported' in str(ex)
 
 
 class TestManager(unittest.TestCase):
