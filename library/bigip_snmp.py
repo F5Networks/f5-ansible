@@ -28,21 +28,17 @@ module: bigip_snmp
 short_description: Manipulate general SNMP settings on a BIG-IP.
 description:
   - Manipulate general SNMP settings on a BIG-IP.
-version_added: 2.3
+version_added: 2.4
 options:
   contact:
     description:
       - Specifies the name of the person who administers the SNMP
         service for this system.
-    required: False
-    default: None
   agent_status_traps:
     description:
       - When C(enabled), ensures that the system sends a trap whenever the
         SNMP agent starts running or stops running. This is usually enabled
         by default on a BIG-IP.
-    required: False
-    default: None
     choices:
       - enabled
       - disabled
@@ -51,8 +47,6 @@ options:
       - When C(enabled), ensures that the system sends authentication warning
         traps to the trap destinations. This is usually disabled by default on
         a BIG-IP.
-    required: False
-    default: None
     choices:
       - enabled
       - disabled
@@ -61,23 +55,18 @@ options:
       - When C(enabled), ensures that the system sends device warning traps
         to the trap destinations. This is usually enabled by default on a
         BIG-IP.
-    required: False
-    default: None
     choices:
       - enabled
       - disabled
   location:
     description:
       - Specifies the description of this system's physical location.
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 2.2.0
-    - ansible >= 2.3.0
 author:
     - Tim Rupp (@caphrim007)
 '''
@@ -130,7 +119,13 @@ location:
     sample: "US West 1a"
 '''
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import (
+    AnsibleF5Client,
+    AnsibleF5Parameters,
+    HAS_F5SDK,
+    F5ModuleError,
+    iControlUnexpectedHTTPError
+)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -179,7 +174,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = None
+        self.changes = Parameters()
 
     def _update_changed_options(self):
         changed = {}
@@ -283,6 +278,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
