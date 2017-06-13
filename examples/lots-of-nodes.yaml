@@ -277,6 +277,7 @@
         bigip_node:
             state: "present"
             name: "{{ item.name }}"
+            host: "{{ item.host }}"
         with_items: "{{ nodes }}"
         delegate_to: localhost
 
@@ -284,6 +285,7 @@
         bigip_node:
             state: "present"
             name: "{{ item.name }}"
+            host: "{{ item.host }}"
         delegate_to: localhost
         with_items:
             - name: 20.10.10.10
