@@ -30,7 +30,7 @@ import os
 import json
 
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch, mock_open
+from ansible.compat.tests.mock import patch, mock_open, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -142,8 +142,6 @@ class TestManager(unittest.TestCase):
         for item in members:
             self.gtm_irules.append(BigIpObj(**item))
 
-    @patch.object(LtmManager, 'exists', side_effect=[False, True])
-    @patch.object(LtmManager, 'create_on_device', return_value=True)
     def test_create_ltm_irule(self, *args):
         set_module_args(dict(
             name='foo',
@@ -162,14 +160,20 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
+        # Override methods in the specific type of manager
+        tm = LtmManager(client)
+        tm.exists = Mock(side_effect=[False, True])
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=tm)
+
         results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['content'] == 'this is my content'
 
-    @patch.object(GtmManager, 'exists', side_effect=[False, True])
-    @patch.object(GtmManager, 'create_on_device', return_value=True)
     def test_create_gtm_irule(self, *args):
         set_module_args(dict(
             name='foo',
@@ -188,14 +192,20 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
+        # Override methods in the specific type of manager
+        tm = GtmManager(client)
+        tm.exists = Mock(side_effect=[False, True])
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=tm)
+
         results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['content'] == 'this is my content'
 
-    @patch.object(GtmManager, 'exists', side_effect=[False, True])
-    @patch.object(GtmManager, 'create_on_device', return_value=True)
     @patch('__builtin__.open', mock_open(read_data='this is my content'), create=True)
     def test_create_gtm_irule_src(self, *args):
         set_module_args(dict(
@@ -215,7 +225,15 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
+        # Override methods in the specific type of manager
+        tm = GtmManager(client)
+        tm.exists = Mock(side_effect=[False, True])
+        tm.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=tm)
+
         results = mm.exec_module()
 
         assert results['changed'] is True
