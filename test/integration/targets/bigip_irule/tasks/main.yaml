@@ -1,5 +1,7 @@
 ---
 
+- include: setup.yaml
+
 - name: Create iRule in LTM
   bigip_irule:
       content: "{{ lookup('template', 'irule-01.tcl') }}"
@@ -147,3 +149,5 @@
 # Tests for different issues filed on Github
 - include: issue-42.yaml
   tags: issue-42
+
+- include: teardown.yaml
