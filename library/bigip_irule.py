@@ -41,23 +41,22 @@ options:
   module:
     description:
       - The BIG-IP module to add the iRule to.
-    required: true
+    required: True
     choices:
       - ltm
       - gtm
   name:
     description:
       - The name of the iRule.
-    required: true
+    required: True
   src:
     description:
       - The iRule file to interpret and upload to the BIG-IP. Either one
         of C(src) or C(content) must be provided.
-    required: true
+    required: True
   state:
     description:
       - Whether the iRule should exist or not.
-    required: false
     default: present
     choices:
       - present
