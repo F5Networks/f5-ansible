@@ -1,8 +1,8 @@
 .. _bigip_qkview:
 
 
-bigip_qkview - Manage qkviews on the device
-+++++++++++++++++++++++++++++++++++++++++++
+bigip_qkview - Manage qkviews on the device.
+++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -46,7 +46,7 @@ Options
     <td>no</td>
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Include complete information in the qkview</div>        </td></tr>
+        <td><div>Include complete information in the qkview.</div>        </td></tr>
                 <tr><td>dest<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -54,14 +54,14 @@ Options
         <td><div>Destination on your local filesystem when you want to save the qkview.</div>        </td></tr>
                 <tr><td>exclude<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>all</li><li>audit</li><li>secure</li><li>bash_history</li></ul></td>
         <td><div>Exclude various file from the qkview.</div>        </td></tr>
                 <tr><td>exclude_core<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Exclude core files from the qkview</div>        </td></tr>
+        <td><div>Exclude core files from the qkview.</div>        </td></tr>
                 <tr><td>filename<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>localhost.localdomain.qkview</td>
@@ -161,7 +161,6 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module does not include the "max time" or "restrict to blade" options.
-    - Requires Ansible >= 2.3.
 
 
 

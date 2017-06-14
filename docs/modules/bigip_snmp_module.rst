@@ -4,7 +4,7 @@
 bigip_snmp - Manipulate general SNMP settings on a BIG-IP.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -22,7 +22,6 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 2.2.0
-  * ansible >= 2.3.0
 
 
 Options
@@ -40,27 +39,27 @@ Options
     </tr>
                 <tr><td>agent_authentication_traps<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>When <code>enabled</code>, ensures that the system sends authentication warning traps to the trap destinations. This is usually disabled by default on a BIG-IP.</div>        </td></tr>
                 <tr><td>agent_status_traps<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>When <code>enabled</code>, ensures that the system sends a trap whenever the SNMP agent starts running or stops running. This is usually enabled by default on a BIG-IP.</div>        </td></tr>
                 <tr><td>contact<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the name of the person who administers the SNMP service for this system.</div>        </td></tr>
                 <tr><td>device_warning_traps<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>When <code>enabled</code>, ensures that the system sends device warning traps to the trap destinations. This is usually enabled by default on a BIG-IP.</div>        </td></tr>
                 <tr><td>location<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the description of this system's physical location.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -136,35 +135,35 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> agent_status_traps </td>
         <td> Value that the agent status traps was set to. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
     </tr>
             <tr>
         <td> contact </td>
         <td> The new value for the person who administers SNMP on the device. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> Joe User </td>
     </tr>
             <tr>
         <td> location </td>
         <td> The new value for the system's physical location. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> US West 1a </td>
     </tr>
             <tr>
         <td> device_warning_traps </td>
         <td> Value that the warning status traps was set to. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
     </tr>
             <tr>
         <td> agent_authentication_traps </td>
         <td> Value that the authentication status traps was set to. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
     </tr>

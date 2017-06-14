@@ -39,7 +39,7 @@ Options
     </tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The description to attach to the Partition.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -64,12 +64,12 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>present</td>
+    <td></td>
         <td><ul><li>present</li><li>absent</li><li>draft</li></ul></td>
         <td><div>When <code>state</code> is <code>present</code>, ensures that the policy exists and is published. When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently drafted. When <code>state</code> is <code>draft</code>, ensures that the policy exists and is drafted.</div>        </td></tr>
                 <tr><td>strategy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>first</li><li>all</li><li>best</li><li>Custom strategy</li></ul></td>
         <td><div>Specifies the method to determine which actions get executed in the case where there are multiple rules that match. When creating new policies, the default is <code>first</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>

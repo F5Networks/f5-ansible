@@ -44,7 +44,7 @@ F5
   bigip_pool (D) - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
   bigip_provision - Manage BIG-IP module provisioning. <bigip_provision_module>
-  bigip_qkview - Manage qkviews on the device <bigip_qkview_module>
+  bigip_qkview - Manage qkviews on the device. <bigip_qkview_module>
   bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP. <bigip_remote_syslog_module>
   bigip_routedomain - Manage route domains on a BIG-IP <bigip_routedomain_module>
   bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
@@ -66,7 +66,7 @@ F5
   bigip_user - Manage user accounts and user attributes on a BIG-IP. <bigip_user_module>
   bigip_user_facts - Retrieve user account attributes from a BIG-IP <bigip_user_facts_module>
   bigip_view - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
-  bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP <bigip_virtual_address_module>
+  bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP. <bigip_virtual_address_module>
   bigip_virtual_server (D) - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>
   bigip_virtual_server - Manage LTM virtual servers on a BIG-IP. <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
