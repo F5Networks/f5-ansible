@@ -135,7 +135,7 @@ EXAMPLES = '''
       partition: "Common"
       address: "10.10.10.10"
   delegate_to: localhost
-  
+
 - name: Enable route advertisement on the virtual address
   bigip_virtual_address:
       server: "lb.mydomain.net"
@@ -174,7 +174,7 @@ netmask:
     type: int
     sample: 2345
 arp_state:
-    description: The new way the virtual address handles ARP requests. 
+    description: The new way the virtual address handles ARP requests.
     returned: changed
     type: string
     sample: disabled
@@ -203,8 +203,7 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
-    iControlUnexpectedHTTPError,
-    iteritems
+    iControlUnexpectedHTTPError
 )
 
 
