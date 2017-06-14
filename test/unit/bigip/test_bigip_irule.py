@@ -34,6 +34,7 @@ from ansible.compat.tests.mock import patch, mock_open, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.six import PY3
 
 try:
     from library.bigip_irule import Parameters
@@ -206,7 +207,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['content'] == 'this is my content'
 
-    @patch('__builtin__.open', mock_open(read_data='this is my content'), create=True)
     def test_create_gtm_irule_src(self, *args):
         set_module_args(dict(
             name='foo',
@@ -225,16 +225,22 @@ class TestManager(unittest.TestCase):
             mutually_exclusive=self.spec.mutually_exclusive,
         )
 
-        # Override methods in the specific type of manager
-        tm = GtmManager(client)
-        tm.exists = Mock(side_effect=[False, True])
-        tm.create_on_device = Mock(return_value=True)
+        if PY3:
+            builtins_name = 'builtins'
+        else:
+            builtins_name = '__builtin__'
 
-        # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
-        mm.get_manager = Mock(return_value=tm)
+        with patch(builtins_name + '.open', mock_open(read_data='this is my content'), create=True):
+            # Override methods in the specific type of manager
+            tm = GtmManager(client)
+            tm.exists = Mock(side_effect=[False, True])
+            tm.create_on_device = Mock(return_value=True)
 
-        results = mm.exec_module()
+            # Override methods to force specific logic in the module to happen
+            mm = ModuleManager(client)
+            mm.get_manager = Mock(return_value=tm)
+
+            results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['content'] == 'this is my content'
@@ -242,7 +248,6 @@ class TestManager(unittest.TestCase):
         assert results['src'] == '/path/to/irules/foo.tcl'
         assert len(results.keys()) == 4
 
-    @patch('__builtin__.open', mock_open(read_data='this is my content'), create=True)
     def test_module_mutual_exclusion(self, *args):
         set_module_args(dict(
             content='foo',
@@ -256,12 +261,11 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        with patch('ansible.module_utils.basic.AnsibleModule.fail_json') as mo:
+        with patch('ansible.module_utils.basic.AnsibleModule.fail_json', unsafe=True) as mo:
             AnsibleF5Client(
                 argument_spec=self.spec.argument_spec,
                 supports_check_mode=self.spec.supports_check_mode,
                 f5_product_name=self.spec.f5_product_name,
                 mutually_exclusive=self.spec.mutually_exclusive,
             )
-
             mo.assert_called_once()
