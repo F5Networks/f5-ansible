@@ -226,3 +226,26 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
+
+    def test_delete_virtual_address(self, *args):
+        set_module_args(dict(
+            state='absent',
+            address='1.1.1.1',
+            password='admin',
+            server='localhost',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, False])
+        mm.remove_from_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is True

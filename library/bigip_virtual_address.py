@@ -27,10 +27,10 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_virtual_address
-short_description: Manage LTM virtual addresses on a BIG-IP
+short_description: Manage LTM virtual addresses on a BIG-IP.
 description:
-  - Manage LTM virtual addresses on a BIG-IP
-version_added: "2.3"
+  - Manage LTM virtual addresses on a BIG-IP.
+version_added: "2.4"
 options:
   address:
     description:
@@ -42,14 +42,11 @@ options:
     description:
       - Netmask of the provided virtual address. This value cannot be
         modified after it is set.
-    required: False
     default: 255.255.255.255
   connection_limit:
     description:
       - Specifies the number of concurrent connections that the system
         allows on this virtual address.
-    required: False
-    default: None
   arp_state:
     description:
       - Specifies whether the system accepts ARP requests. When (disabled),
@@ -60,7 +57,6 @@ options:
     choices:
       - enabled
       - disabled
-    default: None
   auto_delete:
     description:
       - Specifies whether the system automatically deletes the virtual
@@ -71,7 +67,6 @@ options:
     choices:
       - enabled
       - disabled
-    default: None
   icmp_echo:
     description:
       - Specifies how the systems sends responses to (ICMP) echo requests
@@ -87,7 +82,6 @@ options:
       - enabled
       - disabled
       - selective
-    default: None
   state:
     description:
       - The virtual address state. If C(absent), an attempt to delete the
@@ -96,7 +90,6 @@ options:
         the virtual address and enables it. If C(enabled), enable the virtual
         address if it exists. If C(disabled), create the virtual address if
         needed, and set state to C(disabled).
-    required: False
     default: present
     choices:
       - present
@@ -114,8 +107,6 @@ options:
       - always
       - when_all_available
       - when_any_available
-    required: False
-    default: None
   use_route_advertisement:
     description:
       - Specifies whether the system uses route advertisement for this
@@ -124,8 +115,6 @@ options:
     choices:
       - yes
       - no
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -146,10 +135,59 @@ EXAMPLES = '''
       partition: "Common"
       address: "10.10.10.10"
   delegate_to: localhost
+  
+- name: Enable route advertisement on the virtual address
+  bigip_virtual_address:
+      server: "lb.mydomain.net"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      address: "10.10.10.10"
+      use_route_advertisement: yes
+  delegate_to: localhost
 '''
 
 RETURN = '''
-
+use_route_advertisement:
+    description: The new setting for whether to use route advertising or not.
+    returned: changed
+    type: bool
+    sample: true
+auto_delete:
+    description: New setting for auto deleting virtual address.
+    returned: changed
+    type: string
+    sample: enabled
+icmp_echo:
+    description: New ICMP echo setting applied to virtual address.
+    returned: changed
+    type: string
+    sample: disabled
+connection_limit:
+    description: The new connection limit of the virtual address.
+    returned: changed
+    type: int
+    sample: 1000
+netmask:
+    description: The netmask of the virtual address.
+    returned: created
+    type: int
+    sample: 2345
+arp_state:
+    description: The new way the virtual address handles ARP requests. 
+    returned: changed
+    type: string
+    sample: disabled
+address:
+    description: The address of the virtual address.
+    returned: created
+    type: int
+    sample: 2345
+state:
+    description: The new state of the virtual address.
+    returned: changed
+    type: string
+    sample: disabled
 '''
 
 try:
@@ -158,7 +196,6 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.basic import BOOLEANS_TRUE
 from ansible.module_utils.basic import BOOLEANS_FALSE
 from ansible.module_utils.f5_utils import (
@@ -449,7 +486,6 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             state=dict(
-                type='str',
                 default='present',
                 choices=['present', 'absent', 'disabled', 'enabled']
             ),
@@ -461,37 +497,24 @@ class ArgumentSpec(object):
             netmask=dict(
                 type='str',
                 default='255.255.255.255',
-                required=False
             ),
             connection_limit=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             arp_state=dict(
                 choices=['enabled', 'disabled'],
-                required=False,
-                default=None
             ),
             auto_delete=dict(
-                required=False,
                 choices=['enabled', 'disabled'],
-                default=None
             ),
             icmp_echo=dict(
-                required=False,
                 choices=['enabled', 'disabled', 'selective'],
-                default=None
             ),
             advertise_route=dict(
-                required=False,
                 choices=['always', 'when_all_available', 'when_any_available'],
-                default=None
             ),
             use_route_advertisement=dict(
-                required=False,
-                choices=BOOLEANS,
-                default=None
+                type='bool'
             )
         )
         self.f5_product_name = 'bigip'
@@ -515,6 +538,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
