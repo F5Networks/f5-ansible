@@ -35,7 +35,7 @@ from ansible.module_utils.f5_utils import (
     F5ModuleError
 )
 
-from library.bigip_software2 import (
+from library.bigip_software import (
     Parameters,
     ModuleManager,
     ArgumentSpec
