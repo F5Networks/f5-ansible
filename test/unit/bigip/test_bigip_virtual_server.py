@@ -20,14 +20,13 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import sys
-
-if sys.version_info < (2, 7):
-    from nose.plugins.skip import SkipTest
-    raise SkipTest("F5 Ansible modules require Python >= 2.7")
-
 import os
 import json
+import sys
+
+from nose.plugins.skip import SkipTest
+if sys.version_info < (2, 7):
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock, DEFAULT
@@ -43,12 +42,15 @@ try:
     from library.bigip_virtual_server import VirtualAddressManager
     from library.bigip_virtual_server import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressParameters
-    from ansible.modules.network.f5.bigip_virtual_server import VirtualServerParameters
-    from ansible.modules.network.f5.bigip_virtual_server import ModuleManager
-    from ansible.modules.network.f5.bigip_virtual_server import VirtualServerManager
-    from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressManager
-    from ansible.modules.network.f5.bigip_virtual_server import ArgumentSpec
+    try:
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressParameters
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualServerParameters
+        from ansible.modules.network.f5.bigip_virtual_server import ModuleManager
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualServerManager
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressManager
+        from ansible.modules.network.f5.bigip_virtual_server import ArgumentSpec
+    except ImportError:
+        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}

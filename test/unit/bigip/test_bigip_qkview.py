@@ -20,14 +20,13 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import sys
-
-if sys.version_info < (2, 7):
-    from nose.plugins.skip import SkipTest
-    raise SkipTest("F5 Ansible modules require Python >= 2.7")
-
 import os
 import json
+import sys
+
+from nose.plugins.skip import SkipTest
+if sys.version_info < (2, 7):
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
@@ -42,11 +41,14 @@ try:
     from library.bigip_qkview import BulkLocationManager
     from library.bigip_qkview import ArgumentSpec
 except ImportError:
-    from ansible.modules.network.f5.bigip_qkview import Parameters
-    from ansible.modules.network.f5.bigip_qkview import ModuleManager
-    from ansible.modules.network.f5.bigip_qkview import MadmLocationManager
-    from ansible.modules.network.f5.bigip_qkview import BulkLocationManager
-    from ansible.modules.network.f5.bigip_qkview import ArgumentSpec
+    try:
+        from ansible.modules.network.f5.bigip_qkview import Parameters
+        from ansible.modules.network.f5.bigip_qkview import ModuleManager
+        from ansible.modules.network.f5.bigip_qkview import MadmLocationManager
+        from ansible.modules.network.f5.bigip_qkview import BulkLocationManager
+        from ansible.modules.network.f5.bigip_qkview import ArgumentSpec
+    except ImportError:
+        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}

@@ -20,15 +20,14 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import sys
-import pytest
-
-if sys.version_info < (2, 7):
-    from nose.plugins.skip import SkipTest
-    raise SkipTest("F5 Ansible modules require Python >= 2.7")
-
 import os
 import json
+import pytest
+import sys
+
+from nose.plugins.skip import SkipTest
+if sys.version_info < (2, 7):
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
 
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import patch, Mock
@@ -44,11 +43,14 @@ try:
     from library.bigip_user import UnparitionedManager
     from library.bigip_user import PartitionedManager
 except ImportError:
-    from ansible.modules.network.f5.bigip_user import Parameters
-    from ansible.modules.network.f5.bigip_user import ModuleManager
-    from ansible.modules.network.f5.bigip_user import ArgumentSpec
-    from ansible.modules.network.f5.bigip_user import UnparitionedManager
-    from ansible.modules.network.f5.bigip_user import PartitionedManager
+    try:
+        from ansible.modules.network.f5.bigip_user import Parameters
+        from ansible.modules.network.f5.bigip_user import ModuleManager
+        from ansible.modules.network.f5.bigip_user import ArgumentSpec
+        from ansible.modules.network.f5.bigip_user import UnparitionedManager
+        from ansible.modules.network.f5.bigip_user import PartitionedManager
+    except ImportError:
+        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}

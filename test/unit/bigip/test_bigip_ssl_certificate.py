@@ -20,14 +20,13 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import sys
-
-if sys.version_info < (2, 7):
-    from nose.plugins.skip import SkipTest
-    raise SkipTest("F5 Ansible modules require Python >= 2.7")
-
 import os
 import json
+import sys
+
+from nose.plugins.skip import SkipTest
+if sys.version_info < (2, 7):
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
 
 from ansible.compat.tests import unittest
 from ansible.module_utils import basic
@@ -42,11 +41,14 @@ try:
     from library.bigip_ssl_certificate import CertificateManager
     from library.bigip_ssl_certificate import KeyManager
 except ImportError:
-    from ansible.modules.network.f5.bigip_ssl_certificate import ArgumentSpec
-    from ansible.modules.network.f5.bigip_ssl_certificate import KeyParameters
-    from ansible.modules.network.f5.bigip_ssl_certificate import CertParameters
-    from ansible.modules.network.f5.bigip_ssl_certificate import CertificateManager
-    from ansible.modules.network.f5.bigip_ssl_certificate import KeyManager
+    try:
+        from ansible.modules.network.f5.bigip_ssl_certificate import ArgumentSpec
+        from ansible.modules.network.f5.bigip_ssl_certificate import KeyParameters
+        from ansible.modules.network.f5.bigip_ssl_certificate import CertParameters
+        from ansible.modules.network.f5.bigip_ssl_certificate import CertificateManager
+        from ansible.modules.network.f5.bigip_ssl_certificate import KeyManager
+    except ImportError:
+        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
