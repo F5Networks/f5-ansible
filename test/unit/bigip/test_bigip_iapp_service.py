@@ -196,13 +196,13 @@ class TestParameters(unittest.TestCase):
         assert p.tables[0]['rows'][1]['row'] == ['13.13.13.13', '443', '10']
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_create_service(self, *args):
         parameters = load_fixture('create_iapp_service_parameters_f5_http.json')
         set_module_args(dict(
@@ -229,8 +229,6 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
         assert results['changed'] is True
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_agent_status_traps(self, *args):
         parameters = load_fixture('update_iapp_service_parameters_f5_http.json')
         set_module_args(dict(
