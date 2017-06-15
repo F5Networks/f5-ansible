@@ -145,14 +145,12 @@ RETURN = '''
 # only common fields returned
 '''
 
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
     iteritems,
-    defaultdict,
     iControlUnexpectedHTTPError
 )
 from deepdiff import DeepDiff
@@ -228,6 +226,10 @@ class Parameters(AnsibleF5Parameters):
                 tmp['encrypted'] = 'no'
             if 'value' not in tmp:
                 tmp['value'] = ''
+
+            # This seems to happen only on 12.0.0
+            elif tmp['value'] == 'none':
+                tmp['value'] = ''
             result.append(tmp)
         result = sorted(result, key=lambda k: k['name'])
         return result
@@ -285,7 +287,7 @@ class Parameters(AnsibleF5Parameters):
     def template(self):
         if self._values['template'] is None:
             return None
-        if self._values['template'].startswith("/"+self.partition):
+        if self._values['template'].startswith("/" + self.partition):
             return self._values['template']
         else:
             return '/{0}/{1}'.format(
@@ -319,7 +321,7 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1,attr2))
+                    changed[key] = str(DeepDiff(attr1, attr2))
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -440,7 +442,6 @@ class ArgumentSpec(object):
             ),
             force=dict(
                 default=False,
-                choices=BOOLEANS,
                 type='bool'
             )
         )
@@ -465,6 +466,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
