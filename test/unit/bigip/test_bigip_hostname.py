@@ -82,13 +82,13 @@ class TestParameters(unittest.TestCase):
         assert p.hostname == 'foo.internal.com'
 
 
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-           return_value=True)
     def test_update_hostname(self, *args):
         set_module_args(dict(
             hostname='foo2.internal.com',
