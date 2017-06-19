@@ -176,9 +176,13 @@ cert_source_path:
 
 
 import hashlib
-import StringIO
 import os
 import re
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -217,12 +221,12 @@ class Parameters(AnsibleF5Parameters):
 
     def _get_hash(self, content):
         k = hashlib.sha1()
-        s = StringIO.StringIO(content)
+        s = StringIO(content)
         while True:
             data = s.read(1024)
             if not data:
                 break
-            k.update(data)
+            k.update(data.encode('utf-8'))
         return k.hexdigest()
 
     @property
@@ -506,7 +510,7 @@ class CertificateManager(BaseManager):
         return False
 
     def update_on_device(self):
-        content = StringIO.StringIO(self.want.cert_content)
+        content = StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.cert_filename
         )
@@ -517,7 +521,7 @@ class CertificateManager(BaseManager):
         resource.update()
 
     def create_on_device(self):
-        content = StringIO.StringIO(self.want.cert_content)
+        content = StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.cert_filename
         )
@@ -591,7 +595,7 @@ class KeyManager(BaseManager):
         return False
 
     def update_on_device(self):
-        content = StringIO.StringIO(self.want.key_content)
+        content = StringIO(self.want.key_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.key_filename
         )
@@ -622,7 +626,7 @@ class KeyManager(BaseManager):
         return KeyParameters(result)
 
     def create_on_device(self):
-        content = StringIO.StringIO(self.want.key_content)
+        content = StringIO(self.want.key_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.key_filename
         )
