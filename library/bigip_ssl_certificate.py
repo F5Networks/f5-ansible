@@ -25,7 +25,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
-short_description: Import/Delete certificates from BIG-IP
+short_description: Import/Delete certificates from BIG-IP.
 description:
   - This module will import/delete SSL certificates on BIG-IP LTM.
     Certificates can be imported from certificate and key files on the local
@@ -39,7 +39,6 @@ options:
         with formatting or templating. Either one of C(key_src),
         C(key_content), C(cert_src) or C(cert_content) must be provided when
         C(state) is C(present).
-    required: false
   key_content:
     description:
       - When used instead of 'key_src', sets the contents of a certificate key
@@ -47,44 +46,34 @@ options:
         anything with formatting or templating. Either one of C(key_src),
         C(key_content), C(cert_src) or C(cert_content) must be provided when
         C(state) is C(present).
-    required: false
   state:
     description:
       - Certificate and key state. This determines if the provided certificate
         and key is to be made C(present) on the device or C(absent).
-    required: true
     default: present
     choices:
       - present
       - absent
-  partition:
-    description:
-      - BIG-IP partition to use when adding/deleting certificate.
-    required: false
-    default: Common
   name:
     description:
       - SSL Certificate Name.  This is the cert/key pair name used
         when importing a certificate/key into the F5. It also
         determines the filenames of the objects on the LTM
         (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).
-    required: true
+    required: True
   cert_src:
     description:
       - This is the local filename of the certificate. Either one of C(key_src),
         C(key_content), C(cert_src) or C(cert_content) must be provided when
         C(state) is C(present).
-    required: false
   key_src:
     description:
       - This is the local filename of the private key. Either one of C(key_src),
         C(key_content), C(cert_src) or C(cert_content) must be provided when
         C(state) is C(present).
-    required: false
   passphrase:
     description:
       - Passphrase on certificate private key
-    required: false
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
