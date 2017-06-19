@@ -359,7 +359,7 @@ class ModuleManager(object):
         results = dict(changed=False)
         for manager in managers:
             result = manager.exec_module()
-            for k,v in iteritems(result):
+            for k, v in iteritems(result):
                 if k == 'changed':
                     if v is True:
                         results['changed'] = True
@@ -370,7 +370,7 @@ class ModuleManager(object):
     def get_manager(self, type):
         if type == 'certificate':
             return CertificateManager(self.client)
-        elif type =='key':
+        elif type == 'key':
             return KeyManager(self.client)
 
 
@@ -698,6 +698,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
