@@ -185,3 +185,64 @@ class TestCertificateManager(unittest.TestCase):
         results = cm.exec_module()
 
         assert results['changed'] is True
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestKeyManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_import_certificate_and_key_no_key_passphrase(self, *args):
+        set_module_args(dict(
+            name='foo',
+            cert_content=load_fixture('cert1.crt'),
+            key_content=load_fixture('cert1.key'),
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        cm = KeyManager(client)
+        cm.exists = Mock(side_effect=[False, True])
+        cm.create_on_device = Mock(return_value=True)
+
+        results = cm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_update_certificate_new_certificate_and_key_password_protected_key(self, *args):
+        set_module_args(dict(
+            name='foo',
+            cert_content=load_fixture('cert2.crt'),
+            key_content=load_fixture('cert2.key'),
+            state='present',
+            passphrase='keypass',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        cm = KeyManager(client)
+        cm.exists = Mock(side_effect=[False, True])
+        cm.create_on_device = Mock(return_value=True)
+
+        results = cm.exec_module()
+
+        assert results['changed'] is True
