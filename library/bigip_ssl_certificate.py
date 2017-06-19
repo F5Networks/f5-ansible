@@ -554,9 +554,10 @@ class CertificateManager(BaseManager):
         resource.delete()
 
     def remove(self):
-        super(CertificateManager, self).remove()
-        if self.exists():
+        result = super(CertificateManager, self).remove()
+        if self.exists() and not self.client.check_mode:
             raise F5ModuleError("Failed to delete the certificate")
+        return result
 
 
 class KeyManager(BaseManager):
@@ -650,9 +651,10 @@ class KeyManager(BaseManager):
         resource.delete()
 
     def remove(self):
-        super(KeyManager, self).remove()
-        if self.exists():
+        result = super(KeyManager, self).remove()
+        if self.exists() and not self.client.check_mode:
             raise F5ModuleError("Failed to delete the key")
+        return result
 
 
 class ArgumentSpec(object):
