@@ -128,7 +128,6 @@ import os
 from distutils.version import LooseVersion
 
 from ansible.module_utils.six import string_types
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -451,6 +450,6 @@ def main():
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
 
+
 if __name__ == '__main__':
     main()
-
