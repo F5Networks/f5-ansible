@@ -153,6 +153,10 @@ class Parameters(AnsibleF5Parameters):
         return "--exclude='{0}'".format(exclude)
 
     @property
+    def exclude_raw(self):
+        return self._values['exclude']
+
+    @property
     def exclude_core(self):
         if self._values['exclude']:
             return '-C'
@@ -282,6 +286,13 @@ class BaseManager(object):
             raise F5ModuleError(
                 "The specified 'dest' file already exists"
             )
+        if self.want.exclude:
+            choices = ['all', 'audit', 'secure', 'bash_history']
+            if not all(x in choices for x in self.want.exclude_raw):
+                raise F5ModuleError(
+                    "The specified excludes must be in the following list: "
+                    "{0}".format(','.join(choices))
+                )
         self.execute()
 
     def exists(self):
@@ -420,8 +431,7 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             exclude=dict(
-                type='list',
-                choices=['all', 'audit', 'secure', 'bash_history']
+                type='list'
             ),
             dest=dict(
                 type='path',
