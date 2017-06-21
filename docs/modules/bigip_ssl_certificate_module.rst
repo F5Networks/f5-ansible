@@ -1,8 +1,8 @@
 .. _bigip_ssl_certificate:
 
 
-bigip_ssl_certificate - Import/Delete certificates from BIG-IP
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ssl_certificate - Import/Delete certificates from BIG-IP.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -63,11 +63,6 @@ Options
     <td></td>
         <td></td>
         <td><div>SSL Certificate Name.  This is the cert/key pair name used when importing a certificate/key into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>BIG-IP partition to use when adding/deleting certificate.</div>        </td></tr>
                 <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -89,7 +84,7 @@ Options
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>Certificate and key state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div>        </td></tr>
@@ -164,49 +159,49 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> cert_source_path </td>
         <td> Path on BIG-IP where the source of the certificate is stored. </td>
-        <td align=center>  </td>
+        <td align=center> created </td>
         <td align=center> string </td>
         <td align=center> /var/config/rest/downloads/cert1.crt </td>
     </tr>
             <tr>
         <td> cert_checksum </td>
         <td> SHA1 checksum of the cert that was provided. </td>
-        <td align=center>  </td>
+        <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0 </td>
     </tr>
             <tr>
         <td> cert_filename </td>
         <td> ['The name of the SSL certificate. The C(cert_filename) and C(key_filename) will be similar to each other, however the C(cert_filename) will have a C(.crt) extension.'] </td>
-        <td align=center> ['created'] </td>
+        <td align=center> created </td>
         <td align=center> string </td>
         <td align=center> cert1.crt </td>
     </tr>
             <tr>
         <td> cert_name </td>
         <td> The name of the certificate that the user provided </td>
-        <td align=center> ['created'] </td>
+        <td align=center> created </td>
         <td align=center> string </td>
         <td align=center> cert1 </td>
     </tr>
             <tr>
         <td> key_source_path </td>
         <td> Path on BIG-IP where the source of the key is stored </td>
-        <td align=center>  </td>
+        <td align=center> created </td>
         <td align=center> string </td>
         <td align=center> /var/config/rest/downloads/cert1.key </td>
     </tr>
             <tr>
         <td> key_filename </td>
         <td> ['The name of the SSL certificate key. The C(key_filename) and C(cert_filename) will be similar to each other, however the C(key_filename) will have a C(.key) extension.'] </td>
-        <td align=center> ['created'] </td>
+        <td align=center> created </td>
         <td align=center> string </td>
         <td align=center> cert1.key </td>
     </tr>
             <tr>
         <td> key_checksum </td>
         <td> SHA1 checksum of the key that was provided. </td>
-        <td align=center>  </td>
+        <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> cf23df2207d99a74fbe169e3eba035e633b65d94 </td>
     </tr>

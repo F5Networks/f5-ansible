@@ -57,7 +57,7 @@ F5
   bigip_snmp_user - foo <bigip_snmp_user_module>
   bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_update - Manage the software update settings of a BIG-IP. <bigip_software_update_module>
-  bigip_ssl_certificate - Import/Delete certificates from BIG-IP <bigip_ssl_certificate_module>
+  bigip_ssl_certificate - Import/Delete certificates from BIG-IP. <bigip_ssl_certificate_module>
   bigip_static_route - Manipulate static routes on a BIG-IP. <bigip_static_route_module>
   bigip_sys_db - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global - Manage BIG-IP global settings. <bigip_sys_global_module>
