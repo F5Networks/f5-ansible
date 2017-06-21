@@ -74,10 +74,10 @@ Ensure all the following are complete
 
 #### Upstream vendor related
 (this must be done inside of Ansible's source tree)
-- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.6 MODULE_NAME.py`
-- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.7 MODULE_NAME.py`
-- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.5 MODULE_NAME.py`
-- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.6 MODULE_NAME.py`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.6 MODULE_NAME`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.7 MODULE_NAME`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.5 MODULE_NAME`
+- [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.6 MODULE_NAME`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test validate-modules`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test pep8`
 - [ ] Module PR has been mentioned as a comment for the next Networking Team meeting here https://github.com/ansible/community/issues/110
