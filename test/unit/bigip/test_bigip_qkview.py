@@ -148,3 +148,44 @@ class TestMadmLocationManager(unittest.TestCase):
             results = mm.exec_module()
 
         assert results['changed'] is False
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestBulkLocationManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_qkview_default_options(self, *args):
+        set_module_args(dict(
+            dest='/tmp/foo.qkview',
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        tm = BulkLocationManager(client)
+        tm.exists = Mock(return_value=False)
+        tm.execute_on_device = Mock(return_value=True)
+        tm._move_qkview_to_download = Mock(return_value=True)
+        tm._download_file = Mock(return_value=True)
+        tm._delete_qkview = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.is_version_less_than_14 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=tm)
+
+        with patch('os.path.exists') as mo:
+            mo.return_value = True
+            results = mm.exec_module()
+
+        assert results['changed'] is False
