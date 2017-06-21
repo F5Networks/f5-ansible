@@ -1,0 +1,6 @@
+---
+
+- name: Ensure qkview is absent before testing
+  file:
+      path: "{{ qkview_path_local }}"
+      state: "absent"
