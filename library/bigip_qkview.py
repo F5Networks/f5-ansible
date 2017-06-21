@@ -99,12 +99,13 @@ author:
 '''
 
 EXAMPLES = '''
-- name: The whole enchilada
+- name: Fetch a qkview from the remote device
   bigip_qkview:
       asm_request_log: "yes"
       exclude:
-          - all|audit|secure|bash_history|or a list of them, for example, [audit,secure]
-      dest: "/tmp/localhost.localdomain.qkview
+          - audit
+          - secure
+      dest: "/tmp/localhost.localdomain.qkview"
   delegate_to: localhost
 '''
 
