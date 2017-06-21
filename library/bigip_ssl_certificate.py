@@ -126,8 +126,7 @@ EXAMPLES = '''
 RETURN = '''
 cert_name:
     description: The name of the certificate that the user provided
-    returned:
-        - created
+    returned: created
     type: string
     sample: "cert1"
 key_filename:
@@ -135,20 +134,17 @@ key_filename:
         - The name of the SSL certificate key. The C(key_filename) and
           C(cert_filename) will be similar to each other, however the
           C(key_filename) will have a C(.key) extension.
-    returned:
-        - created
+    returned: created
     type: string
     sample: "cert1.key"
 key_checksum:
     description: SHA1 checksum of the key that was provided.
-    return:
-        - changed
-        - created
+    returned: changed and created
     type: string
     sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
 key_source_path:
     description: Path on BIG-IP where the source of the key is stored
-    return: created
+    returned: created
     type: string
     sample: "/var/config/rest/downloads/cert1.key"
 cert_filename:
@@ -156,20 +152,17 @@ cert_filename:
         - The name of the SSL certificate. The C(cert_filename) and
           C(key_filename) will be similar to each other, however the
           C(cert_filename) will have a C(.crt) extension.
-    returned:
-        - created
+    returned: created
     type: string
     sample: "cert1.crt"
 cert_checksum:
     description: SHA1 checksum of the cert that was provided.
-    return:
-        - changed
-        - created
+    returned: changed and created
     type: string
     sample: "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
 cert_source_path:
     description: Path on BIG-IP where the source of the certificate is stored.
-    return: created
+    returned: created
     type: string
     sample: "/var/config/rest/downloads/cert1.crt"
 '''
