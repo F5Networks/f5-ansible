@@ -1,0 +1,55 @@
+- name: Configure Basic vlans, ips, virtuals, license
+  hosts: v11-1
+  environment:
+      F5_USER: "admin"
+      F5_PASSWORD: "admin"
+      F5_VALIDATE_CERTS: "false"
+      F5_SERVER_PORT: 443
+  connection: local
+  vars:
+      # Primary unit should be the unit with the config, secondary is target sync
+      # and will be overwritten.  Primary unit and hosts (above) should be the same
+      primary_unit_hostname: "v11-1.wehrman.com"
+      primary_unit_mgmt_ip: "10.10.10.193"
+      primary_unit_fail_sync: "11.12.13.1"
+      target_unit_hostname: "v11-2.wehrman.com"
+      target_unit_mgmt_ip: "10.10.10.194"
+      target_unit_fail_sync: "11.12.13.2"
+
+  tasks:
+    - name: This configures the primary unit to prep things, such as configsync ip and unicast
+      bigip_command:
+          server: "{{ primary_unit_mgmt_ip }}"
+          commands: "{{ item }}"
+      with_items:
+          - "modify cm device bigip1 configsync-ip {{ primary_unit_fail_sync }}"
+          - "modify cm device bigip1 unicast-address {{ '{{' }} ip {{ primary_unit_mgmt_ip }} }{ ip {{ primary_unit_fail_sync }} {{ '}}' }}"
+
+    - name: This configures the target unit to prep things, such as configsync ip and unicast
+      bigip_command:
+          server: "{{ target_unit_mgmt_ip }}"
+          commands: "{{ item }}"
+      with_items:
+          - "modify cm device bigip1 configsync-ip {{ target_unit_fail_sync }}"
+          - "modify cm device bigip1 unicast-address {{ '{{' }} ip {{ target_unit_mgmt_ip }} }{ ip {{ target_unit_fail_sync }} {{ '}}' }}"
+
+    - name: Now we actually create the pair and sync them
+      bigip_command:
+          server: "{{ primary_unit_mgmt_ip }}"
+          commands: "{{ item }}"
+      with_items:
+          - modify cm trust-domain Root ca-devices add { {{ target_unit_mgmt_ip }} } username {{ ansible_env.F5_USER }} password {{ ansible_env.F5_PASSWORD }} name {{ target_unit_hostname }}
+          - create cm device-group Sync_Failover_Group devices add { bigip1 {{ target_unit_hostname }} } type sync-failover
+          - run cm config-sync to-group Sync_Failover_Group
+
+    - name: Save configuration on the Primary
+      bigip_config:
+          save: yes
+          server: "{{ primary_unit_mgmt_ip }}"
+
+    - name: Save configuration on the Target
+      bigip_config:
+          save: yes
+          server: "{{ target_unit_mgmt_ip }}"
+
+
