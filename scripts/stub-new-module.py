@@ -117,7 +117,7 @@ class ModuleStubber(object):
 #
 
 - name: Test the {module} module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:
