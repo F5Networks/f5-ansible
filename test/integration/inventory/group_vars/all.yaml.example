@@ -1,13 +1,3 @@
 ---
 
-bigip_username: "admin"
-bigip_password: "admin"
-bigip_port: "10443"
-bigip_partition: "Common"
 validate_certs: "no"
-
-iworkflow_username: "admin"
-iworkflow_password: "admin"
-iworkflow_port: "10444"
-iworkflow_license: "{{ secret_iworkflow_license }}"
-iworkflow_pool_license: "{{ secret_iworkflow_pool_license }}"

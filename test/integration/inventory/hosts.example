@@ -1,5 +1,13 @@
 [f5-test]
-localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+bigip1 ansible_host=10.144.128.41 ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+bigip2 ansible_host=10.144.128.42 ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
 
 [secret:children]
 f5-test
+
+[bigip]
+bigip1
+bigip2
+
+[localhost]
+localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
