@@ -35,4 +35,4 @@
       F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-      - bigip_software
+      - targets/bigip_software
