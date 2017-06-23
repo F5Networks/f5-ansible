@@ -1,13 +1,16 @@
 ---
 
-- name: Sync configuration from device to group
-  bigip_configsync_actions:
-      device_group: "{{ device_group }}"
-      sync_device_to_group: yes
-  delegate_to: localhost
+# In this task list, the 0th item is the Active unit and the 1st item is the
+# standby unit.
 
-- name: Sync configuration from group to device
-  bigip_configsync_actions:
-      device_group: "{{ device_group }}"
-      sync_group_to_device: yes
-  delegate_to: localhost
+- include: setup.yaml
+  when: ansible_play_batch[0] == inventory_hostname
+
+- include: test-device-to-group.yaml
+  when: ansible_play_batch[0] == inventory_hostname
+
+- include: test-pull-recent-device.yaml
+  when: ansible_play_batch[1] == inventory_hostname
+
+- include: teardown.yaml
+  when: ansible_play_batch[0] == inventory_hostname
