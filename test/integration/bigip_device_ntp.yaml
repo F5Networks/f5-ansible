@@ -29,7 +29,7 @@
 #    - 12.1.2
 
 - name: Test the bigip_device_ntp module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:

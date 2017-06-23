@@ -34,7 +34,7 @@
 #
 
 - name: Test the bigip_snmp module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:

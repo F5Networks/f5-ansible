@@ -34,7 +34,7 @@
 #
 
 - name: Test the bigip_virtual_address module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:

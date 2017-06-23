@@ -36,7 +36,7 @@
 #
 
 - name: Test the bigip_gtm_pool module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:

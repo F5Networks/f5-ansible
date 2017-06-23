@@ -33,7 +33,7 @@
 #
 
 - name: Test the bigip_user module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:

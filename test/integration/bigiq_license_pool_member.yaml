@@ -24,7 +24,7 @@
 #
 
 - name: Test the bigiq_license_pool_member module
-  hosts: f5-test
+  hosts: "f5-test[0]"
   connection: local
 
   environment:
