@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  f5ansible-sdet:
+    image: hub.docker.com/f5devcentral/f5ansible-sdet
+    stdin_open: true
+    tty: true
