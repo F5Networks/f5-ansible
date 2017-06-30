@@ -36,6 +36,7 @@
 - name: Test the bigip_certificate_ssl module
   hosts: "f5-test[0]"
   connection: local
+  any_errors_fatal: true
 
   environment:
       F5_SERVER: "{{ ansible_host }}"

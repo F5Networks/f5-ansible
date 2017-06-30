@@ -36,6 +36,7 @@
 - name: Test the bigip_snmp module
   hosts: "f5-test[0]"
   connection: local
+  any_errors_fatal: true
 
   environment:
       F5_SERVER: "{{ ansible_host }}"

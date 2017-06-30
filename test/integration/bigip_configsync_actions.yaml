@@ -27,6 +27,7 @@
 - name: Test the bigip_configsync_actions module
   hosts: "f5-test"
   connection: local
+  any_errors_fatal: true
 
   environment:
       F5_SERVER: "{{ ansible_host }}"

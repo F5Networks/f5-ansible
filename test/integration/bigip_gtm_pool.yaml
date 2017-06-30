@@ -38,6 +38,7 @@
 - name: Test the bigip_gtm_pool module
   hosts: "f5-test[0]"
   connection: local
+  any_errors_fatal: true
 
   environment:
       F5_SERVER: "{{ ansible_host }}"
