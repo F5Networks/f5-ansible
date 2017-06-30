@@ -347,7 +347,9 @@ class ArgumentSpec(object):
             )
         )
         self.f5_product_name = 'bigip'
-        self.required_one_of =
+        self.required_one_of = [
+            ['sync_device_to_group', 'sync_most_recent_to_device']
+        ]
         self.mutually_exclusive = [
             ['sync_device_to_group', 'sync_most_recent_to_device']
         ]
