@@ -28,7 +28,7 @@
   connection: local
 
   environment:
-      F5_SERVER: "{{ inventory_hostname }}"
+      F5_SERVER: "{{ ansible_host }}"
       F5_USER: "{{ iworkflow_username }}"
       F5_PASSWORD: "{{ iworkflow_password }}"
       F5_SERVER_PORT: "{{ iworkflow_port }}"
