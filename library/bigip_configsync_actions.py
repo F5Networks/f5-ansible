@@ -41,20 +41,18 @@ options:
   sync_device_to_group:
     description:
       - Specifies that the system synchronizes configuration data from this
-        device to other members of the device group. This option is mutually
-        exclusive with the C(sync_group_to_device) option.
-    required: False
-    default: False
+        device to other members of the device group. In this case, the device
+        will do a "push" to all the other devices in the group. This option
+        is mutually exclusive with the C(sync_group_to_device) option.
     choices:
       - yes
       - no
-  sync_group_to_device:
+  sync_most_recent_to_device:
     description:
       - Specifies that the system synchronizes configuration data from the
-        group to this device. This option is mutually exclusive with the
-        C(sync_device_to_group) options.
-    required: False
-    default: False
+        device with the most recent configuration. In this case, the device
+        will do a "pull" from the most recently updated device. This option
+        is mutually exclusive with the C(sync_device_to_group) options.
     choices:
       - yes
       - no
@@ -62,15 +60,15 @@ options:
     description:
       - Indicates that the sync operation overwrites the configuration on
         the target.
-    required: False
-    default: False
+    default: no
     choices:
       - yes
       - no
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - Requires Ansible >= 2.3.
+  - Requires the objectpath Python package on the host. This is as easy as pip
+    install objectpath.
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
@@ -89,10 +87,10 @@ EXAMPLES = '''
       validate_certs: no
   delegate_to: localhost
 
-- name: Sync configuration from group to devices in group
+- name: Sync configuration from most recent device to the current host
   bigip_configsync_actions:
       device_group: "foo-group"
-      sync_group_to_device: yes
+      sync_most_recent_to_device: yes
       server: "lb01.mydomain.com"
       user: "admin"
       password: "secret"
@@ -115,8 +113,14 @@ RETURN = '''
 '''
 
 import time
+import re
 
-from ansible.module_utils.basic import BOOLEANS
+try:
+    from objectpath import Tree
+    HAS_OBJPATH = True
+except ImportError:
+    HAS_OBJPATH = False
+
 from ansible.module_utils.basic import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -198,11 +202,11 @@ class ModuleManager(object):
         result = dict()
 
         try:
-            self.present()
+            changed = self.present()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(dict(changed=True))
+        result.update(dict(changed=changed))
         return result
 
     def present(self):
@@ -215,7 +219,10 @@ class ModuleManager(object):
                 "This device group needs an initial sync. Please use "
                 "'sync_device_to_group'"
             )
-        self.execute()
+        if self.exists():
+            return False
+        else:
+            return self.execute()
 
     def _sync_to_group_required(self):
         resource = self.read_current_from_device()
@@ -233,6 +240,15 @@ class ModuleManager(object):
     def execute(self):
         self.execute_on_device()
         self._wait_for_sync()
+        return True
+
+    def exists(self):
+        resource = self.read_current_from_device()
+        status = self._get_status_from_resource(resource)
+        if status == 'In Sync':
+            return True
+        else:
+            return False
 
     def execute_on_device(self):
         sync_cmd = 'config-sync {0} {1} {2}'.format(
@@ -249,6 +265,7 @@ class ModuleManager(object):
         # Wait no more than half an hour
         resource = self.read_current_from_device()
         for x in range(1, 180):
+            time.sleep(3)
             status = self._get_status_from_resource(resource)
 
             # Changes Pending:
@@ -264,13 +281,16 @@ class ModuleManager(object):
             #     A device group will go into this state immediately
             #     after starting the sync and stay until all devices finish.
             #
-            if status in ['Changes Pending', 'Awaiting Initial Sync', 'Not All Devices Synced']:
+            if status in ['Changes Pending']:
+                details = self._get_details_from_resource(resource)
+                self._validate_pending_status(details)
+                pass
+            elif status in ['Awaiting Initial Sync', 'Not All Devices Synced']:
                 pass
             elif status == 'In Sync':
                 return
             else:
                 raise F5ModuleError(status)
-            time.sleep(3)
 
     def read_current_from_device(self):
         result = self.client.api.tm.cm.sync_status.load()
@@ -278,9 +298,34 @@ class ModuleManager(object):
 
     def _get_status_from_resource(self, resource):
         resource.refresh()
-        k, v = resource.entries.popitem()
+        entries = resource.entries.copy()
+        k, v = entries.popitem()
         status = v['nestedStats']['entries']['status']['description']
         return status
+
+    def _get_details_from_resource(self, resource):
+        resource.refresh()
+        stats = resource.entries.copy()
+        tree = Tree(stats)
+        details = list(tree.execute('$..*["details"]["description"]'))
+        result = details[::-1]
+        return result
+
+    def _validate_pending_status(self, details):
+        """Validate the content of a pending sync operation
+
+        This is a hack. The REST API is not consistent with its 'status' values
+        so this method is here to check the returned strings from the operation
+        and see if it reported any of these inconsistencies.
+
+        :param details:
+        :raises F5ModuleError:
+        """
+        pattern1 = r'.*(?P<msg>Recommended\s+action.*)'
+        for detail in details:
+            matches = re.search(pattern1, detail)
+            if matches:
+                raise F5ModuleError(matches.group('msg'))
 
 
 class ArgumentSpec(object):
@@ -288,39 +333,43 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             sync_device_to_group=dict(
-                required=False,
-                default=False,
-                type='bool',
-                choices=BOOLEANS
+                type='bool'
             ),
-            sync_group_to_device=dict(
-                required=False,
-                default=False,
-                type='bool',
-                choices=BOOLEANS
+            sync_most_recent_to_device=dict(
+                type='bool'
             ),
             overwrite_config=dict(
-                required=False,
-                default=False,
                 type='bool',
-                choices=BOOLEANS
+                default='no'
             ),
             device_group=dict(
                 required=True
             )
         )
         self.f5_product_name = 'bigip'
+        self.required_one_of =
+        self.mutually_exclusive = [
+            ['sync_device_to_group', 'sync_most_recent_to_device']
+        ]
+        self.required_one_of = [
+            ['sync_device_to_group', 'sync_most_recent_to_device']
+        ]
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
 
+    if not HAS_OBJPATH:
+        raise F5ModuleError("The python objectpath module is required")
+
     spec = ArgumentSpec()
 
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
+        mutually_exclusive=spec.mutually_exclusive,
+        required_one_of=spec.required_one_of,
         f5_product_name=spec.f5_product_name
     )
 
