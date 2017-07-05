@@ -270,8 +270,9 @@ class TestLocalManager(unittest.TestCase):
 
             results = mm.exec_module()
             assert results['changed'] is True
-            assert results['software'] == self.iso
+            assert results['version'] == '12.1.2'
             assert results['volume'] == 'HD1.3'
+            assert results['build'] == '0.0.249'
 
     def test_activate_installed_volume_using_hotfix(self, *args):
         set_module_args(dict(
@@ -306,7 +307,8 @@ class TestLocalManager(unittest.TestCase):
 
             results = mm.exec_module()
             assert results['changed'] is True
-            assert results['hotfix'] == self.iso_hf3
+            assert results['version'] == '12.1.1'
+            assert results['build'] == '1.0.196'
             assert results['volume'] == 'HD1.2'
 
     def test_install_and_activate_software_new_volume(self, *args):
@@ -1272,7 +1274,8 @@ class TestRemoteManager(unittest.TestCase):
 
             results = mm.exec_module()
             assert results['changed'] is True
-            assert results['software'] == 'http://fake.com/BIGIP-12.1.2.iso'
+            assert results['version'] == '12.1.2'
+            assert results['build'] == '0.0.249'
             assert results['volume'] == 'HD1.3'
 
     def test_activate_installed_volume_using_hotfix(self, *args):
@@ -1312,8 +1315,8 @@ class TestRemoteManager(unittest.TestCase):
 
             results = mm.exec_module()
             assert results['changed'] is True
-            assert results['hotfix'] == \
-                'http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso'
+            assert results['version'] == '12.1.2'
+            assert results['build'] == '1.0.271'
             assert results['volume'] == 'HD1.4'
 
     def test_install_and_activate_software_new_volume(self, *args):

@@ -491,7 +491,7 @@ class Parameters(AnsibleF5Parameters):
                     self._values[map_key] = v
 
     updatables = [
-        'software', 'volume', 'hotfix'
+        'version', 'volume', 'build'
     ]
 
     returnables = [
@@ -598,7 +598,7 @@ class Parameters(AnsibleF5Parameters):
         volume = self._values['volume']
         reuse = self._values['reuse_inactive_volume']
 
-        if state in ['absent', 'present']:
+        if state in ['absent', 'present', None]:
             return self._values['volume']
 
         if volume is not None:
@@ -630,16 +630,16 @@ class Parameters(AnsibleF5Parameters):
         remote = self.remote_src
         version = self._values['version']
 
-        if remote is True:
+        if version is True:
             return version
 
-        if remote is False:
+        if remote is False and version is None:
             if photfix:
                 self.use_iso(photfix)
             else:
                 self.use_iso(psoftware)
 
-            return self._values['version']
+        return self._values['version']
 
     @property
     def build(self):
@@ -651,13 +651,13 @@ class Parameters(AnsibleF5Parameters):
         if remote is True:
             return build
 
-        if remote is False:
+        if remote is False and build is None:
             if photfix:
                 self.use_iso(photfix)
             else:
                 self.use_iso(psoftware)
 
-            return self._values['build']
+        return self._values['build']
 
     @version.setter
     def version(self, value):
@@ -849,10 +849,9 @@ class BaseManager(object):
             return True
 
     def is_activated(self):
-        result = self.software_on_volume()
-        if not result:
+        volume = self.software_on_volume()
+        if not volume:
             return False
-        self.have, volume = result
         if hasattr(volume, 'active') and volume.active is True:
             return True
 
@@ -864,12 +863,20 @@ class BaseManager(object):
             return True
 
     def is_installed(self):
-        result = self.software_on_volume()
-        if not result:
+        volume = self.software_on_volume()
+        if not volume:
             return False
-        self.have, volume = result
         if not hasattr(volume, 'active') or volume.active is not True:
             return True
+
+    def activate(self):
+        self.have = self.get_current_active()
+        self._update_changed_options()
+        if self.client.check_mode:
+            return True
+        self.reboot_volume_on_device()
+        self.wait_for_device_reboot()
+        return True
 
     def present(self):
         if self.exists():
@@ -966,14 +973,6 @@ class BaseManager(object):
         else:
             return False
 
-    def activate(self):
-        self._update_changed_options()
-        if self.client.check_mode:
-            return True
-        self.reboot_volume_on_device()
-        self.wait_for_device_reboot()
-        return True
-
     def base_image_exists(self):
         version = self.want.version
         images = self.list_images_on_device()
@@ -1041,6 +1040,13 @@ class BaseManager(object):
             if not self.volume_exists_on_device():
                 break
 
+    def get_current_active(self):
+        volumes = self.list_volumes_on_device()
+        for volume in volumes:
+            if hasattr(volume, 'active') and volume.active is True:
+                result = volume.attrs
+                return Parameters(result)
+
 
 class LocalManager(BaseManager):
     def software_on_volume(self):
@@ -1050,8 +1056,7 @@ class LocalManager(BaseManager):
         for volume in volumes:
             if hasattr(volume, 'version') and hasattr(volume, 'build'):
                 if volume.version == version and volume.build == build:
-                    tmp_res = volume.attrs
-                    return Parameters(tmp_res), volume
+                    return volume
 
     def _has_build_and_version(self, item):
         if item.version != self.want.version:
@@ -1122,9 +1127,8 @@ class LocalManager(BaseManager):
             )
 
     def volume_exists_on_device(self):
-        return self.client.api.tm.sys.software.volumes.volume.exists(
-            name=self.want.volume
-        )
+        result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)
+        return result
 
 
 class RemoteManager(BaseManager):
@@ -1136,8 +1140,7 @@ class RemoteManager(BaseManager):
         for volume in volumes:
             if hasattr(volume, 'version') and hasattr(volume, 'build'):
                 if volume.version == version and volume.build == build:
-                    tmp_res = volume.attrs
-                    return Parameters(tmp_res), volume
+                    return volume
 
     def check_product_info(self):
         hotfix = self.want.hotfix
@@ -1342,9 +1345,8 @@ class RemoteManager(BaseManager):
             )
 
     def volume_exists_on_device(self):
-        return self.client.api.tm.sys.software.volumes.volume.exists(
-            name=self.want.volume
-        )
+        result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)
+        return result
 
 
 class ArgumentSpec(object):
