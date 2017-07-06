@@ -1,0 +1,254 @@
+{
+	"tables": [{
+		"columnNames": ["Index", "Name", "Description", "LbMethod", "Monitor", "AdvOptions"],
+		"rows": [{
+			"row": ["0", "", "", "round-robin", "0", "none"]
+		},{
+			"row": ["1", "", "", "round-robin", "0", "none"]
+		}],
+		"name": "pool__Pools"
+	}, {
+		"columnNames": ["Index", "IPAddress", "Port", "ConnectionLimit", "Ratio", "PriorityGroup", "State", "AdvOptions"],
+		"rows": [{
+			"row": ["0", "10.0.0.10", "80", "0", "1", "0", "enabled", "none"]
+		}, {
+			"row": ["0", "10.0.0.11", "80", "0", "1", "0", "enabled", "none"]
+		}],
+		"name": "pool__Members"
+	}, {
+		"columnNames": ["Index", "Name", "Type", "Options"],
+		"rows": [{
+			"row": ["0", "/Common/http", "none", "none"]
+		}],
+		"name": "monitor__Monitors"
+	}, {
+		"columnNames": ["Listener"],
+		"rows": [],
+		"name": "vs__Listeners"
+	}, {
+		"columnNames": ["Resource"],
+		"rows": [],
+		"name": "vs__BundledItems"
+	}, {
+		"columnNames": ["Group", "Operand", "Negate", "Condition", "Value", "CaseSensitive", "Missing"],
+		"rows": [{
+			"row": ["1", "http-uri/request/path", "no", "starts-with", "/b", "no", "no"]
+		}, {
+			"row": ["0", "http-uri/request/path", "no", "starts-with", "/a", "no", "no"]
+		}, {
+			"row": ["default", "", "no", "", "", "no", "no"]
+		}],
+		"name": "l7policy__rulesMatch"
+	}, {
+		"columnNames": ["Group", "Target", "Parameter"],
+		"rows": [{
+			"row": ["0", "forward/request/select/pool", "pool:0"]
+		}, {
+			"row": ["1", "forward/request/select/pool", "pool:1"]
+		}, {
+			"row": ["default", "forward/request/reset", "none"]
+		}],
+		"name": "l7policy__rulesAction"
+	}, {
+		"columnNames": ["CIDRRange"],
+		"rows": [],
+		"name": "feature__easyL4FirewallBlacklist"
+	}, {
+		"columnNames": ["CIDRRange"],
+		"rows": [{
+			"row": ["0.0.0.0/0"]
+		}],
+		"name": "feature__easyL4FirewallSourceList"
+	}],
+	"variables": [{
+		"name": "extensions__Field1",
+		"value": ""
+	}, {
+		"name": "extensions__Field2",
+		"value": ""
+	}, {
+		"name": "extensions__Field3",
+		"value": ""
+	}, {
+		"name": "feature__easyL4Firewall",
+		"value": "auto"
+	}, {
+		"name": "feature__insertXForwardedFor",
+		"value": "auto"
+	}, {
+		"name": "feature__redirectToHTTPS",
+		"value": "auto"
+	}, {
+		"name": "feature__securityEnableHSTS",
+		"value": "disabled"
+	}, {
+		"name": "feature__sslEasyCipher",
+		"value": "disabled"
+	}, {
+		"name": "feature__statsHTTP",
+		"value": "auto"
+	}, {
+		"name": "feature__statsTLS",
+		"value": "auto"
+	}, {
+		"name": "iapp__apmDeployMode",
+		"value": "preserve-bypass"
+	}, {
+		"name": "iapp__appStats",
+		"value": "enabled"
+	}, {
+		"name": "iapp__asmDeployMode",
+		"value": "preserve-bypass"
+	}, {
+		"name": "iapp__logLevel",
+		"value": "10"
+	}, {
+		"name": "iapp__mode",
+		"value": "auto"
+	}, {
+		"name": "iapp__routeDomain",
+		"value": "auto"
+	}, {
+		"name": "iapp__strictUpdates",
+		"value": "enabled"
+	}, {
+		"name": "l7policy__defaultASM",
+		"value": "bypass"
+	}, {
+		"name": "l7policy__defaultL7DOS",
+		"value": "bypass"
+	}, {
+		"name": "l7policy__strategy",
+		"value": "/Common/first-match"
+	}, {
+		"name": "pool__DefaultPoolIndex",
+		"value": "0"
+	}, {
+		"name": "pool__MemberDefaultPort",
+		"value": ""
+	}, {
+		"name": "pool__addr",
+		"value": "172.10.10.104"
+	}, {
+		"name": "pool__mask",
+		"value": "255.255.255.255"
+	}, {
+		"name": "pool__port",
+		"value": "80"
+	}, {
+		"name": "vs__AdvOptions",
+		"value": ""
+	}, {
+		"name": "vs__AdvPolicies",
+		"value": ""
+	}, {
+		"name": "vs__AdvProfiles",
+		"value": ""
+	}, {
+		"name": "vs__ConnectionLimit",
+		"value": "0"
+	}, {
+		"name": "vs__Description",
+		"value": ""
+	}, {
+		"name": "vs__IpProtocol",
+		"value": "tcp"
+	}, {
+		"name": "vs__Irules",
+		"value": ""
+	}, {
+		"name": "vs__Name",
+		"value": ""
+	}, {
+		"name": "vs__OptionConnectionMirroring",
+		"value": "disabled"
+	}, {
+		"name": "vs__OptionSourcePort",
+		"value": "preserve"
+	}, {
+		"name": "vs__ProfileAccess",
+		"value": ""
+	}, {
+		"name": "vs__ProfileAnalytics",
+		"value": ""
+	}, {
+		"name": "vs__ProfileClientProtocol",
+		"value": "/Common/tcp-wan-optimized"
+	}, {
+		"name": "vs__ProfileClientSSL",
+		"value": ""
+	}, {
+		"name": "vs__ProfileClientSSLAdvOptions",
+		"value": ""
+	}, {
+		"name": "vs__ProfileClientSSLCert",
+		"value": ""
+	}, {
+		"name": "vs__ProfileClientSSLChain",
+		"value": ""
+	}, {
+		"name": "vs__ProfileClientSSLCipherString",
+		"value": "DEFAULT"
+	}, {
+		"name": "vs__ProfileClientSSLKey",
+		"value": ""
+	}, {
+		"name": "vs__ProfileCompression",
+		"value": ""
+	}, {
+		"name": "vs__ProfileConnectivity",
+		"value": ""
+	}, {
+		"name": "vs__ProfileDefaultPersist",
+		"value": ""
+	}, {
+		"name": "vs__ProfileFallbackPersist",
+		"value": ""
+	}, {
+		"name": "vs__ProfileHTTP",
+		"value": "/Common/http"
+	}, {
+		"name": "vs__ProfileOneConnect",
+		"value": ""
+	}, {
+		"name": "vs__ProfilePerRequest",
+		"value": ""
+	}, {
+		"name": "vs__ProfileRequestLogging",
+		"value": ""
+	}, {
+		"name": "vs__ProfileSecurityDoS",
+		"value": ""
+	}, {
+		"name": "vs__ProfileSecurityIPBlacklist",
+		"value": "none"
+	}, {
+		"name": "vs__ProfileSecurityLogProfiles",
+		"value": ""
+	}, {
+		"name": "vs__ProfileServerProtocol",
+		"value": "/Common/tcp-wan-optimized"
+	}, {
+		"name": "vs__ProfileServerSSL",
+		"value": ""
+	}, {
+		"name": "vs__RouteAdv",
+		"value": "disabled"
+	}, {
+		"name": "vs__SNATConfig",
+		"value": "automap"
+	}, {
+		"name": "vs__SourceAddress",
+		"value": "0.0.0.0/0"
+	}, {
+		"name": "vs__VirtualAddrAdvOptions",
+		"value": ""
+	}],
+	"lists": [],
+	"inheritedDevicegroup": "true",
+	"deviceGroup": "none",
+	"inheritedTrafficGroup": "true",
+	"trafficGroup": "/Common/traffic-group-local-only",
+	"template_name": "appsvcs_integration_v2.0.004",
+	"partition": "Common"
+}
