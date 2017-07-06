@@ -100,6 +100,7 @@ class TestParameters(unittest.TestCase):
         assert p.overwrite_config is True
         assert p.device_group == 'foo'
 
+
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
