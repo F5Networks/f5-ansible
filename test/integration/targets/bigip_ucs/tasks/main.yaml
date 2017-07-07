@@ -1,0 +1,25 @@
+---
+
+#include: setup.yaml
+
+- name: Upload UCS file
+  bigip_ucs:
+      ucs: "{{ roles_path }}/files/sample.ucs"
+  register: result
+
+- name: Assert Upload UCS file
+  assert:
+      that:
+          - result|changed
+
+- name: Upload UCS file - Idempotent check
+  bigip_ucs:
+      ucs: "{{ roles_path }}/files/sample.ucs"
+  register: result
+
+- name: Assert Upload UCS file - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+#- include: teardown.yaml

@@ -1,0 +1,10 @@
+---
+
+- name: Get temporary file for fetching UCS
+  tempfile:
+      state: file
+      suffix: temp
+  register: result
+
+- name: Save a UCS file locally for later usage
+  bigip_ucs_fetch:
