@@ -4,7 +4,7 @@
 
 - name: Upload UCS file
   bigip_ucs:
-      ucs: "{{ roles_path }}/files/sample.ucs"
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
   register: result
 
 - name: Assert Upload UCS file
@@ -14,10 +14,72 @@
 
 - name: Upload UCS file - Idempotent check
   bigip_ucs:
-      ucs: "{{ roles_path }}/files/sample.ucs"
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
   register: result
 
 - name: Assert Upload UCS file - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Force upload UCS file
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      force: "yes"
+  register: result
+
+- name: Assert Force upload UCS file
+  assert:
+      that:
+          - result|changed
+
+- name: Install an uploaded UCS file
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "installed"
+  register: result
+
+- name: Assert Install an uploaded UCS file
+  assert:
+      that:
+          - result|changed
+
+- name: Install an uploaded UCS file again - expected not idempotent
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "installed"
+  register: result
+
+- name: Assert Install an uploaded UCS file again - expected not idempotent
+  assert:
+      that:
+          - result|changed
+
+- name: Install an uploaded UCS file
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      include_chassis_level_config: "yes"
+      state: "installed"
+  register: result
+
+- name: Remove uploaded UCS file
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove uploaded UCS file
+  assert:
+      that:
+          - result|changed
+
+- name: Remove uploaded UCS file - Idempotent check
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove uploaded UCS file - Idempotent check
   assert:
       that:
           - not result|changed
