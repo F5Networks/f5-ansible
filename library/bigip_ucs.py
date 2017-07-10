@@ -505,7 +505,7 @@ class V1Manager(BaseManager):
             if 'Connection aborted' in str(ex):
                 pass
             else:
-                raise(str(ex))
+                raise F5ModuleError(str(ex))
         self.wait_for_rest_api_restart()
         self.wait_for_configuration_reload()
         return True
