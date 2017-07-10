@@ -100,7 +100,7 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
-  - Requires BIG-IP software version >= 11
+  - Requires BIG-IP software version >= 12
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
