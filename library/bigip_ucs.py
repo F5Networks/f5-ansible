@@ -553,7 +553,7 @@ class ArgumentSpec(object):
             no_platform_check=dict(
                 type='bool'
             ),
-            passphrase=dict(),
+            passphrase=dict(no_log=True),
             reset_trust=dict(type='bool'),
             state=dict(
                 default='present',
