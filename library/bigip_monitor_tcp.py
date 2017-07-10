@@ -51,9 +51,9 @@ options:
       - The receive string for the monitor call.
   ip:
     description:
-      - IP address part of the ip/port definition. If this parameter is not
+      - IP address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
-        '*'.
+        '*'. If this value is an IP address, a C(port) number must be specified.
   type:
     description:
       - The template type of this monitor template.
@@ -67,9 +67,10 @@ options:
       - TTYPE_TCP_HALF_OPEN
   port:
     description:
-      - Port address part op the ipport definition. If this parameter is not
+      - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
-        '0'.
+        '*'. Note that if specifying an IP address, a value between 1 and 65535
+        must be specified
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
@@ -240,7 +241,6 @@ class Parameters(AnsibleF5Parameters):
     @property
     def destination(self):
         result = '{0}:{1}'.format(self.ip, self.port)
-        q.q(self.port)
         return result
 
     @destination.setter
@@ -275,6 +275,10 @@ class Parameters(AnsibleF5Parameters):
             if self._values['ip'] in ['*', '0.0.0.0']:
                 return '*'
             result = str(netaddr.IPAddress(self._values['ip']))
+            if self.port in [None, '*']:
+                raise F5ModuleError(
+                    "Specifying an IP address requires that a port number be specified"
+                )
             return result
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(

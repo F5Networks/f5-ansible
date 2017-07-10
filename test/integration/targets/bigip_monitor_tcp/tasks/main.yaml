@@ -3,10 +3,9 @@
 - name: Create TCP Monitor
   bigip_monitor_tcp:
       name: "{{ monitor_name }}"
-      receive: "{{ receive_string }}"
-      send: "{{ send_string }}"
+      receive: "{{ receive_string1 }}"
+      send: "{{ send_string1 }}"
       state: "present"
-      type: "tcp"
   register: result
 
 - name: Assert Create TCP Monitor
@@ -17,16 +16,212 @@
 - name: Create TCP Monitor - Idempotent check
   bigip_monitor_tcp:
       name: "{{ monitor_name }}"
-      receive: "{{ receive_string }}"
-      send: "{{ send_string }}"
+      receive: "{{ receive_string1 }}"
+      send: "{{ send_string1 }}"
       state: "present"
-      type: "tcp"
   register: result
 
 - name: Assert Create TCP Monitor - Idempotent check
   assert:
       that:
           - not result|changed
+
+- name: Change send string
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      send: "{{ send_string2 }}"
+  register: result
+
+- name: Assert Change send string
+  assert:
+      that:
+          - result|changed
+
+- name: Change send string - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      send: "{{ send_string2 }}"
+  register: result
+
+- name: Assert Change send string - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change receive string
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      receive: "{{ receive_string2 }}"
+  register: result
+
+- name: Assert Change receive string
+  assert:
+      that:
+          - result|changed
+
+- name: Change receive string - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      receive: "{{ receive_string2 }}"
+  register: result
+
+- name: Assert Change receive string - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change IP
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      ip: "10.10.10.10"
+      port: 80
+  register: result
+
+- name: Assert Change IP
+  assert:
+      that:
+          - result|changed
+
+- name: Change IP - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      ip: "10.10.10.10"
+      port: 80
+  register: result
+
+- name: Assert Change IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change port
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      port: 8000
+  register: result
+
+- name: Assert Change port
+  assert:
+      that:
+          - result|changed
+
+- name: Change port - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      port: 8000
+  register: result
+
+- name: Assert Change port - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+
+
+
+
+
+
+
+
+- name: Change interval
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      interval: 80
+  register: result
+
+- name: Assert Change interval
+  assert:
+      that:
+          - result|changed
+
+- name: Change interval - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      interval: 80
+  register: result
+
+- name: Assert Change interval - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+
+
+- name: Change timeout
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      timeout: 80
+  register: result
+
+- name: Assert Change timeout
+  assert:
+      that:
+          - result|changed
+
+- name: Change timeout - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      timeout: 80
+  register: result
+
+- name: Assert Change timeout - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+
+
+
+
+
+
+- name: Change time until up
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      time_until_up: 80
+  register: result
+
+- name: Assert Change time until up
+  assert:
+      that:
+          - result|changed
+
+- name: Change time until up - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      time_until_up: 80
+  register: result
+
+- name: Assert Change port - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 - name: Remove TCP Monitor
   bigip_monitor_tcp:
