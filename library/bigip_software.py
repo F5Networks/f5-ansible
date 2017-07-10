@@ -70,7 +70,7 @@ options:
       - activated
       - installed
       - present
-    volume:
+  volume:
     description:
       - The volume to install the software and, optionally, the hotfix to. This
         parameter is only required when the C(state) is either C(activated) or
@@ -81,11 +81,10 @@ options:
         provided if the C(state) is either C(installed) or C(activated).
       - If C(remote_src) is used, this parameter will have to be a 
         C(HTTP) or C(HTTPS)link to the software image.
-      - C(Caveat): When providing link to the software ISO, 
-        if the ISO name is different than the one listed inside the 
-        C(software_md5) md5sum file. We will change it accordingly when 
-        saving the files on the device. This might lead to ISO names not 
-        matching the links provided in C(software).
+      - When providing link to the software ISO, if the ISO name is
+        different than the one listed inside the C(software_md5sum) md5sum file.
+        We will change it accordingly when saving the files on the device. This
+        might lead to ISO names not matching the links provided in C(software).
     aliases:
       - base_image
   hotfix:
@@ -95,7 +94,7 @@ options:
         image exists on the unit.
       - If C(remote_src) is used, this parameter will have to be a 
         C(HTTP) or C(HTTPS)link to the hotfix image.
-      - C(Caveat): When providing link to the hotfix ISO, if the ISO name 
+      - When providing link to the hotfix ISO, if the ISO name 
         is different than the one listed inside the C(hotfix_md5) md5sum file. 
         We will change it accordingly while saving the files on the device. 
         This might lead to ISO names not matching the links provided 
@@ -104,17 +103,17 @@ options:
       - hotfix_image
   software_md5sum:
     description:
-      - The link to an MD5 sum file of the remote software ISO image, 
-        it is required when  C(software) parameter is used and C(remote_src) 
-        is selected. 
-      - Parameter only used when and C(state) is: C(installed), C(activated) 
-        or C(present). 
+      - The link to an MD5 sum file of the remote software ISO image,
+        it is required when  C(software) parameter is used and C(remote_src)
+        is selected.
+      - Parameter only used when and C(state) is C(installed), C(activated),
+        or C(present).
   hotfix_md5sum:
-      description:
+    description:
       - The link to an MD5 sum file of the remote hotfix ISO image, 
         it is required when C(hotfix) parameter is used and C(remote_src) 
         is selected. 
-      - Parameter only used when and C(state) is: C(installed), C(activated) 
+      - Parameter only used when and C(state) is C(installed), C(activated), 
         or C(present).
   build:
      description:
@@ -124,15 +123,15 @@ options:
        C(always) the C(build) of the C(hotfix). For example, C(hotfix) has 
        build of C(1.0.271) and C(software) has a build of C(0.0.249), 
        then C(build) parameter has to be set to C(1.0.271).
-     - C(Caveat): If this parameter is missing when C(state) is C(activated) 
+     - If this parameter is missing when C(state) is C(activated) 
        or C(installed), there will be an attempt to supplement that information 
        with searching by name for relevant ISO on the unit. When none is found 
        the exception will be raised and process terminated.
-     - C(Caveat): If this parameter is missing when C(state) is C(present) 
+     - If this parameter is missing when C(state) is C(present) 
        we will confirm the existence of the ISO with searching by name. 
        If the ISO exists under different name, it might lead to duplication of 
        ISO images on the unit.
-     - C(Caveat): Finally if this parameter is missing when C(state) is 
+     - Finally if this parameter is missing when C(state) is 
        C(absent) it might cause the desired ISO not to be deleted.
   version:
      description:
@@ -140,15 +139,15 @@ options:
        This parameter is mandatory when C(remote_src) is in use.
      - If C(hotfix) and C(software) are specified. The version number C(always) 
        be the C(version) of the C(hotfix).
-     - C(Caveat): If this parameter is missing when C(state) is C(activated) 
+     - If this parameter is missing when C(state) is C(activated) 
        or C(installed), there will be an attempt to supplement that information 
        with searching by name for relevant ISO on the unit. When none is found 
        the exception will be raised and process terminated.
-     - C(Caveat): If this parameter is missing when C(state) is C(present) 
+     - If this parameter is missing when C(state) is C(present) 
        we will confirm the existence of the ISO with searching by name. If the 
        ISO exists under different name, it might lead to duplication of ISO 
        images on the unit.
-     - C(Caveat): Finally if this parameter is missing when C(state) is 
+     - Finally if this parameter is missing when C(state) is 
        C(absent) it might cause the desired ISO not to be deleted.
   remote_src:
     description:
