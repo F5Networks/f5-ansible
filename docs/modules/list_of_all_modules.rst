@@ -11,6 +11,7 @@ All Modules
   bigip_device_group - Manage device groups on a BIG-IP. <bigip_device_group_module>
   bigip_device_ntp - Manage NTP servers on a BIG-IP. <bigip_device_ntp_module>
   bigip_device_sshd - Manage the SSHD settings of a BIG-IP. <bigip_device_sshd_module>
+  bigip_device_trust - Manage the trust relationships between BIG-IPs. <bigip_device_trust_module>
   bigip_dns_record - Manage DNS resource records on a BIG-IP <bigip_dns_record_module>
   bigip_dns_record_facts - foo <bigip_dns_record_facts_module>
   bigip_dns_zone - Manages DNS zones on a BIG-IP <bigip_dns_zone_module>
@@ -28,7 +29,7 @@ All Modules
   bigip_irule - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
   bigip_monitor_http - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
-  bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors <bigip_monitor_tcp_module>
+  bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors. <bigip_monitor_tcp_module>
   bigip_node (D) - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
@@ -55,7 +56,7 @@ All Modules
   bigip_static_route - Manipulate static routes on a BIG-IP. <bigip_static_route_module>
   bigip_sys_db - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global - Manage BIG-IP global settings. <bigip_sys_global_module>
-  bigip_ucs - Manage UCS files. <bigip_ucs_module>
+  bigip_ucs - Manage upload, installation and removal of UCS files. <bigip_ucs_module>
   bigip_ucs_fetch - Fetches a UCS file from remote nodes <bigip_ucs_fetch_module>
   bigip_user - Manage user accounts and user attributes on a BIG-IP. <bigip_user_module>
   bigip_user_facts - Retrieve user account attributes from a BIG-IP <bigip_user_facts_module>

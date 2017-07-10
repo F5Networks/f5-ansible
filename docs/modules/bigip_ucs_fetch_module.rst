@@ -4,7 +4,7 @@
 bigip_ucs_fetch - Fetches a UCS file from remote nodes
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -68,31 +68,11 @@ Options
     <td>True</td>
         <td></td>
         <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP password</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP host</div>        </td></tr>
                 <tr><td>src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>temporary file name</td>
         <td></td>
         <td><div>The name of the UCS file to create on the remote server for downloading</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP username</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>True</td>
-        <td></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates.</div>        </td></tr>
         </table>
     </br>
 

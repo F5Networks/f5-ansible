@@ -1,10 +1,10 @@
 .. _bigip_ucs:
 
 
-bigip_ucs - Manage UCS files.
-+++++++++++++++++++++++++++++
+bigip_ucs - Manage upload, installation and removal of UCS files.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.0
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -15,15 +15,13 @@ bigip_ucs - Manage UCS files.
 Synopsis
 --------
 
-* Manage UCS files.
+* Manage upload, installation and removal of UCS files.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
-  * paramiko
+  * f5-sdk
 
 
 Options
@@ -42,28 +40,28 @@ Options
                 <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div>        </td></tr>
                 <tr><td>include_chassis_level_config<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>During restore of the UCS file, include chassis level configuration that is shared among boot volume sets. For example, cluster default configuration.</div>        </td></tr>
                 <tr><td>no_license<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Performs a full restore of the UCS file and all the files it contains, with the exception of the license file. The option must be used to restore a UCS on RMA devices (Returned Materials Authorization).</div>        </td></tr>
                 <tr><td>no_platform_check<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Bypasses the platform check and allows a UCS that was created using a different platform to be installed. By default (without this option), a UCS created from a different platform is not allowed to be installed.</div>        </td></tr>
                 <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>Specifies the passphrase that is necessary to load the specified UCS file</div>        </td></tr>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Specifies the passphrase that is necessary to load the specified UCS file.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -72,7 +70,7 @@ Options
                 <tr><td>reset_trust<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>When specified, the device and trust domain certs and keys are not loaded from the UCS. Instead, a new set is regenerated.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -86,9 +84,9 @@ Options
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>installed</td>
+    <td>present</td>
         <td><ul><li>absent</li><li>installed</li><li>present</li></ul></td>
-        <td><div>When <code>installed</code>, ensures that the UCS is uploaded and installed, on the system. When <code>present</code>, ensures that the UCS is uploaded. When <code>absent</code>, the UCS will be removed from the system.</div>        </td></tr>
+        <td><div>When <code>installed</code>, ensures that the UCS is uploaded and installed, on the system. When <code>present</code>, ensures that the UCS is uploaded. When <code>absent</code>, the UCS will be removed from the system. When <code>installed</code>, the uploading of the UCS is idempotent, however the installation of that configuration is not idempotent.</div>        </td></tr>
                 <tr><td>ucs<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -116,38 +114,38 @@ Examples
 
     
     - name: Upload UCS
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "present"
       delegate_to: localhost
     
     - name: Install (upload, install) UCS.
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "installed"
       delegate_to: localhost
     
     - name: Install (upload, install) UCS without installing the license portion
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "installed"
           no_license: "yes"
       delegate_to: localhost
     
     - name: Install (upload, install) UCS except the license, and bypassing the platform check
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "installed"
           no_license: "yes"
@@ -155,20 +153,20 @@ Examples
       delegate_to: localhost
     
     - name: Install (upload, install) UCS using a passphrase necessary to load the UCS
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "installed"
           passphrase: "MyPassphrase1234"
       delegate_to: localhost
     
     - name: Remove uploaded UCS file
-      bigip_software:
-          server: "bigip.localhost.localdomain"
+      bigip_ucs:
+          server: "lb.mydomain.com"
           user: "admin"
-          password: "admin"
+          password: "secret"
           ucs: "/root/bigip.localhost.localdomain.ucs"
           state: "absent"
       delegate_to: localhost
@@ -178,20 +176,16 @@ Notes
 -----
 
 .. note::
-    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
-    - Requires the paramiko Python package on the host for UCS load commands that are not available through the REST or SOAP APIs
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Only the most basic checks are performed by this module. Other checks and considerations need to be taken into account. See the following URL. https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
-    - This module requires SSH access to the remote BIG-IP and will use the ``user`` and ``password`` values specified by default. The web UI credentials typically differ from the SSH credentials so it is recommended that you use the bigip_user module to enable terminal access for the Web UI user
     - This module does not handle devices with the FIPS 140 HSM
     - This module does not handle BIG-IPs systems on the 6400, 6800, 8400, or 8800 hardware platform.
     - This module does not verify that the new or replaced SSH keys from the UCS file are synchronized between the BIG-IP system and the SCCP
     - This module does not support the 'rma' option
     - This module does not support restoring a UCS archive on a BIG-IP 1500, 3400, 4100, 6400, 6800, or 8400 hardware platform other than the system from which the backup was created
-    - This module does not support restoring a UCS archive using the bigpipe utility
-    - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the bigip_hostname Ansible module in a task before using this module.
+    - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the ``bigip_hostname`` Ansible module in a task before using this module.
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
-    - This module will attempt to auto-recover a failed UCS load by using the iControl API to load the default backup UCS file (cs_backup.ucs)
 
 
 

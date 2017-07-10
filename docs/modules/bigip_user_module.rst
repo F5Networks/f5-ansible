@@ -225,7 +225,7 @@ Notes
 -----
 
 .. note::
-    - Requires the requests Python package on the host. This is as easy as pip install requests
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
 
 

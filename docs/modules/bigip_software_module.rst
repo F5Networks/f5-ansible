@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
+  * f5-sdk
   * isoparser
 
 
@@ -38,6 +38,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>build<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Parameter specifying build number of the remote ISO image. This parameter is mandatory when <code>remote_src</code> is in use.</div><div>If <code>hotfix</code> and <code>software</code> are specified. The build number will be <code>always</code> the <code>build</code> of the <code>hotfix</code>. For example, <code>hotfix</code> has build of <code>1.0.271</code> and <code>software</code> has a build of <code>0.0.249</code>, then <code>build</code> parameter has to be set to <code>1.0.271</code>.</div><div>If this parameter is missing when <code>state</code> is <code>activated</code> or <code>installed</code>, there will be an attempt to supplement that information with searching by name for relevant ISO on the unit. When none is found the exception will be raised and process terminated.</div><div>If this parameter is missing when <code>state</code> is <code>present</code> we will confirm the existence of the ISO with searching by name. If the ISO exists under different name, it might lead to duplication of ISO images on the unit.</div><div>Finally if this parameter is missing when <code>state</code> is <code>absent</code> it might cause the desired ISO not to be deleted.</div>        </td></tr>
                 <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -45,15 +50,25 @@ Options
         <td><div>If <code>yes</code> will upload the file every time and replace the file on the device. If <code>no</code>, the file will only be uploaded if it does not already exist. Generally should be <code>yes</code> only in cases where you have reason to believe that the image was corrupted during upload.</div><div>If <code>yes</code> with <code>reuse_inactive_volume</code> is specified and <code>volume</code> is not specified, Software will be installed / activated regardless of current running version to a new or an existing volume.</div>        </td></tr>
                 <tr><td>hotfix<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>The path to an optional Hotfix to install. This parameter requires that the <code>software</code> parameter be specified.</div></br>
+        <td><div>The path to an optional Hotfix to install. This parameter requires that the <code>software</code> parameter be specified or the corresponding software image exists on the unit.</div><div>If <code>remote_src</code> is used, this parameter will have to be a <code>HTTP</code> or <code>HTTPS</code>link to the hotfix image.</div><div>When providing link to the hotfix ISO, if the ISO name is different than the one listed inside the <code>hotfix_md5</code> md5sum file. We will change it accordingly while saving the files on the device. This might lead to ISO names not matching the links provided in <code>hotfix</code>.</div></br>
     <div style="font-size: small;">aliases: hotfix_image<div>        </td></tr>
+                <tr><td>hotfix_md5sum<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The link to an MD5 sum file of the remote hotfix ISO image, it is required when <code>hotfix</code> parameter is used and <code>remote_src</code> is selected.</div><div>Parameter only used when and <code>state</code> is <code>installed</code>, <code>activated</code>, or <code>present</code>.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>remote_src<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>no</td>
+        <td></td>
+        <td><div>Parameter to enable remote source usage. When set to <code>yes</code> bigip will attempt to download and verify the images using the links provided in <code>software</code>, <code>hotfix</code>, <code>software_md5sum</code> and <code>hotfix_md5sum</code>.</div><div>This parameter also makes the <code>software_md5sum</code> and <code>hotfix_md5sum</code> mandatory when <code>state is C(present</code>, <code>activated</code> or <code>installed</code>.</div>        </td></tr>
                 <tr><td>reuse_inactive_volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -73,13 +88,18 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The path to the software (base image) to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>.</div></br>
+        <td><div>The path to the software (base image) to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>.</div><div>If <code>remote_src</code> is used, this parameter will have to be a <code>HTTP</code> or <code>HTTPS</code>link to the software image.</div><div>When providing link to the software ISO, if the ISO name is different than the one listed inside the <code>software_md5sum</code> md5sum file. We will change it accordingly when saving the files on the device. This might lead to ISO names not matching the links provided in <code>software</code>.</div></br>
     <div style="font-size: small;">aliases: base_image<div>        </td></tr>
+                <tr><td>software_md5sum<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The link to an MD5 sum file of the remote software ISO image, it is required when  <code>software</code> parameter is used and <code>remote_src</code> is selected.</div><div>Parameter only used when and <code>state</code> is <code>installed</code>, <code>activated</code>, or <code>present</code>.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>activated</td>
         <td><ul><li>absent</li><li>activated</li><li>installed</li><li>present</li></ul></td>
-        <td><div>When <code>installed</code>, ensures that the software is uploaded and installed, on the system. The device is not, however, rebooted into the new software. When <code>activated</code>, ensures that the software is uploaded, installed, and the system is rebooted to the new software. When <code>present</code>, ensures that the software is uploaded. When <code>absent</code>, only the uploaded image will be removed from the system</div>        </td></tr>
+        <td><div>When <code>installed</code>, ensures that the software is uploaded/downloaded and installed on the system. The device is not, however, rebooted into the new software.</div><div>When <code>activated</code>, ensures that the software is uploaded/downloaded, installed, and the system is rebooted to the new software.</div><div>When <code>present</code>, ensures that the software is uploaded/downloaded.</div><div>When <code>absent</code>, only the uploaded/downloaded image will be removed from the system.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -90,6 +110,11 @@ Options
     <td>True</td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                <tr><td>version<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Parameter specifying version of of the remote ISO image. This parameter is mandatory when <code>remote_src</code> is in use.</div><div>If <code>hotfix</code> and <code>software</code> are specified. The version number <code>always</code> be the <code>version</code> of the <code>hotfix</code>.</div><div>If this parameter is missing when <code>state</code> is <code>activated</code> or <code>installed</code>, there will be an attempt to supplement that information with searching by name for relevant ISO on the unit. When none is found the exception will be raised and process terminated.</div><div>If this parameter is missing when <code>state</code> is <code>present</code> we will confirm the existence of the ISO with searching by name. If the ISO exists under different name, it might lead to duplication of ISO images on the unit.</div><div>Finally if this parameter is missing when <code>state</code> is <code>absent</code> it might cause the desired ISO not to be deleted.</div>        </td></tr>
                 <tr><td>volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -181,6 +206,7 @@ Examples
           hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
           volume: "HD1.1"
           state: "installed"
+      delegate_to: localhost
     
     - name: Activate (upload, install, reboot) base image. Create volume if not exists
       bigip_software:
@@ -201,6 +227,7 @@ Examples
           hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
           volume: "HD1.1"
           state: "activated"
+      delegate_to: localhost
     
     - name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
       bigip_software:
@@ -211,13 +238,206 @@ Examples
           hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
           reuse_inactive_volume: yes
           state: "activated"
+      delegate_to: localhost
+    
+    - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+          build: "1.0.271"
+          version: "12.1.2"
+          remote_src: "yes"
+          state: "activated"
+          reuse_inactive_volume: True
+      delegate_to: localhost
+    
+    - name: Download hotfix image
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+          build: "1.0.271"
+          version: "12.1.2"
+          remote_src: "yes"
+          state: "present"
+      delegate_to: localhost
+    
+    - name: Remove uploaded hotfix image
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+          build: "1.0.271"
+          version: "12.1.2"
+          remote_src: "yes"
+      delegate_to: localhost
+    
+    - name: Install (download, install) base image
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+          build: "0.0.249"
+          version: "12.1.2"
+          remote_src: "yes"
+          volume: "HD1.1"
+          state: "installed"
+      delegate_to: localhost
+    
+    - name: Install (download, install) base image and hotfix
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+          build: "1.0.271"
+          version: "12.1.2"
+          remote_src: "yes"
+          state: "installed"
+          volume: "HD1.2"
+       delegate_to: localhost
+       
+       - name: Download hotfix image (name mismatch)
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          hotfix: "http://fake.com/12.1.2-HF1.iso"
+          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
+          build: "1.0.271"
+          version: "12.1.2"
+          remote_src: "yes"
+          state: "present"
+      delegate_to: localhost
+      
+    - name: Download software image (name mismatch)
+      bigip_software:
+          server: "bigip.localhost.localdomain"
+          user: "admin"
+          password: "admin"
+          software: "http://fake.com/BIGIP-12.1.2.iso"
+          software_md5sum: "http://fake.com/12.1.2.md5"
+          build: "0.0.249"
+          version: "12.1.2"
+          remote_src: "yes"
+          state: "present"
+      delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> force </td>
+        <td> Set when forcing the ISO upload/download. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> hotfix_md5 </td>
+        <td> MD5 sum file for the remote hotfix ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> http://someweb.com/fake/hotfix.iso.md5 </td>
+    </tr>
+            <tr>
+        <td> remote_src </td>
+        <td> Download ISO on the target device. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> yes </td>
+    </tr>
+            <tr>
+        <td> reuse_inactive_volume </td>
+        <td> Create volume or reuse existing volume. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> False </td>
+    </tr>
+            <tr>
+        <td> volume </td>
+        <td> Volume to install desired image on </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> HD1.2 </td>
+    </tr>
+            <tr>
+        <td> state </td>
+        <td> Action performed on the target device. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> absent </td>
+    </tr>
+            <tr>
+        <td> version </td>
+        <td> Version of the remote ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 12.1.1 </td>
+    </tr>
+            <tr>
+        <td> build </td>
+        <td> Build of the remote ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 0.0.249 </td>
+    </tr>
+            <tr>
+        <td> hotfix </td>
+        <td> Local path, or remote link to the hotfix ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /root/hotfixes/hotfix.iso </td>
+    </tr>
+            <tr>
+        <td> software_md5 </td>
+        <td> MD5 sum file for the remote software ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> http://someweb.com/fake/software.iso.md5 </td>
+    </tr>
+            <tr>
+        <td> software </td>
+        <td> Local path, or remote link to the software ISO image. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> http://someweb.com/fake/software.iso </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
     - Requires the isoparser Python package on the host. This can be installed with pip install isoparser
     - Requires the lxml Python package on the host. This can be installed with pip install lxml
 

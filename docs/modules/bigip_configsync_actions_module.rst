@@ -66,12 +66,12 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Specifies that the system synchronizes configuration data from this device to other members of the device group. This option is mutually exclusive with the <code>sync_group_to_device</code> option.</div>        </td></tr>
-                <tr><td>sync_group_to_device<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies that the system synchronizes configuration data from this device to other members of the device group. In this case, the device will do a "push" to all the other devices in the group. This option is mutually exclusive with the <code>sync_group_to_device</code> option.</div>        </td></tr>
+                <tr><td>sync_most_recent_to_device<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Specifies that the system synchronizes configuration data from the group to this device. This option is mutually exclusive with the <code>sync_device_to_group</code> options.</div>        </td></tr>
+        <td><div>Specifies that the system synchronizes configuration data from the device with the most recent configuration. In this case, the device will do a "pull" from the most recently updated device. This option is mutually exclusive with the <code>sync_device_to_group</code> options.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -103,10 +103,10 @@ Examples
           validate_certs: no
       delegate_to: localhost
     
-    - name: Sync configuration from group to devices in group
+    - name: Sync configuration from most recent device to the current host
       bigip_configsync_actions:
           device_group: "foo-group"
-          sync_group_to_device: yes
+          sync_most_recent_to_device: yes
           server: "lb01.mydomain.com"
           user: "admin"
           password: "secret"
@@ -129,7 +129,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Requires Ansible >= 2.3.
+    - Requires the objectpath Python package on the host. This is as easy as pip install objectpath.
 
 
 
