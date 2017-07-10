@@ -184,6 +184,10 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+RETURN = '''
+# only common fields returned
+'''
+
 import os
 import re
 import time
