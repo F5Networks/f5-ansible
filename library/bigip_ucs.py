@@ -126,7 +126,7 @@ author:
 
 EXAMPLES = '''
 - name: Upload UCS
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
@@ -135,7 +135,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Install (upload, install) UCS.
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
@@ -144,7 +144,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Install (upload, install) UCS without installing the license portion
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
@@ -154,7 +154,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Install (upload, install) UCS except the license, and bypassing the platform check
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
@@ -165,7 +165,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Install (upload, install) UCS using a passphrase necessary to load the UCS
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
@@ -175,7 +175,7 @@ EXAMPLES = '''
   delegate_to: localhost
 
 - name: Remove uploaded UCS file
-  bigip_software:
+  bigip_ucs:
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
