@@ -116,18 +116,6 @@ EXAMPLES = '''
       receive: "tcp string to receive"
   delegate_to: localhost
 
-- name: Create TCP half open Monitor
-  bigip_monitor_tcp:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_tcp_monitor"
-      type: "tcp"
-      send: "tcp string to send"
-      receive: "http string to receive"
-  delegate_to: localhost
-
 - name: Remove TCP Monitor
   bigip_monitor_tcp:
       state: "absent"
