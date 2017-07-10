@@ -504,6 +504,9 @@ class V1Manager(BaseManager):
             # aborting the connection.
             if 'Connection aborted' in str(ex):
                 pass
+            elif 'TimeoutException' in str(ex):
+                # Timeouts appear to be able to happen in 12.1.2
+                pass
             else:
                 raise F5ModuleError(str(ex))
         self.wait_for_rest_api_restart()
