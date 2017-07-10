@@ -1,0 +1,171 @@
+---
+
+- name: Create TCP Monitor - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      state: "present"
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Create TCP Monitor - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Create TCP Monitor - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      state: "present"
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Create TCP Monitor - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change IP - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      ip: "10.10.10.10"
+      port: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change IP - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Change IP - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      ip: "10.10.10.10"
+      port: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change IP - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change port - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      port: 8000
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change port - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Change port - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      port: 8000
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change port - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change interval - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      interval: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change interval - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Change interval - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      interval: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change interval - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change timeout - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      timeout: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change timeout - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Change timeout - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      timeout: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change timeout - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change time until up - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      time_until_up: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change time until up - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Change time until up - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      time_until_up: 80
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Change port - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove TCP Monitor - Half Open
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      state: "absent"
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Remove TCP Monitor - Half Open
+  assert:
+      that:
+          - result|changed
+
+- name: Remove TCP Monitor - Half Open - Idempotent check
+  bigip_monitor_tcp:
+      name: "{{ monitor_name }}"
+      state: "absent"
+      type: "TTYPE_TCP_HALF_OPEN"
+  register: result
+
+- name: Assert Remove TCP Monitor - Half Open - Idempotent check
+  assert:
+      that:
+          - not result|changed

@@ -116,14 +116,6 @@
       that:
           - not result|changed
 
-
-
-
-
-
-
-
-
 - name: Change interval
   bigip_monitor_tcp:
       name: "{{ monitor_name }}"
@@ -145,8 +137,6 @@
   assert:
       that:
           - not result|changed
-
-
 
 - name: Change timeout
   bigip_monitor_tcp:
@@ -170,12 +160,6 @@
       that:
           - not result|changed
 
-
-
-
-
-
-
 - name: Change time until up
   bigip_monitor_tcp:
       name: "{{ monitor_name }}"
@@ -198,31 +182,6 @@
       that:
           - not result|changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Remove TCP Monitor
   bigip_monitor_tcp:
       name: "{{ monitor_name }}"
@@ -244,3 +203,8 @@
   assert:
       that:
           - not result|changed
+
+
+# TODO: These tests should be in their own modules. Move in 2.5
+- include: legacy_tcp_echo.yaml
+- include: legacy_tcp_half_open.yaml

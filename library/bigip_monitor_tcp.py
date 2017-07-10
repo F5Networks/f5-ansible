@@ -53,7 +53,9 @@ options:
     description:
       - IP address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
-        '*'. If this value is an IP address, a C(port) number must be specified.
+        '*'.
+      - If this value is an IP address, and the C(type) is C(tcp) (the default),
+        then a C(port) number must be specified.
   type:
     description:
       - The template type of this monitor template.
@@ -62,6 +64,8 @@ options:
     default: 'tcp'
     choices:
       - tcp
+      - tcp_echo
+      - tcp_half_open
       - TTYPE_TCP
       - TTYPE_TCP_ECHO
       - TTYPE_TCP_HALF_OPEN
@@ -71,6 +75,7 @@ options:
         provided when creating a new monitor, then the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
         must be specified
+      - This argument is not supported for TCP Echo types.
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
@@ -202,6 +207,15 @@ class Parameters(AnsibleF5Parameters):
         'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
     ]
 
+    def _get_default_parent_type(self):
+        return '/Common/tcp'
+
+    def _validate_port_option_with_ip(self):
+        if self.port in [None, '*']:
+            raise F5ModuleError(
+                "Specifying an IP address requires that a port number be specified"
+            )
+
     def __init__(self, params=None):
         super(Parameters, self).__init__(params)
         self._values['__warnings'] = []
@@ -263,10 +277,7 @@ class Parameters(AnsibleF5Parameters):
             if self._values['ip'] in ['*', '0.0.0.0']:
                 return '*'
             result = str(netaddr.IPAddress(self._values['ip']))
-            if self.port in [None, '*']:
-                raise F5ModuleError(
-                    "Specifying an IP address requires that a port number be specified"
-                )
+            self._validate_port_option_with_ip()
             return result
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
@@ -275,6 +286,9 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def port(self):
+        if self.type == 'tcp_echo':
+            return None
+
         if self._values['port'] is None:
             if self._values['state'] == 'present':
                 return '*'
@@ -295,7 +309,7 @@ class Parameters(AnsibleF5Parameters):
     def parent(self):
         if self._values['parent'] is None:
             if self._values['state'] == 'present':
-                return '/Common/tcp'
+                return self._get_default_parent_type()
             return None
 
         # TODO: Remove in 2.5. Instead just return the _values['parent'] value.
@@ -326,17 +340,112 @@ class Parameters(AnsibleF5Parameters):
                 version='2.4'
             )
         )
-
+        # TODO: Remove in 2.5
         if self._values['type'] in [None, 'tcp', 'TTYPE_TCP']:
             return 'tcp'
-        elif self._values['type'] == ['TTYPE_TCP_ECHO']:
+        elif self._values['type'] in ['TTYPE_TCP_ECHO']:
             return 'tcp_echo'
-        elif self._values['type'] == ['TTYPE_TCP_HALF_OPEN']:
+        elif self._values['type'] in ['TTYPE_TCP_HALF_OPEN']:
             return 'tcp_half_open'
 
     @type.setter
     def type(self, value):
         self._values['type'] = value
+
+
+class ParametersEcho(Parameters):
+    api_map = {
+        'timeUntilUp': 'time_until_up',
+        'defaultsFrom': 'parent'
+    }
+
+    api_attributes = [
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination'
+    ]
+
+    returnables = [
+        'parent', 'ip', 'interval', 'timeout', 'time_until_up'
+    ]
+
+    updatables = [
+        'destination', 'interval', 'timeout', 'time_until_up'
+    ]
+
+    def _get_default_parent_type(self):
+        return '/Common/tcp_echo'
+
+    def _validate_port_option_with_ip(self):
+        pass
+
+    @property
+    def destination(self):
+        return self.ip
+
+    @destination.setter
+    def destination(self, value):
+        self._values['ip'] = value
+
+    @property
+    def send(self):
+        if self._values['send'] is None:
+            return None
+        raise F5ModuleError(
+            "The 'send' parameter is not available for TCP echo"
+        )
+
+    @property
+    def receive(self):
+        if self._values['receive'] is None:
+            return None
+        raise F5ModuleError(
+            "The 'receive' parameter is not available for TCP echo"
+        )
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        raise F5ModuleError(
+            "The 'port' parameter is not available for TCP echo"
+        )
+
+
+class ParametersHalfOpen(Parameters):
+    api_map = {
+        'timeUntilUp': 'time_until_up',
+        'defaultsFrom': 'parent'
+    }
+
+    api_attributes = [
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination'
+    ]
+
+    returnables = [
+        'parent', 'ip', 'port', 'interval', 'timeout', 'time_until_up'
+    ]
+
+    updatables = [
+        'destination', 'interval', 'timeout', 'time_until_up'
+    ]
+
+    def _get_default_parent_type(self):
+        return '/Common/tcp_half_open'
+
+    @property
+    def send(self):
+        if self._values['send'] is None:
+            return None
+        raise F5ModuleError(
+            "The 'send' parameter is not available for TCP half open"
+        )
+
+    @property
+    def receive(self):
+        if self._values['receive'] is None:
+            return None
+        raise F5ModuleError(
+            "The 'receive' parameter is not available for TCP half open"
+        )
 
 
 class Difference(object):
@@ -369,6 +478,7 @@ class Difference(object):
             return attr1
 
 
+# TODO: Remove all of this in 2.5
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -379,44 +489,15 @@ class ModuleManager(object):
         return manager.exec_module()
 
     def get_manager(self, type):
-        if type == 'tcp':
+        if type in ['tcp', 'TTYPE_TCP']:
             return TcpManager(self.client)
-        elif type == 'tcp_echo':
+        elif type in ['tcp_echo', 'TTYPE_TCP_ECHO']:
             return TcpEchoManager(self.client)
-        elif type == 'tcp_half_open':
+        elif type in ['tcp_half_open', 'TTYPE_TCP_HALF_OPEN']:
             return TcpHalfOpenManager(self.client)
 
 
 class BaseManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
-
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                changed[k] = change
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
-
     def _announce_deprecations(self):
         warnings = []
         if self.want:
@@ -491,6 +572,35 @@ class BaseManager(object):
 
 
 class TcpManager(BaseManager):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
     def read_current_from_device(self):
         resource = self.client.api.tm.ltm.monitor.tcps.tcp.load(
             name=self.want.name,
@@ -533,13 +643,44 @@ class TcpManager(BaseManager):
 
 # TODO: Remove this in 2.5 and put it its own module
 class TcpEchoManager(BaseManager):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = ParametersEcho(self.client.module.params)
+        self.changes = ParametersEcho()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in ParametersEcho.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = ParametersEcho(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = ParametersEcho.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            import q
+            q.q(changed)
+            self.changes = ParametersEcho(changed)
+            return True
+        return False
+
     def read_current_from_device(self):
         resource = self.client.api.tm.ltm.monitor.tcp_echos.tcp_echo.load(
             name=self.want.name,
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ParametersEcho(result)
 
     def exists(self):
         result = self.client.api.tm.ltm.monitor.tcp_echos.tcp_echo.exists(
@@ -572,15 +713,45 @@ class TcpEchoManager(BaseManager):
         if result:
             result.delete()
 
+
 # TODO: Remove this in 2.5 and put it its own module
 class TcpHalfOpenManager(BaseManager):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = ParametersHalfOpen(self.client.module.params)
+        self.changes = ParametersHalfOpen()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in ParametersHalfOpen.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = ParametersHalfOpen(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = ParametersHalfOpen.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            self.changes = ParametersHalfOpen(changed)
+            return True
+        return False
+
     def read_current_from_device(self):
         resource = self.client.api.tm.ltm.monitor.tcp_half_opens.tcp_half_open.load(
             name=self.want.name,
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ParametersHalfOpen(result)
 
     def exists(self):
         result = self.client.api.tm.ltm.monitor.tcp_half_opens.tcp_half_open.exists(
