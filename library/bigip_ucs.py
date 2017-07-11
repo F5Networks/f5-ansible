@@ -44,6 +44,10 @@ options:
     description:
       - The path to the UCS file to install. The parameter must be
         provided if the C(state) is either C(installed) or C(activated).
+        When C(state) is C(absent), the full path for this parameter will be
+        ignored and only the filename will be used to select a UCS for removal.
+        Therefore you could specify C(/mickey/mouse/test.ucs) and this module
+        would only look for C(test.ucs).
   force:
     description:
       - If C(yes) will upload the file every time and replace the file on the
@@ -179,7 +183,7 @@ EXAMPLES = '''
       server: "lb.mydomain.com"
       user: "admin"
       password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
+      ucs: "bigip.localhost.localdomain.ucs"
       state: "absent"
   delegate_to: localhost
 '''
