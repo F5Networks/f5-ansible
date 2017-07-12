@@ -23,6 +23,7 @@ __metaclass__ = type
 import os
 import json
 import sys
+import pytest
 
 from nose.plugins.skip import SkipTest
 if sys.version_info < (2, 7):
@@ -33,6 +34,7 @@ from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigip_monitor_tcp import Parameters
@@ -273,7 +275,7 @@ class TestManager(unittest.TestCase):
     def test_update_interval(self, *args):
         set_module_args(dict(
             name='foo',
-            interval=200,
+            interval=10,
             partition='Common',
             server='localhost',
             password='password',
@@ -300,7 +302,72 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['interval'] == 200
+        assert results['interval'] == 10
+
+    def test_update_interval_larger_than_existing_timeout(self, *args):
+        set_module_args(dict(
+            name='foo',
+            interval=30,
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_monitor_tcp.json'))
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        tm = TcpManager(client)
+        tm.exists = Mock(return_value=True)
+        tm.read_current_from_device = Mock(return_value=current)
+        tm.update_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=tm)
+
+        with pytest.raises(F5ModuleError) as ex:
+            mm.exec_module()
+
+        assert "must be less than" in str(ex)
+
+    def test_update_interval_larger_than_new_timeout(self, *args):
+        set_module_args(dict(
+            name='foo',
+            interval=10,
+            timeout=5,
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_monitor_tcp.json'))
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods in the specific type of manager
+        tm = TcpManager(client)
+        tm.exists = Mock(return_value=True)
+        tm.read_current_from_device = Mock(return_value=current)
+        tm.update_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=tm)
+
+        with pytest.raises(F5ModuleError) as ex:
+            mm.exec_module()
+
+        assert "must be less than" in str(ex)
 
     def test_update_send(self, *args):
         set_module_args(dict(

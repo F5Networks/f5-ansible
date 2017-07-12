@@ -80,7 +80,8 @@ options:
     description:
       - The interval specifying how frequently the monitor instance of this
         template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 5.
+        a new monitor, then the default value will be 5. This value B(must)
+        be less than the C(timeout) value.
   timeout:
     description:
       - The number of seconds in which the node or service must respond to
@@ -182,7 +183,9 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
-    iControlUnexpectedHTTPError
+    iControlUnexpectedHTTPError,
+    iteritems,
+    defaultdict
 )
 
 
@@ -206,6 +209,35 @@ class Parameters(AnsibleF5Parameters):
     updatables = [
         'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
     ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def _get_default_parent_type(self):
         return '/Common/tcp'
@@ -254,16 +286,19 @@ class Parameters(AnsibleF5Parameters):
     @property
     def interval(self):
         if self._values['interval'] is None:
-            if self._values['state'] == 'present':
-                return 5
             return None
+
+        # Per BZ617284, the BIG-IP UI does not raise a warning about this.
+        # So i
+        if 1 > self._values['interval'] > 86400:
+            raise F5ModuleError(
+                "Interval value must be between 1 and 86400"
+            )
         return int(self._values['interval'])
 
     @property
     def timeout(self):
         if self._values['timeout'] is None:
-            if self._values['state'] == 'present':
-                return 16
             return None
         return int(self._values['timeout'])
 
@@ -468,6 +503,28 @@ class Difference(object):
                 "The parent monitor cannot be changed"
             )
 
+    @property
+    def interval(self):
+        if self.have.timeout:
+            # Update
+            if self.want.timeout:
+                if self.want.interval >= self.want.timeout:
+                    raise F5ModuleError(
+                        "Parameter 'interval' must be less than 'timeout'."
+                    )
+            if self.want.interval >= self.have.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        else:
+            if self.want.timeout:
+                if self.want.interval >= self.want.timeout:
+                    raise F5ModuleError(
+                        "Parameter 'interval' must be less than 'timeout'."
+                    )
+        if self.want.interval != self.have.interval:
+            return self.want.interval
+
     def __default(self, param):
         attr1 = getattr(self.want, param)
         try:
@@ -537,6 +594,10 @@ class BaseManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.timeout is None:
+            self.want.update({'timeout': 16})
+        if self.want.interval is None:
+            self.want.update({'interval': 5})
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -668,8 +729,6 @@ class TcpEchoManager(BaseManager):
             else:
                 changed[k] = change
         if changed:
-            import q
-            q.q(changed)
             self.changes = ParametersEcho(changed)
             return True
         return False
