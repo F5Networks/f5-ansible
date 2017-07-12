@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
+# Copyright 2017 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
@@ -196,6 +196,7 @@ import os
 import re
 import time
 
+from collections import OrderedDict
 from distutils.version import LooseVersion
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
@@ -264,7 +265,9 @@ class Parameters(AnsibleF5Parameters):
     def install_command(self):
         cmd = 'tmsh load sys ucs /var/local/ucs/{0}'.format(self.basename)
         # Append any options that might be specified
-        for k, v in iteritems(self.options):
+        options = OrderedDict(sorted(self.options.items(), key=lambda t: t[0]))
+        print(options)
+        for k, v in iteritems(options):
             if v is False or v is None:
                 continue
             elif k == 'passphrase':

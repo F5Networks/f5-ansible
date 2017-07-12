@@ -102,8 +102,8 @@ class TestParameters(unittest.TestCase):
         assert p.reset_trust is True
         assert p.install_command == \
             "tmsh load sys ucs /var/local/ucs/bigip.localhost.localdomain.ucs " \
-            "include-chassis-level-config no-platform-check reset-trust passphrase " \
-            "foobar no-license"
+            "include-chassis-level-config no-license no-platform-check " \
+            "passphrase foobar reset-trust"
 
     def test_module_parameters_false_ucs_booleans(self):
         args = dict(
