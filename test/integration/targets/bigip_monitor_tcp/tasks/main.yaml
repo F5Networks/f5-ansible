@@ -204,7 +204,6 @@
       that:
           - not result|changed
 
-
 # TODO: These tests should be in their own modules. Move in 2.5
 - include: legacy_tcp_echo.yaml
 - include: legacy_tcp_half_open.yaml
