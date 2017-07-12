@@ -403,39 +403,55 @@ class BaseManager(object):
                 time.sleep(3)
 
     def wait_for_configuration_reload(self):
-        nops = 0
-        time.sleep(3)
-        while nops < 4:
-            try:
-                # Need to re-connect here because the REST framework will be restarting
-                # and thus be clearing its authorization cache
-                if not self._is_config_reloading_on_device():
-                    nops += 1
-                else:
-                    nops = 0
-            except Exception:
-                # This can be caused by restjavad restarting.
-                pass
+        noops = 0
+        while noops < 4:
             time.sleep(3)
+            try:
+                output = self.client.api.tm.util.bash.exec_cmd(
+                    'run',
+                    utilCmdArgs='-c "tmsh show sys mcp-state"'
+                )
+            except Exception as ex:
+                # This can be caused by restjavad restarting.
+                continue
 
-    def _is_config_reloading_on_device(self):
+            if not hasattr(output, 'commandResult'):
+                continue
+
+            # Need to re-connect here because the REST framework will be restarting
+            # and thus be clearing its authorization cache
+            result = output.commandResult
+            if self._is_config_reloading_failed_on_device(result):
+                raise F5ModuleError(
+                    "Failed to reload the configuration. This may be due "
+                    "to a cross-version incompatibility. {0}".format(result)
+                )
+            if self._is_config_reloading_success_on_device(result):
+                if self._is_config_reloading_running_on_device(result):
+                    noops += 1
+                    continue
+            noops = 0
+
+    def _is_config_reloading_success_on_device(self, output):
         succeed = r'Last Configuration Load Status\s+full-config-load-succeed'
+        matches = re.search(succeed, output)
+        if matches:
+            return True
+        return False
+
+    def _is_config_reloading_running_on_device(self, output):
         running = r'Running Phase\s+running'
+        matches = re.search(running, output)
+        if matches:
+            return True
+        return False
 
-        output = self.client.api.tm.util.bash.exec_cmd(
-            'run',
-            utilCmdArgs='-c "tmsh show sys mcp-state"'
-        )
-
-        if hasattr(output, 'commandResult'):
-            matches = re.search(succeed, output.commandResult)
-            if not matches:
-                return True
-            matches = re.search(running, output.commandResult)
-            if not matches:
-                return True
-            return False
-        return True
+    def _is_config_reloading_failed_on_device(self, output):
+        failed = r'Last Configuration Load Status\s+base-config-load-failed'
+        matches = re.search(failed, output)
+        if matches:
+            return True
+        return False
 
 
 class V1Manager(BaseManager):
@@ -477,7 +493,7 @@ class V1Manager(BaseManager):
         )
         if hasattr(output, 'commandResult'):
             lines = output.commandResult.split("\n")
-            result = [x.trim() for x in lines]
+            result = [x.strip() for x in lines]
             result = list(set(result))
         return result
 
