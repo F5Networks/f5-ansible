@@ -331,23 +331,21 @@ class Difference(object):
 
     @property
     def interval(self):
-        if self.have.timeout:
-            # Update
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
-                    raise F5ModuleError(
-                        "Parameter 'interval' must be less than 'timeout'."
-                    )
+        if self.want.timeout is not None and self.want.interval is not None:
+            if self.want.interval >= self.want.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        elif self.want.timeout is not None:
+            if self.have.interval >= self.want.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        elif self.want.interval is not None:
             if self.want.interval >= self.have.timeout:
                 raise F5ModuleError(
                     "Parameter 'interval' must be less than 'timeout'."
                 )
-        else:
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
-                    raise F5ModuleError(
-                        "Parameter 'interval' must be less than 'timeout'."
-                    )
         if self.want.interval != self.have.interval:
             return self.want.interval
 

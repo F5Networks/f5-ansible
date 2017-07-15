@@ -218,7 +218,7 @@ class Parameters(AnsibleF5Parameters):
     def interval(self):
         if self._values['interval'] is None:
             return None
-        if 1 > self._values['interval'] > 86400:
+        if 1 > int(self._values['interval']) > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
             )
@@ -303,23 +303,21 @@ class Difference(object):
 
     @property
     def interval(self):
-        if self.have.timeout:
-            # Update
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
-                    raise F5ModuleError(
-                        "Parameter 'interval' must be less than 'timeout'."
-                    )
+        if self.want.timeout is not None and self.want.interval is not None:
+            if self.want.interval >= self.want.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        elif self.want.timeout is not None:
+            if self.have.interval >= self.want.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        elif self.want.interval is not None:
             if self.want.interval >= self.have.timeout:
                 raise F5ModuleError(
                     "Parameter 'interval' must be less than 'timeout'."
                 )
-        else:
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
-                    raise F5ModuleError(
-                        "Parameter 'interval' must be less than 'timeout'."
-                    )
         if self.want.interval != self.have.interval:
             return self.want.interval
 
