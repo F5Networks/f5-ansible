@@ -190,28 +190,9 @@ from ansible.module_utils.f5_utils import (
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {
-        'timeUntilUp': 'time_until_up',
-        'defaultsFrom': 'parent',
-        'recv': 'receive'
-    }
-
-    api_attributes = [
-        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
-        'destination'
-    ]
-
-    returnables = [
-        'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
-        'time_until_up'
-    ]
-
-    updatables = [
-        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
-    ]
-
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
         if params:
             self.update(params=params)
 
@@ -239,19 +220,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def _get_default_parent_type(self):
-        return '/Common/tcp'
-
-    def _validate_port_option_with_ip(self):
-        if self.port in [None, '*']:
-            raise F5ModuleError(
-                "Specifying an IP address requires that a port number be specified"
-            )
-
-    def __init__(self, params=None):
-        super(Parameters, self).__init__(params)
-        self._values['__warnings'] = []
-
     def to_return(self):
         result = {}
         try:
@@ -273,23 +241,9 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
-    def destination(self):
-        result = '{0}:{1}'.format(self.ip, self.port)
-        return result
-
-    @destination.setter
-    def destination(self, value):
-        ip, port = value.split(':')
-        self._values['ip'] = ip
-        self._values['port'] = port
-
-    @property
     def interval(self):
         if self._values['interval'] is None:
             return None
-
-        # Per BZ617284, the BIG-IP UI does not raise a warning about this.
-        # So i
         if 1 > self._values['interval'] > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
@@ -305,14 +259,11 @@ class Parameters(AnsibleF5Parameters):
     @property
     def ip(self):
         if self._values['ip'] is None:
-            if self._values['state'] == 'present':
-                return '*'
             return None
         try:
             if self._values['ip'] in ['*', '0.0.0.0']:
                 return '*'
             result = str(netaddr.IPAddress(self._values['ip']))
-            self._validate_port_option_with_ip()
             return result
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
@@ -320,39 +271,29 @@ class Parameters(AnsibleF5Parameters):
             )
 
     @property
-    def port(self):
-        if self.type == 'tcp_echo':
-            return None
-
-        if self._values['port'] is None:
-            if self._values['state'] == 'present':
-                return '*'
-            return None
-        elif self._values['port'] == '*':
-            return '*'
-        return int(self._values['port'])
-
-    @property
     def time_until_up(self):
         if self._values['time_until_up'] is None:
-            if self._values['state'] == 'present':
-                return 0
             return None
         return int(self._values['time_until_up'])
 
     @property
     def parent(self):
-        if self._values['parent'] is None:
-            if self._values['state'] == 'present':
-                return self._get_default_parent_type()
-            return None
-
-        # TODO: Remove in 2.5. Instead just return the _values['parent'] value.
-        if self._values['parent'].startswith('/'):
-            parent = os.bar.basename(self._values['parent'])
-            result = '/{0}/{1}'.format(self.partition, parent)
+        if self._values['parent_partition']:
+            if self._values['parent_partition'] is None:
+                return None
+            if self._values['parent_partition'].startswith('/'):
+                partition = os.path.basename(self._values['parent_partition'])
+                result = '/{0}/{1}'.format(partition, self.type)
+            else:
+                result = '/{0}/{1}'.format(self.parent_partition, self.type)
         else:
-            result = '/{0}/{1}'.format(self.partition, self._values['parent'])
+            if self._values['parent'] is None:
+                return None
+            if self._values['parent'].startswith('/'):
+                parent = os.path.basename(self._values['parent'])
+                result = '/{0}/{1}'.format(self.partition, parent)
+            else:
+                result = '/{0}/{1}'.format(self.partition, self._values['parent'])
         return result
 
     @property
@@ -367,31 +308,68 @@ class Parameters(AnsibleF5Parameters):
         )
         return self._values['parent_partition']
 
+
+class ParametersTcp(Parameters):
+    api_map = {
+        'timeUntilUp': 'time_until_up',
+        'defaultsFrom': 'parent',
+        'recv': 'receive'
+    }
+
+    api_attributes = [
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
+        'destination'
+    ]
+
+    returnables = [
+        'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
+        'time_until_up'
+    ]
+
+    updatables = [
+        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
+    ]
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        elif self._values['port'] == '*':
+            return '*'
+        return int(self._values['port'])
+
+    @property
+    def destination(self):
+        if self.ip is None and self.port is None:
+            return None
+        destination = '{0}:{1}'.format(self.ip, self.port)
+        return destination
+
+    @destination.setter
+    def destination(self, value):
+        ip, port = value.split(':')
+        self._values['ip'] = ip
+        self._values['port'] = port
+
     @property
     def type(self):
-        self._values['__warnings'].append(
-            dict(
-                msg="The type param is deprecated",
-                version='2.4'
-            )
-        )
-        # TODO: Remove in 2.5
-        if self._values['type'] in [None, 'tcp', 'TTYPE_TCP']:
-            return 'tcp'
-        elif self._values['type'] in ['TTYPE_TCP_ECHO']:
-            return 'tcp_echo'
-        elif self._values['type'] in ['TTYPE_TCP_HALF_OPEN']:
-            return 'tcp_half_open'
+        return 'tcp'
 
     @type.setter
     def type(self, value):
-        self._values['type'] = value
-
+        if value:
+            self._values['__warnings'].append(
+                dict(
+                    msg="The type param is deprecated",
+                    version='2.4'
+                )
+            )
 
 class ParametersEcho(Parameters):
     api_map = {
         'timeUntilUp': 'time_until_up',
-        'defaultsFrom': 'parent'
+        'defaultsFrom': 'parent',
+        'destination': 'ip'
     }
 
     api_attributes = [
@@ -406,11 +384,19 @@ class ParametersEcho(Parameters):
         'destination', 'interval', 'timeout', 'time_until_up'
     ]
 
-    def _get_default_parent_type(self):
-        return '/Common/tcp_echo'
+    @property
+    def type(self):
+        return 'tcp_echo'
 
-    def _validate_port_option_with_ip(self):
-        pass
+    @type.setter
+    def type(self, value):
+        if value:
+            self._values['__warnings'].append(
+                dict(
+                    msg="The type param is deprecated",
+                    version='2.4'
+                )
+            )
 
     @property
     def destination(self):
@@ -438,11 +424,7 @@ class ParametersEcho(Parameters):
 
     @property
     def port(self):
-        if self._values['port'] is None:
-            return None
-        raise F5ModuleError(
-            "The 'port' parameter is not available for TCP echo"
-        )
+        return None
 
 
 class ParametersHalfOpen(Parameters):
@@ -463,8 +445,40 @@ class ParametersHalfOpen(Parameters):
         'destination', 'interval', 'timeout', 'time_until_up'
     ]
 
-    def _get_default_parent_type(self):
-        return '/Common/tcp_half_open'
+    @property
+    def destination(self):
+        if self.ip is None and self.port is None:
+            return None
+        result = '{0}:{1}'.format(self.ip, self.port)
+        return result
+
+    @destination.setter
+    def destination(self, value):
+        ip, port = value.split(':')
+        self._values['ip'] = ip
+        self._values['port'] = port
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        elif self._values['port'] == '*':
+            return '*'
+        return int(self._values['port'])
+
+    @property
+    def type(self):
+        return 'tcp_half_open'
+
+    @type.setter
+    def type(self, value):
+        if value:
+            self._values['__warnings'].append(
+                dict(
+                    msg="The type param is deprecated",
+                    version='2.4'
+                )
+            )
 
     @property
     def send(self):
@@ -504,24 +518,47 @@ class Difference(object):
             )
 
     @property
+    def destination(self):
+        if self.want.type == 'tcp_echo':
+            if self.want.ip is None:
+                return None
+        else:
+            if self.want.ip is None and self.want.port is None:
+                return None
+            if self.want.port is None:
+                self.want.update({'port': self.have.port})
+            if self.want.ip is None:
+                self.want.update({'ip': self.have.ip})
+
+            if self.want.port in [None, '*'] and self.want.ip != '*':
+                raise F5ModuleError(
+                    "Specifying an IP address requires that a port number be specified"
+                )
+
+        import q
+        q.q(self.want.destination)
+        q.q(self.have.destination)
+
+        if self.want.destination != self.have.destination:
+            return self.want.destination
+
+    @property
     def interval(self):
-        if self.have.timeout:
-            # Update
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
+        if self.want.timeout is not None and self.want.interval is not None:
+            if self.want.interval >= self.want.timeout:
+                raise F5ModuleError(
+                    "Parameter 'interval' must be less than 'timeout'."
+                )
+        elif self.want.timeout is not None:
+            if self.have.interval >= self.want.timeout:
                     raise F5ModuleError(
                         "Parameter 'interval' must be less than 'timeout'."
                     )
+        elif self.want.interval is not None:
             if self.want.interval >= self.have.timeout:
                 raise F5ModuleError(
                     "Parameter 'interval' must be less than 'timeout'."
                 )
-        else:
-            if self.want.timeout:
-                if self.want.interval >= self.want.timeout:
-                    raise F5ModuleError(
-                        "Parameter 'interval' must be less than 'timeout'."
-                    )
         if self.want.interval != self.have.interval:
             return self.want.interval
 
@@ -546,7 +583,7 @@ class ModuleManager(object):
         return manager.exec_module()
 
     def get_manager(self, type):
-        if type in ['tcp', 'TTYPE_TCP']:
+        if type in [None, 'tcp', 'TTYPE_TCP']:
             return TcpManager(self.client)
         elif type in ['tcp_echo', 'TTYPE_TCP_ECHO']:
             return TcpEchoManager(self.client)
@@ -594,10 +631,7 @@ class BaseManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.want.timeout is None:
-            self.want.update({'timeout': 16})
-        if self.want.interval is None:
-            self.want.update({'interval': 5})
+        self._set_default_creation_values()
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -636,20 +670,20 @@ class TcpManager(BaseManager):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.want = ParametersTcp(self.client.module.params)
+        self.changes = ParametersTcp()
 
     def _set_changed_options(self):
         changed = {}
-        for key in Parameters.returnables:
+        for key in ParametersTcp.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = ParametersTcp(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
+        updatables = ParametersTcp.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)
@@ -658,9 +692,23 @@ class TcpManager(BaseManager):
             else:
                 changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            import q
+            q.q(changed)
+            self.changes = ParametersTcp(changed)
             return True
         return False
+
+    def _set_default_creation_values(self):
+        if self.want.timeout is None:
+            self.want.update({'timeout': 16})
+        if self.want.interval is None:
+            self.want.update({'interval': 5})
+        if self.want.time_until_up is None:
+            self.want.update({'time_until_up': 0})
+        if self.want.ip is None:
+            self.want.update({'ip': '*'})
+        if self.want.port is None:
+            self.want.update({'port': '*'})
 
     def read_current_from_device(self):
         resource = self.client.api.tm.ltm.monitor.tcps.tcp.load(
@@ -668,7 +716,7 @@ class TcpManager(BaseManager):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ParametersTcp(result)
 
     def exists(self):
         result = self.client.api.tm.ltm.monitor.tcps.tcp.exists(
@@ -678,7 +726,9 @@ class TcpManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
+        import q
+        q.q(params)
         result = self.client.api.tm.ltm.monitor.tcps.tcp.load(
             name=self.want.name,
             partition=self.want.partition
@@ -710,6 +760,16 @@ class TcpEchoManager(BaseManager):
         self.want = ParametersEcho(self.client.module.params)
         self.changes = ParametersEcho()
 
+    def _set_default_creation_values(self):
+        if self.want.timeout is None:
+            self.want.update({'timeout': 16})
+        if self.want.interval is None:
+            self.want.update({'interval': 5})
+        if self.want.time_until_up is None:
+            self.want.update({'time_until_up': 0})
+        if self.want.ip is None:
+            self.want.update({'ip': '*'})
+
     def _set_changed_options(self):
         changed = {}
         for key in ParametersEcho.returnables:
@@ -729,6 +789,8 @@ class TcpEchoManager(BaseManager):
             else:
                 changed[k] = change
         if changed:
+            import q
+            q.q(changed)
             self.changes = ParametersEcho(changed)
             return True
         return False
@@ -804,6 +866,18 @@ class TcpHalfOpenManager(BaseManager):
             return True
         return False
 
+    def _set_default_creation_values(self):
+        if self.want.timeout is None:
+            self.want.update({'timeout': 16})
+        if self.want.interval is None:
+            self.want.update({'interval': 5})
+        if self.want.time_until_up is None:
+            self.want.update({'time_until_up': 0})
+        if self.want.ip is None:
+            self.want.update({'ip': '*'})
+        if self.want.port is None:
+            self.want.update({'port': '*'})
+
     def read_current_from_device(self):
         resource = self.client.api.tm.ltm.monitor.tcp_half_opens.tcp_half_open.load(
             name=self.want.name,
@@ -865,14 +939,12 @@ class ArgumentSpec(object):
 
             # Deprecated params
             type=dict(
-                default='tcp',
                 removed_in_version='2.4',
                 choices=[
                     'tcp', 'TTYPE_TCP', 'TTYPE_TCP_ECHO', 'TTYPE_TCP_HALF_OPEN'
                 ]
             ),
             parent_partition=dict(
-                default='Common',
                 removed_in_version='2.4'
             )
         )
