@@ -535,10 +535,6 @@ class Difference(object):
                     "Specifying an IP address requires that a port number be specified"
                 )
 
-        import q
-        q.q(self.want.destination)
-        q.q(self.have.destination)
-
         if self.want.destination != self.have.destination:
             return self.want.destination
 
@@ -692,8 +688,6 @@ class TcpManager(BaseManager):
             else:
                 changed[k] = change
         if changed:
-            import q
-            q.q(changed)
             self.changes = ParametersTcp(changed)
             return True
         return False
@@ -727,8 +721,6 @@ class TcpManager(BaseManager):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        import q
-        q.q(params)
         result = self.client.api.tm.ltm.monitor.tcps.tcp.load(
             name=self.want.name,
             partition=self.want.partition
@@ -789,8 +781,6 @@ class TcpEchoManager(BaseManager):
             else:
                 changed[k] = change
         if changed:
-            import q
-            q.q(changed)
             self.changes = ParametersEcho(changed)
             return True
         return False

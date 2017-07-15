@@ -321,10 +321,6 @@ class Difference(object):
         if self.want.ip is None:
             self.want.update({'ip': self.have.ip})
 
-        import q
-        q.q(self.want.destination)
-        q.q(self.have.destination)
-
         if self.want.port in [None, '*'] and self.want.ip != '*':
             raise F5ModuleError(
                 "Specifying an IP address requires that a port number be specified"

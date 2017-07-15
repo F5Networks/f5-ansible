@@ -297,10 +297,6 @@ class Difference(object):
     def destination(self):
         if self.want.ip is None:
             return None
-        import q
-        q.q(self.want.destination)
-        q.q(self.have.destination)
-
         if self.want.destination != self.have.destination:
             return self.want.destination
 
