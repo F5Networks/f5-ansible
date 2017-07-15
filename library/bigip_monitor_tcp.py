@@ -365,6 +365,7 @@ class ParametersTcp(Parameters):
                 )
             )
 
+
 class ParametersEcho(Parameters):
     api_map = {
         'timeUntilUp': 'time_until_up',
