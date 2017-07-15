@@ -12,6 +12,8 @@
   assert:
       that:
           - result|changed
+          - result.send == send_string1
+          - result.receive == receive_string1
 
 - name: Create TCP Monitor - Idempotent check
   bigip_monitor_tcp:
@@ -36,6 +38,7 @@
   assert:
       that:
           - result|changed
+          - result.send == send_string2
 
 - name: Change send string - Idempotent check
   bigip_monitor_tcp:
@@ -58,6 +61,7 @@
   assert:
       that:
           - result|changed
+          - result.receive == receive_string2
 
 - name: Change receive string - Idempotent check
   bigip_monitor_tcp:
@@ -81,6 +85,8 @@
   assert:
       that:
           - result|changed
+          - result.ip == '10.10.10.10'
+          - result.port == 80
 
 - name: Change IP - Idempotent check
   bigip_monitor_tcp:
@@ -104,6 +110,7 @@
   assert:
       that:
           - result|changed
+          - result.port == 8000
 
 - name: Change port - Idempotent check
   bigip_monitor_tcp:
@@ -126,6 +133,7 @@
   assert:
       that:
           - result|changed
+          - result.interval == 2
 
 - name: Change interval, less than timeout - Idempotent check
   bigip_monitor_tcp:
@@ -160,6 +168,7 @@
   assert:
       that:
           - result|changed
+          - result.timeout == 80
 
 - name: Change timeout - Idempotent check
   bigip_monitor_tcp:
@@ -182,6 +191,7 @@
   assert:
       that:
           - result|changed
+          - result.time_until_up == 80
 
 - name: Change time until up - Idempotent check
   bigip_monitor_tcp:
