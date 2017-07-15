@@ -244,7 +244,7 @@ class Parameters(AnsibleF5Parameters):
     def interval(self):
         if self._values['interval'] is None:
             return None
-        if 1 > self._values['interval'] > 86400:
+        if 1 > int(self._values['interval']) > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
             )
