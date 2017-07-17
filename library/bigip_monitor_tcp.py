@@ -175,8 +175,13 @@ time_until_up:
     sample: 2
 '''
 
-import netaddr
 import os
+
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
@@ -948,19 +953,22 @@ class ArgumentSpec(object):
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
-    spec = ArgumentSpec()
-
-    client = AnsibleF5Client(
-        argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name,
-        mutually_exclusive=spec.mutually_exclusive
-    )
-
     try:
+        spec = ArgumentSpec()
+
+        client = AnsibleF5Client(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode,
+            f5_product_name=spec.f5_product_name,
+            mutually_exclusive=spec.mutually_exclusive
+        )
+
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+
+        if not HAS_NETADDR:
+            raise F5ModuleError("The python netaddr module is required")
+
         mm = ModuleManager(client)
         results = mm.exec_module()
         client.module.exit_json(**results)
