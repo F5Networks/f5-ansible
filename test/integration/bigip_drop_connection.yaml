@@ -29,11 +29,11 @@
   any_errors_fatal: true
 
   environment:
-      F5_SERVER: "{{ lookup('env', 'F5_SERVER')|default(ansible_host) }}"
-      F5_USER: "{{ lookup('env', 'F5_USER')|default(bigip_username) }}"
-      F5_PASSWORD: "{{ lookup('env', 'F5_PASSWORD')|default(bigip_password) }}"
-      F5_SERVER_PORT: "{{ lookup('env', 'F5_SERVER_PORT')|default(bigip_port) }}"
-      F5_VALIDATE_CERTS: "{{ lookup('env', 'F5_VALIDATE_CERTS')|default(validate_certs) }}"
+      F5_SERVER: "{{ ansible_host }}"
+      F5_USER: "{{ bigip_username }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
       - bigip_drop_connection
