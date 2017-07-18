@@ -270,6 +270,8 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.create_on_device()
+        if not self.exists():
+            raise F5ModuleError("Failed to create the partition.")
         return True
 
     def should_update(self):
