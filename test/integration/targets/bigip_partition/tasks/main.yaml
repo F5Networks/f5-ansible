@@ -57,29 +57,6 @@
       that:
           - result|changed
 
-- name: Change route domain by integer
-  bigip_partition:
-      name: "{{ partition }}"
-      route_domain_id: "{{ route_domain2 }}"
-  register: result
-
-- name: Assert Change route domain by integer
-  assert:
-      that:
-          - result|changed
-
-- name: Change route domain by integer - Idempotent check
-  bigip_partition:
-      description: "{{ description }}"
-      name: "{{ partition }}"
-      route_domain_id: "{{ route_domain2 }}"
-  register: result
-
-- name: Assert Change route domain by integer - Idempotent check
-  assert:
-      that:
-          - not result|changed
-
 - name: Delete partition
   bigip_partition:
       name: "{{ partition }}"
@@ -102,4 +79,4 @@
       that:
           - not result|changed
 
-- include: teardown
+- include: teardown.yaml
