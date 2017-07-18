@@ -27,38 +27,33 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_partition
-short_description: Manage BIG-IP partitions
+short_description: Manage BIG-IP partitions.
 description:
-  - Manage BIG-IP partitions
-version_added: "2.3"
+  - Manage BIG-IP partitions.
+version_added: "2.5"
 options:
   description:
     description:
-      - The description to attach to the Partition
-    required: False
-    default: None
+      - The description to attach to the Partition.
   route_domain:
     description:
       - The default Route Domain to assign to the Partition. If no route domain
         is specified, then the default route domain for the system (typically
         zero) will be used only when creating a new partition. C(route_domain)
         and C(route_domain_id) are mutually exclusive.
-    required: False
-    default: None
   state:
     description:
       - Whether the partition should exist or not
-    required: false
     default: present
     choices:
       - present
       - absent
 notes:
-  - Requires the bigsuds Python package on the host if using the iControl
-    interface. This is as easy as pip install bigsuds
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk.
+  - Requires BIG-IP software version >= 12
 requirements:
-  - bigsuds
-  - requests
+  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -71,6 +66,7 @@ EXAMPLES = '''
       password: "secret"
       server: "lb.mydomain.com"
       user: "admin"
+  delegate_to: localhost
 
 - name: Delete the foo partition
   bigip_partition:
@@ -79,6 +75,7 @@ EXAMPLES = '''
       server: "lb.mydomain.com"
       user: "admin"
       state: "absent"
+  delegate_to: localhost
 '''
 
 RETURN = '''
@@ -92,271 +89,276 @@ description:
     returned: changed and success
     type: string
     sample: "Example partition"
-name:
-    description: The name of the partition
-    returned: changed and success
-    type: string
-    sample: "/foo"
 '''
 
-try:
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.f5_utils import defaultdict
 
-    HAS_F5SDK = True
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
 
-def connect_to_bigip(**kwargs):
-    return ManagementRoot(kwargs['server'],
-                          kwargs['user'],
-                          kwargs['password'],
-                          port=kwargs['server_port'],
-                          token=True)
+
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'route_domain': 'defaultRouteDomain',
+    }
+
+    api_attributes = [
+        'description', 'defaultRouteDomain'
+    ]
+
+    returnables = [
+        'description', 'route_domain'
+    ]
+
+    updatables = [
+        'description', 'route_domain'
+    ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+    @property
+    def partition(self):
+        # Cannot create a partition in a partition, so nullify this
+        return None
+
+    @property
+    def route_domain(self):
+        if self._values['route_domain'] is None:
+            return None
+        return int(self._values['route_domain'])
 
 
-class BigIpPartitionManager(object):
-    def __init__(self, *args, **kwargs):
-        self.changed_params = dict()
-        self.params = kwargs
-        self.api = None
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
 
-    def apply_changes(self):
-        result = dict()
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            result = self.__default(param)
+            return result
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Parameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Parameters(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            self.changes = Parameters(changed)
+            return True
+        return False
+
+    def exec_module(self):
         changed = False
+        result = dict()
+        state = self.want.state
 
         try:
-            self.api = connect_to_bigip(**self.params)
-
-            if self.params['state'] == "present":
+            if state == "present":
                 changed = self.present()
-            elif self.params['state'] == "absent":
+            elif state == "absent":
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changed_params)
+        changes = self.changes.to_return()
+        result.update(**changes)
         result.update(dict(changed=changed))
         return result
 
     def present(self):
-        if self.partition_exists():
-            return False
+        if self.exists():
+            return self.update()
         else:
-            return self.ensure_partition_is_present()
-
-    def absent(self):
-        changed = False
-        if self.partition_exists():
-            changed = self.ensure_partition_is_absent()
-        return changed
-
-    def partition_exists(self):
-        return self.api.tm.sys.folder.exists(
-            name=self.params['name']
-        )
-
-
-
-
-
-
-    def get_route_domain_id(self, route_domain):
-        resp = self.api.Networking.RouteDomainV2.get_identifier(
-            route_domains=[route_domain]
-        )
-        return resp[0]
+            return self.create()
 
     def create(self):
-        name = self.params['name']
-        folder = self.params['folder']
-        # description = self.params['description']
-        route_domain = self.params['route_domain']
-
-        if route_domain:
-            # When setting the default route domain, you need to use the ID
-            # instead of the string name. So if the name was specified, we
-            # need to translate it
-            self.params['route_domain_id'] = self.get_route_domain_id(route_domain)
-
-        route_domain_id = self.params['route_domain_id']
-
-        self.api.System.Session.start_transaction()
-        self.api.Management.Folder.create(
-            folders=[folder]
-        )
-
-        # A valid route domain is zero, so I need to specifically check
-        # for None
-        if route_domain_id is not None:
-            self.api.Management.Partition.set_default_route_domain(
-                partitions=[name],
-                route_domains=[route_domain_id]
-            )
-
-        self.api.System.Session.submit_transaction()
-
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
         return True
 
-    def update(self):
-        changed = dict()
-
-        name = self.params['name']
-        folder = self.params['folder']
-        description = self.params['description']
-        route_domain = self.params['route_domain']
-        route_domain_id = self.params['route_domain_id']
-
-        current = self.read()
-
-        if route_domain:
-            if '/' + route_domain not in current['route_domain']:
-                changed['route_domain'] = True
-
-        if route_domain_id is not None:
-            if route_domain_id != current['route_domain_id']:
-                changed['route_domain_id'] = True
-
-        if description:
-            if description != current['description']:
-                changed['description'] = True
-
-        if changed:
-            if 'route_domain' in changed:
-                # This is a special case because the route domain name needs
-                # to be translated to an ID
-                route_domain_id = self.get_route_domain_id(route_domain)
-                changed['route_domain_id'] = True
-
-            self.api.System.Session.start_transaction()
-
-            if 'route_domain_id' in changed:
-                self.api.Management.Partition.set_default_route_domain(
-                    partitions=[name],
-                    route_domains=[route_domain_id]
-                )
-
-            if 'description' in changed:
-                self.api.Management.Folder.set_description(
-                    folders=[folder],
-                    descriptions=[description]
-                )
-
-                try:
-                    # This method is only available on BIG-IP >= 11.0.0
-                    self.api.Management.Folder.set_description(
-                        folders=[folder],
-                        descriptions=[description]
-                    )
-                except Exception:
-                    self.api.Management.Partition.set_description(
-                        partitions=[name],
-                        descriptions=[description]
-                    )
-
-            self.api.System.Session.submit_transaction()
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
             return True
         return False
 
-    def absent(self):
-        folder = self.params['folder']
-
-        if not self.exists():
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
             return False
-
-        if self.params['check_mode']:
+        if self.client.check_mode:
             return True
+        self.update_on_device()
+        return True
 
-        self.api.Management.Folder.delete_folder(
-            folders=[folder]
-        )
-
+    def absent(self):
         if self.exists():
-            raise DeleteFolderError()
-        else:
+            return self.remove()
+        return False
+
+    def remove(self):
+        if self.client.check_mode:
             return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the partition.")
+        return True
 
-    def read(self):
-        result = dict()
-        name = self.params['name']
-        folder = self.params['folder']
-
-        try:
-            # This method is only available on BIG-IP >= 11.0.0
-            resp = self.api.Management.Folder.get_description(
-                folders=[folder]
-            )
-            result['description'] = resp[0]
-        except Exception:
-            resp = self.api.Management.Partition.get_description(
-                partitions=[name]
-            )
-            result['description'] = resp[0]
-
-        resp = self.api.Management.Partition.get_default_route_domain(
-            partitions=[name]
+    def read_current_from_device(self):
+        resource = self.client.api.tm.auth.partitions.partition.load(
+            name=self.want.name
         )
-        result['route_domain_id'] = resp[0]
+        result = resource.attrs
+        return Parameters(result)
 
-        resp = self.api.Networking.RouteDomainV2.get_list()
-        for route_domain in resp:
-            id = self.get_route_domain_id(route_domain)
-            if id == result['route_domain_id']:
-                result['route_domain'] = route_domain
-
-        result['name'] = folder
+    def exists(self):
+        result = self.client.api.tm.auth.partitions.partition.exists(
+            name=self.want.name
+        )
         return result
 
+    def update_on_device(self):
+        params = self.want.api_params()
+        result = self.client.api.tm.auth.partitions.partition.load(
+            name=self.want.name
+        )
+        result.modify(**params)
 
-class BigIpPartitionModuleConfig(object):
+    def create_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.auth.partitions.partition.create(
+            name=self.want.name,
+            **params
+        )
+
+    def remove_from_device(self):
+        result = self.client.api.tm.auth.partitions.partition.load(
+            name=self.want.name
+        )
+        if result:
+            result.delete()
+
+
+class ArgumentSpec(object):
     def __init__(self):
-        self.argument_spec = dict()
-        self.meta_args = dict()
         self.supports_check_mode = True
-        self.states = ['present', 'absent']
-
-        self.initialize_meta_args()
-        self.initialize_argument_spec()
-
-    def initialize_meta_args(self):
-        args = dict(
+        self.argument_spec = dict(
             name=dict(required=True),
-            description=dict(required=False, default=None),
-            route_domain=dict(required=False, default=None)
+            description=dict(),
+            route_domain=dict(type='int'),
         )
-        self.meta_args = args
-
-    def initialize_argument_spec(self):
-        self.argument_spec = f5_argument_spec()
-        self.argument_spec.update(self.meta_args)
-
-    def create(self):
-        return AnsibleModule(
-            argument_spec=self.argument_spec,
-            supports_check_mode=self.supports_check_mode
-        )
+        self.f5_product_name = 'bigip'
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
-    config = BigIpPartitionModuleConfig()
-    module = config.create()
-
     try:
-        obj = BigIpPartitionManager(
-            check_mode=module.check_mode, **module.params
+        spec = ArgumentSpec()
+
+        client = AnsibleF5Client(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode,
+            f5_product_name=spec.f5_product_name
         )
-        result = obj.apply_changes()
 
-        module.exit_json(**result)
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
