@@ -50,8 +50,8 @@ Ensure all the following are complete
 - [ ] Module code conforms to coding standards (v3). This includes a `Parameters` class, `ModuleManager` class, and `ArgumentSpec` class.
 - [ ] Module includes GPL3 license at top of the file and F5 Networks copyright.
 - [ ] Module imports are not `from *`
-- [ ] If this module is new to Ansible, the `version_added` key of the `DOCUMENTATION` variable is set to `2.4`.
-- [ ] If this module is not new to Ansible, but you have added accepted parameters to it, the `version_added` key for each of those new parameters is `2.4`.
+- [ ] If this module is new to Ansible, the `version_added` key of the `DOCUMENTATION` variable is set to `2.5`.
+- [ ] If this module is not new to Ansible, but you have added accepted parameters to it, the `version_added` key for each of those new parameters is `2.5`.
 
 #### Integration test related
 - [ ] Playbook exists to do functional tests
