@@ -42,7 +42,7 @@ try:
     from library.bigip_monitor_tcp_echo import ArgumentSpec
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_monitor_tcp_echo import ParametersTcp
+        from ansible.modules.network.f5.bigip_monitor_tcp_echo import Parameters
         from ansible.modules.network.f5.bigip_monitor_tcp_echo import ModuleManager
         from ansible.modules.network.f5.bigip_monitor_tcp_echo import ArgumentSpec
     except ImportError:
