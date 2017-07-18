@@ -45,4 +45,5 @@ listed below.
    development/upstreaming
    development/writing-a-module
    development/deprecating_code.rst
-   development/design_decisions.rst
+   development/design-decisions.rst
+   development/dealing-with-replace-all.rst
