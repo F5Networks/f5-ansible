@@ -1,0 +1,5 @@
+paramiko
+git+https://github.com/ansible/ansible.git@devel
+pytest
+flake8
+q
