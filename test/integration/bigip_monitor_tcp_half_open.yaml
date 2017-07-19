@@ -20,7 +20,17 @@
 #
 # Tested platforms:
 #
-#    - NA
+#    - 12.0.0
+#    - 12.1.0
+#    - 12.1.0 HF1
+#    - 12.1.0 HF2
+#    - 12.1.1
+#    - 12.1.1 HF1
+#    - 12.1.1 HF2
+#    - 12.1.2
+#    - 12.1.2 HF1
+#    - 13.0.0
+#    - 13.0.0 HF1
 #
 
 - name: Test the bigip_monitor_tcp_half_open module
