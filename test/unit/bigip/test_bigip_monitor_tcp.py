@@ -45,6 +45,7 @@ try:
     from library.bigip_monitor_tcp import TcpManager
     from library.bigip_monitor_tcp import TcpEchoManager
     from library.bigip_monitor_tcp import TcpHalfOpenManager
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_monitor_tcp import ParametersTcp
@@ -55,6 +56,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_monitor_tcp import TcpManager
         from ansible.modules.network.f5.bigip_monitor_tcp import TcpEchoManager
         from ansible.modules.network.f5.bigip_monitor_tcp import TcpHalfOpenManager
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
