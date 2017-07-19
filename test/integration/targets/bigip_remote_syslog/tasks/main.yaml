@@ -1,0 +1,95 @@
+---
+
+- name: Create remote syslog
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Create remote syslog
+  assert:
+      that:
+          - result|changed
+
+- name: Create remote syslog - Idempotent check
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Create remote syslog - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Create another remote syslog
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host2 }}"
+      state: "present"
+  register: result
+
+- name: Assert Create another remote syslog
+  assert:
+      that:
+          - result|changed
+
+- name: Create another remote syslog - Idempotent check
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host2 }}"
+      state: "present"
+  register: result
+
+- name: Assert Create another remote syslog - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove remote syslog
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host1 }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove remote syslog
+  assert:
+      that:
+          - result|changed
+
+- name: Remove remote syslog - Idempotent check
+  bigip_remote_syslog:
+      remote_host: "{{ remote_host1 }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove remote syslog - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove all remote syslog
+  bigip_remote_syslog:
+      remote_host: "{{ item }}"
+      state: "absent"
+  register: result
+  with_items:
+      - "{{ remote_host1 }}"
+      - "{{ remote_host2 }}"
+
+- name: Assert Remove all remote syslog
+  assert:
+      that:
+          - result|changed
+
+- name: Remove all remote syslog - Idempotent check
+  bigip_remote_syslog:
+      remote_host: "{{ item }}"
+      state: "absent"
+  register: result
+  with_items:
+      - "{{ remote_host1 }}"
+      - "{{ remote_host2 }}"
+
+- name: Assert Remove all remote syslog - Idempotent check
+  assert:
+      that:
+          - not result|changed

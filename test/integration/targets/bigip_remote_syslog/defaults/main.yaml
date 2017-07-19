@@ -1,0 +1,8 @@
+---
+
+remote_host1: '10.10.10.10'
+remote_host2: '20.20.20.20'
+local_ip1: '1.1.1.1'
+local_ip2: '2.2.2.2'
+remote_port1: 700
+remote_port2: 800
