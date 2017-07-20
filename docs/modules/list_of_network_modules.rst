@@ -36,9 +36,11 @@ F5
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
   bigip_monitor_http - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
   bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors. <bigip_monitor_tcp_module>
+  bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp monitors. <bigip_monitor_tcp_echo_module>
+  bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp monitors. <bigip_monitor_tcp_half_open_module>
   bigip_node (D) - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
-  bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
+  bigip_partition - Manage BIG-IP partitions. <bigip_partition_module>
   bigip_policy - Manage general policy configuration on a BIG-IP. <bigip_policy_module>
   bigip_policy_rule - foo <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools. <bigip_pool_module>

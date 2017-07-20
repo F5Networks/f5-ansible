@@ -4,7 +4,7 @@
 bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the local IP address of the system that is logging.</div>        </td></tr>
+        <td><div>Specifies the local IP address of the system that is logging. To provide no local IP, specify the value <code>none</code>. When creating a remote syslog, if this parameter is not specified, the default value <code>none</code> is used.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -56,7 +56,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the port that the system uses to send messages to the remote logging server. The default is <code>514</code> when the <code>state</code> option is <code>present</code>.</div>        </td></tr>
+        <td><div>Specifies the port that the system uses to send messages to the remote logging server. When creating a remote syslog, if this parameter is not specified, the default value <code>514</code> is used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -107,6 +107,39 @@ Examples
           validate_certs: "false"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> remote_port </td>
+        <td> New remote port of the remote syslog server. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 514 </td>
+    </tr>
+            <tr>
+        <td> local_ip </td>
+        <td> The new local IP of the remote syslog server </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 10.10.10.10 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

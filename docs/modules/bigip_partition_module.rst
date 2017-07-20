@@ -1,10 +1,10 @@
 .. _bigip_partition:
 
 
-bigip_partition - Manage BIG-IP partitions
-++++++++++++++++++++++++++++++++++++++++++
+bigip_partition - Manage BIG-IP partitions.
++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -15,14 +15,13 @@ bigip_partition - Manage BIG-IP partitions
 Synopsis
 --------
 
-* Manage BIG-IP partitions
+* Manage BIG-IP partitions.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -40,9 +39,9 @@ Options
     </tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>The description to attach to the Partition</div>        </td></tr>
+        <td><div>The description to attach to the Partition.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -50,9 +49,9 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>route_domain<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>The default Route Domain to assign to the Partition. If no route domain is specified, then the default route domain for the system (typically zero) will be used only when creating a new partition. <code>route_domain</code> and <code>route_domain_id</code> are mutually exclusive.</div>        </td></tr>
+        <td><div>The default Route Domain to assign to the Partition. If no route domain is specified, then the default route domain for the system (typically zero) will be used only when creating a new partition.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -67,7 +66,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the partition should exist or not</div>        </td></tr>
+        <td><div>Whether the partition should exist or not.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -95,14 +94,43 @@ Examples
           password: "secret"
           server: "lb.mydomain.com"
           user: "admin"
+      delegate_to: localhost
     
-    - name: Delete the foo partition
+    - name: Create partition "bar" using a custom route domain
+      bigip_partition:
+          name: "bar"
+          route_domain: 3
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Change route domain of partition "foo"
+      bigip_partition:
+          name: "foo"
+          route_domain: 8
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Set a description for partition "foo"
+      bigip_partition:
+          name: "foo"
+          description: "Tenant CompanyA"
+          password: "secret"
+          server: "lb.mydomain.com"
+          user: "admin"
+      delegate_to: localhost
+    
+    - name: Delete the "foo" partition
       bigip_partition:
           name: "foo"
           password: "secret"
           server: "lb.mydomain.com"
           user: "admin"
           state: "absent"
+      delegate_to: localhost
 
 Return Values
 -------------
@@ -122,24 +150,17 @@ Common return values are documented here :doc:`common_return_values`, the follow
 
         <tr>
         <td> route_domain </td>
-        <td> Name of the route domain associated with the partition </td>
+        <td> Name of the route domain associated with the partition. </td>
         <td align=center> changed and success </td>
-        <td align=center> string </td>
+        <td align=center> int </td>
         <td align=center> 0 </td>
     </tr>
             <tr>
         <td> description </td>
-        <td> The description of the partition </td>
+        <td> The description of the partition. </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
         <td align=center> Example partition </td>
-    </tr>
-            <tr>
-        <td> name </td>
-        <td> The name of the partition </td>
-        <td align=center> changed and success </td>
-        <td align=center> string </td>
-        <td align=center> /foo </td>
     </tr>
         
     </table>
@@ -149,7 +170,8 @@ Notes
 -----
 
 .. note::
-    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires BIG-IP software version >= 12
 
 
 

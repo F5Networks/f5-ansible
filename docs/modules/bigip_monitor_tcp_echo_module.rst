@@ -1,10 +1,10 @@
-.. _bigip_monitor_tcp:
+.. _bigip_monitor_tcp_echo:
 
 
-bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp monitors.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 1.4
+.. versionadded:: 2.4
 
 
 .. contents::
@@ -119,21 +119,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>port<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div><div>This argument is not supported for TCP Echo types.</div>        </td></tr>
-                <tr><td>receive<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The receive string for the monitor call.</div>        </td></tr>
-                <tr><td>send<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The send string for the monitor call.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -154,11 +139,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>        </td></tr>
-                <tr><td>type<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>tcp</td>
-        <td><ul><li>tcp</li><li>tcp_echo</li><li>tcp_half_open</li><li>TTYPE_TCP</li><li>TTYPE_TCP_ECHO</li><li>TTYPE_TCP_HALF_OPEN</li></ul></td>
-        <td><div>The template type of this monitor template.</div><div>Deprecated in 2.4. Use one of the <code>bigip_monitor_tcp_echo</code> or <code>bigip_monitor_tcp_half_open</code> modules instead.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -180,20 +160,18 @@ Examples
  ::
 
     
-    - name: Create TCP Monitor
-      bigip_monitor_tcp:
+    - name: Create TCP Echo Monitor
+      bigip_monitor_tcp_echo:
           state: "present"
           server: "lb.mydomain.com"
           user: "admin"
+          ip: 10.10.10.10
           password: "secret"
           name: "my_tcp_monitor"
-          type: "tcp"
-          send: "tcp string to send"
-          receive: "tcp string to receive"
       delegate_to: localhost
     
-    - name: Remove TCP Monitor
-      bigip_monitor_tcp:
+    - name: Remove TCP Echo Monitor
+      bigip_monitor_tcp_echo:
           state: "absent"
           server: "lb.mydomain.com"
           user: "admin"
@@ -218,20 +196,6 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> parent </td>
-        <td> New parent template of the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> tcp </td>
-    </tr>
-            <tr>
-        <td> receive </td>
-        <td> The new receive string for this monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> tcp string to receive </td>
-    </tr>
-            <tr>
         <td> ip </td>
         <td> The new IP of IP/port definition. </td>
         <td align=center> changed </td>
@@ -246,18 +210,11 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> 2 </td>
     </tr>
             <tr>
-        <td> send </td>
-        <td> The new send string for this monitor. </td>
+        <td> parent </td>
+        <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> tcp string to send </td>
-    </tr>
-            <tr>
-        <td> time_until_up </td>
-        <td> The new time in which to mark a system as up after first successful response. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
+        <td align=center> tcp </td>
     </tr>
             <tr>
         <td> timeout </td>
@@ -267,11 +224,11 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td align=center> 10 </td>
     </tr>
             <tr>
-        <td> port </td>
-        <td> The new port of IP/port definition. </td>
+        <td> time_until_up </td>
+        <td> The new time in which to mark a system as up after first successful response. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> admin@root.local </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
     </tr>
         
     </table>

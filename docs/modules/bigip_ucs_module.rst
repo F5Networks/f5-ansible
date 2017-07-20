@@ -91,7 +91,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The path to the UCS file to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>.</div>        </td></tr>
+        <td><div>The path to the UCS file to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>. When <code>state</code> is <code>absent</code>, the full path for this parameter will be ignored and only the filename will be used to select a UCS for removal. Therefore you could specify <code>/mickey/mouse/test.ucs</code> and this module would only look for <code>test.ucs</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -167,7 +167,7 @@ Examples
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
+          ucs: "bigip.localhost.localdomain.ucs"
           state: "absent"
       delegate_to: localhost
 
