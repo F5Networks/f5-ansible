@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
+# Copyright 2017 F5 Networks Inc.
 #
 # This file is part of Ansible
 #
@@ -106,12 +106,12 @@ EXAMPLES = '''
 
 RETURN = '''
 route_domain:
-    description: Name of the route domain associated with the partition
+    description: Name of the route domain associated with the partition.
     returned: changed and success
-    type: string
-    sample: "0"
+    type: int
+    sample: 0
 description:
-    description: The description of the partition
+    description: The description of the partition.
     returned: changed and success
     type: string
     sample: "Example partition"
