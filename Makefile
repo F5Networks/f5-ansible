@@ -28,15 +28,11 @@ docs:
 flake8:
 	flake8
 
-clean-coverage:
-	$(shell rm cache/coverage/.coverage*)
-	$(shell rm .coverage)
-
 export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 
 bigip_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml && cd -
 	#flake8 library/${MODULE_TARGET}.py
 
 iworkflow_%:
@@ -51,9 +47,6 @@ cov-bigip-%: clean-coverage
 
 unit:
 	pytest -s test/
-
-clean:
-	rm
 
 fetch-upstream:
 	curl -o library/bigip_device_dns.py https://raw.githubusercontent.com/ansible/ansible-modules-extras/devel/network/f5/bigip_device_dns.py
