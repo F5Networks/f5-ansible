@@ -1,29 +1,3 @@
-CRUDable
-========
-
-* bigip_static_route
-
-
-Only Updateable
-===============
-* bigip_snmp
-
-
-Executable
-==========
-* bigip_command
-
-
-CRUDable Reference
-==================
-iworkflow_tenant_connector
-
-
-List item as member
-===================
-* bigip_remote_syslog
-
-
 All properties should read from self._values[key]
 
 All property.setters should write to self._values[key]
@@ -32,45 +6,101 @@ The 'key' in the self._values dictionary should match the API resource attribute
 This allows us to easily determine
 
 
-The module parameters will always include the 'state'. You may not want this in
-your returned changes though, so you can filter them with the following
+Deprecating functionality
+=========================
 
-def _filter_outliers(self, params):
-    # These parameters are outliers because they have no API equivalent
-    # but are still used in the modules to direct the behavior of the
-    # module.
-    #
-    # Additionally, these parameters do not need to be returned to
-    # the user if the module reports changes.
-    outliers = ['state']
-    for key in outliers:
-        params.pop(key, None)
-    return params
+In a module, it may be necessary to raise warnings to the user due to deprecated
+functionality.
 
+Normally, deprecations are done in the ArgumentSpec, such as when using the
+`removed_in_version` key shown below.
 
+.. raw:: python
 
-when needing to raise warnings
+   type=dict(
+       removed_in_version='2.4'
+   )
 
-        if lb_method in deprecated.keys():
-            if self._values['__warnings'] is None:
-                self._values['__warnings'] = []
-            self._values['__warnings'].append(
-                [
-                    dict(
-                        msg='The provided lb_method is deprecated',
-                        version='2.4'
-                    )
-                ]
-            )
-followed by this in the end of exec_module
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
+but that is only relevant when the **parameter itself** is deprecated. There are
+other deprecation scenarios for instance where the parameter is a list of choices
+and the **choices themselves** are deprecated.
 
+For example, consider the following parameter
+
+.. raw:: python
+
+   type=dict(
+       choices=['foo_1', 'bar_2', 'baz_3']
+   )
+
+One may need to deprecate the values themselves in favor of other values.
+
+.. raw:: python
+
+   type=dict(
+       choices=['foo-1', 'bar-2', 'baz-3']
+   )
+
+This may seem like a simple thing that one could add code to fix, but doing so would
+also lead to an increase in technical debt. Having a mapping of old values to new
+values should be considered an anti-pattern and something that is a candidate for
+deprecation.
+
+To announce deprecations (for all things) you can use the `removed_in_version` field
+mentioned above, but you can also have more customized deprecations raised by your
+module.
+
+To do this, begin by amending the `__init__` method of your `Parameters` class to
+define a `__warnings` variable.
+
+.. raw:: python
+
+   class Parameters(AnsibleF5Parameters):
+       def __init__(self, params=None):
+           super(Parameters, self).__init__(params)
+           self._values['__warnings'] = []
+
+Next, we need to add a new method to the `ModuleManager`, or, class specific manager
+(such as those used when forking logic; ie, `bigip_gtm_pool`)
+
+The definition of this method is the following
+
+.. raw:: python
+
+   def _announce_deprecations(self):
+       warnings = []
+       if self.want:
+           warnings += self.want._values.get('__warnings', [])
+       if self.have:
+           warnings += self.have._values.get('__warnings', [])
+       for warning in warnings:
+           self.client.module.deprecate(
+               msg=warning['msg'],
+               version=warning['version']
+           )
+
+The third and final step is to actually make use of the deprecation code that you
+set up previously. Do do that, you want to **append** to the aforementioned
+`__warnings` field.
+
+An example is show below.
+
+.. raw:: python
+
+   if lb_method in deprecated.keys():
+       if self._values['__warnings'] is None:
+           self._values['__warnings'] = []
+       self._values['__warnings'].append(
+           [
+               dict(
+                   msg='The provided lb_method is deprecated',
+                   version='2.4'
+               )
+           ]
+       )
+
+pycodestyle
+===========
 
 Your modules should be flake free
     flake8
@@ -80,7 +110,7 @@ Your modules should conform to ansible's validate-modules code
 Design Patterns
 ===============
 
- These patterns are intended to
+These patterns are intended to
 
   * make your time spent developing new modules shorter
   * allow you to not need to decide "what to do"
@@ -92,61 +122,100 @@ Design Patterns
 If these patterns conflict with the above goals, the patterns should be
 re-evaluated and all modules should be changed to support the new patterns.
 
+CRUDable
+--------
+* bigip_static_route
+
+
+Only Updatable
+--------------
+* bigip_snmp
+
+
+Executable
+----------
+* bigip_command
+
+
+CRUDable Reference
+------------------
+iworkflow_tenant_connector
+
+
+List item as member
+-------------------
+* bigip_remote_syslog
+
 Class variables
 ===============
 
-updatables:
-    Specifies a list of `Parameters` properties to that are considered
-    updatable by the module. This is used when doing `should_update()``
-    comparisons and setting properties in `self.changes`.
+The following class variables are common attributes that each `Parameters` class
+needs to define.
 
-api_attributes:
-    Specifies a list `Parameters` properties to provide to the `api_params()``
-    method when generating valid sets of attributes for resources in the REST
-    API.
+updatables
+----------
 
-    You will likely need to write adapter methods that call the properties
-    used internally by the module when writing these. For example
+Specifies a list of `Parameters` properties to that are considered
+updatable by the module. This is used when doing `should_update()``
+comparisons and setting properties in `self.changes`.
 
-    ```
-    def minSupportedBIGIPVersion(self):
-        return self.min_bigip_version
-    ```
+api_attributes
+--------------
 
-    The reason that we use this method instead of the map method is because
-    there may be cases where the value used in `api_params()` is not a single
-    property but a set of properties that need to be combined.
+Specifies a list `Parameters` properties to provide to the `api_params()``
+method when generating valid sets of attributes for resources in the REST
+API.
 
-    This is used by the api_params() method to generate a valid set of
-    attributes to provide to the REST API. Typically this dictionary does
-    NOT provide the `name` and `partition` parameters. These values should
-    be specified specifically in the (create|update|delete)_on_device methods
+You will likely need to write adapter methods that call the properties
+used internally by the module when writing these. For example
+
+.. raw:: python
+
+   def minSupportedBIGIPVersion(self):
+       return self.min_bigip_version
+
+The reason that we use this method instead of the map method is because
+there may be cases where the value used in `api_params()` is not a single
+property but a set of properties that need to be combined.
+
+This is used by the `api_params` method to generate a valid set of
+attributes to provide to the REST API. Typically this dictionary does
+NOT provide the `name` and `partition` parameters. These values should
+be specified specifically in the (create|update|delete)_on_device methods
 
 returnables
+-----------
+
     Specifies a list of Parameters properties for the `to_return()` method
     to iterate over when supplying "changed" options back to the user
 
-param_api_map:
-    We need to have a dictionary or a list of some stuff because there are
-    times when the API parameters can not be written as methods. For example,
-    the bigip_device_dns API's parameters include
+api_map
+-------
 
-        "dns.proxy.__iter__"
+We need to have a dictionary or a list of some stuff because there are
+times when the API parameters can not be written as methods. For example,
+the `bigip_device_dns` APIs parameters include
 
-    this attributes is mapped to "forwarders" in the Ansible module.
+.. raw:: python
 
-    The pattern that I had been developing is to use methods decorated as
-    properties in python and then to call those methods when setting values
-    and getting values.
+   dns.proxy.__iter__
 
-    For example, the "dns.proxy.__iter__" API attribute would be mapped to the
-    `_values` key "forwarders". Normally I would set the set the API attributes
-    directly in the dictionary. I would need to get those API specific keys
-    however when I am returning the values to compare. this makes the getters
-    for the Module options look messy though.
+This attribute is mapped to `forwarders` in the Ansible module.
 
-    Next I thought about having the API attributes have their own @property
-    decorators, but this won't work in the "dns" case mention above.
+The pattern that I had been developing is to use methods decorated as
+properties in python and then to call those methods when setting values
+and getting values.
+
+For example, the "dns.proxy.__iter__" API attribute would be mapped to the
+`_values` key "forwarders". Normally I would set the set the API attributes
+directly in the dictionary. I would need to get those API specific keys
+however when I am returning the values to compare. this makes the getters
+for the Module options look messy though.
+
+Next I thought about having the API attributes have their own @property
+decorators, but this won't work in the "dns" case mention above.
+
+
 
 NEED
 a pattern for a single Ansible Option Parameter that returns 2 API attributes.
@@ -186,7 +255,6 @@ params_spec=dict(
 )
 
 
-
 Common classes
 ==============
 
@@ -197,8 +265,8 @@ classes are used to support the stated design patterns.
   * ModuleManager
   * ArgumentSpec
 
-Exceptions
-~~~~~~~~~~
+Exceptions to common classes
+----------------------------
 
 Exceptions to the above rules will happen when,
 
@@ -213,30 +281,32 @@ Good examples of this include
 Defaulting to None
 ==================
 
-Why is it that I have to do a lot of this in my ArgumentSpec?
+It should be noted that you should never specify default values in your
+`ArgumentSpec`. For example, the following is incorrect
 
-..raw: json
+.. raw:: python
 
-            type=dict(
-                required=False,
-                default=None
-            ),
+   type=dict(
+       required=False,
+       default='foo'
+   ),
 
-Shouldn't I be using the actual defaults?
+But, shouldn't you be using the actual defaults?
 
-Answer: No
+  Answer: No
 
-The reason that you provide `default: None` is to support cases where the user
-does not specify a value for a particular option.
+The reason that you provide no defaults is to support cases where the user does not
+specify a value for a particular option. If that happens, then you should not step
+on that parameter if it is preconfigured.
 
-If that happens, they you should not step on that parameter if it is preconfigured.
-This is the reason to set `default: None`. If a user had a setting that they want
-to keep and you specified a default value, then in the first opportunity that they
-forgot to specify that value, you would end up replacing that value with your
-default.
+If a user had a setting that they want to keep and you specified a default value,
+then in the first opportunity that they forgot to specify that value, you would
+end up replacing that value with your default.
 
-This is a bad idea, so use `None` (not the string "None", but the Python `None`)
-to decide if a user has or has not specified something.
+This is a bad idea.
+
+Ansible defaults `required` to `False` and `default` to `None`. Therefore, there is
+no need to specify these default values.
 
 What is the layer of @property decorators all about?
 ====================================================
@@ -285,9 +355,10 @@ So,
 
 Why are they not all setters?
 =============================
-because there are some cases where you do not know ahead of time what the value of
-that property should be. Often it takes two or more options be set before another
-option can be known.
+
+This is because there are some cases where you do not know ahead of time what
+the value of that property should be. Often it takes two or more options be set
+before another option can be known.
 
 Consider a module that accepts an IP address option and a gateway mask option,
 but needs to return a CIDR representation of those two values. Without getting
@@ -297,15 +368,25 @@ necessary value at time of getattr, and not at the time of setattr.
 Use the module_utils test suite to verify AnsibleF5Parameters classes
 =====================================================================
 
-this is important in case there is a pattern we miss for adapting api
-attributes and module params
+This is important in case there is a pattern we miss for adapting API
+attributes and module params.
 
+This test suite is found at the following location
 
-Why is from ansible.module_utils.basic import * included in some modules?
-=========================================================================
+  test/misc/test_module_utils.py
 
-9 times out of 10 this is because you are using the BOOLEANS, BOOLEANS_TRUE,
-or BOOLEANS_FALSE constants in the module.
+Never import *
+==============
+
+9 times out of 10 you are doing this because you are using one of the following
+variables
+
+* `BOOLEANS`
+* `BOOLEANS_TRUE`
+* `BOOLEANS_FALSE`
+
+It is, however, an anti-pattern to import from * and it will be caught by the
+Ansible unit tests. Instead, specifically include each thing that you want to use.
 
 The Changes class
 =================
@@ -315,7 +396,7 @@ that you send to BIG-IP.
 
 For example, consider the following parameters to a module
 
-.. raw::yaml
+.. raw:: yaml
 
    - name: This is an example
      bigip_device_sshd:
@@ -345,6 +426,143 @@ An example of it in use is the `bigip_device_connectivity` module where it acts
 as a way to translate BIG-IP's representation of "none" (`any6`) to the human
 word "none"
 
+Examples of modules that use the `Changes` class are,
+
+* `bigip_gtm_datacenter`
+* `bigip_device_connectivity`
+* `bigip_device_group`
+
+The Difference class
+====================
+
+When comparing values to detect changed-ness, there are situations where the
+default comparison method will not be appropriate for you use. The default comparison
+method essentially just does a simple comparison.
+
+The source of this method illustrates its simplicity
+
+.. raw:: python
+
+   attr1 = getattr(self.want, key)
+   attr2 = getattr(self.have, key)
+   if attr1 != attr2:
+       changed[key] = attr1
+
+As you can see, it is quite simple and does not take into consideration anything
+more complicated than simply the values being compared.
+
+This differencing is not conducive to more complicated data structures or types of
+data.
+
+.. raw:: python
+
+   int(5) == '5'
+
+The above fails to satisfy this simple (albeit erroneous due to established
+patterns) difference.
+
+.. note::
+
+   This is logically incorrect because the Adapter pattern that you should be using
+   for the `Parameters` class mandates that `@property` values should return a
+   specific data type (in the above case `int`) and should never be
+   non-deterministic.
+
+To check for differences in more complicated data structures, the module author
+should make use of the `Difference` class.
+
+The definition of the `Difference` class is the following
+
+.. raw:: python
+
+   class Difference(object):
+       def __init__(self, want, have=None):
+           self.want = want
+           self.have = have
+
+       def compare(self, param):
+           try:
+               result = getattr(self, param)
+               return result
+           except AttributeError:
+               return self.__default(param)
+
+       def __default(self, param):
+           attr1 = getattr(self.want, param)
+           try:
+               attr2 = getattr(self.have, param)
+               if attr1 != attr2:
+                   return attr1
+           except AttributeError:
+               return attr1
+
+By default, it does nothing more than uses the simple comparison to diff the
+parameters provided, and discovered, by the module.
+
+To make use of it, you must do the following.
+
+First, define this class in your module.
+
+Second, add `@property` methods for each of the values that you want to compare.
+Remember, the properties of the `Parameter` classes are the names that are exposed
+to the module user and not the names of REST API parameters themselves (unless it
+perfectly matches) because the REST API camel-cases all parameter names.
+
+So, if we were interested in providing custom diffing for the `members` module
+parameter, we may add this as a `@property` to the `Difference` class like so.
+
+.. raw:: python
+
+   @property
+   def members(self):
+       if self.want.members is None:
+           return None
+       if set(self.want.members) == set(self.have.members):
+           return None
+       if self.want.append is False:
+           return self.want.members
+
+       # Checking to see if the supplied list is a subset of the current
+       # list is only relevant if the `append` parameter is provided.
+       new_members = set(self.want.members)
+       current_members = set(self.have.members)
+       if new_members.issubset(current_members):
+           return None
+       result = list(set(self.have.members + self.want.members))
+       return result
+
+These `@property` methods **must** be named after the Parameter you want to compare.
+Additionally, the return value of these `@property` definitions is one of two values.
+
+- Python `None` if there is no difference
+- The value of the difference if there is one. This value will later be reported as
+  what was changed in the module invocation.
+
+Finally, to make use of this new difference class, you must change the following
+method in the `ModuleManager` code,
+
+* `_update_changed_options`
+
+The new value of this method must include the usage of the `Difference` class as a
+new object. Example usage is provided below.
+
+.. raw:: python
+
+   def _update_changed_options(self):
+       diff = Difference(self.want, self.have)
+       updatables =  Parameters.updatables
+       changed = dict()
+       for k in updatables:
+           change = diff.compare(k)
+           if change is None:
+               continue
+           else:
+               changed[k] = change
+       if changed:
+           self.changes = Parameters(changed)
+           return True
+       return False
+
 API Map Adapter
 ===============
 
@@ -361,7 +579,7 @@ REST API.
 
 The following is an example of this kind of adapter.
 
-.. raw::python
+.. raw:: python
 
    ...
 
@@ -387,7 +605,7 @@ F5 Ansible modules because it is nearly a 1 to 1 translation of Ansible to F5.
 
 The following is an example of this kind of adapter.
 
-.. raw::python
+.. raw:: python
 
    ...
        banner_text=dict(

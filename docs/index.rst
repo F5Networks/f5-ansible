@@ -47,3 +47,4 @@ listed below.
    development/deprecating_code.rst
    development/design-decisions.rst
    development/dealing-with-replace-all.rst
+   development/module-patterns.rst
