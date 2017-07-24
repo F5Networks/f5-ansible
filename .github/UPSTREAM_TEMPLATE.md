@@ -72,19 +72,28 @@ Ensure all the following are complete
 - [ ] Docs exist and build correctly (`make docs`)
 - [ ] Docs have been merged to `f5-ansible` so they can be rebuilt by ReadTheDocs.
 
-#### Upstream vendor related
+#### Upstream vendor related, with f5-sdk
 (this must be done inside of Ansible's source tree)
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.6 MODULE_NAME`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 2.7 MODULE_NAME`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.5 MODULE_NAME`
 - [ ] Module code in Ansible repo passes `ansible-test units --tox --python 3.6 MODULE_NAME`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test validate-modules`
+- [ ] Module code in Ansible repo passes `ansible-test sanity --test pep8`
+
+#### Upstream vendor related, without f5-sdk
+(this must be done inside of Ansible's source tree)
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 2.6`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 2.7`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.5`
 - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.6`
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test pep8`
+- [ ] Module code in Ansible repo passes `nosetests test/units/modules/network/f5/test_MODULE_NAME.py` using venv made with requirements.bare.txt
+
+#### Upstream vendor related, misc
 - [ ] Module PR has been mentioned as a comment for the next Networking Team meeting here https://github.com/ansible/community/issues/110
+
+#### Upstream vendor, sanity related
+- [ ] Command `bash test/ansible/sanity/integration-test-idempotent-names.sh` passes
 
 ##### SUMMARY
 <!--- Explain the problem briefly -->
