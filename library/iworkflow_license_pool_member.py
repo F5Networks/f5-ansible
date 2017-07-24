@@ -43,7 +43,6 @@ options:
     description:
       - Whether the member should exist in the pool (and therefore be licensed)
         or if it should not (and therefore be unlicensed).
-    required: false
     default: present
     choices:
       - present
@@ -91,7 +90,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -342,12 +341,10 @@ class ArgumentSpec(object):
                 required=True
             ),
             devices=dict(
-                type='str',
                 required=True,
                 aliases=['device']
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )

@@ -50,8 +50,6 @@ options:
         (for example it is located in a public cloud), you can provide that
         value here. Either one of C(key_src), C(key_content), or
         C(username_credential) must be provided.
-    required: False
-    default: None
   key_src:
     description:
       - Private key to use when iWorkflow attempts to communicate with the
@@ -59,32 +57,23 @@ options:
         (for example it is located in a public cloud), you can provide that
         value here. Either one of C(key_src), C(key_content), or
         C(username_credential) must be provided.
-    required: False
-    default: None
   username_credential:
     description:
       - Username used to the remote BIG-IP with over its web API. This
         parameter is required when C(state) is C(present).
-    required: False
   password_credential:
     description:
       - Password of the user that you wish to connect to the remote BIG-IP
         with over SSH. The C(password_credential) and C(private_key) parameters
         are mutually exclusive. You may use one or the other.
-    required: False
-    default: None
   device_root_password:
     description:
       - If the C(username_credential) is C(root) but the C(password_credential)
         is not the password of the root user, then this value should be provided.
         This parameter is only relevant when creating new nodes.
-    required: False
-    default: None
   hostname:
     description:
       - The hostname that you want to set on the remote managed BIG-IP.
-    required: False
-    default: None
   interfaces:
     description:
       - A list of network interface configuration details that iWorkflow
@@ -101,13 +90,10 @@ options:
         apply to the interfaces in ascending order that they appear on the
         device (eth1, eth2, etc). This parameter is only required when
         C(state) is C(present).
-    required: False
-    default: None
   state:
     description:
       - When C(present), ensures that the cloud connector exists. When
         C(absent), ensures that the cloud connector does not exist.
-    required: false
     default: present
     choices:
       - present
@@ -522,7 +508,7 @@ class Parameters(AnsibleF5Parameters):
         if self.username_credential != 'root':
             return []
 
-        result =[dict(
+        result = [dict(
             id='DeviceRootPassword',
             provider=self.device_root_password
         )]
@@ -814,44 +800,27 @@ class ArgumentSpec(object):
                 required=True
             ),
             device_root_password=dict(
-                required=False,
-                default=None,
                 no_log=True
             ),
-            key_content=dict(
-                type='str',
-                required=False,
-                default=None
-            ),
+            key_content=dict(),
             password_credential=dict(
-                required=False,
-                default=None,
                 no_log=True
             ),
-            username_credential=dict(
-                required=False,
-                default=None
-            ),
-            hostname=dict(
-                required=False,
-                default=None
-            ),
+            username_credential=dict(),
+            hostname=dict(),
             interfaces=dict(
                 type='list',
-                required=False,
-                default=None
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )
         )
 
-        self.mutually_exclusive=[
+        self.mutually_exclusive = [
             ['key_content', 'password_credential'],
         ]
-        self.required_if=[
+        self.required_if = [
             ['state', 'present', ['interfaces']]
         ]
         self.f5_product_name = 'iworkflow'

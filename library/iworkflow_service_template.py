@@ -50,24 +50,18 @@ options:
         large, the recommended practice is to put it in an external file
         and include it with the Ansible C(file) or C(template) lookup plugins.
         This option is required when C(state) is C(present).
-    required: False
-    default: None
   connector:
     description:
       - The cloud connector associated with this Service Template. If you want
         to have this Service Template associated with all clouds, then specify
         a C(connector) of C(all). When creating a new Service Template, if no
         connector is specified, then C(all) clouds will be the default.
-    required: False
-    default: None
   base_template:
     description:
       - The iApp template that you want to base this Service Template off
         of. Note that, while iWorkflow's UI also allows you to specify another
         Service Template for the C(base_template), this module does not yet
         let you do that. This option is required when C(state) is C(present).
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the remote host. This is as easy as
     pip install f5-sdk
@@ -115,7 +109,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -184,7 +178,7 @@ class Parameters(AnsibleF5Parameters):
                 tmp['columns'] = []
                 for column in columns:
                     tmp['columns'].append(
-                        dict((str(k),str(v)) for k,v in iteritems(column))
+                        dict((str(k), str(v)) for k, v in iteritems(column))
                     )
                 # You cannot have rows without columns
                 rows = table.pop('rows', None)
@@ -326,7 +320,7 @@ class ModuleManager(object):
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1,attr2))
+                    changed[key] = str(DeepDiff(attr1, attr2))
         if changed:
             self.changes = Parameters()
             self.changes.client = self.client
@@ -445,21 +439,12 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(required=True),
-            base_template=dict(
-                required=False,
-                default=None
-            ),
+            base_template=dict(),
             parameters=dict(
-                required=False,
-                default=None,
                 type='dict'
             ),
-            connector=dict(
-                required=False,
-                default=None
-            ),
+            connector=dict(),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )

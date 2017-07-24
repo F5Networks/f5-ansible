@@ -55,20 +55,14 @@ options:
     description:
       - A dictionary containing the values of input parameters that the
         service administrator has made available for tenant editing.
-    required: False
-    default: None
   connector:
     description:
       - The cloud connector associated with this L4/L7 service. This option
         is required when C(state) is C(present).
-    required: False
-    default: None
   service_template:
     description:
       - The Service Template that you want to base this L4/L7 Service off of.
         This option is required when C(state) is C(present).
-    required: False
-    default: None
 notes:
   - Requires the f5-sdk Python package on the remote host. This is as easy as
     pip install f5-sdk.
@@ -112,7 +106,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -214,7 +208,7 @@ class Parameters(AnsibleF5Parameters):
                 tmp['columns'] = []
                 for column in columns:
                     tmp['columns'].append(
-                        dict((str(k),str(v)) for k,v in iteritems(column))
+                        dict((str(k), str(v)) for k, v in iteritems(column))
                     )
                 # You cannot have rows without columns
                 rows = table.get('rows', None)
@@ -415,25 +409,13 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(required=True),
-            service_template=dict(
-                required=False,
-                default=None
-            ),
+            service_template=dict(),
             parameters=dict(
-                required=False,
-                default=None,
                 type='dict'
             ),
-            connector=dict(
-                required=False,
-                default=None
-            ),
-            tenant=dict(
-                required=False,
-                default=None
-            ),
+            connector=dict(),
+            tenant=dict(),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )
