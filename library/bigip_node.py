@@ -42,7 +42,7 @@ options:
         Specifies that the node can handle only active connections. In all
         cases except C(absent), the node will be created if it does not yet
         exist.
-    required: true
+    required: True
     default: present
     choices:
       - present
@@ -53,8 +53,6 @@ options:
   name:
     description:
       - Specifies the name of the node.
-    required: False
-    default: None
   availability_requirement:
     description:
       - Specifies, if you activate more than one health monitor, the number
@@ -255,7 +253,7 @@ class ModuleConfig(object):
 
         # Initial Ansible Module parameter values
         self.supports_check_mode = True
-        self.required_together=[
+        self.required_together = [
             ['availability_requirement', 'monitors'],
             ['quorum', 'monitors']
         ]
@@ -333,7 +331,7 @@ class ParamState(object):
             state=None
         )
         self._valid_states = [
-            'offline','enabled','disabled'
+            'offline', 'enabled', 'disabled'
         ]
 
     def update(self, state=None):
@@ -575,7 +573,7 @@ class BigIpNodeFacade(object):
             )
         tmp = ['/{0}/{1}'.format(partition, x) for x in monitors]
         if availability == 'at_least':
-            return "min {0} of {1}".format(quorum,' '.join(tmp))
+            return "min {0} of {1}".format(quorum, ' '.join(tmp))
         else:
             return ' and '.join(tmp)
 

@@ -57,7 +57,7 @@ options:
     description:
       - Indicates whether configuration synchronization occurs manually or
         automatically. When creating a new device group, this option will
-        default to C(false). 
+        default to C(false).
     choices:
       - true
       - false
@@ -90,7 +90,7 @@ options:
     description:
       - Specifies the size of the changes cache for incremental sync. For example,
         using the default, if you make more than 1024 KB worth of incremental
-        changes, the system performs a full synchronization operation. Using 
+        changes, the system performs a full synchronization operation. Using
         incremental synchronization operations can reduce the per-device sync/load
         time for configuration changes. This setting is relevant only when
         C(full_sync) is C(false).
