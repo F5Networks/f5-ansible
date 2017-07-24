@@ -38,7 +38,6 @@ options:
         operation each time a lookup is needed. Please note that this applies
         only to Access Policy Manager features, such as ACLs, web application
         rewrites, and authentication.
-    required: false
     default: disable
     choices:
        - enabled
@@ -57,7 +56,6 @@ options:
   ip_version:
     description:
       - Specifies whether the DNS specifies IP addresses using IPv4 or IPv6.
-    required: false
     choices:
       - 4
       - 6
@@ -65,7 +63,6 @@ options:
     description:
       - The state of the variable on the system. When C(present), guarantees
         that an existing variable is set to C(value).
-    required: false
     default: present
     choices:
       - absent
@@ -209,9 +206,9 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def ip_version(self):
-        if self._values['ip_version'] in [6,'6','options inet6']:
+        if self._values['ip_version'] in [6, '6', 'options inet6']:
             return "options inet6"
-        elif self._values['ip_version'] in [4,'4','']:
+        elif self._values['ip_version'] in [4, '4', '']:
             return ""
         else:
             return None
@@ -340,7 +337,7 @@ class ModuleManager(object):
         with BigIpTxContext(tx) as api:
             dns = api.tm.sys.dns.load()
             dns.update(**params)
-        
+
 
 class ArgumentSpec(object):
     def __init__(self):
