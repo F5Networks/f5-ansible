@@ -8,3 +8,4 @@ flake8
 sphinx
 sphinx_rtd_theme
 q
+pycodestyle
