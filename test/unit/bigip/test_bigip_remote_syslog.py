@@ -38,13 +38,20 @@ try:
     from library.bigip_remote_syslog import Parameters
     from library.bigip_remote_syslog import ModuleManager
     from library.bigip_remote_syslog import ArgumentSpec
+    from library.bigip_remote_syslog import HAS_F5SDK
+    from library.bigip_remote_syslog import HAS_NETADDR
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_remote_syslog import Parameters
         from ansible.modules.network.f5.bigip_remote_syslog import ModuleManager
         from ansible.modules.network.f5.bigip_remote_syslog import ArgumentSpec
+        from ansible.modules.network.f5.bigip_remote_syslog import HAS_F5SDK
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
+
+    from ansible.modules.network.f5.bigip_remote_syslog import HAS_NETADDR
+    if not HAS_NETADDR:
+        raise SkipTest("F5 Ansible modules require the netaddr Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
