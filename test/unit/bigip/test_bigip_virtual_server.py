@@ -433,8 +433,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         patches = dict(
-            exists = Mock(return_value=True),
-            read_current_from_device = Mock(return_value=current)
+            exists=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=current)
         )
 
         with patch.multiple(VirtualServerManager, **patches) as vsm:
@@ -469,8 +469,8 @@ class TestManager(unittest.TestCase):
 
         # Override methods to force specific logic in the module to happen
         patches = dict(
-            exists = Mock(return_value=True),
-            read_current_from_device = Mock(return_value=current)
+            exists=Mock(return_value=True),
+            read_current_from_device=Mock(return_value=current)
         )
 
         with patch.multiple(VirtualServerManager, **patches) as vsm:

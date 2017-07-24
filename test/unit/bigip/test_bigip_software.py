@@ -25,23 +25,32 @@ import os
 import json
 import pytest
 
+from nose.plugins.skip import SkipTest
+if sys.version_info < (2, 7):
+    raise SkipTest("F5 Ansible modules require Python >= 2.7")
+
 from ansible.compat.tests import unittest
-from ansible.compat.tests.mock import patch
-from ansible.compat.tests.mock import DEFAULT
-from ansible.compat.tests.mock import Mock
+from ansible.compat.tests.mock import patch, DEFAULT, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    F5ModuleError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
-from library.bigip_software import (
-    Parameters,
-    LocalManager,
-    RemoteManager,
-    ArgumentSpec
-)
+try:
+    from library.bigip_software import Parameters
+    from library.bigip_software import LocalManager
+    from library.bigip_software import RemoteManager
+    from library.bigip_software import ArgumentSpec
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    try:
+        from ansible.modules.network.f5.bigip_software import Parameters
+        from ansible.modules.network.f5.bigip_software import LocalManager
+        from ansible.modules.network.f5.bigip_software import RemoteManager
+        from ansible.modules.network.f5.bigip_software import ArgumentSpec
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    except ImportError:
+        raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
@@ -179,9 +188,10 @@ class TestParameters(unittest.TestCase):
             software='/var/fake/software_iso.iso'
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -253,9 +263,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -290,9 +301,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -327,9 +339,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -377,10 +390,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        _volume_exists_on_device=DEFAULT
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+            _volume_exists_on_device=DEFAULT
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -432,10 +446,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        _volume_exists_on_device=DEFAULT
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+            _volume_exists_on_device=DEFAULT
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -534,17 +549,17 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        _volume_exists_on_device=DEFAULT
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+            _volume_exists_on_device=DEFAULT
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
             patched['_check_active_volume'].return_value = False
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes
             patched['_volume_exists_on_device'].return_value = True
-            
 
             mm = LocalManager(client)
             mm.exit_json = Mock(return_value=False)
@@ -592,10 +607,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        _volume_exists_on_device=DEFAULT
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+            _volume_exists_on_device=DEFAULT
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -650,9 +666,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -693,9 +710,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -742,11 +760,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -795,10 +813,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -847,9 +866,10 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -900,10 +920,11 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
@@ -956,18 +977,17 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        to_patch = dict(_check_active_volume=DEFAULT,
-                        _volume_exists_on_device=DEFAULT,
-                        _list_volumes_on_device=DEFAULT,
-                        
-                        )
+        to_patch = dict(
+            _check_active_volume=DEFAULT,
+            _volume_exists_on_device=DEFAULT,
+            _list_volumes_on_device=DEFAULT,
+        )
 
         # Override methods to force specific logic in the module to happen
         with patch.multiple(Parameters, **to_patch) as patched:
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = False
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
-            
 
             mm = LocalManager(client)
             mm.exit_json = Mock(return_value=False)
@@ -1539,8 +1559,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-            ]
-                                            )
+            ])
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
             mm.install_image_on_device = Mock(return_value=True)
@@ -1611,8 +1630,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-            ]
-                                            )
+            ])
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
             mm.install_image_on_device = Mock(return_value=True)
@@ -1685,8 +1703,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-                ]
-            )
+            ])
             mm.wait_for_software_install_on_device = Mock(return_value=True)
             mm.run_command_on_device = Mock(side_effect=cmd_side_effect_md5_ok)
             mm.install_image_on_device = Mock(return_value=True)
@@ -1978,8 +1995,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-            ]
-                                            )
+            ])
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
             mm.install_image_on_device = Mock(return_value=True)
@@ -2048,8 +2064,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-            ]
-                                            )
+            ])
             mm.delete_volume_on_device = Mock(return_value=True)
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
@@ -2122,8 +2137,7 @@ class TestRemoteManager(unittest.TestCase):
             )
             mm.list_images_on_device = Mock(side_effect=[
                 self.loaded_images, self.loaded_images_after_upload
-                ]
-            )
+            ])
             mm.wait_for_software_install_on_device = Mock(return_value=True)
             mm.run_command_on_device = Mock(side_effect=cmd_side_effect_md5_ok)
             mm.install_image_on_device = Mock(return_value=True)
