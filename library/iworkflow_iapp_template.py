@@ -38,8 +38,6 @@ options:
         device. This is usually included in the template itself. This
         option is typically used in cases where the template no longer
         exists on disk (to reference) and the C(state) is C(absent).
-    required: False
-    default: None
   template_content:
     description:
       - The contents of a valid iApp template in a tmpl file. This iApp
@@ -48,19 +46,14 @@ options:
         This option is only required when creating new template in iWorkflow.
         When you are deleting iApp templates, you will need to specify either
         one of C(name) or C(template_content).
-    required: False
-    default: None
   device:
     description:
       - Managed BIG-IP that you want to get template JSON from. This option
         is only required when C(state) is C(present).
-    required: False
-    default: None
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
         When C(absent), ensures that the iApp service has been removed.
-    required: False
     default: present
     choices:
       - present
@@ -141,7 +134,7 @@ class Parameters(AnsibleF5Parameters):
 
     def update(self, params=None):
         if params:
-            for k,v in iteritems(params):
+            for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
                 else:
@@ -356,17 +349,10 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            name=dict(
-                required=False,
-                default=None
-            ),
+            name=dict(),
             template_content=dict(required=False),
-            device=dict(
-                required=False,
-                default=None
-            ),
+            device=dict(),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )

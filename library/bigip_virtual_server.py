@@ -410,7 +410,7 @@ class VirtualServerParameters(Parameters):
     def pool(self):
         if self._values['pool'] is None:
             return None
-        if self._values['pool'].startswith('/'+self.partition):
+        if self._values['pool'].startswith('/' + self.partition):
             return self._values['pool']
         else:
             return '/{0}/{1}'.format(self.partition, self._values['pool'])
@@ -585,7 +585,7 @@ class ModuleManager(object):
         results = dict(changed=False)
         for manager in managers:
             result = manager.exec_module()
-            for k,v in iteritems(result):
+            for k, v in iteritems(result):
                 if k == 'changed':
                     if v is True:
                         results['changed'] = True
@@ -597,7 +597,7 @@ class ModuleManager(object):
         vsm = VirtualServerManager(self.client)
         if type == 'virtual_server':
             return vsm
-        elif type =='virtual_address':
+        elif type == 'virtual_address':
             self.set_name_of_virtual_address()
             result = VirtualAddressManager(self.client)
             return result
@@ -702,7 +702,7 @@ class VirtualServerManager(BaseManager):
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables =  VirtualServerParameters.updatables
+        updatables = VirtualServerParameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)
@@ -732,8 +732,7 @@ class VirtualServerManager(BaseManager):
             )
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
-                "You must specify both of "
-                + ', '.join(required_resources)
+                "You must specify both of " + ', '.join(required_resources)
             )
         return super(VirtualServerManager, self).create()
 
@@ -792,7 +791,7 @@ class VirtualAddressManager(BaseManager):
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables =  VirtualAddressParameters.updatables
+        updatables = VirtualAddressParameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)

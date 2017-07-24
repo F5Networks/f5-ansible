@@ -69,5 +69,3 @@ from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
-
-
