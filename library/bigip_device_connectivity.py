@@ -152,7 +152,6 @@ multicast_port:
 '''
 
 from netaddr import IPAddress, AddrFormatError
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -185,8 +184,6 @@ class Parameters(AnsibleF5Parameters):
         'multicast_port', 'mirror_primary_address', 'mirror_secondary_address',
         'failover_multicast', 'unicast_failover'
     ]
-
-    DEFAULT_UNICAST_FAILOVER_PORT=1026
 
     @property
     def multicast_port(self):
@@ -294,7 +291,7 @@ class Parameters(AnsibleF5Parameters):
                 "The provided 'port' for unicast failover is not a valid number"
             )
         except TypeError:
-            result = self.DEFAULT_UNICAST_FAILOVER_PORT
+            result = 1026
         return result
 
     def _validate_unicast_failover_address(self, address):

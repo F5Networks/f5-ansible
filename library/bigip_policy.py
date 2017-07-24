@@ -365,7 +365,7 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
             resource = self.client.api.tm.ltm.policys.policy.load(
                 name=self.want.name,
                 partition=self.want.partition,
-                subPath = 'Drafts'
+                subPath='Drafts'
             )
         else:
             resource = self.client.api.tm.ltm.policys.policy.load(
@@ -481,7 +481,7 @@ class ModuleManager(object):
     def get_manager(self, type):
         if type == 'traffic':
             return SimpleTrafficPolicyManager(self.client)
-        elif type =='complex_traffic':
+        elif type == 'complex_traffic':
             return ComplexTrafficPolicyManager(self.client)
 
     def version_is_less_than_12(self):
