@@ -55,13 +55,6 @@
       that:
           - result|changed
 
-- name: Install an uploaded UCS file
-  bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      include_chassis_level_config: "yes"
-      state: "installed"
-  register: result
-
 - name: Remove uploaded UCS file
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
@@ -83,5 +76,17 @@
   assert:
       that:
           - not result|changed
+
+- name: Install a UCS file, no initial upload
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "installed"
+  register: result
+
+- name: Remove uploaded UCS file
+  bigip_ucs:
+      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+      state: "absent"
+  register: result
 
 #- include: teardown.yaml
