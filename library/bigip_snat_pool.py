@@ -275,7 +275,7 @@ class ModuleManager(object):
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
-        updatables =  Parameters.updatables
+        updatables = Parameters.updatables
         changed = dict()
         for k in updatables:
             change = diff.compare(k)

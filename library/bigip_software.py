@@ -47,22 +47,22 @@ options:
       - no
   reuse_inactive_volume:
     description:
-      - Automatically chooses the first inactive volume in alphanumeric order. 
-        If there is no inactive volume, new volume with incremented volume name 
-        will be created. For example, if HD1.1 is currently active and no other 
-        volume exists, then the module will create HD1.2 and install the 
-        software. If volume name does not end with numeric character, 
-        then add .1 to the current active volume name. When C(volume) is 
+      - Automatically chooses the first inactive volume in alphanumeric order.
+        If there is no inactive volume, new volume with incremented volume name
+        will be created. For example, if HD1.1 is currently active and no other
+        volume exists, then the module will create HD1.2 and install the
+        software. If volume name does not end with numeric character,
+        then add .1 to the current active volume name. When C(volume) is
         specified, this option will be ignored.
   state:
     description:
-      - When C(installed), ensures that the software is uploaded/downloaded 
-        and installed on the system. The device is not, however, 
-        rebooted into the new software.
-      - When C(activated), ensures that the software is uploaded/downloaded, 
-        installed, and the system is rebooted to the new software. 
-      - When C(present), ensures that the software is uploaded/downloaded. 
-      - When C(absent), only the uploaded/downloaded image 
+      - When C(installed), ensures that the software is uploaded/downloaded
+        and installed on the system. The device is not, however, rebooted into
+        the new software.
+      - When C(activated), ensures that the software is uploaded/downloaded,
+        installed, and the system is rebooted to the new software.
+      - When C(present), ensures that the software is uploaded/downloaded.
+      - When C(absent), only the uploaded/downloaded image
         will be removed from the system.
     default: activated
     choices:
@@ -79,7 +79,7 @@ options:
     description:
       - The path to the software (base image) to install. The parameter must be
         provided if the C(state) is either C(installed) or C(activated).
-      - If C(remote_src) is used, this parameter will have to be a 
+      - If C(remote_src) is used, this parameter will have to be a
         C(HTTP) or C(HTTPS)link to the software image.
       - When providing link to the software ISO, if the ISO name is
         different than the one listed inside the C(software_md5sum) md5sum file.
@@ -90,15 +90,15 @@ options:
   hotfix:
     description:
       - The path to an optional Hotfix to install. This parameter requires that
-        the C(software) parameter be specified or the corresponding software 
+        the C(software) parameter be specified or the corresponding software
         image exists on the unit.
-      - If C(remote_src) is used, this parameter will have to be a 
+      - If C(remote_src) is used, this parameter will have to be a
         C(HTTP) or C(HTTPS)link to the hotfix image.
-      - When providing link to the hotfix ISO, if the ISO name 
-        is different than the one listed inside the C(hotfix_md5) md5sum file. 
-        We will change it accordingly while saving the files on the device. 
-        This might lead to ISO names not matching the links provided 
-        in C(hotfix).        
+      - When providing link to the hotfix ISO, if the ISO name
+        is different than the one listed inside the C(hotfix_md5) md5sum file.
+        We will change it accordingly while saving the files on the device.
+        This might lead to ISO names not matching the links provided
+        in C(hotfix).
     aliases:
       - hotfix_image
   software_md5sum:
@@ -110,55 +110,55 @@ options:
         or C(present).
   hotfix_md5sum:
     description:
-      - The link to an MD5 sum file of the remote hotfix ISO image, 
-        it is required when C(hotfix) parameter is used and C(remote_src) 
-        is selected. 
-      - Parameter only used when and C(state) is C(installed), C(activated), 
+      - The link to an MD5 sum file of the remote hotfix ISO image,
+        it is required when C(hotfix) parameter is used and C(remote_src)
+        is selected.
+      - Parameter only used when and C(state) is C(installed), C(activated),
         or C(present).
   build:
      description:
-     - Parameter specifying build number of the remote ISO image. 
+     - Parameter specifying build number of the remote ISO image.
        This parameter is mandatory when C(remote_src) is in use.
-     - If C(hotfix) and C(software) are specified. The build number will be 
-       C(always) the C(build) of the C(hotfix). For example, C(hotfix) has 
-       build of C(1.0.271) and C(software) has a build of C(0.0.249), 
+     - If C(hotfix) and C(software) are specified. The build number will be
+       C(always) the C(build) of the C(hotfix). For example, C(hotfix) has
+       build of C(1.0.271) and C(software) has a build of C(0.0.249),
        then C(build) parameter has to be set to C(1.0.271).
-     - If this parameter is missing when C(state) is C(activated) 
-       or C(installed), there will be an attempt to supplement that information 
-       with searching by name for relevant ISO on the unit. When none is found 
+     - If this parameter is missing when C(state) is C(activated)
+       or C(installed), there will be an attempt to supplement that information
+       with searching by name for relevant ISO on the unit. When none is found
        the exception will be raised and process terminated.
-     - If this parameter is missing when C(state) is C(present) 
-       we will confirm the existence of the ISO with searching by name. 
-       If the ISO exists under different name, it might lead to duplication of 
+     - If this parameter is missing when C(state) is C(present)
+       we will confirm the existence of the ISO with searching by name.
+       If the ISO exists under different name, it might lead to duplication of
        ISO images on the unit.
-     - Finally if this parameter is missing when C(state) is 
+     - Finally if this parameter is missing when C(state) is
        C(absent) it might cause the desired ISO not to be deleted.
   version:
      description:
-     - Parameter specifying version of of the remote ISO image. 
+     - Parameter specifying version of of the remote ISO image.
        This parameter is mandatory when C(remote_src) is in use.
-     - If C(hotfix) and C(software) are specified. The version number C(always) 
+     - If C(hotfix) and C(software) are specified. The version number C(always)
        be the C(version) of the C(hotfix).
-     - If this parameter is missing when C(state) is C(activated) 
-       or C(installed), there will be an attempt to supplement that information 
-       with searching by name for relevant ISO on the unit. When none is found 
+     - If this parameter is missing when C(state) is C(activated)
+       or C(installed), there will be an attempt to supplement that information
+       with searching by name for relevant ISO on the unit. When none is found
        the exception will be raised and process terminated.
-     - If this parameter is missing when C(state) is C(present) 
-       we will confirm the existence of the ISO with searching by name. If the 
-       ISO exists under different name, it might lead to duplication of ISO 
+     - If this parameter is missing when C(state) is C(present)
+       we will confirm the existence of the ISO with searching by name. If the
+       ISO exists under different name, it might lead to duplication of ISO
        images on the unit.
-     - Finally if this parameter is missing when C(state) is 
+     - Finally if this parameter is missing when C(state) is
        C(absent) it might cause the desired ISO not to be deleted.
   remote_src:
     description:
-       - Parameter to enable remote source usage. When set to C(yes) bigip will 
-         attempt to download and verify the images using the links provided in 
+       - Parameter to enable remote source usage. When set to C(yes) bigip will
+         attempt to download and verify the images using the links provided in
          C(software), C(hotfix), C(software_md5sum) and C(hotfix_md5sum).
-       - This parameter also makes the C(software_md5sum) and C(hotfix_md5sum) 
+       - This parameter also makes the C(software_md5sum) and C(hotfix_md5sum)
          mandatory when C(state is C(present), C(activated) or C(installed).
-    default: 'no' 
+    default: 'no'
 notes:
-  - Requires the f5-sdk Python package on the host. 
+  - Requires the f5-sdk Python package on the host.
     This is as easy as pip install f5-sdk
   - Requires the isoparser Python package on the host. This can be installed
     with pip install isoparser
@@ -352,8 +352,8 @@ EXAMPLES = '''
       state: "installed"
       volume: "HD1.2"
    delegate_to: localhost
-   
-   - name: Download hotfix image (name mismatch)
+
+- name: Download hotfix image (name mismatch)
   bigip_software:
       server: "bigip.localhost.localdomain"
       user: "admin"
@@ -365,7 +365,7 @@ EXAMPLES = '''
       remote_src: "yes"
       state: "present"
   delegate_to: localhost
-  
+
 - name: Download software image (name mismatch)
   bigip_software:
       server: "bigip.localhost.localdomain"
@@ -1123,7 +1123,7 @@ class LocalManager(BaseManager):
     def reboot_volume_on_device(self):
         self.client.api.tm.sys.software.volumes.exec_cmd(
             'reboot', volume=self.want.volume
-            )
+        )
 
     def volume_exists_on_device(self):
         result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)
@@ -1266,7 +1266,7 @@ class RemoteManager(BaseManager):
     def install_image_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.sys.software.images.exec_cmd(
-            'install', name =self.want.software_name, **params
+            'install', name=self.want.software_name, **params
         )
 
     def install_hotfix_on_device(self):
@@ -1328,7 +1328,7 @@ class RemoteManager(BaseManager):
     def hotfix_exists_by_name_on_device(self):
         result = self.client.api.tm.sys.software.hotfix_s.hotfix.exists(name=self.want.hotfix_name)
         return result
-    
+
     def image_exists_by_name_on_device(self):
         result = self.client.api.tm.sys.software.images.image.exists(name=self.want.software_name)
         return result
@@ -1341,7 +1341,7 @@ class RemoteManager(BaseManager):
     def reboot_volume_on_device(self):
         self.client.api.tm.sys.software.volumes.exec_cmd(
             'reboot', volume=self.want.volume
-            )
+        )
 
     def volume_exists_on_device(self):
         result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)

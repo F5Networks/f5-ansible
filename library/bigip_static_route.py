@@ -314,8 +314,7 @@ class ModuleManager(object):
             )
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
-                "You must specify at least one of "
-                + ', '.join(required_resources)
+                "You must specify at least one of " + ', '.join(required_resources)
             )
         if self.client.check_mode:
             return True
