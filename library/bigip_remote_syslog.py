@@ -81,15 +81,15 @@ EXAMPLES = '''
 
 RETURN = '''
 remote_port:
-    description: New parent template of the monitor.
+    description: New remote port of the remote syslog server.
     returned: changed
-    type: string
-    sample: "tcp"
+    type: int
+    sample: 514
 local_ip:
-    description: The new send string for this monitor.
+    description: The new local IP of the remote syslog server
     returned: changed
     type: string
-    sample: "tcp string to send"
+    sample: "10.10.10.10"
 '''
 
 try:
