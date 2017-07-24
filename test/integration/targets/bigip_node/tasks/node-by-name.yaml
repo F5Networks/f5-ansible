@@ -16,7 +16,7 @@
       that:
           - result|changed
 
-- name: Create node - idempotent check
+- name: Create node - Idempotent check
   bigip_node:
       description: "{{ node_description }}"
       host: "{{ node_host_dns }}"
@@ -27,7 +27,7 @@
       state: "present"
   register: result
 
-- name: Assert Create node - idempotent check
+- name: Assert Create node - Idempotent check
   assert:
       that:
         - not result|changed
@@ -65,13 +65,13 @@
       that:
           - result|changed
 
-- name: Delete node - idempotent check
+- name: Delete node - Idempotent check
   bigip_node:
       name: "{{ node_name }}"
       state: "absent"
   register: result
 
-- name: Assert delete node - idempotent check
+- name: Assert delete node - Idempotent check
   assert:
       that:
           - not result|changed
