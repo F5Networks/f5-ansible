@@ -14,7 +14,7 @@
       that:
           - result|changed
 
-- name: Create pool with member - idempotent check
+- name: Create pool with member - Idempotent check
   bigip_pool:
       lb_method: "{{ pool_lb_method }}"
       host: "1.1.1.1"
@@ -23,7 +23,7 @@
       state: "present"
   register: result
 
-- name: Assert Create pool with member - idempotent check
+- name: Assert Create pool with member - Idempotent check
   assert:
       that:
           - not result|changed
