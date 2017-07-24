@@ -14,19 +14,15 @@ all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
 	flake8 library/*.py
 
-all-tests: flake8 ansible-doc
-
-all-tests-dev: flake8 ansible-doc ansible-doc-dev
-
-pylint: pylint-modules
+all-tests: pycodestyle ansible-doc
 
 docs:
 	rm docs/modules/* || true
 	python scripts/plugin_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
 	cd docs && make html
 
-flake8:
-	flake8
+pycodestyle:
+	pycodestyle
 
 export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
