@@ -126,7 +126,7 @@ class TestManager(unittest.TestCase):
         # Override methods in the specific type of manager
         mm = ModuleManager(client)
         mm.exists = Mock(side_effect=[False, True])
-        mm.create_on_device = Mock(return_value=True)
+        mm.update_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
