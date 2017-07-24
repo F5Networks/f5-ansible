@@ -13,7 +13,7 @@
       that:
           - result|changed
 
-- name: Create pool, type 'mx' - idempotent check
+- name: Create pool, type 'mx' - Idempotent check
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
@@ -21,7 +21,7 @@
       type: "mx"
   register: result
 
-- name: Assert Create pool, 'mx' - idempotent check
+- name: Assert Create pool, 'mx' - Idempotent check
   assert:
       that:
           - not result|changed
@@ -64,14 +64,14 @@
       that:
           - result|changed
 
-- name: Delete pool - idempotent check
+- name: Delete pool - Idempotent check
   bigip_gtm_pool:
       name: "{{ pool_name }}"
       state: "absent"
       type: "mx"
   register: result
 
-- name: Assert Delete pool - idempotent check
+- name: Assert Delete pool - Idempotent check
   assert:
       that:
           - not result|changed

@@ -12,14 +12,14 @@
       that:
           - result|changed
 
-- name: Create pool - idempotent check
+- name: Create pool - Idempotent check
   bigip_gtm_pool:
       preferred_lb_method: "{{ pool_lb_method }}"
       name: "{{ pool_name }}"
       state: "present"
   register: result
 
-- name: Assert Create pool - idempotent check
+- name: Assert Create pool - Idempotent check
   assert:
       that:
           - not result|changed
@@ -59,13 +59,13 @@
       that:
           - result|changed
 
-- name: Delete pool - idempotent check
+- name: Delete pool - Idempotent check
   bigip_gtm_pool:
       name: "{{ pool_name }}"
       state: "absent"
   register: result
 
-- name: Assert Delete pool - idempotent check
+- name: Assert Delete pool - Idempotent check
   assert:
       that:
           - not result|changed
