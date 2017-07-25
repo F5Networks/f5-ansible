@@ -32,14 +32,6 @@
     that:
         - not result|changed
 
-
-
-
-
-
-
-
-
 - name: Import a certificate, key and CA chain, password protected key
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
