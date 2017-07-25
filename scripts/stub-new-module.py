@@ -220,11 +220,11 @@ except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
-fixture_data = {}
+fixture_data = {{}}
 
 
 def set_module_args(args):
-    args = json.dumps({'ANSIBLE_MODULE_ARGS': args})
+    args = json.dumps({{'ANSIBLE_MODULE_ARGS': args}})
     basic._ANSIBLE_ARGS = to_bytes(args)
 
 
