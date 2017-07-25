@@ -141,7 +141,7 @@ class TestCertificateManager(unittest.TestCase):
             cert_content=load_fixture('cert1.crt'),
             key_content=load_fixture('cert1.key'),
             state='present',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -161,14 +161,12 @@ class TestCertificateManager(unittest.TestCase):
 
         assert results['changed'] is True
 
-    def test_update_certificate_new_certificate_and_key_password_protected_key(self, *args):
+    def test_import_certificate_chain(self, *args):
         set_module_args(dict(
             name='foo',
-            cert_content=load_fixture('cert2.crt'),
-            key_content=load_fixture('cert2.key'),
+            cert_content=load_fixture('chain1.crt'),
             state='present',
-            passphrase='keypass',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -202,7 +200,7 @@ class TestKeyManager(unittest.TestCase):
             cert_content=load_fixture('cert1.crt'),
             key_content=load_fixture('cert1.key'),
             state='present',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
@@ -229,7 +227,7 @@ class TestKeyManager(unittest.TestCase):
             key_content=load_fixture('cert2.key'),
             state='present',
             passphrase='keypass',
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
