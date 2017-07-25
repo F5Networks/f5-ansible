@@ -1,0 +1,71 @@
+---
+
+- include: setup.yaml
+
+- name: Import a certificate, key and CA chain, password protected key
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
+      name: "cert2"
+      passphrase: "default"
+      state: "present"
+  register: result
+
+- name: Assert Import a certificate, key and CA chain, password protected key
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate, key and CA chain, password protected key - Idempotent check
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
+      name: "cert2"
+      passphrase: "default"
+      state: "present"
+  register: result
+
+- name: Assert Import a certificate, key and CA chain, password protected key - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+
+
+
+
+
+
+
+
+- name: Import a certificate, key and CA chain, password protected key
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
+      name: "cert2"
+      state: "absent"
+  register: result
+
+- name: Assert Import a certificate, key and CA chain, password protected key
+  assert:
+    that:
+        - result|changed
+
+- name: Import a certificate, key and CA chain, password protected key - Idempotent check
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert2.crt') }}"
+      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
+      key_content: "{{ lookup('file', 'cert2.key') }}"
+      name: "cert2"
+      state: "absent"
+  register: result
+
+- name: Assert Import a certificate, key and CA chain, password protected key - Idempotent check
+  assert:
+    that:
+        - not result|changed
+
+- include: teardown.yaml

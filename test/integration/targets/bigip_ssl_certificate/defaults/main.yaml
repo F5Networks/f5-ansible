@@ -1,0 +1,3 @@
+---
+
+base_ca_dir: "/tmp/__f5ansible__/ca"

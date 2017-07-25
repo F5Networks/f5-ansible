@@ -1,0 +1,6 @@
+---
+
+- name: Remove temporary certs
+  file:
+      path: "{{ ca_dir }}"
+      state: "absent"

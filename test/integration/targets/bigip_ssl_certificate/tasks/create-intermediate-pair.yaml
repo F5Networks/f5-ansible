@@ -1,0 +1,112 @@
+---
+
+- name: Create intermediate CA dir
+  file:
+      path: "{{ ca_dir }}/intermediate/{{ item }}"
+      state: "directory"
+  with_items:
+      - certs
+      - crl
+      - csr
+      - newcerts
+      - private
+
+- name: Ensure ownership of private dir
+  file:
+      path: "{{ ca_dir }}/intermediate/private"
+      mode: "0700"
+      state: "directory"
+
+- name: Touch index.txt file
+  file:
+      path: "{{ ca_dir }}/intermediate/index.txt"
+      state: "touch"
+
+- name: Seed serial file
+  copy:
+      content: 1000
+      dest: "{{ ca_dir }}/intermediate/serial"
+
+- name: See crlnumber file
+  copy:
+      content: 1000
+      dest: "{{ ca_dir }}/intermediate/crlnumber"
+
+- name: Create intermediate CA openssl.cnf file
+  template:
+      src: "intermediate-ca-openssl.cnf"
+      dest: "{{ ca_dir }}/intermediate/openssl.cnf"
+
+- name: Generate rsa keyfile
+  command: >
+      openssl genrsa -passout pass:default -aes256
+        -out intermediate/private/intermediate.key.pem 4096
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Ensure ownership of keyfile is correct
+  file:
+      path: "{{ ca_dir }}/intermediate/private/intermediate.key.pem"
+      mode: "0400"
+
+- name: Generate cert request
+  command: >
+      openssl req -passin pass:default
+        -subj "/C=GB/ST=England/O=Alice Ltd/OU=Alice Ltd Certificate Authority/CN=Alice Ltd Intermediate CA"
+        -config intermediate/openssl.cnf -new -sha256
+        -key intermediate/private/intermediate.key.pem
+        -out intermediate/csr/intermediate.csr.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Sign the request with the intermediate CA
+  command: >
+      openssl ca -passin pass:default
+        -batch
+        -config openssl.cnf
+        -extensions v3_intermediate_ca
+        -days 3650 -notext -md sha256
+        -in intermediate/csr/intermediate.csr.pem
+        -out intermediate/certs/intermediate.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Ensure ownership of intermediate cert
+  file:
+      path: "{{ ca_dir }}/intermediate/certs/intermediate.cert.pem"
+      mode: "0444"
+
+- name: Write out cert to ensure it is correct
+  command: >
+      openssl x509 -noout -text
+        -in intermediate/certs/intermediate.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Verify new cert using intermediate CA
+  command: >
+      openssl verify -CAfile certs/ca.cert.pem
+        intermediate/certs/intermediate.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Create temp directory to use in aeembling ca-cert
+  file:
+      path: "{{ ca_dir }}/tmp"
+      state: "directory"
+
+- name: Write intermediate CA to file
+  copy:
+      content: "{{ lookup('file', ca_dir + '/intermediate/certs/intermediate.cert.pem') }}"
+      dest: "{{ ca_dir }}/tmp/intermediate.cert.pem"
+
+- name: Write root CA to file
+  copy:
+      content: "{{ lookup('file', ca_dir + '/certs/ca.cert.pem') }}"
+      dest: "{{ ca_dir }}/tmp/ca.cert.pem"
+
+- name: Assemble ca-chain file
+  assemble:
+      src: "{{ ca_dir }}/tmp/"
+      dest: "{{ ca_dir }}/intermediate/certs/ca-chain.cert.pem"
+      mode: "0444"

@@ -239,3 +239,7 @@
   with_items:
       - "cert4"
       - "cert5"
+
+- include: issue-222.yaml
+  tags:
+      - issue-222.yaml

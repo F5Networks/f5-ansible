@@ -1,0 +1,59 @@
+---
+
+- name: Generate cert for server/client
+  command: >
+      openssl genrsa -aes256
+        -passout pass:default
+        -out intermediate/private/www.example.com.key.pem 2048
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Ensure permissions of key are correct
+  file:
+      path: "{{ ca_dir }}/intermediate/private/www.example.com.key.pem"
+      mode: "0400"
+
+- name: Create certificate request
+  command: >
+      openssl req -passin pass:default -config intermediate/openssl.cnf
+        -subj "/C=US/ST=California/O=Alice Ltd/L=Mountain View/OU=Alice Ltd Web Services/CN=www.example.com"
+        -key intermediate/private/www.example.com.key.pem
+        -new -sha256 -out intermediate/csr/www.example.com.csr.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Sign certificate with intermediate CA
+  command: >
+      openssl ca -batch -passin pass:default -config intermediate/openssl.cnf
+        -extensions server_cert -days 375 -notext -md sha256
+        -in intermediate/csr/www.example.com.csr.pem
+        -out intermediate/certs/www.example.com.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Ensure ownership on cert are correct
+  file:
+      path: "{{ ca_dir }}/intermediate/certs/www.example.com.cert.pem"
+      mode: "0444"
+
+- name: Get contents of cert file
+  command: >
+      openssl x509 -noout -text
+        -in intermediate/certs/www.example.com.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Verify cert using intermediate CA
+  command: >
+      openssl verify -CAfile intermediate/certs/ca-chain.cert.pem
+        intermediate/certs/www.example.com.cert.pem
+  args:
+      chdir: "{{ ca_dir }}"
+
+- name: Write out paths to files
+  debug:
+      msg: "{{ item }}"
+  with_items:
+      - "{{ ca_dir }}/intermediate/certs/ca-chain.cert.pem"
+      - "{{ ca_dir }}/intermediate/certs/www.example.com.cert.pem"
+      - "{{ ca_dir }}/intermediate/private/www.example.com.key.pem"
