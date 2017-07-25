@@ -39,6 +39,7 @@ try:
     from library.bigip_ssl_certificate import KeyParameters
     from library.bigip_ssl_certificate import CertParameters
     from library.bigip_ssl_certificate import CertificateManager
+    from library.bigip_ssl_certificate import HAS_F5SDK
     from library.bigip_ssl_certificate import KeyManager
 except ImportError:
     try:
@@ -46,6 +47,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_ssl_certificate import KeyParameters
         from ansible.modules.network.f5.bigip_ssl_certificate import CertParameters
         from ansible.modules.network.f5.bigip_ssl_certificate import CertificateManager
+        from ansible.modules.network.f5.bigip_ssl_certificate import HAS_F5SDK
         from ansible.modules.network.f5.bigip_ssl_certificate import KeyManager
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
