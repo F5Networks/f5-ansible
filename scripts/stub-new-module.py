@@ -121,7 +121,7 @@ class ModuleStubber(object):
   connection: local
 
   environment:
-      F5_SERVER: "{{{{ inventory_hostname }}}}"
+      F5_SERVER: "{{{{ ansible_host }}}}"
       F5_USER: "{{{{ bigip_username }}}}"
       F5_PASSWORD: "{{{{ bigip_password }}}}"
       F5_SERVER_PORT: "{{{{ bigip_port }}}}"
