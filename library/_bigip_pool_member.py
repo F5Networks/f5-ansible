@@ -26,8 +26,9 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: bigip_pool_member
+module: _bigip_pool_member
 short_description: Manages F5 BIG-IP LTM pool members
+deprecated: Deprecated in 2.5. Use the bigip_pool_member module instead.
 description:
   - Manages F5 BIG-IP LTM pool members via iControl SOAP API
 version_added: 1.4

@@ -26,8 +26,9 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: bigip_facts
+module: _bigip_facts
 short_description: Collect facts from F5 BIG-IP devices
+deprecated: Deprecated in 2.5. Use individual facts modules instead.
 description:
   - Collect facts from F5 BIG-IP devices via iControl SOAP API
 version_added: "1.6"

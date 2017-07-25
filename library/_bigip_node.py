@@ -26,9 +26,9 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: bigip_node
+module: _bigip_node
 short_description: "Manages F5 BIG-IP LTM nodes"
-deprecated: Deprecated in 2.4. Use the bigip_node module instead.
+deprecated: Deprecated in 2.5. Use the bigip_node module instead.
 description:
   - "Manages F5 BIG-IP LTM nodes via iControl SOAP API"
 version_added: "1.4"
