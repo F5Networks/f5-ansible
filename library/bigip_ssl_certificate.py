@@ -56,7 +56,7 @@ options:
       - absent
   name:
     description:
-      - SSL Certificate Name.  This is the cert/key pair name used
+      - SSL Certificate Name. This is the cert/key pair name used
         when importing a certificate/key into the F5. It also
         determines the filenames of the objects on the LTM
         (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).
@@ -111,6 +111,16 @@ EXAMPLES = '''
       state: "present"
       cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
       key_content: "{{ lookup('file', '/path/to/key.key') }}"
+  delegate_to: localhost
+
+- name: Use a file lookup to import CA certificate chain
+  bigip_ssl_certificate:
+      name: "ca-chain-name"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
   delegate_to: localhost
 
 - name: "Delete Certificate"
@@ -177,14 +187,12 @@ try:
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError,
-    iteritems
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import iteritems
 
 
 class Parameters(AnsibleF5Parameters):
@@ -559,14 +567,14 @@ class KeyManager(BaseManager):
                 if getattr(self.want, key) is not None:
                     changed[key] = getattr(self.want, key)
             if changed:
-                self.changes = Parameters(changed)
+                self.changes = KeyParameters(changed)
         except Exception:
             pass
 
     def _update_changed_options(self):
         changed = {}
         try:
-            for key in CertParameters.updatables:
+            for key in KeyParameters.updatables:
                 if getattr(self.want, key) is not None:
                     attr1 = getattr(self.want, key)
                     attr2 = getattr(self.have, key)
@@ -575,7 +583,7 @@ class KeyManager(BaseManager):
                 if self.want.key_checksum != self.have.checksum:
                     changed['key_checksum'] = self.want.key_checksum
             if changed:
-                self.changes = CertParameters(changed)
+                self.changes = KeyParameters(changed)
                 return True
         except Exception:
             pass
