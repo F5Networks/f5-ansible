@@ -1,8 +1,8 @@
-.. _bigip_facts:
+.. __bigip_facts:
 
 
-bigip_facts - Collect facts from F5 BIG-IP devices
-++++++++++++++++++++++++++++++++++++++++++++++++++
+_bigip_facts - Collect facts from F5 BIG-IP devices
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 1.6
 
@@ -11,6 +11,10 @@ bigip_facts - Collect facts from F5 BIG-IP devices
    :local:
    :depth: 2
 
+DEPRECATED
+----------
+
+Deprecated in 2.5. Use individual facts modules instead.
 
 Synopsis
 --------
@@ -106,21 +110,6 @@ Notes
     - Best run as a local_action in your playbook
     - Tested with manager and above account privilege level
     - ``provision`` facts were added in 2.2
-
-
-
-Status
-~~~~~~
-
-This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
-
-
-Support
-~~~~~~~
-
-This module is community maintained without core committer oversight.
-
-For more information on what this means please read :doc:`modules_support`
 
 
 For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

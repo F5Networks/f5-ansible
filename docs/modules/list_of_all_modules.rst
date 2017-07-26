@@ -16,7 +16,7 @@ All Modules
   bigip_dns_record_facts - foo <bigip_dns_record_facts_module>
   bigip_dns_zone - Manages DNS zones on a BIG-IP <bigip_dns_zone_module>
   bigip_drop_connection - foo <bigip_drop_connection_module>
-  bigip_facts - Collect facts from F5 BIG-IP devices <bigip_facts_module>
+  bigip_facts (D) - Collect facts from F5 BIG-IP devices <bigip_facts_module>
   bigip_gtm_datacenter - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices. <bigip_gtm_facts_module>
   bigip_gtm_pool - Manages F5 BIG-IP GTM pools. <bigip_gtm_pool_module>
@@ -39,7 +39,7 @@ All Modules
   bigip_policy_rule - foo <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools. <bigip_pool_module>
   bigip_pool (D) - Manages F5 BIG-IP LTM pools <bigip_pool_module>
-  bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
+  bigip_pool_member (D) - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
   bigip_provision - Manage BIG-IP module provisioning. <bigip_provision_module>
   bigip_qkview - Manage qkviews on the device. <bigip_qkview_module>
   bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP. <bigip_remote_syslog_module>
@@ -55,6 +55,7 @@ All Modules
   bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_update - Manage the software update settings of a BIG-IP. <bigip_software_update_module>
   bigip_ssl_certificate - Import/Delete certificates from BIG-IP. <bigip_ssl_certificate_module>
+  bigip_ssl_key - Import/Delete SSL keys from BIG-IP. <bigip_ssl_key_module>
   bigip_static_route - Manipulate static routes on a BIG-IP. <bigip_static_route_module>
   bigip_sys_db - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global - Manage BIG-IP global settings. <bigip_sys_global_module>

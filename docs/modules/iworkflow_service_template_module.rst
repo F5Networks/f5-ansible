@@ -40,12 +40,12 @@ Options
     </tr>
                 <tr><td>base_template<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The iApp template that you want to base this Service Template off of. Note that, while iWorkflow's UI also allows you to specify another Service Template for the <code>base_template</code>, this module does not yet let you do that. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>connector<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The cloud connector associated with this Service Template. If you want to have this Service Template associated with all clouds, then specify a <code>connector</code> of <code>all</code>. When creating a new Service Template, if no connector is specified, then <code>all</code> clouds will be the default.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -55,7 +55,7 @@ Options
         <td><div>Name of the service template.</div>        </td></tr>
                 <tr><td>parameters<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>A dictionary containing the values of input parameters that the Service Template contains. You will see these in iWorkflow's UI labeled as "Application Tier Information" and "Sections". This is the way by which you customize the Service Template and specify which values are tenant editable. Since this value can be particularly large, the recommended practice is to put it in an external file and include it with the Ansible <code>file</code> or <code>template</code> lookup plugins. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
         </table>

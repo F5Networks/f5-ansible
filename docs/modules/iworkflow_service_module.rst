@@ -40,7 +40,7 @@ Options
     </tr>
                 <tr><td>connector<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The cloud connector associated with this L4/L7 service. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -50,12 +50,12 @@ Options
         <td><div>Name of the L4/L7 service.</div>        </td></tr>
                 <tr><td>parameters<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>A dictionary containing the values of input parameters that the service administrator has made available for tenant editing.</div>        </td></tr>
                 <tr><td>service_template<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The Service Template that you want to base this L4/L7 Service off of. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>tenant<br/><div style="font-size: small;"></div></td>

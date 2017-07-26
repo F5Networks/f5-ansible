@@ -309,8 +309,8 @@ Examples
           state: "installed"
           volume: "HD1.2"
        delegate_to: localhost
-       
-       - name: Download hotfix image (name mismatch)
+    
+    - name: Download hotfix image (name mismatch)
       bigip_software:
           server: "bigip.localhost.localdomain"
           user: "admin"
@@ -322,7 +322,7 @@ Examples
           remote_src: "yes"
           state: "present"
       delegate_to: localhost
-      
+    
     - name: Download software image (name mismatch)
       bigip_software:
           server: "bigip.localhost.localdomain"

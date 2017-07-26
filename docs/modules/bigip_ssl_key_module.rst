@@ -1,10 +1,10 @@
-.. _bigip_ssl_certificate:
+.. _bigip_ssl_key:
 
 
-bigip_ssl_certificate - Import/Delete certificates from BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ssl_key - Import/Delete SSL keys from BIG-IP.
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -15,7 +15,7 @@ bigip_ssl_certificate - Import/Delete certificates from BIG-IP.
 Synopsis
 --------
 
-* This module will import/delete SSL certificates on BIG-IP LTM. Certificates can be imported from certificate and key files on the local disk, in PEM format.
+* This module will import/delete SSL keys on a BIG-IP. Keys can be imported from key files on the local disk, in PEM format.
 
 
 Requirements (on host that executes module)
@@ -38,36 +38,22 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>cert_content<br/><div style="font-size: small;"></div></td>
+                <tr><td>content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>When used instead of 'cert_src', sets the contents of a certificate directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>cert_src<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>This is the local filename of the certificate. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>key_content<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>When used instead of 'key_src', sets the contents of a certificate key directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>key_src<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>This is the local filename of the private key. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+        <td><div>Sets the contents of a key directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. This must be provided when <code>state</code> is <code>present</code>.</div></br>
+    <div style="font-size: small;">aliases: key_content<div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>SSL Certificate Name. This is the cert/key pair name used when importing a certificate/key into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
+        <td><div>The name of the key.</div>        </td></tr>
                 <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Passphrase on certificate private key</div>        </td></tr>
+        <td><div>Passphrase on key.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -87,7 +73,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Certificate and key state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div>        </td></tr>
+        <td><div>When <code>present</code>, ensures that the key is uploaded to the device. When <code>absent</code>, ensures that the key is removed from the device. If the key is currently in use, the module will not be able to remove the key.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -109,41 +95,19 @@ Examples
  ::
 
     
-    - name: Import PEM Certificate from local disk
-      bigip_ssl_certificate:
-          name: "certificate-name"
+    - name: Use a file lookup to import key
+      bigip_ssl_key:
+          name: "key-name"
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
           state: "present"
-          cert_src: "/path/to/cert.crt"
-          key_src: "/path/to/key.key"
+          content: "{{ lookup('file', '/path/to/key.key') }}"
       delegate_to: localhost
     
-    - name: Use a file lookup to import PEM Certificate
-      bigip_ssl_certificate:
-          name: "certificate-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
-          key_content: "{{ lookup('file', '/path/to/key.key') }}"
-      delegate_to: localhost
-    
-    - name: Use a file lookup to import CA certificate chain
-      bigip_ssl_certificate:
-          name: "ca-chain-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
-      delegate_to: localhost
-    
-    - name: "Delete Certificate"
-      bigip_ssl_certificate:
-          name: "certificate-name"
+    - name: Delete key
+      bigip_ssl_key:
+          name: "key-name"
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
@@ -167,34 +131,6 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> cert_source_path </td>
-        <td> Path on BIG-IP where the source of the certificate is stored. </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> /var/config/rest/downloads/cert1.crt </td>
-    </tr>
-            <tr>
-        <td> cert_checksum </td>
-        <td> SHA1 checksum of the cert that was provided. </td>
-        <td align=center> changed and created </td>
-        <td align=center> string </td>
-        <td align=center> f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0 </td>
-    </tr>
-            <tr>
-        <td> cert_filename </td>
-        <td> ['The name of the SSL certificate. The C(cert_filename) and C(key_filename) will be similar to each other, however the C(cert_filename) will have a C(.crt) extension.'] </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> cert1.crt </td>
-    </tr>
-            <tr>
-        <td> cert_name </td>
-        <td> The name of the certificate that the user provided </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> cert1 </td>
-    </tr>
-            <tr>
         <td> key_source_path </td>
         <td> Path on BIG-IP where the source of the key is stored </td>
         <td align=center> created </td>

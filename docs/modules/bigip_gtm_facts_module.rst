@@ -39,14 +39,14 @@ Options
     </tr>
                 <tr><td>filter<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Perform regex filter of response. Filtering is done on the name of the resource. Valid filters are anything that can be provided to Python's <code>re</code> module.</div>        </td></tr>
                 <tr><td>include<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul><li>pool</li><li>wide_ip</li><li>virtual_server</li></ul></td>
-        <td><div>Fact category to collect</div>        </td></tr>
+        <td><div>Fact category to collect.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

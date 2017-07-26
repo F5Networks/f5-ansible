@@ -1,8 +1,8 @@
-.. _bigip_pool_member:
+.. __bigip_pool_member:
 
 
-bigip_pool_member - Manages F5 BIG-IP LTM pool members
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+_bigip_pool_member - Manages F5 BIG-IP LTM pool members
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 1.4
 
@@ -11,6 +11,10 @@ bigip_pool_member - Manages F5 BIG-IP LTM pool members
    :local:
    :depth: 2
 
+DEPRECATED
+----------
+
+Deprecated in 2.5. Use the bigip_pool_member module instead.
 
 Synopsis
 --------
@@ -213,21 +217,6 @@ Notes
     - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
     - Best run as a local_action in your playbook
     - Supersedes bigip_pool for managing pool members
-
-
-
-Status
-~~~~~~
-
-This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
-
-
-Support
-~~~~~~~
-
-This module is community maintained without core committer oversight.
-
-For more information on what this means please read :doc:`modules_support`
 
 
 For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

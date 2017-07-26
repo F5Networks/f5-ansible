@@ -45,12 +45,12 @@ Options
         <td><div>Specifies that you accept the EULA that is part of iWorkflow. Note that this is required to activate the license. If this is not specified, or it is set to <code>no</code>, then the device will remain in a state of limbo until you choose to accept the EULA. This option is required when updating a license. It is also suggested that you provide it when creating a license, but if you do not, the license will remain inactive and you will have to run this module again with this option set to <code>yes</code> to activate it.</div>        </td></tr>
                 <tr><td>add_on_keys<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>A list of additional registration keys.</div>        </td></tr>
                 <tr><td>base_key<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Key that the license server uses to verify the functionality that you are entitled to license. This option is required if you are creating a new license.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>

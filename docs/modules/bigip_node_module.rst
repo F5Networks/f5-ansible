@@ -61,7 +61,7 @@ Options
         <td><div>Specifies the health monitors that the system currently uses to monitor this node.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the name of the node.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>

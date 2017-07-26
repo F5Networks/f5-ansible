@@ -50,27 +50,27 @@ Options
         <td><div>Managed device to create node for.</div>        </td></tr>
                 <tr><td>device_root_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>If the <code>username_credential</code> is <code>root</code> but the <code>password_credential</code> is not the password of the root user, then this value should be provided. This parameter is only relevant when creating new nodes.</div>        </td></tr>
                 <tr><td>hostname<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The hostname that you want to set on the remote managed BIG-IP.</div>        </td></tr>
                 <tr><td>interfaces<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>A list of network interface configuration details that iWorkflow should apply to the remote BIG-IP. This list must include the following keys; <code>local_address</code>, <code>subnet_address</code>. Also, optionally, the following keys can be provided <code>gateway_address</code>, <code>name</code>. One final key, <code>virtual_address</code>, can be provided in the event that the cloud provider you are configuring the device on sets a public IP address that forwards traffic to a NAT'd private address. <code>virtual_address</code> can be used in cases such as Azure public IPs, AWS Elastic IP paired with an ENI primary address, and OpenStack's Floating IP. The first item in the list is <b>always</b> the management interface of the BIG-IP. All remaining items in the list apply to the interfaces in ascending order that they appear on the device (eth1, eth2, etc). This parameter is only required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>key_content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Private key content to use when iWorkflow attempts to communicate with the remote device. If your remote BIG-IP requires key based authentication (for example it is located in a public cloud), you can provide that value here. Either one of <code>key_src</code>, <code>key_content</code>, or <code>username_credential</code> must be provided.</div>        </td></tr>
                 <tr><td>key_src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Private key to use when iWorkflow attempts to communicate with the remote device. If your remote BIG-IP requires key based authentication (for example it is located in a public cloud), you can provide that value here. Either one of <code>key_src</code>, <code>key_content</code>, or <code>username_credential</code> must be provided.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -80,7 +80,7 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Password of the user that you wish to connect to the remote BIG-IP with over SSH. The <code>password_credential</code> and <code>private_key</code> parameters are mutually exclusive. You may use one or the other.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>

@@ -40,12 +40,12 @@ Options
     </tr>
                 <tr><td>device<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Managed BIG-IP that you want to get template JSON from. This option is only required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The name of the iApp template that you want to create on the device. This is usually included in the template itself. This option is typically used in cases where the template no longer exists on disk (to reference) and the <code>state</code> is <code>absent</code>.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -70,7 +70,7 @@ Options
         <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div>        </td></tr>
                 <tr><td>template_content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The contents of a valid iApp template in a tmpl file. This iApp Template should be versioned and tested for compatibility with iWorkflow Tenant Services and a BIG-IP version of 11.5.3.2 or later. This option is only required when creating new template in iWorkflow. When you are deleting iApp templates, you will need to specify either one of <code>name</code> or <code>template_content</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
