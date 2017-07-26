@@ -28,7 +28,7 @@ export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 
 bigip_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml && cd -
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
 	#flake8 library/${MODULE_TARGET}.py
 
 iworkflow_%:
