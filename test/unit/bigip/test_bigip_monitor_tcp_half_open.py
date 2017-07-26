@@ -40,13 +40,13 @@ try:
     from library.bigip_monitor_tcp_half_open import Parameters
     from library.bigip_monitor_tcp_half_open import ModuleManager
     from library.bigip_monitor_tcp_half_open import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.bigip_monitor_tcp_half_open import HAS_F5SDK
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_monitor_tcp_half_open import Parameters
         from ansible.modules.network.f5.bigip_monitor_tcp_half_open import ModuleManager
         from ansible.modules.network.f5.bigip_monitor_tcp_half_open import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.modules.network.f5.bigip_monitor_tcp_half_open import HAS_F5SDK
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
