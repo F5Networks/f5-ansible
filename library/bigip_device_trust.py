@@ -50,7 +50,7 @@ options:
       - The API username of the remote peer device that you are trusting. Note
         that the CLI user cannot be used unless it too has an API account. If this
         value is not specified, then the value of C(user), or the environment
-        variable C(F5_USER) will be used. 
+        variable C(F5_USER) will be used.
   peer_password:
     description:
       - The password of the API username of the remote peer device that you are
@@ -68,7 +68,7 @@ options:
         device.
       - Designating devices as subordinate devices is recommended for device
         groups with a large number of member devices, where the risk of compromise
-        is high. 
+        is high.
     choices:
       - peer
       - subordinate
