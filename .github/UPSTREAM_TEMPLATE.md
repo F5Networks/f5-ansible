@@ -36,7 +36,7 @@ Check the tested versions
 - [ ] 12.1.2 (BIGIP-12.1.2.0.0.249)
 - [ ] 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
 - [ ] 13.0.0 (BIGIP-13.0.0.0.0.1645)
-- [ ] 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1.box)
+- [ ] 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 
 ##### CHECKLIST
 <!---
@@ -65,8 +65,8 @@ Ensure all the following are complete
 - [ ] `TestManager` unit test class (or `*Managers` if required) exists and has content
 
 #### QC related
-- [ ] Module code passes `tox -e flake -- library/MODULE_NAME.py`
-- [ ] Unit test code passes `tox -e flake -- test/unit/PRODUCT/test_MODULE_NAME.py`
+- [ ] Module code passes `tox -e style -- library/MODULE_NAME.py`
+- [ ] Unit test code passes `tox -e style -- test/unit/PRODUCT/test_MODULE_NAME.py`
 
 #### Docs related
 - [ ] Docs exist and build correctly (`make docs`)
