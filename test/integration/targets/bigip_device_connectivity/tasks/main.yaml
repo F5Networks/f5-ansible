@@ -77,4 +77,3 @@
   assert:
       that:
           - not result|changed
-
