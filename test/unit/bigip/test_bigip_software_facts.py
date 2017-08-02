@@ -39,13 +39,13 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
     from library.bigip_software_facts import Parameters
-    from library.bigip_software_facts import FactManagerBase
+    from library.bigip_software_facts import ModuleManager
     from library.bigip_software_facts import ArgumentSpec
     from library.bigip_software_facts import F5ModuleError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_software_facts import Parameters
-        from ansible.modules.network.f5.bigip_software_facts import FactManagerBase
+        from ansible.modules.network.f5.bigip_software_facts import ModuleManager
         from ansible.modules.network.f5.bigip_software_facts import ArgumentSpec
         from ansible.modules.network.f5.bigip_software_facts import F5ModuleError
     except ImportError:
@@ -112,9 +112,9 @@ class TestParameters(unittest.TestCase):
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-@patch('library.bigip_software_facts.ImageFactManager.list_images_on_device', return_value=loaded_images)
-@patch('library.bigip_software_facts.HotfixFactManager.list_hotfixes_on_device', return_value=loaded_hotfixes)
-@patch('library.bigip_software_facts.VolumeFactManager.list_volumes_on_device', return_value=loaded_volumes)
+@patch('library.bigip_software_facts.ImageFactManager.get_facts_from_device', return_value=loaded_images)
+@patch('library.bigip_software_facts.HotfixFactManager.get_facts_from_device', return_value=loaded_hotfixes)
+@patch('library.bigip_software_facts.VolumeFactManager.get_facts_from_device', return_value=loaded_volumes)
 class TestFactManagerBase(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
@@ -133,9 +133,9 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert len(results['images']) == 8
@@ -156,9 +156,9 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert 'hotfixes' not in results.keys()
@@ -179,9 +179,9 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert 'images' not in results.keys()
@@ -202,9 +202,9 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert 'images' not in results.keys()
@@ -225,9 +225,9 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert len(results['images']) == 8
@@ -249,17 +249,24 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
+        images = results['images'][0]
+        volumes = results['volumes'][0]
 
         assert results['changed'] is True
         assert len(results['hotfixes']) == 0
-        assert results['images'] == [{'product': 'BIG-IP', 'name': 'BIGIP-12.1.1.0.0.184.iso',
-                                      'lastModified': 'Sun Oct  2 20:50:04 2016', 'version': '12.1.1',
-                                      'build': '0.0.184', 'fileSize': '1997 MB'}]
-        assert results['volumes'] == [{'status': 'complete', 'product': 'BIG-IP', 'name': 'HD1.2',
-                                       'basebuild': '0.0.184', 'version': '12.1.1', 'build': '1.0.196'}]
+        assert len(results['images']) == 1
+        assert len(results['volumes']) == 1
+        assert 'product' in images.keys()
+        assert 'name' in images.keys()
+        assert 'product' in volumes.keys()
+        assert 'name' in volumes.keys()
+        assert images['product'] == 'BIG-IP'
+        assert images['name'] == 'BIGIP-12.1.1.0.0.184.iso'
+        assert volumes['product'] == 'BIG-IP'
+        assert volumes['name'] == 'HD1.2'
 
     def test_get_volume_filter_on_active(self, *args):
         set_module_args(dict(
@@ -276,16 +283,19 @@ class TestFactManagerBase(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        mm = FactManagerBase(client)
+        mm = ModuleManager(client)
         mm.exit_json = Mock(return_value=False)
-        results = mm.display_facts()
+        results = mm.exec_module()
+        volumes = results['volumes'][0]
 
         assert results['changed'] is True
         assert 'images' not in results.keys()
         assert 'hotfixes' not in results.keys()
-        assert results['volumes'] == [{'status': 'complete', 'product': 'BIG-IP', 'name': 'HD1.1',
-                                       'basebuild': '0.0.1434', 'version': '12.1.0', 'build': '1.0.1447',
-                                       'active': 'True'}]
+        assert len(results['volumes']) == 1
+        assert 'product' in volumes.keys()
+        assert 'name' in volumes.keys()
+        assert volumes['product'] == 'BIG-IP'
+        assert volumes['name'] == 'HD1.1'
 
     def test_invalid_filter_raises(self, *args):
         set_module_args(dict(
@@ -303,9 +313,10 @@ class TestFactManagerBase(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"foo" is not a supported filter. Supported key values are: name, build, version, status, active'
-            FactManagerBase(client)
+            mm = ModuleManager(client)
+            mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_invalid_filter_format_raises(self, *args):
         set_module_args(dict(
@@ -323,9 +334,10 @@ class TestFactManagerBase(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"foobar" is not a valid filter format. Filters must have key:value format'
-            FactManagerBase(client)
+            mm = ModuleManager(client)
+            mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_invalid_filter_empty_key_raises(self, *args):
         set_module_args(dict(
@@ -343,9 +355,10 @@ class TestFactManagerBase(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             msg = '":foobar" is not a valid filter format. Filters must have key:value format'
-            FactManagerBase(client)
+            mm = ModuleManager(client)
+            mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_invalid_filter_empty_value_raises(self, *args):
         set_module_args(dict(
@@ -363,9 +376,10 @@ class TestFactManagerBase(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"name:" is not a valid filter format. Filters must have key:value format'
-            FactManagerBase(client)
+            mm = ModuleManager(client)
+            mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_invalid_include_raises(self, *args):
         set_module_args(dict(
@@ -383,7 +397,7 @@ class TestFactManagerBase(unittest.TestCase):
 
         with pytest.raises(F5ModuleError) as err:
             msg = 'Include parameter may only be specified as one or more of the following: all, volume, image, hotfix'
-            FactManagerBase(client)
+            mm = ModuleManager(client)
+            mm.exec_module()
 
-        assert err.value.message == msg
-
+        assert str(err.value) == msg

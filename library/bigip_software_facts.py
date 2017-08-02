@@ -35,8 +35,8 @@ options:
   include:
     description:
       - Type of information to collect.
-    required: False
-    default: ['all']
+    default: 
+      - all
     choices:
       - all
       - image
@@ -119,10 +119,11 @@ from ansible.module_utils.f5_utils import (
 
 
 class Parameters(AnsibleF5Parameters):
-    returnables = ['name', 'build', 'version',
-                   'product', 'lastModified',
-                   'basebuild', 'status', 'active', 'fileSize'
-                   ]
+    returnables = [
+        'name', 'build', 'version', 'product',
+        'lastModified', 'basebuild', 'status',
+        'active', 'fileSize'
+        ]
 
     @property
     def include(self):
@@ -162,7 +163,17 @@ class Parameters(AnsibleF5Parameters):
         return key, value
 
 
-class FactManagerBase(object):
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+
+    def exec_module(self):
+        manager = BaseManager(self.client)
+
+        return manager.exec_module()
+
+
+class BaseManager(object):
     def __init__(self, client):
         self.client = client
         self.want = Parameters(self.client.module.params)
@@ -170,7 +181,7 @@ class FactManagerBase(object):
         self.include = self.want.include
         self.filter = self.want.filter
 
-    def display_facts(self):
+    def exec_module(self):
         result = dict()
 
         if 'all' in self.include:
@@ -188,9 +199,9 @@ class FactManagerBase(object):
         hotfixes = HotfixFactManager(self.client)
         volumes = VolumeFactManager(self.client)
 
-        output['images'] = images.get_images_facts()
-        output['hotfixes'] = hotfixes.get_hotfixes_facts()
-        output['volumes'] = volumes.get_volumes_facts()
+        output['images'] = images.get_facts()
+        output['hotfixes'] = hotfixes.get_facts()
+        output['volumes'] = volumes.get_facts()
 
         return output
 
@@ -201,11 +212,11 @@ class FactManagerBase(object):
         volumes = VolumeFactManager(self.client)
 
         if 'image' in self.include:
-            output['images'] = images.get_images_facts()
+            output['images'] = images.get_facts()
         if 'hotfix' in self.include:
-            output['hotfixes'] = hotfixes.get_hotfixes_facts()
+            output['hotfixes'] = hotfixes.get_facts()
         if 'volume' in self.include:
-            output['volumes'] = volumes.get_volumes_facts()
+            output['volumes'] = volumes.get_facts()
 
         return output
 
@@ -234,38 +245,38 @@ class FactManagerBase(object):
         return output
 
 
-class ImageFactManager(FactManagerBase):
+class ImageFactManager(BaseManager):
 
-    def get_images_facts(self):
-        collection = self.list_images_on_device()
+    def get_facts(self):
+        collection = self.get_facts_from_device()
         to_return = self.collection_parser(collection)
         return to_return
 
-    def list_images_on_device(self):
+    def get_facts_from_device(self):
         images = self.client.api.tm.sys.software.images.get_collection()
         return images
 
 
-class HotfixFactManager(FactManagerBase):
+class HotfixFactManager(BaseManager):
 
-    def get_hotfixes_facts(self):
-        collection = self.list_hotfixes_on_device()
+    def get_facts(self):
+        collection = self.get_facts_from_device()
         to_return = self.collection_parser(collection)
         return to_return
 
-    def list_hotfixes_on_device(self):
+    def get_facts_from_device(self):
         hotfixes = self.client.api.tm.sys.software.hotfix_s.get_collection()
         return hotfixes
 
 
-class VolumeFactManager(FactManagerBase):
+class VolumeFactManager(BaseManager):
 
-    def get_volumes_facts(self):
-        collection = self.list_volumes_on_device()
+    def get_facts(self):
+        collection = self.get_facts_from_device()
         to_return = self.collection_parser(collection)
         return to_return
 
-    def list_volumes_on_device(self):
+    def get_facts_from_device(self):
         volumes = self.client.api.tm.sys.software.volumes.get_collection()
         return volumes
 
@@ -296,8 +307,8 @@ def main():
     )
 
     try:
-        mm = FactManagerBase(client)
-        results = mm.display_facts()
+        mm = ModuleManager(client)
+        results = mm.exec_module()
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
