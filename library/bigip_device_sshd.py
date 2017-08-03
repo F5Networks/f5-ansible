@@ -283,11 +283,6 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        if self.have.dhcp:
-            raise F5ModuleError(
-                "DHCP on the mgmt interface must be disabled to make use of"
-                "this module"
-            )
         if not self.should_update():
             return False
         if self.client.check_mode:

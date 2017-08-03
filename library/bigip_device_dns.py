@@ -253,28 +253,21 @@ class ModuleManager(object):
         return result
 
     def read_current_from_device(self):
-        want_keys = ['dhclient.mgmt', 'dns.cache']
+        want_keys = ['dns.cache']
         result = dict()
         dbs = self.client.api.tm.sys.dbs.get_collection()
         for db in dbs:
             if db.name in want_keys:
                 result[db.name] = db.value
         dns = self.client.api.tm.sys.dns.load()
-        dns = dns.to_dict()
-        dns.pop('_meta_data', None)
-        if 'include' not in dns:
-            dns['include'] = 4
-        result.update(dns)
-
+        attrs = dns.attrs
+        if 'include' not in attrs:
+            attrs['include'] = 4
+        result.update(attrs)
         return Parameters(result)
 
     def update(self):
         self.have = self.read_current_from_device()
-        if self.have.dhcp:
-            raise F5ModuleError(
-                "DHCP on the mgmt interface must be disabled to make use of"
-                "this module"
-            )
         if not self.should_update():
             return False
         if self.client.check_mode:
