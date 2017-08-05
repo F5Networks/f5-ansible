@@ -1,0 +1,19 @@
+---
+
+- name: Create a VIP, pool, pool members and nodes
+  hosts: f5-test
+  connection: local
+
+  vars:
+      bigip_license: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+
+  tasks:
+      - name: License a BIG-IP
+        bigip_license:
+            password: "{{ bigip_password }}"
+            server: "{{ ansible_host }}"
+            server_port: "{{ bigip_port }}"
+            user: "{{ bigip_username }}"
+            key: "{{ bigip_license }}"
+            validate_certs: "{{ validate_certs }}"
+        delegate_to: localhost
