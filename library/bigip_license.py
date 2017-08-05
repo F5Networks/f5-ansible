@@ -190,6 +190,7 @@ class BigIpLicenseCommon(object):
         self.password = module.params.get('password')
         self.username = module.params.get('user')
         self.hostname = module.params.get('server')
+        self.server_port = module.params.get('server_port')
 
         # Holds the SSH connection for paramiko if ensurign the license is absent
         self.cli = None
@@ -200,6 +201,7 @@ class BigIpLicenseCommon(object):
             hostname=self.hostname,
             username=self.username,
             password=self.password,
+            port=self.server_port,
             debug=True
         )
 
