@@ -593,7 +593,7 @@ class BigIpSelfIp(object):
             )
 
         if traffic_group is None:
-            params['trafficGroup'] = "/%s/%s" % (partition, DEFAULT_TG)
+            params['trafficGroup'] = "/Common/%s" % (DEFAULT_TG)
         else:
             traffic_group = "/%s/%s" % (partition, traffic_group)
             if traffic_group in self.traffic_groups():
