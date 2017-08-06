@@ -32,7 +32,6 @@
 - name: Set Self IP VLAN
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
       vlan: "{{ selfip_vlan2 }}"
   register: result
 
@@ -44,7 +43,6 @@
 - name: Set Self IP VLAN - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
       vlan: "{{ selfip_vlan2 }}"
   register: result
 
@@ -78,7 +76,6 @@
 - name: Set single protocol allow service
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service: "{{ allowed_services_single }}"
   register: result
 
@@ -90,7 +87,6 @@
 - name: Set single protocol allow service - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service: "{{ allowed_services_single }}"
   register: result
 
@@ -102,7 +98,6 @@
 - name: Set multiple protocol allow all service
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service: "{{ allowed_services_multi }}"
   register: result
 
@@ -114,7 +109,6 @@
 - name: Set multiple protocol allow all service - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service: "{{ allowed_services_multi }}"
   register: result
 
@@ -126,7 +120,6 @@
 - name: Set keyword "all" allow service
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "all"
   register: result
@@ -139,7 +132,6 @@
 - name: Set keyword "all" allow service - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "all"
   register: result
@@ -152,7 +144,6 @@
 - name: Set keyword "default" allow service
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "default"
   register: result
@@ -165,7 +156,6 @@
 - name: Set keyword "default" allow service - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "default"
   register: result
@@ -178,7 +168,6 @@
 - name: Set keyword "none" allow service
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "none"
   register: result
@@ -191,7 +180,6 @@
 - name: Set keyword "none" allow service - Idempotent check
   bigip_selfip:
       name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
       allow_service:
           - "none"
   register: result

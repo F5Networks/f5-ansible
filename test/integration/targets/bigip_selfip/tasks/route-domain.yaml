@@ -1,6 +1,6 @@
 ---
 
-- include: setup-route-domain.ymal
+- include: setup-route-domain.yaml
 
 - name: Create Self IP, specify a Route Domain
   bigip_selfip:

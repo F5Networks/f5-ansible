@@ -1,21 +1,16 @@
 ---
 
 - name: Create VLAN 1
+  bigip_selfip:
+      name: "{{ item }}"
+      state: "absent"
+  with_items:
+      - "{{ selfip_vlan }}"
+      - "{{ selfip_vlan2 }}"
+
+- name: Create VLANs
   bigip_vlan:
-      name: "{{ selfip_vlan }}"
-  register: result
-
-- name: Assert Create VLAN 1
-  assert:
-      that:
-          - result|changed
-
-- name: Create VLAN 2
-  bigip_vlan:
-      name: "{{ selfip_vlan2 }}"
-  register: result
-
-- name: Assert Create VLAN 2
-  assert:
-      that:
-          - result|changed
+      name: "{{ item }}"
+  with_items:
+      - "{{ selfip_vlan }}"
+      - "{{ selfip_vlan2 }}"
