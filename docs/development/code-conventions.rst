@@ -703,3 +703,54 @@ lines from code coverage is documented here.
 
 The cases where you would want to use this include the various `*_on_device` and
 `*_from_device` methods in modules that make direct calls to the remote BIG-IPs.
+
+Exception message should be on a new line
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This convention is done to eliminate the total number of columns in use, but also
+to increase readability when long lines tend to scroll off screen. Even with a
+160 column limit for this project, long lines, and many lines, can begin to grow
+less compact.
+
+**BAD**
+
+.. code-block::python
+
+   ...
+   raise F5ModuleError('"{0}" is not a supported filter. '
+                       'Supported key values are: {1}'.format(key, ', '.join(keys)))
+
+**GOOD**
+
+.. code-block::python
+
+   ...
+   raise F5ModuleError(
+       '"{0}" is not a supported filter. '
+       'Supported key values are: {1}'.format(key, ', '.join(keys)))
+   )
+
+List contents should start on a new line
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For the same reason given above concerning compactness, lists should follow the same
+rule. The ending bracket should be on a new line as well, aligned with the beginning of
+the variable name
+
+**BAD**
+
+.. code-block::python
+
+   ...
+   mylist = ['foo', 'bar',
+             'baz', 'biz']
+
+**GOOD**
+
+.. code-block::python
+
+   ...
+   mylist = [
+       'foo', 'bar',
+       'baz', 'biz'
+   ]
