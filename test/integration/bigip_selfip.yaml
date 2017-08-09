@@ -18,13 +18,6 @@
 #
 #    ansible-playbook -i notahost, playbooks/bigip_selfip.yaml
 #
-# Tested platforms:
-#
-#    - 11.5.4 HF1
-#    - 11.6.0
-#    - 12.1.0
-#    - 12.1.0 HF1
-#
 
 - name: Test the bigip_selfip module
   hosts: "f5-test[0]"
@@ -35,8 +28,17 @@
       __tested_platforms:
           - 11.5.4 HF1
           - 11.6.0
+          - 12.0.0
           - 12.1.0
           - 12.1.0 HF1
+          - 12.1.0 HF2
+          - 12.1.1
+          - 12.1.1 HF1
+          - 12.1.1 HF2
+          - 12.1.2
+          - 12.1.2 HF1
+          - 13.0.0
+          - 13.0.0 HF1
 
   environment:
       F5_SERVER: "{{ ansible_host }}"
