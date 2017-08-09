@@ -396,37 +396,16 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(required=True),
-            description=dict(
-                required=False,
-                default=None
-            ),
-            destination=dict(
-                required=False,
-                default=None
-            ),
-            gateway_address=dict(
-                required=False,
-                default=None
-            ),
-            vlan=dict(
-                required=False,
-                default=None
-            ),
-            pool=dict(
-                required=False,
-                default=None
-            ),
-            mtu=dict(
-                required=False,
-                default=None
-            ),
+            description=dict(),
+            destination=dict(),
+            gateway_address=dict(),
+            vlan=dict(),
+            pool=dict(),
+            mtu=dict(),
             reject=dict(
-                required=False,
-                default=None,
                 choices=BOOLEANS_TRUE
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )

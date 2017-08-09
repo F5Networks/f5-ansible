@@ -361,35 +361,23 @@ class BigIpSysGlobalModuleConfig(object):
     def initialize_meta_args(self):
         args = dict(
             security_banner=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
-            banner_text=dict(required=False, default=None),
+            banner_text=dict(),
             gui_setup=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
             lcd_display=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
             mgmt_dhcp=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
             net_reboot=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
             quiet_boot=dict(
-                required=False,
-                choices=self.on_off_choices,
-                default=None
+                choices=self.on_off_choices
             ),
             console_timeout=dict(required=False, type='int', default=None),
             state=dict(default='present', choices=['present'])

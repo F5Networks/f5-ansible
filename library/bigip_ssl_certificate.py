@@ -672,7 +672,6 @@ class ArgumentSpec(object):
                 no_log=True
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )

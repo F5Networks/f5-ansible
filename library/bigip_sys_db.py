@@ -271,10 +271,7 @@ class ArgumentSpec(object):
                 default='present',
                 choices=['present', 'reset']
             ),
-            value=dict(
-                required=False,
-                default=None
-            )
+            value=dict()
         )
         self.f5_product_name = 'bigip'
 
