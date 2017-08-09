@@ -410,7 +410,8 @@ class Parameters(AnsibleF5Parameters):
                 result = [svc]
                 break
             elif svc in allowed_protocols:
-                result.append(svc)
+                full_service = '{0}:0'.format(svc)
+                result.append(full_service)
             else:
                 tmp = svc.split(':')
                 if tmp[0] not in allowed_protocols:
