@@ -128,7 +128,6 @@ members:
 '''
 
 import os
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -408,14 +407,11 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             append=dict(
-                default=False,
+                default='no',
                 type='bool',
-                choices=BOOLEANS
             ),
             name=dict(required=True),
             members=dict(
-                required=False,
-                default=None,
                 type='list',
                 aliases=['member']
             ),

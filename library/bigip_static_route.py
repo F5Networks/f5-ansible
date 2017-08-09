@@ -152,7 +152,7 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
-from ansible.module_utils.basic import *
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -403,7 +403,7 @@ class ArgumentSpec(object):
             pool=dict(),
             mtu=dict(),
             reject=dict(
-                choices=BOOLEANS_TRUE
+                type='bool'
             ),
             state=dict(
                 default='present',

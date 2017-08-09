@@ -127,9 +127,9 @@ location:
     sample: "222 West 23rd"
 '''
 
-from ansible.module_utils.basic import BOOLEANS
-from ansible.module_utils.basic import BOOLEANS_TRUE
-from ansible.module_utils.basic import BOOLEANS_FALSE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -410,24 +410,12 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            contact=dict(
-                required=False,
-                default=None
-            ),
-            description=dict(
-                required=False,
-                default=None
-            ),
+            contact=dict(),
+            description=dict(),
             enabled=dict(
-                required=False,
                 type='bool',
-                default=None,
-                choices=BOOLEANS
             ),
-            location=dict(
-                required=False,
-                default=None
-            ),
+            location=dict(),
             name=dict(required=True),
             state=dict(
                 type='str',

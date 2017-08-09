@@ -66,7 +66,6 @@ EXAMPLES = '''
 RETURN = '''
 '''
 
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -175,14 +174,9 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             auto_check=dict(
-                required=False,
-                default=None,
-                choices=BOOLEANS,
                 type='bool'
             ),
             frequency=dict(
-                required=False,
-                default=None,
                 choices=['daily', 'monthly', 'weekly']
             )
         )

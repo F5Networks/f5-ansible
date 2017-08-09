@@ -118,7 +118,6 @@ RETURN = '''
 import re
 import uuid
 
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -453,7 +452,6 @@ class ArgumentSpec(object):
                 choices=['present', 'absent']
             ),
             force=dict(
-                choices=BOOLEANS,
                 type='bool'
             ),
             content=dict()
