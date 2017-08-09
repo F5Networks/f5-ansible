@@ -6,13 +6,13 @@ PYLINT := pylint --additional-builtins=_ --init-hook=$(PYHOOK)
 
 MODULE_TARGET = $(shell echo $@ | sed s/cov-// | tr '-' '_')
 
-.PHONY: docs flake8
+.PHONY: docs style
 
 all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=on" -vvvv
 	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/bigip.yaml -vvvv
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
-	flake8 library/*.py
+	pycodestyle library/*.py
 
 all-tests: pycodestyle
 
@@ -21,7 +21,7 @@ docs:
 	python scripts/plugin_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
 	cd docs && make html
 
-pycodestyle:
+style:
 	pycodestyle
 
 export ANSIBLE_KEEP_REMOTE_FILES=1
@@ -29,17 +29,9 @@ export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 
 bigip_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-	#flake8 library/${MODULE_TARGET}.py
 
 iworkflow_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-	#flake8 library/${MODULE_TARGET}.py
-
-cov-bigip-%: clean-coverage
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=on" -vvvv
-	COVERAGE_PROCESS_START=${CURDIR}/.coveragerc ANSIBLE_KEEP_REMOTE_FILES=1 ansible-playbook -i inventory/hosts playbooks/${MODULE_TARGET}.yaml -vvvv
-	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=${MODULE_TARGET} toggle=off" -vvvv
-	flake8 library/${MODULE_TARGET}.py
 
 unit:
 	pytest -s test/
