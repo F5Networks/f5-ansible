@@ -161,8 +161,7 @@ max_incremental_sync_size:
     sample: 1000
 '''
 
-from ansible.module_utils.basic import BOOLEANS
-from ansible.module_utils.basic import BOOLEANS_TRUE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -411,15 +410,13 @@ class ArgumentSpec(object):
             description=dict(),
             auto_sync=dict(
                 type='bool',
-                choices=BOOLEANS
+                default='no'
             ),
             save_on_auto_sync=dict(
                 type='bool',
-                choices=BOOLEANS
             ),
             full_sync=dict(
-                type='bool',
-                choices=BOOLEANS
+                type='bool'
             ),
             name=dict(
                 required=True
