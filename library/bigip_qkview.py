@@ -413,17 +413,17 @@ class ArgumentSpec(object):
             ),
             asm_request_log=dict(
                 type='bool',
-                default=False,
+                default='no',
             ),
             max_file_size=dict(
                 type='int',
             ),
             complete_information=dict(
-                default=False,
+                default='no',
                 type='bool'
             ),
             exclude_core=dict(
-                default=False,
+                default="no",
                 type='bool'
             ),
             force=dict(
