@@ -1,32 +1,31 @@
 
-# Test the {module} module
+# Test the {{ module }} module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# {module} module behaves as expected.
+# {{ module }} module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, test/integration/{module}.yaml
+#    ansible-playbook -i notahost, test/integration/{{ module }}.yaml
 #
 # Examples:
 #
 #    Run all tests on the {module} module
 #
-#    ansible-playbook -i notahost, test/integration/{module}.yaml
-#
-# Tested platforms:
-#
-#    - NA
+#    ansible-playbook -i notahost, test/integration/{{ module }}.yaml
 #
 
 - name: Test the {{ module }} module
   hosts: "f5-test[0]"
   connection: local
-{% raw %}
-  environment:
+
+  vars:
+      __tested_platforms:
+
+{% raw %}  environment:
       F5_SERVER: "{{ ansible_host }}"
       F5_USER: "{{ bigip_username }}"
       F5_PASSWORD: "{{ bigip_password }}"
