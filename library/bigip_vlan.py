@@ -417,24 +417,15 @@ class ArgumentSpec(object):
                 required=True,
             ),
             tagged_interfaces=dict(
-                required=False,
-                default=None,
                 type='list',
                 aliases=['tagged_interface']
             ),
             untagged_interfaces=dict(
-                required=False,
-                default=None,
                 type='list',
                 aliases=['untagged_interface']
             ),
-            description=dict(
-                required=False,
-                default=None
-            ),
+            description=dict(),
             tag=dict(
-                required=False,
-                default=None,
                 type='int'
             )
         )
