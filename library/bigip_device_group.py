@@ -406,39 +406,25 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             type=dict(
-                required=False,
-                default=None,
                 choices=['sync-failover', 'sync-only']
             ),
-            description=dict(
-                required=False,
-                default=None
-            ),
+            description=dict(),
             auto_sync=dict(
-                required=False,
-                default=None,
                 type='bool',
                 choices=BOOLEANS
             ),
             save_on_auto_sync=dict(
-                required=False,
-                default=None,
                 type='bool',
                 choices=BOOLEANS
             ),
             full_sync=dict(
-                required=False,
-                default=None,
                 type='bool',
                 choices=BOOLEANS
             ),
             name=dict(
                 required=True
             ),
-            max_incremental_sync_size=dict(
-                required=False,
-                default=None
-            )
+            max_incremental_sync_size=dict()
         )
         self.f5_product_name = 'bigip'
 
