@@ -359,7 +359,7 @@ class Parameters(AnsibleF5Parameters):
         if self._values['netmask'] is None:
             return None
         try:
-            address = '0.0.0.0/'+self._values['netmask']
+            address = '0.0.0.0/' + self._values['netmask']
             ip = IPNetwork(address)
             result = ip.prefixlen
         except (AddrFormatError, ValueError):
@@ -463,7 +463,7 @@ class ApiParameters(Parameters):
             )
         try:
             ip = matches.group('ip')
-            self._values['ip']= str(IPAddress(ip))
+            self._values['ip'] = str(IPAddress(ip))
         except AddrFormatError:
             raise F5ModuleError(
                 'The provided address is not a valid IP address'
