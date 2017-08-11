@@ -229,7 +229,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         destination = self._values['destination']
         try:
-            netaddr.IPAddress(destination)
+            netaddr.IPAddress(destination.split("%")[0])
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
                 "The provided destination is not a valid IP address"
