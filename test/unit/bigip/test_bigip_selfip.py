@@ -139,7 +139,6 @@ class TestParameters(unittest.TestCase):
         assert p.vlan == '/Common/net1'
 
 
-
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
