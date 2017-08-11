@@ -279,8 +279,6 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        import q
-        q.q(params)
         self.client.api.tm.cm.add_to_trust.exec_cmd(
             'run',
             name='Root',
