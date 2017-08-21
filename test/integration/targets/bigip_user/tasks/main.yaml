@@ -227,7 +227,11 @@
       that:
           - not result|changed
 
+# Github issues
 - include: issue-113.yaml
+- include: issue-310.yaml
+  tags:
+      - issue-310
 
 - name: Collect BIG-IP facts
   bigip_facts:
