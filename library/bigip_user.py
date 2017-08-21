@@ -631,8 +631,9 @@ class RootUserManager(BaseManager):
     def update(self):
         file = tempfile.NamedTemporaryFile()
         self.want.update({'tempfile': os.path.basename(file.name)})
-        self.upload_password_to_device()
+        self.upload_password_file_to_device()
         self.update_on_device()
+        self.remove_password_file_from_device()
         return True
 
     def update_on_device(self):
@@ -650,12 +651,18 @@ class RootUserManager(BaseManager):
             if any(x for x in errors if x in result):
                 raise F5ModuleError(result)
 
-    def upload_password_to_device(self):
+    def upload_password_file_to_device(self):
         content = "{0}\n{0}\n".format(self.want.password_credential)
         template = StringIO(content)
         upload = self.client.api.shared.file_transfer.uploads
         upload.upload_stringio(template, self.want.tempfile)
         return True
+
+    def remove_password_file_from_device(self):
+        self.client.api.tm.util.unix_rm.exec_cmd(
+            'run',
+            utilCmdArgs='/var/config/rest/downloads/{0}'.format(self.want.tempfile)
+        )
 
 
 class ArgumentSpec(object):
