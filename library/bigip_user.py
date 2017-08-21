@@ -169,6 +169,16 @@ EXAMPLES = '''
       username_credential: "admin"
       password_credential: "NewSecretPassword"
   delegate_to: localhost
+
+- name: Change the root user's password
+  bigip_user:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      username_credential: "root"
+      password_credential: "secret"
+      state: "present"
+  delegate_to: localhost
 '''
 
 RETURN = '''
