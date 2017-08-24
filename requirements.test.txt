@@ -11,3 +11,10 @@ q
 pycodestyle
 netaddr
 fire
+tabulate
+
+# Needed for SkipIf in unit tests. Consider switching to pytest?
+nose
+
+# Needed for unit tests
+mock
