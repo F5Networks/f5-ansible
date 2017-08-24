@@ -29,7 +29,7 @@ DOCUMENTATION = '''
 module: bigip_iapplx_package
 short_description: Manages Javascript iApp packages on a BIG-IP.
 description:
-  - Manages Javascript iApp packages on a BIG-IP. This module will allow 
+  - Manages Javascript iApp packages on a BIG-IP. This module will allow
     you to deploy iAppLX packages to the BIG-IP and manage their lifecycle.
 version_added: "2.5"
 options:
@@ -52,11 +52,14 @@ notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
   - Requires the rpm tool be installed on the host. This can be accomplished through
-    different ways on each platform. On Debian based systems with C(apt); 
-    C(apt-get install rpm). On Mac with C(brew); C(brew install rpm). 
-    This command is already present on RedHat based systems. 
+    different ways on each platform. On Debian based systems with C(apt);
+    C(apt-get install rpm). On Mac with C(brew); C(brew install rpm).
+    This command is already present on RedHat based systems.
+  - Requires BIG-IP < 12.1.0 because the required functionality is missing
+    on versions  earlier than that.
 requirements:
   - f5-sdk >= 2.2.3
+  - Requires BIG-IP >= 12.1.0
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -95,6 +98,7 @@ RETURN = '''
 # only common fields returned
 '''
 
+from distutils.version import LooseVersion
 import os
 import subprocess
 import time
@@ -176,6 +180,12 @@ class ModuleManager(object):
         result = dict()
         changed = False
         state = self.want.state
+
+        version = self.client.api.tmos_version
+        if LooseVersion(version) <= LooseVersion('12.0.0'):
+            raise F5ModuleError(
+                "This version of BIG-IP is not supported."
+            )
 
         try:
             if state == "present":
@@ -288,7 +298,7 @@ class ModuleManager(object):
         return False
 
     def _wait_for_task(self, task):
-        for x in range(0,60):
+        for x in range(0, 60):
             task.refresh()
             if task.status in ['FINISHED', 'FAILED']:
                 return task.status
