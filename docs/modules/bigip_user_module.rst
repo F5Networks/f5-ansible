@@ -15,7 +15,7 @@ bigip_user - Manage user accounts and user attributes on a BIG-IP.
 Synopsis
 --------
 
-* Manage user accounts and user attributes on a BIG-IP.
+* Manage user accounts and user attributes on a BIG-IP. Typically this module operates only on the REST API users and not the CLI users. There is one exception though and that is if you specify the ``username_credential`` of ``root``. When specifying ``root``, you may only change the password. Your other parameters will be ignored in this case. Changing the ``root`` password is not an idempotent operation. Therefore, it will change it every time this module attempts to change it.
 
 
 Requirements (on host that executes module)
@@ -81,7 +81,7 @@ Options
     <td>no</td>
     <td>on_create</td>
         <td><ul><li>always</li><li>on_create</li></ul></td>
-        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users.</div>        </td></tr>
+        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users. When <code>username_credential</code> is <code>root</code>, this value will be forced to <code>always</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -91,7 +91,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Name of the user to create, remove or modify.</div></br>
+        <td><div>Name of the user to create, remove or modify. There is a special case that exists for the user <code>root</code>.</div></br>
     <div style="font-size: small;">aliases: name<div>        </td></tr>
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
@@ -178,6 +178,16 @@ Examples
           state: "present"
           username_credential: "admin"
           password_credential: "NewSecretPassword"
+      delegate_to: localhost
+    
+    - name: Change the root user's password
+      bigip_user:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          username_credential: "root"
+          password_credential: "secret"
+          state: "present"
       delegate_to: localhost
 
 Return Values

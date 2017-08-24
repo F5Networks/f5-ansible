@@ -1,8 +1,8 @@
 .. _bigip_selfip:
 
 
-bigip_selfip - Manage Self-IPs on a BIG-IP system
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_selfip - Manage Self-IPs on a BIG-IP system.
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_selfip - Manage Self-IPs on a BIG-IP system
 Synopsis
 --------
 
-* Manage Self-IPs on a BIG-IP system
+* Manage Self-IPs on a BIG-IP system.
 
 
 Requirements (on host that executes module)
@@ -40,12 +40,12 @@ Options
     </tr>
                 <tr><td>address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The IP addresses for the new self IP. This value is ignored upon update as addresses themselves cannot be changed after they are created.</div>        </td></tr>
                 <tr><td>allow_service<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Configure port lockdown for the Self IP. By default, the Self IP has a "default deny" policy. This can be changed to allow TCP and UDP ports as well as specific protocols. This list should contain <code>protocol</code>:<code>port</code> values.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -54,10 +54,10 @@ Options
         <td></td>
         <td><div>The self IP to create.</div>        </td></tr>
                 <tr><td>netmask<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The netmasks for the self IP.</div>        </td></tr>
+        <td><div>The netmask for the self IP. When creating a new Self IP, this value is required.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -65,9 +65,9 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>route_domain<br/><div style="font-size: small;"> (added in 2.3)</div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>The route domain id of the system. If none, id of the route domain will be "0" (default route domain)</div>        </td></tr>
+        <td><div>The route domain id of the system. When creating a new Self IP, if this value is not specified, a default value of <code>0</code> will be used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -87,7 +87,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The traffic group for the self IP addresses in an active-active, redundant load balancer configuration.</div>        </td></tr>
+        <td><div>The traffic group for the Self IP addresses in an active-active, redundant load balancer configuration. When creating a new Self IP, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -99,10 +99,10 @@ Options
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlan<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The VLAN that the new self IPs will be on.</div>        </td></tr>
+        <td><div>The VLAN that the new self IPs will be on. When creating a new Self IP, this value is required.</div>        </td></tr>
         </table>
     </br>
 

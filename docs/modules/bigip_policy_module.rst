@@ -4,7 +4,7 @@
 bigip_policy - Manage general policy configuration on a BIG-IP.
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -66,7 +66,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>present</li><li>absent</li><li>draft</li></ul></td>
-        <td><div>When <code>state</code> is <code>present</code>, ensures that the policy exists and is published. When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently drafted. When <code>state</code> is <code>draft</code>, ensures that the policy exists and is drafted.</div>        </td></tr>
+        <td><div>When <code>state</code> is <code>present</code>, ensures that the policy exists and is published. When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently drafted. When <code>state</code> is <code>draft</code>, ensures that the policy exists and is drafted. When modifying rules, it is required that policies first be in a draft.</div>        </td></tr>
                 <tr><td>strategy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

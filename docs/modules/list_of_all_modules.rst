@@ -9,6 +9,7 @@ All Modules
   bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP. <bigip_device_connectivity_module>
   bigip_device_dns - Manage BIG-IP device DNS settings <bigip_device_dns_module>
   bigip_device_group - Manage device groups on a BIG-IP. <bigip_device_group_module>
+  bigip_device_group_member - Manages members in a device group. <bigip_device_group_member_module>
   bigip_device_ntp - Manage NTP servers on a BIG-IP. <bigip_device_ntp_module>
   bigip_device_sshd - Manage the SSHD settings of a BIG-IP. <bigip_device_sshd_module>
   bigip_device_trust - Manage the trust relationships between BIG-IPs. <bigip_device_trust_module>
@@ -25,7 +26,7 @@ All Modules
   bigip_hostname - Manage the hostname of a BIG-IP. <bigip_hostname_module>
   bigip_iapp_service - Manages TCL iApp services on a BIG-IP. <bigip_iapp_service_module>
   bigip_iapp_template - Manages TCL iApp templates on a BIG-IP. <bigip_iapp_template_module>
-  bigip_iapplx_package - foo <bigip_iapplx_package_module>
+  bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP. <bigip_iapplx_package_module>
   bigip_irule - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
   bigip_monitor_http - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
@@ -36,7 +37,7 @@ All Modules
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_partition - Manage BIG-IP partitions. <bigip_partition_module>
   bigip_policy - Manage general policy configuration on a BIG-IP. <bigip_policy_module>
-  bigip_policy_rule - foo <bigip_policy_rule_module>
+  bigip_policy_rule - Manage LTM policy rules on a BIG-IP. <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools. <bigip_pool_module>
   bigip_pool (D) - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member (D) - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
@@ -45,7 +46,7 @@ All Modules
   bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP. <bigip_remote_syslog_module>
   bigip_routedomain - Manage route domains on a BIG-IP <bigip_routedomain_module>
   bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
-  bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
+  bigip_selfip - Manage Self-IPs on a BIG-IP system. <bigip_selfip_module>
   bigip_service - Manage BIG-IP service states <bigip_service_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP. <bigip_snat_pool_module>
   bigip_snmp - Manipulate general SNMP settings on a BIG-IP. <bigip_snmp_module>
@@ -63,13 +64,14 @@ All Modules
   bigip_ucs_fetch - Fetches a UCS file from remote nodes <bigip_ucs_fetch_module>
   bigip_user - Manage user accounts and user attributes on a BIG-IP. <bigip_user_module>
   bigip_user_facts - Retrieve user account attributes from a BIG-IP <bigip_user_facts_module>
+  bigip_vcmp_guest - Manages vCMP guests on a BIG-IP. <bigip_vcmp_guest_module>
   bigip_view - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
   bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP. <bigip_virtual_address_module>
   bigip_virtual_server (D) - Manages F5 BIG-IP LTM virtual servers <bigip_virtual_server_module>
   bigip_virtual_server - Manage LTM virtual servers on a BIG-IP. <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
-  bigiq_license_pool - foo <bigiq_license_pool_module>
-  bigiq_license_pool_member - foo <bigiq_license_pool_member_module>
+  bigiq_license_purchased_pool - foo <bigiq_license_purchased_pool_module>
+  bigiq_license_purchased_pool_member - foo <bigiq_license_purchased_pool_member_module>
   f5_support_upload - Manage BIG-IP partitions <f5_support_upload_module>
   iworkflow_device - Manipulate cloud managed devices in iWorkflow. <iworkflow_device_module>
   iworkflow_iapp_template - Manages iApp templates <iworkflow_iapp_template_module>
