@@ -251,3 +251,7 @@
           - result|changed
 
 - include: route-domain.yaml
+
+- include: issue-315.yaml
+  tags:
+      - issue-315

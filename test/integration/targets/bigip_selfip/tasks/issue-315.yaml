@@ -1,0 +1,53 @@
+---
+
+- set_fact:
+    self_ips:
+      - address: "10.2.1.1/24"
+        name: "internal_self"
+        vlan: "internal"
+
+- name: Create self-IPs
+  bigip_selfip:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      name: "{{ item.name }}"
+      address: "{{ item.address|ipaddr('address') }}"
+      netmask: "{{ item.address|ipaddr('netmask') }}"
+      vlan: "{{ item.vlan }}"
+      route_domain: "{{ item.route_domain|default(omit) }}"
+      allow_service: "default"
+      state: present
+  delegate_to: localhost
+  with_items: "{{ self_ips }}"
+  register: result
+
+- name: Assert Create self-IPs
+  assert:
+      that:
+          - result|changed
+
+- name: Create self-IPs - Idempotent check
+  bigip_selfip:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+      name: "{{ item.name }}"
+      address: "{{ item.address|ipaddr('address') }}"
+      netmask: "{{ item.address|ipaddr('netmask') }}"
+      vlan: "{{ item.vlan }}"
+      route_domain: "{{ item.route_domain|default(omit) }}"
+      allow_service: "default"
+      state: present
+  delegate_to: localhost
+  with_items: "{{ self_ips }}"
+  register: result
+
+- name: Assert Create self-IPs - Idempotent check
+  assert:
+      that:
+          - result|changed

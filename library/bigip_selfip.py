@@ -614,10 +614,12 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to create the Self IP")
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.net.selfips.selfip.create(
             name=self.want.name,
             partition=self.want.partition,
+            address=self.want.address,
+            vlan=self.want.vlan,
             **params
         )
 
