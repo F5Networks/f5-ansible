@@ -49,7 +49,7 @@ except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
-{% raw %}fixture_data = {{}}{% endraw %}
+{% raw %}fixture_data = { }{% endraw %}
 
 
 def set_module_args(args):
@@ -107,6 +107,5 @@ class TestParameters(unittest.TestCase):
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-
     def test_create(self, *args):
         raise Exception('You must write a creation test')

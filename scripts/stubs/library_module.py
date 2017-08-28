@@ -21,16 +21,16 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
 ---
 module: {{ module }}
-short_description: << SHORT DESCRIPTION >>.
+short_description: __SHORT_DESCRIPTION__.
 description:
-  - << LONG DESCRIPTION >>.
-version_added: "2.4"
+  - __LONG DESCRIPTION__.
+version_added: "2.5"
 options:
   name:
     description:
@@ -236,7 +236,7 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.<< API ENDPOINT >>.exists(
+        result = self.client.api.__API_ENDPOINT__.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -268,7 +268,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.<< API ENDPOINT >>.create(
+        self.client.api.__API_ENDPOINT__.create(
             name=self.want.name,
             partition=self.want.partition,
             **params
@@ -276,7 +276,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.<< API ENDPOINT >>.load(
+        resource = self.client.api.__API_ENDPOINT__.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -288,7 +288,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.<< API ENDPOINT >>.load(
+        resource = self.client.api.__API_ENDPOINT__.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -296,7 +296,7 @@ class ModuleManager(object):
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.<< API_ENDPOINT >>.load(
+        resource = self.client.api.__API_ENDPOINT__.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -308,7 +308,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-                             << ARGUMENT SPEC >>
+            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
         )
         self.f5_product_name = 'bigip'
 
