@@ -247,6 +247,7 @@ class ModuleManager(object):
             )
         self.upload_to_device()
         self.create_on_device()
+        self.enable_iapplx_on_device()
         self.remove_package_file_from_device()
         if self.exists():
             return True
@@ -304,6 +305,12 @@ class ModuleManager(object):
                 return task.status
             time.sleep(1)
         return task.status
+
+    def enable_iapplx_on_device(self):
+        self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "touch /var/config/rest/iapps/enable"'
+        )
 
 
 class ArgumentSpec(object):
