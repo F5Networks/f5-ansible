@@ -113,6 +113,8 @@ content:
     sample: "when LB_FAILED { set wipHost [LB::server addr] }"
 '''
 
+import os
+
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
@@ -162,8 +164,11 @@ class Parameters(AnsibleF5Parameters):
     @property
     def content(self):
         if self._values['content'] is None:
-            return None
-        return str(self._values['content']).strip()
+            result = self.src_content
+        else:
+            result = self._values['content']
+
+        return str(result).strip()
 
     @property
     def src(self):
@@ -171,13 +176,15 @@ class Parameters(AnsibleF5Parameters):
             return None
         return self._values['src']
 
-    @src.setter
-    def src(self, value):
-        if value:
-            self._values['src'] = value
-            with open(value) as f:
-                result = f.read()
-            self._values['content'] = result
+    @property
+    def src_content(self):
+        if not os.path.exists(self._values['src']):
+            raise F5ModuleError(
+                "The specified 'src' was not found."
+            )
+        with open(self._values['src']) as f:
+            result = f.read()
+        return result
 
 
 class ModuleManager(object):
@@ -304,7 +311,7 @@ class LtmManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.ltm.rules.rule.load(
             name=self.want.name,
             partition=self.want.partition
@@ -313,6 +320,8 @@ class LtmManager(BaseManager):
 
     def create_on_device(self):
         params = self.want.api_params()
+        import q
+        q.q(params)
         resource = self.client.api.tm.ltm.rules.rule
         resource.create(
             name=self.want.name,
@@ -360,7 +369,7 @@ class GtmManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.gtm.rules.rule.load(
             name=self.want.name,
             partition=self.want.partition

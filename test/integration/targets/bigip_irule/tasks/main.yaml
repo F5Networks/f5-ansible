@@ -149,5 +149,7 @@
 # Tests for different issues filed on Github
 - include: issue-42.yaml
   tags: issue-42
+- include: issue-316.yaml
+  tags: issue-316
 
 - include: teardown.yaml
