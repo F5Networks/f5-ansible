@@ -27,14 +27,25 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_device_group_member
-short_description: << SHORT DESCRIPTION >>.
+short_description: Manages members in a device group.
 description:
-  - << LONG DESCRIPTION >>.
-version_added: "2.4"
+  - Manages members in a device group. Members in a device group can only
+    be added or removed, never updated. This is because the members are
+    identified by unique name values and changing that name would invalidate
+    the uniqueness.
+version_added: "2.5"
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - Specifies the name of the device that you want to add to the
+        device group. Often this will be the hostname of the device.
+        This member must be trusted by the device already. Trusting
+        can be done with the C(bigip_device_group) module and the
+        C(peer_hostname) option to that module.
+    required: True
+  device_group:
+    description:
+      - The device group that you want to add the member to.
     required: True
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -47,22 +58,31 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Create a ...
+- name: Add the current device to the "device_trust_group" device group
   bigip_device_group_member:
-      name: "foo"
+      name: "{{ inventory_hostname }}"
+      device_group: "device_trust_group"
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"
       user: "admin"
   delegate_to: localhost
+
+- name: Add the hosts in the current scope to "device_trust_group"
+  bigip_device_group_member:
+      name: "{{ item }}"
+      device_group: "device_trust_group"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+  with_items: "{{ hostvars.keys() }}"
+  run_once: true
+  delegate_to: localhost
 '''
 
 RETURN = '''
-param1:
-    description: The new param1 value of the resource.
-    returned: changed
-    type: bool
-    sample: true
+# only common fields returned
 '''
 
 
@@ -74,21 +94,13 @@ from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {
+    api_map = {}
 
-    }
+    api_attributes = []
 
-    api_attributes = [
+    returnables = []
 
-    ]
-
-    returnables = [
-
-    ]
-
-    updatables = [
-
-    ]
+    updatables = []
 
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
@@ -141,32 +153,6 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class Changes(Parameters):
-    pass
-
-
-class Difference(object):
-    def __init__(self, want, have=None):
-        self.want = want
-        self.have = have
-
-    def compare(self, param):
-        try:
-            result = getattr(self, param)
-            return result
-        except AttributeError:
-            return self.__default(param)
-
-    def __default(self, param):
-        attr1 = getattr(self.want, param)
-        try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
-        except AttributeError:
-            return attr1
-
-
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -180,27 +166,6 @@ class ModuleManager(object):
                 changed[key] = getattr(self.want, key)
         if changed:
             self.changes = Changes(changed)
-
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                changed[k] = change
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
 
     def exec_module(self):
         changed = False
@@ -218,45 +183,26 @@ class ModuleManager(object):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations(result)
         return result
-
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
             return self.create()
 
     def exists(self):
-        result = self.client.api.<< API ENDPOINT >>.exists(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        return result
-
-    def update(self):
         self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
-        if self.client.check_mode:
+        if self.have.device_group.devices.exists(name=self.want.name):
             return True
-        self.update_on_device()
-        return True
+        return False
 
     def remove(self):
         if self.client.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
+            raise F5ModuleError("Failed to remove the member from the device group.")
         return True
 
     def create(self):
@@ -267,20 +213,9 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.<< API ENDPOINT >>.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        self.have.device_group.devices.device.create(
+            name=self.want.name
         )
-
-    def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.<< API ENDPOINT >>.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
 
     def absent(self):
         if self.exists():
@@ -288,27 +223,30 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.<< API ENDPOINT >>.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.have.device_group.devices.device.load(
+            name=self.want.name
         )
         if resource:
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.<< API_ENDPOINT >>.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return Parameters(result)
+        try:
+            resource = self.client.api.tm.cm.device_groups.device_group.load(
+                name=self.want.device_group
+            )
+            return Parameters({"device_group": resource})
+        except iControlUnexpectedHTTPError:
+            raise F5ModuleError(
+                "The specified device group does not exist"
+            )
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-                             << ARGUMENT SPEC >>
+            name=dict(required=True),
+            device_group=dict(required=True)
         )
         self.f5_product_name = 'bigip'
 
