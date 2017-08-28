@@ -160,7 +160,6 @@ size:
 
 import os
 import tempfile
-import q
 import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -344,7 +343,7 @@ class BaseManager(object):
             if self.want.backup:
                 if os.path.exists(self.want.fulldest):
                     backup_file = self.client.module.backup_local(self.want.fulldest)
-                    self.want.update({'backup_file': backup_file})
+                    self.changes.update({'backup_file': backup_file})
             self.download()
         except IOError:
             raise F5ModuleError(
@@ -463,6 +462,8 @@ class V1Manager(BaseManager):
 class V2Manager(BaseManager):
     def read_current_from_device(self):
         collection = self.client.api.tm.sys.ucs.load()
+        if 'items' not in collection.attrs:
+            return []
         resources = collection.attrs['items']
         result = [x['apiRawValues']['filename'] for x in resources]
         return result

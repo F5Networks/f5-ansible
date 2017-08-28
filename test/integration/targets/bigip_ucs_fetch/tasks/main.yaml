@@ -24,7 +24,7 @@
 
 - name: Create a UCS, do not force
   bigip_ucs_fetch:
-      dest: "/tmp/{{ ucs_name }}"
+      dest: "/tmp/{{ ucs_name_1 }}"
       force: "no"
       src: "{{ ucs_name }}"
   register: result
@@ -32,12 +32,12 @@
 - name: Assert Create a UCS, do not force
   assert:
       that:
-          - not result|changed
+          - result|changed
 
 - name: Create a UCS, leave a backup
   bigip_ucs_fetch:
       backup: "yes"
-      dest: "/tmp/{{ ucs_name }}"
+      dest: "/tmp/{{ ucs_name_1 }}"
       src: "{{ ucs_name }}"
   register: result
 
@@ -57,9 +57,10 @@
       create_on_missing: "no"
       dest: "/tmp/{{ ucs_missing }}"
       src: "{{ ucs_missing }}"
+  ignore_errors: true
   register: result
 
-- name: Assert Fetch a missing UCS
+- name: Assert Error on fetching a missing UCS
   assert:
       that:
           - not result|changed
@@ -88,3 +89,12 @@
   assert:
       that:
           - result|changed
+
+- name: Remove backups
+  file:
+      path: "{{ item }}"
+      state: "absent"
+  with_items:
+      - "/tmp/{{ ucs_missing }}"
+      - "/tmp/{{ ucs_name_1 }}"
+      - "/tmp/{{ ucs_name }}"
