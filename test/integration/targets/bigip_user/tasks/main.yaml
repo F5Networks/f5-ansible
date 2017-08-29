@@ -229,9 +229,11 @@
 
 # Github issues
 - include: issue-113.yaml
+  tags: issue-113
+- include: issue-276.yaml
+  tags: issue-276
 - include: issue-310.yaml
-  tags:
-      - issue-310
+  tags: issue-310
 
 - name: Collect BIG-IP facts
   bigip_facts:
