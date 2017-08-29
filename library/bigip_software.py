@@ -440,18 +440,17 @@ volume:
 
 import io
 import isoparser
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Parameters,
-    AnsibleF5Client,
-    defaultdict,
-    F5ModuleError,
-    HAS_F5SDK,
-    iControlUnexpectedHTTPError,
-    iteritems,
-    os,
-    time
-)
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.f5_utils import os
+from ansible.module_utils.f5_utils import time
 from lxml import etree
+from requests.exceptions import ConnectionError
 
 try:
     import urlparse
@@ -1018,9 +1017,12 @@ class BaseManager(object):
         # We need to delay this slightly in case the the volume needs to be
         # created first
         for count in range(10):
-            if self.volume_exists_on_device():
-                break
-            time.sleep(4)
+            try:
+                if self.volume_exists_on_device():
+                    break
+            except ConnectionError:
+                pass
+            time.sleep(5)
         progress = self.load_volume_on_device()
         while True:
             time.sleep(10)
