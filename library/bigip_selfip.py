@@ -21,7 +21,7 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
@@ -200,31 +200,22 @@ address:
     sample: "192.0.2.10"
 name:
     description: The name of the Self IP
-    returned:
-        - created
-        - changed
-        - deleted
+    returned: created, changed and deleted
     type: string
     sample: "self1"
 netmask:
     description: The netmask of the Self IP
-    returned:
-        - changed
-        - created
+    returned: changed and created
     type: string
     sample: "255.255.255.0"
 traffic_group:
     description: The traffic group that the Self IP is a member of
-    return:
-        - changed
-        - created
+    returned: changed and created
     type: string
     sample: "traffic-group-local-only"
 vlan:
     description: The VLAN set on the Self IP
-    return:
-        - changed
-        - created
+    returned: changed and created
     type: string
     sample: "vlan1"
 '''
