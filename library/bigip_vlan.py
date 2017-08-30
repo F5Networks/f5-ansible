@@ -246,6 +246,7 @@ class Parameters(AnsibleF5Parameters):
 
     def _get_interfaces_from_device(self):
         lst = self.client.api.tm.net.interfaces.get_collection()
+        lst.append(self.client.api.tm.net.trunks.get_collection())
         return lst
 
     def _parse_return_ifcs(self):
