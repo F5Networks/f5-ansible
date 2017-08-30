@@ -27,3 +27,4 @@ test/integration/inventory/group_vars/all.yaml
 ./ansible/
 
 examples/hosts.ini
+**/*.secret
