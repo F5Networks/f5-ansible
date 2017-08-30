@@ -3,18 +3,38 @@ bigsuds
 requests
 git+https://github.com/ansible/ansible.git
 git+https://github.com/F5Networks/f5-common-python.git@development
+
+# Unit tests
 pytest
+pytest-cov
 flake8
+
+# Docs
 sphinx
 sphinx_rtd_theme
+
+# Debugging
 q
+
+# Used for code style checking
 pycodestyle
+
+# Used for all modules that need IP address validation
 netaddr
+
+# Used for creating CLI scripts in the scripts/ directory. Probably should
+# replace with plain-old argparse in the future
 fire
 tabulate
+
+# Used for diff'ing iApp templates in bigip_iapp_service
+deepdiff
 
 # Needed for SkipIf in unit tests. Consider switching to pytest?
 nose
 
 # Needed for unit tests
 mock
+
+# Used for upstream sanity tests
+voluptuous
