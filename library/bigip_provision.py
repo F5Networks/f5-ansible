@@ -51,6 +51,7 @@ options:
       - pem
       - sam
       - swg
+      - vcmp
   level:
     description:
       - Sets the provisioning level for the requested modules. Changing the
@@ -298,7 +299,7 @@ class ArgumentSpec(object):
                 choices=[
                     'afm', 'am', 'sam', 'asm', 'avr', 'fps',
                     'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx',
-                    'apm'
+                    'apm', 'vcmp'
                 ]
             ),
             level=dict(
