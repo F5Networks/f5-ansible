@@ -199,7 +199,7 @@
       time_until_up: 80
   register: result
 
-- name: Assert Change port - Idempotent check
+- name: Assert Change time until up - Idempotent check
   assert:
       that:
           - not result|changed

@@ -130,7 +130,7 @@
       type: "TTYPE_TCP_ECHO"
   register: result
 
-- name: Assert Change port - Echo - Idempotent check
+- name: Assert Change time until up - Echo - Idempotent check
   assert:
       that:
           - not result|changed
