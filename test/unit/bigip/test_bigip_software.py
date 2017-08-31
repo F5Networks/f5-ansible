@@ -24,6 +24,7 @@ __metaclass__ = type
 import os
 import json
 import pytest
+import sys
 
 from nose.plugins.skip import SkipTest
 if sys.version_info < (2, 7):
