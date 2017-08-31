@@ -75,12 +75,12 @@ images:
     type: list of dict
     sample:
         images:
-            - build: "0.0.184"
-              fileSize: "1997 MB",
-              lastModified: "Sun Oct  2 20:50:04 2016",
-              name: "BIGIP-12.1.1.0.0.184.iso",
-              product: "BIG-IP",
-              version: "12.1.1"
+            - build: 0.0.184
+              fileSize: 1997 MB,
+              lastModified: Sun Oct  2 20:50:04 2016,
+              name: BIGIP-12.1.1.0.0.184.iso,
+              product: BIG-IP,
+              version: 12.1.1
 hotfixes:
     description:
         List of hotfix ISOs that are present on the unit.
@@ -88,12 +88,12 @@ hotfixes:
     type: list of dict
     sample:
         hotfixes:
-            - build: "2.0.204"
-              fileSize: "1997 MB",
-              lastModified: "Sun Oct  2 20:50:04 2016",
-              name: "12.1.1-hf2.iso",
-              product: "BIG-IP",
-              version: "12.1.1"   
+            - build: 2.0.204
+              fileSize: 1997 MB,
+              lastModified: Sun Oct  2 20:50:04 2016,
+              name: 12.1.1-hf2.iso,
+              product: BIG-IP,
+              version: 12.1.1   
 volumes:     
     description:
         List the volumes present on device.
@@ -101,12 +101,12 @@ volumes:
     type: list of dict
     sample:
        volumes:
-            - basebuild: "0.0.184",
-              build: "0.0.184",
-              name: "HD1.2",
-              product: "BIG-IP",
-              status: "complete",
-              version: "12.1.1"              
+            - basebuild: 0.0.184,
+              build: 0.0.184,
+              name: HD1.2,
+              product: BIG-IP,
+              status: complete,
+              version: 12.1.1              
 '''
 
 
@@ -115,6 +115,7 @@ from ansible.module_utils.f5_utils import (
     AnsibleF5Parameters,
     HAS_F5SDK,
     F5ModuleError,
+    iteritems
 )
 
 
@@ -123,7 +124,7 @@ class Parameters(AnsibleF5Parameters):
         'name', 'build', 'version', 'product',
         'lastModified', 'basebuild', 'status',
         'active', 'fileSize'
-        ]
+    ]
 
     @property
     def include(self):
@@ -166,11 +167,37 @@ class Parameters(AnsibleF5Parameters):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
+        self.want = Parameters(self.client.module.params)
+        self.include = self.want.include
 
     def exec_module(self):
-        manager = BaseManager(self.client)
+        if 'all' in self.include:
+            names = ['image', 'hotfix', 'volume']
+        else:
+            names = self.include
+        managers = [self.get_manager(name) for name in names]
+        result = self.execute_managers(managers)
+        return result
 
-        return manager.exec_module()
+    def execute_managers(self, managers):
+        results = dict(changed=False)
+        for manager in managers:
+            result = manager.exec_module()
+            for k, v in iteritems(result):
+                if k == 'changed':
+                    if v is True:
+                        results['changed'] = True
+                else:
+                    results[k] = v
+        return results
+
+    def get_manager(self, which):
+        if 'image' == which:
+            return ImageFactManager(self.client)
+        if 'hotfix' == which:
+            return HotfixFactManager(self.client)
+        if 'volume' == which:
+            return VolumeFactManager(self.client)
 
 
 class BaseManager(object):
@@ -178,52 +205,19 @@ class BaseManager(object):
         self.client = client
         self.want = Parameters(self.client.module.params)
         self.result = dict()
-        self.include = self.want.include
         self.filter = self.want.filter
 
     def exec_module(self):
         result = dict()
-
-        if 'all' in self.include:
-            facts = self.get_all_facts()
-        else:
-            facts = self.get_selected_facts()
-
+        facts = self.get_facts()
         result.update(**facts)
         result.update(dict(changed=True))
         return result
 
-    def get_all_facts(self):
-        output = dict()
-        images = ImageFactManager(self.client)
-        hotfixes = HotfixFactManager(self.client)
-        volumes = VolumeFactManager(self.client)
-
-        output['images'] = images.get_facts()
-        output['hotfixes'] = hotfixes.get_facts()
-        output['volumes'] = volumes.get_facts()
-
-        return output
-
-    def get_selected_facts(self):
-        output = dict()
-        images = ImageFactManager(self.client)
-        hotfixes = HotfixFactManager(self.client)
-        volumes = VolumeFactManager(self.client)
-
-        if 'image' in self.include:
-            output['images'] = images.get_facts()
-        if 'hotfix' in self.include:
-            output['hotfixes'] = hotfixes.get_facts()
-        if 'volume' in self.include:
-            output['volumes'] = volumes.get_facts()
-
-        return output
-
     def _filter_and_format_facts(self, fact):
         filtered = dict()
         listing = fact.attrs
-        for k, v in listing.items():
+        for k, v in listing.viewitems():
             if k in Parameters.returnables:
                 filtered[str(k)] = str(v)
         return filtered
@@ -248,8 +242,9 @@ class BaseManager(object):
 class ImageFactManager(BaseManager):
 
     def get_facts(self):
+        to_return = dict()
         collection = self.get_facts_from_device()
-        to_return = self.collection_parser(collection)
+        to_return['images'] = self.collection_parser(collection)
         return to_return
 
     def get_facts_from_device(self):
@@ -260,8 +255,9 @@ class ImageFactManager(BaseManager):
 class HotfixFactManager(BaseManager):
 
     def get_facts(self):
+        to_return = dict()
         collection = self.get_facts_from_device()
-        to_return = self.collection_parser(collection)
+        to_return['hotfixes'] = self.collection_parser(collection)
         return to_return
 
     def get_facts_from_device(self):
@@ -272,8 +268,9 @@ class HotfixFactManager(BaseManager):
 class VolumeFactManager(BaseManager):
 
     def get_facts(self):
+        to_return = dict()
         collection = self.get_facts_from_device()
-        to_return = self.collection_parser(collection)
+        to_return['volumes'] = self.collection_parser(collection)
         return to_return
 
     def get_facts_from_device(self):
