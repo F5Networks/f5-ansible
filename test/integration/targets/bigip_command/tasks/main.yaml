@@ -23,13 +23,13 @@
       that:
           - result.stdout_lines|length == 2
 
-- name: Run command mising tmsh
+- name: Run command missing tmsh
   bigip_command:
       commands:
           - "show sys clock"
   register: result
 
-- name: Assert Run command mising tmsh
+- name: Assert Run command missing tmsh
   assert:
       that:
           - result.stdout_lines|length == 1
