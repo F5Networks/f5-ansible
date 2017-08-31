@@ -53,7 +53,7 @@ fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 
 
 def set_module_args(args):
-    {% raw %}args = json.dumps({{'ANSIBLE_MODULE_ARGS': args}}){% endraw %}
+    {% raw %}args = json.dumps({'ANSIBLE_MODULE_ARGS': args}){% endraw %}
     basic._ANSIBLE_ARGS = to_bytes(args)
 
 
