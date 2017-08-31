@@ -610,7 +610,7 @@ class Parameters(AnsibleF5Parameters):
         if volume is None:
             if reuse:
                 new_volume = self._get_next_available_volume()
-                if self._volume_exists_on_device(volume):
+                if self._volume_exists_on_device(new_volume):
                     self._values['delete_volume'] = True
                     self._values['create_volume'] = True
                 else:
