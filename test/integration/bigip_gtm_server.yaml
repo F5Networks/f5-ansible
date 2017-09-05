@@ -1,0 +1,36 @@
+
+# Test the bigip_gtm_server module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_gtm_server module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, test/integration/bigip_gtm_server.yaml
+#
+# Examples:
+#
+#    Run all tests on the {module} module
+#
+#    ansible-playbook -i notahost, test/integration/bigip_gtm_server.yaml
+#
+
+- name: Test the bigip_gtm_server module
+  hosts: "f5-test[0]"
+  connection: local
+
+  vars:
+      __tested_platforms:
+
+  environment:
+      F5_SERVER: "{{ ansible_host }}"
+      F5_USER: "{{ bigip_username }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+
+  roles:
+      - bigip_gtm_server
