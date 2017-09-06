@@ -1,0 +1,47 @@
+---
+
+- name: Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: "foo"
+    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    parent: "clientssl"
+  register: result
+
+- name: Assert Create a client SSL profile
+  assert:
+      that:
+          - result|changed
+
+- name: Create a client SSL profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: "foo"
+    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
+    parent: "clientssl"
+  register: result
+
+- name: Assert Create a client SSL profile - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove client SSL profile
+  bigip_profile_client_ssl:
+    name: "foo"
+    state: "absent"
+  register: result
+
+- name: Assert Remove client SSL profile
+  assert:
+      that:
+          - result|changed
+
+- name: Remove client SSL profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: "foo"
+    state: "absent"
+  register: result
+
+- name: Assert Remove client SSL profile - Idempotent check
+  assert:
+      that:
+          - not result|changed
