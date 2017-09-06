@@ -1,0 +1,23 @@
+---
+
+- name: Create GTM server
+  bigip_gtm_server:
+      name: "{{ monitor_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create TCP Monitor - Echo
+  assert:
+      that:
+          - result|changed
+
+- name: Create TCP Monitor - Echo - Idempotent check
+  bigip_monitor_tcp_echo:
+      name: "{{ monitor_name }}"
+      state: "present"
+  register: result
+
+- name: Assert Create TCP Monitor - Echo - Idempotent check
+  assert:
+      that:
+          - not result|changed
