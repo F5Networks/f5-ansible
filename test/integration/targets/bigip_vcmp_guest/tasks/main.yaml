@@ -1,0 +1,7 @@
+---
+
+- include: setup.yaml
+
+# do some stuff
+
+- include: teardown.yaml
