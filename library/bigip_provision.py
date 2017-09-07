@@ -217,7 +217,10 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.update_on_device()
-        self.wait_for_module_provisioning()
+        self._wait_for_module_provisioning()
+        if self.want.module == 'vcmp':
+            self._wait_for_reboot()
+            self._wait_for_module_provisioning()
         return True
 
     def should_update(self):
@@ -249,7 +252,15 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.remove_from_device()
-        self.wait_for_module_provisioning()
+        self._wait_for_module_provisioning()
+
+        # For vCMP, because it has to reboot, we also wait for mcpd to become available
+        # before "moving on", or else the REST API would not be available and subsequent
+        # Tasks would fail.
+        if self.want.module == 'vcmp':
+            self._wait_for_reboot()
+            self._wait_for_module_provisioning()
+
         if self.exists():
             raise F5ModuleError("Failed to de-provision the module")
         return True
@@ -260,7 +271,7 @@ class ModuleManager(object):
         resource = resource.load()
         resource.update(level='none')
 
-    def wait_for_module_provisioning(self):
+    def _wait_for_module_provisioning(self):
         # To prevent things from running forever, the hack is to check
         # for mprov's status twice. If mprov is finished, then in most
         # cases (not ASM) the provisioning is probably ready.
@@ -288,6 +299,37 @@ class ModuleManager(object):
         if hasattr(output, 'commandResult'):
             return True
         return False
+
+    def _get_last_reboot(self):
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "/usr/bin/last reboot | head - 1"'
+        )
+        if hasattr(output, 'commandResult'):
+            return str(output.commandResult)
+        return None
+
+    def _wait_for_reboot(self):
+        nops = 0
+
+        last_reboot = self._get_last_reboot()
+
+        # Sleep a little to let provisioning settle and begin properly
+        time.sleep(5)
+
+        while nops < 6:
+            try:
+                next_reboot = self._get_last_reboot()
+                if next_reboot is None:
+                    nops = 0
+                if next_reboot == last_reboot:
+                    nops = 0
+                else:
+                    nops += 1
+            except Exception as ex:
+                # This can be caused by restjavad restarting.
+                pass
+            time.sleep(10)
 
 
 class ArgumentSpec(object):
