@@ -90,6 +90,19 @@ class ModuleStubber(object):
                 self._top_level, self._module, dir
             )
             self.__touch(defaults_file)
+        for file in ['setup.yaml', 'teardown.yaml']:
+            defaults_file = '{0}/test/integration/targets/{1}/tasks/{2}'.format(
+                self._top_level, self._module, file
+            )
+            self.__touch(defaults_file)
+        main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(
+            self._top_level, self._module
+        )
+        with open(main_tests, 'w') as fh:
+            fh.write("---\n\n")
+            fh.write("- include: setup.yaml\n\n")
+            fh.write("# tests go here\n\n")
+            fh.write("- include: teardown.yaml")
 
     def __stub_playbook_file(self):
         # Stub out the test playbook
