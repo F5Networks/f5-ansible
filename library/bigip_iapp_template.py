@@ -457,9 +457,6 @@ class ArgumentSpec(object):
             content=dict()
         )
         self.f5_product_name = 'bigip'
-        self.mutually_exclusive = [
-            ['sync_device_to_group', 'sync_group_to_device']
-        ]
 
 
 def main():
@@ -471,8 +468,7 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name,
-        mutually_exclusive=spec.mutually_exclusive
+        f5_product_name=spec.f5_product_name
     )
 
     try:
