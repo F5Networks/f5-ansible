@@ -658,7 +658,7 @@ class ArgumentSpec(object):
             name=dict(
                 required=True
             ),
-            cert_content=dict(),
+            cert_content=dict(aliases=['content']),
             cert_src=dict(
                 type='path',
                 removed_in_version='2.4'
