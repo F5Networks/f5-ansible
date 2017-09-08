@@ -24,7 +24,6 @@ netaddr
 
 # Used for creating CLI scripts in the scripts/ directory. Probably should
 # replace with plain-old argparse in the future
-fire
 tabulate
 
 # Used for diff'ing iApp templates in bigip_iapp_service
@@ -38,3 +37,16 @@ mock
 
 # Used for upstream sanity tests
 voluptuous
+
+# Used for testing modules
+pep8
+pyflakes
+virtualenvwrapper
+
+# Used for stubbing new modules (./scripts/stub-new-module.py)
+ipython==5.1.0
+fire
+
+# For standing up test infrastructure
+shade
+os-client-config
