@@ -71,6 +71,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.f5_utils import defaultdict
 
 
 class Parameters(AnsibleF5Parameters):
