@@ -2,6 +2,11 @@
 
 - include: setup.yaml
 
-# do some stuff
+- name: Create a vCMP guest
+  bigip_vcmp_guest:
+      name: "guest1"
+      mgmt_network: "bridged"
+      mgmt_address: "10.10.10.10/24"
+      initial_image: ""
 
 - include: teardown.yaml

@@ -3,4 +3,4 @@
 - name: Provision vCMP
   bigip_provision:
       module: "vcmp"
-      level: "none"
+      state: "absent"
