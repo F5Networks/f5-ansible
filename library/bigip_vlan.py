@@ -21,7 +21,7 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
@@ -40,27 +40,24 @@ options:
       - Specifies a list of tagged interfaces and trunks that you want to
         configure for the VLAN. Use tagged interfaces or trunks when
         you want to assign a single interface or trunk to multiple VLANs.
-    required: false
     aliases:
       - tagged_interface
   untagged_interfaces:
     description:
       - Specifies a list of untagged interfaces and trunks that you want to
         configure for the VLAN.
-    required: false
     aliases:
       - untagged_interface
   name:
     description:
       - The VLAN to manage. If the special VLAN C(ALL) is specified with
         the C(state) value of C(absent) then all VLANs will be removed.
-    required: true
+    required: True
   state:
     description:
       - The state of the VLAN on the system. When C(present), guarantees
         that the VLAN exists with the provided attributes. When C(absent),
         removes the VLAN from the system.
-    required: false
     default: present
     choices:
       - absent
@@ -225,9 +222,9 @@ class Parameters(AnsibleF5Parameters):
         value = self._values['tagged_interfaces']
         if value is None:
             return None
-        self._parse_return_ifcs()
+        ifcs = self._parse_return_ifcs()
         for ifc in value:
-            if ifc not in self.ifcs:
+            if ifc not in ifcs:
                 err = 'The specified interface "%s" was not found' % ifc
                 raise F5ModuleError(err)
         return value
@@ -237,9 +234,9 @@ class Parameters(AnsibleF5Parameters):
         value = self._values['untagged_interfaces']
         if value is None:
             return None
-        self._parse_return_ifcs()
+        ifcs = self._parse_return_ifcs()
         for ifc in value:
-            if ifc not in self.ifcs:
+            if ifc not in ifcs:
                 err = 'The specified interface "%s" was not found' % ifc
                 raise F5ModuleError(err)
         return value
@@ -249,14 +246,12 @@ class Parameters(AnsibleF5Parameters):
         return lst
 
     def _parse_return_ifcs(self):
-        if self.ifcs is not None:
-            return
         ifclst = self._get_interfaces_from_device()
         ifcs = [str(x.name) for x in ifclst]
         if not ifcs:
             err = 'No interfaces were found'
             raise F5ModuleError(err)
-        self.ifcs = ifcs
+        return ifcs
 
     def to_return(self):
         result = {}
