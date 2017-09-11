@@ -1,23 +1,71 @@
 ---
 
+- name: Create datacenter
+  bigip_gtm_datacenter:
+      name: "{{ dc_name1 }}"
+
+- name: Create second datacenter
+  bigip_gtm_datacenter:
+      name: "{{ dc_name2 }}"
+
 - name: Create GTM server
   bigip_gtm_server:
-      name: "{{ monitor_name }}"
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            address: "1.1.1.1"
+            translation: "2.2.2.2"
+      datacenter: "{{ dc_name1 }}"
       state: "present"
   register: result
 
-- name: Assert Create TCP Monitor - Echo
+- name: Assert Create GTM server
   assert:
       that:
           - result|changed
 
-- name: Create TCP Monitor - Echo - Idempotent check
-  bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
+- name: Create GTM server - Idempotent check
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            address: "1.1.1.1"
+            translation: "2.2.2.2"
+      datacenter: "{{ dc_name1 }}"
       state: "present"
   register: result
 
-- name: Assert Create TCP Monitor - Echo - Idempotent check
+- name: Assert Create GTM server - Idempotent check
   assert:
       that:
           - not result|changed
+
+- name: Remove GTM server
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove GTM server
+  assert:
+      that:
+          - result|changed
+
+- name: Remove GTM server - Idempotent check
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      state: "absent"
+  register: result
+
+- name: Assert Remove GTM server - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove datacenters
+  bigip_gtm_datacenter:
+      name: "{{ item }}"
+      state: "absent"
+  with_items:
+      - "{{ dc_name1 }}"
+      - "{{ dc_name2 }}"
