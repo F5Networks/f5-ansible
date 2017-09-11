@@ -1,0 +1,12 @@
+clouds:
+  default:
+    identity_api_version: '3'
+    auth:
+      username: '<user>'
+      project_name: '<project>'
+      auth_url: 'https://<URL>:5000/v3'
+      domain_name: "default"
+    cacert: "/opt/f5-ansible/devtools/vio-openstack-certs.pem"
+    networks:
+      - name: "<admin-net>"
+        routes_externally: "True"

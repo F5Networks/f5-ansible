@@ -1,0 +1,6 @@
+---
+
+clouds:
+  default:
+    auth:
+      password: '<password>'
