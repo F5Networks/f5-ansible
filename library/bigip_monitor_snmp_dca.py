@@ -120,7 +120,12 @@ options:
   disk_threshold:
     description:
       - Specifies the maximum acceptable disk usage on the target server. When
-        creating a new monitor, the default is C(90) percent. 
+        creating a new monitor, the default is C(90) percent.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common' 
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
