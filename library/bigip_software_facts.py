@@ -45,7 +45,7 @@ options:
   filter:
     description:
       - Filter responses based on the attribute and value provided. Valid filters are required to be in 
-      C(key:value) format, with keys being one of the following: name, build, version, status, active.
+        C(key:value) format, with keys being one of the following; name, build, version, status, active.
 notes:
    - Requires the f5-sdk Python package on the host. This is as easy as
      pip install f5-sdk
