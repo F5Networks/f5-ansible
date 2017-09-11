@@ -38,6 +38,63 @@ options:
     description:
       - The name of the vCMP guest to manage.
     required: True
+  vlans:
+    description:
+      - VLANs that the guest uses to communicate with other guests, the host, and with
+        the external network. The available VLANs in the list are those that are
+        currently configured on the vCMP host.
+  initial_image:
+    description:
+      - Specifies the base software release ISO image file for installing the TMOS
+        hypervisor instance and any licensed BIG-IP modules onto the guest's virtual
+        disk. When creating a new guest, this parameter is required.
+  mgmt_network:
+    description:
+      - Specifies the method by which the management address is used in the vCMP guest.
+      - When C(bridged), specifies that the guest can communicate with the vCMP host's
+        management network.
+      - When C(isolated), specifies that the guest is isolated from the vCMP host's
+        management network. In this case, the only way that a guest can communicate
+        with the vCMP host is through the console port or through a self IP address
+        on the guest that allows traffic through port 22.
+      - When C(host only), prevents the guest from installing images and hotfixes other
+        than those provided by the hypervisor.
+      - If the guest setting is C(isolated) or C(host only), the C(mgmt_address) does
+        not apply.
+      - Concerning mode changing, changing C(bridged) to C(isolated) causes the vCMP
+        host to remove all of the guest's management interfaces from its bridged
+        management network. This immediately disconnects the guest's VMs from the
+        physical management network. Changing C(isolated) to C(bridged) causes the
+        vCMP host to dynamically add the guest's management interfaces to the bridged
+        management network. This immediately connects all of the guest's VMs to the
+        physical management network. Changing this property while the guest is in the
+        C(configured) or C(provisioned) state has no immediate effect.
+    choices:
+      - bridged
+      - isolated
+      - host only
+  mgmt_address:
+    description:
+      - Specifies the IP address, and subnet or subnet mask that you use to access
+        the guest when you want to manage a module running within the guest. This
+        parameter is required if the C(mgmt_network) parameter is C(bridged).
+      - If you do not specify a network or network mask, a default of C(/24)
+        (C(255.255.255.0)) will be assumed.
+  mgmt_route:
+    description:
+      - Specifies the gateway address for the C(mgmt_address).
+  state:
+    description:
+      - The state of the  on the system. When C(present), guarantees
+        that the VLAN exists with the provided attributes. When C(absent),
+        removes the VLAN from the system.
+    default: "present"
+    choices:
+      - disabled
+      - provisioned
+      - deployed
+      - absent
+      - present
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -49,22 +106,38 @@ author:
 '''
 
 EXAMPLES = '''
-- name: Create a ...
+- name: Create a vCMP guest
   bigip_vcmp_guest:
       name: "foo"
       password: "secret"
       server: "lb.mydomain.com"
       state: "present"
       user: "admin"
+      mgmt_network: "bridge"
+      mgmt_address: "10.20.30.40/24"
+  delegate_to: localhost
+
+- name: Create a vCMP guest with specific VLANs
+  bigip_vcmp_guest:
+      name: "foo"
+      password: "secret"
+      server: "lb.mydomain.com"
+      state: "present"
+      user: "admin"
+      mgmt_network: "bridge"
+      mgmt_address: "10.20.30.40/24"
+      vlans:
+          - vlan1
+          - vlan2
   delegate_to: localhost
 '''
 
 RETURN = '''
-param1:
-    description: The new param1 value of the resource.
+vlans:
+    description: The VLANs assigned to the vCMP guest, in their full path format.
     returned: changed
-    type: bool
-    sample: true
+    type: list
+    sample: ['/Common/vlan1', '/Common/vlan2']
 '''
 
 
@@ -73,23 +146,35 @@ from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.f5_utils import defaultdict
+
+
+try:
+    from netaddr import IPAddress, AddrFormatError, IPNetwork
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'managementGw': 'mgmt_route',
+        'managementNetwork': 'mgmt_network',
+        'managementIp': 'mgmt_address',
+        'initialImage': 'initial_image',
     }
 
     api_attributes = [
-
+        'vlans', 'managementNetwork', 'managementIp', 'initialImage', 'managementGw'
     ]
 
     returnables = [
-
+        'vlans', 'mgmt_network', 'mgmt_address', 'initial_image', 'mgmt_route'
     ]
 
     updatables = [
-
+        'vlans', 'mgmt_network', 'mgmt_address', 'initial_image', 'mgmt_route'
     ]
 
     def __init__(self, params=None):
@@ -141,6 +226,24 @@ class Parameters(AnsibleF5Parameters):
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
+
+    @property
+    def mgmt_route(self):
+        if self._values['mgmt_route'] is None:
+            return None
+        try:
+            result = IPAddress(self._values['mgmt_route'])
+            return str(result)
+        except AddrFormatError:
+            raise F5ModuleError(
+                "The specified 'mgmt_route' is not a valid IP address"
+            )
+
+    @property
+    def mgmt_address(self):
+        if self._values['mgmt_address'] is None:
+            return None
+
 
 
 class Changes(Parameters):
@@ -231,6 +334,14 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
+    def _fqdn_name(self, value):
+        if value.startswith('/'):
+            name = os.path.basename(value)
+            result = '/{0}/{1}'.format(self.partition, name)
+        else:
+            result = '/{0}/{1}'.format(self.partition, value)
+        return result
+
     def present(self):
         if self.exists():
             return self.update()
@@ -238,9 +349,8 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        result = self.client.api.tm.vcmp.guests.guest.exists(
+            name=self.want.name
         )
         return result
 
@@ -270,17 +380,15 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
+        self.client.api.tm.vcmp.guests.guest.create(
             name=self.want.name,
-            partition=self.want.partition,
             **params
         )
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.tm.vcmp.guests.guest.load(
+            name=self.want.name
         )
         resource.modify(**params)
 
@@ -290,17 +398,15 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.tm.vcmp.guests.guest.load(
+            name=self.want.name
         )
         if resource:
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.tm.vcmp.guests.guest.load(
+            name=self.want.name
         )
         result = resource.attrs
         return Parameters(result)
@@ -310,14 +416,29 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True),
+            vlans=dict(type='list'),
+            mgmt_network=dict(choices=['bridged', 'isolated', 'host only']),
+            mgmt_address=dict(),
+            mgmt_route=dict(),
+            initial_image=dict(),
+            state=dict(
+                default='deployed',
+                choices=['disabled', 'provisioned', 'deployed', 'absent', 'present']
+            )
         )
         self.f5_product_name = 'bigip'
+        self.required_if = [
+            ['mgmt_network', 'bridged', ['mgmt_address']]
+        ]
 
 
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if not HAS_NETADDR:
+        raise F5ModuleError("The python netaddr module is required")
 
     spec = ArgumentSpec()
 
