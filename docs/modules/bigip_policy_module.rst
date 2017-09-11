@@ -105,7 +105,6 @@ Examples
                     path: "yes"
                     starts-with:
                         - /euro
-              ordinal: 8
             - name: HomePage
               actions:
                   - forward: yes
@@ -116,7 +115,6 @@ Examples
                     path: yes
                     starts-with:
                         - /HomePage/
-              ordinal: 4
     
     - name: Create policies
       bigip_policy:

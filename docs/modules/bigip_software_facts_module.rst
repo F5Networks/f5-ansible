@@ -1,10 +1,10 @@
-.. _bigip_provision:
+.. _bigip_software_facts:
 
 
-bigip_provision - Manage BIG-IP module provisioning.
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_software_facts - Collect software facts from BIG-IP devices.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -15,13 +15,13 @@ bigip_provision - Manage BIG-IP module provisioning.
 Synopsis
 --------
 
-* Manage BIG-IP module provisioning. This module will only provision at the standard levels of Dedicated, Nominal, and Minimum.
+* Collect information about installed volumes, existing ISOs for images and hotfixes on the BIG-IP device.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk
 
 
 Options
@@ -37,16 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>level<br/><div style="font-size: small;"></div></td>
+                <tr><td>filter<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>nominal</td>
-        <td><ul><li>dedicated</li><li>nominal</li><li>minimum</li></ul></td>
-        <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not run.</div>        </td></tr>
-                <tr><td>module<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
     <td></td>
-        <td><ul><li>am</li><li>afm</li><li>apm</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>ilx</li><li>lc</li><li>ltm</li><li>pem</li><li>sam</li><li>swg</li><li>vcmp</li></ul></td>
-        <td><div>The module to provision in BIG-IP.</div>        </td></tr>
+        <td></td>
+        <td><div>Filter responses based on the attribute and value provided. Valid filters are required to be in <code>key:value</code> format, with keys being one of the following; name, build, version, status, active.</div>        </td></tr>
+                <tr><td>include<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>[u'all']</td>
+        <td><ul><li>all</li><li>image</li><li>hotfix</li><li>volume</li></ul></td>
+        <td><div>Type of information to collect.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -62,11 +62,6 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>The state of the provisioned module on the system. When <code>present</code>, guarantees that the specified module is provisioned at the requested level provided that there are sufficient resources on the device (such as physical RAM) to support the provisioned module. When <code>absent</code>, de-provision the module.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -88,24 +83,13 @@ Examples
  ::
 
     
-    - name: Provision PEM at "nominal" level
-      bigip_provision:
+    - name: Gather image facts filter on version
+      bigip_software_facts:
           server: "lb.mydomain.com"
-          module: "pem"
-          level: "nominal"
-          password: "secret"
           user: "admin"
-          validate_certs: "no"
-      delegate_to: localhost
-    
-    - name: Provision a dedicated SWG. This will unprovision every other module
-      bigip_provision:
-          server: "lb.mydomain.com"
-          module: "swg"
           password: "secret"
-          level: "dedicated"
-          user: "admin"
-          validate_certs: "no"
+          include: "image"
+          filter: "version:12.1.1"
       delegate_to: localhost
 
 Return Values
@@ -125,11 +109,25 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> level </td>
-        <td> The new provisioning level of the module. </td>
+        <td> images </td>
+        <td> List of base image ISOs that are present on the unit. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> minimum </td>
+        <td align=center> list of dict </td>
+        <td align=center> {'images': [{'product': 'BIG-IP,', 'version': '12.1.1', 'name': 'BIGIP-12.1.1.0.0.184.iso,', 'lastModified': 'Sun Oct  2 20:50:04 2016,', 'fileSize': '1997 MB,', 'build': '0.0.184'}]} </td>
+    </tr>
+            <tr>
+        <td> hotfixes </td>
+        <td> List of hotfix ISOs that are present on the unit. </td>
+        <td align=center> changed </td>
+        <td align=center> list of dict </td>
+        <td align=center> {'hotfixes': [{'product': 'BIG-IP,', 'version': '12.1.1', 'name': '12.1.1-hf2.iso,', 'lastModified': 'Sun Oct  2 20:50:04 2016,', 'fileSize': '1997 MB,', 'build': '2.0.204'}]} </td>
+    </tr>
+            <tr>
+        <td> volumes </td>
+        <td> List the volumes present on device. </td>
+        <td align=center> changed </td>
+        <td align=center> list of dict </td>
+        <td align=center> {'volumes': [{'status': 'complete,', 'product': 'BIG-IP,', 'version': '12.1.1', 'name': 'HD1.2,', 'basebuild': '0.0.184,', 'build': '0.0.184,'}]} </td>
     </tr>
         
     </table>
@@ -139,7 +137,7 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
 
 
 

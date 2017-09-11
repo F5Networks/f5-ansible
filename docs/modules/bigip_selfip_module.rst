@@ -231,14 +231,14 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> netmask </td>
         <td> The netmask of the Self IP </td>
-        <td align=center> ['changed', 'created'] </td>
+        <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> 255.255.255.0 </td>
     </tr>
             <tr>
         <td> name </td>
         <td> The name of the Self IP </td>
-        <td align=center> ['created', 'changed', 'deleted'] </td>
+        <td align=center> created, changed and deleted </td>
         <td align=center> string </td>
         <td align=center> self1 </td>
     </tr>
@@ -252,14 +252,14 @@ Common return values are documented here :doc:`common_return_values`, the follow
             <tr>
         <td> traffic_group </td>
         <td> The traffic group that the Self IP is a member of </td>
-        <td align=center>  </td>
+        <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> traffic-group-local-only </td>
     </tr>
             <tr>
         <td> vlan </td>
         <td> The VLAN set on the Self IP </td>
-        <td align=center>  </td>
+        <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> vlan1 </td>
     </tr>

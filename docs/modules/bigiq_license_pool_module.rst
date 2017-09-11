@@ -1,8 +1,8 @@
-.. _bigip_license:
+.. _bigiq_license_pool:
 
 
-bigip_license - Manage license installation and activation on BIG-IP devices
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_license_pool - Manages license pools of different types.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -15,7 +15,7 @@ bigip_license - Manage license installation and activation on BIG-IP devices
 Synopsis
 --------
 
-* Manage license installation and activation on BIG-IP devices. This module provides two different ways to license a device. Either via a activation key (which requires a connection back to f5.com) or, with the content of a license and dossier that you have acquired manually.
+* Manages license pools of different types. The type of the license pool determines the arguments that are provided to this module. BIG-IQ supports a variety of types of licenses and this module provides a means to manage them.
 
 
 Requirements (on host that executes module)
@@ -37,26 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>accept_eula<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Declares whether you accept the BIG-IP EULA or not. By default, this value is <code>no</code>. You must specifically declare that you have viewed and accepted the license. This module will not present you with that EULA though, so it is incumbent on you to re</div>        </td></tr>
-                <tr><td>dossier_content<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Path to file containing kernel dossier for your system.</div>        </td></tr>
                 <tr><td>key<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The registration key to use to license the BIG-IP. This is required if the <code>state</code> is equal to <code>present</code> or <code>latest</code>.</div>        </td></tr>
-                <tr><td>license_content<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
+        <td><div>The key to assign to the pool. When <code>state</code> is <code>present</code> or <code>latest</code></div>        </td></tr>
+                <tr><td>name<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Path to file containing the license to use. In most cases you will want to use a <code>lookup</code> for this.</div>        </td></tr>
+        <td><div>Specifies the name of the ... .</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -76,7 +66,12 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>absent</li><li>latest</li><li>present</li></ul></td>
-        <td><div>The state of the license on the system. When <code>present</code>, only guarantees that a license is there. When <code>latest</code> ensures that the license is always valid. When <code>absent</code> removes the license on the system. <code>latest</code> is most useful internally. When using <code>absent</code>, the account accessing the device must be configured to use the advanced shell instead of Appliance Mode.</div>        </td></tr>
+        <td><div>The state of the license on the system. When <code>present</code>, guarantees that the license exists and is activate. When <code>latest</code>, ensures that the license is valid and, if necessary, renews the existing license. When <code>absent</code>, removes the license on the system.</div>        </td></tr>
+                <tr><td>type<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul><li>regkey</li><li>utility</li></ul></td>
+        <td><div>The type of license that you are providing. BIG-IQ supports many different types of licenses, and this module supports many of them that let you create different types of license pools.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -98,56 +93,47 @@ Examples
  ::
 
     
-    - name: License BIG-IP using a key
-      bigip_license:
-          server: "lb.mydomain.com"
-          user: "admin"
+    - name: Create a license pool for a given RegKey license
+      bigiq_license_pool:
+          name: "foo"
           password: "secret"
-          key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
-      delegate_to: localhost
-    
-    - name: License BIG-IP using a development key
-      bigip_license:
           server: "lb.mydomain.com"
+          state: "present"
           user: "admin"
-          password: "secret"
-          key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
-          license_server: "xxx.f5net.com"
-      delegate_to: localhost
-    
-    - name: License BIG-IP using a pre-acquired license
-      bigip_license:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          license_content: "{{ lookup('file', 'license.lic') }}"
-          dossier_content: "{{ lookup('file', 'dossier.txt') }}"
-      delegate_to: localhost
-    
-    - name: Remove the license from the system
-      bigip_license:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "absent"
-      delegate_to: localhost
-    
-    - name: Update the current license of the BIG-IP
-      bigip_license:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
-          state: "latest"
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> param1 </td>
+        <td> The new param1 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Requires BIG-IP software version >= 12
 
 
 

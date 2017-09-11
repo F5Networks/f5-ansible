@@ -1,8 +1,8 @@
 .. _bigip_monitor_tcp_echo:
 
 
-bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp monitors.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -41,6 +41,11 @@ Synopsis
 * c
 * p
 *  
+* e
+* c
+* h
+* o
+*  
 * m
 * o
 * n
@@ -49,28 +54,6 @@ Synopsis
 * o
 * r
 * s
-*  
-* v
-* i
-* a
-*  
-* i
-* C
-* o
-* n
-* t
-* r
-* o
-* l
-*  
-* S
-* O
-* A
-* P
-*  
-* A
-* P
-* I
 * .
 
 
@@ -111,9 +94,9 @@ Options
     <div style="font-size: small;">aliases: monitor<div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>/Common/tcp</td>
+    <td>/Common/tcp_echo</td>
         <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp_echo</code> parent on the <code>Common</code> partition.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

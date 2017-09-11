@@ -1,10 +1,10 @@
-.. _bigip_monitor_tcp_half_open:
+.. _bigip_profile_client_ssl:
 
 
-bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp half-open monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -23,8 +23,30 @@ Synopsis
 * e
 * s
 *  
-* F
-* 5
+* c
+* l
+* i
+* e
+* n
+* t
+*  
+* S
+* S
+* L
+*  
+* p
+* r
+* o
+* f
+* i
+* l
+* e
+* s
+*  
+* o
+* n
+*  
+* a
 *  
 * B
 * I
@@ -32,33 +54,6 @@ Synopsis
 * -
 * I
 * P
-*  
-* L
-* T
-* M
-*  
-* t
-* c
-* p
-*  
-* h
-* a
-* l
-* f
-* -
-* o
-* p
-* e
-* n
-*  
-* m
-* o
-* n
-* i
-* t
-* o
-* r
-* s
 * .
 
 
@@ -81,27 +76,26 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>interval<br/><div style="font-size: small;"></div></td>
+                <tr><td>cert_key_chain<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
-                <tr><td>ip<br/><div style="font-size: small;"></div></td>
+        <td><div>One or more certificates and keys to associate with the SSL profile. This option is always a list. The keys in the list dictate the details of the client/key/chain combination. Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile. If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div><div>This list is a complex list that specifies a number of keys. There are several supported keys.</div><div>The <code>cert</code> key specifies a cert name for use. This key is required.</div><div>The <code>key</code> key contains a key name. This key is required.</div><div>The <code>chain</code> key contains a certificate chain that is relevant to the certificate and key mentioned earlier. This key is optional.</div>        </td></tr>
+                <tr><td>ciphers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'.</div><div>If this value is an IP address, and the <code>type</code> is <code>tcp</code> (the default), then a <code>port</code> number must be specified.</div>        </td></tr>
+        <td><div>Specifies the list of ciphers that the system supports. When creating a new profile, the default cipher list is <code>DEFAULT</code>.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Monitor name.</div></br>
-    <div style="font-size: small;">aliases: monitor<div>        </td></tr>
+        <td><div>-Specifies the name of the profile.</div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>/Common/tcp_half_open</td>
+    <td>/Common/clientssl</td>
         <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp_half_open</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>clientssl</code> parent on the <code>Common</code> partition.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -117,16 +111,6 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>time_until_up<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. If this parameter is not provided when creating a new monitor, then the default value will be 0.</div>        </td></tr>
-                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -148,23 +132,23 @@ Examples
  ::
 
     
-    - name: Create TCP Monitor
-      bigip_monitor_tcp_half_open:
+    - name: Create client SSL profile
+      bigip_profile_client_ssl:
           state: "present"
-          ip: "10.10.10.10"
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
-          name: "my_tcp_monitor"
+          name: "my_profile"
       delegate_to: localhost
     
-    - name: Remove TCP Monitor
-      bigip_monitor_tcp_half_open:
-          state: "absent"
+    - name: Create client SSL profile with specific ciphers
+      bigip_profile_client_ssl:
+          state: "present"
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
-          name: "my_tcp_monitor"
+          name: "my_profile"
+          ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
       delegate_to: localhost
 
 Return Values
@@ -184,39 +168,11 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
 
         <tr>
-        <td> ip </td>
-        <td> The new IP of IP/port definition. </td>
+        <td> ciphers </td>
+        <td> The ciphers applied to the profile. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> 10.12.13.14 </td>
-    </tr>
-            <tr>
-        <td> interval </td>
-        <td> The new interval in which to run the monitor check. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
-    </tr>
-            <tr>
-        <td> parent </td>
-        <td> New parent template of the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> tcp </td>
-    </tr>
-            <tr>
-        <td> timeout </td>
-        <td> The new timeout in which the remote system must respond to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> time_until_up </td>
-        <td> The new time in which to mark a system as up after first successful response. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
+        <td align=center> !SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA </td>
     </tr>
         
     </table>

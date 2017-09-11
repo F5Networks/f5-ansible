@@ -116,7 +116,6 @@ Examples
                     path: "yes"
                     starts-with:
                         - /euro
-              ordinal: 8
             - name: HomePage
               actions:
                   - forward: yes
@@ -127,7 +126,6 @@ Examples
                     path: yes
                     starts-with:
                         - /HomePage/
-              ordinal: 4
     
     - name: Create policies
       bigip_policy:
@@ -154,7 +152,6 @@ Examples
       bigip_policy_rule:
           policy: "Policy-Foo"
           name: "{{ item.name }}"
-          ordinal: "{{ item.ordinal }}"
           conditions: "{{ item.conditions }}"
           actions: "{{ item.actions }}"
       with_items:
