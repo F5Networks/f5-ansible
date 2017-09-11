@@ -73,6 +73,11 @@ options:
     choices:
       - present
       - absent
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common'
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
