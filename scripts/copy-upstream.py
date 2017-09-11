@@ -29,9 +29,11 @@ import re
 
 UPSTREAM_FIXTURE_FILE = '{0}/test/units/modules/network/f5/fixtures/{1}'
 UPSTREAM_UNIT_TEST = '{0}/test/units/modules/network/f5/test_{1}.py'
+UPSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
 UPSTREAM_MODULE = '{0}/lib/ansible/modules/network/f5/{1}.py'
 DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/{1}/fixtures/{2}'
 DOWNSTREAM_UNIT_TEST = '{0}/test/unit/{1}/test_{2}.py'
+DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{2}'
 DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 
 
@@ -138,6 +140,17 @@ def copy_unit_tests(module, upstream_dir):
     shutil.copy(src, dest)
 
 
+def copy_integration_tests(module, upstream_dir):
+    upstream = os.path.realpath(upstream_dir)
+    r = root_dir()
+    p = product(module)
+    dest = UPSTREAM_INTEGRATION_TEST.format(upstream, module)
+    src = DOWNSTREAM_INTEGRATION_TEST.format(r, p, module)
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    shutil.copytree(src, dest)
+
+
 def copy_unit_test_fixtures(module, upstream_dir):
     fixtures = get_fixtures(module)
     upstream = os.path.realpath(upstream_dir)
@@ -161,6 +174,7 @@ def main():
         copy_module(module, args.upstream_dir)
         copy_unit_tests(module, args.upstream_dir)
         copy_unit_test_fixtures(module, args.upstream_dir)
+        copy_integration_tests(module, args.upstream_dir)
     except Exception as ex:
         exit_fail(str(ex))
 
