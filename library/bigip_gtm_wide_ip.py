@@ -78,6 +78,12 @@ options:
       - disabled
       - enabled
     version_added: 2.4
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common'
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -510,23 +516,18 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             lb_method=dict(
-                required=False,
-                choices=lb_method_choices,
-                default=None
+                choices=lb_method_choices
             ),
             name=dict(
                 required=True,
                 aliases=['wide_ip']
             ),
             type=dict(
-                required=False,
-                default=None,
                 choices=[
                     'a', 'aaaa', 'cname', 'mx', 'naptr', 'srv'
                 ]
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present', 'enabled', 'disabled']
             )
