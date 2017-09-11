@@ -35,7 +35,7 @@ description:
     the description, and things unrelated to the policy rules themselves.
     It is also the first module that should be used when creating rules as
     the C(bigip_policy_rule) module requires a policy parameter.
-version_added: "2.4"
+version_added: "2.5"
 options:
   description:
     description:
@@ -49,7 +49,8 @@ options:
       - When C(state) is C(present), ensures that the policy exists and is
         published. When C(state) is C(absent), ensures that the policy is removed,
         even if it is currently drafted. When C(state) is C(draft), ensures that
-        the policy exists and is drafted.
+        the policy exists and is drafted. When modifying rules, it is required
+        that policies first be in a draft.
     choices:
       - present
       - absent
@@ -87,7 +88,6 @@ vars:
                 path: "yes"
                 starts-with:
                     - /euro
-          ordinal: 8
         - name: HomePage
           actions:
               - forward: yes
@@ -98,7 +98,6 @@ vars:
                 path: yes
                 starts-with:
                     - /HomePage/
-          ordinal: 4
 
 - name: Create policies
   bigip_policy:
