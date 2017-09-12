@@ -89,6 +89,22 @@ f5-sdk
       if not HAS_F5SDK:
          module.fail_json(msg='f5-sdk required for this module')
 
+You might ask yourself "Why am I doing this?".
+
+The answer is because of the way that Ansible tests PRs that are made against
+their source. There are automated tests that run specifically against your module,
+using an environment where none of your module's dependencies are installed.
+
+Therefore, without the appropriate exception handlers, your PR will fail to
+pass when these upstream tests are run.
+
+Example tests include, but are not limited to,
+
+* ansible-test sanity --test import --python 2.6
+* ansible-test sanity --test import --python 2.7
+* ansible-test sanity --test import --python 3.5
+* ansible-test sanity --test import --python 3.6
+
 Connecting to a BIG-IP
 ^^^^^^^^^^^^^^^^^^^^^^
 
