@@ -261,10 +261,6 @@ class Difference(object):
             return result
 
     @property
-    def cert_key_chain(self):
-        pass
-
-    @property
     def parent(self):
         if self.want.parent != self.want.parent:
             raise F5ModuleError(
