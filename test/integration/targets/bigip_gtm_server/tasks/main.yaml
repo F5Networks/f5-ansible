@@ -40,6 +40,76 @@
       that:
           - not result|changed
 
+- name: Update device using single address
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            address: "2.2.2.2"
+            translation: "1.1.1.1"
+      datacenter: "{{ dc_name1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Update device using single address
+  assert:
+      that:
+          - result|changed
+
+- name: Update device using single address - Idempotent check
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            address: "2.2.2.2"
+            translation: "1.1.1.1"
+      datacenter: "{{ dc_name1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Update device using single address - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Update device using multiple addresses
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            addresses:
+              - address: "4.4.4.1"
+                translation: "192.168.14.10"
+              - address: "4.4.4.2"
+            translation: "1.1.1.1"
+      datacenter: "{{ dc_name1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Update device using multiple addresses
+  assert:
+      that:
+          - result|changed
+
+- name: Update device using multiple addresses - Idempotent check
+  bigip_gtm_server:
+      name: "{{ server_name }}"
+      devices:
+          - name: "foo"
+            addresses:
+              - address: "4.4.4.1"
+                translation: "192.168.14.10"
+              - address: "4.4.4.2"
+            translation: "1.1.1.1"
+      datacenter: "{{ dc_name1 }}"
+      state: "present"
+  register: result
+
+- name: Assert Update device using multiple addresses - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
 - name: Remove GTM server
   bigip_gtm_server:
       name: "{{ server_name }}"

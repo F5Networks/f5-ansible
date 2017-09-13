@@ -231,43 +231,45 @@ class Parameters(AnsibleF5Parameters):
             return None
         result = []
 
-        for address in self._values['devices']:
-            if not 'translation' in address:
-                translation = 'none'
-            else:
-                translation = address['translation']
-
+        for device in self._values['devices']:
             if self.kind == 'tm:gtm:server:serverstate':
-                name = address['name']
-                device = address['deviceName']
-            else:
-                name = address['address']
-                device = address['name']
+                device['address'] = device.pop('name', 'none')
+                device['name'] = device.pop('deviceName', 'none')
 
-            result.append({
-                'name': name,
-                'deviceName': device,
-                'translation': translation
-            })
+            if 'address' in device:
+                translation = self._determine_translation(device)
+                name = device['address']
+                device_name = device['name']
+                result.append({
+                    'name': name,
+                    'deviceName': device_name,
+                    'translation': translation
+                })
+            elif 'addresses' in device:
+                for address in device['addresses']:
+                    translation = self._determine_translation(address)
+                    name = address['address']
+                    device_name = device['name']
+                    result.append({
+                        'name': name,
+                        'deviceName': device_name,
+                        'translation': translation
+                    })
+
+            else:
+                raise F5ModuleError(
+                    "The specified device list must contain an 'address' or 'addresses' key"
+                )
         return result
+
+    def _determine_translation(self, device):
+        if not 'translation' in device:
+            return 'none'
+        return device['translation']
 
     @property
     def addresses(self):
         return self.devices
-
-    @addresses.setter
-    def addresses(self, value):
-        # This is probably not a good way to check if we are looking at the
-        # server resource, but we can change this depending on the REST APIs
-        # being communicated with.
-        #
-        # In any event 'kind' is an attribute that only comes from the REST
-        # API.
-        result = []
-        for device in value:
-            device['name'] = device.pop('deviceName', "none")
-            result.append(device)
-        self._values['devices'] = result
 
     @property
     def enabled(self):
