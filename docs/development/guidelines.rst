@@ -54,7 +54,7 @@ If a module that you need does not yet exist, it is equally likely that the
 REST API in the f5-sdk has also not yet been developed. Please refer to the
 following github project
 
-  * https://github.com/F5Networks/f5-common-python
+* https://github.com/F5Networks/f5-common-python
 
 Open an Issue with that project to add the necessary APIs so that a proper
 Ansible module can be written to use them.
@@ -186,7 +186,7 @@ The travis configuration contained in this repo will verify that your modules
 are compatible with both versions. Use the following cheat-sheet to write
 compatible code.
 
-  * http://python-future.org/compatible_idioms.html
+* http://python-future.org/compatible_idioms.html
 
 Automated testing
 -----------------
