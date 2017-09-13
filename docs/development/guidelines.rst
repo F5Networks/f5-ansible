@@ -108,59 +108,73 @@ Example tests include, but are not limited to,
 Connecting to a BIG-IP
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To connect to a BIG-IP, you should use the instantiate a `ManagementRoot`
-object, providing the credentials and options you wish to use for connecting.
+Connecting to an F5 product is handled for you automatically. You can control
+which product you are communicating with by changing the appropriate value in
+your `ArgumentSpec` class.
 
-REST
-""""
-
-An example of connecting to big-ip01.internal is shown below.
+For example, to specify that your module is one that communicates with a BIG-IP,
+The minimum viable `ArgumentSpec` you can write is illustrated below.
 
 .. code-block:: python
 
-   from f5.bigip import ManagementRoot
-   from f5.bigip.contexts import TransactionContextManager
+   class ArgumentSpec(object):
+       def __init__(self):
+           self.argument_spec = dict()
+           self.f5_product_name = 'bigip'
+
+Note the special key `f5_product_name`. By changing this value, you are able to
+change the `ManagementRoot` which will be provided to your module.
+
+The following is a list of allowed values for this key
+
+* bigip
+* bigiq
+* iworkflow
+
+Inside your module, the `ManagementRoot` is contained in the `ModuleManager`
+under the `self.client.api` object.
+
+Use of the object is done in the same way that you work normally use the
+`ManagementRoot` of an F5-SDK product.
+
+For example, the code snippet below illustrates a "normal" method of using the
+F5-SDK
+
+.. code-block:: python
 
    mr = ManagementRoot("localhost", "admin", "admin", port='10443')
-   tx = mr.tm.transactions.transaction
+   vs = mr.tm.ltm.virtuals.virtual.load(name='asdf')
 
-   with TransactionContextManager(tx) as api:
-       virt = api.tm.ltm.virtuals.virtual.load(name='asdf')
-       tcp = virt.profiles_s.profiles.load(name='tcp')
-       tcp.delete()
-       virt.profiles_s.profiles.create(name='wom-tcp-wan-optimized')
+The equivalent Ansible module code is shown below
+
+.. code-block:: python
+
+   # Assumes you provided "bigip" in your ArgumentSpec
+   vs = self.client.api.tm.ltm.virtuals.virtual.load(name='asdf')
 
 Exception Handling
 ^^^^^^^^^^^^^^^^^^
 
-If an exception is thrown, it is up to you decide how to handle it but
-usually calling `fail_json` with the error message will suffice.
+If an exception is thrown, it is up to you decide how to handle it.
 
-For raising exceptions you can use the exception class, `F5ModuleError`,
-provided with the `f5-sdk`. It can be used as such.
+For raising exceptions the exception class, `F5ModuleError`, provided with the
+`f5-sdk` is used exclusively. It can be used as such.
 
 .. code-block:: python
 
-   try:
-       from f5.bigip import ManagementRoot
-       HAS_F5SDK = True
-   except ImportError:
-       HAS_F5SDK = False
-
-   # Connect to BIG-IP
+   # Module code
    ...
 
-   # Make a call to BIG-IP
    try:
-       result = api.tm.ltm.pools.pool.create(foo='bar')
-   except F5ModuleError as e:
-       module.fail_json(msg=e.message)
+       result = self.want.api.tm.ltm.pools.pool.create(foo='bar')
+   except iControlUnexpectedHTTPError as ex:
+       raise F5ModuleError(str(ex))
 
-Helper functions
-^^^^^^^^^^^^^^^^
+   ...
+   # End of module code
 
-The helper functions available to you are included in the Ansible f5.py
-module_utils.
+In all cases which you encounter it, it is correct to catch internal exceptions
+and re-raise them (if necessary) with the `F5ModuleError` class.
 
 Code compatibility
 ------------------
@@ -186,6 +200,17 @@ VE instances to do your testing (although if you do that's fine).
 
 We currently have the following devices in our test harness
 
-  * BIG-IP VE 11.6.0
-  * BIG-IP VE 12.0.0
-  * BIG-IP VE 12.1.0
+* 12.0.0 (BIGIP-12.0.0.0.0.606)
+* 12.1.0 (BIGIP-12.1.0.0.0.1434)
+* 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
+* 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
+* 12.1.1 (BIGIP-12.1.1.0.0.184)
+* 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
+* 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
+* 12.1.2 (BIGIP-12.1.2.0.0.249)
+* 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+* 13.0.0 (BIGIP-13.0.0.0.0.1645)
+* 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
+
+The above list runs the risk of becoming outdated because the actual source of
+truth can be found here
