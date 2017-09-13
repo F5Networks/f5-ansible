@@ -1,0 +1,3 @@
+---
+
+initial_image: "{{ role_path }}/files/BIGIP-13.0.0.0.0.1645.iso"

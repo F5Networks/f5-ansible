@@ -7,6 +7,25 @@
       name: "guest1"
       mgmt_network: "bridged"
       mgmt_address: "10.10.10.10/24"
-      initial_image: ""
+      initial_image: "{{ initial_image }}"
+  register: result
+
+- name: Assert Create a vCMP guest
+  assert:
+      that:
+          - result|changed
+
+- name: Create a vCMP guest - Idempotent check
+  bigip_vcmp_guest:
+      name: "guest1"
+      mgmt_network: "bridged"
+      mgmt_address: "10.10.10.10/24"
+      initial_image: "{{ initial_image }}"
+  register: result
+
+- name: Assert Create a vCMP guest - Idempotent check
+  assert:
+      that:
+          - not result|changed
 
 - include: teardown.yaml
