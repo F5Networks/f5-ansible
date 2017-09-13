@@ -260,7 +260,7 @@ class Difference(object):
             result = self.__default(param)
             return result
 
-    @proprty
+    @property
     def cert_key_chain(self):
         pass
 
