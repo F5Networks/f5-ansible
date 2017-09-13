@@ -1,4 +1,4 @@
-{% extends "f5-sphinx-theme/layout.html" %}
+{% extends "classic/layout.html" %}
 
 {% set css_files = css_files + ["_static/css/f5.css", "_static/css/custom.css"] %}
 {# set script_files = script_files + ["https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js", "_static/js/bootstrap.min.js"] #}
@@ -39,7 +39,7 @@
 {%- block sidebar2 %}{% endblock %}
 
 {%- block header %}
-  {% include "header.html" %}
+  {% include "f5-sphinx-theme/header.html" %}
 {% endblock %}
 
 {% block content %}
@@ -77,7 +77,7 @@
 
 {% endblock %}
 {%- block footer %}
-  {% include "footer.html" %}
+  {% include "f5-sphinx-theme/footer.html" %}
   <!-- Bootstrap core JavaScript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
