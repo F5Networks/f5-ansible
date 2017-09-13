@@ -13,6 +13,9 @@ flake8
 sphinx
 sphinx_rtd_theme
 markupsafe
+git+https://github.com/f5devcentral/f5-sphinx-theme@master
+cloud_sptheme
+sphinxjp.themes.basicstrap
 
 # Debugging
 q
@@ -20,15 +23,11 @@ q
 # Used for code style checking
 pycodestyle
 
-# Used for all modules that need IP address validation
+# Used in modules
 netaddr
-
-# Used for creating CLI scripts in the scripts/ directory. Probably should
-# replace with plain-old argparse in the future
-tabulate
-
-# Used for diff'ing iApp templates in bigip_iapp_service
 deepdiff
+isoparser
+lxml
 
 # Needed for SkipIf in unit tests. Consider switching to pytest?
 nose
