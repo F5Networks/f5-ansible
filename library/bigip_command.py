@@ -363,6 +363,11 @@ class ArgumentSpec(object):
             interval=dict(
                 default=1,
                 type='int'
+            ),
+            transport=dict(
+                type='str',
+                default='rest',
+                choices=['cli', 'rest']
             )
         )
         self.f5_product_name = 'bigip'
@@ -378,7 +383,7 @@ def main():
     )
 
     if client.module.params['transport'] != 'cli' and not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required for use of f5api")
+        raise F5ModuleError("The python f5-sdk module is required to use the rest api")
 
     try:
         mm = ModuleManager(client)
