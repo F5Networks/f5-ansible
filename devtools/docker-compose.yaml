@@ -1,0 +1,60 @@
+---
+
+version: '3.3'
+services:
+  py2.7.10:
+    image: python:2.7
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secrets.yaml
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+  py3.5.4:
+    image: python:3.5
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secrets.yaml
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+  py3.6.2:
+    image: python:3.6
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secrets.yaml
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+secrets:
+  clouds.yaml:
+    file: ./secrets/clouds.yaml.secret
+  secure.yaml:
+    file: ./secrets/secure.yaml.secret
