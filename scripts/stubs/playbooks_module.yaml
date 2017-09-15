@@ -23,7 +23,21 @@
   connection: local
 
   vars:
-      __tested_platforms:
+      limit_to: "*"
+      __metadata__:
+          version: "1.0"
+          tested_platforms:
+              - "NA"
+          callgraph_exclude:
+              - "pycallgraph.*"
+
+              # Ansible related
+              - "ansible.module_utils.basic.AnsibleModule.*"
+              - "ansible.module_utils.basic.*"
+              - "ansible.module_utils.parsing.*"
+              - "ansible.module_utils._text.*"
+              - "ansible.module_utils.six.*"
+
 
 {% raw %}  environment:
       F5_SERVER: "{{ ansible_host }}"
