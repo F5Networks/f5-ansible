@@ -1,10 +1,11 @@
-FROM python:2.7
+FROM python:3.6.2
 MAINTAINER @caphrim007
 
 COPY requirements.test.txt /tmp/__src__/
 RUN mkdir -p /root/.config/openstack
 RUN ln -s /run/secrets /root/.config/openstack/secrets
 RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
+RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
 
 RUN apt-get update && apt-get install -y \
     python-dev python-pip vim git-core wget curl \

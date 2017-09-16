@@ -1,0 +1,4 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" build --no-cache py2.7.10

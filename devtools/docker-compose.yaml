@@ -6,7 +6,7 @@ services:
     image: python:2.7
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py2.7.10
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -23,7 +23,7 @@ services:
     image: python:3.5
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.5.4
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -40,7 +40,7 @@ services:
     image: python:3.6
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2
     command: /bin/bash
     secrets:
       - source: clouds.yaml

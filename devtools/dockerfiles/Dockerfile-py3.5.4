@@ -1,0 +1,20 @@
+FROM python:3.5.4
+MAINTAINER @caphrim007
+
+COPY requirements.test.txt /tmp/__src__/
+RUN mkdir -p /root/.config/openstack
+RUN ln -s /run/secrets /root/.config/openstack/secrets
+RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
+RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
+
+RUN apt-get update && apt-get install -y \
+    python-dev python-pip vim git-core wget curl \
+    libffi-dev libssl-dev libxml2-dev libxslt1-dev \
+    libjpeg62-turbo-dev zlib1g-dev
+RUN pip install -r /tmp/__src__/requirements.test.txt
+
+RUN rm -rf /var/lib/apt/lists/*
+
+WORKDIR /here
+
+CMD ['/bin/bash']
