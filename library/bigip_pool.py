@@ -79,7 +79,8 @@ options:
       - weighted-least-connections-nod
   monitor_type:
     description:
-      - Monitor rule type when C(monitors) > 1.
+      - Monitor rule type when C(monitors) > 1. When creating a new pool, if this
+        value is not specified, the default of 'and_list' will be used.
     version_added: "1.3"
     choices: ['and_list', 'm_of_n']
   quorum:
@@ -237,14 +238,15 @@ reselect_tries:
 
 import re
 import os
+
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.f5_utils import iteritems
 from netaddr import IPAddress, AddrFormatError
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
 
 
 class Parameters(AnsibleF5Parameters):
@@ -252,7 +254,8 @@ class Parameters(AnsibleF5Parameters):
         'loadBalancingMode': 'lb_method',
         'slowRampTime': 'slow_ramp_time',
         'reselectTries': 'reselect_tries',
-        'serviceDownAction': 'service_down_action'
+        'serviceDownAction': 'service_down_action',
+        'monitor': 'monitors'
     }
 
     updatables = [
@@ -273,8 +276,33 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     def __init__(self, params=None):
-        super(Parameters, self).__init__(params)
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
         self._values['__warnings'] = []
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     @property
     def lb_method(self):
@@ -314,71 +342,57 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError('Provided lb_method is unknown')
         return lb_method
 
+    def _fqdn_name(self, value):
+        if value.startswith('/'):
+            name = os.path.basename(value)
+            result = '/{0}/{1}'.format(self.partition, name)
+        else:
+            result = '/{0}/{1}'.format(self.partition, value)
+        return result
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            return result
+        except Exception:
+            return self._values['monitors']
+
     @property
     def monitors(self):
-        monitors = list()
-        monitor_list = self._values['monitors']
-        monitor_type = self._values['monitor_type']
-        error1 = "The 'monitor_type' parameter cannot be empty when " \
-                 "'monitors' parameter is specified."
-        error2 = "The 'monitor' parameter cannot be empty when " \
-                 "'monitor_type' parameter is specified"
-        if monitor_list is not None and monitor_type is None:
-            raise F5ModuleError(error1)
-        elif monitor_list is None and monitor_type is not None:
-            raise F5ModuleError(error2)
-        elif monitor_list is None:
+        if self._values['monitors'] is None:
             return None
-
-        for m in monitor_list:
-            if re.match(r'\/\w+\/\w+', m):
-                m = '/{0}/{1}'.format(self.partition, os.path.basename(m))
-            elif re.match(r'\w+', m):
-                m = '/{0}/{1}'.format(self.partition, m)
-            else:
-                raise F5ModuleError(
-                    "Unknown monitor format '{0}'".format(m)
-                )
-            monitors.append(m)
-
-        return monitors
+        monitors = [self._fqdn_name(x) for x in self.monitors_list]
+        if self.monitor_type == 'and_list':
+            result = ' and '.join(monitors).strip()
+        else:
+            monitors = ' '.join(monitors)
+            result = 'min %s of { %s }' % (self.quorum, monitors)
+        return result
 
     @property
     def quorum(self):
-        value = self._values['quorum']
-        error = "Quorum value must be specified with monitor_type 'm_of_n'."
-        if self._values['monitor_type'] == 'm_of_n' and value is None:
-            raise F5ModuleError(error)
-        return value
+        if self.monitor_type == 'm_of_n' and self._values['quorum'] is None:
+            raise F5ModuleError(
+                "Quorum value must be specified with monitor_type 'm_of_n'."
+            )
+        return self._values['quorum']
 
     @property
-    def monitor(self):
-        monitors = self.monitors
-        monitor_type = self._values['monitor_type']
-        quorum = self.quorum
-
-        if monitors is None:
+    def monitor_type(self):
+        if self._values['monitor_type'] is None:
             return None
-
-        if monitor_type == 'and_list':
-            and_list = list()
-            for m in monitors:
-                if monitors.index(m) == 0:
-                    and_list.append(m)
-                else:
-                    and_list.append('and')
-                    and_list.append(m)
-            result = ' '.join(and_list)
+        if self.kind == 'tm:ltm:pool:poolstate':
+            pattern = r'min\s+\d+\s+of'
+            matches = re.search(pattern, self._values['monitors'])
+            if matches:
+                return 'm_of_n'
+            else:
+                return 'and_list'
         else:
-            min_list = list()
-            prefix = 'min {0} of {{'.format(str(quorum))
-            min_list.append(prefix)
-            for m in monitors:
-                min_list.append(m)
-            min_list.append('}')
-            result = ' '.join(min_list)
-
-        return result
+            return self._values['monitor_type']
 
     @property
     def host(self):
@@ -437,12 +451,51 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class Changes(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def monitors(self):
+        if self.want.monitor_type is None:
+            self.want.update(dict(monitor_type=self.have.monitor_type))
+        if not self.want.monitors_list:
+            self.want.monitors = self.have.monitors_list
+        if not self.want.monitors and self.want.monitor_type is not None:
+            raise F5ModuleError(
+                "The 'monitors' parameter cannot be empty when 'monitor_type' parameter is specified"
+            )
+        if self.want.monitors != self.have.monitors:
+            return self.want.monitors
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def exec_module(self):
         changed = False
@@ -484,13 +537,15 @@ class ModuleManager(object):
             self.changes = Parameters(changed)
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -547,6 +602,15 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        if self.want.monitor_type is not None:
+            if self.want.monitors_list:
+                raise F5ModuleError(
+                    "The 'monitors' parameter cannot be empty when 'monitor_type' parameter is specified"
+                )
+        else:
+            if self.want.monitor_type is None:
+                self.want.update(dict(monitor_type='and_list'))
+
         self._set_changed_options()
         if self.client.check_mode:
             return True
