@@ -184,7 +184,13 @@ from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import run_commands
+
+try:
+    from ansible.module_utils.f5_utils import run_commands
+    HAS_CLI_TRANSPORT = True
+except ImportError:
+    HAS_CLI_TRANSPORT = False
+
 from ansible.module_utils.netcli import FailedConditionsError
 from ansible.module_utils.six import string_types
 from ansible.module_utils.netcli import Conditional
@@ -271,7 +277,7 @@ class ModuleManager(object):
             return
 
         while retries > 0:
-            if self.client.module.params['transport'] == 'cli':
+            if self.client.module.params['transport'] == 'cli' and HAS_CLI_TRANSPORT:
                 responses = run_commands(self.client.module, self.want.commands)
             else:
                 responses = self.execute_on_device(commands)
