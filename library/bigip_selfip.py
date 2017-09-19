@@ -75,6 +75,15 @@ options:
         - The route domain id of the system. When creating a new Self IP, if
           this value is not specified, a default value of C(0) will be used.
     version_added: 2.3
+  partition:
+    description:
+      - Device partition to manage resources on. You can set different partitions
+        for Self IPs, but the address used may not match any other address used
+        by a Self IP. In that sense, Self IPs are not isolated by partitions as
+        other resources on a BIG-IP are.
+    required: False
+    default: 'Common'
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
