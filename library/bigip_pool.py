@@ -32,15 +32,6 @@ short_description: Manages F5 BIG-IP LTM pools.
 description:
   - Manages F5 BIG-IP LTM pools via iControl REST API.
 version_added: 1.2
-author:
-  - Tim Rupp (@caphrim007)
-  - Wojciech Wypior (@wojtek0806)
-notes:
-  - Requires BIG-IP software version >= 11.
-  - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
-  - Best run as a local_action in your playbook.
-requirements:
-  - f5-sdk
 options:
   description:
     description:
@@ -121,7 +112,22 @@ options:
     description:
       - Pool member port.
     deprecated: Deprecated in 2.4. Use the bigip_pool_member module instead.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common'
+    version_added: 2.5
+notes:
+  - Requires BIG-IP software version >= 11.
+  - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
+  - Best run as a local_action in your playbook.
+requirements:
+  - f5-sdk
 extends_documentation_fragment: f5
+author:
+  - Tim Rupp (@caphrim007)
+  - Wojciech Wypior (@wojtek0806)
 '''
 
 EXAMPLES = '''

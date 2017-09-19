@@ -58,6 +58,12 @@ options:
       - The C(key) key contains a key name. This key is required.
       - The C(chain) key contains a certificate chain that is relevant to the certificate
         and key mentioned earlier. This key is optional.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common'
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
