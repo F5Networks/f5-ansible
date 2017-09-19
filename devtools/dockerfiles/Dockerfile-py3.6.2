@@ -1,20 +1,27 @@
 FROM python:3.6.2
 MAINTAINER @caphrim007
 
-COPY requirements.test.txt /tmp/__src__/
 RUN mkdir -p /root/.config/openstack
-RUN ln -s /run/secrets /root/.config/openstack/secrets
+RUN rm -f /root/.config/openstack/clouds.yaml /root/.config/openstack/secure.yaml
+RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml
+RUN ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml
+RUN ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem
 RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
 RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
 
 RUN apt-get update && apt-get install -y \
     python-dev python-pip vim git-core wget curl \
     libffi-dev libssl-dev libxml2-dev libxslt1-dev \
-    libjpeg62-turbo-dev zlib1g-dev
+    libjpeg62-turbo-dev zlib1g-dev python3-apt jq
+
+# Because python gets installed in /usr/local/bin instead of /usr/bin
+RUN ln -sf /usr/lib/python3/dist-packages/apt_pkg.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.6/apt_pkg.so
+RUN ln -sf /usr/lib/python3/dist-packages/apt_inst.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.6/apt_inst.so
+RUN ln -sf /usr/lib/python3/dist-packages/apt /usr/local/lib/python3.6/apt
+
+COPY requirements.test.txt /tmp/__src__/requirements.test.txt
 RUN pip install -r /tmp/__src__/requirements.test.txt
 
 RUN rm -rf /var/lib/apt/lists/*
-
 WORKDIR /here
-
 CMD ['/bin/bash']
