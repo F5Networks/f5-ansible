@@ -1,9 +1,14 @@
 ---
 
+# We use clouds.yaml for both the CLI and Ansible configurations
+#
+# @see: https://docs.openstack.org/python-openstackclient/latest/configuration/index.html
+#
+
 version: '3.3'
 services:
   py2.7.10:
-    image: python:2.7
+    image: f5ansible/py2.7.10
     build:
       context: ..
       dockerfile: ./devtools/dockerfiles/Dockerfile-py2.7.10
@@ -12,15 +17,19 @@ services:
       - source: clouds.yaml
         target: clouds.yaml
       - source: secure.yaml
-        target: secrets.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
       - type: bind
         source: ../
         target: /here
+    environment:
+      - OS_CLOUD=default
   py3.5.4:
-    image: python:3.5
+    image: f5ansible/py3.5.4
     build:
       context: ..
       dockerfile: ./devtools/dockerfiles/Dockerfile-py3.5.4
@@ -29,15 +38,19 @@ services:
       - source: clouds.yaml
         target: clouds.yaml
       - source: secure.yaml
-        target: secrets.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
       - type: bind
         source: ../
         target: /here
+    environment:
+      - OS_CLOUD=default
   py3.6.2:
-    image: python:3.6
+    image: f5ansible/py3.6.2
     build:
       context: ..
       dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2
@@ -46,15 +59,21 @@ services:
       - source: clouds.yaml
         target: clouds.yaml
       - source: secure.yaml
-        target: secrets.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
       - type: bind
         source: ../
         target: /here
+    environment:
+      - OS_CLOUD=default
 secrets:
   clouds.yaml:
     file: ./secrets/clouds.yaml.secret
   secure.yaml:
     file: ./secrets/secure.yaml.secret
+  cacerts.pem:
+    file: ./secrets/cacerts.pem.secret
