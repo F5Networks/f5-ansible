@@ -24,6 +24,14 @@ ANSIBLE_METADATA = {
     'metadata_version': '1.0'
 }
 
+
+# To do list:
+# Add updatables
+# Split to separate module managers if this gets too convoluted?
+# Unit tests
+# Functional tests
+
+
 import os
 import time
 from icontrol.exceptions import iControlUnexpectedHTTPError
@@ -232,6 +240,8 @@ class ModuleManager(object):
         if task:
             if self.wait_for_task(task):
                 return True
+            else:
+                raise F5ModuleError('Import policy task failed.')
         return False
 
     def create(self):
@@ -247,7 +257,10 @@ class ModuleManager(object):
 
     def activate(self):
         task = self.apply_policy_on_device()
-        self.wait_for_task(task)
+        if self.wait_for_task(task):
+            return True
+        else:
+            raise F5ModuleError('Apply policy task failed.')
 
     def wait_for_task(self, task):
         while True:
@@ -255,7 +268,6 @@ class ModuleManager(object):
             if task.status in ['COMPLETED', 'FAILURE']:
                 break
             time.sleep(1)
-        # better to raise exception if the task fails, need to think on this a bit
         if task.status == 'FAILURE':
             return False
         if task.status == 'COMPLETED':
@@ -324,9 +336,50 @@ class ModuleManager(object):
             raise F5ModuleError('Failed to delete ASM policy: {0}'.format(self.want.name))
         return True
 
-# To do list:
-# Add status checking for policy apply/import to verify success - this is done but need some more safety checks
-# Add updatables
-# Split to separate module managers if this gets too convoluted?
-# Unit tests
-# Functional tests
+
+class ArgumentSpec(object):
+    def __init__(self):
+        self.states = ['absent', 'activated', 'present']
+        self.supports_check_mode = True
+        self.argument_spec = dict(
+            name=dict(
+                required=True,
+            ),
+            file=dict(),
+            template=dict(),
+            inline=dict(
+                default='no',
+                type=bool
+            ),
+            state=dict(
+                default='activate',
+                choices=self.states
+            )
+        )
+        self.f5_product_name = 'bigip'
+
+
+def main():
+    if not HAS_F5SDK:
+        raise F5ModuleError("The python f5-sdk module is required")
+
+    spec = ArgumentSpec()
+
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name,
+        mutually_exclusive=[
+            ['tagged_interfaces', 'untagged_interfaces']
+        ]
+    )
+
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        client.module.fail_json(msg=str(e))
+
+if __name__ == '__main__':
+    main()
