@@ -67,8 +67,8 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    updatables = []
-    returnables = []
+    updatables = ['active']
+    returnables = ['name', 'active']
     api_attributes = ['name', 'file', 'filename', 'policyTemplateReference']
     api_map = {}
 
@@ -76,6 +76,8 @@ class Parameters(AnsibleF5Parameters):
     def file(self):
         path = self._values['file']
         inline = self._values['inline']
+        if path is None:
+            return None
         if inline:
             with open(path, 'r') as f:
                 contents = f.read()
@@ -177,26 +179,113 @@ class ModuleManager(object):
         return False
 
     def activated(self):
-        pass
+        if self.exists():
+            if self.is_activated():
+                return False
+            else:
+                if self.client.check_mode:
+                    return True
+                self.activate()
+                return True
+        else:
+            if self.client.check_mode:
+                return True
+            self.install()
+            self.activate()
+            return True
 
     def present(self):
-        pass
+        if self.exists():
+            return False
+        else:
+            if self.client.check_mode:
+                return True
+            self.install()
+            return True
 
     def absent(self):
-        pass
+        if not self.exists():
+            return False
+        else:
+            if self.client.check_mode:
+                return True
+            self.delete()
 
-    def policy_exists_on_device(self):
-        policies = self.policies_on_device()
-        for policy in policies:
-            if policy.name == self.want.name:
+    def exists(self):
+        if self.client.check_mode:
+            return True
+        result = self.policy_exists_on_device()
+        return result
+
+    def install(self):
+        template = self.want.template
+        path = self.want.file
+        if self.client.check_mode:
+            return True
+        if template is None and path is None:
+            self.create()
+            return True
+        if template is None:
+            task = self.import_policy_to_device()
+        if path is None:
+            task = self.create_policy_from_template_on_device()
+        if task:
+            if self.wait_for_task(task):
                 return True
         return False
 
-    def policy_self_link(self):
+    def create(self):
+        self.create_policy_on_device()
+        if self.policy_exists_on_device():
+            return True
+        else:
+            raise F5ModuleError('Failed to create ASM policy: {0}'.format(self.want.name))
+
+    def delete(self):
+        result = self.delete_policy_on_device()
+        return result
+
+    def activate(self):
+        task = self.apply_policy_on_device()
+        self.wait_for_task(task)
+
+    def wait_for_task(self, task):
+        while True:
+            task.refresh()
+            if task.status in ['COMPLETED', 'FAILURE']:
+                break
+            time.sleep(1)
+        # better to raise exception if the task fails, need to think on this a bit
+        if task.status == 'FAILURE':
+            return False
+        if task.status == 'COMPLETED':
+            return True
+
+    def is_activated(self):
+        if self.client.check_mode:
+            return True
+        result = self.policy_active()
+        return result
+
+    def policy_active(self):
+        policy = self.return_policy()
+        if policy.active is True:
+            return True
+        else:
+            return False
+
+    def return_policy(self):
         policies = self.policies_on_device()
         for policy in policies:
             if policy.name == self.want.name:
-                return policy.selfLink
+                return policy
+
+    def policy_exists_on_device(self):
+        policy = self.return_policy()
+        if policy:
+            return True
+        else:
+            return False
 
     def policies_on_device(self):
         policies = self.client.api.tm.asm.policies_s.get_collection()
@@ -207,23 +296,37 @@ class ModuleManager(object):
 
     def import_policy_to_device(self):
         if self.want.inline:
-            self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, file=self.want.file)
+            result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, file=self.want.file)
         else:
             self.upload_to_device()
-            time.sleep(3)
+            time.sleep(2)
             name = os.path.split(self.want.file)[1]
-            self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, filename=name)
+            result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, filename=name)
+        return result
 
     def apply_policy_on_device(self):
-        selflink = self.policy_self_link()
-        link = {'link': selflink}
-        apply = self.client.api.tm.asm.tasks.apply_policy_s.apply_policy.create(policyReference=link)
-        return apply
+        policy = self.return_policy()
+        link = {'link': policy.selflink}
+        result = self.client.api.tm.asm.tasks.apply_policy_s.apply_policy.create(policyReference=link)
+        return result
+
+    def create_policy_from_template_on_device(self):
+        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, policyTemplateReference=self.want.template_link)
+        return result
+
+    def create_policy_on_device(self):
+        self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
+
+    def delete_policy_on_device(self):
+        policy = self.return_policy()
+        policy.delete()
+        if policy.exists():
+            raise F5ModuleError('Failed to delete ASM policy: {0}'.format(self.want.name))
+        return True
 
 # To do list:
-# Add status checking for policy apply/import to verify success
-# Add policy create/delete without import
+# Add status checking for policy apply/import to verify success - this is done but need some more safety checks
+# Add updatables
 # Split to separate module managers if this gets too convoluted?
-# Add policy status check (i.e active/inactive)
 # Unit tests
 # Functional tests
