@@ -72,6 +72,12 @@ options:
         node to be marked up immediately after a valid response is received
         from the node. If this parameter is not provided when creating
         a new monitor, then the default value will be 0.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    required: False
+    default: 'Common'
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
