@@ -1,0 +1,6 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [ "${STACK_NAME}" == "" ]; then
+    exit 1
+fi
+python "${DIR}/stack.py" --stack ${STACK_NAME}
