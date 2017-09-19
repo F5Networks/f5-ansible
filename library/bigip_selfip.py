@@ -229,6 +229,7 @@ vlan:
     sample: "vlan1"
 '''
 
+import os
 import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -342,10 +343,7 @@ class Parameters(AnsibleF5Parameters):
     def traffic_group(self):
         if self._values['traffic_group'] is None:
             return None
-        if self._values['traffic_group'].startswith('/'):
-            return self._values['traffic_group']
-        else:
-            return '/{0}/{1}'.format(self.partition, self._values['traffic_group'])
+        return self._fqdn_name(self._values['traffic_group'])
 
     @property
     def route_domain(self):
@@ -433,14 +431,19 @@ class Parameters(AnsibleF5Parameters):
                     result.append(svc)
         return set(result)
 
+    def _fqdn_name(self, value):
+        if value.startswith('/'):
+            name = os.path.basename(value)
+            result = '/{0}/{1}'.format(self.partition, name)
+        else:
+            result = '/{0}/{1}'.format(self.partition, value)
+        return result
+
     @property
     def vlan(self):
         if self._values['vlan'] is None:
             return None
-        if self._values['vlan'].startswith('/' + self.partition):
-            return self._values['vlan']
-        else:
-            return '/{0}/{1}'.format(self.partition, self._values['vlan'])
+        return self._fqdn_name(self._values['vlan'])
 
 
 class ApiParameters(Parameters):

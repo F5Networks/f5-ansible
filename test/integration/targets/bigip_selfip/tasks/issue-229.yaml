@@ -1,0 +1,61 @@
+---
+
+- name: Create partition
+  bigip_partition:
+      name: "Tenant1A"
+      state: "present"
+
+- name: Create VLAN
+  bigip_vlan:
+      name: "External"
+      partition: "Tenant1A"
+  register: result
+
+- name: Configure SELF-IPs on the BIG-IP
+  bigip_selfip:
+      name: "issue-229"
+      address: "1.2.3.4"
+      netmask: "255.255.255.0"
+      vlan: "External"
+      partition: "Tenant1A"
+      state: "present"
+  register: result
+
+- name: Assert Configure SELF-IPs on the BIG-IP
+  assert:
+      that:
+          - result|changed
+
+- name: Configure SELF-IPs on the BIG-IP - Idempotent check
+  bigip_selfip:
+      name: "issue-229"
+      address: "1.2.3.4"
+      netmask: "255.255.255.0"
+      vlan: "External"
+      partition: "Tenant1A"
+      state: "present"
+  register: result
+
+- name: Assert Configure SELF-IPs on the BIG-IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove Self-IP
+  bigip_selfip:
+      name: "issue-229"
+      partition: "Tenant1A"
+      state: "absent"
+  register: result
+
+- name: Remove VLAN
+  bigip_vlan:
+      name: "External"
+      partition: "Tenant1A"
+      state: "absent"
+  register: result
+
+- name: Remove Partition
+  bigip_partition:
+      name: "Tenant1A"
+      state: "absent"

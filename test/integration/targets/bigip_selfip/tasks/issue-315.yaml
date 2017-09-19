@@ -51,3 +51,9 @@
   assert:
       that:
           - result|changed
+
+- name: Remove self-IPs
+  bigip_selfip:
+      name: "{{ item.name }}"
+      state: "absent"
+  with_items: "{{ self_ips }}"
