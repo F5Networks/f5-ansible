@@ -222,9 +222,9 @@ resources:
                   tmsh modify auth user admin password ${BIGIP_ADMIN_PASSWORD}
                   tmsh modify sys provision gtm level nominal
                   tmsh create net vlan ${NETWORK_1_NAME} interfaces add { 1.1 }
-                  tmsh create net self ${NETWORK_1_NAME}_self address ${NETWORK_1_ADDRESS}/${NETWORK_1_PREFIX} vlan ${NETWORK_1_NAME} allow-service all
+                  tmsh create net self ${NETWORK_1_NAME} address ${NETWORK_1_ADDRESS}/${NETWORK_1_PREFIX} vlan ${NETWORK_1_NAME} allow-service all
                   tmsh create net vlan ${NETWORK_2_NAME} interfaces add { 1.2 }
-                  tmsh create net self ${NETWORK_2_NAME}_self address ${NETWORK_2_ADDRESS}/${NETWORK_2_PREFIX} vlan ${NETWORK_2_NAME} allow-service all
+                  tmsh create net self ${NETWORK_2_NAME} address ${NETWORK_2_ADDRESS}/${NETWORK_2_PREFIX} vlan ${NETWORK_2_NAME} allow-service all
 
                   tmsh save /sys config
 
