@@ -4,11 +4,6 @@ requests
 git+https://github.com/ansible/ansible.git
 git+https://github.com/F5Networks/f5-common-python.git@development
 
-# Unit tests
-pytest
-pytest-cov
-flake8
-
 # Docs
 sphinx
 sphinx_rtd_theme
@@ -19,6 +14,7 @@ sphinxjp.themes.basicstrap
 
 # Debugging
 q
+pycallgraph
 
 # Used for code style checking
 pycodestyle
@@ -29,24 +25,18 @@ deepdiff
 isoparser
 lxml
 
-# Needed for SkipIf in unit tests. Consider switching to pytest?
-nose
-
-# Needed for unit tests
-mock
-
-# Used for upstream sanity tests
-voluptuous
-
 # Used for testing modules
 pep8
 pyflakes
 virtualenvwrapper
-
-# Used for stubbing new modules (./scripts/stub-new-module.py)
-ipython==5.1.0
-fire
+voluptuous
+mock
+nose
+pytest
+pytest-cov
+flake8
 
 # For standing up test infrastructure
 shade
 os-client-config
+python-heatclient
