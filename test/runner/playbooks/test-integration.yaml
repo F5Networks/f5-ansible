@@ -55,8 +55,9 @@
 #
 
 - name: Setup devices under test
-  hosts: bigip
+  hosts: localhost
   connection: local
+  gather_facts: false
   any_errors_fatal: true
 
   vars_prompt:
@@ -74,7 +75,7 @@
             tld: "{{ playbook_dir|dirname|dirname|dirname }}"
 
       - name: Run integration tests
-        command: "ansible-playbook -i inventory/stack {{ module }}.py"
+        command: "ansible-playbook -i inventory/stack {{ module }}.yaml"
         args:
             chdir: "{{ tld }}/test/integration"
         environment:
