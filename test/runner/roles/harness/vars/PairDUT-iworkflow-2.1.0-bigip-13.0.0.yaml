@@ -1,0 +1,35 @@
+---
+
+#
+# Copyright 2017 F5 Networks Inc.
+#
+# This file is part of Ansible
+#
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+templates:
+    - "OneArmed-cloud-init"
+
+parameters:
+    ve_image: "BIGIP-13.0.0.2.0.1671"
+    ve_flavor: "m1.medium"
+    f5_ve_os_ssh_key: "{{ openstack_keypair }}"
+    admin_password: "admin"
+    root_password: "default"
+    license: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
+    mgmt_network: "management"
+    use_config_drive: True
+    network_1_name: "net1"
+    network_2_name: "net2"

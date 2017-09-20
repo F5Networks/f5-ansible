@@ -1,0 +1,39 @@
+---
+
+# Copyright (c) 2017 F5 Networks Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+- job:
+    name: ci.f5.f5-ansible-run-one
+    project-type: workflow
+    defaults: global
+    description: >
+        Run test harnesses for a single F5 Ansible module.
+    disabled: false
+    display-name: ci.f5.f5-ansible-run-one
+    concurrent: true
+    logrotate:
+        daysToKeep: -1
+        numToKeep: 31
+        artifactDaysToKeep: -1
+        artifactNumToKeep: 7
+    parameters:
+        - string:
+              name: Module
+              default: bigip_selfip
+              description: "The module that you want to test"
+    dsl:
+        !include-raw: ./ci.f5.f5-ansible-run-one.groovy

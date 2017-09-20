@@ -1,0 +1,63 @@
+---
+
+# Copyright (c) 2017 F5 Networks Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Setup a test harness for integration tests
+#
+# This playbook allows one to setup a test harness that is specific
+# to the DUT.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, setup-harness.yaml [OPTIONS]:
+#
+# Examples:
+#
+#    Refresh the state of hype by calling the UI endpoint
+#
+#    ansible-playbook -i notahost, setup-harness.yaml
+#
+# Options:
+#
+#     harness:
+#         description: The harness to create a stack from.
+#         required: True
+#
+#     harness_name:
+#         description: Name of the harness that you want to create.
+#         required: True
+#
+
+- name: Setup test harness
+  hosts: all
+  connection: local
+  any_errors_fatal: true
+
+  vars_prompt:
+      - name: "harness"
+        prompt: "Which test harness do you want to create?"
+        private: no
+
+      - name: "harness_name"
+        prompt: "What name do you want to use for this harness?"
+        private: no
+
+  tasks:
+      - include_role:
+            name: "harness"
+        vars:
+            state: "setup"

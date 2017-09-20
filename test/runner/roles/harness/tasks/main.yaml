@@ -1,0 +1,10 @@
+---
+
+- include: setup-main.yaml
+  when: state in ['setup', 'test']
+
+- include: test-main.yaml
+  when: state in ['test']
+
+- include: teardown-main.yaml
+  when: state in ['teardown', 'test']
