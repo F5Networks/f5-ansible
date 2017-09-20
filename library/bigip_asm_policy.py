@@ -81,20 +81,6 @@ class Parameters(AnsibleF5Parameters):
     api_map = {}
 
     @property
-    def file(self):
-        path = self._values['file']
-        inline = self._values['inline']
-        if path is None:
-            return None
-        if inline:
-            with open(path, 'r') as f:
-                contents = f.read()
-                self._values['file_read'] = contents
-            return self._values['file_read']
-        else:
-            return self._values['file']
-
-    @property
     def template(self):
         want_name = self._values['template']
         if want_name is None:
@@ -274,13 +260,15 @@ class ModuleManager(object):
             return True
 
     def is_activated(self):
+        result = self.policy_active()
+        self._update_changed_options()
         if self.client.check_mode:
             return True
-        result = self.policy_active()
         return result
 
     def policy_active(self):
         policy = self.return_policy()
+        self.have = Parameters(policy.attrs)
         if policy.active is True:
             return True
         else:
@@ -307,13 +295,10 @@ class ModuleManager(object):
         self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
 
     def import_policy_to_device(self):
-        if self.want.inline:
-            result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, file=self.want.file)
-        else:
-            self.upload_to_device()
-            time.sleep(2)
-            name = os.path.split(self.want.file)[1]
-            result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, filename=name)
+        self.upload_to_device()
+        time.sleep(2)
+        name = os.path.split(self.want.file)[1]
+        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, filename=name)
         return result
 
     def apply_policy_on_device(self):
@@ -323,14 +308,16 @@ class ModuleManager(object):
         return result
 
     def create_policy_from_template_on_device(self):
-        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, policyTemplateReference=self.want.template_link)
+        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(
+            name=self.want.name, policyTemplateReference=self.want.template_link
+        )
         return result
 
     def create_policy_on_device(self):
         self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
 
     def delete_policy_on_device(self):
-        policy = self.return_policy()
+        policy = self.return_policy() # needs rework ?
         policy.delete()
         if policy.exists():
             raise F5ModuleError('Failed to delete ASM policy: {0}'.format(self.want.name))
@@ -347,10 +334,6 @@ class ArgumentSpec(object):
             ),
             file=dict(),
             template=dict(),
-            inline=dict(
-                default='no',
-                type=bool
-            ),
             state=dict(
                 default='activate',
                 choices=self.states
