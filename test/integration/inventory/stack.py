@@ -63,12 +63,7 @@ def get_groups_from_server(server_vars, namegroup=True):
 
 
 def get_host_groups(inventory, refresh=False):
-    (cache_file, cache_expiration_time) = get_cache_settings()
-    if is_cache_stale(cache_file, cache_expiration_time, refresh=refresh):
-        groups = to_json(get_host_groups_from_cloud(inventory))
-        open(cache_file, 'w').write(groups)
-    else:
-        groups = open(cache_file, 'r').read()
+    groups = to_json(get_host_groups_from_cloud(inventory))
     return groups
 
 
@@ -129,19 +124,6 @@ def is_cache_stale(cache_file, cache_expiration_time, refresh=False):
         if (mod_time + cache_expiration_time) > current_time:
             return False
     return True
-
-
-def get_cache_settings():
-    config = os_client_config.config.OpenStackConfig(
-        config_files=os_client_config.config.CONFIG_FILES + CONFIG_FILES
-    ).get_one_clouse('f5-ansible')
-    # For inventory-wide caching
-    cache_expiration_time = config.get_cache_expiration_time()
-    cache_path = config.get_cache_path()
-    if not os.path.exists(cache_path):
-        os.makedirs(cache_path)
-    cache_file = os.path.join(cache_path, 'ansible-inventory.cache')
-    return (cache_file, cache_expiration_time)
 
 
 def to_json(in_dict):
