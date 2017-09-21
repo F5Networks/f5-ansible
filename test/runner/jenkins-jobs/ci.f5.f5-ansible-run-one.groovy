@@ -48,7 +48,6 @@ modules = [
     'bigip_dns_record_facts.py',
     'bigip_dns_zone.py',
     'bigip_drop_connection.py',
-    'bigip_foo.py',
     'bigip_gtm_datacenter.py',
     'bigip_gtm_facts.py',
     'bigip_gtm_pool.py',
