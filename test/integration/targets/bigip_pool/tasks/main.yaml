@@ -580,3 +580,7 @@
           - not result|changed
 
 - include: pool_with_member.yaml
+
+- include: issue-331.yaml
+  tags:
+      - issue-331

@@ -1,0 +1,10 @@
+---
+
+vip_name: "proxy_vs"
+vip_ip: "20.20.20.108"
+http_profile: "http"
+clientssl: "clientssl"
+cloud_pool: "my_cloud_pool"
+cloud_vip_ip: "20.20.20.110"
+cloud_vip_name: "cloud-vip"
+cloud_http_mon: "http"
