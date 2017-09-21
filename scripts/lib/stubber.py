@@ -22,6 +22,7 @@
 import os
 import shutil
 from jinja2 import Environment, FileSystemLoader
+from os.path import isfile, join
 
 FILE_PATH = os.path.realpath(__file__)
 TOP_LEVEL = os.path.dirname(os.path.dirname(os.path.dirname(FILE_PATH)))
@@ -84,6 +85,23 @@ def stub_module_documentation(module):
     # Create the documentation link for your module
     documentation_file = '{0}/docs/modules/{1}.rst'.format(TOP_LEVEL, module)
     touch(documentation_file)
+
+
+def restub_test_automation():
+    dest = "{0}/test/runner/jenkins-jobs/ci.f5.f5-ansible-run-one.groovy".format(TOP_LEVEL)
+    library = "{0}/library".format(TOP_LEVEL)
+    with open(dest, "r") as fh:
+        content = fh.readlines()
+    start = content.index("modules = [\n") + 1
+    end = content.index("]\n", start)
+    content[start:end] = []
+    files = [f for f in os.listdir(library) if isfile(join(library, f))]
+    files = [f for f in files if not f.startswith('_')]
+    for l in reversed(files):
+        content.insert(start, "    '{0}',\n".format(l))
+    with open(dest, "w") as fh:
+        to_write = "".join(content)
+        fh.write(to_write)
 
 
 def touch(fname, times=None):
