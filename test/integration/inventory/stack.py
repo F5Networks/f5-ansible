@@ -52,6 +52,8 @@ def get_groups_from_server(server_vars, namegroup=True):
 
     for key, value in iter(metadata.items()):
         groups.append('meta-%s_%s' % (key, value))
+    groups.append('f5-test')
+    groups.append('bigip')
 
     az = server_vars.get('az', None)
     if az:
