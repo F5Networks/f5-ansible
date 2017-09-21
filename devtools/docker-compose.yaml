@@ -6,6 +6,15 @@
 #
 
 version: '3.3'
+
+# Networks need to be overridden from their defaults to avoid address space
+# conflicts on site.
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 2.2.2.0/24
 services:
   py2.7.10:
     image: f5ansible/py2.7.10
@@ -28,6 +37,7 @@ services:
         target: /here
     environment:
       - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
   py3.5.4:
     image: f5ansible/py3.5.4
     build:
@@ -49,6 +59,7 @@ services:
         target: /here
     environment:
       - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
   py3.6.2:
     image: f5ansible/py3.6.2
     build:
@@ -70,6 +81,7 @@ services:
         target: /here
     environment:
       - OS_CLOUD=default
+
 secrets:
   clouds.yaml:
     file: ./secrets/clouds.yaml.secret
