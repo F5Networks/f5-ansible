@@ -31,71 +31,22 @@ available for you to use to set these directories up automatically.
 
 .. code-block:: shell
 
-    $> ./scripts/stub-new-module.py stub --module=bigip_device_ssh
+    $> ./scripts/stub-new-module.py stub --module MODULE_NAME
 
 When it finishes running, you will have the necessary files available to
 begin working on your module.
 
-The module file
----------------
+Stubbed files
+-------------
 
-The module file that gets created is located here
+The stubber creates a number of files that you need to then go through and
+do some form of development on. These files are
 
-  ``library/bigip_device_ssh.py
-
-Let's open that file to get started
-
-License header
-~~~~~~~~~~~~~~
-
-The first things you you will put in the file is the license header.
-
-Here is the common license header.
-
-.. code-block:: python
-
-   #!/usr/bin/python
-   # -*- coding: utf-8 -*-
-   #
-   # Copyright 2016 F5 Networks Inc.
-   #
-   # This file is part of Ansible
-   #
-   # Ansible is free software: you can redistribute it and/or modify
-   # it under the terms of the GNU General Public License as published by
-   # the Free Software Foundation, either version 3 of the License, or
-   # (at your option) any later version.
-   #
-   # Ansible is distributed in the hope that it will be useful,
-   # but WITHOUT ANY WARRANTY; without even the implied warranty of
-   # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   # GNU General Public License for more details.
-   #
-   # You should have received a copy of the GNU General Public License
-   # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
-
-If the module under development is your original work, then you can
-include your name in the copyright above.
-
-If you are only contributing an existing module, then it is not necessary
-to include a copyright line at the top. Instead, accepting our CLA is
-sufficient to get code merged into our branch.
-
-The ANSIBLE_METADATA variable
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-This variable should be included first in your module. It specifies
-metadata for the module itself. It can always look the same. Here is
-it as would be defined in code.
-
-.. code-block:: python
-
-
-   ANSIBLE_METADATA = {'status': ['preview'],
-                       'supported_by': 'community',
-                       'version': '1.0'}
-
-After the metadata variable comes the `DOCUMENTATION` variable.
+* ``docs/modules/MODULE_NAME.rst``
+* ``library/MODULE_NAME.py``
+* ``test/integration/MODULE_NAME.yaml``
+* ``test/integration/targets/MODULE_NAME/``
+* ``test/unit/bigip/test_MODULE_NAME.py``
 
 The DOCUMENTATION variable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,15 +121,15 @@ values of those keys.
 
 The keys that one commonly finds are
 
-  * ``module``
-  * ``short_description``
-  * ``description``
-  * ``version_added``
-  * ``options``
-  * ``notes``
-  * ``requirements``
-  * ``author``
-  * ``extends_documentation_fragment``
+* ``module``
+* ``short_description``
+* ``description``
+* ``version_added``
+* ``options``
+* ``notes``
+* ``requirements``
+* ``author``
+* ``extends_documentation_fragment``
 
 .. note::
 
@@ -471,24 +422,38 @@ subsequently pushed upstream. We rely heavily on testing.
 In this section I will go in to detail on how our tests are organized and
 how you can write your own to ensure that your modules works as designed.
 
-flake8
-~~~~~~
+Connection variables
+~~~~~~~~~~~~~~~~~~~~
 
-We make use of the ``flake8`` command to ensure that our modules meet certain
-coding standards and compatibility across Python releases.
+It is not required that you specify connection-related variables for each
+task. These values are provided for you automatically at the playbook level.
 
-You can run the flake8 tests via the ``make`` command
+These values include,
+
+* `server`
+* `server_port`
+* `user`
+* `password`
+* `validate_certs`
+
+Style checks
+~~~~~~~~~~~~
+
+We make use of the ``pycodestyle`` command to ensure that our modules meet
+certain coding standards and compatibility across Python releases.
+
+You can run the style tests via the ``make`` command
 
 .. code-block:: bash
 
-   make flake8
+   make style
 
 Before submitting your own module, it is recommended that your module pass
-the `flake8` tests we ship with the repository. We will ask you to update
+the style tests we ship with the repository. We will ask you to update
 your code to meet these requirements if it does not.
 
-Functional tests
-~~~~~~~~~~~~~~~~
+Integration/Functional tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is probably the most important part of testing, so let's go in to
 detail on this part.
@@ -497,7 +462,7 @@ Functional tests are required during module submission so that we (F5)
 and you, the developer, can agree that a module works on a particular
 platform.
 
-We will test your module on a variety of platforms automatically when
+We will test your module on a variety of versions automatically when
 a new PR is submitted, and from there provide feedback if something does
 not fly.
 
@@ -507,9 +472,6 @@ Structure of tests
 Test file stubs are created for you automatically when you stub a new
 module.
 
-To best show you how testing works, we will reference an existing module
-that provides complete tests; `bigip_device_sshd`.
-
 First, let's look at the layout of a set of tests. A test is composed of
 a role whose name matches the name of the module that is being tested.
 
@@ -517,7 +479,7 @@ This role is placed in the `roles/` directory.
 
 So, for our example, our test role looks like this.
 
-   * `roles/bigip_device_sshd/`
+   * `roles/MODULE_NAME/`
 
 Inside of this role is everything that you would associate with a normal
 role in ansible.
@@ -554,11 +516,6 @@ Here is an example of a test from the `bigip_device_sshd` module.
      bigip_device_sshd:
          allow:
              - "{{ allow[0] }}"
-         user: "{{ bigip_username }}"
-         password: "{{ bigip_password }}"
-         server: "{{ inventory_hostname }}"
-         server_port: "{{ bigip_port }}"
-         validate_certs: "no"
      register: result
 
    - name: Assert Set the SSHD allow string to a specific IP
@@ -574,14 +531,7 @@ changed.
 Test variables
 --------------
 
-All of the tests have access to the following variables by default.
-
-  * `{{ bigip_password }}`
-  * `{{ bigip_port }}`
-  * `{{ bigip_username }}`
-  * `{{ inventory_hostname }}`
-
-All other information specific to the tests that you need to run should be
+Information specific to the tests that you need to run should be
 put in the `defaults/main.yaml` file of your test role.
 
 By putting them there, you allow individuals to override values in your test
@@ -604,11 +554,6 @@ Here is an example of the previous test as an idempotent test
      bigip_device_sshd:
          allow:
              - "{{ allow[0] }}"
-         user: "{{ bigip_username }}"
-         password: "{{ bigip_password }}"
-         server: "{{ inventory_hostname }}"
-         server_port: "{{ bigip_port }}"
-         validate_certs: "no"
      register: result
 
    - name: Assert Set the SSHD allow string to a specific IP - Idempotent check
