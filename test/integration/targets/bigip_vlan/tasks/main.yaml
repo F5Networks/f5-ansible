@@ -1,7 +1,7 @@
 ---
 
 - name: Include task to setup the remote device
-  include: setup.yaml
+  import_tasks: setup.yaml
 
 - name: Create VLAN
   bigip_vlan:
