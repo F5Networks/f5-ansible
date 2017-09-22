@@ -17,8 +17,8 @@ having to have the maintainers intervene.
 For more information on what tools perform these checks, refer to the tests
 page.
 
-Conventions
------------
+Module Conventions
+------------------
 
 When writing your modules and their accompanying tests and docs, please
 follow the below coding conventions.
@@ -803,3 +803,80 @@ it as would be defined in code.
                        'version': '1.0'}
 
 The stubber will create this for you automatically.
+
+Do not include required key for non-required parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This convention comes to us courtesy of Ansible module authoring rules. This
+convention is used to limit the amount of verbosity in module code. Additionally,
+there is a risk of conflict (who is right? docs? or code?) that can occur if
+this convention is not followed.
+
+Ansible, by default, make a parameter not required. Therefore, it is also redundant
+to provide it again in your documentation.
+
+**BAD**
+
+.. code-block:: yaml
+
+   ...
+   login:
+     description:
+       - Specifies, when checked C(enabled), that the system accepts SSH
+         communications.
+     choices:
+       - enabled
+       - disabled
+     required: False
+   ...
+
+**GODE**
+
+.. code-block:: yaml
+
+   ...
+   login:
+     description:
+       - Specifies, when checked C(enabled), that the system accepts SSH
+         communications.
+     choices:
+       - enabled
+       - disabled
+   ...
+
+Do not include default key for parameters without defaults
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Another convention from Ansible, similar to the `required: False` convention,
+this convention is applying the rule to the `default`. Since `default: None` is
+already the value that Ansible uses (in code), it is redundant to provide it
+again in the docs.
+
+**BAD**
+
+.. code-block:: yaml
+
+   ...
+   login:
+     description:
+       - Specifies, when checked C(enabled), that the system accepts SSH
+         communications.
+     choices:
+       - enabled
+       - disabled
+     default: None
+   ...
+
+**GODE**
+
+.. code-block:: yaml
+
+   ...
+   login:
+     description:
+       - Specifies, when checked C(enabled), that the system accepts SSH
+         communications.
+     choices:
+       - enabled
+       - disabled
+   ...
