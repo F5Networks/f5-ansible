@@ -52,9 +52,9 @@ def stub_roles_yaml_files(module):
     main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(TOP_LEVEL, module)
     with open(main_tests, 'w') as fh:
         fh.write("---\n\n")
-        fh.write("- include: setup.yaml\n\n")
+        fh.write("- import_tasks:: setup.yaml\n\n")
         fh.write("# tests go here\n\n")
-        fh.write("- include: teardown.yaml")
+        fh.write("- import_tasks:: teardown.yaml")
 
 
 def stub_playbook_file(module):
