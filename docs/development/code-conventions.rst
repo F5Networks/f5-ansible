@@ -754,3 +754,52 @@ the variable name
        'foo', 'bar',
        'baz', 'biz'
    ]
+
+License header
+~~~~~~~~~~~~~~
+
+Each module requires a license header which includes the GPL3 license.
+
+Here is the common license header.
+
+.. raw::
+
+   # Copyright 2016 F5 Networks Inc.
+   #
+   # This file is part of Ansible
+   #
+   # Ansible is free software: you can redistribute it and/or modify
+   # it under the terms of the GNU General Public License as published by
+   # the Free Software Foundation, either version 3 of the License, or
+   # (at your option) any later version.
+   #
+   # Ansible is distributed in the hope that it will be useful,
+   # but WITHOUT ANY WARRANTY; without even the implied warranty of
+   # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   # GNU General Public License for more details.
+   #
+   # You should have received a copy of the GNU General Public License
+   # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
+If the module under development is your original work, then you can
+include your name in the copyright above.
+
+If you are only contributing an existing module, then it is not necessary
+to include a copyright line at the top. Instead, accepting the F5 CLA is
+sufficient to get code merged into our branch.
+
+The ANSIBLE_METADATA variable
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This variable should be included first in your module. It specifies
+metadata for the module itself. It can always look the same. Here is
+it as would be defined in code.
+
+.. code-block:: python
+
+
+   ANSIBLE_METADATA = {'status': ['preview'],
+                       'supported_by': 'community',
+                       'version': '1.0'}
+
+The stubber will create this for you automatically.
