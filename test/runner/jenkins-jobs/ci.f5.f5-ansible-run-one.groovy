@@ -121,25 +121,6 @@ modules = [
     'wait_for_bigip.py',
 ]
 
-def transformIntoModuleStep(module) {
-  return {
-    waitUntil {
-      Random random = new Random()
-      sleep time: random.nextInt(30), unit: 'SECONDS'
-      dir('test/runner') {
-        sh script: """
-          docker-compose -f devtools/docker-compose.yaml run --rm \
-              --name ${harness}-build.${BUILD_NUMBER} py2.7.10 \
-              ansible-playbook -i inventory/hosts playbooks/test-integration.yaml \
-              -e harness_name=${harness}-build.${BUILD_NUMBER} \
-              -e module=${Module}
-        """, returnStatus: true
-        return (r == 0)
-      }
-    }
-  }
-}
-
 def transformIntoHarnessStep(harness) {
   return {
     timeout(240) {
@@ -174,6 +155,27 @@ def transformIntoHarnessStep(harness) {
           """, returnStatus: true
           return (r == 0)
         }
+      }
+    }
+  }
+}
+
+def transformIntoModuleStep(module) {
+  return {
+    waitUntil {
+      Random random = new Random()
+      sleep time: random.nextInt(30), unit: 'SECONDS'
+      environment {
+          STACK_NAME = "${harness}-build.${BUILD_NUMBER}"
+      }
+      dir('test/integration') {
+        sh script: """
+          docker-compose -f devtools/docker-compose.yaml run --rm \
+              --name ${harness}-build.${BUILD_NUMBER} py2.7.10 \
+              ansible-playbook -i inventory/stack ${F5_MODULE}.yaml \
+              -e harness_name=${harness}-build.${BUILD_NUMBER}
+        """, returnStatus: true
+        return (r == 0)
       }
     }
   }

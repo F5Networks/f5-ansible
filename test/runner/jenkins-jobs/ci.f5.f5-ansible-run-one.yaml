@@ -32,7 +32,7 @@
         artifactNumToKeep: 7
     parameters:
         - string:
-              name: Module
+              name: F5_MODULE
               default: bigip_selfip
               description: "The module that you want to test"
     dsl:
