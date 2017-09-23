@@ -931,7 +931,7 @@ class ArgumentSpec(object):
             # Make this assume "tcp" in the partition specified. The user
             # is required to specify the full path if they want to use a different
             # partition.
-            parent=dict(),
+            parent=dict(default='tcp'),
 
             send=dict(),
             receive=dict(),
