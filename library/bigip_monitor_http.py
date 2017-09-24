@@ -186,9 +186,7 @@ class Parameters(AnsibleF5Parameters):
     api_map = {
         'timeUntilUp': 'time_until_up',
         'defaultsFrom': 'parent',
-        'recv': 'receive',
-        'username': 'target_username',
-        'password': 'target_password'
+        'recv': 'receive'
     }
 
     api_attributes = [
@@ -255,6 +253,14 @@ class Parameters(AnsibleF5Parameters):
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
+
+    @property
+    def username(self):
+        return self._values['target_username']
+
+    @property
+    def password(self):
+        return self._values['target_password']
 
     @property
     def destination(self):
