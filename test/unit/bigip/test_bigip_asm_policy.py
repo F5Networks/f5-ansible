@@ -22,6 +22,7 @@ __metaclass__ = type
 
 import os
 import json
+import pytest
 import sys
 
 from nose.plugins.skip import SkipTest
@@ -33,6 +34,7 @@ from ansible.compat.tests.mock import patch, Mock, DEFAULT, PropertyMock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigip_asm_policy import Parameters
@@ -73,6 +75,12 @@ class BigIpObj(object):
         self.attrs = self.__dict__
 
     def refresh(self):
+        pass
+
+    def delete(self):
+        pass
+
+    def exists(self):
         pass
 
     @property
@@ -274,3 +282,243 @@ class TestLocalManager(unittest.TestCase):
             results = mm.exec_module()
 
         assert results['changed'] is False
+
+    def test_import_from_file(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            file=self.policy,
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(return_value=self.policy_absent)
+            mm.import_policy_to_device = Mock(return_value=self.import_start)
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_policy'
+        assert results['file'] == self.policy
+        assert results['active'] is False
+
+    def test_import_from_template(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            template='POLICY_TEMPLATE_SHAREPOINT_2007_HTTP',
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(return_value=self.policy_absent)
+            mm.create_policy_from_template_on_device = Mock(return_value=self.import_from_template_start)
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_policy'
+        assert results['template'] == 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP'
+        assert results['active'] is False
+
+    def test_create_by_name(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(side_effect=[self.policy_absent, self.policy_present])
+            mm.create_policy_on_device = Mock(return_value=True)
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_policy'
+        assert results['active'] is False
+
+    def test_delete_policy(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            state='absent',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        with patch.object(BigIpObj, 'exists', return_value=False):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(return_value=self.policy_present)
+
+            results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_template_not_present_raises(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            template='foo_bar',
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        msg = 'Template with the given name: foo_bar does not exist'
+        # Override methods to force specific logic in the module to happen
+        with patch.object(Parameters, '_template_exists_on_device') as obj:
+            obj.return_value = False
+
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.exists = Mock(return_value=False)
+            with pytest.raises(F5ModuleError) as err:
+                mm.exec_module()
+
+        assert err.value.message == msg
+
+    def test_policy_import_raises(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            file=self.policy,
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        msg = 'Import policy task failed.'
+        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='FAILURE'):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.exists = Mock(return_value=False)
+            mm.import_policy_to_device = Mock(return_value=self.import_start)
+            with pytest.raises(F5ModuleError) as err:
+                mm.exec_module()
+        assert err.value.message == msg
+
+    def test_activate_policy_raises(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            state='activate',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        msg = 'Apply policy task failed.'
+        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, side_effect=['COMPLETED', 'FAILURE']):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(return_value=self.policy_present)
+            mm.apply_policy_on_device = Mock(return_value=self.apply_start)
+            with pytest.raises(F5ModuleError) as err:
+                mm.exec_module()
+        assert err.value.message == msg
+
+    def test_create_policy_raises(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            state='present',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        msg = 'Failed to create ASM policy: fake_policy'
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exit_json = Mock(return_value=False)
+        mm.policies_on_device = Mock(return_value=self.policy_absent)
+        mm.create_policy_on_device = Mock(return_value=False)
+        with pytest.raises(F5ModuleError) as err:
+                mm.exec_module()
+        assert err.value.message == msg
+
+    def test_delete_policy_raises(self, *args):
+        set_module_args(dict(
+            name='fake_policy',
+            state='absent',
+            server='localhost',
+            password='password',
+            user='admin',
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        msg = 'Failed to delete ASM policy: fake_policy'
+        # Override methods to force specific logic in the module to happen
+        with patch.object(BigIpObj, 'exists', return_value=True):
+            mm = ModuleManager(client)
+            mm.exit_json = Mock(return_value=False)
+            mm.policies_on_device = Mock(return_value=self.policy_present)
+            with pytest.raises(F5ModuleError) as err:
+                mm.exec_module()
+        assert err.value.message == msg

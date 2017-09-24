@@ -204,6 +204,7 @@ class ModuleManager(object):
         if self.exists():
             return False
         else:
+            self.want.active = False
             self._set_changed_options()
             if self.client.check_mode:
                 return True
@@ -214,10 +215,10 @@ class ModuleManager(object):
         if not self.exists():
             return False
         else:
-            self._set_changed_options()
             if self.client.check_mode:
                 return True
             self.delete()
+            return True
 
     def exists(self):
         if self.client.check_mode:
