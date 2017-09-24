@@ -28,3 +28,9 @@ test/integration/inventory/group_vars/all.yaml
 
 examples/hosts.ini
 **/*.secret
+**/*.iso
+**/secrets/*
+
+/keyrings/live/pubring.gpg~
+/keyrings/live/pubring.kbx~
+/keyrings/live/secring.gpg
