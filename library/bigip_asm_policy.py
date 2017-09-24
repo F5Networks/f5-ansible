@@ -26,8 +26,6 @@ ANSIBLE_METADATA = {
 
 
 # To do list:
-# Add updatables
-# Split to separate module managers if this gets too convoluted?
 # Unit tests
 # Functional tests
 
@@ -41,7 +39,7 @@ from ansible.module_utils.f5_utils import (
     defaultdict,
     HAS_F5SDK,
     F5ModuleError,
-    iteritems
+    iteritems,
 )
 
 
@@ -75,29 +73,42 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    updatables = ['active']
-    returnables = ['name', 'active']
-    api_attributes = ['name', 'file', 'filename', 'policyTemplateReference']
-    api_map = {}
+    updatables = [
+        'active', 'name'
+    ]
+
+    returnables = [
+        'name', 'template', 'file', 'active'
+    ]
+
+    api_attributes = [
+        'name', 'file'
+    ]
+    api_map = {
+        'filename': 'file'
+    }
 
     @property
     def template(self):
-        want_name = self._values['template']
-        if want_name is None:
+        tmpl_name = self._values['template']
+        if tmpl_name is None:
             return None
-        if self._template_exists_on_device(want_name):
+        if self._template_exists_on_device(tmpl_name):
             return self._values['template']
         else:
-            raise F5ModuleError('Template with the given name: {0} does not exist'.format(want_name))
+            raise F5ModuleError('Template with the given name: {0} does not exist'.format(tmpl_name))
 
     def _template_exists_on_device(self, name):
         collection = self._templates_on_device()
         for resource in collection:
             if resource.name == name:
-                link = {'link': resource.selfLink}
-                self._values['template_link'] = link
+                self._set_template_selflink(resource)
                 return True
         return False
+
+    def _set_template_selflink(self, template):
+        link = {'link': template.selfLink}
+        self._values['template_link'] = link
 
     def _templates_on_device(self):
         collection = self.client.api.tm.asm.policy_templates_s.get_collection()
@@ -182,6 +193,7 @@ class ModuleManager(object):
                 self.activate()
                 return True
         else:
+            self._set_changed_options()
             if self.client.check_mode:
                 return True
             self.install()
@@ -192,6 +204,7 @@ class ModuleManager(object):
         if self.exists():
             return False
         else:
+            self._set_changed_options()
             if self.client.check_mode:
                 return True
             self.install()
@@ -201,6 +214,7 @@ class ModuleManager(object):
         if not self.exists():
             return False
         else:
+            self._set_changed_options()
             if self.client.check_mode:
                 return True
             self.delete()
@@ -244,6 +258,8 @@ class ModuleManager(object):
     def activate(self):
         task = self.apply_policy_on_device()
         if self.wait_for_task(task):
+            self.want.active = True
+            self._set_changed_options()
             return True
         else:
             raise F5ModuleError('Apply policy task failed.')
@@ -261,17 +277,16 @@ class ModuleManager(object):
 
     def is_activated(self):
         result = self.policy_active()
-        self._update_changed_options()
         if self.client.check_mode:
             return True
         return result
 
     def policy_active(self):
         policy = self.return_policy()
-        self.have = Parameters(policy.attrs)
         if policy.active is True:
             return True
         else:
+            self._update_changed_options()
             return False
 
     def return_policy(self):
@@ -283,6 +298,7 @@ class ModuleManager(object):
     def policy_exists_on_device(self):
         policy = self.return_policy()
         if policy:
+            self.have = Parameters(policy.attrs)
             return True
         else:
             return False
@@ -314,10 +330,11 @@ class ModuleManager(object):
         return result
 
     def create_policy_on_device(self):
-        self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
+        result = self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
+        return result
 
     def delete_policy_on_device(self):
-        policy = self.return_policy() # needs rework ?
+        policy = self.return_policy()
         policy.delete()
         if policy.exists():
             raise F5ModuleError('Failed to delete ASM policy: {0}'.format(self.want.name))
@@ -326,7 +343,7 @@ class ModuleManager(object):
 
 class ArgumentSpec(object):
     def __init__(self):
-        self.states = ['absent', 'activated', 'present']
+        self.states = ['absent', 'activate', 'present']
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
@@ -353,7 +370,7 @@ def main():
         supports_check_mode=spec.supports_check_mode,
         f5_product_name=spec.f5_product_name,
         mutually_exclusive=[
-            ['tagged_interfaces', 'untagged_interfaces']
+            ['file', 'template']
         ]
     )
 
