@@ -35,9 +35,13 @@ services:
       - type: bind
         source: ../
         target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
   py3.5.4:
     image: f5ansible/py3.5.4
     build:
@@ -57,9 +61,13 @@ services:
       - type: bind
         source: ../
         target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
   py3.6.2:
     image: f5ansible/py3.6.2
     build:
@@ -79,8 +87,13 @@ services:
       - type: bind
         source: ../
         target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
     environment:
       - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
 
 secrets:
   clouds.yaml:
