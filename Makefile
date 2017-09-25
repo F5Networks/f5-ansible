@@ -62,3 +62,6 @@ fetch-upstream:
 
 upgrade-ansible:
 	pip install --upgrade git+https://github.com/ansible/ansible.git
+
+remove-images:
+	docker rmi --force $(docker images -a -q)
