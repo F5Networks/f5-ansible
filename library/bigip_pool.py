@@ -73,7 +73,7 @@ options:
       - Monitor rule type when C(monitors) > 1. When creating a new pool, if this
         value is not specified, the default of 'and_list' will be used.
     version_added: "1.3"
-    choices: ['and_list', 'm_of_n']
+    choices: ['and_list', 'm_of_n', 'single']
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
@@ -265,9 +265,8 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
-        'host', 'port'
+        'quorum', 'monitors', 'service_down_action', 'description',
+        'lb_method', 'slow_ramp_time', 'reselect_tries', 'host', 'port'
     ]
 
     returnables = [
@@ -371,11 +370,11 @@ class Parameters(AnsibleF5Parameters):
         if self._values['monitors'] is None:
             return None
         monitors = [self._fqdn_name(x) for x in self.monitors_list]
-        if self.monitor_type == 'and_list':
-            result = ' and '.join(monitors).strip()
-        else:
+        if self.monitor_type == 'm_of_n':
             monitors = ' '.join(monitors)
             result = 'min %s of { %s }' % (self.quorum, monitors)
+        else:
+            result = ' and '.join(monitors).strip()            
         return result
 
     @property
@@ -754,7 +753,7 @@ class ArgumentSpec(object):
             ),
             monitor_type=dict(
                 choices=[
-                    'and_list', 'm_of_n'
+                    'and_list', 'm_of_n', 'single'
                 ]
             ),
             quorum=dict(
