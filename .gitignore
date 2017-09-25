@@ -32,8 +32,12 @@ examples/hosts.ini
 **/*.iso
 **/secrets/*
 
-/keyrings/live/pubring.gpg~
-/keyrings/live/pubring.kbx~
-/keyrings/live/secring.gpg
-/keyrings/S.gpg*
-/tmp/foo.txt
+# Secrets encryption related
+**/keyrings/live/pubring.gpg~
+**/keyrings/live/pubring.kbx~
+**/keyrings/live/secring.gpg
+**/keyrings/*gpg-agent*
+
+# Normal YAML files will be encrypted
+test/runner/roles/harness/vars/*.yaml
+!test/runner/roles/harness/vars/*.example.yaml
