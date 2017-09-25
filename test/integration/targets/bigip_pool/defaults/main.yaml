@@ -25,3 +25,38 @@ pool_lb_method_alt:
     - "ratio_least_connection_node_address"
 pool_description_1: "my description"
 pool_description_2: "my other description"
+
+# START - Issue 341
+issue_341_pool1:
+    state: present
+    name: test_pool
+    lb_method: round_robin
+    monitors:
+        - http
+        - tcp
+    monitor_type: and_list
+
+issue_341_pool2:
+    state: present
+    name: test_pool2
+    lb_method: round_robin
+    monitors: http
+    monitor_type: and_list
+
+issue_341_pool3:
+    state: present
+    name: test_pool3
+    lb_method: round_robin
+    monitors: http
+    monitor_type: m_of_n
+
+issue_341_pool4:
+    state: present
+    name: test_pool4
+    lb_method: round_robin
+    monitors:
+        - http
+        - tcp
+    quorum: 1
+    monitor_type: m_of_n
+# END - Issue 341

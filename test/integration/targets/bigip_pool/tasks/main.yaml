@@ -582,5 +582,7 @@
 - include: pool_with_member.yaml
 
 - include: issue-331.yaml
-  tags:
-      - issue-331
+  tags: issue-331
+
+- include: issue-341.yaml
+  tags: issue-341

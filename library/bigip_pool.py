@@ -371,25 +371,36 @@ class Parameters(AnsibleF5Parameters):
         if self._values['monitors'] is None:
             return None
         monitors = [self._fqdn_name(x) for x in self.monitors_list]
-        if self.monitor_type == 'and_list':
-            result = ' and '.join(monitors).strip()
-        else:
+        if self.monitor_type == 'm_of_n':
             monitors = ' '.join(monitors)
             result = 'min %s of { %s }' % (self.quorum, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
         return result
 
     @property
     def quorum(self):
-        if self.monitor_type == 'm_of_n' and self._values['quorum'] is None:
+        if self.kind == 'tm:ltm:pool:poolstate':
+            pattern = r'min\s+(?P<quorum>\d+)\s+of'
+            matches = re.search(pattern, self._values['monitors'])
+            if matches:
+                quorum = matches.group('quorum')
+            else:
+                quorum = None
+        else:
+            quorum = self._values['quorum']
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
             raise F5ModuleError(
-                "Quorum value must be specified with monitor_type 'm_of_n'."
+                "The specified 'quorum' must be an integer."
             )
-        return self._values['quorum']
 
     @property
     def monitor_type(self):
-        if self._values['monitor_type'] is None:
-            return None
         if self.kind == 'tm:ltm:pool:poolstate':
             pattern = r'min\s+\d+\s+of'
             matches = re.search(pattern, self._values['monitors'])
@@ -398,6 +409,8 @@ class Parameters(AnsibleF5Parameters):
             else:
                 return 'and_list'
         else:
+            if self._values['monitor_type'] is None:
+                return None
             return self._values['monitor_type']
 
     @property
@@ -481,6 +494,20 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def monitor_type(self):
+        if self.want.monitor_type is None:
+            self.want.update(dict(monitor_type=self.have.monitor_type))
+        if self.want.quorum is None:
+            self.want.update(dict(quorum=self.have.quorum))
+
+        if self.want.monitor_type == 'm_of_n' and self.want.quorum is None:
+            raise F5ModuleError(
+                "Quorum value must be specified with monitor_type 'm_of_n'."
+            )
+        if self.want.monitor_type != self.have.monitor_type:
+            return self.want.monitor_type
 
     @property
     def monitors(self):
@@ -609,13 +636,18 @@ class ModuleManager(object):
 
     def create(self):
         if self.want.monitor_type is not None:
-            if self.want.monitors_list:
+            if not self.want.monitors_list:
                 raise F5ModuleError(
                     "The 'monitors' parameter cannot be empty when 'monitor_type' parameter is specified"
                 )
         else:
             if self.want.monitor_type is None:
                 self.want.update(dict(monitor_type='and_list'))
+
+        if self.want.monitor_type == 'm_of_n' and self.want.quorum is None:
+            raise F5ModuleError(
+                "Quorum value must be specified with monitor_type 'm_of_n'."
+            )
 
         self._set_changed_options()
         if self.client.check_mode:
