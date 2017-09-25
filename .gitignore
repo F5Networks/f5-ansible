@@ -27,6 +27,7 @@ test/integration/inventory/group_vars/all.yaml
 ./ansible/
 
 examples/hosts.ini
+**/.DS_Store
 **/*.secret
 **/*.iso
 **/secrets/*
@@ -34,3 +35,5 @@ examples/hosts.ini
 /keyrings/live/pubring.gpg~
 /keyrings/live/pubring.kbx~
 /keyrings/live/secring.gpg
+/keyrings/S.gpg*
+/tmp/foo.txt
