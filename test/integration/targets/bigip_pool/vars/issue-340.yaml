@@ -1,0 +1,24 @@
+---
+
+issue_340_pool1:
+    state: present
+    name: issue_340
+    lb_method: round_robin
+    monitors: http
+    monitor_type: single
+
+issue_340_pool2:
+    state: present
+    name: issue_340_2
+    lb_method: round_robin
+    monitors: http
+    monitor_type: and_list
+
+issue_340_pool3:
+    state: present
+    name: issue_340_3
+    lb_method: round_robin
+    monitors:
+        - http
+        - tcp
+    monitor_type: and_list

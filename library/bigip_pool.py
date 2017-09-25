@@ -70,10 +70,15 @@ options:
       - weighted-least-connections-nod
   monitor_type:
     description:
-      - Monitor rule type when C(monitors) > 1. When creating a new pool, if this
-        value is not specified, the default of 'and_list' will be used.
+      - Monitor rule type when C(monitors) is specified. When creating a new
+        pool, if this value is not specified, the default of 'and_list' will
+        be used.
+      - Both C(single) and C(and_list) are functionally identical since BIG-IP
+        considers all monitors as "a list". BIG=IP either has a list of many,
+        or it has a list of one. Where they differ is in the extra guards that
+        C(single) provides; namely that it only allows a single monitor.
     version_added: "1.3"
-    choices: ['and_list', 'm_of_n']
+    choices: ['and_list', 'm_of_n', 'single]
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
@@ -105,13 +110,13 @@ options:
   host:
     description:
       - Pool member IP.
-    deprecated: Deprecated in 2.4. Use the bigip_pool_member module instead.
+    deprecated: Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
     aliases:
       - address
   port:
     description:
       - Pool member port.
-    deprecated: Deprecated in 2.4. Use the bigip_pool_member module instead.
+    deprecated: Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
   partition:
     description:
       - Device partition to manage resources on.
@@ -166,6 +171,60 @@ EXAMPLES = '''
       port: 80
   delegate_to: localhost
 
+- name: Set a single monitor (with enforcement)
+  bigip_pool:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      name: "my-pool"
+      partition: "Common"
+      monitor_type: "single"
+      monitors:
+          - http
+  delegate_to: localhost
+
+- name: Set a single monitor (without enforcement)
+  bigip_pool:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      name: "my-pool"
+      partition: "Common"
+      monitors:
+          - http
+  delegate_to: localhost
+
+- name: Set multiple monitors (all must succeed)
+  bigip_pool:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      name: "my-pool"
+      partition: "Common"
+      monitor_type: "and_list"
+      monitors:
+          - http
+          - tcp
+  delegate_to: localhost
+
+- name: Set multiple monitors (at least 1 must succeed)
+  bigip_pool:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      name: "my-pool"
+      partition: "Common"
+      monitor_type: "m_of_n"
+      quorum: 1
+      monitors:
+          - http
+          - tcp
+  delegate_to: localhost
+  
 - name: Remove pool member from pool
   bigip_pool:
       server: "lb.mydomain.com"
@@ -382,6 +441,8 @@ class Parameters(AnsibleF5Parameters):
     @property
     def quorum(self):
         if self.kind == 'tm:ltm:pool:poolstate':
+            if self._values['monitors'] is None:
+                return None
             pattern = r'min\s+(?P<quorum>\d+)\s+of'
             matches = re.search(pattern, self._values['monitors'])
             if matches:
@@ -402,6 +463,8 @@ class Parameters(AnsibleF5Parameters):
     @property
     def monitor_type(self):
         if self.kind == 'tm:ltm:pool:poolstate':
+            if self._values['monitors'] is None:
+                return None
             pattern = r'min\s+\d+\s+of'
             matches = re.search(pattern, self._values['monitors'])
             if matches:
@@ -501,11 +564,26 @@ class Difference(object):
             self.want.update(dict(monitor_type=self.have.monitor_type))
         if self.want.quorum is None:
             self.want.update(dict(quorum=self.have.quorum))
-
         if self.want.monitor_type == 'm_of_n' and self.want.quorum is None:
             raise F5ModuleError(
                 "Quorum value must be specified with monitor_type 'm_of_n'."
             )
+        elif self.want.monitor_type == 'single':
+            if len(self.want.monitors_list) > 1:
+                raise F5ModuleError(
+                    "When using a 'monitor_type' of 'single', only one monitor may be provided"
+                )
+            elif len(self.have.monitors_list) > 1:
+                raise F5ModuleError(
+                    "When using a 'monitor_type' of 'single', only one monitor may be provided"
+                )
+            # Update to 'and_list' here because the above checks are all that need
+            # to be done before we change the value back to what is expected by
+            # BIG-IP.
+            #
+            # Remember that 'single' is nothing more than a fancy way of saying
+            # "and_list plus some extra checks"
+            self.want.update(dict(monitor_type='and_list'))
         if self.want.monitor_type != self.have.monitor_type:
             return self.want.monitor_type
 
@@ -648,6 +726,10 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "Quorum value must be specified with monitor_type 'm_of_n'."
             )
+        elif self.want.monitor_type == 'single' and len(self.want.monitors_list) > 1:
+            raise F5ModuleError(
+                "When using a 'monitor_type' of 'single', only one monitor may be provided"
+            )
 
         self._set_changed_options()
         if self.client.check_mode:
@@ -786,7 +868,7 @@ class ArgumentSpec(object):
             ),
             monitor_type=dict(
                 choices=[
-                    'and_list', 'm_of_n'
+                    'and_list', 'm_of_n', 'single'
                 ]
             ),
             quorum=dict(
