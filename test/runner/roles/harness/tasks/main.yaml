@@ -1,0 +1,4 @@
+---
+
+- include: setup-main.yaml
+  when: state in ['setup', 'test']

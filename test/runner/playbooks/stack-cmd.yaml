@@ -1,0 +1,99 @@
+---
+
+# Copyright (c) 2017 F5 Networks Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Print out the test harness setup command
+#
+# This playbook will print out the command that is used to create a
+# test harness when running integration tests. This is particularly
+# useful for when you need to debug something and Ansible itself is
+# not helping.
+#
+# Additionally, one might want to use the command that is generated
+# as a way to manually setup harnesses for their own (not CI/CD)
+# purposes.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, setup-harness.yaml [OPTIONS]:
+#
+# Examples:
+#
+#    Print commands for DualDUT-bigip-13.0.0 harness
+#
+#    ansible-playbook -i notahost, setup-harness.yaml -e harness=DualDUT-bigip-13.0.0
+#
+# Options:
+#
+#     harness:
+#         description: The harness to use when printing harness command
+#         required: True
+#
+
+- name: Print test harness setup command
+  hosts: all
+  connection: local
+  any_errors_fatal: true
+
+  vars_prompt:
+      - name: "harness"
+        prompt: "Which test harness do you want to create?"
+        private: no
+
+  tasks:
+      - name: Create temporary dir
+        tempfile:
+            state: "directory"
+            suffix: "temp"
+        register: result
+
+      - name: Find harness variables
+        set_fact:
+            harness_vars_file: "{{ item }}"
+        with_first_found:
+            - files:
+                  - "{{ harness }}.yaml"
+              paths:
+                  - "{{ playbook_dir|dirname }}/roles/harness/vars/"
+
+      - name: Get harness variables
+        include_vars:
+            file: "{{ harness_vars_file }}"
+            name: "harness_vars"
+
+      - name: Template parameters to temporary dest
+        template:
+            src: "{{ result.path }}/params.yaml.tpl"
+            dest: "{{ result.path }}/params.yaml"
+
+      - name: Template Heat file to disk
+        template:
+            dest: "{{ result.path }}/{{ item }}.yaml"
+            src: "{{ playbook_dir|dirname }}/roles/harness/templates/{{ item }}.yaml"
+        with_items: "{{ harness_vars['templates'] }}"
+
+      - set_fact:
+            harness_params: "{{ lookup('file', result.path + '/params.yaml')|from_yaml }}"
+
+      - name: Template parameters to final temporary dest
+        copy:
+            content: "parameters: {{ harness_params['parameters']|to_yaml }}"
+            dest: "{{ result.path }}/params.yaml"
+
+      - name: Write out stack cmd
+        debug:
+            msg: "openstack stack create -t {{ result.path }}/{{ harness_vars['templates'][0] }}.yaml -e {{ result.path }}/params.yaml {{ harness|basename|splitext|first }} --wait"
