@@ -48,7 +48,7 @@ of our Ansible playbooks in a file called ``site.yaml``
 Installing Modules
 ------------------
 
-Refer to the documentation on `installing the modules here`_.
+Refer to the documentation on [installing the modules here](installing-modules.rst).
 
 Playbook
 --------
@@ -204,4 +204,4 @@ links relevant to your interests.
 
 .. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
 .. _Python 2.7: http://www.python.org/
-.. _installing the modules here: https://f5-ansible.readthedocs.io/en/latest/usage/installing_modules.html
+
