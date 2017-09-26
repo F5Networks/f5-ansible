@@ -1,0 +1,16 @@
+---
+
+issue_348_pool1:
+    state: present
+    name: test_pool
+    lb_method: round_robin
+    monitors:
+        - http
+        - tcp
+    monitor_type: and_list
+
+issue_348_pool2:
+    state: present
+    lb_method: round_robin
+    monitors: http
+    monitor_type: single

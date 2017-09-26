@@ -571,11 +571,14 @@ class Difference(object):
         elif self.want.monitor_type == 'single':
             if len(self.want.monitors_list) > 1:
                 raise F5ModuleError(
-                    "When using a 'monitor_type' of 'single', only one monitor may be provided"
+                    "When using a 'monitor_type' of 'single', only one monitor may be provided."
                 )
-            elif len(self.have.monitors_list) > 1:
+            elif len(self.have.monitors_list) > 1 and len(self.want.monitors_list) == 0:
+                # Handle instances where there already exists many monitors, and the
+                # user runs the module again specifying that the monitor_type should be
+                # changed to 'single'
                 raise F5ModuleError(
-                    "When using a 'monitor_type' of 'single', only one monitor may be provided"
+                    "A single monitor must be specified if more than one monitor currently exists on your pool."
                 )
             # Update to 'and_list' here because the above checks are all that need
             # to be done before we change the value back to what is expected by
