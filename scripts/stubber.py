@@ -10,7 +10,7 @@ from lib.stubber import stub_playbook_file
 from lib.stubber import stub_library_file
 from lib.stubber import stub_module_documentation
 from lib.stubber import stub_unit_test_file
-from lib.stubber import restub_test_automation
+#from lib.stubber import restub_test_automation
 
 from lib.stubber import unstub_roles_dirs
 from lib.stubber import unstub_playbook_file
@@ -28,7 +28,7 @@ def stub(module):
     stub_library_file(module, extension)
     stub_module_documentation(module)
     stub_unit_test_file(module, extension)
-    restub_test_automation()
+    #restub_test_automation()
 
 
 def unstub(module):
@@ -39,7 +39,7 @@ def unstub(module):
     unstub_library_file(module, extension)
     unstub_module_documentation(module)
     unstub_unit_test_file(module, extension)
-    restub_test_automation()
+    #restub_test_automation()
 
 
 def parse_args():
