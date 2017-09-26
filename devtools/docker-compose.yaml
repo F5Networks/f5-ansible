@@ -40,9 +40,6 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
-      - type: bind
-        source: ~/.gnupg
-        target: /gpg
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
