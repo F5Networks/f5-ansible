@@ -19,4 +19,5 @@ test/runner/roles/harness/vars/TwoArmed-bigip-12.1.0.yaml
 test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1-hf1.yaml
 test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1-hf2.yaml
 test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1.yaml
+test/runner/roles/harness/vars/TwoArmed-bigip-12.1.2-hf1.yaml
 test/runner/roles/harness/vars/TwoArmed-bigip-12.1.2.yaml
