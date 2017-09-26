@@ -13,3 +13,4 @@ test/runner/roles/harness/vars/DualDUT-bigip-13.0.0.yaml
 test/runner/roles/harness/vars/PairDUT-bigiq-5.1.3-bigip-13.0.0.yaml
 test/runner/roles/harness/vars/PairDUT-iworkflow-2.1.0-bigip-13.0.0.yaml
 test/runner/roles/harness/vars/TwoArmed-bigip-12.0.0.yaml
+test/runner/roles/harness/vars/TwoArmed-bigip-12.1.0.yaml
