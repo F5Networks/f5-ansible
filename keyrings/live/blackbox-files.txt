@@ -1,1 +1,3 @@
-tmp/foo.txt
+test/heat/jenkins-secondary-params.yaml
+test/runner/roles/harness/vars/DualDUT-bigip-12.0.0.yaml
+test/runner/roles/harness/vars/DualDUT-bigip-12.1.0.yaml
