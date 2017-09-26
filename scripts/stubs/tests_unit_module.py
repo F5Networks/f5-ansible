@@ -51,7 +51,7 @@ except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
-{% raw %}fixture_data = { }{% endraw %}
+{% raw %}fixture_data = {}{% endraw %}
 
 
 def set_module_args(args):
