@@ -30,7 +30,6 @@ examples/hosts.ini
 **/.DS_Store
 **/*.secret
 **/*.iso
-**/secrets/*
 
 # Secrets encryption related
 **/keyrings/live/pubring.gpg~
@@ -38,6 +37,36 @@ examples/hosts.ini
 **/keyrings/live/secring.gpg
 **/keyrings/*gpg-agent*
 
-# Normal YAML files will be encrypted
+# Encrypted files
+test/heat/jenkins-secondary-params.yaml
 test/runner/roles/harness/vars/*.yaml
 !test/runner/roles/harness/vars/*.example.yaml
+/test/heat/jenkins-secondary-params.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.0.0.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.0.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.0-hf1.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.0-hf2.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.1.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.1-hf1.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.1-hf2.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.2.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-12.1.2-hf1.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-13.0.0.yaml
+/test/runner/roles/harness/vars/DualDUT-bigip-13.0.0-hf1.yaml
+/test/runner/roles/harness/vars/PairDUT-bigiq-5.1.3-bigip-13.0.0.yaml
+/test/runner/roles/harness/vars/PairDUT-iworkflow-2.1.0-bigip-13.0.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.0.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.0-hf1.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.0-hf2.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1-hf1.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.1-hf2.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.2.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-12.1.2-hf1.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-13.0.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigip-13.0.0-hf1.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigiq-5.1.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigiq-5.2.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-bigiq-5.3.0.yaml
+/test/runner/roles/harness/vars/TwoArmed-iworkflow-2.1.0.yaml
