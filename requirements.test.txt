@@ -1,14 +1,14 @@
 paramiko
 bigsuds
 requests
-[-e] git+https://github.com/ansible/ansible.git
-[-e] git+https://github.com/F5Networks/f5-common-python.git@development
+git+https://github.com/ansible/ansible.git
+git+https://github.com/F5Networks/f5-common-python.git@development
 
 # Docs
 sphinx
 sphinx_rtd_theme
 markupsafe
-[-e] git+https://github.com/f5devcentral/f5-sphinx-theme@master
+git+https://github.com/f5devcentral/f5-sphinx-theme@master
 cloud_sptheme
 sphinxjp.themes.basicstrap
 
@@ -35,6 +35,7 @@ nose
 pytest
 pytest-cov
 flake8
+jenkins-job-builder
 
 # For standing up test infrastructure
 shade
