@@ -40,7 +40,7 @@ options:
   state:
     description:
       - The server state. If C(absent), an attempt to delete the server will be made.
-        This will only succeed if this server is not in use by a virtual server. 
+        This will only succeed if this server is not in use by a virtual server.
         C(present) creates the server and enables it. If C(enabled), enable the server
         if it exists. If C(disabled), create the server if needed, and set state to
         C(disabled).
@@ -269,7 +269,7 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     def _determine_translation(self, device):
-        if not 'translation' in device:
+        if 'translation' not in device:
             return 'none'
         return device['translation']
 
@@ -508,13 +508,13 @@ class ArgumentSpec(object):
         self.states = ['absent', 'present', 'enabled', 'disabled']
         self.server_types = [
             'alteon-ace-director', 'cisco-css', 'cisco-server-load-balancer',
-            'generic-host', 'radware-wsd', 'windows-nt-4.0','bigip',
+            'generic-host', 'radware-wsd', 'windows-nt-4.0', 'bigip',
             'cisco-local-director-v2', 'extreme', 'generic-load-balancer',
             'sun-solaris', 'cacheflow', 'cisco-local-director-v3',
             'foundry-server-iron', 'netapp', 'standalone-bigip',
             'redundant-bigip', 'windows-2000-server'
         ]
-        self.enabled_disabled = ['enabled','disabled']
+        self.enabled_disabled = ['enabled', 'disabled']
         self.supports_check_mode = True
         self.argument_spec = dict(
             state=dict(
