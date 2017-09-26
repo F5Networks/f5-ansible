@@ -6,3 +6,4 @@ test/runner/roles/harness/vars/DualDUT-bigip-12.1.0.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.1.1-hf1.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.1.1-hf2.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.1.1.yaml
+test/runner/roles/harness/vars/DualDUT-bigip-12.1.2.yaml
