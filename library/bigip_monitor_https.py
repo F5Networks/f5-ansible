@@ -46,7 +46,7 @@ options:
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
-        this value is not provided, the default C(GET /\r\n) will be used.
+        this value is not provided, the default C(GET /\\r\\n) will be used.
   receive:
     description:
       - The receive string for the monitor call.

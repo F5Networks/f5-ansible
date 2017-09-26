@@ -46,7 +46,7 @@ options:
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
-        this value is not provided, the default C(GET /\r\n) will be used.
+        this value is not provided, the default C(GET /\\r\\n) will be used.
   receive:
     description:
       - The receive string for the monitor call.
@@ -66,7 +66,7 @@ options:
       - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
+        must be specified.
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
