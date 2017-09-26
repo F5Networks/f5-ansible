@@ -52,9 +52,9 @@ def stub_roles_yaml_files(module):
     main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(TOP_LEVEL, module)
     with open(main_tests, 'w') as fh:
         fh.write("---\n\n")
-        fh.write("- import_tasks:: setup.yaml\n\n")
+        fh.write("- import_tasks: setup.yaml\n\n")
         fh.write("# tests go here\n\n")
-        fh.write("- import_tasks:: teardown.yaml")
+        fh.write("- import_tasks: teardown.yaml")
 
 
 def stub_playbook_file(module):
@@ -87,21 +87,21 @@ def stub_module_documentation(module):
     touch(documentation_file)
 
 
-def restub_test_automation():
-    dest = "{0}/test/runner/jenkins-jobs/ci.f5.f5-ansible-run-one.groovy".format(TOP_LEVEL)
-    library = "{0}/library".format(TOP_LEVEL)
-    with open(dest, "r") as fh:
-        content = fh.readlines()
-    start = content.index("modules = [\n") + 1
-    end = content.index("]\n", start)
-    content[start:end] = []
-    files = [f for f in os.listdir(library) if isfile(join(library, f))]
-    files = [f for f in files if not f.startswith('_')]
-    for l in reversed(files):
-        content.insert(start, "    '{0}',\n".format(l))
-    with open(dest, "w") as fh:
-        to_write = "".join(content)
-        fh.write(to_write)
+#def restub_test_automation():
+#    dest = "{0}/test/runner/jenkins-jobs/ci.f5.f5-ansible-run-one.groovy".format(TOP_LEVEL)
+#    library = "{0}/library".format(TOP_LEVEL)
+#    with open(dest, "r") as fh:
+#        content = fh.readlines()
+#    start = content.index("modules = [\n") + 1
+#    end = content.index("]\n", start)
+#    content[start:end] = []
+#    files = [f for f in os.listdir(library) if isfile(join(library, f))]
+#    files = [f for f in files if not f.startswith('_')]
+#    for l in reversed(files):
+#        content.insert(start, "    '{0}',\n".format(l))
+#    with open(dest, "w") as fh:
+#        to_write = "".join(content)
+#        fh.write(to_write)
 
 
 def touch(fname, times=None):
