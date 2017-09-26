@@ -48,3 +48,7 @@ listed below.
    development/design-decisions.rst
    development/dealing-with-replace-all.rst
    development/module-patterns.rst
+   development/testing-pipeline.rst
+   development/securing-sensitive-information.rst
+   development/ssh-functionality-for-modules.rst
+   development/issue-management.rst
