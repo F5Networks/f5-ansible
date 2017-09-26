@@ -44,7 +44,6 @@ options:
   banner:
     description:
       - Whether to enable the banner or not.
-    required: False
     choices:
       - enabled
       - disabled
@@ -53,13 +52,11 @@ options:
     description:
       - Specifies the text to include on the pre-login banner that displays
         when a user attempts to login to the system using SSH.
-    required: False
     default: None
   inactivity_timeout:
     description:
       - Specifies the number of seconds before inactivity causes an SSH
         session to log out.
-    required: False
     default: None
   log_level:
     description:
@@ -74,7 +71,6 @@ options:
       - info
       - quiet
       - verbose
-    required: False
     default: None
   login:
     description:
@@ -83,12 +79,10 @@ options:
     choices:
       - enabled
       - disabled
-    required: False
     default: None
   port:
     description:
       - Port that you want the SSH daemon to run on.
-    required: False
     default: None
 notes:
   - Requires the f5-sdk Python package on the host This is as easy as pip
@@ -175,13 +169,11 @@ port:
 '''
 
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 
 
 class Parameters(AnsibleF5Parameters):
