@@ -20,11 +20,6 @@ setuptools.setup(
         "f5-ansible",
     ],
     install_requires=requires,
-    entry_points={
-        'flake8.extension': [
-            'F5 = flake8_example:ExamplePlugin',
-        ],
-    },
     classifiers=[
         "Framework :: Ansible",
         "Environment :: Console",
