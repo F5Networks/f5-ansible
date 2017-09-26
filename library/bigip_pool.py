@@ -78,7 +78,7 @@ options:
         or it has a list of one. Where they differ is in the extra guards that
         C(single) provides; namely that it only allows a single monitor.
     version_added: "1.3"
-    choices: ['and_list', 'm_of_n', 'single]
+    choices: ['and_list', 'm_of_n', 'single']
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
