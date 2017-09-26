@@ -28,7 +28,7 @@ DOCUMENTATION = '''
 ---
 module: _bigip_pool
 short_description: "Manages F5 BIG-IP LTM pools"
-deprecated: Deprecated in 2.5. Use the bigip_pool module instead.
+deprecated: Deprecated in 2.5. Use the C(bigip_pool) module instead.
 description:
   - Manages F5 BIG-IP LTM pools via iControl SOAP API
 version_added: 1.2

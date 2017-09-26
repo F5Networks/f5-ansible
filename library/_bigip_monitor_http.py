@@ -28,8 +28,9 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 ---
-module: bigip_monitor_http
+module: _bigip_monitor_http
 short_description: "Manages F5 BIG-IP LTM http monitors"
+deprecated: Deprecated in 2.5. Use C(bigip_monitor_http) instead.
 description:
   - Manages F5 BIG-IP LTM monitors via iControl SOAP API
 version_added: "1.4"
