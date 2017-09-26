@@ -1,0 +1,11 @@
+---
+
+- name: License BIG-IP
+  bigip_license:
+      key: "{{ bigip_license }}"
+  register: result
+
+- name: Assert License BIG-IP
+  assert:
+      that:
+          - result|changed
