@@ -224,7 +224,7 @@ EXAMPLES = '''
           - http
           - tcp
   delegate_to: localhost
-  
+
 - name: Remove pool member from pool
   bigip_pool:
       server: "lb.mydomain.com"
