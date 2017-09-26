@@ -73,6 +73,11 @@ options:
       - bridged
       - isolated
       - host only
+  delete_virtual_disk:
+    description:
+      - When C(state) is C(absent), will additionally delete the virtual disk associated
+        with the vCMP guest. By default, this value is 
+    default: no
   mgmt_address:
     description:
       - Specifies the IP address, and subnet or subnet mask that you use to access
@@ -98,6 +103,14 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+  - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
+    limitation of the vCMP system because it is booting real VMs on the BIG-IP
+    device. This boot time is very similar in length to the time it takes to
+    boot VMs on any other virtualization platform; public or private.
+  - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This
+    means that it is not unusual for a vCMP host with many guests to take a
+    long time (60+ minutes) to reboot and bring all the guests online. The
+    BIG-IP chassis will be available before all vCMP guests are online.
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
@@ -245,7 +258,6 @@ class Parameters(AnsibleF5Parameters):
             return None
 
 
-
 class Changes(Parameters):
     pass
 
@@ -313,7 +325,7 @@ class ModuleManager(object):
         state = self.want.state
 
         try:
-            if state == "present":
+            if state in ['disabled', 'provisioned', 'deployed', 'present']:
                 changed = self.present()
             elif state == "absent":
                 changed = self.absent()
@@ -366,9 +378,13 @@ class ModuleManager(object):
     def remove(self):
         if self.client.check_mode:
             return True
+        if self.want.delete_virtual_disk:
+            self.have = self.read_current_from_device()
         self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the resource.")
+        if self.want.delete_virtual_disk:
+            self.remove_virtual_disk_from_device()
         return True
 
     def create(self):
@@ -376,6 +392,8 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.create_on_device()
+        if state == 'disabled':
+            self.disable()
         return True
 
     def create_on_device(self):
@@ -411,6 +429,13 @@ class ModuleManager(object):
         result = resource.attrs
         return Parameters(result)
 
+    def remove_virtual_disk_from_device(self):
+        resource = self.client.api.tm.vcmp.guests.guest.load(
+            name=self.want.name
+        )
+        if resource:
+            resource.delete()
+
 
 class ArgumentSpec(object):
     def __init__(self):
@@ -425,6 +450,9 @@ class ArgumentSpec(object):
             state=dict(
                 default='deployed',
                 choices=['disabled', 'provisioned', 'deployed', 'absent', 'present']
+            ),
+            delete_virtual_disk=dict(
+                type='bool', default='no'
             )
         )
         self.f5_product_name = 'bigip'
