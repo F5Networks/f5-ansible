@@ -29,6 +29,8 @@ services:
         target: secure.yaml
       - source: cacerts.pem
         target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -38,10 +40,14 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
+      - GPG=/usr/local/bin/gpg2
   py3.5.4:
     image: f5ansible/py3.5.4
     build:
@@ -55,6 +61,8 @@ services:
         target: secure.yaml
       - source: cacerts.pem
         target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -68,6 +76,7 @@ services:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
+      - GPG=/usr/local/bin/gpg2
   py3.6.2:
     image: f5ansible/py3.6.2
     build:
@@ -81,6 +90,8 @@ services:
         target: secure.yaml
       - source: cacerts.pem
         target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -94,7 +105,7 @@ services:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
-
+      - GPG=/usr/local/bin/gpg2
 secrets:
   clouds.yaml:
     file: ./secrets/clouds.yaml.secret
@@ -102,3 +113,5 @@ secrets:
     file: ./secrets/secure.yaml.secret
   cacerts.pem:
     file: ./secrets/cacerts.pem.secret
+  .gitconfig:
+    file: ./secrets/gitconfig.secret
