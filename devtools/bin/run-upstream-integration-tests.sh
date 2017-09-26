@@ -25,7 +25,7 @@ do
     VBoxManage controlvm ${i} poweroff
     VBoxManage snapshot ${i} restore "${SNAPSHOT}"
     sleep 3
-    VBoxManage startvm ${i}
+    VBoxManage startvm ${i} --type headless
 
     for x in $(seq 1 10); do
         curl -k https://${HOST}:${PORT}/
