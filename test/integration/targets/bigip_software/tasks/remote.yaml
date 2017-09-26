@@ -4,9 +4,6 @@
   bigip_software:
       software: "{{ image_link }}"
       software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: "yes"
       state: "present"
   register: result
 
