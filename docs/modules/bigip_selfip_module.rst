@@ -58,6 +58,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The netmask for the self IP. When creating a new Self IP, this value is required.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on. You can set different partitions for Self IPs, but the address used may not match any other address used by a Self IP. In that sense, Self IPs are not isolated by partitions as other resources on a BIG-IP are.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

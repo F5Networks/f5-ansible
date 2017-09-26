@@ -14,7 +14,7 @@ _bigip_pool_member - Manages F5 BIG-IP LTM pool members
 DEPRECATED
 ----------
 
-Deprecated in 2.5. Use the bigip_pool_member module instead.
+Deprecated in 2.5. Use the ``bigip_pool_member`` module instead.
 
 Synopsis
 --------

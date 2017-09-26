@@ -5,7 +5,7 @@ All Modules
 
   bigip_command - Run arbitrary command on F5 devices. <bigip_command_module>
   bigip_config - Manage BIG-IP configuration sections. <bigip_config_module>
-  bigip_configsync_actions - Perform different actions related to config-sync. <bigip_configsync_actions_module>
+  bigip_configsync_action - Perform different actions related to config-sync. <bigip_configsync_action_module>
   bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP. <bigip_device_connectivity_module>
   bigip_device_dns - Manage BIG-IP device DNS settings <bigip_device_dns_module>
   bigip_device_group - Manage device groups on a BIG-IP. <bigip_device_group_module>
@@ -30,7 +30,9 @@ All Modules
   bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP. <bigip_iapplx_package_module>
   bigip_irule - Manage iRules across different modules on a BIG-IP. <bigip_irule_module>
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
-  bigip_monitor_http - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
+  bigip_monitor_http - Manages F5 BIG-IP LTM http monitors. <bigip_monitor_http_module>
+  bigip_monitor_http (D) - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
+  bigip_monitor_https - Manages F5 BIG-IP LTM https monitors. <bigip_monitor_https_module>
   bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitors. <bigip_monitor_snmp_dca_module>
   bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors. <bigip_monitor_tcp_module>
   bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors. <bigip_monitor_tcp_echo_module>
@@ -57,7 +59,7 @@ All Modules
   bigip_snmp_community - foo <bigip_snmp_community_module>
   bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP. <bigip_snmp_trap_module>
   bigip_snmp_user - foo <bigip_snmp_user_module>
-  bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
+  bigip_software - Manage BIG-IP software versions and hotfixes. <bigip_software_module>
   bigip_software_facts - Collect software facts from BIG-IP devices. <bigip_software_facts_module>
   bigip_software_update - Manage the software update settings of a BIG-IP. <bigip_software_update_module>
   bigip_ssl_certificate - Import/Delete certificates from BIG-IP. <bigip_ssl_certificate_module>

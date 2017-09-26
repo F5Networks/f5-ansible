@@ -69,6 +69,11 @@ Options
     <td>255.255.255.255</td>
         <td></td>
         <td><div>Netmask of the provided virtual address. This value cannot be modified after it is set.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

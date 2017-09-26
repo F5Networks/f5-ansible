@@ -72,6 +72,11 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>transport<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td>rest</td>
+        <td><ul><li>rest</li><li>cli</li></ul></td>
+        <td><div>Configures the transport connection to use when connecting to the remote device. The transport argument supports connectivity to the device over cli (ssh) or rest.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

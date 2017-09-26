@@ -55,8 +55,8 @@ Options
                 <tr><td>monitor_type<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>and_list</li><li>m_of_n</li></ul></td>
-        <td><div>Monitor rule type when <code>monitors</code> &gt; 1.</div>        </td></tr>
+        <td><ul><li>and_list</li><li>m_of_n</li><li>single</li></ul></td>
+        <td><div>Monitor rule type when <code>monitors</code> is specified. When creating a new pool, if this value is not specified, the default of 'and_list' will be used.</div><div>Both <code>single</code> and <code>and_list</code> are functionally identical since BIG-IP considers all monitors as "a list". BIG=IP either has a list of many, or it has a list of one. Where they differ is in the extra guards that <code>single</code> provides; namely that it only allows a single monitor.</div>        </td></tr>
                 <tr><td>monitors<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -68,6 +68,11 @@ Options
         <td></td>
         <td><div>Pool name</div></br>
     <div style="font-size: small;">aliases: pool<div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -164,6 +169,60 @@ Examples
           port: 80
       delegate_to: localhost
     
+    - name: Set a single monitor (with enforcement)
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          monitor_type: "single"
+          monitors:
+              - http
+      delegate_to: localhost
+    
+    - name: Set a single monitor (without enforcement)
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          monitors:
+              - http
+      delegate_to: localhost
+    
+    - name: Set multiple monitors (all must succeed)
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          monitor_type: "and_list"
+          monitors:
+              - http
+              - tcp
+      delegate_to: localhost
+    
+    - name: Set multiple monitors (at least 1 must succeed)
+      bigip_pool:
+          server: "lb.mydomain.com"
+          user: "admin"
+          password: "secret"
+          state: "present"
+          name: "my-pool"
+          partition: "Common"
+          monitor_type: "m_of_n"
+          quorum: 1
+          monitors:
+              - http
+              - tcp
+      delegate_to: localhost
+      
     - name: Remove pool member from pool
       bigip_pool:
           server: "lb.mydomain.com"

@@ -4,7 +4,7 @@
 bigip_device_group - Manage device groups on a BIG-IP.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::

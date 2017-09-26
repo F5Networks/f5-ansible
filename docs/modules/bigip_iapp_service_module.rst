@@ -53,6 +53,11 @@ Options
     <td></td>
         <td></td>
         <td><div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

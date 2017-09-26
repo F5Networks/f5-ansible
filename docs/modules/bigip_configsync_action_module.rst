@@ -1,8 +1,8 @@
-.. _bigip_configsync_actions:
+.. _bigip_configsync_action:
 
 
-bigip_configsync_actions - Perform different actions related to config-sync.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_configsync_action - Perform different actions related to config-sync.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

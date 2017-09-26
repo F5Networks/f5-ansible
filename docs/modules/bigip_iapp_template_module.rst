@@ -48,6 +48,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the iApp template that you want to delete. This option is only available when specifying a <code>state</code> of <code>absent</code> and is provided as a way to delete templates that you may no longer have the source of.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>

@@ -1,10 +1,10 @@
-.. _bigip_monitor_tcp_echo:
+.. _bigip_monitor_https:
 
 
-bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_https - Manages F5 BIG-IP LTM https monitors.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -37,14 +37,11 @@ Synopsis
 * T
 * M
 *  
-* t
-* c
-* p
-*  
-* e
-* c
 * h
-* o
+* t
+* t
+* p
+* s
 *  
 * m
 * o
@@ -85,7 +82,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'.</div><div>If this value is an IP address, and the <code>type</code> is <code>tcp</code> (the default), then a <code>port</code> number must be specified.</div>        </td></tr>
+        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -94,9 +91,9 @@ Options
     <div style="font-size: small;">aliases: monitor<div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>/Common/tcp_echo</td>
+    <td>/Common/https</td>
         <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp_echo</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>https</code> parent on the <code>Common</code> partition.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td>Common</td>
@@ -107,6 +104,26 @@ Options
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
+                <tr><td>receive<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The receive string for the monitor call.</div>        </td></tr>
+                <tr><td>receive_disable<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>This setting works like <code>receive</code>, except that the system marks the node or pool member disabled when its response matches the <code>receive_disable</code> string but not <code>receive</code>. To use this setting, you must specify both <code>receive_disable</code> and <code>receive</code>.</div>        </td></tr>
+                <tr><td>send<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\r\n</code> will be used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -117,6 +134,16 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>target_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the password, if the monitored target requires authentication.</div>        </td></tr>
+                <tr><td>target_username<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the user name, if the monitored target requires authentication.</div>        </td></tr>
                 <tr><td>time_until_up<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -148,23 +175,23 @@ Examples
  ::
 
     
-    - name: Create TCP Echo Monitor
-      bigip_monitor_tcp_echo:
+    - name: Create HTTPS Monitor
+      bigip_monitor_https:
           state: "present"
+          ip: "10.10.10.10"
           server: "lb.mydomain.com"
           user: "admin"
-          ip: 10.10.10.10
           password: "secret"
-          name: "my_tcp_monitor"
+          name: "my_http_monitor"
       delegate_to: localhost
     
-    - name: Remove TCP Echo Monitor
-      bigip_monitor_tcp_echo:
+    - name: Remove HTTPS Monitor
+      bigip_monitor_https:
           state: "absent"
           server: "lb.mydomain.com"
           user: "admin"
           password: "secret"
-          name: "my_tcp_monitor"
+          name: "my_http_monitor"
       delegate_to: localhost
 
 Return Values
@@ -202,7 +229,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> tcp </td>
+        <td align=center> https </td>
     </tr>
             <tr>
         <td> timeout </td>

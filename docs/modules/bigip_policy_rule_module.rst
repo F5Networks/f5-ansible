@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 3.0.0
   * BIG-IP >= v12.1.0
 
 
@@ -53,11 +53,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the rule.</div>        </td></tr>
-                <tr><td>order<br/><div style="font-size: small;"></div></td>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
-    <td></td>
+    <td>Common</td>
         <td></td>
-        <td><div>A number, indicating the place in the list of a policy's rules.</div><div>When <code>order</code> is <code>0</code>, the rule will be placed first in the list, and all other rules will be moved down by one place.</div><div>When <code>order</code> is <code>-1</code>, the rule will be moved to the end of the list, and all other rules will be moved up by one place.</div><div>When <code>order</code> is any other number, if that order is currently occupied by an existing rule, then that exiting rule will be moved down and this new rule will take the existing rule's place.</div><div>When creating a new rule, the new rule will be placed at the end of any existing rules; a value of <code>-1</code>.</div>        </td></tr>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -157,46 +157,6 @@ Examples
       with_items:
           - policy_rules
 
-Return Values
--------------
-
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
-        <tr>
-        <td> key_source_path </td>
-        <td> Path on BIG-IP where the source of the key is stored </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> /var/config/rest/downloads/cert1.key </td>
-    </tr>
-            <tr>
-        <td> key_filename </td>
-        <td> ['The name of the SSL certificate key. The C(key_filename) and C(cert_filename) will be similar to each other, however the C(key_filename) will have a C(.key) extension.'] </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> cert1.key </td>
-    </tr>
-            <tr>
-        <td> key_checksum </td>
-        <td> SHA1 checksum of the key that was provided. </td>
-        <td align=center> changed and created </td>
-        <td align=center> string </td>
-        <td align=center> cf23df2207d99a74fbe169e3eba035e633b65d94 </td>
-    </tr>
-        
-    </table>
-    </br></br>
 
 Notes
 -----

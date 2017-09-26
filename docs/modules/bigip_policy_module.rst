@@ -47,11 +47,21 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the policy to create.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>rules<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies a list of rules that you want associated with this policy. The order of this list is the order they will be evaluated by BIG-IP. If the specified rules do not exist (for example when creating a new policy) then they will be created.</div><div>The <code>conditions</code> for a default rule are <code>all</code>.</div><div>The <code>actions</code> for a default rule are <code>ignore</code>.</div><div>The <code>bigip_policy_rule</code> module can be used to create and edit existing and new rules.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -70,8 +80,8 @@ Options
                 <tr><td>strategy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>first</li><li>all</li><li>best</li><li>Custom strategy</li></ul></td>
-        <td><div>Specifies the method to determine which actions get executed in the case where there are multiple rules that match. When creating new policies, the default is <code>first</code>.</div>        </td></tr>
+        <td><ul><li>first</li><li>all</li><li>best</li></ul></td>
+        <td><div>Specifies the method to determine which actions get executed in the case where there are multiple rules that match. When creating new policies, the default is <code>first</code>.</div><div>This module does not allow you to specify the <code>best</code> strategy to use. It will choose the system default (<code>/Common/best-match</code>) for you instead.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -93,40 +103,16 @@ Examples
  ::
 
     
-    vars:
-        policy_rules:
-            - name: rule1
-              actions:
-                  - forward: "yes"
-                    select: "yes"
-                    pool: "pool-svrs"
-              conditions:
-                  - http_uri: "yes"
-                    path: "yes"
-                    starts-with:
-                        - /euro
-            - name: HomePage
-              actions:
-                  - forward: yes
-                    select: yes
-                    pool: "pool-svrs"
-              conditions:
-                  - http-uri: yes
-                    path: yes
-                    starts-with:
-                        - /HomePage/
-    
-    - name: Create policies
+    - name: Create policy which is immediately published
       bigip_policy:
           name: "Policy-Foo"
-          state: present
+          state: "present"
       delegate_to: localhost
     
-    - name: Add a rule to the new policy
+    - name: Add a rule to the new policy - Immediately published
       bigip_policy_rule:
           policy: "Policy-Foo"
           name: "ABC"
-          ordinal: 11
           conditions:
               - http_uri: "yes"
                 path: "yes"
@@ -137,15 +123,51 @@ Examples
                 select: "yes"
                 pool: "pool-svrs"
     
-    - name: Add multiple rules to the new policy
+    - name: Add multiple rules to the new policy - Added in the order they are specified
       bigip_policy_rule:
           policy: "Policy-Foo"
           name: "{{ item.name }}"
-          ordinal: "{{ item.ordinal }}"
           conditions: "{{ item.conditions }}"
           actions: "{{ item.actions }}"
       with_items:
-          - policy_rules
+          - name: rule1
+            actions:
+                - forward: "yes"
+                  select: "yes"
+                  pool: "pool-svrs"
+            conditions:
+                - http_uri: "yes"
+                  path: "yes"
+                  starts-with:
+                      - /euro
+          - name: HomePage
+            actions:
+                - forward: yes
+                  select: yes
+                  pool: "pool-svrs"
+            conditions:
+                - http-uri: yes
+                  path: yes
+                  starts-with:
+                      - /HomePage/
+                      
+    - name: Create policy specify default rules - Immediately published
+      bigip_policy:
+          name: "Policy-Bar"
+          state: "present"
+          rules:
+              - rule1
+              - rule2
+              - rule3
+    
+    - name: Create policy specify default rules - Left in a draft
+      bigip_policy:
+          name: "Policy-Baz"
+          state: "draft"
+          rules:
+              - rule1
+              - rule2
+              - rule3
 
 
 Notes
