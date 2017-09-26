@@ -281,7 +281,7 @@ class Parameters(AnsibleF5Parameters):
             return None
 
         # Per BZ617284, the BIG-IP UI does not raise a warning about this.
-        # So i
+        # So I do
         if 1 > int(self._values['interval']) > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
