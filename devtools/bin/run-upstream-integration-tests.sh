@@ -41,10 +41,12 @@ do
     do
         docker-compose -f "${DIR}/devtools/docker-compose.yaml" run ${k} make $MODULE
         if [ $? -ne 0 ]; then
+            VBoxManage controlvm ${i} poweroff
             echo "FAILED: ${k} - ${i}"
             exit 1
         fi
     done
+    VBoxManage controlvm ${i} poweroff
 done
 
 echo "SUCCESS"
