@@ -60,11 +60,22 @@ options:
       - Specifies the method to determine which actions get executed in the
         case where there are multiple rules that match. When creating new
         policies, the default is C(first).
+      - This module does not allow you to specify the C(best) strategy to use.
+        It will choose the system default (C(/Common/best-match)) for you instead.
     choices:
       - first
       - all
       - best
-      - Custom strategy
+  rules:
+    description:
+      - Specifies a list of rules that you want associated with this policy.
+        The order of this list is the order they will be evaluated by BIG-IP.
+        If the specified rules do not exist (for example when creating a new
+        policy) then they will be created.
+      - The C(conditions) for a default rule are C(all).
+      - The C(actions) for a default rule are C(ignore).
+      - The C(bigip_policy_rule) module can be used to create and edit existing
+        and new rules.
   partition:
     description:
       - Device partition to manage resources on.
@@ -82,40 +93,16 @@ author:
 '''
 
 EXAMPLES = '''
-vars:
-    policy_rules:
-        - name: rule1
-          actions:
-              - forward: "yes"
-                select: "yes"
-                pool: "pool-svrs"
-          conditions:
-              - http_uri: "yes"
-                path: "yes"
-                starts-with:
-                    - /euro
-        - name: HomePage
-          actions:
-              - forward: yes
-                select: yes
-                pool: "pool-svrs"
-          conditions:
-              - http-uri: yes
-                path: yes
-                starts-with:
-                    - /HomePage/
-
-- name: Create policies
+- name: Create policy which is immediately published
   bigip_policy:
       name: "Policy-Foo"
-      state: present
+      state: "present"
   delegate_to: localhost
 
-- name: Add a rule to the new policy
+- name: Add a rule to the new policy - Immediately published
   bigip_policy_rule:
       policy: "Policy-Foo"
       name: "ABC"
-      ordinal: 11
       conditions:
           - http_uri: "yes"
             path: "yes"
@@ -126,15 +113,51 @@ vars:
             select: "yes"
             pool: "pool-svrs"
 
-- name: Add multiple rules to the new policy
+- name: Add multiple rules to the new policy - Added in the order they are specified
   bigip_policy_rule:
       policy: "Policy-Foo"
       name: "{{ item.name }}"
-      ordinal: "{{ item.ordinal }}"
       conditions: "{{ item.conditions }}"
       actions: "{{ item.actions }}"
   with_items:
-      - policy_rules
+      - name: rule1
+        actions:
+            - forward: "yes"
+              select: "yes"
+              pool: "pool-svrs"
+        conditions:
+            - http_uri: "yes"
+              path: "yes"
+              starts-with:
+                  - /euro
+      - name: HomePage
+        actions:
+            - forward: yes
+              select: yes
+              pool: "pool-svrs"
+        conditions:
+            - http-uri: yes
+              path: yes
+              starts-with:
+                  - /HomePage/
+
+- name: Create policy specify default rules - Immediately published
+  bigip_policy:
+      name: "Policy-Bar"
+      state: "present"
+      rules:
+          - rule1
+          - rule2
+          - rule3
+
+- name: Create policy specify default rules - Left in a draft
+  bigip_policy:
+      name: "Policy-Baz"
+      state: "draft"
+      rules:
+          - rule1
+          - rule2
+          - rule3
 '''
 
 import re
@@ -504,13 +527,9 @@ class ArgumentSpec(object):
             name=dict(
                 required=True
             ),
-            description=dict(
-                required=False,
-                default=None
-            ),
+            description=dict(),
             strategy=dict(
-                required=False,
-                default=None
+                choices=['first', 'all', 'best']
             ),
             state=dict(
                 required=False,
