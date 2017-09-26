@@ -26,3 +26,4 @@ test/runner/roles/harness/vars/TwoArmed-bigip-13.0.0.yaml
 test/runner/roles/harness/vars/TwoArmed-bigiq-5.1.0.yaml
 test/runner/roles/harness/vars/TwoArmed-bigiq-5.2.0.yaml
 test/runner/roles/harness/vars/TwoArmed-bigiq-5.3.0.yaml
+test/runner/roles/harness/vars/TwoArmed-iworkflow-2.1.0.yaml
