@@ -48,7 +48,7 @@ of our Ansible playbooks in a file called ``site.yaml``
 Installing Modules
 ------------------
 
-Refer to the documentation on [installing the modules here](installing-modules.rst).
+Refer to the documentation on `installing the modules here <installing-modules.rst>`_.
 
 Playbook
 --------
