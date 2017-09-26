@@ -21,7 +21,7 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
@@ -130,6 +130,17 @@ EXAMPLES = '''
       user: "admin"
       password: "secret"
       name: "my_http_monitor"
+  delegate_to: localhost
+
+- name: Include a username and password in the HTTP monitor
+  bigip_monitor_http:
+      state: "absent"
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      name: "my_http_monitor"
+      target_username: "monitor_user"
+      target_password: "monitor_pass"
   delegate_to: localhost
 '''
 
