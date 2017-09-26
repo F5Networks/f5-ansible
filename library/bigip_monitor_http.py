@@ -588,7 +588,7 @@ class ArgumentSpec(object):
             target_password=dict(no_log=True),
 
             # Deprecated params
-            parent_partition = dict(
+            parent_partition=dict(
                 removed_in_version='2.4'
             )
         )
