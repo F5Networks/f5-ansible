@@ -131,7 +131,6 @@ class TestManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
         mm = ModuleManager(client)
-        results = mm.exec_module()
+        mm.exec_module()
         self.assertEqual(self.run_commands.call_count, 1)
         self.assertEqual(self.execute_on_device.call_count, 0)
-
