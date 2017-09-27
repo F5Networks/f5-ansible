@@ -65,8 +65,8 @@ Ensure all the following are complete
 - [ ] `TestManager` unit test class (or `*Managers` if required) exists and has content
 
 #### QC related
-- [ ] Module code passes `tox -e style -- library/MODULE_NAME.py`
-- [ ] Unit test code passes `tox -e style -- test/unit/PRODUCT/test_MODULE_NAME.py`
+- [ ] Module code passes `pycodestyle library/MODULE_NAME.py`
+- [ ] Unit test code passes `pycodestyle test/unit/PRODUCT/test_MODULE_NAME.py`
 
 #### Docs related
 - [ ] Docs exist and build correctly (`make docs`)
