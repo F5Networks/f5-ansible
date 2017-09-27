@@ -1,0 +1,78 @@
+FROM python:3.6.2
+MAINTAINER @caphrim007
+
+# Directories used to hold command configs
+RUN mkdir -p /root/.config/openstack
+RUN mkdir -p /etc/jenkins_jobs
+
+# Misc symlinks
+RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
+
+# Symlinks to OpenStack config files
+#
+# This is required because the os-client-config library is incapable of
+# taking an environment variable that specifies a **DIRECTORY** to find the
+# OpenStack config files in.
+#
+# You will find in the documentation here,
+#
+#  https://docs.openstack.org/os-client-config/latest/user/configuration.html#site-specific-file-locations
+#
+# the mention of what appear to be environment variables to override. This is
+# not the case however. These values are the documentations way of saying that
+# the code will look in platform specific locations. It is not an actual variable
+# that you may override.
+#
+# There is also an OS_CLIENT_CONFIG_FILE environment variable that you **CAN**
+# override, mentioned here,
+#
+#  https://docs.openstack.org/os-client-config/latest/user/configuration.html#config-files
+#
+# This variable, however, has a deficiency in that it is unable to find a secrets
+# file that may reside in the same directory as it. Therefore we cannot use this
+# environment variable because we then cannot use secrets.
+RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml
+RUN ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml
+RUN ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem
+
+# Conveniance aliases
+RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
+RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
+
+# Required package installation
+RUN apt-get update && apt-get install -y \
+    python-dev python-pip vim git-core wget curl \
+    libffi-dev libssl-dev libxml2-dev libxslt1-dev \
+    libjpeg62-turbo-dev zlib1g-dev python3-apt jq
+
+# Install required pip packages
+RUN pip install --upgrade pip
+
+# Upgrade gpg to 2.1
+RUN curl -sL "https://gist.githubusercontent.com/caphrim007/998ba54373517c3ee62572fb626e6a53/raw/327fb4d540eccf10f6bc52b73526182aed1537b5/gistfile1.txt" |sh
+
+# Install blackbox commands for encryption in the repository
+RUN cd /tmp && git clone https://github.com/StackExchange/blackbox.git \
+    && cd blackbox && make manual-install
+
+# Because python gets installed in /usr/local/bin instead of /usr/bin
+RUN ln -sf /usr/lib/python3/dist-packages/apt_pkg.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.6/apt_pkg.so
+RUN ln -sf /usr/lib/python3/dist-packages/apt_inst.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.6/apt_inst.so
+RUN ln -sf /usr/lib/python3/dist-packages/apt /usr/local/lib/python3.6/apt
+
+# The dependencies of the f5-ansible repository are installed here.
+#
+# Note that the entire codebase is **NOT** installed because it is instead
+# provided as a bind-mount when using docker-compose.
+COPY requirements.bare.txt /tmp/__src__/requirements.bare.txt
+RUN pip install -r /tmp/__src__/requirements.bare.txt
+
+# Clears any cache that may have been saved when running the package installation
+# steps earlier.
+RUN rm -rf /var/lib/apt/lists/*
+
+# The /here directory will be bind-mounted to your f5-ansible source tree,
+# allowing you to use a proper editor outside of the container, and have the
+# changes that editor makes reflected inside the container immediately.
+WORKDIR /here
+CMD ['/bin/bash']

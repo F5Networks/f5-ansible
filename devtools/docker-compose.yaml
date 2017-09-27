@@ -45,6 +45,35 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+  py2.7.10-bare:
+    image: f5ansible/py2.7.10-bare
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py2.7.10-bare
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
+    environment:
+      - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
+      - GPG=/usr/local/bin/gpg2
   py3.5.4:
     image: f5ansible/py3.5.4
     build:
@@ -74,11 +103,69 @@ services:
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+  py3.5.4-bare:
+    image: f5ansible/py3.5.4-bare
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.5.4-bare
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
+    environment:
+      - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
+      - GPG=/usr/local/bin/gpg2
   py3.6.2:
     image: f5ansible/py3.6.2
     build:
       context: ..
       dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2
+    command: /bin/bash
+    secrets:
+      - source: clouds.yaml
+        target: clouds.yaml
+      - source: secure.yaml
+        target: secure.yaml
+      - source: cacerts.pem
+        target: cacerts.pem
+      - source: .gitconfig
+        target: .gitconfig
+    extra_hosts:
+      - "localhost:1.2.3.4"
+    volumes:
+      - type: bind
+        source: ../
+        target: /here
+      - type: bind
+        source: ~/.gnupg
+        target: /gpg
+    environment:
+      - OS_CLOUD=default
+      - PYTHONDONTWRITEBYTECODE=1
+      - GNUPGHOME=/gpg/
+      - GPG=/usr/local/bin/gpg2
+  py3.6.2-bare:
+    image: f5ansible/py3.6.2-bare
+    build:
+      context: ..
+      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
