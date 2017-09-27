@@ -21,7 +21,7 @@
             host: "10.10.10.10"
             name: "node-1"
             password: "{{ bigip_password }}"
-            server: "{{ ansible_hosdt }}"
+            server: "{{ ansible_host }}"
             user: "{{ bigip_username }}"
             validate_certs: "{{ validate_certs }}"
         delegate_to: localhost
