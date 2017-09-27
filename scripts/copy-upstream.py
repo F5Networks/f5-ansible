@@ -108,7 +108,7 @@ def get_fixtures(module):
     )
     p1.stdout.close()
     stdout, stderr = p2.communicate()
-    stdout = stdout.split("\n")
+    stdout = str(stdout).split("\n")
     stdout = [x.strip() for x in stdout if x]
 
     for x in stdout:
@@ -163,6 +163,7 @@ def main():
         copy_module(module, args.upstream_dir)
         copy_unit_tests(module, args.upstream_dir)
         copy_unit_test_fixtures(module, args.upstream_dir)
+        print("Copy complete")
     except Exception as ex:
         exit_fail(str(ex))
 
