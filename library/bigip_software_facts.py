@@ -29,13 +29,14 @@ DOCUMENTATION = '''
 module: bigip_software_facts
 short_description: Collect software facts from BIG-IP devices.
 description:
-  - Collect information about installed volumes, existing ISOs for images and hotfixes on the BIG-IP device.
+  - Collect information about installed volumes, existing ISOs for images and
+    hotfixes on the BIG-IP device.
 version_added: "2.5"
 options:
   include:
     description:
       - Type of information to collect.
-    default: 
+    default:
       - all
     choices:
       - all
@@ -44,8 +45,9 @@ options:
       - volume
   filter:
     description:
-      - Filter responses based on the attribute and value provided. Valid filters are required to be in 
-        C(key:value) format, with keys being one of the following; name, build, version, status, active.
+      - Filter responses based on the attribute and value provided. Valid filters
+        are required to be in C(key:value) format, with keys being one of the
+        following; name, build, version, status, active.
 notes:
    - Requires the f5-sdk Python package on the host. This is as easy as
      pip install f5-sdk
@@ -93,8 +95,8 @@ hotfixes:
               lastModified: Sun Oct  2 20:50:04 2016,
               name: 12.1.1-hf2.iso,
               product: BIG-IP,
-              version: 12.1.1   
-volumes:     
+              version: 12.1.1
+volumes:
     description:
         List the volumes present on device.
     returned: changed
@@ -106,7 +108,7 @@ volumes:
               name: HD1.2,
               product: BIG-IP,
               status: complete,
-              version: 12.1.1              
+              version: 12.1.1
 '''
 
 
