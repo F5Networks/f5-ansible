@@ -210,7 +210,7 @@ class Parameters(AnsibleF5Parameters):
             return name
 
     def _get_chain_value(self, item):
-        if not 'chain' in item:
+        if 'chain' not in item:
             result = 'none'
         else:
             result = self._fqdn_name(item['chain'])
