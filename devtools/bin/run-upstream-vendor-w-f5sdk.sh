@@ -39,5 +39,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run py2.7.10 bash test/ansible/sanity/integration-test-idempotent-names.sh
+if [ $? -ne 0 ]; then
+    echo "FAILED"
+    exit 1
+fi
+
 
 echo "SUCCESS"
