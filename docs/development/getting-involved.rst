@@ -163,6 +163,48 @@ More ways if you're at F5
 If you're an F5 employee, there are even more ways to help. Refer to
 the *go/ansible* link for more details.
 
+Keeping F5 out of "legacy" files
+--------------------------------
+
+When Ansible introduces some new check that causes a whole lot of errors
+(such as when they added pep8 checking) they put all of the findings in
+a legacy file and fix the code that they're interested.
+
+On one hand, this allows them to fix what they need to fix.
+
+On the other hand, it results in problems like this
+
+.. code-block:: bash
+
+   ERROR: build/lib/ansible/modules/system/capabilities.py:139:55: E202 whitespace before ']'
+   ERROR: build/lib/ansible/modules/system/capabilities.py:166:1: E302 expected 2 blank lines, found 1
+   ERROR: build/lib/ansible/modules/system/capabilities.py:170:22: E251 unexpected spaces around keyword / parameter equals
+   ERROR: build/lib/ansible/modules/system/capabilities.py:170:24: E251 unexpected spaces around keyword / parameter equals
+   ... 10,000+ lines here ...
+   ERROR: build/lib/ansible/playbook/base.py:450:28: E225 missing whitespace around operator
+   ERROR: build/lib/ansible/playbook/base.py:452:28: E225 missing whitespace around operator
+   ERROR: The 1 sanity test(s) listed below (out of 1) failed. See error output above for details.
+
+It turns out that there is some post-processing that happens to whittle
+down this huge list. What is post-processed is enumerated here
+
+* local/ansible/test/sanity/pep8/legacy-ignore.txt
+
+While this ends up limiting the amount of errors that are raised by automated
+testing, it also puts a bandage over the problem without fixing the actual
+problems.
+
+I consider this a poor excuse for a "fix". So it's your, or *our*, job to make
+sure that F5 *anything* never makes it in this list. But it doesn't stop there.
+
+As a good netizen, it is also your job to assist in eliminating these legacy
+files (the text files, not the modules) by **FIXING** all the errors that are
+raised.
+
+Ultimately, this makes F5's job easier because when we run the commands to check
+for this stuff, we're no longer seeing a hundred-bajillion errors being raised
+by their tools.
+
 Conclusion
 ----------
 
