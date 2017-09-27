@@ -1,6 +1,7 @@
 paramiko
 git+https://github.com/ansible/ansible.git@devel
 pytest
+pytest-xdist
 flake8
 q
 nose
