@@ -92,9 +92,11 @@ options:
   target_username:
     description:
       - Specifies the user name, if the monitored target requires authentication.
+    version_added: 2.5
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
+    version_added: 2.5
   partition:
     description:
       - Device partition to manage resources on.
