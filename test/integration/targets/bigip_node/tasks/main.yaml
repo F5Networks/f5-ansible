@@ -1,4 +1,7 @@
 ---
 
-#- include: node-by-ip.yaml
-- include: node-by-name.yaml
+- import_tasks: node-by-address.yaml
+- import_tasks: node-by-fqdn.yaml
+- import_tasks: node-monitors.yaml
+- import_tasks: statuses.yaml
+  tags: status

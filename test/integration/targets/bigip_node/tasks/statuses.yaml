@@ -1,0 +1,123 @@
+---
+
+# Tests different status for a node with an FQDN
+#
+# Real domains are used here so that we can see actual information change in the
+# BIG-IP.
+#
+# If you have fake data here, then none of the BIG-IP nodes will register
+# with "valid" status'. The error/warning that is displayed by BIG-IP is
+#
+#  Unavailable (Enabled) - The DNS server(s) are available; No records returned 2017-09-26 22:08:38
+#
+
+- name: Create present node
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "present"
+  register: result
+
+- name: Assert Create present node
+  assert:
+      that:
+        - result|changed
+
+- name: Create present node - Idempotent check
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "present"
+  register: result
+
+- name: Assert Create present node - Idempotent check
+  assert:
+      that:
+        - not result|changed
+
+- name: Create enabled node
+  bigip_node:
+      fqdn: "google.com"
+      name: "google.com"
+      state: "enabled"
+  register: result
+
+- name: Assert Create enabled node
+  assert:
+      that:
+        - result|changed
+
+- name: Create enabled node - Idempotent check
+  bigip_node:
+      fqdn: "google.com"
+      name: "google.com"
+      state: "enabled"
+  register: result
+
+- name: Assert Create enabled node - Idempotent check
+  assert:
+      that:
+        - not result|changed
+
+- name: Create disabled node
+  bigip_node:
+      fqdn: "mit.edu"
+      name: "mit.edu"
+      state: "disabled"
+  register: result
+
+- name: Assert Create disabled node
+  assert:
+      that:
+        - result|changed
+
+- name: Create disabled node - Idempotent check
+  bigip_node:
+      fqdn: "mit.edu"
+      name: "mit.edu"
+      state: "disabled"
+  register: result
+
+- name: Assert Create disabled node - Idempotent check
+  assert:
+      that:
+        - not result|changed
+
+- name: Create offline node
+  bigip_node:
+      fqdn: "apple.com"
+      name: "apple"
+      state: "offline"
+  register: result
+
+- name: Assert Create offline node
+  assert:
+      that:
+        - result|changed
+
+- name: Create offline node - Idempotent check
+  bigip_node:
+      fqdn: "apple.com"
+      name: "apple"
+      state: "offline"
+  register: result
+
+- name: Assert Create offline node - Idempotent check
+  assert:
+      that:
+        - not result|changed
+
+- import_tasks: status-disabled.yaml
+- import_tasks: status-enabled.yaml
+- import_tasks: status-offline.yaml
+- import_tasks: status-present.yaml
+
+- name: Remove nodes
+  bigip_node:
+      name: "{{ item }}"
+      state: "absent"
+  with_items:
+      - "google.com"
+      - "mit.edu"
+      - "apple.com"
+      - "microsoft.com"

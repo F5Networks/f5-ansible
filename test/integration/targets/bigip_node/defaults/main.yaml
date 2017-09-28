@@ -1,7 +1,8 @@
 ---
 
-node_host_ip: "10.10.10.10"
-node_host_dns: "foo.bar.com"
+node_host_ipv4: "10.10.10.10"
+node_host_ipv6: "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+node_host_fqdn: "foo.bar.com"
 node_name: "foo.example"
 node_description: "foo node"
 availability_requirement: "at_least"

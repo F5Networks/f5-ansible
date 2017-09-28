@@ -1,0 +1,95 @@
+---
+
+- name: Include variables
+  include_vars:
+      file: node-monitors.yaml
+
+- name: Create node with multiple monitors
+  bigip_node:
+      state: "present"
+      name: "{{ node1['name'] }}"
+      fqdn: "{{ node1['fqdn'] }}"
+      monitors: "{{ node1['monitors'] }}"
+      monitor_type: "{{ node1['monitor_type'] }}"
+  register: result
+
+- name: Assert Create node with multiple monitors
+  assert:
+      that:
+          - result|changed
+
+- name: Create node with multiple monitors - Idempotent check
+  bigip_node:
+      state: "present"
+      name: "{{ node1['name'] }}"
+      fqdn: "{{ node1['fqdn'] }}"
+      monitors: "{{ node1['monitors'] }}"
+      monitor_type: "{{ node1['monitor_type'] }}"
+  register: result
+
+- name: Assert Create node with multiple monitors - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Change node to single monitor - Expected error due to multiple existing monitors
+  bigip_node:
+      state: "present"
+      name: "{{ node1['name'] }}"
+      monitor_type: "{{ node2['monitor_type'] }}"
+  register: result
+  ignore_errors: true
+
+- name: Assert Change node to single monitor - Expected error due to multiple existing monitors
+  assert:
+      that:
+          - not result|changed
+          - "'A single monitor must be specified' in result.msg"
+
+- name: Change node to single monitor
+  bigip_node:
+      state: "present"
+      name: "{{ node1['name'] }}"
+      monitors: "{{ node2['monitors'] }}"
+      monitor_type: "{{ node2['monitor_type'] }}"
+  register: result
+
+- name: Assert Change node to single monitor
+  assert:
+      that:
+          - result|changed
+
+- name: Change node to single monitor - Idempotent check
+  bigip_node:
+      state: "present"
+      name: "{{ node1['name'] }}"
+      monitors: "{{ node2['monitors'] }}"
+      monitor_type: "{{ node2['monitor_type'] }}"
+  register: result
+
+- name: Assert Change node to single monitor - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Delete node
+  bigip_node:
+      name: "{{ node1['name'] }}"
+      state: "absent"
+  register: result
+
+- name: Assert delete node
+  assert:
+      that:
+          - result|changed
+
+- name: Delete node - Idempotent check
+  bigip_node:
+      name: "{{ node1['name'] }}"
+      state: "absent"
+  register: result
+
+- name: Assert delete node - Idempotent check
+  assert:
+      that:
+          - not result|changed

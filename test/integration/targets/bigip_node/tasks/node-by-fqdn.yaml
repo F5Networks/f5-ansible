@@ -2,12 +2,8 @@
 
 - name: Create node
   bigip_node:
-      description: "{{ node_description }}"
-      host: "{{ node_host_dns }}"
-      monitor_type: "{{ monitor_type }}"
-      monitors: "{{ node_monitors }}"
+      fqdn: "{{ node_host_fqdn }}"
       name: "{{ node_name }}"
-      quorum: "{{ node_quorum }}"
       state: "present"
   register: result
 
@@ -18,12 +14,8 @@
 
 - name: Create node - Idempotent check
   bigip_node:
-      description: "{{ node_description }}"
-      host: "{{ node_host_dns }}"
-      monitor_type: "{{ monitor_type }}"
-      monitors: "{{ node_monitors }}"
+      fqdn: "{{ node_host_fqdn }}"
       name: "{{ node_name }}"
-      quorum: "{{ node_quorum }}"
       state: "present"
   register: result
 
@@ -43,16 +35,16 @@
       that:
           - result|changed
 
-- name: Change session state
+- name: Change node description - Idempotent check
   bigip_node:
+      description: "new {{ node_description }}"
       name: "{{ node_name }}"
-      session_state: "disabled"
   register: result
 
-- name: Assert change node session state
+- name: Assert change node description - Idempotent check
   assert:
       that:
-        - result|changed
+          - not result|changed
 
 - name: Delete node
   bigip_node:
@@ -75,3 +67,16 @@
   assert:
       that:
           - not result|changed
+
+- name: Create node without FQDN or Address
+  bigip_node:
+      name: "{{ node_name }}"
+      state: "present"
+  register: result
+  ignore_errors: true
+
+- name: Assert Create node without FQDN or Address
+  assert:
+      that:
+          - not result|changed
+          - "'At least one of \\'address\\' or \\'fqdn\\'' in result.msg"

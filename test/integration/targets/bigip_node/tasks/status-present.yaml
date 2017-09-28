@@ -1,0 +1,61 @@
+---
+
+# Test changing status to other status' from the `present` status
+
+- name: Reset node to present
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "present"
+  register: result
+
+- name: Change node to enabled
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "enabled"
+  register: result
+
+# The two are equivalent. This should register no change
+- name: Assert Change node to enabled
+  assert:
+      that:
+        - not result|changed
+
+- name: Reset node to present
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "present"
+  register: result
+
+- name: Change node to disabled
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "disabled"
+  register: result
+
+- name: Assert Change node to disabled
+  assert:
+      that:
+        - result|changed
+
+- name: Reset node present
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "present"
+  register: result
+
+- name: Change node to offline
+  bigip_node:
+      fqdn: "microsoft.com"
+      name: "microsoft.com"
+      state: "offline"
+  register: result
+
+- name: Assert Change node to offline
+  assert:
+      that:
+        - result|changed
