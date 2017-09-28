@@ -92,7 +92,7 @@ This must be done inside of Ansible's source tree. (`cd local/ansible`)
 - [ ] Module code in Ansible repo passes `nosetests test/units/modules/network/f5/test_MODULE_NAME.py` using venv made with requirements.bare.txt
 
 #### Upstream vendor related, misc
-- [ ] Module PR has been mentioned as a comment for the next Networking Team meeting here https://github.com/ansible/community/issues/248
+- [ ] Module PR has been mentioned as a comment for the next Networking Team meeting here https://github.com/ansible/community/issues/247
 
 #### Upstream vendor, sanity related
 - [ ] Command `bash test/ansible/sanity/integration-test-idempotent-names.sh` passes
