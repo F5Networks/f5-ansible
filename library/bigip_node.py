@@ -169,15 +169,56 @@ EXAMPLES = '''
       partition: "Common"
       name: "10.20.30.40"
   delegate_to: localhost
+
+- name: Add node by their FQDN
+  bigip_node:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      state: "present"
+      partition: "Common"
+      fqdn: "foo.bar.com"
+      name: "10.20.30.40"
+  delegate_to: localhost
 '''
 
 RETURN = '''
-members:
+monitor_type:
     description:
-      - List of members that are part of the SNAT pool.
+      - Changed value for the monitor_type of the node.
+    returned: changed and success
+    type: string
+    sample: "m_of_n"
+quorum:
+    description:
+      - Changed value for the quorum of the node.
+    returned: changed and success
+    type: int
+    sample: "1"
+monitors:
+    description:
+      - Changed list of monitors for the node.
     returned: changed and success
     type: list
-    sample: "['10.10.10.10']"
+    sample: "['icmp', 'tcp_echo']"
+description:
+    description:
+      - Changed value for the description of the node.
+    returned: changed and success
+    type: string
+    sample: "E-Commerce webserver in ORD"
+session:
+    description:
+      - Changed value for the internal session of the node.
+    returned: changed and success
+    type: string
+    sample: "user-disabled"
+state:
+    description:
+      - Changed value for the internal state of the node.
+    returned: changed and success
+    type: string
+    sample: "m_of_n"
 '''
 
 import os
