@@ -98,7 +98,7 @@ class TestParameters(unittest.TestCase):
         assert p.send == 'this is a send string'
         assert p.receive == 'this is a receive string'
         assert p.ip == '10.10.10.10'
-        assert p.type == 'http'
+        assert p.type == 'https'
         assert p.port == 80
         assert p.destination == '10.10.10.10:80'
         assert p.interval == 20
@@ -125,7 +125,7 @@ class TestParameters(unittest.TestCase):
         assert p.send == 'this is a send string'
         assert p.receive == 'this is a receive string'
         assert p.ip == '10.10.10.10'
-        assert p.type == 'http'
+        assert p.type == 'https'
         assert p.port == 80
         assert p.destination == '10.10.10.10:80'
         assert p.interval == 20
@@ -150,7 +150,7 @@ class TestParameters(unittest.TestCase):
         assert p.send == 'this is a send string'
         assert p.receive == 'this is a receive string'
         assert p.ip == '10.10.10.10'
-        assert p.type == 'http'
+        assert p.type == 'https'
         assert p.port == 80
         assert p.destination == '10.10.10.10:80'
         assert p.interval == 20
