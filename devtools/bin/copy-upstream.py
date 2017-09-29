@@ -38,7 +38,7 @@ DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 
 
 def root_dir():
-    result = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    result = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     return result
 
 
