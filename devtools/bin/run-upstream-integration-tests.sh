@@ -39,7 +39,7 @@ do
 
     for k in "${PYTHONS[@]}"
     do
-        docker-compose -f "${DIR}/devtools/docker-compose.yaml" run ${k} make $MODULE
+        docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm ${k} make $MODULE
         if [ $? -ne 0 ]; then
             VBoxManage controlvm ${i} poweroff
             echo "FAILED: ${k} - ${i}"
