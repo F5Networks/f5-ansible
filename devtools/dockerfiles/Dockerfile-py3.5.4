@@ -43,7 +43,8 @@ RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
 RUN apt-get update && apt-get install -y \
     python-dev python-pip vim git-core wget curl \
     libffi-dev libssl-dev libxml2-dev libxslt1-dev \
-    libjpeg62-turbo-dev zlib1g-dev python3-apt jq
+    libjpeg62-turbo-dev zlib1g-dev python3-apt jq \
+    sshpass
 
 # Install required pip packages
 RUN pip install --upgrade pip
