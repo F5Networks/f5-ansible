@@ -20,7 +20,7 @@ install:
 script:
     - make all-tests
     - bash test/ansible/sanity/integration-test-idempotent-names.sh
-    - tox -e style -- library/
-    - tox -e style -- test/unit/bigip/
-    - tox -e style -- test/unit/bigiq/
-    - tox -e style -- test/unit/iworkflow/
+    - pycodestyle library/
+    - pycodestyle test/unit/bigip/
+    - pycodestyle test/unit/bigiq/
+    - pycodestyle test/unit/iworkflow/
