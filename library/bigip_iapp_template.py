@@ -68,7 +68,7 @@ options:
         be provided when creating new templates.
   state:
     description:
-      - Whether the iRule should exist or not.
+      - Whether the iApp template should exist or not.
     default: present
     choices:
       - present
