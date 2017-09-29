@@ -38,6 +38,16 @@ Check the tested versions
 - [ ] 13.0.0 (BIGIP-13.0.0.0.0.1645)
 - [ ] 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 
+##### Python VERSION
+<!---
+Paste a list of Python versions this was tested on.
+
+Check the tested versions
+-->
+- [ ] 2.7.10
+- [ ] 3.5.4
+- [ ] 3.6.2
+
 ##### CHECKLIST
 <!---
 Ensure all the following are complete
