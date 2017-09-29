@@ -213,7 +213,9 @@ class BigIpGtmFactsCommon(object):
             srvs='srv'
         )
         self.request_params = dict(
-            params='expandSubcollections=true'
+            requests_params=dict(
+                params='expandSubcollections=true'
+            )
         )
 
     def is_version_less_than_12(self):
