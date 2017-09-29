@@ -86,7 +86,7 @@
 - name: Create offline node
   bigip_node:
       fqdn: "apple.com"
-      name: "apple"
+      name: "apple.com"
       state: "offline"
   register: result
 
@@ -98,7 +98,7 @@
 - name: Create offline node - Idempotent check
   bigip_node:
       fqdn: "apple.com"
-      name: "apple"
+      name: "apple.com"
       state: "offline"
   register: result
 
@@ -121,3 +121,5 @@
       - "mit.edu"
       - "apple.com"
       - "microsoft.com"
+      - "google-public-dns-a.google.com"
+      - "mit-v6"

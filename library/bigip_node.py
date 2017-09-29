@@ -21,15 +21,15 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
 ---
 module: bigip_node
-short_description: Manages F5 BIG-IP LTM nodes
+short_description: Manages F5 BIG-IP LTM nodes.
 description:
-  - Manages F5 BIG-IP LTM nodes via iControl SOAP API.
+  - Manages F5 BIG-IP LTM nodes.
 version_added: "1.4"
 options:
   state:
@@ -42,7 +42,10 @@ options:
         Specifies that the node can handle only active connections. In all
         cases except C(absent), the node will be created if it does not yet
         exist.
-    required: True
+      - Be particularly careful about changing the status of a node whose FQDN
+        cannot be resolved. These situations disable your ability to change their
+        C(state) to C(disabled) or C(offline). They will remain in an 
+        *Unavailable - Enabled* state.
     default: present
     choices:
       - present
@@ -53,55 +56,60 @@ options:
   name:
     description:
       - Specifies the name of the node.
-  availability_requirement:
+    required: True
+  monitor_type:
     description:
-      - Specifies, if you activate more than one health monitor, the number
-        of health monitors that must receive successful responses in order
-        for the node to be considered available. The default is C(all).
-    version_added: "2.2"
-    default: C(and_list)
-    required: False
-    choices:
-      - all
-      - at_least
-    aliases:
-      - monitor_type
+      - Monitor rule type when C(monitors) is specified. When creating a new
+        pool, if this value is not specified, the default of 'and_list' will
+        be used.
+      - Both C(single) and C(and_list) are functionally identical since BIG-IP
+        considers all monitors as "a list". BIG=IP either has a list of many,
+        or it has a list of one. Where they differ is in the extra guards that
+        C(single) provides; namely that it only allows a single monitor.
+    version_added: "1.3"
+    choices: ['and_list', 'm_of_n', 'single']
   quorum:
     description:
-      - Monitor quorum value when C(monitor_type) is C(at_least).
+      - Monitor quorum value when C(monitor_type) is C(m_of_n).
     version_added: "2.2"
-    required: False
-    default: None
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to
         monitor this node.
     version_added: "2.2"
-    required: False
-    default: None
-  host:
+  address:
     description:
-      - Node IP. Required when C(state) is present and node does not exist.
-        Error when C(state) is equal to C(absent).
-    required: true
-    default: None
+      - IP address of the node. This can be either IPv4 or IPv6. When creating a
+        new node, one of either C(address) or C(fqdn) must be provided. This
+        parameter cannot be updated after it is set.
     aliases:
-      - address
       - ip
+      - host
+    version_added: "2.2"
+  fqdn:
+    description:
+      - FQDN name of the node. This can be any name that is a valid RFC 1123 DNS
+        name. Therefore, the only characters that can be used are "A" to "Z",
+        "a" to "z", "0" to "9", the hyphen ("-") and the period (".").
+      - FQDN names must include at lease one period; delineating the host from
+        the domain. ex. C(host.domain).
+      - FQDN names must end with a letter or a number.
+      - When creating a new node, one of either C(address) or C(fqdn) must be
+        provided. This parameter cannot be updated after it is set.
+    aliases:
+      - hostname
+    version_added: "2.2"
   description:
     description:
       - Specifies descriptive text that identifies the node.
-    required: False
-    default: None
 notes:
-  - Requires BIG-IP software version >= 11
   - Requires the f5-sdk Python package on the host. This is as easy as
     pip install f5-sdk
   - Requires the netaddr Python package on the host. This is as easy as
     pip install netaddr
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk
+  - f5-sdk >= 3.0.2
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -172,432 +180,550 @@ members:
     sample: "['10.10.10.10']"
 '''
 
+import os
 import re
+import time
 
 try:
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
-
-    HAS_F5SDK = True
-except ImportError:
-    HAS_F5SDK = False
-
-try:
-    import bigsuds
-    HAS_BIGSUDS = True
-except ImportError:
-    HAS_BIGSUDS = False
-
-try:
-    from netaddr import IPAddress, AddrFormatError
+    import netaddr
     HAS_NETADDR = True
 except ImportError:
     HAS_NETADDR = False
 
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.f5_utils import defaultdict
 
-class F5Connector(object):
-    __instance = None
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
-    def __call__(self, *args, **kwargs):
-        if self.__instance:
-            return self.__instance
-        else:
-            if HAS_F5SDK:
-                self.__instance = F5RestConnector(**kwargs)
-            elif HAS_BIGSUDS:
-                self.__instance = F5SoapConnector(**kwargs)
+
+class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'monitor': 'monitors'
+    }
+
+    api_attributes = [
+        'monitor', 'description', 'address', 'fqdn',
+
+        # Used for changing state
+        #
+        # user-enabled (enabled)
+        # user-disabled (disabled)
+        # user-disabled (offline)
+        'session',
+
+        # Used for changing state
+        # user-down (offline)
+        'state'
+    ]
+
+    returnables = [
+        'monitor_type', 'quorum', 'monitors', 'description', 'fqdn', 'session', 'state'
+    ]
+
+    updatables = [
+        'monitor_type', 'quorum', 'monitors', 'description', 'state'
+    ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
+
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if self.api_map is not None and api_attribute in self.api_map:
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
-                raise F5ModuleError(
-                    "No API connector was found"
-                )
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
 
+    def _fqdn_name(self, value):
+        if value.startswith('/'):
+            name = os.path.basename(value)
+            result = '/{0}/{1}'.format(self.partition, name)
+        else:
+            result = '/{0}/{1}'.format(self.partition, value)
+        return result
 
-class BigIpNodeUpdater(object):
-    def __call__(self, *args, **kwargs):
-        tx = self.client.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            req = api.tm.ltm.nodes.node.load(
-                name=node.name,
-                partition=node.partition
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        monitors = [self._fqdn_name(x) for x in self.monitors_list]
+        if self.monitor_type == 'm_of_n':
+            monitors = ' '.join(monitors)
+            result = 'min %s of { %s }' % (self.quorum, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    @property
+    def quorum(self):
+        if self.kind == 'tm:ltm:pool:poolstate':
+            if self._values['monitors'] is None:
+                return None
+            pattern = r'min\s+(?P<quorum>\d+)\s+of'
+            matches = re.search(pattern, self._values['monitors'])
+            if matches:
+                quorum = matches.group('quorum')
+            else:
+                quorum = None
+        else:
+            quorum = self._values['quorum']
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
+            raise F5ModuleError(
+                "The specified 'quorum' must be an integer."
             )
-            req.modify(**kwargs)
 
+    @property
+    def monitor_type(self):
+        if self.kind == 'tm:ltm:node:nodestate':
+            if self._values['monitors'] is None:
+                return None
+            pattern = r'min\s+\d+\s+of'
+            matches = re.search(pattern, self._values['monitors'])
+            if matches:
+                return 'm_of_n'
+            else:
+                return 'and_list'
+        else:
+            if self._values['monitor_type'] is None:
+                return None
+            return self._values['monitor_type']
 
-class BigIpNodeDeleter(object):
-    def __call__(self, *args, **kwargs):
-        tx = self.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            req = api.tm.ltm.nodes.node.load(
-                name=node.name, partition=node.partition
-            )
-            req.delete()
-
-
-class BigIpNodeLoader(object):
-    def __call__(self, *args, **kwargs):
-        return F5Connector.tm.ltm.nodes.node.load(
-            name=node.name, partition=node.partition
+    @property
+    def fqdn(self):
+        if self._values['fqdn'] is None:
+            return None
+        result = dict(
+            addressFamily='ipv4',
+            autopopulate='disabled',
+            downInterval=3600,
+            tmName=self._values['fqdn']
         )
+        return result
 
 
-class ModuleConfig(object):
+class Changes(Parameters):
+    pass
 
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def monitor_type(self):
+        if self.want.monitor_type is None:
+            self.want.update(dict(monitor_type=self.have.monitor_type))
+        if self.want.quorum is None:
+            self.want.update(dict(quorum=self.have.quorum))
+        if self.want.monitor_type == 'm_of_n' and self.want.quorum is None:
+            raise F5ModuleError(
+                "Quorum value must be specified with monitor_type 'm_of_n'."
+            )
+        elif self.want.monitor_type == 'single':
+            if len(self.want.monitors_list) > 1:
+                raise F5ModuleError(
+                    "When using a 'monitor_type' of 'single', only one monitor may be provided."
+                )
+            elif len(self.have.monitors_list) > 1 and len(self.want.monitors_list) == 0:
+                # Handle instances where there already exists many monitors, and the
+                # user runs the module again specifying that the monitor_type should be
+                # changed to 'single'
+                raise F5ModuleError(
+                    "A single monitor must be specified if more than one monitor currently exists on your pool."
+                )
+            # Update to 'and_list' here because the above checks are all that need
+            # to be done before we change the value back to what is expected by
+            # BIG-IP.
+            #
+            # Remember that 'single' is nothing more than a fancy way of saying
+            # "and_list plus some extra checks"
+            self.want.update(dict(monitor_type='and_list'))
+        if self.want.monitor_type != self.have.monitor_type:
+            return self.want.monitor_type
+
+    @property
+    def monitors(self):
+        if self.want.monitor_type is None:
+            self.want.update(dict(monitor_type=self.have.monitor_type))
+        if not self.want.monitors_list:
+            self.want.monitors = self.have.monitors_list
+        if not self.want.monitors and self.want.monitor_type is not None:
+            raise F5ModuleError(
+                "The 'monitors' parameter cannot be empty when 'monitor_type' parameter is specified"
+            )
+        if self.want.monitors != self.have.monitors:
+            return self.want.monitors
+
+    @property
+    def state(self):
+        result = None
+        if self.want.state in ['present', 'enabled']:
+            if self.have.session != 'user-enabled':
+                result = dict(
+                    session='user-enabled',
+                    state='user-up',
+                )
+        elif self.want.state == 'disabled':
+            if self.have.session != 'user-disabled' or self.have.state == 'user-down':
+                result = dict(
+                    session='user-disabled',
+                    state='user-up'
+                )
+        elif self.want.state == 'offline':
+            if self.have.state != 'user-down':
+                result = dict(
+                    session='user-disabled',
+                    state='user-down'
+                )
+        return result
+
+
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.have = None
+        self.want = Parameters(self.client.module.params)
+        self.changes = Changes()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = Changes(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
+        if changed:
+            self.changes = Changes(changed)
+            return True
+        return False
+
+    def _announce_deprecations(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__warnings', [])
+        if self.have:
+            warnings += self.have._values.get('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
+
+    def exec_module(self):
+        changed = False
+        result = dict()
+        state = self.want.state
+
+        try:
+            if state in ['present', 'enabled', 'disabled', 'offline']:
+                changed = self.present()
+            elif state == "absent":
+                changed = self.absent()
+        except IOError as e:
+            raise F5ModuleError(str(e))
+
+        changes = self.changes.to_return()
+        result.update(**changes)
+        result.update(dict(changed=changed))
+        self._announce_deprecations()
+        return result
+
+    def present(self):
+        if self.exists():
+            return self.update()
+        else:
+            return self.create()
+
+    def _check_required_creation_vars(self):
+        if self.want.address is None and self.want.fqdn is None:
+            raise F5ModuleError(
+                "At least one of 'address' or 'fqdn' is required when creating a node"
+            )
+        elif self.want.address is not None and self.want.fqdn is not None:
+            raise F5ModuleError(
+                "Only one of 'address' or 'fqdn' can be provided when creating a node"
+            )
+        elif self.want.fqdn is not None:
+            self.want.update(dict(address='any6'))
+
+    def _munge_creation_state_for_device(self):
+        # Modifying the state before sending to BIG-IP
+        #
+        # The 'state' must be set to None to exclude the values (accepted by this
+        # module) from being sent to the BIG-IP because for specific Ansible states,
+        # BIG-IP will consider those state values invalid.
+        if self.want.state in ['present', 'enabled']:
+            self.want.update(dict(
+                session='user-enabled',
+                state='user-up',
+            ))
+        elif self.want.state in 'disabled':
+            self.want.update(dict(
+                session='user-disabled',
+                state='user-up'
+            ))
+        else:
+            # State 'offline'
+            # Offline state will result in the monitors stopping for the node
+            self.want.update(dict(
+                session='user-disabled',
+
+                # only a valid state can be specified. The module's value is "offline",
+                # but this is an invalid value for the BIG-IP. Therefore set it to user-down.
+                state='user-down',
+
+                # Even user-down wil not work when _creating_ a node, so we register another
+                # want value (that is not sent to the API). This is checked for later to
+                # determine if we have to PATCH the node to be offline.
+                is_offline=True
+            ))
+
+    def create(self):
+        self._check_required_creation_vars()
+        self._munge_creation_state_for_device()
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        self.create_on_device()
+        if not self.exists():
+            raise F5ModuleError("Failed to create the node")
+        # It appears that you cannot create a node in an 'offline' state, so instead
+        # we update its status to offline after we create it.
+        if self.want.is_offline:
+            self.update_node_offline_on_device()
+        return True
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        self.update_on_device()
+        if self.want.state == 'offline':
+            self.update_node_offline_on_device()
+        return True
+
+    def absent(self):
+        if self.exists():
+            return self.remove()
+        return False
+
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the node.")
+        return True
+
+    def read_current_from_device(self):
+        resource = self.client.api.tm.ltm.nodes.node.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return Parameters(result)
+
+    def exists(self):
+        result = self.client.api.tm.ltm.nodes.node.exists(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        return result
+
+    def update_node_offline_on_device(self):
+        params = dict(
+            session="user-disabled",
+            state="user-down"
+        )
+        result = self.client.api.tm.ltm.nodes.node.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result.modify(**params)
+
+    def update_on_device(self):
+        params = self.changes.api_params()
+        result = self.client.api.tm.ltm.nodes.node.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result.modify(**params)
+
+    def create_on_device(self):
+        params = self.want.api_params()
+        resource = self.client.api.tm.ltm.nodes.node.create(
+            name=self.want.name,
+            partition=self.want.partition,
+            **params
+        )
+        self._wait_for_fqdn_checks(resource)
+
+    def _wait_for_fqdn_checks(self, resource):
+        while True:
+            if resource.state == 'fqdn-checking':
+                resource.refresh()
+                time.sleep(1)
+            else:
+                break
+
+    def remove_from_device(self):
+        result = self.client.api.tm.ltm.nodes.node.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if result:
+            result.delete()
+
+
+class ArgumentSpec(object):
     def __init__(self):
-        # Initial parameter values
-        self.states = [
-            'absent', 'present', 'enabled', 'disabled', 'offline'
-        ]
-        self.monitor_type_choices = ['all', 'at_least']
-        self.host_choices = ['address', 'ip']
-
-        # Initial Ansible Module parameter values
         self.supports_check_mode = True
-        self.required_together = [
-            ['availability_requirement', 'monitors'],
-            ['quorum', 'monitors']
-        ]
-        self.required_if = [
-            'availability_requirement', 'at_least', ['quorum']
-        ]
-
-    def init_meta_args(self, **kwargs):
-        args = dict(
+        self.argument_spec = dict(
             name=dict(required=True),
-            host=dict(aliases=kwargs['host_choices']),
+            address=dict(
+                aliases=['host', 'ip']
+            ),
+            fqdn=dict(
+                aliases=['hostname']
+            ),
             description=dict(),
-            availability_requirement=dict(
-                choices=kwargs['monitor_type_choices']
+            monitor_type=dict(
+                choices=[
+                    'and_list', 'm_of_n', 'single'
+                ]
             ),
             quorum=dict(type='int'),
             monitors=dict(type='list'),
             state=dict(
-                choices=kwargs['states'],
+                choices=['absent', 'present', 'enabled', 'disabled', 'offline'],
                 default='present'
             )
         )
-        return args
-
-    def init_argument_spec(self, meta_args=None):
-        argument_spec = f5_argument_spec()
-        if meta_args:
-            argument_spec.update(meta_args)
-        return argument_spec
-
-    def create(self):
-        meta_args = self.init_meta_args(
-            host_choices=self.host_choices,
-            monitor_type_choices=self.monitor_type_choices,
-            states=self.states
-        )
-        argument_spec = self.init_argument_spec(meta_args)
-        return AnsibleModule(
-            argument_spec=argument_spec,
-            supports_check_mode=self.supports_check_mode,
-            required_together=self.required_together,
-            required_if=self.required_if
-        )
-
-
-class DeviceState(object):
-    def __init__(self, **kwargs):
-        self._values = dict(
-            state=None,
-            session=None
-        )
-        self._valid_sessions = [
-            'user-disabled', 'user-enabled'
-        ]
-        self._valid_states = [
-            'user-down'
-        ]
-        state = kwargs.pop('state', None)
-        session = kwargs.pop('session', None)
-        self.update(state=state, session=session)
-
-    def update(self, state=None, session=None):
-        if session in self._valid_sessions or session is None:
-            self._values['session'] = session
-        if state in self._valid_states or state is None:
-            self._values['state'] = state
-
-    def from_param_state(cls, param_state):
-        pass
-
-
-class ParamState(object):
-    def __init__(self):
-        self._values = dict(
-            state=None
-        )
-        self._valid_states = [
-            'offline', 'enabled', 'disabled'
-        ]
-
-    def update(self, state=None):
-        if state in self._valid_states or state is None:
-            self._values['state'] = state
-        """
-        if state == 'offline':
-            self._values['session'] = 'user-disabled'
-            self._values['state'] = 'user-down'
-        elif state == 'enabled':
-            self._values['session'] = 'user-enabled'
-            self._values['state'] = None
-        elif state == 'disabled':
-            self._values['session'] = 'user-disabled'
-            self._values['state'] = None
-        """
-
-    @classmethod
-    def as_device_state(cls, param_state):
-        device_state = cls()
-        device_state.update()
-
-
-class MonitorAdapter(object):
-
-    def __init__(self, **kwargs):
-        self.pattern = r'^min\s(\d+)\s+of'
-        self._quorum = None
-        self._requirements = None
-        self._monitors = None
-        self.quorum = kwargs.pop('quorum', None)
-        self.requirements = kwargs.pop('requirements', None)
-
-    @property
-    def requirements(self):
-        return self._value
-
-    @requirements.setter
-    def requirements(self, value):
-        matches = re.match(self.pattern, value)
-        if matches:
-            if matches:
-                self._requirements = "at_least"
-            else:
-                self._requirements = "all"
-
-    @property
-    def quorum(self):
-        return self._quorum
-
-    @quorum.setter
-    def quorum(self, value):
-        try:
-            self._quorum = int(value)
-        except (TypeError) as ex:
-            matches = re.match(self.pattern, value)
-            if matches:
-                self._quorum = int(matches.group(1))
-
-    @property
-    def monitors(self):
-        return self._monitors
-
-    @monitors.setter
-    def monitors(self, value):
-        self._monitors = value
-
-
-class BigIpNode(object):
-
-    def __init__(self, **kwargs):
-        self.address = kwargs.pop('address', None)
-        self.description = kwargs.pop('description', None)
-        self.monitor = kwargs.pop('monitor', None)
-        self.name = kwargs.pop('name', None)
-        self.partition = kwargs.pop('partition', None)
-        self.state = kwargs.pop('state', None)
-
-    @classmethod
-    def from_device(cls, name, partition):
-        device = BigIpNodeLoader()
-        settings = device()
-
-    def from_params(self):
-        pass
-
-
-class BigIpNodeFacade(object):
-    def __init__(self, *args, **kwargs):
-        self.changed_params = dict()
-        self.params = kwargs
-        self.api = None
-
-    def apply_changes(self):
-        result = dict()
-        try:
-            if self.config['state'] == 'absent':
-                changed = self.absent()
-            else:
-                changed = self.present()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
-        result.update(**changed)
-        result.update(dict(changed=changed))
-        return result
-
-    def present(self):
-        if self.node_exists():
-            return self.update_node()
-        else:
-            return self.ensure_node_is_present()
-
-    def absent(self):
-        changed = False
-        if self.node_exists():
-            changed = ensure_node_is_absent()
-        return changed
-
-    def update_node(self, node):
-        params = self.set_changed_parameters()
-        if params:
-            self.changed_params = camel_dict_to_snake_dict(params)
-            if self.params['check_mode']:
-                return True
-        else:
-            return False
-        self.update_node_on_device(node)
-        return True
-
-    def ensure_node_is_absent(self, node, check_mode):
-        if check_mode:
-            return True
-        self.delete_node_from_device(name, partition)
-        if self.node_exists(name, partition):
-            raise F5ModuleError("Failed to delete the node")
-        return True
-
-    def ensure_node_is_present(self, node):
-        if self.params['host'] is None:
-            F5ModuleError(
-                "host parameter required when state is equal to present"
-            )
-        params = self.get_node_creation_parameters()
-        self.changed_params = camel_dict_to_snake_dict(params)
-        if self.params['check_mode']:
-            return True
-        self.create_node_on_device(params)
-        if self.node_exists():
-            return True
-        else:
-            raise F5ModuleError("Failed to create the node")
-
-    def format_node_information(self, node):
-        result = dict(
-            name=str(node.name),
-            state=format_current_state(node.session, node.cache)
-        )
-        if hasattr(node, 'monitor'):
-            result['monitors'] = self.format_current_monitors(node.monitor)
-            result['quorum'] = self.format_current_quorum(node.monitor)
-            result['availability_req'] = self.format_current_availability_req(node.monitor)
-        return result
-
-    def set_changed_parameters(self):
-        result = dict()
-        params = self.get_supplied_parameters()
-        current = self.read_node_information()
-        if self.is_description_changed(current, params['description']):
-            result['description'] = params['description']
-        if self.is_state_changed(current):
-            result.update(**self.get_changed_state())
-        if (self.are_monitors_changed(current) or
-                self.is_quorum_changed(current) or
-                self.is_availability_req_changed(current)):
-            result['monitor'] = self.format_monitor_parameter()
-        return result
-
-    def are_monitors_changed(self, current):
-        if self.params['monitors'] is None:
-            return False
-        if 'monitors' not in current:
-            return True
-        if set(self.params['monitors']) != set(current['monitors']):
-            return True
-        else:
-            return False
-
-    def is_description_changed(self, current, description):
-        if description is None:
-            return False
-        if 'description' not in current:
-            return True
-        if description != current['description']:
-            return True
-        else:
-            return False
-
-    def is_state_changed(self, current):
-        if self.params['state'] != current['state']:
-            return True
-        else:
-            return False
-
-    def is_availability_req_changed(self, current):
-        if self.params['availability_req'] is None:
-            return False
-        if 'availability_req' not in current:
-            return True
-        if self.params['availability_req'] != current['availability_req']:
-            return True
-        else:
-            return False
-
-    def get_node_creation_parameters(self):
-        result = dict(
-            name=self.params['name'],
-            address=self.params['host'],
-            partition=self.params['partition']
-        )
-        if self.params['description']:
-            result['description'] = self.params['description']
-        if self.params['monitors']:
-            result['monitor'] = self.format_monitor_parameter()
-        return result
-
-    def format_monitor_parameter(self):
-        if len(self.params['monitors']) == 1:
-            return 'default'
-        return self.format_monitor_param_with_quorum()
-
-    def format_monitor_param_with_quorum(self):
-        monitors = self.params['monitors']
-        quorum = self.params['quorum']
-        partition = self.params['partition']
-        availability = self.params['availability_requirement']
-        if quorum > len(monitors):
-            raise F5ModuleError(
-                "The quorum number cannot exceed the number of monitors"
-            )
-        tmp = ['/{0}/{1}'.format(partition, x) for x in monitors]
-        if availability == 'at_least':
-            return "min {0} of {1}".format(quorum, ' '.join(tmp))
-        else:
-            return ' and '.join(tmp)
+        self.f5_product_name = 'bigip'
 
 
 def main():
-    if not HAS_NETADDR:
-        raise F5ModuleError("The python netaddr module is required")
+    spec = ArgumentSpec()
 
-    config = ModuleConfig()
-    module = config.create()
-
+    client = AnsibleF5Client(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode,
+        f5_product_name=spec.f5_product_name
+    )
     try:
-        obj = BigIpNodeFacade(
-            check_mode=module.check_mode, **module.params
-        )
-        result = obj.apply_changes()
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
 
-        module.exit_json(**result)
+        if not HAS_NETADDR:
+            raise F5ModuleError("The python netaddr module is required")
+
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        client.module.exit_json(**results)
     except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        client.module.fail_json(msg=str(e))
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.ec2 import camel_dict_to_snake_dict
-from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()

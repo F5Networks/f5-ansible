@@ -58,3 +58,107 @@
   assert:
       that:
         - result|changed
+
+- name: Create disabled node - address
+  bigip_node:
+      address: "8.8.8.8"
+      name: "google-public-dns-a.google.com"
+      state: "disabled"
+  register: result
+
+- name: Change node to enabled
+  bigip_node:
+      name: "google-public-dns-a.google.com"
+      state: "enabled"
+  register: result
+
+- name: Assert Change node to enabled
+  assert:
+      that:
+        - result|changed
+
+- name: Reset node to disabled
+  bigip_node:
+      name: "google-public-dns-a.google.com"
+      state: "disabled"
+  register: result
+
+- name: Change node to offline
+  bigip_node:
+      name: "google-public-dns-a.google.com"
+      state: "offline"
+  register: result
+
+- name: Assert Change node to offline
+  assert:
+      that:
+        - result|changed
+
+- name: Reset node to disabled
+  bigip_node:
+      name: "google-public-dns-a.google.com"
+      state: "disabled"
+  register: result
+
+- name: Change node to present
+  bigip_node:
+      name: "google-public-dns-a.google.com"
+      state: "present"
+  register: result
+
+- name: Assert Change node to present
+  assert:
+      that:
+        - result|changed
+
+- name: Create disabled node - IPv6 address
+  bigip_node:
+      address: "2600:1409:a:186::255e"
+      name: "mit-v6"
+      state: "disabled"
+  register: result
+
+- name: Change node to enabled
+  bigip_node:
+      name: "mit-v6"
+      state: "enabled"
+  register: result
+
+- name: Assert Change node to enabled
+  assert:
+      that:
+        - result|changed
+
+- name: Reset node to disabled
+  bigip_node:
+      name: "mit-v6"
+      state: "disabled"
+  register: result
+
+- name: Change node to offline
+  bigip_node:
+      name: "mit-v6"
+      state: "offline"
+  register: result
+
+- name: Assert Change node to offline
+  assert:
+      that:
+        - result|changed
+
+- name: Reset node to disabled
+  bigip_node:
+      name: "mit-v6"
+      state: "disabled"
+  register: result
+
+- name: Change node to present
+  bigip_node:
+      name: "mit-v6"
+      state: "present"
+  register: result
+
+- name: Assert Change node to present
+  assert:
+      that:
+        - result|changed
