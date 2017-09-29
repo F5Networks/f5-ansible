@@ -38,6 +38,7 @@ RUN ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem
 # Conveniance aliases
 RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
 RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
+RUN echo 'alias rq="rm -f /tmp/q"' >> ~/.bashrc
 
 # Required package installation
 RUN apt-get update && apt-get install -y \
