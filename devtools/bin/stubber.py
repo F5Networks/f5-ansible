@@ -1,24 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
-import os
-
-
-from lib.stubber import stub_roles_dirs
-from lib.stubber import stub_roles_yaml_files
-from lib.stubber import stub_playbook_file
-from lib.stubber import stub_library_file
-from lib.stubber import stub_module_documentation
-from lib.stubber import stub_unit_test_file
-#from lib.stubber import restub_test_automation
-
-from lib.stubber import unstub_roles_dirs
-from lib.stubber import unstub_playbook_file
-from lib.stubber import unstub_library_file
-from lib.stubber import unstub_module_documentation
-from lib.stubber import unstub_unit_test_file
-
-
 def stub(module):
     module, extension = os.path.splitext(module)
     extension = extension + '.py' if extension == '' else extension
@@ -65,4 +46,33 @@ def main():
 
 
 if __name__ == '__main__':
+    import argparse
+    import os
+    import sys
+
+    if __package__ is None:
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from lib.stubber import stub_roles_dirs
+        from lib.stubber import stub_roles_yaml_files
+        from lib.stubber import stub_playbook_file
+        from lib.stubber import stub_library_file
+        from lib.stubber import stub_module_documentation
+        from lib.stubber import stub_unit_test_file
+        from lib.stubber import unstub_roles_dirs
+        from lib.stubber import unstub_playbook_file
+        from lib.stubber import unstub_library_file
+        from lib.stubber import unstub_module_documentation
+        from lib.stubber import unstub_unit_test_file
+    else:
+        from ..lib.stubber import stub_roles_dirs
+        from ..lib.stubber import stub_roles_yaml_files
+        from ..lib.stubber import stub_playbook_file
+        from ..lib.stubber import stub_library_file
+        from ..lib.stubber import stub_module_documentation
+        from ..lib.stubber import stub_unit_test_file
+        from ..lib.stubber import unstub_roles_dirs
+        from ..lib.stubber import unstub_playbook_file
+        from ..lib.stubber import unstub_library_file
+        from ..lib.stubber import unstub_module_documentation
+        from ..lib.stubber import unstub_unit_test_file
     main()
