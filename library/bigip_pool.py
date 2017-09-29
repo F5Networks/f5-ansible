@@ -323,10 +323,9 @@ class Parameters(AnsibleF5Parameters):
         'monitor': 'monitors'
     }
 
-    updatables = [
-        'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
-        'host', 'port'
+    api_attributes = [
+        'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
+        'reselectTries', 'serviceDownAction'
     ]
 
     returnables = [
@@ -335,9 +334,10 @@ class Parameters(AnsibleF5Parameters):
         'reselect_tries', 'monitor', 'member_name', 'name', 'partition'
     ]
 
-    api_attributes = [
-        'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
-        'reselectTries', 'serviceDownAction'
+    updatables = [
+        'monitor_type', 'quorum', 'monitors', 'service_down_action',
+        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
+        'host', 'port'
     ]
 
     def __init__(self, params=None):
