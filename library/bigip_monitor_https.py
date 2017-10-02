@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_monitor_https
-short_description: Manages F5 BIG-IP LTM https monitors.
+short_description: Manages F5 BIG-IP LTM https monitors
 description: Manages F5 BIG-IP LTM https monitors.
 version_added: "2.5"
 options:
