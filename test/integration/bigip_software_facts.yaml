@@ -1,4 +1,28 @@
 ---
+
+# Test the bigip_software_facts module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_software_facts module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, playbooks/bigip_software_facts.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_software_facts module
+#
+#    ansible-playbook -i notahost, playbooks/bigip_software_facts.yaml
+#
+# Tested platforms:
+#
+#    - NA
+#
+
 - name: Test the bigip_software_facts module
   hosts: "f5-test[0]"
   connection: local
