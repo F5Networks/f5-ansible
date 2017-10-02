@@ -144,6 +144,15 @@ EXAMPLES = '''
               - name: "pm__apache_servers_for_https"
                 value: "2.2.2.2:80"
   delegate_to: localhost
+
+- name: Try to remove the iApp template before the associated Service is removed
+  bigip_iapp_template:
+      name: "web_frontends"
+      state: "absent"
+  register: result
+  failed_when:
+    - not result|success
+    - "'referenced by one or more applications' not in result.msg"
 '''
 
 RETURN = '''

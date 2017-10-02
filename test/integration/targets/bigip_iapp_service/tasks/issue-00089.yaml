@@ -62,6 +62,4 @@
   bigip_iapp_template:
       name: "tests"
       state: "absent"
-  with_items:
-      - web_frontends.iapp
   register: result

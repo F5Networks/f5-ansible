@@ -97,12 +97,7 @@
 - name: Delete AppSvcs iApp service from iApp template - Idempotent check
   bigip_iapp_service:
       name: "foo-app-service"
-      password: "{{ bigip_password }}"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
       state: "absent"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
   register: result
 
 - name: Assert Delete AppSvcs iApp service from iApp template - Idempotent check
@@ -110,20 +105,18 @@
       that:
           - not result|changed
 
-
 # Github issues
 - include: issue-00089.yaml
-  tags:
-      - issue-00089
+  tags: issue-00089
 
 - include: issue-00138.yaml
-  tags:
-      - issue-00138
+  tags: issue-00138
 
 - include: issue-00254.yaml
-  tags:
-      - issue-00254
+  tags: issue-00254
 
 - include: issue-00263.yaml
-  tags :
-      - issue-00263
+  tags: issue-00263
+
+- include: issue-00354.yaml
+  tags: issue-00354

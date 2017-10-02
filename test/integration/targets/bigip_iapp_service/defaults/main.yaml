@@ -90,18 +90,3 @@ service1_parameters:
       value: "/#do_not_use#"
     - name: "stats__request_logging"
       value: "/#do_not_use#"
-
-
-# If you converted our current JSON payloads to YAML
-#tables:
-#    - columnNames:
-#        - "addr"
-#        - "connection_limit"
-#      name: "pool__members"
-#      rows:
-#        - row:
-#            - "10.1.1.1"
-#            - "0"
-#        - row:
-#            - "10.1.1.2"
-#            - "0"
