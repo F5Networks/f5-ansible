@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # Copyright 2017 F5 Networks Inc.
 #
@@ -20,7 +21,7 @@
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
