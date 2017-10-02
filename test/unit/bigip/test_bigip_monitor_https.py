@@ -215,7 +215,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -241,7 +241,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -269,7 +269,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -297,7 +297,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -326,7 +326,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -354,7 +354,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -382,7 +382,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -410,7 +410,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -438,7 +438,7 @@ class TestManager(unittest.TestCase):
             user='admin'
         ))
 
-        current = Parameters(load_fixture('load_ltm_monitor_http.json'))
+        current = Parameters(load_fixture('load_ltm_monitor_https.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
