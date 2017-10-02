@@ -19,6 +19,7 @@
   "ipDscp": 0,
   "manualResume": "disabled",
   "password": "$M$7F$+F0VTCeKM4LbGkpC/u8pwg==",
+  "recv": "hello world",
   "reverse": "disabled",
   "send": "GET /\\r\\n",
   "timeUntilUp": 0,

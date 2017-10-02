@@ -201,7 +201,7 @@ class TestManager(unittest.TestCase):
     def test_create_monitor_idempotent(self, *args):
         set_module_args(dict(
             name='asdf',
-            parent='http',
+            parent='https',
             send='GET /\\r\\n',
             receive='hello world',
             ip='1.1.1.1',
