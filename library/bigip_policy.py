@@ -80,8 +80,7 @@ options:
     description:
       - Device partition to manage resources on.
     required: False
-    default: 'Common'
-    version_added: 2.5
+    default: Common
 notes:
    - Requires the f5-sdk Python package on the host. This is as easy as
      pip install f5-sdk
@@ -104,13 +103,10 @@ EXAMPLES = '''
       policy: "Policy-Foo"
       name: "ABC"
       conditions:
-          - http_uri: "yes"
-            path: "yes"
-            starts_with:
-                - "/ABC"
+          - type: "http_uri"
+            path_starts_with: "/ABC"
       actions:
-          - forward: "yes"
-            select: "yes"
+          - type: "forward"
             pool: "pool-svrs"
 
 - name: Add multiple rules to the new policy - Added in the order they are specified
@@ -122,24 +118,18 @@ EXAMPLES = '''
   with_items:
       - name: rule1
         actions:
-            - forward: "yes"
-              select: "yes"
+            - type: "forward"
               pool: "pool-svrs"
         conditions:
-            - http_uri: "yes"
-              path: "yes"
-              starts-with:
-                  - /euro
+            - type: http_uri
+              path_starts_with: "/euro"
       - name: HomePage
         actions:
-            - forward: yes
-              select: yes
+            - type: "forward"
               pool: "pool-svrs"
         conditions:
-            - http-uri: yes
-              path: yes
-              starts-with:
-                  - /HomePage/
+            - type: "http_uri"
+              path_starts_with: "/HomePage/"
 
 - name: Create policy specify default rules - Immediately published
   bigip_policy:
