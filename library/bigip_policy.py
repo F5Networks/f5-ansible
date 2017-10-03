@@ -161,15 +161,55 @@ EXAMPLES = '''
 '''
 
 import re
+
 from ansible.module_utils.f5_utils import *
 from distutils.version import LooseVersion
+from f5.bigip.contexts import TransactionContextManager
+from f5.sdk_exception import NonExtantPolicyRule
 from icontrol.exceptions import iControlUnexpectedHTTPError
 
 
 class Parameters(AnsibleF5Parameters):
-    api_attributes = ['strategy', 'description']
-    updatables = ['strategy', 'description']
-    returnables = ['strategy', 'description']
+    api_attributes = [
+        'strategy', 'description'
+    ]
+
+    updatables = [
+        'strategy', 'description', 'rules'
+    ]
+
+    returnables = [
+        'strategy', 'description', 'rules'
+    ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+        self._values['__warnings'] = []
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -233,17 +273,21 @@ class Parameters(AnsibleF5Parameters):
                 "The provided strategy name is invalid!"
             )
 
-    @strategy.setter
-    def strategy(self, value):
-        self._values['strategy'] = value
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        # In case rule values are unicode (as they may be coming from the API
+        result = [str(x) for x in self._values['rules']]
+        return result
 
 
-class BaseTrafficPolicyManager(object):
+class BaseManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def _set_changed_options(self):
         changed = {}
@@ -251,18 +295,20 @@ class BaseTrafficPolicyManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-        self.changes = Parameters(changed)
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
         if changed:
+            self.changes = Changes(changed)
             return True
         return False
 
@@ -280,10 +326,28 @@ class BaseTrafficPolicyManager(object):
 
     def _validate_creation_parameters(self):
         if self.want.strategy is None:
-            self.want.strategy = 'first'
+            self.want.update(dict(strategy='first'))
+
+    def _get_rule_names(self, resource):
+        rules = resource.rules_s.get_collection()
+        rules.sort(key=lambda x: x.ordinal)
+        result = [x.name for x in rules]
+        return result
+
+    def _upsert_policy_rules_on_device(self, policy):
+        rules = self.changes.rules
+        if rules is None:
+            rules = []
+        for idx, rule in enumerate(rules):
+            try:
+                resource = policy.rules_s.rules.load(name=rule)
+                if int(resource.ordinal) != idx:
+                    resource.modify(ordinal=idx)
+            except NonExtantPolicyRule:
+                policy.rules_s.rules.create(name=rule, ordinal=idx)
 
 
-class SimpleTrafficPolicyManager(BaseTrafficPolicyManager):
+class SimpleManager(BaseManager):
     def exec_module(self):
         changed = False
         result = dict()
@@ -307,32 +371,54 @@ class SimpleTrafficPolicyManager(BaseTrafficPolicyManager):
             name=self.want.name,
             partition=self.want.partition
         )
-        result = resource.attrs
-        return Parameters(result)
+        rules = self._get_rule_names(resource)
+        result = Parameters(resource.attrs)
+        result.update(dict(rules=rules))
+        return result
 
     def exists(self):
-        return self.client.api.tm.ltm.policys.policy.exists(
+        result = self.client.api.tm.ltm.policys.policy.exists(
             name=self.want.name,
             partition=self.want.partition
         )
+        return result
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
-        return resource
+        params = self.changes.api_params()
+
+        # Using a transaction because the rule ordering cannot be changed
+        # by just patching the policy endpoint. You instead need to patch
+        # each of the rule endpoints.
+        tx = self.client.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            resource = api.tm.ltm.policys.policy.load(
+                name=self.want.name,
+                partition=self.want.partition
+            )
+            if params:
+                resource.modify(**params)
+            self._upsert_policy_rules_on_device(resource)
 
     def create(self):
         self._validate_creation_parameters()
-
         self._set_changed_options()
         if self.client.check_mode:
             return True
-
         self.create_on_device()
+        return True
+
+    def create_on_device(self):
+        params = self.want.api_params()
+
+        tx = self.client.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            params = dict(
+                name=self.want.name,
+                partition=self.want.partition,
+                **params
+            )
+            resource = api.tm.ltm.policys.policy.create(**params)
+            self._upsert_policy_rules_on_device(resource)
         return True
 
     def update(self):
@@ -341,19 +427,38 @@ class SimpleTrafficPolicyManager(BaseTrafficPolicyManager):
             return False
         if self.client.check_mode:
             return True
-
         self.update_on_device()
         return True
 
+    def absent(self):
+        changed = False
+        if self.exists():
+            changed = self.remove()
+        return changed
 
-class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError("Failed to delete the policy")
+        return True
+
+    def remove_from_device(self):
+        resource = self.client.api.tm.ltm.policys.policy.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        resource.delete()
+
+
+class ComplexManager(BaseManager):
     def exec_module(self):
         changed = False
         result = dict()
         state = self.want.state
 
         try:
-
             if state in ["present", "draft"]:
                 changed = self.present()
             elif state == "absent":
@@ -388,6 +493,35 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
         else:
             return self.create()
 
+    def absent(self):
+        changed = False
+        if self.draft_exists() or self.policy_exists():
+            changed = self.remove()
+        return changed
+
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.draft_exists() or self.policy_exists():
+            raise F5ModuleError("Failed to delete the policy")
+        return True
+
+    def remove_from_device(self):
+        if self.draft_exists():
+            resource = self.client.api.tm.ltm.policys.policy.load(
+                name=self.want.name,
+                partition=self.want.partition,
+                subPath='Drafts'
+            )
+            resource.delete()
+        if self.policy_exists():
+            resource = self.client.api.tm.ltm.policys.policy.load(
+                name=self.want.name,
+                partition=self.want.partition
+            )
+            resource.delete()
+
     def read_current_from_device(self):
         if self.draft_exists():
             resource = self.client.api.tm.ltm.policys.policy.load(
@@ -400,7 +534,10 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
                 name=self.want.name,
                 partition=self.want.partition
             )
+
+        rules = self._get_rule_names(resource)
         result = Parameters(resource.attrs)
+        result.update(dict(rules=rules))
         return result
 
     def policy_exists(self):
@@ -421,11 +558,12 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
         return result
 
     def _create_new_policy_draft(self):
+        params = self.want.api_params()
         params = dict(
             name=self.want.name,
             partition=self.want.partition,
             subPath='Drafts',
-            strategy=self.want.strategy
+            **params
         )
         self.client.api.tm.ltm.policys.policy.create(**params)
         return True
@@ -440,13 +578,21 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
         return True
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.tm.ltm.policys.policy.load(
-            name=self.want.name,
-            partition=self.want.partition,
-            subPath='Drafts'
-        )
-        resource.modify(**params)
+        params = self.changes.api_params()
+
+        # Using a transaction because the rule ordering cannot be changed
+        # by just patching the policy endpoint. You instead need to patch
+        # each of the rule endpoints.
+        tx = self.client.api.tm.transactions.transaction
+        with TransactionContextManager(tx) as api:
+            resource = api.tm.ltm.policys.policy.load(
+                name=self.want.name,
+                partition=self.want.partition,
+                subPath='Drafts'
+            )
+            if params:
+                resource.modify(**params)
+            self._upsert_policy_rules_on_device(resource)
 
     def publish(self):
         resource = self.client.api.tm.ltm.policys.policy.load(
@@ -495,6 +641,37 @@ class ComplexTrafficPolicyManager(BaseTrafficPolicyManager):
             return self.publish()
 
 
+class Changes(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def rules(self):
+        if self.want.rules != self.have.rules:
+            return self.want.rules
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -508,9 +685,9 @@ class ModuleManager(object):
 
     def get_manager(self, type):
         if type == 'traffic':
-            return SimpleTrafficPolicyManager(self.client)
+            return SimpleManager(self.client)
         elif type == 'complex_traffic':
-            return ComplexTrafficPolicyManager(self.client)
+            return ComplexManager(self.client)
 
     def version_is_less_than_12(self):
         version = self.client.api.tmos_version
@@ -528,6 +705,7 @@ class ArgumentSpec(object):
                 required=True
             ),
             description=dict(),
+            rules=dict(type='list'),
             strategy=dict(
                 choices=['first', 'all', 'best']
             ),
@@ -558,6 +736,7 @@ def main():
         client.module.exit_json(**results)
     except F5ModuleError as e:
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()
