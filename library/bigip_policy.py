@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_policy
-short_description: Manage general policy configuration on a BIG-IP.
+short_description: Manage general policy configuration on a BIG-IP
 description:
   - Manages general policy configuration on a BIG-IP. This module is best
     used in conjunction with the C(bigip_policy_rule) module. This module
