@@ -15,38 +15,9 @@ just can't wait for a module to become stable.
 
 There are a couple ways to install these modules on your system.
 
-In your Ansible install directory
----------------------------------
 
-Different systems can put Ansible in different locations. The recommended way
-to install Ansible however (via `pip`) puts the modules here
-
-  * `/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/`
-
-To install the F5 modules in this repository, you can copy the contents of
-the `library/` directory we provide, into the location mentioned above.
-
-On MacOSX, the following location can be used for the modules:
-
-  * `/Library/Frameworks/Python.framework/Versions/[PYTHON_VERSION]/lib/python[PYTHON_VERSION]/site-packages/ansible/modules/extras/network/f5`
-
-For example,
-
-.. code-block:: bash
-
-   cp library/* /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
-
-This will overwrite *all* of the modules with the ones in this repository. If you
-only want one or two modules, then just copy those. For example,
-
-.. code-block:: bash
-
-   cp library/bigip_iapp_service.py /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
-
-Above, only the `bigip_iapp_service` module is copied.
-
-In a relative location
-----------------------
+In a relative location (recommended)
+-----------------------------------
 
 Ansible also allows you to put modules in a location that is relative to where
 the project you are working on is.
@@ -92,6 +63,36 @@ follow this order
 3. Recursively through `/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/`
 
 Whichever method you choose is up to you.
+
+In your Ansible install directory
+---------------------------------
+
+Different systems can put Ansible in different locations. The recommended way
+to install Ansible however (via `pip`) puts the modules here
+
+  * `/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/`
+
+To install the F5 modules in this repository, you can copy the contents of
+the `library/` directory we provide, into the location mentioned above.
+
+On MacOSX, the following location can be used for the modules:
+
+  * `/Library/Frameworks/Python.framework/Versions/[PYTHON_VERSION]/lib/python[PYTHON_VERSION]/site-packages/ansible/modules/extras/network/f5`
+
+For example,
+
+.. code-block:: bash
+
+   cp library/* /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
+
+This will overwrite *all* of the modules with the ones in this repository. If you
+only want one or two modules, then just copy those. For example,
+
+.. code-block:: bash
+
+   cp library/bigip_iapp_service.py /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
+
+Above, only the `bigip_iapp_service` module is copied.
 
 Caveats
 -------
