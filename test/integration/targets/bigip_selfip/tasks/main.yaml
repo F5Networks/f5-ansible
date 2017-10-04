@@ -252,8 +252,8 @@
 
 - include: route-domain.yaml
 
-- include: issue-315.yaml
-  tags: issue-315
+- include: issue-00315.yaml
+  tags: issue-00315
 
-- include: issue-229.yaml
-  tags: issue-229
+- include: issue-00229.yaml
+  tags: issue-00229
