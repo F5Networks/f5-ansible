@@ -12,43 +12,31 @@ The version of Ansible that is required is at least 2.2.0.
 Installing Ansible
 ------------------
 
-Let's install Ansible to make it possible to use the modules.
+Please see the Ansible documentation for how to install Ansible:
 
-First, make sure `ansible` is installed.
+* http://docs.ansible.com/ansible/latest/intro_installation.html
+  
+Installing via virtualenv/pip is encouraged if you are testing out f5-ansible in your development and/or personal device.  For an example please see :doc:`virtualenv`.
 
-.. code-block:: bash
+*  http://docs.ansible.com/ansible/latest/intro_installation.html#latest-releases-via-pip
+ 
+.. note:: You are strongly encouraged to install Ansible from `pip` to ensure that you are using a version of Ansible that we can assist you with.
 
-   pip install ansible
+Installing Dependencies
+------------------------
 
-.. note:: You should *only* install Ansible from `pip`. While you might
-          find Ansible packaged for your operating system (for instance
-          via `apt`, `yum`, or `brew`, the only official way to get
-          Ansible is via `pip`. We cannot assist you if you have installed
-          it any other way.
+In addition to Ansible a few additional Python modules are required.  At minimum you should add the `f5-sdk`.  A common set of modules to start with would be.
 
-You should be able to verify that you are running Ansible by using the
-`--version` argument to the `ansible` command, like so.
+* f5-sdk
+* bigsuds
+* netaddr
+* deepdiff
 
-.. code-block:: bash
+You can install these via pip (either globally or within a virtual environment).
 
-   ansible --version
-
-You should be presented with output that resembles the following
-
-.. code-block:: bash
-
-   (test1)SEA-ML-RUPP1:virtualenv trupp$ ansible --version
-   ansible 2.2.0
-     config file =
-     configured module search path = Default w/o overrides
-
-With this ready, you can create your first playbook. We'll write the remainder
-of our Ansible playbooks in a file called ``site.yaml``
-
-Installing Modules
-------------------
-
-Refer to the documentation on `installing the modules here <installing-modules.html>`_.
+.. code-block:: terminal
+  
+  (myansible) $ pip install f5-sdk bigsuds netaddr deepdiff
 
 Playbook
 --------
