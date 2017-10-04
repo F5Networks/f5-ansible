@@ -9,7 +9,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_virtual_server
 short_description: Manages F5 BIG-IP LTM virtual servers
@@ -29,35 +29,32 @@ requirements:
 options:
   state:
     description:
-      - Virtual Server state
+      - Virtual Server state.
       - Absent, delete the VS if present
       - C(present) (and its synonym enabled), create if needed the VS and set
-        state to enabled
-      - C(disabled), create if needed the VS and set state to disabled
-    required: false
+        state to enabled.
+      - C(disabled), create if needed the VS and set state to disabled.
     default: present
     choices:
       - present
       - absent
       - enabled
       - disabled
-    aliases: []
   partition:
     description:
-      - Partition
-    required: false
-    default: 'Common'
+      - Partition.
+    default: Common
   name:
     description:
-      - Virtual server name
-    required: true
+      - Virtual server name.
+    required: True
     aliases:
       - vs
   destination:
     description:
       - Destination IP of the virtual server (only host is currently supported).
         Required when state=present and vs does not exist.
-    required: true
+    required: True
     aliases:
       - address
       - ip
@@ -66,123 +63,102 @@ options:
       - Port of the virtual server. Required when state=present and vs does
         not exist. If you specify a value for this field, it must be a number
         between 0 and 65535.
-    required: false
-    default: None
   all_profiles:
     description:
       - List of all Profiles (HTTP,ClientSSL,ServerSSL,etc) that must be used
-        by the virtual server
-    required: false
-    default: None
+        by the virtual server.
   all_policies:
     description:
       - List of all policies enabled for the virtual server.
-    required: false
-    default: None
     version_added: "2.3"
   all_rules:
     version_added: "2.2"
     description:
-      - List of rules to be applied in priority order
-    required: false
-    default: None
+      - List of rules to be applied in priority order.
   enabled_vlans:
     version_added: "2.2"
     description:
       - List of vlans to be enabled. When a VLAN named C(ALL) is used, all
         VLANs will be allowed.
-    required: false
-    default: None
   pool:
     description:
-      - Default pool for the virtual server
-    required: false
-    default: None
+      - Default pool for the virtual server.
   snat:
     description:
-      - Source network address policy
-    required: false
+      - Source network address policy.
     choices:
       - None
       - Automap
       - Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT with the specific pool
-    default: None
   default_persistence_profile:
     description:
-      - Default Profile which manages the session persistence
-    required: false
-    default: None
+      - Default Profile which manages the session persistence.
   fallback_persistence_profile:
     description:
       - Specifies the persistence profile you want the system to use if it
         cannot use the specified default persistence profile.
-    required: false
-    default: None
     version_added: "2.3"
   route_advertisement_state:
     description:
-      - Enable route advertisement for destination
-    required: false
+      - Enable route advertisement for destination.
     default: disabled
     version_added: "2.3"
   description:
     description:
-      - Virtual server description
-    required: false
-    default: None
+      - Virtual server description.
 extends_documentation_fragment: f5
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add virtual server
   bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: present
-      partition: MyPartition
-      name: myvirtualserver
-      destination: "{{ ansible_default_ipv4['address'] }}"
-      port: 443
-      pool: "{{ mypool }}"
-      snat: Automap
-      description: Test Virtual Server
-      all_profiles:
-          - http
-          - clientssl
-      enabled_vlans:
-          - /Common/vlan2
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: present
+    partition: MyPartition
+    name: myvirtualserver
+    destination: "{{ ansible_default_ipv4['address'] }}"
+    port: 443
+    pool: "{{ mypool }}"
+    snat: Automap
+    description: Test Virtual Server
+    all_profiles:
+      - http
+      - clientssl
+    enabled_vlans:
+      - /Common/vlan2
   delegate_to: localhost
 
 - name: Modify Port of the Virtual Server
   bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: present
-      partition: MyPartition
-      name: myvirtualserver
-      port: 8080
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: present
+    partition: MyPartition
+    name: myvirtualserver
+    port: 8080
   delegate_to: localhost
 
 - name: Delete virtual server
   bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: absent
-      partition: MyPartition
-      name: myvirtualserver
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: absent
+    partition: MyPartition
+    name: myvirtualserver
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 ---
 deleted:
-    description: Name of a virtual server that was deleted
-    returned: changed
-    type: string
-    sample: "my-virtual-server"
+  description: Name of a virtual server that was deleted
+  returned: changed
+  type: string
+  sample: my-virtual-server
 '''
 
 # map of state values

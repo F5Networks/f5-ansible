@@ -9,7 +9,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: _bigip_facts
 short_description: Collect facts from F5 BIG-IP devices
@@ -74,13 +74,13 @@ options:
 extends_documentation_fragment: f5
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Collect BIG-IP facts
   bigip_facts:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      include: "interface,vlan"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    include: interface,vlan
   delegate_to: localhost
 '''
 

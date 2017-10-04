@@ -9,7 +9,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: _bigip_pool_member
 short_description: Manages F5 BIG-IP LTM pool members
@@ -30,80 +30,66 @@ requirements:
 options:
   state:
     description:
-      - Pool member state
-    required: true
+      - Pool member state.
+    required: True
     default: present
     choices:
       - present
       - absent
   session_state:
     description:
-      - Set new session availability status for pool member
+      - Set new session availability status for pool member.
     version_added: 2.0
-    required: false
-    default: null
     choices:
       - enabled
       - disabled
   monitor_state:
     description:
-      - Set monitor availability status for pool member
+      - Set monitor availability status for pool member.
     version_added: 2.0
-    required: false
-    default: null
     choices:
       - enabled
       - disabled
   pool:
     description:
       - Pool name. This pool must exist.
-    required: true
+    required: True
   partition:
     description:
       - Partition
-    required: false
-    default: 'Common'
+    default: Common
   host:
     description:
-      - Pool member IP
-    required: true
+      - Pool member IP.
+    required: True
     aliases:
       - address
       - name
   port:
     description:
-      - Pool member port
-    required: true
+      - Pool member port.
+    required: True
   connection_limit:
     description:
       - Pool member connection limit. Setting this to 0 disables the limit.
-    required: false
-    default: null
   description:
     description:
-      - Pool member description
-    required: false
-    default: null
+      - Pool member description.
   rate_limit:
     description:
       - Pool member rate limit (connections-per-second). Setting this to 0
         disables the limit.
-    required: false
-    default: null
   ratio:
     description:
       - Pool member ratio weight. Valid values range from 1 through 100.
         New pool members -- unless overridden with this value -- default
         to 1.
-    required: false
-    default: null
   preserve_node:
     description:
       - When state is absent and the pool member is no longer referenced
         in other pools, the default behavior removes the unused node
         o bject. Setting this to 'yes' disables this behavior.
-    required: false
-    default: 'no'
+    default: no
     choices:
       - yes
       - no
@@ -114,44 +100,44 @@ extends_documentation_fragment: f5
 EXAMPLES = '''
 - name: Add pool member
   bigip_pool_member:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      pool: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
-      description: "web server"
-      connection_limit: 100
-      rate_limit: 50
-      ratio: 2
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    pool: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
+    description: web server
+    connection_limit: 100
+    rate_limit: 50
+    ratio: 2
   delegate_to: localhost
 
 - name: Modify pool member ratio and description
   bigip_pool_member:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      pool: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
-      ratio: 1
-      description: "nginx server"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    pool: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
+    ratio: 1
+    description: nginx server
   delegate_to: localhost
 
 - name: Remove pool member from pool
   bigip_pool_member:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      pool: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    pool: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
   delegate_to: localhost
 
 
@@ -170,16 +156,16 @@ EXAMPLES = '''
 
 - name: Force pool member offline
   bigip_pool_member:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      session_state: "disabled"
-      monitor_state: "disabled"
-      pool: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    session_state: disabled
+    monitor_state: disabled
+    pool: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
   delegate_to: localhost
 '''
 

@@ -9,7 +9,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: _bigip_pool
 short_description: Manages F5 BIG-IP LTM pools
@@ -34,33 +34,25 @@ options:
     version_added: "2.3"
   state:
     description:
-      - Pool/pool member state
-    required: false
+      - Pool/pool member state.
     default: present
     choices:
       - present
       - absent
-    aliases: []
   name:
     description:
-      - Pool name
-    required: true
-    default: null
-    choices: []
+      - Pool name.
+    required: True
     aliases:
       - pool
   partition:
     description:
-      - Partition of pool/pool member
-    required: false
-    default: 'Common'
-    choices: []
-    aliases: []
+      - Partition of pool/pool member.
+    default: Common
   lb_method:
     description:
-      - Load balancing method
+      - Load balancing method.
     version_added: "1.3"
-    required: False
     default: 'round_robin'
     choices:
       - round_robin
@@ -83,135 +75,109 @@ options:
       - ratio_session
       - ratio_least_connection_member
       - ratio_least_connection_node_address
-    aliases: []
   monitor_type:
     description:
-      - Monitor rule type when monitors > 1
+      - Monitor rule type when monitors > 1.
     version_added: "1.3"
-    required: False
-    default: null
     choices: ['and_list', 'm_of_n']
-    aliases: []
   quorum:
     description:
-      - Monitor quorum value when monitor_type is m_of_n
+      - Monitor quorum value when monitor_type is m_of_n.
     version_added: "1.3"
-    required: False
-    default: null
-    choices: []
-    aliases: []
   monitors:
     description:
       - Monitor template name list. Always use the full path to the monitor.
     version_added: "1.3"
-    required: False
-    default: null
-    choices: []
-    aliases: []
   slow_ramp_time:
     description:
       - Sets the ramp-up time (in seconds) to gradually ramp up the load on
-        newly added or freshly detected up pool members
+        newly added or freshly detected up pool members.
     version_added: "1.3"
-    required: False
-    default: null
-    choices: []
-    aliases: []
   reselect_tries:
     description:
       - Sets the number of times the system tries to contact a pool member
-        after a passive failure
+        after a passive failure.
     version_added: "2.2"
-    required: False
-    default: null
-    choices: []
-    aliases: []
   service_down_action:
     description:
-      - Sets the action to take when node goes down in pool
+      - Sets the action to take when node goes down in pool.
     version_added: "1.3"
-    required: False
-    default: null
     choices:
       - none
       - reset
       - drop
       - reselect
-    aliases: []
   host:
     description:
-      - "Pool member IP"
-    required: False
-    default: null
-    choices: []
+      - Pool member IP.
     aliases:
       - address
   port:
     description:
-      - Pool member port
-    required: False
-    default: null
-    choices: []
-    aliases: []
+      - Pool member port.
 extends_documentation_fragment: f5
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      lb_method: "least_connection_member"
-      slow_ramp_time: 120
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: least_connection_member
+    slow_ramp_time: 120
   delegate_to: localhost
 
 - name: Modify load balancer method
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      lb_method: "round_robin"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: round_robin
+  delegate_to: localhost
 
 - name: Add pool member
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
+  delegate_to: localhost
 
 - name: Remove pool member from pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      name: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4["address"] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4["address"] }}"
+    port: 80
+  delegate_to: localhost
 
 - name: Delete pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      name: "my-pool"
-      partition: "Common"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+  delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 '''
 
 

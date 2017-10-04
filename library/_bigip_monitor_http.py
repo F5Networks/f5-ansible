@@ -10,7 +10,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: _bigip_monitor_http
 short_description: Manages F5 BIG-IP LTM http monitors
@@ -115,25 +115,25 @@ options:
 extends_documentation_fragment: f5
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: BIGIP F5 | Create HTTP Monitor
   bigip_monitor_http:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_http_monitor"
-      send: "http string to send"
-      receive: "http string to receive"
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_http_monitor
+    send: http string to send
+    receive: http string to receive
   delegate_to: localhost
 
 - name: BIGIP F5 | Remove HTTP Monitor
   bigip_monitor_http:
-    state: "absent"
-    server: "lb.mydomain.com"
-    user: "admin"
-    password: "secret"
-    name: "my_http_monitor"
+    state: absent
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_http_monitor
   delegate_to: localhost
 '''
 
