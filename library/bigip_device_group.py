@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_device_group
-short_description: Manage device groups on a BIG-IP.
+short_description: Manage device groups on a BIG-IP
 description:
   - Managing device groups allows you to create HA pairs and clusters
     of BIG-IP devices. Usage of this module should be done in conjunction
@@ -145,7 +145,12 @@ max_incremental_sync_size:
     sample: 1000
 '''
 
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+try:
+    from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+except ImportError:
+    # Ansible 2.3??
+    BOOLEANS_TRUE = frozenset(('y', 'yes', 'on', '1', 'true', 't', 1, 1.0, True))
+
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
