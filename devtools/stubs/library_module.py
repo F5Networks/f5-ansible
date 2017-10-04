@@ -1,30 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+# Copyright: (c) 2017, F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-DOCUMENTATION = '''
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
+
+DOCUMENTATION = r'''
 ---
 module: {{ module }}
 short_description: __SHORT_DESCRIPTION__.
@@ -46,23 +30,28 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create a ...
   {{ module }}:
-      name: "foo"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    name: "foo"
+    password: "secret"
+    server: "lb.mydomain.com"
+    state: "present"
+    user: "admin"
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 param1:
-    description: The new param1 value of the resource.
-    returned: changed
-    type: bool
-    sample: true
+  description: The new param1 value of the resource.
+  returned: changed
+  type: bool
+  sample: true
+param2:
+  description: The new param2 value of the resource.
+  returned: changed
+  type: string
+  sample: Foo is bar
 '''
 
 

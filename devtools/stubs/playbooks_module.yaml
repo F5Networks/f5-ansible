@@ -23,28 +23,28 @@
   connection: local
 
   vars:
-      limit_to: "*"
-      __metadata__:
-          version: "1.0"
-          tested_platforms:
-              - "NA"
-          callgraph_exclude:
-              - "pycallgraph.*"
+    limit_to: "*"
+    __metadata__:
+      version: "1.0"
+      tested_platforms:
+        - "NA"
+      callgraph_exclude:
+        - "pycallgraph.*"
 
-              # Ansible related
-              - "ansible.module_utils.basic.AnsibleModule.*"
-              - "ansible.module_utils.basic.*"
-              - "ansible.module_utils.parsing.*"
-              - "ansible.module_utils._text.*"
-              - "ansible.module_utils.six.*"
+        # Ansible related
+        - "ansible.module_utils.basic.AnsibleModule.*"
+        - "ansible.module_utils.basic.*"
+        - "ansible.module_utils.parsing.*"
+        - "ansible.module_utils._text.*"
+        - "ansible.module_utils.six.*"
 
 
 {% raw %}  environment:
-      F5_SERVER: "{{ ansible_host }}"
-      F5_USER: "{{ bigip_username }}"
-      F5_PASSWORD: "{{ bigip_password }}"
-      F5_SERVER_PORT: "{{ bigip_port }}"
-      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "{{ bigip_username }}"
+    F5_PASSWORD: "{{ bigip_password }}"
+    F5_SERVER_PORT: "{{ bigip_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
 {% endraw %}
   roles:
-      - {{ module }}
+    - {{ module }}
