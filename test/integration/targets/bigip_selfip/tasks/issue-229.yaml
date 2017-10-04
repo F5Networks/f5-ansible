@@ -11,7 +11,12 @@
       partition: "Tenant1A"
   register: result
 
-- name: Configure SELF-IPs on the BIG-IP
+- name: Create VLAN on Common
+  bigip_vlan:
+      name: "InternalCommon"
+  register: result
+
+- name: Configure Self-IPs on the BIG-IP
   bigip_selfip:
       name: "issue-229"
       address: "1.2.3.4"
@@ -21,12 +26,12 @@
       state: "present"
   register: result
 
-- name: Assert Configure SELF-IPs on the BIG-IP
+- name: Assert Configure Self-IPs on the BIG-IP
   assert:
       that:
           - result|changed
 
-- name: Configure SELF-IPs on the BIG-IP - Idempotent check
+- name: Configure Self-IPs on the BIG-IP - Idempotent check
   bigip_selfip:
       name: "issue-229"
       address: "1.2.3.4"
@@ -36,7 +41,46 @@
       state: "present"
   register: result
 
-- name: Assert Configure SELF-IPs on the BIG-IP - Idempotent check
+- name: Assert Configure Self-IPs on the BIG-IP - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove Self-IP
+  bigip_selfip:
+      name: "issue-229"
+      partition: "Tenant1A"
+      state: "absent"
+  register: result
+
+- name: Configure Self-IPs with specific partitions
+  bigip_selfip:
+      name: "issue-229"
+      address: "1.2.3.4"
+      netmask: "255.255.255.0"
+      vlan: "/Common/InternalCommon"
+      partition: "Tenant1A"
+      traffic_group: /Common/traffic-group-local-only
+      state: "present"
+  register: result
+
+- name: Assert Configure Self-IPs with specific partitions
+  assert:
+      that:
+          - result|changed
+
+- name: Configure Self-IPs with specific partitions - Idempotent check
+  bigip_selfip:
+      name: "issue-229"
+      address: "1.2.3.4"
+      netmask: "255.255.255.0"
+      vlan: "/Common/InternalCommon"
+      partition: "Tenant1A"
+      traffic_group: /Common/traffic-group-local-only
+      state: "present"
+  register: result
+
+- name: Assert Configure Self-IPs with specific partitions - Idempotent check
   assert:
       that:
           - not result|changed
@@ -52,6 +96,12 @@
   bigip_vlan:
       name: "External"
       partition: "Tenant1A"
+      state: "absent"
+  register: result
+
+- name: Remove Internal VLAN
+  bigip_vlan:
+      name: "InternalCommon"
       state: "absent"
   register: result
 
