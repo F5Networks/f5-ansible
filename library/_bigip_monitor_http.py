@@ -1,35 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# (c) 2013, serge van Ginderachter <serge@vanginderachter.be>
-# based on Matt Hite's bigip_pool module
-# (c) 2013, Matt Hite <mhite@hotmail.com>
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# Copyright (c) 2013 Serge van Ginderachter <serge@vanginderachter.be>
+# Copyright (c) 2013 Matt Hite <mhite@hotmail.com>
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
 module: _bigip_monitor_http
-short_description: "Manages F5 BIG-IP LTM http monitors"
+short_description: Manages F5 BIG-IP LTM http monitors
 deprecated: Deprecated in 2.5. Use C(bigip_monitor_http) instead.
 description:
   - Manages F5 BIG-IP LTM monitors via iControl SOAP API
