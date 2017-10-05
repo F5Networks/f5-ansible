@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: bigip_ssl_certificate
-short_description: Import/Delete certificates from BIG-IP.
+short_description: Import/Delete certificates from BIG-IP
 description:
   - This module will import/delete SSL certificates on BIG-IP LTM.
     Certificates can be imported from certificate and key files on the local

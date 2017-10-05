@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: bigip_snmp_trap
-short_description: Manipulate SNMP trap information on a BIG-IP.
+short_description: Manipulate SNMP trap information on a BIG-IP
 description:
   - Manipulate SNMP trap information on a BIG-IP.
 version_added: 2.4

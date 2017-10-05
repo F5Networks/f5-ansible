@@ -24,9 +24,9 @@ ANSIBLE_METADATA = {
     'metadata_version': '1.1'
 }
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 module: bigip_ssl_key
-short_description: Import/Delete SSL keys from BIG-IP.
+short_description: Import/Delete SSL keys from BIG-IP
 description:
   - This module will import/delete SSL keys on a BIG-IP. Keys can be imported
     from key files on the local disk, in PEM format.
@@ -65,52 +65,52 @@ notes:
     a role context.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.5.0
-    - BIG-IP >= v12
+  - f5-sdk >= 1.5.0
+  - BIG-IP >= v12
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Use a file lookup to import key
   bigip_ssl_key:
-      name: "key-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      content: "{{ lookup('file', '/path/to/key.key') }}"
+    name: key-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    content: "{{ lookup('file', '/path/to/key.key') }}"
   delegate_to: localhost
 
 - name: Delete key
   bigip_ssl_key:
-      name: "key-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
+    name: key-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 key_filename:
-    description:
-        - The name of the SSL certificate key. The C(key_filename) and
-          C(cert_filename) will be similar to each other, however the
-          C(key_filename) will have a C(.key) extension.
-    returned: created
-    type: string
-    sample: "cert1.key"
+  description:
+    - The name of the SSL certificate key. The C(key_filename) and
+      C(cert_filename) will be similar to each other, however the
+      C(key_filename) will have a C(.key) extension.
+  returned: created
+  type: string
+  sample: cert1.key
 key_checksum:
-    description: SHA1 checksum of the key that was provided.
-    returned: changed and created
-    type: string
-    sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
+  description: SHA1 checksum of the key that was provided.
+  returned: changed and created
+  type: string
+  sample: cf23df2207d99a74fbe169e3eba035e633b65d94
 key_source_path:
-    description: Path on BIG-IP where the source of the key is stored
-    returned: created
-    type: string
-    sample: "/var/config/rest/downloads/cert1.key"
+  description: Path on BIG-IP where the source of the key is stored
+  returned: created
+  type: string
+  sample: /var/config/rest/downloads/cert1.key
 '''
 
 

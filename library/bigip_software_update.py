@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_software_update
-short_description: Manage the software update settings of a BIG-IP.
+short_description: Manage the software update settings of a BIG-IP
 description:
   - Manage the software update settings of a BIG-IP.
 version_added: "2.4"

@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_software_facts
-short_description: Collect software facts from BIG-IP devices.
+short_description: Collect software facts from BIG-IP devices
 description:
   - Collect information about installed volumes, existing ISOs for images and
     hotfixes on the BIG-IP device.
