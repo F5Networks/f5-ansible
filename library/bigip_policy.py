@@ -1,22 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+
+# Copyright: (c) 2017, F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 ANSIBLE_METADATA = {
     'status': ['preview'],
@@ -82,8 +68,8 @@ options:
     required: False
     default: Common
 notes:
-   - Requires the f5-sdk Python package on the host. This is as easy as
-     pip install f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
 requirements:
   - f5-sdk
 extends_documentation_fragment: f5
@@ -94,60 +80,66 @@ author:
 EXAMPLES = '''
 - name: Create policy which is immediately published
   bigip_policy:
-      name: "Policy-Foo"
-      state: "present"
+    name: "Policy-Foo"
+    state: "present"
   delegate_to: localhost
 
 - name: Add a rule to the new policy - Immediately published
   bigip_policy_rule:
-      policy: "Policy-Foo"
-      name: "ABC"
-      conditions:
-          - type: "http_uri"
-            path_starts_with: "/ABC"
-      actions:
-          - type: "forward"
-            pool: "pool-svrs"
+    policy: "Policy-Foo"
+    name: "ABC"
+    conditions:
+      - type: "http_uri"
+        path_starts_with:
+          - "/ABC"
+          - foo
+          - bar
+        path_ends_with:
+          - baz
+    actions:
+      - forward: yes
+        select: yes
+        pool: "pool-svrs"
 
 - name: Add multiple rules to the new policy - Added in the order they are specified
   bigip_policy_rule:
-      policy: "Policy-Foo"
-      name: "{{ item.name }}"
-      conditions: "{{ item.conditions }}"
-      actions: "{{ item.actions }}"
+    policy: "Policy-Foo"
+    name: "{{ item.name }}"
+    conditions: "{{ item.conditions }}"
+    actions: "{{ item.actions }}"
   with_items:
-      - name: rule1
-        actions:
-            - type: "forward"
-              pool: "pool-svrs"
-        conditions:
-            - type: http_uri
-              path_starts_with: "/euro"
-      - name: HomePage
-        actions:
-            - type: "forward"
-              pool: "pool-svrs"
-        conditions:
-            - type: "http_uri"
-              path_starts_with: "/HomePage/"
+    - name: rule1
+      actions:
+        - type: "forward"
+          pool: "pool-svrs"
+      conditions:
+        - type: http_uri
+          path_starts_with: /euro
+    - name: HomePage
+      actions:
+        - type: forward
+          pool: pool-svrs
+      conditions:
+        - type: http_uri
+          path_starts_with: /HomePage/
 
 - name: Create policy specify default rules - Immediately published
   bigip_policy:
-      name: "Policy-Bar"
-      state: "present"
-      rules:
-          - rule1
-          - rule2
-          - rule3
+    name: Policy-Bar
+    state: present
+    rules:
+      - rule1
+      - rule2
+      - rule3
 
 - name: Create policy specify default rules - Left in a draft
   bigip_policy:
-      name: "Policy-Baz"
-      state: "draft"
-      rules:
-          - rule1
-          - rule2
-          - rule3
+    name: Policy-Baz
+    state: draft
+    rules:
+      - rule1
+      - rule2
+      - rule3
 '''
 
 import re
