@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_device_connectivity
-short_description: Manages device IP configuration settings for HA on a BIG-IP.
+short_description: Manages device IP configuration settings for HA on a BIG-IP
 description:
   - Manages device IP configuration settings for HA on a BIG-IP. Each BIG-IP device
     has synchronization and failover connectivity information (IP addresses) that

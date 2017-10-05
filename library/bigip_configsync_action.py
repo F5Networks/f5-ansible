@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_configsync_action
-short_description: Perform different actions related to config-sync.
+short_description: Perform different actions related to config-sync
 description:
   - Allows one to run different config-sync actions. These actions allow
     you to manually sync your configuration across multiple BIG-IPs when
