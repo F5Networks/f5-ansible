@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_gtm_server
-short_description: Manages F5 BIG-IP GTM servers.
+short_description: Manages F5 BIG-IP GTM servers
 description:
   - Manage BIG-IP server configuration. This module is able to manipulate the server
     definitions in a BIG-IP.

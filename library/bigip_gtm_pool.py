@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_gtm_pool
-short_description: Manages F5 BIG-IP GTM pools.
+short_description: Manages F5 BIG-IP GTM pools
 description:
     - Manages F5 BIG-IP GTM pools.
 version_added: "2.4"

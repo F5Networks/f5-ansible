@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_gtm_facts
-short_description: Collect facts from F5 BIG-IP GTM devices.
+short_description: Collect facts from F5 BIG-IP GTM devices
 description:
   - Collect facts from F5 BIG-IP GTM devices.
 version_added: "2.3"

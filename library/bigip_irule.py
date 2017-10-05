@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_irule
-short_description: Manage iRules across different modules on a BIG-IP.
+short_description: Manage iRules across different modules on a BIG-IP
 description:
   - Manage iRules across different modules on a BIG-IP.
 version_added: "2.2"

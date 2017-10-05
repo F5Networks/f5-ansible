@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_iapplx_package
-short_description: Manages Javascript iApp packages on a BIG-IP.
+short_description: Manages Javascript iApp packages on a BIG-IP
 description:
   - Manages Javascript iApp packages on a BIG-IP. This module will allow
     you to deploy iAppLX packages to the BIG-IP and manage their lifecycle.
