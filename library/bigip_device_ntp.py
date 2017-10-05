@@ -8,10 +8,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_ntp
-short_description: Manage NTP servers on a BIG-IP.
+short_description: Manage NTP servers on a BIG-IP
 description:
   - Manage NTP servers on a BIG-IP.
 version_added: "2.2"
@@ -20,14 +20,11 @@ options:
     description:
       - A list of NTP servers to set on the device. At least one of C(ntp_servers)
         or C(timezone) is required.
-    required: false
-    default: []
   state:
     description:
       - The state of the NTP servers on the system. When C(present), guarantees
         that the NTP servers are set on the system. When C(absent), removes the
         specified NTP servers from the device configuration.
-    required: false
     default: present
     choices:
       - absent
@@ -37,7 +34,6 @@ options:
       - The timezone to set for NTP lookups. At least one of C(ntp_servers) or
         C(timezone) is required.
     default: UTC
-    required: false
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -49,38 +45,38 @@ authors:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set NTP server
   bigip_device_ntp:
-      ntp_servers:
-          - "192.0.2.23"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      validate_certs: "no"
+    ntp_servers:
+      - 192.0.2.23
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Set timezone
   bigip_device_ntp:
-      password: "secret"
-      server: "lb.mydomain.com"
-      timezone: "America/Los_Angeles"
-      user: "admin"
-      validate_certs: "no"
+    password: secret
+    server: lb.mydomain.com
+    timezone: America/Los_Angeles
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 ntp_servers:
-    description: The NTP servers that were set on the device
-    returned: changed
-    type: list
-    sample: ["192.0.2.23", "192.0.2.42"]
+  description: The NTP servers that were set on the device
+  returned: changed
+  type: list
+  sample: ["192.0.2.23", "192.0.2.42"]
 timezone:
-    description: The timezone that was set on the device
-    returned: changed
-    type: string
-    sample: "true"
+  description: The timezone that was set on the device
+  returned: changed
+  type: string
+  sample: true
 '''
 
 from ansible.module_utils.f5_utils import (

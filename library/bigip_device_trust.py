@@ -8,10 +8,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_trust
-short_description: Manage the trust relationships between BIG-IPs.
+short_description: Manage the trust relationships between BIG-IPs
 description:
   - Manage the trust relationships between BIG-IPs. Devices, once peered, cannot
     be updated. If updating is needed, the peer must first be removed before it
@@ -67,32 +67,32 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add trusts for all peer devices to Active device
   bigip_device_trust:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      peer_server: "{{ item.ansible_host }}"
-      peer_hostname: "{{ item.inventory_hostname }}"
-      peer_user: "{{ item.bigip_username }}"
-      peer_password: "{{ item.bigip_password }}"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    peer_server: "{{ item.ansible_host }}"
+    peer_hostname: "{{ item.inventory_hostname }}"
+    peer_user: "{{ item.bigip_username }}"
+    peer_password: "{{ item.bigip_password }}"
   with_items: hostvars
   when: inventory_hostname in groups['master']
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 peer_server:
-    description: The remote IP address of the trusted peer.
-    returned: changed
-    type: string
-    sample: "10.0.2.15"
+  description: The remote IP address of the trusted peer.
+  returned: changed
+  type: string
+  sample: 10.0.2.15
 peer_hostname:
-    description: The remote hostname used to identify the trusted peer.
-    returned: changed
-    type: string
-    sample: "test-bigip-02.localhost.localdomain"
+  description: The remote hostname used to identify the trusted peer.
+  returned: changed
+  type: string
+  sample: test-bigip-02.localhost.localdomain
 '''
 
 import re

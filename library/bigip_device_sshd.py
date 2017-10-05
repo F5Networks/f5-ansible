@@ -8,10 +8,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_sshd
-short_description: Manage the SSHD settings of a BIG-IP.
+short_description: Manage the SSHD settings of a BIG-IP
 description:
   - Manage the SSHD settings of a BIG-IP.
 version_added: "2.2"
@@ -31,17 +31,14 @@ options:
     choices:
       - enabled
       - disabled
-    default: None
   banner_text:
     description:
       - Specifies the text to include on the pre-login banner that displays
         when a user attempts to login to the system using SSH.
-    default: None
   inactivity_timeout:
     description:
       - Specifies the number of seconds before inactivity causes an SSH
         session to log out.
-    default: None
   log_level:
     description:
       - Specifies the minimum SSHD message level to include in the system log.
@@ -55,7 +52,6 @@ options:
       - info
       - quiet
       - verbose
-    default: None
   login:
     description:
       - Specifies, when checked C(enabled), that the system accepts SSH
@@ -63,11 +59,9 @@ options:
     choices:
       - enabled
       - disabled
-    default: None
   port:
     description:
       - Port that you want the SSH daemon to run on.
-    default: None
 notes:
   - Requires the f5-sdk Python package on the host This is as easy as pip
     install f5-sdk.
@@ -79,31 +73,31 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set the banner for the SSHD service from a string
   bigip_device_sshd:
-      banner: "enabled"
-      banner_text: "banner text goes here"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
+    banner: enabled
+    banner_text: banner text goes here
+    password: secret
+    server: lb.mydomain.com
+    user: admin
   delegate_to: localhost
 
 - name: Set the banner for the SSHD service from a file
   bigip_device_sshd:
-      banner: "enabled"
-      banner_text: "{{ lookup('file', '/path/to/file') }}"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
+    banner: enabled
+    banner_text: "{{ lookup('file', '/path/to/file') }}"
+    password: secret
+    server: lb.mydomain.com
+    user: admin
   delegate_to: localhost
 
 - name: Set the SSHD service to run on port 2222
   bigip_device_sshd:
-      password: "secret"
-      port: 2222
-      server: "lb.mydomain.com"
-      user: "admin"
+    password: secret
+    port: 2222
+    server: lb.mydomain.com
+    user: admin
   delegate_to: localhost
 '''
 

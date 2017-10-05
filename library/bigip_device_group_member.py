@@ -11,7 +11,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = '''
 ---
 module: bigip_device_group_member
-short_description: Manages members in a device group.
+short_description: Manages members in a device group
 description:
   - Manages members in a device group. Members in a device group can only
     be added or removed, never updated. This is because the members are
