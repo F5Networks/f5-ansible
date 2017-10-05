@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_qkview
-short_description: Manage qkviews on the device.
+short_description: Manage qkviews on the device
 description:
   - Manages creating and downloading qkviews from a BIG-IP. Various
     options can be provided when creating qkviews. The qkview is important

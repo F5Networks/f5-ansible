@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_provision
-short_description: Manage BIG-IP module provisioning.
+short_description: Manage BIG-IP module provisioning
 description:
   - Manage BIG-IP module provisioning. This module will only provision at the
     standard levels of Dedicated, Nominal, and Minimum.
