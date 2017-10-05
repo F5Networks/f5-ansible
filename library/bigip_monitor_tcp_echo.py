@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_monitor_tcp_echo
-short_description: Manages F5 BIG-IP LTM tcp echo monitors.
+short_description: Manages F5 BIG-IP LTM tcp echo monitors
 description: Manages F5 BIG-IP LTM tcp echo monitors.
 version_added: "2.4"
 options:

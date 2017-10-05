@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_node
-short_description: Manages F5 BIG-IP LTM nodes.
+short_description: Manages F5 BIG-IP LTM nodes
 description:
   - Manages F5 BIG-IP LTM nodes.
 version_added: "1.4"

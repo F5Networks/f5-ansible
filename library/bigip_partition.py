@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_partition
-short_description: Manage BIG-IP partitions.
+short_description: Manage BIG-IP partitions
 description:
   - Manage BIG-IP partitions.
 version_added: "2.5"

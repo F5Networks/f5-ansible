@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_monitor_snmp_dca
-short_description: Manages BIG-IP SNMP data collecting agent (DCA) monitors.
+short_description: Manages BIG-IP SNMP data collecting agent (DCA) monitors
 description:
   - The BIG-IP has an SNMP data collecting agent (DCA) that can query remote
     SNMP agents of various types, including the UC Davis agent (UCD) and the

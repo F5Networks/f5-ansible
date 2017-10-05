@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_monitor_tcp
-short_description: Manages F5 BIG-IP LTM tcp monitors.
+short_description: Manages F5 BIG-IP LTM tcp monitors
 description: Manages F5 BIG-IP LTM tcp monitors via iControl SOAP API.
 version_added: "1.4"
 options:
