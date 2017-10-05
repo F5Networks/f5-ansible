@@ -1,33 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_pool
-short_description: Manages F5 BIG-IP LTM pools.
+short_description: Manages F5 BIG-IP LTM pools
 description:
   - Manages F5 BIG-IP LTM pools via iControl REST API.
 version_added: 1.2
@@ -119,8 +103,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 11.
@@ -134,170 +117,170 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      lb_method: "least_connection_member"
-      slow_ramp_time: 120
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: least_connection_member
+    slow_ramp_time: 120
   delegate_to: localhost
 
 - name: Modify load balancer method
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      lb_method: "round_robin"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    lb_method: round_robin
   delegate_to: localhost
 
 - name: Add pool member
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4['address'] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4['address'] }}"
+    port: 80
   delegate_to: localhost
 
 - name: Set a single monitor (with enforcement)
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      monitor_type: "single"
-      monitors:
-          - http
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: single
+    monitors:
+      - http
   delegate_to: localhost
 
 - name: Set a single monitor (without enforcement)
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      monitors:
-          - http
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    monitors:
+      - http
   delegate_to: localhost
 
 - name: Set multiple monitors (all must succeed)
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      monitor_type: "and_list"
-      monitors:
-          - http
-          - tcp
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: and_list
+    monitors:
+      - http
+      - tcp
   delegate_to: localhost
 
 - name: Set multiple monitors (at least 1 must succeed)
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      name: "my-pool"
-      partition: "Common"
-      monitor_type: "m_of_n"
-      quorum: 1
-      monitors:
-          - http
-          - tcp
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    name: my-pool
+    partition: Common
+    monitor_type: m_of_n
+    quorum: 1
+    monitors:
+      - http
+      - tcp
   delegate_to: localhost
 
 - name: Remove pool member from pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      name: "my-pool"
-      partition: "Common"
-      host: "{{ ansible_default_ipv4['address'] }}"
-      port: 80
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    host: "{{ ansible_default_ipv4['address'] }}"
+    port: 80
   delegate_to: localhost
 
 - name: Delete pool
   bigip_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      name: "my-pool"
-      partition: "Common"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 monitor_type:
-    description: The contact that was set on the datacenter.
-    returned: changed
-    type: string
-    sample: "admin@root.local"
+  description: The contact that was set on the datacenter.
+  returned: changed
+  type: string
+  sample: admin@root.local
 quorum:
-    description: The quorum that was set on the pool
-    returned: changed
-    type: int
-    sample: 2
+  description: The quorum that was set on the pool.
+  returned: changed
+  type: int
+  sample: 2
 monitors:
-    description: Monitors set on the pool.
-    returned: changed
-    type: list
-    sample: ['/Common/http', '/Common/gateway_icmp']
+  description: Monitors set on the pool.
+  returned: changed
+  type: list
+  sample: ['/Common/http', '/Common/gateway_icmp']
 service_down_action:
-    description: Service down action that is set on the pool.
-    returned: changed
-    type: string
-    sample: "reset"
+  description: Service down action that is set on the pool.
+  returned: changed
+  type: string
+  sample: reset
 description:
-    description: Description set on the pool.
-    returned: changed
-    type: string
-    sample: "Pool of web servers"
+  description: Description set on the pool.
+  returned: changed
+  type: string
+  sample: Pool of web servers
 lb_method:
-    description: The LB method set for the pool.
-    returned: changed
-    type: string
-    sample: "round-robin"
+  description: The LB method set for the pool.
+  returned: changed
+  type: string
+  sample: round-robin
 host:
-    description: IP of pool member included in pool.
-    returned: changed
-    type: string
-    sample: "10.10.10.10"
+  description: IP of pool member included in pool.
+  returned: changed
+  type: string
+  sample: 10.10.10.10
 port:
-    description: Port of pool member included in pool.
-    returned: changed
-    type: int
-    sample: 80
+  description: Port of pool member included in pool.
+  returned: changed
+  type: int
+  sample: 80
 slow_ramp_time:
-    description: The new value that is set for the slow ramp-up time.
-    returned: changed
-    type: int
-    sample: 500
+  description: The new value that is set for the slow ramp-up time.
+  returned: changed
+  type: int
+  sample: 500
 reselect_tries:
-    description: The new value that is set for the number of tries to contact member
-    returned: changed
-    type: int
-    sample: 10
+  description: The new value that is set for the number of tries to contact member.
+  returned: changed
+  type: int
+  sample: 10
 '''
 
 import re
