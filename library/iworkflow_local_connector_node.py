@@ -25,7 +25,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_local_connector_node
-short_description: Manages L2/L3 configuration of a BIG-IP via iWorkflow.
+short_description: Manages L2/L3 configuration of a BIG-IP via iWorkflow
 description:
   - Manages L2/L3 configuration of a BIG-IP via iWorkflow. This module is
     useful in the event that you have a new BIG-IP that does not yet have

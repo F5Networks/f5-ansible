@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_tenant_connector
-short_description: Manage connectors associated with tenants in iWorkflow.
+short_description: Manage connectors associated with tenants in iWorkflow
 description:
   - Manage connectors associated with tenants in iWorkflow.
 version_added: 2.4

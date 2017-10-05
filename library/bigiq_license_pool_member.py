@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigiq_license_pool_member
-short_description: __SHORT_DESCRIPTION__.
+short_description: __SHORT_DESCRIPTION__
 description:
   - __LONG DESCRIPTION__.
 version_added: "2.4"

@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_managed_device
-short_description: Manipulate cloud managed devices in iWorkflow.
+short_description: Manipulate cloud managed devices in iWorkflow
 description:
   - Manipulate cloud managed devices in iWorkflow.
 version_added: 2.4

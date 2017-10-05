@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_license_pool
-short_description: Manage license pools in iWorkflow.
+short_description: Manage license pools in iWorkflow
 description:
   - Manage license pools in iWorkflow.
 version_added: 2.4

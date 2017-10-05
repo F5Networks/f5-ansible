@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigiq_license_pool
-short_description: Manages license pools of different types.
+short_description: Manages license pools of different types
 description:
   - Manages license pools of different types. The type of the license pool
     determines the arguments that are provided to this module. BIG-IQ supports

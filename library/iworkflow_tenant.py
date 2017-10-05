@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_tenant
-short_description: Manage tenants in iWorkflow.
+short_description: Manage tenants in iWorkflow
 description:
   - Manage tenants in iWorkflow.
 version_added: 2.4

@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_license_pool_member
-short_description: Manages members in a license pool.
+short_description: Manages members in a license pool
 description:
   - Manages members in a license pool. By adding and removing members from
     a pool, you will implicitly be licensing and un-licensing them.

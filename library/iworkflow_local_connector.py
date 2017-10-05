@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_bigip_connector
-short_description: Manipulate cloud BIG-IP connectors in iWorkflow.
+short_description: Manipulate cloud BIG-IP connectors in iWorkflow
 description:
   - Manipulate cloud BIG-IP connectors in iWorkflow.
 version_added: 2.4

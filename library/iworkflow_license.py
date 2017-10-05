@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_license
-short_description: Manage license of iWorkflow itself.
+short_description: Manage license of iWorkflow itself
 description:
   - Manage license of iWorkflow itself.
 version_added: 2.4

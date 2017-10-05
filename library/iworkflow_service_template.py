@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: iworkflow_service_template
-short_description: Manages Service Templates on iWorkflow.
+short_description: Manages Service Templates on iWorkflow
 description:
   - Manages Service Templates on iWorkflow. Service templates are created
     by the iWorkflow administrator and are consumed by iWorkflow tenants

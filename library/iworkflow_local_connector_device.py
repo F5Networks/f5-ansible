@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_local_connector_device
-short_description: Manipulate cloud local connector devices in iWorkflow.
+short_description: Manipulate cloud local connector devices in iWorkflow
 description:
   - Manipulate cloud local connector devices in iWorkflow.
 version_added: 2.4

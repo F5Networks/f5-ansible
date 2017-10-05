@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: iworkflow_user
-short_description: Manage users in iWorkflow.
+short_description: Manage users in iWorkflow
 description:
   - Manage users in iWorkflow.
 version_added: 2.4

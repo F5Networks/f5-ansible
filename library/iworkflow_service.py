@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: iworkflow_service
-short_description: Manages L4/L7 Services on iWorkflow.
+short_description: Manages L4/L7 Services on iWorkflow
 description:
   - Manages L4/L7 Service on iWorkflow. Services can only be created and
     otherwise managed by tenants on iWorkflow. Since all of the F5 modules
