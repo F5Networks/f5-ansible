@@ -136,6 +136,52 @@ EXAMPLES = '''
   failed_when:
     - not result|success
     - "'referenced by one or more applications' not in result.msg"
+
+- name: Configure a service using more complicated parameters
+  bigip_iapp_service:
+    name: tests
+    template: web_frontends
+    password: admin
+    server: "{{ inventory_hostname }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+    state: present
+    user: admin
+    parameters:
+      variables:
+        - name: var__vs_address
+          value: 1.1.1.1
+        - name: pm__apache_servers_for_http
+          value: 2.2.2.1:80
+        - name: pm__apache_servers_for_https
+          value: 2.2.2.2:80
+      lists:
+        - name: irules__irules
+          value:
+            - foo
+            - bar
+      tables:
+        - name: basic__snatpool_members
+        - name: net__snatpool_members
+        - name: optimizations__hosts
+        - name: pool__hosts
+          columnNames:
+            - name
+          rows:
+            - row:
+                - internal.company.bar
+        - name: pool__members
+          columnNames:
+            - addr
+            - port
+            - connection_limit
+          rows:
+            - row:
+                - ""
+                - 80
+                - 0
+        - name: server_pools__servers
+  delegate_to: localhost
 '''
 
 RETURN = '''
