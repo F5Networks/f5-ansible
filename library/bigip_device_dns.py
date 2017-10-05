@@ -8,7 +8,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_dns
 short_description: Manage BIG-IP device DNS settings
@@ -61,7 +61,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set the DNS settings on the BIG-IP
   bigip_device_dns:
       name_servers:
@@ -77,7 +77,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 cache:
     description: The new value of the DNS caching
     returned: changed

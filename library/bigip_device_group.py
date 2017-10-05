@@ -8,7 +8,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_group
 short_description: Manage device groups on a BIG-IP
@@ -91,7 +91,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create a sync-only device group
   bigip_device_group:
       name: "foo-group"
@@ -112,7 +112,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 save_on_auto_sync:
     description: The new save_on_auto_sync value of the device group.
     returned: changed

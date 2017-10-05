@@ -8,7 +8,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_dns_zone
 short_description: Manages DNS zones on a BIG-IP
@@ -57,7 +57,7 @@ author:
     - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add a view, named "internal", to organization.com zone
   module: bigip_view:
     username: admin

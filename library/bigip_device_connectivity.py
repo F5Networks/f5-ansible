@@ -8,7 +8,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_device_connectivity
 short_description: Manages device IP configuration settings for HA on a BIG-IP
@@ -76,7 +76,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Configure device connectivity for standard HA pair
   bigip_device_connectivity:
       config_sync_ip: "10.1.30.1"
@@ -89,7 +89,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 changed:
     description: Denotes if the F5 configuration was updated.
     returned: always
