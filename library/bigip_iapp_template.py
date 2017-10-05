@@ -1,33 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
 module: bigip_iapp_template
-short_description: Manages TCL iApp templates on a BIG-IP.
+short_description: Manages TCL iApp templates on a BIG-IP
 description:
   - Manages TCL iApp templates on a BIG-IP. This module will allow you to
     deploy iApp templates to the BIG-IP and manage their lifecycle. The
@@ -76,8 +60,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -89,30 +72,30 @@ author:
 EXAMPLES = '''
 - name: Add the iApp contained in template iapp.tmpl
   bigip_iapp_template:
-      content: "{{ lookup('template', 'iapp.tmpl') }}"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    content: "{{ lookup('template', 'iapp.tmpl') }}"
+    password: "secret"
+    server: "lb.mydomain.com"
+    state: "present"
+    user: "admin"
   delegate_to: localhost
 
 - name: Update a template in place
   bigip_iapp_template:
-      content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+    password: "secret"
+    server: "lb.mydomain.com"
+    state: "present"
+    user: "admin"
   delegate_to: localhost
 
 - name: Update a template in place that has existing services created from it.
   bigip_iapp_template:
-      content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-      force: yes
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+    force: yes
+    password: "secret"
+    server: "lb.mydomain.com"
+    state: "present"
+    user: "admin"
   delegate_to: localhost
 '''
 

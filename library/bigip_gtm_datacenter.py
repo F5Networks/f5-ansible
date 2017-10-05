@@ -1,30 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_datacenter
 short_description: Manage Datacenter configuration in BIG-IP
@@ -38,21 +22,15 @@ options:
   contact:
     description:
       - The name of the contact for the data center.
-    required: False
-    default: None
   description:
     description:
       - The description of the data center.
-    required: False
-    default: None
   enabled:
     description:
       - Whether the data center should be enabled. At least one of C(state) and
         C(enabled) are required.
       - Deprecated in 2.4. Use C(state) and either C(enabled) or C(disabled)
         instead.
-    required: False
-    default: None
     deprecated:
       - Deprecated in 2.4. Use C(state) and either C(enabled) or C(disabled)
         instead.
@@ -62,8 +40,6 @@ options:
   location:
     description:
       - The location of the data center.
-    required: False
-    default: None
   name:
     description:
       - The name of the data center.
@@ -93,38 +69,38 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create data center "New York"
   bigip_gtm_datacenter:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "New York"
-      location: "222 West 23rd"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: New York
+    location: 222 West 23rd
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 contact:
-    description: The contact that was set on the datacenter.
-    returned: changed
-    type: string
-    sample: "admin@root.local"
+  description: The contact that was set on the datacenter.
+  returned: changed
+  type: string
+  sample: admin@root.local
 description:
-    description: The description that was set for the datacenter.
-    returned: changed
-    type: string
-    sample: "Datacenter in NYC"
+  description: The description that was set for the datacenter.
+  returned: changed
+  type: string
+  sample: Datacenter in NYC
 enabled:
-    description: Whether the datacenter is enabled or not
-    returned: changed
-    type: bool
-    sample: true
+  description: Whether the datacenter is enabled or not
+  returned: changed
+  type: bool
+  sample: true
 location:
-    description: The location that is set for the datacenter.
-    returned: changed
-    type: string
-    sample: "222 West 23rd"
+  description: The location that is set for the datacenter.
+  returned: changed
+  type: string
+  sample: 222 West 23rd
 '''
 
 from ansible.module_utils.parsing.convert_bool import BOOLEANS

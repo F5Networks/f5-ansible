@@ -1,86 +1,65 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# (c) 2015, Michael Perzel
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# Copyright (c) 2015 Michael Perzel
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
 module: bigip_gtm_virtual_server
-short_description: "Manages F5 BIG-IP GTM virtual servers"
+short_description: Manages F5 BIG-IP GTM virtual servers
 description:
-    - "Manages F5 BIG-IP GTM virtual servers"
+  - Manages F5 BIG-IP GTM virtual servers.
 version_added: "2.2"
-author:
-    - Michael Perzel (@perzizzle)
-    - Tim Rupp (@caphrim007)
-notes:
-    - "Requires BIG-IP software version >= 11.4"
-    - "F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
-    - "Best run as a local_action in your playbook"
-    - "Tested with manager and above account privilege level"
-
-requirements:
-    - bigsuds
 options:
-    state:
-        description:
-            - Virtual server state
-        required: false
-        default: present
-        choices: ['present', 'absent','enabled','disabled']
-    virtual_server_name:
-        description:
-            - Virtual server name
-        required: True
-    virtual_server_server:
-        description:
-            - Virtual server server
-        required: true
-    host:
-        description:
-            - Virtual server host
-        required: false
-        default: None
-        aliases: ['address']
-    port:
-        description:
-            - Virtual server port
-        required: false
-        default: None
+  state:
+    description:
+      - Virtual server state.
+    default: present
+    choices: ['present', 'absent','enabled','disabled']
+  virtual_server_name:
+    description:
+      - Virtual server name.
+    required: True
+  virtual_server_server:
+    description:
+      - Virtual server server.
+    required: true
+  host:
+    description:
+      - Virtual server host.
+    aliases: ['address']
+  port:
+    description:
+      - Virtual server port.
 extends_documentation_fragment: f5
+notes:
+  - Requires BIG-IP software version >= 11.4
+  - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
+  - Best run as a local_action in your playbook
+  - Tested with manager and above account privilege level
+requirements:
+  - bigsuds
+author:
+  - Michael Perzel (@perzizzle)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = '''
-  - name: Enable virtual server
-    local_action: >
-      bigip_gtm_virtual_server
-      server=192.0.2.1
-      user=admin
-      password=mysecret
-      virtual_server_name=myname
-      virtual_server_server=myserver
-      state=enabled
+- name: Enable virtual server
+  bigip_gtm_virtual_server:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    virtual_server_name: myname
+    virtual_server_server: myserver
+    state: enabled
+  delegate_to: localhost
 '''
 
 RETURN = '''# '''

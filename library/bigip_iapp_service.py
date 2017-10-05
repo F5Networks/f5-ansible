@@ -1,33 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
 module: bigip_iapp_service
-short_description: Manages TCL iApp services on a BIG-IP.
+short_description: Manages TCL iApp services on a BIG-IP
 description:
   - Manages TCL iApp services on a BIG-IP.
 version_added: "2.4"
@@ -55,7 +39,7 @@ options:
         the iApp template that underlies the service has been updated in-place.
         This option is equivalent to re-configuring the iApp if that template
         has changed.
-    default: False
+    default: no
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
@@ -67,8 +51,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -85,70 +68,70 @@ author:
 EXAMPLES = '''
 - name: Create HTTP iApp service from iApp template
   bigip_iapp_service:
-      name: "foo-service"
-      template: "f5.http"
-      parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    name: foo-service
+    template: f5.http
+    parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Upgrade foo-service to v1.2.0rc4 of the f5.http template
   bigip_iapp_service:
-      name: "foo-service"
-      template: "f5.http.v1.2.0rc4"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    name: foo-service
+    template: f5.http.v1.2.0rc4
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Configure a service using parameters in YAML
   bigip_iapp_service:
-      name: "tests"
-      template: "web_frontends"
-      password: "admin"
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "{{ validate_certs }}"
-      state: "present"
-      user: "admin"
-      parameters:
-          variables:
-              - name: "var__vs_address"
-                value: "1.1.1.1"
-              - name: "pm__apache_servers_for_http"
-                value: "2.2.2.1:80"
-              - name: "pm__apache_servers_for_https"
-                value: "2.2.2.2:80"
+    name: tests
+    template: web_frontends
+    password: admin
+    server: "{{ inventory_hostname }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+    state: present
+    user: admin
+    parameters:
+      variables:
+        - name: var__vs_address
+          value: 1.1.1.1
+        - name: pm__apache_servers_for_http
+          value: 2.2.2.1:80
+        - name: pm__apache_servers_for_https
+          value: 2.2.2.2:80
   delegate_to: localhost
 
 - name: Re-configure a service whose underlying iApp was updated in place
   bigip_iapp_service:
-      name: "tests"
-      template: "web_frontends"
-      password: "admin"
-      force: yes
-      server: "{{ inventory_hostname }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "{{ validate_certs }}"
-      state: "present"
-      user: "admin"
-      parameters:
-          variables:
-              - name: "var__vs_address"
-                value: "1.1.1.1"
-              - name: "pm__apache_servers_for_http"
-                value: "2.2.2.1:80"
-              - name: "pm__apache_servers_for_https"
-                value: "2.2.2.2:80"
+    name: tests
+    template: web_frontends
+    password: admin
+    force: yes
+    server: "{{ inventory_hostname }}"
+    server_port: "{{ bigip_port }}"
+    validate_certs: "{{ validate_certs }}"
+    state: present
+    user: admin
+    parameters:
+      variables:
+        - name: var__vs_address
+          value: 1.1.1.1
+        - name: pm__apache_servers_for_http
+          value: 2.2.2.1:80
+        - name: pm__apache_servers_for_https
+          value: 2.2.2.2:80
   delegate_to: localhost
 
 - name: Try to remove the iApp template before the associated Service is removed
   bigip_iapp_template:
-      name: "web_frontends"
-      state: "absent"
+    name: web_frontends
+    state: absent
   register: result
   failed_when:
     - not result|success
