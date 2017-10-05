@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: bigip_remote_syslog
-short_description: Manipulate remote syslog settings on a BIG-IP.
+short_description: Manipulate remote syslog settings on a BIG-IP
 description:
   - Manipulate remote syslog settings on a BIG-IP.
 version_added: 2.5

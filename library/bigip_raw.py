@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_raw
-short_description: Run raw commands on F5 devices.
+short_description: Run raw commands on F5 devices
 description:
   - Sends an arbitrary command to a BIG-IP node and returns the results
     read from the device. This module includes an argument that will cause
