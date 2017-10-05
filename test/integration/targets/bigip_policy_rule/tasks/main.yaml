@@ -1,0 +1,31 @@
+---
+
+- name: Create published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: present
+  register: result
+
+- name: Assert Create a published policy
+  assert:
+    that:
+      - result|changed
+
+- name: Create draft policy
+  bigip_policy:
+    name: "{{ policy_name2 }}"
+    state: draft
+  register: result
+
+- name: Assert Create draft policy
+  assert:
+    that:
+      - result|changed
+
+- name: Remove policies
+  bigip_policy:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ policy_name1 }}"
+    - "{{ policy_name2 }}"
