@@ -37,8 +37,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 try:
     from library.bigip_policy import Parameters
     from library.bigip_policy import ModuleManager
-    from library.bigip_policy import SimpleTrafficPolicyManager
-    from library.bigip_policy import ComplexTrafficPolicyManager
+    from library.bigip_policy import SimpleManager
+    from library.bigip_policy import ComplexManager
     from library.bigip_policy import ArgumentSpec
 except ImportError:
     try:
@@ -172,7 +172,7 @@ class TestSimpleTrafficPolicyManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = SimpleTrafficPolicyManager(client)
+        tm = SimpleManager(client)
         tm.exists = Mock(return_value=False)
         tm.create_on_device = Mock(return_value=True)
 
