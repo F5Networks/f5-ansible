@@ -1,28 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2016 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.0'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
 DOCUMENTATION = '''
 ---
@@ -35,30 +19,29 @@ version_added: "2.2"
 options:
   server:
     description:
-      - BIG-IP host
-    required: true
+      - BIG-IP host.
+    required: True
   user:
     description:
-      - BIG-IP username
-    required: true
+      - BIG-IP username.
+    required: True
     aliases:
       - username
   password:
     description:
-      - BIG-IP password
-    required: true
+      - BIG-IP password.
+    required: True
   zone:
     description:
-      - The name of the zone
-    required: true
+      - The name of the zone.
+    required: True
   options:
     description:
-      - A sequence of options for the view
+      - A sequence of options for the view.
   state:
     description:
       - Whether the record should exist.  When C(absent), removes
         the record.
-    required: false
     default: present
     choices:
       - present
@@ -76,17 +59,16 @@ author:
 
 EXAMPLES = '''
 - name: Add a view, named "internal", to organization.com zone
-  local_action:
-      module: bigip_view
-      username: 'admin'
-      password: 'admin'
-      hostname: 'bigip.organization.com'
-      zone_names:
-          - 'organization.com'
-      state: 'present'
-      options:
-          - domain_name: elliot.organization.com
-          ip_address: 10.1.1.1
+  module: bigip_view:
+    username: admin
+    password: secret
+    server: lb.mydomain.com
+    zone_names:
+      - organization.com
+    state: present
+    options:
+      - domain_name: elliot.organization.com
+        ip_address: 10.1.1.1
 '''
 
 from distutils.version import StrictVersion
