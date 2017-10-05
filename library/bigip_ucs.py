@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_ucs
-short_description: Manage upload, installation and removal of UCS files.
+short_description: Manage upload, installation and removal of UCS files
 description:
    - Manage upload, installation and removal of UCS files.
 version_added: "2.4"

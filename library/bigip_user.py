@@ -27,7 +27,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = '''
 ---
 module: bigip_user
-short_description: Manage user accounts and user attributes on a BIG-IP.
+short_description: Manage user accounts and user attributes on a BIG-IP
 description:
   - Manage user accounts and user attributes on a BIG-IP. Typically this
     module operates only on the REST API users and not the CLI users. There

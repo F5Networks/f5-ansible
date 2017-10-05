@@ -26,7 +26,7 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = '''
 module: bigip_static_route
-short_description: Manipulate static routes on a BIG-IP.
+short_description: Manipulate static routes on a BIG-IP
 description:
   - Manipulate static routes on a BIG-IP.
 version_added: 2.3
