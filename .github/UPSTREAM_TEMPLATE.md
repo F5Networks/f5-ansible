@@ -106,6 +106,7 @@ This must be done inside of Ansible's source tree. (`cd local/ansible`)
 
 #### Upstream vendor, sanity related
 - [ ] Command `bash test/ansible/sanity/integration-test-idempotent-names.sh` passes
+- [ ] Command `./test/ansible/sanity/short-description-ends-with-period.py` passes
 
 ##### SUMMARY
 <!--- Explain the problem briefly -->
