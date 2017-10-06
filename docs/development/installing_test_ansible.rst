@@ -1,1 +1,0 @@
-pip install git+file:///path/to/your/git/repo@mybranch

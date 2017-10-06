@@ -31,7 +31,7 @@ available for you to use to set these directories up automatically.
 
 .. code-block:: shell
 
-    $> ./scripts/stub-new-module.py stub --module MODULE_NAME
+    $> ./devtools/bin/stubber.py --module MODULE_NAME stub
 
 When it finishes running, you will have the necessary files available to
 begin working on your module.
@@ -65,12 +65,11 @@ Let's look at the code that we will add to our module.
    short_description: Manage the SSHD settings of a BIG-IP
    description:
      - Manage the SSHD settings of a BIG-IP
-   version_added: "2.4"
+   version_added: "2.5"
    options:
      banner:
        description:
          - Whether to enable the banner or not
-       required: false
        choices:
          - enabled
          - disabled
@@ -78,12 +77,10 @@ Let's look at the code that we will add to our module.
        description:
          - Specifies the text to include on the pre-login banner that displays
            when a user attempts to login to the system using SSH
-       required: false
      inactivity_timeout:
        description:
          - Specifies the number of seconds before inactivity causes an SSH
            session to log out
-       required: false
      log_level:
        description:
          - Specifies the minimum SSHD message level to include in the system log
@@ -101,11 +98,9 @@ Let's look at the code that we will add to our module.
        description:
          - Specifies, when checked C(enabled), that the system accepts SSH
            communications
-       required: false
      port:
        description:
          - Port that you want the SSH daemon to run on
-       required: false
    notes:
      - Requires the f5-sdk Python package on the host This is as easy as pip
        install f5-sdk
@@ -138,6 +133,12 @@ The keys that one commonly finds are
     `server_port` and `validate_certs` into your documentation. It should
     be used for all modules.
 
+Additionally, you should take note that Ansible upstream has several rules for
+their documentation blocks. At the time of this writing, the rules include
+
+* If a parameter is *not* required, **do not** include a `required: false` field
+  in the parameter's `DOCUMENTATION` section.
+
 The EXAMPLES variable
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -156,28 +157,28 @@ For this module, our ``EXAMPLES`` variable looks like this.
    EXAMPLES = '''
    - name: Set the banner for the SSHD service from a string
      bigip_device_sshd:
-         banner: "enabled"
-         banner_text: "banner text goes here"
-         password: "secret"
-         server: "lb.mydomain.com"
-         user: "admin"
+       banner: enabled
+       banner_text: banner text goes here
+       password: secret
+       server: lb.mydomain.com
+       user: admin
      delegate_to: localhost
 
    - name: Set the banner for the SSHD service from a file
      bigip_device_sshd:
-         banner: "enabled"
-         banner_text: "{{ lookup('file', '/path/to/file') }}"
-         password: "secret"
-         server: "lb.mydomain.com"
-         user: "admin"
+       banner: enabled
+       banner_text: "{{ lookup('file', '/path/to/file') }}"
+       password: secret
+       server: lb.mydomain.com
+       user: admin
      delegate_to: localhost
 
    - name: Set the SSHD service to run on port 2222
      bigip_device_sshd:
-         password: "secret"
-         port: 2222
-         server: "lb.mydomain.com"
-         user: "admin"
+       password: secret
+       port: 2222
+       server: lb.mydomain.com
+       user: admin
      delegate_to: localhost
    '''
 
@@ -230,70 +231,59 @@ The import block
 
 The next section in our code is the block of code where our `import`s happen.
 
-This code usually just involves importing the `module_util` helper library, but
+This code usually just involves importing the `module_util` helper libraries, but
 may also include imports of other libraries if you are working with legacy code.
 
 For this module our import block is the following
 
 .. code-block:: python
 
-   from ansible.module_utils.f5_utils import *
+   from ansible.module_utils.f5_utils import AnsibleF5Client
+   from ansible.module_utils.f5_utils import AnsibleF5Parameters
+   from ansible.module_utils.f5_utils import HAS_F5SDK
+   from ansible.module_utils.f5_utils import F5ModuleError
+   from ansible.module_utils.f5_utils import iteritems
+   from ansible.module_utils.f5_utils import defaultdict
 
-Module class
-~~~~~~~~~~~~
+   try:
+       from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+   except ImportError:
+       HAS_F5SDK = False
 
-The next block of code is the skeleton for our module's class. We encapsulate
-all of our module's code inside a class for easy testing as well as for code
-re-use outside of this module.
+In 90% of cases, this code is boilerplate and can be ignored by the developer
+when writing a module. `stubber.py` takes care of this for you.
 
-For example, there are cases where third-parties want to re-use this code
-outside of Ansible.
+ModuleManager class
+~~~~~~~~~~~~~~~~~~~
 
-The module class is where the specifics of your code will be. There are,
-however, a number of commonalities across all modules. The code outlined
-below includes those commonalities and leaves the implementation details
-specific to the module to your interpretation.
+The next block of code is the skeleton for our module's `Manager` class. We
+encapsulate most of our module's steering code inside this class. It acts as
+the traffic cop, determining which path the module should take to reach the
+desired outcome.
 
-.. code-block:: python
+The `Manager` class is where the specifics of your code will be. The `stubber`
+will create a generic version of this for you. It is your responsibility to
+change the API calls as needed.
 
-   class BigIpDeviceSshd(object):
-       def __init__(self, *args, **kwargs):
-           if not HAS_F5SDK:
-               raise F5ModuleError("The python f5-sdk module is required")
+Below are examples of the different versions of the design standards that
+have existed at one point or another
 
-           self.params = kwargs
-           self.api = ManagementRoot(kwargs['server'],
-                                     kwargs['user'],
-                                     kwargs['password'],
-                                     port=kwargs['server_port'])
+* `version 3.3 (proposed)`_
+* `version 3.2 (current)`_
+* `version 3.1`_
+* `version 3`_
+* `version 2`_
+* `version 1`_
 
-       def present(self):
-           pass
+.. note::
 
-       def absent(self):
-           pass
+   The ModuleManager class will change over time as our design standards
+   change. The above examples are used for historical reference and training.
 
-       def update(self):
-           pass
+For the implementation specifics, refer to the existing module.
 
-       def read(self):
-           pass
-
-       def flush(self):
-           pass
-
-For modules where settings are actively added or removed from the system,
-the modules **must** provide ``present`` and ``absent`` methods respectively.
-
-Additionally, modules usually include an ``update`` method for those cases
-where ``present`` is being performed, but the value already exists and only
-an attribute of the setting is being changed.
-
-The ``flush`` method exists to encapsulate the running of the ``absent``,
-``present``, and ``update`` modules and should include the appropriate
-checks of the ``state`` parameter to decide which method to call.
-
-For the implementation specifics, you can refer to the existing module.
+A deep dive into the major differences between the different versions of
+design standards `can be found here`_.
 
 Connecting to Ansible
 ---------------------
@@ -379,21 +369,6 @@ exception.
    except F5ModuleError as e:
        module.fail_json(msg=str(e))
 
-Common imports
-~~~~~~~~~~~~~~
-
-The following imports are common to all of the F5 modules. The ``f5`` import
-provides you with the helper functions that create the ``argument_spec``.
-
-The ``basic`` import is replaced by Ansible itself and provides helper
-functions and classes used to create the ``Module`` object (among other
-things).
-
-.. code-block:: python
-
-   from ansible.module_utils.basic import *
-   from ansible.module_utils.f5_utils import *
-
 Common running
 ~~~~~~~~~~~~~~
 
@@ -475,11 +450,11 @@ module.
 First, let's look at the layout of a set of tests. A test is composed of
 a role whose name matches the name of the module that is being tested.
 
-This role is placed in the `roles/` directory.
+This role is placed in the `tests/integration/targets/` directory.
 
 So, for our example, our test role looks like this.
 
-   * `roles/MODULE_NAME/`
+   * `test/integration/targets/MODULE_NAME/`
 
 Inside of this role is everything that you would associate with a normal
 role in ansible.
@@ -500,8 +475,10 @@ Test content
 
 The test itself will follow the pattern below.
 
-  - perform some operation with the module
-  - assert a value
+  - Perform some operation with the module
+  - Assert a change (and optionally other values)
+  - Perform the same operation again (identical)
+  - Assert no change
 
 All of the tests work like this, and it is a decent smoke test for all modules
 until such time as we take the testing further.
@@ -526,7 +503,8 @@ Here is an example of a test from the `bigip_device_sshd` module.
 As you can see, pretty straightforward.
 
 We use the module and then we check that the result we `register` was
-changed.
+changed. Tests for idempotence (the last two bullets above) are shown in
+the section below.
 
 Test variables
 --------------
@@ -588,6 +566,29 @@ So, for our example, that `make` command would be.
 
 This command will run the module functional tests for you in debug mode.
 
+You may optionally call the tests with the literal `ansible-playbook` command
+if you need to do things like,
+
+* stepping (`--step`)
+* starting at a particular task (`--start-at-task`)
+* running tasks by tag name (`--tags issue-00239`)
+
+To run the tests without `make`, first, change to the following directory.
+
+* `test/integration`
+
+Next, find the playbook that matches the module you wish to test. Using this
+playbook, run `ansible-playbook` as you normally would. A hosts file is
+included for you in the working directory you are in.
+
+An example command might be,
+
+.. code-block:: bash
+
+   ansible-playbook -i inventory/hosts bigip_device_sshd.yaml
+
+This is the most flexible option during debugging.
+
 Including supplementary information
 -----------------------------------
 
@@ -609,8 +610,23 @@ needed to re-create any of the inputs to your tests in case they need to.
 Other testing notes
 -------------------
 
-When writing your tests, there is no need to be concerned about "undoing"
-what you previously have done to the test environment.
+When writing your tests, you should concern yourself with "undoing" what you
+previously have done to the test environment.
 
-Between the running of the tests, we destroy the VMs that ran the test
-so for each running of the test you can assume a pristine environment.
+Test testing environment (at the time of this writing) boots harnesses for
+each suite of tests. That means that all tests are run on the same harness.
+
+Therefore, any changes you may make in one of the integration tests might
+accidentally be used as a basis in subsequent tests. You do not want this
+because it makes using additional the `ansible-playbook` arguments specified
+above exceedingly difficult.
+
+Therefore, please cleanup after yourself. Since you need to test the `absent`
+case in most cases, this is a good opportunity to do that.
+
+.. _version 1: https://github.com/F5Networks/f5-ansible/blob/b0d2afa1ad0b5bef29526477bb1ca0cdfd74ff74/library/_bigip_node.py
+.. _version 2: https://github.com/F5Networks/f5-ansible/blob/b6a502034e21d1d7039ec0cbb642e22259d646fc/library/bigip_routedomain.py
+.. _version 3: https://github.com/F5Networks/f5-ansible/blob/b81304b75d0d3a4d406f20e121ac3c3285168c2d/library/bigip_device_sshd.py
+.. _version 3.1: https://github.com/F5Networks/f5-ansible/blob/f6ae5eecbcffdf0008905830dbefb4044f849a14/library/bigip_monitor_tcp_echo.py
+.. _version 3.2 (current): https://github.com/F5Networks/f5-ansible/blob/8505ed1a245673aa856eb88baad9896bbe87994b/library/bigip_pool.py
+.. _version 3.3 (proposed):
