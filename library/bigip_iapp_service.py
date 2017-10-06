@@ -177,7 +177,7 @@ EXAMPLES = '''
             - connection_limit
           rows:
             - row:
-                - ""
+                - "none"
                 - 80
                 - 0
         - name: server_pools__servers
