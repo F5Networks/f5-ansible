@@ -8,7 +8,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_facts
 short_description: Collect facts from F5 BIG-IP GTM devices
@@ -30,8 +30,8 @@ options:
         the resource. Valid filters are anything that can be provided to
         Python's C(re) module.
 notes:
-   - Requires the f5-sdk Python package on the host. This is as easy as
-     pip install f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as
+    pip install f5-sdk
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk
@@ -39,132 +39,132 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Get pool facts
   bigip_gtm_facts:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      include: "pool"
-      filter: "my_pool"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    include: pool
+    filter: my_pool
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 wide_ip:
-    description:
-        Contains the lb method for the wide ip and the pools
-        that are within the wide ip.
-    returned: changed
-    type: dict
-    sample:
-        wide_ip:
-            - enabled: "True"
-              failure_rcode: "noerror"
-              failure_rcode_response: "disabled"
-              failure_rcode_ttl: "0"
-              full_path: "/Common/foo.ok.com"
-              last_resort_pool: ""
-              minimal_response: "enabled"
-              name: "foo.ok.com"
+  description:
+    Contains the lb method for the wide ip and the pools
+    that are within the wide ip.
+  returned: changed
+  type: dict
+  sample:
+    wide_ip:
+      - enabled: "True"
+        failure_rcode: "noerror"
+        failure_rcode_response: "disabled"
+        failure_rcode_ttl: "0"
+        full_path: "/Common/foo.ok.com"
+        last_resort_pool: ""
+        minimal_response: "enabled"
+        name: "foo.ok.com"
+        partition: "Common"
+        persist_cidr_ipv4: "32"
+        persist_cidr_ipv6: "128"
+        persistence: "disabled"
+        pool_lb_mode: "round-robin"
+        pools:
+            - name: "d3qw"
+              order: "0"
               partition: "Common"
-              persist_cidr_ipv4: "32"
-              persist_cidr_ipv6: "128"
-              persistence: "disabled"
-              pool_lb_mode: "round-robin"
-              pools:
-                  - name: "d3qw"
-                    order: "0"
-                    partition: "Common"
-                    ratio: "1"
-              ttl_persistence: "3600"
-              type: "naptr"
+              ratio: "1"
+        ttl_persistence: "3600"
+        type: "naptr"
 pool:
-    description: Contains the pool object status and enabled status.
-    returned: changed
-    type: dict
-    sample:
-        pool:
-            - alternate_mode: "round-robin"
-              dynamic_ratio: "disabled"
-              enabled: "True"
-              fallback_mode: "return-to-dns"
-              full_path: "/Common/d3qw"
-              load_balancing_mode: "round-robin"
-              manual_resume: "disabled"
-              max_answers_returned: "1"
-              members:
-                  - disabled: "True"
-                    flags: "a"
-                    full_path: "ok3.com"
-                    member_order: "0"
-                    name: "ok3.com"
-                    order: "10"
-                    preference: "10"
-                    ratio: "1"
-                    service: "80"
-              name: "d3qw"
-              partition: "Common"
-              qos_hit_ratio: "5"
-              qos_hops: "0"
-              qos_kilobytes_second: "3"
-              qos_lcs: "30"
-              qos_packet_rate: "1"
-              qos_rtt: "50"
-              qos_topology: "0"
-              qos_vs_capacity: "0"
-              qos_vs_score: "0"
-              ttl: "30"
-              type: "naptr"
-              verify_member_availability: "disabled"
+  description: Contains the pool object status and enabled status.
+  returned: changed
+  type: dict
+  sample:
+    pool:
+      - alternate_mode: "round-robin"
+        dynamic_ratio: "disabled"
+        enabled: "True"
+        fallback_mode: "return-to-dns"
+        full_path: "/Common/d3qw"
+        load_balancing_mode: "round-robin"
+        manual_resume: "disabled"
+        max_answers_returned: "1"
+        members:
+          - disabled: "True"
+            flags: "a"
+            full_path: "ok3.com"
+            member_order: "0"
+            name: "ok3.com"
+            order: "10"
+            preference: "10"
+            ratio: "1"
+            service: "80"
+        name: "d3qw"
+        partition: "Common"
+        qos_hit_ratio: "5"
+        qos_hops: "0"
+        qos_kilobytes_second: "3"
+        qos_lcs: "30"
+        qos_packet_rate: "1"
+        qos_rtt: "50"
+        qos_topology: "0"
+        qos_vs_capacity: "0"
+        qos_vs_score: "0"
+        ttl: "30"
+        type: "naptr"
+        verify_member_availability: "disabled"
 virtual_server:
-    description:
-        Contains the virtual server enabled and availability
-        status, and address
-    returned: changed
-    type: dict
-    sample:
-        virtual_server:
-            - addresses:
-                  - device_name: "/Common/qweqwe"
-                    name: "10.10.10.10"
-                    translation: "none"
-              datacenter: "/Common/xfxgh"
-              enabled: "True"
-              expose_route_domains: "no"
-              full_path: "/Common/qweqwe"
-              iq_allow_path: "yes"
-              iq_allow_service_check: "yes"
-              iq_allow_snmp: "yes"
-              limit_cpu_usage: "0"
-              limit_cpu_usage_status: "disabled"
-              limit_max_bps: "0"
-              limit_max_bps_status: "disabled"
-              limit_max_connections: "0"
-              limit_max_connections_status: "disabled"
-              limit_max_pps: "0"
-              limit_max_pps_status: "disabled"
-              limit_mem_avail: "0"
-              limit_mem_avail_status: "disabled"
-              link_discovery: "disabled"
-              monitor: "/Common/bigip "
-              name: "qweqwe"
-              partition: "Common"
-              product: "single-bigip"
-              virtual_server_discovery: "disabled"
-              virtual_servers:
-                  - destination: "10.10.10.10:0"
-                    enabled: "True"
-                    full_path: "jsdfhsd"
-                    limit_max_bps: "0"
-                    limit_max_bps_status: "disabled"
-                    limit_max_connections: "0"
-                    limit_max_connections_status: "disabled"
-                    limit_max_pps: "0"
-                    limit_max_pps_status: "disabled"
-                    name: "jsdfhsd"
-                    translation_address: "none"
-                    translation_port: "0"
+  description:
+    Contains the virtual server enabled and availability
+    status, and address
+  returned: changed
+  type: dict
+  sample:
+    virtual_server:
+      - addresses:
+          - device_name: "/Common/qweqwe"
+            name: "10.10.10.10"
+            translation: "none"
+        datacenter: "/Common/xfxgh"
+        enabled: "True"
+        expose_route_domains: "no"
+        full_path: "/Common/qweqwe"
+        iq_allow_path: "yes"
+        iq_allow_service_check: "yes"
+        iq_allow_snmp: "yes"
+        limit_cpu_usage: "0"
+        limit_cpu_usage_status: "disabled"
+        limit_max_bps: "0"
+        limit_max_bps_status: "disabled"
+        limit_max_connections: "0"
+        limit_max_connections_status: "disabled"
+        limit_max_pps: "0"
+        limit_max_pps_status: "disabled"
+        limit_mem_avail: "0"
+        limit_mem_avail_status: "disabled"
+        link_discovery: "disabled"
+        monitor: "/Common/bigip "
+        name: "qweqwe"
+        partition: "Common"
+        product: "single-bigip"
+        virtual_server_discovery: "disabled"
+        virtual_servers:
+          - destination: "10.10.10.10:0"
+            enabled: "True"
+            full_path: "jsdfhsd"
+            limit_max_bps: "0"
+            limit_max_bps_status: "disabled"
+            limit_max_connections: "0"
+            limit_max_connections_status: "disabled"
+            limit_max_pps: "0"
+            limit_max_pps_status: "disabled"
+            name: "jsdfhsd"
+            translation_address: "none"
+            translation_port: "0"
 '''
 
 try:
