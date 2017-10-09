@@ -173,6 +173,14 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
+try:
+    import bigsuds
+except ImportError:
+    pass  # Handled by f5_utils.bigsuds_found
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.f5_utils import bigip_api, bigsuds_found, f5_argument_spec, fq_name
+
 
 def pool_exists(api, pool):
     # hack to determine if pool exists
@@ -367,6 +375,7 @@ def get_member_monitor_status(api, pool, address, port):
 
 
 def main():
+    result = {}
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
@@ -388,6 +397,9 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True
     )
+
+    if not bigsuds_found:
+        module.fail_json(msg="the python bigsuds module is required")
 
     if module.params['validate_certs']:
         import ssl
@@ -506,8 +518,6 @@ def main():
 
     module.exit_json(**result)
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
