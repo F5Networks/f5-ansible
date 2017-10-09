@@ -41,6 +41,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.napoleon'
 ]
 
 autodoc_default_flags = ['inherited-members', 'show-inheritance']
