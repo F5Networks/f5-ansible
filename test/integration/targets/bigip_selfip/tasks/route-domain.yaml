@@ -1,6 +1,6 @@
 ---
 
-- include: setup-route-domain.yaml
+- import_tasks: setup-route-domain.yaml
 
 - name: Create Self IP, specify a Route Domain
   bigip_selfip:
@@ -54,4 +54,4 @@
       that:
           - not result|changed
 
-- include: teardown-route-domain.yaml
+- import_tasks: teardown-route-domain.yaml
