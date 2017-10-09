@@ -1,27 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
 
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
@@ -29,7 +19,7 @@ DOCUMENTATION = '''
 module: bigip_software
 short_description: Manage BIG-IP software versions and hotfixes
 description:
-   - Manage BIG-IP software versions and hotfixes
+   - Manage BIG-IP software versions and hotfixes.
 version_added: "2.4"
 options:
   force:
@@ -52,18 +42,18 @@ options:
         will be created. For example, if HD1.1 is currently active and no other
         volume exists, then the module will create HD1.2 and install the
         software. If volume name does not end with numeric character,
-        then add .1 to the current active volume name. When C(volume) is
+        then add C(.1) to the current active volume name. When C(volume) is
         specified, this option will be ignored.
   state:
     description:
+      - When C(present), ensures that the software is uploaded/downloaded.
       - When C(installed), ensures that the software is uploaded/downloaded
-        and installed on the system. The device is not, however, rebooted into
+        and installed on the system. The device is B(not) rebooted into
         the new software.
       - When C(activated), ensures that the software is uploaded/downloaded,
         installed, and the system is rebooted to the new software.
-      - When C(present), ensures that the software is uploaded/downloaded.
-      - When C(absent), only the uploaded/downloaded image
-        will be removed from the system.
+      - When C(absent), only the uploaded/downloaded image will be removed from
+        the system.
     default: activated
     choices:
       - absent
@@ -73,14 +63,14 @@ options:
   volume:
     description:
       - The volume to install the software and, optionally, the hotfix to. This
-        parameter is only required when the C(state) is either C(activated) or
+        parameter is only required when the C(state) is C(activated) or
         C(installed).
   software:
     description:
       - The path to the software (base image) to install. The parameter must be
-        provided if the C(state) is either C(installed) or C(activated).
-      - If C(remote_src) is used, this parameter will have to be a
-        C(HTTP) or C(HTTPS)link to the software image.
+        provided if the C(state) is either C(installed) or C(activated). If this
+        parameter begins with either C(http://) or C(https://), the path will be
+        assumed to be a remote source.
       - When providing link to the software ISO, if the ISO name is
         different than the one listed inside the C(software_md5sum) md5sum file.
         We will change it accordingly when saving the files on the device. This
@@ -91,9 +81,8 @@ options:
     description:
       - The path to an optional Hotfix to install. This parameter requires that
         the C(software) parameter be specified or the corresponding software
-        image exists on the unit.
-      - If C(remote_src) is used, this parameter will have to be a
-        C(HTTP) or C(HTTPS)link to the hotfix image.
+        image exists on the unit. If this parameter begins with either C(http://)
+        or C(https://), the path will be assumed to be a remote source.
       - When providing link to the hotfix ISO, if the ISO name
         is different than the one listed inside the C(hotfix_md5) md5sum file.
         We will change it accordingly while saving the files on the device.
@@ -104,51 +93,17 @@ options:
   software_md5sum:
     description:
       - The link to an MD5 sum file of the remote software ISO image,
-        it is required when  C(software) parameter is used and C(remote_src)
-        is selected.
+        it is required when C(software) parameter is used and that parameter is
+        a remote URL.
       - Parameter only used when and C(state) is C(installed), C(activated),
         or C(present).
   hotfix_md5sum:
     description:
       - The link to an MD5 sum file of the remote hotfix ISO image,
-        it is required when C(hotfix) parameter is used and C(remote_src)
-        is selected.
+        it is required when C(hotfix) parameter is used and that parameter is
+        a remote URL.
       - Parameter only used when and C(state) is C(installed), C(activated),
         or C(present).
-  build:
-     description:
-     - Parameter specifying build number of the remote ISO image.
-       This parameter is mandatory when C(remote_src) is in use.
-     - If C(hotfix) and C(software) are specified. The build number will be
-       C(always) the C(build) of the C(hotfix). For example, C(hotfix) has
-       build of C(1.0.271) and C(software) has a build of C(0.0.249),
-       then C(build) parameter has to be set to C(1.0.271).
-     - If this parameter is missing when C(state) is C(activated)
-       or C(installed), there will be an attempt to supplement that information
-       with searching by name for relevant ISO on the unit. When none is found
-       the exception will be raised and process terminated.
-     - If this parameter is missing when C(state) is C(present)
-       we will confirm the existence of the ISO with searching by name.
-       If the ISO exists under different name, it might lead to duplication of
-       ISO images on the unit.
-     - Finally if this parameter is missing when C(state) is
-       C(absent) it might cause the desired ISO not to be deleted.
-  version:
-     description:
-     - Parameter specifying version of of the remote ISO image.
-       This parameter is mandatory when C(remote_src) is in use.
-     - If C(hotfix) and C(software) are specified. The version number C(always)
-       be the C(version) of the C(hotfix).
-     - If this parameter is missing when C(state) is C(activated)
-       or C(installed), there will be an attempt to supplement that information
-       with searching by name for relevant ISO on the unit. When none is found
-       the exception will be raised and process terminated.
-     - If this parameter is missing when C(state) is C(present)
-       we will confirm the existence of the ISO with searching by name. If the
-       ISO exists under different name, it might lead to duplication of ISO
-       images on the unit.
-     - Finally if this parameter is missing when C(state) is
-       C(absent) it might cause the desired ISO not to be deleted.
   remote_src:
     description:
        - Parameter to enable remote source usage. When set to C(yes) bigip will
@@ -158,8 +113,8 @@ options:
          mandatory when C(state is C(present), C(activated) or C(installed).
     default: 'no'
 notes:
-  - Requires the f5-sdk Python package on the host.
-    This is as easy as pip install f5-sdk
+  - Requires the f5-sdk Python package on the host. This is as easy as pip
+    install f5-sdk
   - Requires the isoparser Python package on the host. This can be installed
     with pip install isoparser
   - Requires the lxml Python package on the host. This can be installed
@@ -176,45 +131,45 @@ authors:
 EXAMPLES = '''
 - name: Remove uploaded hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       state: "absent"
   delegate_to: localhost
 
 - name: Upload hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       state: "present"
   delegate_to: localhost
 
 - name: Remove uploaded base image
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       state: "absent"
   delegate_to: localhost
 
 - name: Upload base image
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       state: "present"
   delegate_to: localhost
 
 - name: Upload base image and hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       state: "present"
@@ -222,9 +177,9 @@ EXAMPLES = '''
 
 - name: Remove uploaded base image and hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       state: "absent"
@@ -232,9 +187,9 @@ EXAMPLES = '''
 
 - name: Install (upload, install) base image. Create volume if not exists
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       volume: "HD1.1"
       state: "installed"
@@ -242,9 +197,9 @@ EXAMPLES = '''
 
 - name: Install (upload, install) base image and hotfix. Create volume if not exists
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       volume: "HD1.1"
@@ -253,9 +208,9 @@ EXAMPLES = '''
 
 - name: Activate (upload, install, reboot) base image. Create volume if not exists
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       volume: "HD1.1"
       state: "activated"
@@ -263,9 +218,9 @@ EXAMPLES = '''
 
 - name: Activate (upload, install, reboot) base image and hotfix. Create volume if not exists
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       volume: "HD1.1"
@@ -274,9 +229,9 @@ EXAMPLES = '''
 
 - name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "/root/BIGIP-11.6.0.0.0.401.iso"
       hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
       reuse_inactive_volume: yes
@@ -285,98 +240,101 @@ EXAMPLES = '''
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
       hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
       software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
       software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      build: "1.0.271"
-      version: "12.1.2"
-      remote_src: "yes"
       state: "activated"
       reuse_inactive_volume: True
   delegate_to: localhost
 
 - name: Download hotfix image
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
       hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-      build: "1.0.271"
-      version: "12.1.2"
-      remote_src: "yes"
       state: "present"
   delegate_to: localhost
 
 - name: Remove uploaded hotfix image
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-      build: "1.0.271"
-      version: "12.1.2"
-      remote_src: "yes"
   delegate_to: localhost
 
 - name: Install (download, install) base image
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
       software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      build: "0.0.249"
-      version: "12.1.2"
-      remote_src: "yes"
       volume: "HD1.1"
       state: "installed"
   delegate_to: localhost
 
 - name: Install (download, install) base image and hotfix
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
       hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
       software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
       software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      build: "1.0.271"
-      version: "12.1.2"
-      remote_src: "yes"
       state: "installed"
       volume: "HD1.2"
    delegate_to: localhost
 
 - name: Download hotfix image (name mismatch)
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       hotfix: "http://fake.com/12.1.2-HF1.iso"
       hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
-      build: "1.0.271"
-      version: "12.1.2"
-      remote_src: "yes"
       state: "present"
   delegate_to: localhost
 
 - name: Download software image (name mismatch)
   bigip_software:
-      server: "bigip.localhost.localdomain"
+      server: "lb.mydomain.com"
       user: "admin"
-      password: "admin"
+      password: "secret"
       software: "http://fake.com/BIGIP-12.1.2.iso"
       software_md5sum: "http://fake.com/12.1.2.md5"
-      build: "0.0.249"
-      version: "12.1.2"
-      remote_src: "yes"
       state: "present"
+  delegate_to: localhost
+
+- name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
+  bigip_software:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+      software: "/root/BIGIP-11.6.0.0.0.401.iso"
+      state: "activated"
+      reuse_inactive_volume: True
+  delegate_to: localhost
+
+- name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
+  bigip_software:
+      server: "lb.mydomain.com"
+      user: "admin"
+      password: "secret"
+      hotfix: "/root/Hotfix-12.1.2.1.0.271-HF1.iso"
+      software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+      software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+      state: "activated"
+      reuse_inactive_volume: True
   delegate_to: localhost
 '''
 
@@ -396,11 +354,6 @@ reuse_inactive_volume:
     returned: changed
     type: bool
     sample: no
-remote_src:
-    description: Download ISO on the target device.
-    returned: changed
-    type: bool
-    sample: "yes"
 software:
     description: Local path, or remote link to the software ISO image.
     returned: changed
@@ -440,15 +393,15 @@ volume:
 
 import io
 import isoparser
+import os
+import time
+
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import defaultdict
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import os
-from ansible.module_utils.f5_utils import time
 from lxml import etree
 from requests.exceptions import ConnectionError
 
@@ -457,8 +410,37 @@ try:
 except ImportError:
     from urllib import parse as urlparse
 
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
+
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'name': 'volume'
+    }
+
+    updatables = [
+        'volume'
+    ]
+
+    returnables = [
+        'force', 'hotfix', 'state', 'software', 'volume', 'reuse_inactive_volume',
+        'software_md5sum', 'hotfix_md5sum', 'build', 'version'
+    ]
+
+    api_attributes = [
+        'volume', 'options'
+    ]
+
+    def _has_url_scheme(self, value):
+        source = urlparse.urlparse(value)
+        if source.scheme:
+            if source.scheme in ['http', 'https']:
+                return True
+        return False
+
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
         if params:
@@ -488,22 +470,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    updatables = [
-        'version', 'volume', 'build'
-    ]
-
-    returnables = [
-        'force', 'hotfix', 'state',
-        'software', 'volume', 'reuse_inactive_volume', 'remote_src',
-        'software_md5sum', 'hotfix_md5sum', 'build', 'version'
-    ]
-
-    api_attributes = [
-        'volume', 'options'
-    ]
-
-    api_map = {'name': 'volume'}
-
     @property
     def remote_src(self):
         remote = self._values['remote_src']
@@ -532,6 +498,14 @@ class Parameters(AnsibleF5Parameters):
                 return remote
         else:
             return remote
+
+    @property
+    def remote_software(self):
+        return self._has_url_scheme(self.want.software)
+
+    @property
+    def remote_hotfix(self):
+        return self._has_url_scheme(self.want.hotfix)
 
     @property
     def software(self):
@@ -623,8 +597,8 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def version(self):
-        psoftware = self.software
-        photfix = self.hotfix
+        software = self.software
+        hotfix = self.hotfix
         remote = self.remote_src
         version = self._values['version']
 
@@ -632,17 +606,17 @@ class Parameters(AnsibleF5Parameters):
             return version
 
         if remote is False and version is None:
-            if photfix:
-                self.use_iso(photfix)
+            if hotfix:
+                self.use_iso(hotfix)
             else:
-                self.use_iso(psoftware)
+                self.use_iso(software)
 
         return self._values['version']
 
     @property
     def build(self):
-        psoftware = self.software
-        photfix = self.hotfix
+        software = self.software
+        hotfix = self.hotfix
         remote = self.remote_src
         build = self._values['build']
 
@@ -650,10 +624,10 @@ class Parameters(AnsibleF5Parameters):
             return build
 
         if remote is False and build is None:
-            if photfix:
-                self.use_iso(photfix)
+            if hotfix:
+                self.use_iso(hotfix)
             else:
-                self.use_iso(psoftware)
+                self.use_iso(software)
 
         return self._values['build']
 
@@ -680,14 +654,15 @@ class Parameters(AnsibleF5Parameters):
 
     def _find_iso_content(self, iso):
         paths = ['/METADATA.XML', 'metadata.xml']
-
         for path in paths:
             try:
                 content = iso.record(path).content
                 return content
             except KeyError:
                 pass
-        raise F5ModuleError('Unable to find metadata file in ISO. Please file a bug.')
+        raise F5ModuleError(
+            'Unable to find metadata file in ISO. Please file a bug.'
+        )
 
     def handle_remote_source(self, link):
         source = urlparse.urlparse(link)
@@ -699,9 +674,13 @@ class Parameters(AnsibleF5Parameters):
                 self._values['secure'] = True
                 return name
             else:
-                raise F5ModuleError('Only remote HTTP or HTTPS sources are supported.')
+                raise F5ModuleError(
+                    'Only remote HTTP or HTTPS sources are supported.'
+                )
         else:
-            raise F5ModuleError('{0} is not a valid URL, please provide a valid link'.format(link))
+            raise F5ModuleError(
+                '{0} is not a valid URL, please provide a valid link'.format(link)
+            )
 
     def _list_volumes_on_device(self):
         volumes = self.client.api.tm.sys.software.volumes.get_collection()
@@ -762,6 +741,10 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class Changes(Parameters):
+    pass
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -791,7 +774,7 @@ class BaseManager(object):
         self.want = Parameters()
         self.want.client = self.client
         self.want.update(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def exec_module(self):
         changed = False
@@ -910,8 +893,9 @@ class BaseManager(object):
             if self.base_image_exists():
                 self.install_hotfix_on_device()
             else:
-                raise F5ModuleError('Base image of version: {0} must exist to install this hotfix.'.format(version))
-
+                raise F5ModuleError(
+                    'Base image of version: {0} must exist to install this hotfix.'.format(version)
+                )
         self.wait_for_software_install_on_device()
 
     def upload(self):
@@ -924,14 +908,14 @@ class BaseManager(object):
             self.remove()
 
         if software_path and not self.image_exists_on_device():
-            if self.want.remote_src:
+            if self.want.remote_software:
                 self.download_iso_on_device()
             else:
                 self.upload_to_device(software_path)
             self.wait_for_images(image_list)
 
         if hotfix_path and not self.hotfix_exists_on_device():
-            if self.want.remote_src:
+            if self.want.remote_hotfix:
                 self.download_iso_on_device(True)
             else:
                 self.upload_to_device(hotfix_path)
@@ -952,11 +936,10 @@ class BaseManager(object):
             self.wait_for_images(image_list)
 
     def exists(self):
-        forced = self.want.forced
         software_path = self.want.software
         hotfix_path = self.want.hotfix
 
-        if forced:
+        if self.want.forced:
             return False
 
         if software_path and hotfix_path:
@@ -981,7 +964,9 @@ class BaseManager(object):
             return False
 
     def _device_reconnect(self):
-        self.client.api = self.client._get_mgmt_root('bigip', **self.client._connect_params)
+        self.client.api = self.client._get_mgmt_root(
+            'bigip', **self.client._connect_params
+        )
 
     def wait_for_images(self, count, hotfix=False):
         current = len(count)
@@ -1016,7 +1001,7 @@ class BaseManager(object):
     def wait_for_software_install_on_device(self):
         # We need to delay this slightly in case the the volume needs to be
         # created first
-        for count in range(10):
+        for _ in range(10):
             try:
                 if self.volume_exists_on_device():
                     break
@@ -1036,7 +1021,7 @@ class BaseManager(object):
     def delete_volume_on_device(self):
         volume = self.load_volume_on_device()
         volume.delete()
-        for count in range(10):
+        for _ in range(10):
             time.sleep(5)
             if not self.volume_exists_on_device():
                 break
@@ -1048,79 +1033,11 @@ class BaseManager(object):
                 result = volume.attrs
                 return Parameters(result)
 
-
-class LocalManager(BaseManager):
-    def software_on_volume(self):
-        volumes = self.list_volumes_on_device()
-        version = self.want.version
-        build = self.want.build
-        for volume in volumes:
-            if hasattr(volume, 'version') and hasattr(volume, 'build'):
-                if volume.version == version and volume.build == build:
-                    return volume
-
-    def _has_build_and_version(self, item):
-        if item.version != self.want.version:
-            return False
-        if item.build != self.want.build:
-            return False
-        return True
-
-    def install_image_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.sys.software.images.exec_cmd(
-            'install', name=self.want.software_name, **params
-        )
-
-    def install_hotfix_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.sys.software.hotfix_s.exec_cmd(
-            'install', name=self.want.hotfix_name, **params
-        )
-
-    def upload_to_device(self, filepath):
-        self.client.api.cm.autodeploy.software_image_uploads.upload_image(
-            filepath
-        )
-
-    def list_images_on_device(self):
-        images = self.client.api.tm.sys.software.images.get_collection()
-        return images
-
-    def list_hotfixes_on_device(self):
-        hotfixes = self.client.api.tm.sys.software.hotfix_s.get_collection()
-        return hotfixes
-
-    def delete_image_on_device(self):
-        img = self.client.api.tm.sys.software.images.image.load(
-            name=self.want.software_name)
-        img.delete()
-
-    def delete_hotfix_on_device(self):
-        hf = self.client.api.tm.sys.software.hotfix_s.hotfix.load(
-            name=self.want.hotfix_name)
-        hf.delete()
-
-    def list_volumes_on_device(self):
-        volumes = self.client.api.tm.sys.software.volumes.get_collection()
-        return volumes
-
-    def image_exists_on_device(self):
-        images = self.client.api.tm.sys.software.images.get_collection()
-        if any(self._has_build_and_version(i) for i in images):
-            return True
-        return False
-
-    def hotfix_exists_on_device(self):
-        hotfixes = self.client.api.tm.sys.software.hotfix_s.get_collection()
-        if any(self._has_build_and_version(h) for h in hotfixes):
-            return True
-        return False
-
     def load_volume_on_device(self):
-        volume = self.client.api.tm.sys.software.volumes.volume.load(
-            name=self.want.volume)
-        return volume
+        resource = self.client.api.tm.sys.software.volumes.volume.load(
+            name=self.want.volume
+        )
+        return resource
 
     def reboot_volume_on_device(self):
         self.client.api.tm.sys.software.volumes.exec_cmd(
@@ -1128,13 +1045,48 @@ class LocalManager(BaseManager):
         )
 
     def volume_exists_on_device(self):
-        result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)
+        result = self.client.api.tm.sys.software.volumes.volume.exists(
+            name=self.want.volume
+        )
         return result
 
+    def install_hotfix_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.sys.software.hotfix_s.exec_cmd(
+            'install', name=self.want.hotfix_name, **params
+        )
 
-class RemoteManager(BaseManager):
+    def delete_image_on_device(self):
+        resource = self.client.api.tm.sys.software.images.image.load(
+            name=self.want.software_name
+        )
+        resource.delete()
+
+    def list_volumes_on_device(self):
+        collection = self.client.api.tm.sys.software.volumes.get_collection()
+        return collection
+
+    def delete_hotfix_on_device(self):
+        resource = self.client.api.tm.sys.software.hotfix_s.hotfix.load(
+            name=self.want.hotfix_name
+        )
+        resource.delete()
+
+    def list_hotfixes_on_device(self):
+        collection = self.client.api.tm.sys.software.hotfix_s.get_collection()
+        return collection
+
+    def list_images_on_device(self):
+        collection = self.client.api.tm.sys.software.images.get_collection()
+        return collection
+
+    def install_image_on_device(self):
+        params = self.want.api_params()
+        self.client.api.tm.sys.software.images.exec_cmd(
+            'install', name=self.want.software_name, **params
+        )
+
     def software_on_volume(self):
-        self.check_product_info()
         volumes = self.list_volumes_on_device()
         version = self.want.version
         build = self.want.build
@@ -1143,25 +1095,49 @@ class RemoteManager(BaseManager):
                 if volume.version == version and volume.build == build:
                     return volume
 
+
+class LocalManager(BaseManager):
+    def _has_build_and_version(self, item):
+        if item.version != self.want.version:
+            return False
+        if item.build != self.want.build:
+            return False
+        return True
+
+    def upload_to_device(self, filepath):
+        self.client.api.cm.autodeploy.software_image_uploads.upload_image(
+            filepath
+        )
+
+    def image_exists_on_device(self):
+        collection = self.client.api.tm.sys.software.images.get_collection()
+        if any(self._has_build_and_version(i) for i in collection):
+            return True
+        return False
+
+    def hotfix_exists_on_device(self):
+        collection = self.client.api.tm.sys.software.hotfix_s.get_collection()
+        if any(self._has_build_and_version(h) for h in collection):
+            return True
+        return False
+
+
+class RemoteManager(BaseManager):
     def check_product_info(self):
-        hotfix = self.want.hotfix
         version = self.want.version
         build = self.want.build
-        state = self.want.state
 
-        if state in ['installed', 'activated']:
+        if self.want.state in ['installed', 'activated']:
             if version is None or build is None:
-                if hotfix:
-                    self.set_product_info(True)
+                if self.want.hotfix:
+                    self.set_product_info(hotfix=True)
                 else:
                     self.set_product_info()
             return False
-
-        elif state in ['present', 'absent']:
+        elif self.want.state in ['present', 'absent']:
             if version is None or build is None:
                 return True
-            else:
-                return False
+            return False
 
     def set_product_info(self, hotfix=False):
         # We attempt to use filename when version or build is missing
@@ -1169,18 +1145,15 @@ class RemoteManager(BaseManager):
             info = self.load_hotfix_by_name_from_device()
         else:
             info = self.load_image_by_name_from_device()
-
         if info is None:
-            raise F5ModuleError('Unable to set ISO information based on ISO name, please specify version and build.')
-
+            raise F5ModuleError(
+                'Unable to set ISO information based on ISO name, please specify version and build.'
+            )
         self.want.version = info.version
         self.want.build = info.build
 
     def prepare_command(self, url, name):
-        # We will add file download resume, multiple file download,
-        # ftp/ftps in next iterations. We need to test this simple solution first
-        secure = self.want.secure
-        if secure:
+        if self.want.secure:
             cmd = '-c "curl {0} -k -o /shared/images/{1}"'.format(url, name)
         else:
             cmd = '-c "curl {0} -o /shared/images/{1}"'.format(url, name)
@@ -1247,9 +1220,7 @@ class RemoteManager(BaseManager):
 
     def load_image_by_name_from_device(self):
         result = None
-        exists = self.image_exists_by_name_on_device()
-
-        if exists:
+        if self.image_exists_by_name_on_device():
             result = self.client.api.tm.sys.software.images.image.load(
                 name=self.want.software_name
             )
@@ -1257,54 +1228,20 @@ class RemoteManager(BaseManager):
 
     def load_hotfix_by_name_from_device(self):
         result = None
-        exists = self.hotfix_exists_by_name_on_device()
-
-        if exists:
+        if self.hotfix_exists_by_name_on_device():
             result = self.client.api.tm.sys.software.hotfix_s.hotfix.load(
                 name=self.want.hotfix_name
             )
         return result
-
-    def install_image_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.sys.software.images.exec_cmd(
-            'install', name=self.want.software_name, **params
-        )
-
-    def install_hotfix_on_device(self):
-        params = self.want.api_params()
-        self.client.api.tm.sys.software.hotfix_s.exec_cmd(
-            'install', name=self.want.hotfix_name, **params
-        )
-
-    def list_images_on_device(self):
-        images = self.client.api.tm.sys.software.images.get_collection()
-        return images
-
-    def list_hotfixes_on_device(self):
-        hotfixes = self.client.api.tm.sys.software.hotfix_s.get_collection()
-        return hotfixes
-
-    def delete_image_on_device(self):
-        img = self.client.api.tm.sys.software.images.image.load(
-            name=self.want.software_name)
-        img.delete()
-
-    def delete_hotfix_on_device(self):
-        hf = self.client.api.tm.sys.software.hotfix_s.hotfix.load(
-            name=self.want.hotfix_name)
-        hf.delete()
-
-    def list_volumes_on_device(self):
-        volumes = self.client.api.tm.sys.software.volumes.get_collection()
-        return volumes
 
     def run_command_on_device(self, cmd):
         result = self.client.api.tm.util.bash.exec_cmd('run', utilCmdArgs=cmd)
         if result:
             return result
         else:
-            raise F5ModuleError('Could not execute command. Most likely device is unresponsive.')
+            raise F5ModuleError(
+                'Could not execute command. Most likely device is unresponsive.'
+            )
 
     def image_exists_on_device(self):
         if self.check_product_info():
@@ -1328,25 +1265,15 @@ class RemoteManager(BaseManager):
         return False
 
     def hotfix_exists_by_name_on_device(self):
-        result = self.client.api.tm.sys.software.hotfix_s.hotfix.exists(name=self.want.hotfix_name)
+        result = self.client.api.tm.sys.software.hotfix_s.hotfix.exists(
+            name=self.want.hotfix_name
+        )
         return result
 
     def image_exists_by_name_on_device(self):
-        result = self.client.api.tm.sys.software.images.image.exists(name=self.want.software_name)
-        return result
-
-    def load_volume_on_device(self):
-        volume = self.client.api.tm.sys.software.volumes.volume.load(
-            name=self.want.volume)
-        return volume
-
-    def reboot_volume_on_device(self):
-        self.client.api.tm.sys.software.volumes.exec_cmd(
-            'reboot', volume=self.want.volume
+        result = self.client.api.tm.sys.software.images.image.exists(
+            name=self.want.software_name
         )
-
-    def volume_exists_on_device(self):
-        result = self.client.api.tm.sys.software.volumes.volume.exists(name=self.want.volume)
         return result
 
 
@@ -1379,11 +1306,12 @@ class ArgumentSpec(object):
             ),
             volume=dict(),
             software_md5sum=dict(),
-            hotfix_md5sum=dict(),
-            version=dict(),
-            build=dict()
+            hotfix_md5sum=dict()
         )
         self.f5_product_name = 'bigip'
+        self.mutually_exclusive = [
+            ['volume', 'reuse_inactive_volume']
+        ]
 
 
 def main():
@@ -1395,7 +1323,8 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        f5_product_name=spec.f5_product_name,
+        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:
