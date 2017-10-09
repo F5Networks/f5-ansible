@@ -178,6 +178,19 @@ STATUSES = {
 }
 
 
+try:
+    import bigsuds
+except:
+    pass  # Taken care of by f5_utils.bigsuds_found
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import bigip_api
+from ansible.module_utils.f5_utils import bigsuds_found
+from ansible.module_utils.f5_utils import f5_argument_spec
+from ansible.module_utils.f5_utils import fq_list_names
+from ansible.module_utils.f5_utils import fq_name
+
 def vs_exists(api, vs):
     # hack to determine if pool exists
     result = False
@@ -301,7 +314,7 @@ def set_profiles(api, name, profiles_list):
                 profiles=[to_add_profiles]
             )
             updated = True
-        current_profiles = list(map(lambda x: x['profile_name'], get_profiles(api, name)))
+        current_profiles = [x['profile_name'] for x in get_profiles(api, name)]
         if len(current_profiles) == 0:
             raise F5ModuleError(
                 "Virtual servers must has at least one profile"
@@ -635,7 +648,7 @@ def set_route_advertisement_state(api, destination, partition, route_advertiseme
     try:
         state = "STATE_%s" % route_advertisement_state.strip().upper()
         address = fq_name(partition, destination,)
-        current_route_advertisement_state = get_route_advertisement_status(api,address)
+        current_route_advertisement_state = get_route_advertisement_status(api, address)
         if current_route_advertisement_state != route_advertisement_state:
             api.LocalLB.VirtualAddressV2.set_route_advertisement_state(virtual_addresses=[address], states=[state])
             updated = True
@@ -797,9 +810,7 @@ def main():
         module.fail_json(msg="received exception: %s" % e)
 
     module.exit_json(**result)
-# import module snippets
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
+
 
 if __name__ == '__main__':
     main()
