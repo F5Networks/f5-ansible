@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {
     'metadata_version': '1.1'
 }
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_monitor_http
 short_description: Manages F5 BIG-IP LTM http monitors
@@ -36,7 +36,7 @@ options:
   send:
     description:
       - The send string for the monitor call. When creating a new monitor, if
-        this value is not provided, the default C(GET /\\r\\n) will be used.
+        this value is not provided, the default C(GET /\r\n) will be used.
   receive:
     description:
       - The receive string for the monitor call.
@@ -101,64 +101,64 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create HTTP Monitor
   bigip_monitor_http:
-      state: "present"
-      ip: "10.10.10.10"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_http_monitor"
+    state: present
+    ip: 10.10.10.10
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_http_monitor
   delegate_to: localhost
 
 - name: Remove HTTP Monitor
   bigip_monitor_http:
-      state: "absent"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_http_monitor"
+    state: absent
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_http_monitor
   delegate_to: localhost
 
 - name: Include a username and password in the HTTP monitor
   bigip_monitor_http:
-      state: "absent"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_http_monitor"
-      target_username: "monitor_user"
-      target_password: "monitor_pass"
+    state: absent
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_http_monitor
+    target_username: monitor_user
+    target_password: monitor_pass
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 parent:
-    description: New parent template of the monitor.
-    returned: changed
-    type: string
-    sample: "http"
+  description: New parent template of the monitor.
+  returned: changed
+  type: string
+  sample: http
 ip:
-    description: The new IP of IP/port definition.
-    returned: changed
-    type: string
-    sample: "10.12.13.14"
+  description: The new IP of IP/port definition.
+  returned: changed
+  type: string
+  sample: 10.12.13.14
 interval:
-    description: The new interval in which to run the monitor check.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new interval in which to run the monitor check.
+  returned: changed
+  type: int
+  sample: 2
 timeout:
-    description: The new timeout in which the remote system must respond to the monitor.
-    returned: changed
-    type: int
-    sample: 10
+  description: The new timeout in which the remote system must respond to the monitor.
+  returned: changed
+  type: int
+  sample: 10
 time_until_up:
-    description: The new time in which to mark a system as up after first successful response.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new time in which to mark a system as up after first successful response.
+  returned: changed
+  type: int
+  sample: 2
 '''
 
 import os
