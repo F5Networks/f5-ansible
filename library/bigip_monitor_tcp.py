@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_monitor_tcp
 short_description: Manages F5 BIG-IP LTM tcp monitors
@@ -32,7 +30,7 @@ options:
       - The parent template of this monitor template. Once this value has
         been set, it cannot be changed. By default, this value is the C(tcp)
         parent on the C(Common) partition.
-    default: "/Common/tcp"
+    default: /Common/tcp
   send:
     description:
       - The send string for the monitor call.
@@ -51,7 +49,7 @@ options:
       - The template type of this monitor template.
       - Deprecated in 2.4. Use one of the C(bigip_monitor_tcp_echo) or
         C(bigip_monitor_tcp_half_open) modules instead.
-    default: 'tcp'
+    default: tcp
     choices:
       - tcp
       - tcp_echo
@@ -91,8 +89,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -105,70 +102,70 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create TCP Monitor
   bigip_monitor_tcp:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_tcp_monitor"
-      type: "tcp"
-      send: "tcp string to send"
-      receive: "tcp string to receive"
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_tcp_monitor
+    type: tcp
+    send: tcp string to send
+    receive: tcp string to receive
   delegate_to: localhost
 
 - name: Remove TCP Monitor
   bigip_monitor_tcp:
-      state: "absent"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_tcp_monitor"
+    state: absent
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: "my_tcp_monitor
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 parent:
-    description: New parent template of the monitor.
-    returned: changed
-    type: string
-    sample: "tcp"
+  description: New parent template of the monitor.
+  returned: changed
+  type: string
+  sample: tcp
 send:
-    description: The new send string for this monitor.
-    returned: changed
-    type: string
-    sample: "tcp string to send"
+  description: The new send string for this monitor.
+  returned: changed
+  type: string
+  sample: tcp string to send
 receive:
-    description: The new receive string for this monitor.
-    returned: changed
-    type: string
-    sample: "tcp string to receive"
+  description: The new receive string for this monitor.
+  returned: changed
+  type: string
+  sample: tcp string to receive
 ip:
-    description: The new IP of IP/port definition.
-    returned: changed
-    type: string
-    sample: "10.12.13.14"
+  description: The new IP of IP/port definition.
+  returned: changed
+  type: string
+  sample: 10.12.13.14
 port:
-    description: The new port of IP/port definition.
-    returned: changed
-    type: string
-    sample: "admin@root.local"
+  description: The new port of IP/port definition.
+  returned: changed
+  type: string
+  sample: admin@root.local
 interval:
-    description: The new interval in which to run the monitor check.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new interval in which to run the monitor check.
+  returned: changed
+  type: int
+  sample: 2
 timeout:
-    description: The new timeout in which the remote system must respond to the monitor.
-    returned: changed
-    type: int
-    sample: 10
+  description: The new timeout in which the remote system must respond to the monitor.
+  returned: changed
+  type: int
+  sample: 10
 time_until_up:
-    description: The new time in which to mark a system as up after first successful response.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new time in which to mark a system as up after first successful response.
+  returned: changed
+  type: int
+  sample: 2
 '''
 
 import os
@@ -183,8 +180,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError

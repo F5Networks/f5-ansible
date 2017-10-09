@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_iapplx_package
 short_description: Manages Javascript iApp packages on a BIG-IP
@@ -55,40 +53,39 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add an iAppLX package
   bigip_iapplx_package:
-      package: "MyApp-0.1.0-0001.noarch.rpm"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    package: MyApp-0.1.0-0001.noarch.rpm
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Add an iAppLX package stored in a role
   bigip_iapplx_package:
-      package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Remove an iAppLX package
   bigip_iapplx_package:
-      package: "MyApp-0.1.0-0001.noarch.rpm"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "absent"
-      user: "admin"
+    package: MyApp-0.1.0-0001.noarch.rpm
+    password: secret
+    server: lb.mydomain.com
+    state: absent
+    user: admin
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 # only common fields returned
 '''
 
-from distutils.version import LooseVersion
 import os
 import subprocess
 import time
@@ -97,6 +94,7 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
+from distutils.version import LooseVersion
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError

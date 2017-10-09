@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_monitor_snmp_dca
 short_description: Manages BIG-IP SNMP data collecting agent (DCA) monitors
@@ -114,8 +112,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -131,92 +128,92 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create SNMP DCS monitor
   bigip_monitor_snmp_dca:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_monitor"
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_monitor
   delegate_to: localhost
 
 - name: Remove TCP Echo Monitor
   bigip_monitor_snmp_dca:
-      state: "absent"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_monitor"
+    state: absent
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_monitor
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 parent:
-    description: New parent template of the monitor.
-    returned: changed
-    type: string
-    sample: "snmp_dca"
+  description: New parent template of the monitor.
+  returned: changed
+  type: string
+  sample: snmp_dca
 interval:
-    description: The new interval in which to run the monitor check.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new interval in which to run the monitor check.
+  returned: changed
+  type: int
+  sample: 2
 timeout:
-    description: The new timeout in which the remote system must respond to the monitor.
-    returned: changed
-    type: int
-    sample: 10
+  description: The new timeout in which the remote system must respond to the monitor.
+  returned: changed
+  type: int
+  sample: 10
 time_until_up:
-    description: The new time in which to mark a system as up after first successful response.
-    returned: changed
-    type: int
-    sample: 2
+  description: The new time in which to mark a system as up after first successful response.
+  returned: changed
+  type: int
+  sample: 2
 community:
-    description: The new community for the monitor.
-    returned: changed
-    type: string
-    sample: foobar
+  description: The new community for the monitor.
+  returned: changed
+  type: string
+  sample: foobar
 version:
-    description: The new new SNMP version to be used by the monitor.
-    returned: changed
-    type: string
-    sample: v2c
+  description: The new new SNMP version to be used by the monitor.
+  returned: changed
+  type: string
+  sample: v2c
 agent_type:
-    description: The new agent type to be used by the monitor.
-    returned: changed
-    type: string
-    sample: UCD
+  description: The new agent type to be used by the monitor.
+  returned: changed
+  type: string
+  sample: UCD
 cpu_coefficient:
-    description: The new CPU coefficient.
-    returned: changed
-    type: float
-    sample: 2.4
+  description: The new CPU coefficient.
+  returned: changed
+  type: float
+  sample: 2.4
 cpu_threshold:
-    description: The new CPU threshold.
-    returned: changed
-    type: int
-    sample: 85
+  description: The new CPU threshold.
+  returned: changed
+  type: int
+  sample: 85
 memory_coefficient:
-    description: The new memory coefficient.
-    returned: changed
-    type: float
-    sample: 6.4
+  description: The new memory coefficient.
+  returned: changed
+  type: float
+  sample: 6.4
 memory_threshold:
-    description: The new memory threshold.
-    returned: changed
-    type: int
-    sample: 50
+  description: The new memory threshold.
+  returned: changed
+  type: int
+  sample: 50
 disk_coefficient:
-    description: The new disk coefficient.
-    returned: changed
-    type: float
-    sample: 10.2
+  description: The new disk coefficient.
+  returned: changed
+  type: float
+  sample: 10.2
 disk_threshold:
-    description: The new disk threshold.
-    returned: changed
-    type: int
-    sample: 34
+  description: The new disk threshold.
+  returned: changed
+  type: int
+  sample: 34
 '''
 
 import os
@@ -225,8 +222,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError

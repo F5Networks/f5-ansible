@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_policy
 short_description: Manage general policy configuration on a BIG-IP
@@ -69,7 +67,6 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
     default: Common
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
@@ -81,21 +78,21 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create policy which is immediately published
   bigip_policy:
-    name: "Policy-Foo"
-    state: "present"
+    name: Policy-Foo
+    state: present
   delegate_to: localhost
 
 - name: Add a rule to the new policy - Immediately published
   bigip_policy_rule:
-    policy: "Policy-Foo"
-    name: "ABC"
+    policy: Policy-Foo
+    name: ABC
     conditions:
-      - type: "http_uri"
+      - type: http_uri
         path_starts_with:
-          - "/ABC"
+          - /ABC
           - foo
           - bar
         path_ends_with:
@@ -103,19 +100,19 @@ EXAMPLES = '''
     actions:
       - forward: yes
         select: yes
-        pool: "pool-svrs"
+        pool: pool-svrs
 
 - name: Add multiple rules to the new policy - Added in the order they are specified
   bigip_policy_rule:
-    policy: "Policy-Foo"
+    policy: Policy-Foo
     name: "{{ item.name }}"
     conditions: "{{ item.conditions }}"
     actions: "{{ item.actions }}"
   with_items:
     - name: rule1
       actions:
-        - type: "forward"
-          pool: "pool-svrs"
+        - type: forward
+          pool: pool-svrs
       conditions:
         - type: http_uri
           path_starts_with: /euro
@@ -148,11 +145,20 @@ EXAMPLES = '''
 
 import re
 
-from ansible.module_utils.f5_utils import *
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from distutils.version import LooseVersion
 from f5.bigip.contexts import TransactionContextManager
 from f5.sdk_exception import NonExtantPolicyRule
-from icontrol.exceptions import iControlUnexpectedHTTPError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

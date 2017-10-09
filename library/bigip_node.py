@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_node
 short_description: Manages F5 BIG-IP LTM nodes
@@ -92,6 +90,11 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the node.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
     pip install f5-sdk
@@ -104,111 +107,111 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add node
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      partition: "Common"
-      host: "10.20.30.40"
-      name: "10.20.30.40"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    host: 10.20.30.40
+    name: 10.20.30.40
   delegate_to: localhost
 
 - name: Add node with a single 'ping' monitor
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      partition: "Common"
-      host: "10.20.30.40"
-      name: "mytestserver"
-      monitors:
-          - /Common/icmp
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    host: 10.20.30.40
+    name: mytestserver
+    monitors:
+      - /Common/icmp
   delegate_to: localhost
 
 - name: Modify node description
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      partition: "Common"
-      name: "10.20.30.40"
-      description: "Our best server yet"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    name: 10.20.30.40
+    description: Our best server yet
   delegate_to: localhost
 
 - name: Delete node
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
-      partition: "Common"
-      name: "10.20.30.40"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    partition: Common
+    name: 10.20.30.40
   delegate_to: localhost
 
 - name: Force node offline
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "disabled"
-      partition: "Common"
-      name: "10.20.30.40"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: disabled
+    partition: Common
+    name: 10.20.30.40
   delegate_to: localhost
 
 - name: Add node by their FQDN
   bigip_node:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      partition: "Common"
-      fqdn: "foo.bar.com"
-      name: "10.20.30.40"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    fqdn: foo.bar.com
+    name: 10.20.30.40
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 monitor_type:
-    description:
-      - Changed value for the monitor_type of the node.
-    returned: changed and success
-    type: string
-    sample: "m_of_n"
+  description:
+    - Changed value for the monitor_type of the node.
+  returned: changed and success
+  type: string
+  sample: m_of_n
 quorum:
-    description:
-      - Changed value for the quorum of the node.
-    returned: changed and success
-    type: int
-    sample: "1"
+  description:
+    - Changed value for the quorum of the node.
+  returned: changed and success
+  type: int
+  sample: 1
 monitors:
-    description:
-      - Changed list of monitors for the node.
-    returned: changed and success
-    type: list
-    sample: "['icmp', 'tcp_echo']"
+  description:
+    - Changed list of monitors for the node.
+  returned: changed and success
+  type: list
+  sample: ['icmp', 'tcp_echo']
 description:
-    description:
-      - Changed value for the description of the node.
-    returned: changed and success
-    type: string
-    sample: "E-Commerce webserver in ORD"
+  description:
+    - Changed value for the description of the node.
+  returned: changed and success
+  type: string
+  sample: E-Commerce webserver in ORD
 session:
-    description:
-      - Changed value for the internal session of the node.
-    returned: changed and success
-    type: string
-    sample: "user-disabled"
+  description:
+    - Changed value for the internal session of the node.
+  returned: changed and success
+  type: string
+  sample: user-disabled
 state:
-    description:
-      - Changed value for the internal state of the node.
-    returned: changed and success
-    type: string
-    sample: "m_of_n"
+  description:
+    - Changed value for the internal state of the node.
+  returned: changed and success
+  type: string
+  sample: m_of_n
 '''
 
 import os
@@ -225,8 +228,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError

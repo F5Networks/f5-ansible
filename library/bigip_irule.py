@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_irule
 short_description: Manage iRules across different modules on a BIG-IP
@@ -54,8 +52,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
@@ -67,57 +64,59 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add the iRule contained in template irule.tcl to the LTM module
   bigip_irule:
-      content: "{{ lookup('template', 'irule.tcl') }}"
-      module: "ltm"
-      name: "MyiRule"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    content: "{{ lookup('template', 'irule.tcl') }}"
+    module: ltm
+    name: MyiRule
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Add the iRule contained in static file irule.tcl to the LTM module
   bigip_irule:
-      module: "ltm"
-      name: "MyiRule"
-      password: "secret"
-      server: "lb.mydomain.com"
-      src: "irule.tcl"
-      state: "present"
-      user: "admin"
+    module: ltm
+    name: MyiRule
+    password: secret
+    server: lb.mydomain.com
+    src: irule.tcl
+    state: present
+    user: admin
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 module:
-    description: The module that the iRule was added to
-    returned: changed and success
-    type: string
-    sample: "gtm"
+  description: The module that the iRule was added to
+  returned: changed and success
+  type: string
+  sample: gtm
 src:
-    description: The filename that included the iRule source
-    returned: changed and success, when provided
-    type: string
-    sample: "/opt/src/irules/example1.tcl"
+  description: The filename that included the iRule source
+  returned: changed and success, when provided
+  type: string
+  sample: /opt/src/irules/example1.tcl
 content:
-    description: The content of the iRule that was managed
-    returned: changed and success
-    type: string
-    sample: "when LB_FAILED { set wipHost [LB::server addr] }"
+  description: The content of the iRule that was managed
+  returned: changed and success
+  type: string
+  sample: "when LB_FAILED { set wipHost [LB::server addr] }"
 '''
 
 import os
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

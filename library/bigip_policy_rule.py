@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_policy_rule
 short_description: Manage LTM policy rules on a BIG-IP
@@ -76,7 +76,6 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
     default: Common
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -89,7 +88,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 vars:
   policy_rules:
     - name: rule1
@@ -134,7 +133,7 @@ vars:
     - policy_rules
 '''
 
-RETURN = '''
+RETURN = r'''
 
 '''
 
@@ -143,9 +142,9 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
 from ansible.module_utils.parsing.convert_bool import BOOLEANS
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     # Test related

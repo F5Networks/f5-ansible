@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_iapp_template
 short_description: Manages TCL iApp templates on a BIG-IP
@@ -73,55 +73,55 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add the iApp contained in template iapp.tmpl
   bigip_iapp_template:
     content: "{{ lookup('template', 'iapp.tmpl') }}"
-    password: "secret"
-    server: "lb.mydomain.com"
-    state: "present"
-    user: "admin"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Update a template in place
   bigip_iapp_template:
     content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-    password: "secret"
-    server: "lb.mydomain.com"
-    state: "present"
-    user: "admin"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Update a template in place that has existing services created from it.
   bigip_iapp_template:
     content: "{{ lookup('template', 'iapp-new.tmpl') }}"
     force: yes
-    password: "secret"
-    server: "lb.mydomain.com"
-    state: "present"
-    user: "admin"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 # only common fields returned
 '''
 
 import re
 import uuid
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iteritems,
-    defaultdict,
-    iControlUnexpectedHTTPError
-)
-from f5.utils.iapp_parser import (
-    NonextantTemplateNameException
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+from f5.utils.iapp_parser import NonextantTemplateNameException
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 try:
     from StringIO import StringIO
