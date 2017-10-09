@@ -150,6 +150,70 @@ class TestParameters(unittest.TestCase):
         assert p.variables[1]['name'] == 'afm__policy'
         assert p.variables[1]['value'] == '/#do_not_use#'
 
+    def test_module_strict_updates_from_top_level(self):
+        # Assumes the user did not provide any parameters
+
+        args = dict(
+            strict_updates=True
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'enabled'
+
+        args = dict(
+            strict_updates=False
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'disabled'
+
+    def test_module_strict_updates_override_from_top_level(self):
+        args = dict(
+            strict_updates=True,
+            parameters=dict(
+                strictUpdates='disabled'
+            )
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'enabled'
+
+        args = dict(
+            strict_updates=False,
+            parameters=dict(
+                strictUpdates='enabled'
+            )
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'disabled'
+
+    def test_module_strict_updates_only_parameters(self):
+        args = dict(
+            parameters=dict(
+                strictUpdates='disabled'
+            )
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'disabled'
+
+        args = dict(
+            parameters=dict(
+                strictUpdates='enabled'
+            )
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'enabled'
+
+    def test_api_strict_updates_from_top_level(self):
+        args = dict(
+            strictUpdates='enabled'
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'enabled'
+
+        args = dict(
+            strictUpdates='disabled'
+        )
+        p = Parameters(args)
+        assert p.strict_updates == 'disabled'
+
     def test_api_parameters_variables(self):
         args = dict(
             variables=[

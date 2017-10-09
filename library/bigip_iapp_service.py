@@ -32,6 +32,8 @@ options:
         If your parameters are stored in a file (the more common scenario)
         it is recommended you use either the `file` or `template` lookups
         to supply the expected parameters.
+      - These parameters typically consist of the C(lists), C(tables), and
+        C(variables) fields.
   force:
     description:
       - Forces the updating of an iApp service even if the parameters to the
@@ -52,6 +54,16 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
+  strict_updates:
+    description:
+      - Indicates whether the application service is tied to the template,
+        so when the template is updated, the application service changes to
+        reflect the updates.
+      - When C(yes), disallows any updates to the resources that the iApp
+        service has created, if they are not updated directly through the
+        iApp.
+      - When C(no), allows updates outside of the iApp.
+    default: yes
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -200,12 +212,16 @@ from deepdiff import DeepDiff
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'strictUpdates': 'strict_updates'
+    }
     returnables = []
     api_attributes = [
         'tables', 'variables', 'template', 'lists', 'deviceGroup',
-        'inheritedDevicegroup', 'inheritedTrafficGroup', 'trafficGroup'
+        'inheritedDevicegroup', 'inheritedTrafficGroup', 'trafficGroup',
+        'strictUpdates'
     ]
-    updatables = ['tables', 'variables', 'lists']
+    updatables = ['tables', 'variables', 'lists', 'strict_updates']
 
     def to_return(self):
         result = {}
@@ -310,11 +326,12 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def parameters(self):
-        return dict(
+        result = dict(
             tables=self.tables,
             variables=self.variables,
             lists=self.lists
         )
+        return result
 
     @parameters.setter
     def parameters(self, value):
@@ -334,6 +351,8 @@ class Parameters(AnsibleF5Parameters):
             self.inheritedTrafficGroup = value['inheritedTrafficGroup']
         if 'trafficGroup' in value:
             self.trafficGroup = value['trafficGroup']
+        if 'strictUpdates' in value:
+            self.strictUpdates = value['strictUpdates']
 
     @property
     def template(self):
@@ -352,13 +371,57 @@ class Parameters(AnsibleF5Parameters):
     def template(self, value):
         self._values['template'] = value
 
+    @property
+    def strict_updates(self):
+        if self._values['strict_updates'] is None and self.strictUpdates is None:
+            return None
+
+        # Specifying the value overrides any associated value in the payload
+        elif self._values['strict_updates'] is True:
+            return 'enabled'
+        elif self._values['strict_updates'] is False:
+            return 'disabled'
+
+        # This will be automatically `None` if it was not set by the
+        # parameters setter
+        elif self.strictUpdates:
+            return self.strictUpdates
+        else:
+            return self._values['strict_updates']
+
+
+class Changes(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def _set_changed_options(self):
         changed = {}
@@ -366,18 +429,23 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = str(DeepDiff(attr1, attr2))
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             return True
         return False
 
@@ -495,7 +563,10 @@ class ArgumentSpec(object):
                 choices=['absent', 'present']
             ),
             force=dict(
-                default=False,
+                default='no',
+                type='bool'
+            ),
+            strict_updates=dict(
                 type='bool'
             )
         )
