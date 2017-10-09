@@ -2,34 +2,34 @@
 
 - name: Provision GTM on the device
   bigip_provision:
-      module: "{{ module1 }}"
+    module: "{{ module1 }}"
   register: result
 
 - name: Assert Provision GTM on the device
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Provision GTM on the device - Idempotent check
   bigip_provision:
-      module: "{{ module1 }}"
+    module: "{{ module1 }}"
   register: result
 
 - name: Assert Provision GTM on the device - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Deprovision GTM on the device
   bigip_provision:
-      module: "{{ module1 }}"
-      state: "absent"
+    module: "{{ module1 }}"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision GTM on the device
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Deprovision GTM on the device - Idempotent check
   bigip_provision:
