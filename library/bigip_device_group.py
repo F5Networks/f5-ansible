@@ -98,55 +98,55 @@ author:
 EXAMPLES = r'''
 - name: Create a sync-only device group
   bigip_device_group:
-      name: "foo-group"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    name: foo-group
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Create a sync-only device group with auto-sync enabled
   bigip_device_group:
-      name: "foo-group"
-      auto_sync: "yes"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    name: foo-group
+    auto_sync: yes
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
 save_on_auto_sync:
-    description: The new save_on_auto_sync value of the device group.
-    returned: changed
-    type: bool
-    sample: true
+  description: The new save_on_auto_sync value of the device group.
+  returned: changed
+  type: bool
+  sample: true
 full_sync:
-    description: The new full_sync value of the device group.
-    returned: changed
-    type: bool
-    sample: false
+  description: The new full_sync value of the device group.
+  returned: changed
+  type: bool
+  sample: false
 description:
-    description: The new description of the device group.
-    returned: changed
-    type: string
-    sample: "this is a device group"
+  description: The new description of the device group.
+  returned: changed
+  type: string
+  sample: this is a device group
 type:
-    description: The new type of the device group.
-    returned: changed
-    type: string
-    sample: "sync-failover"
+  description: The new type of the device group.
+  returned: changed
+  type: string
+  sample: sync-failover
 auto_sync:
-    description: The new auto_sync value of the device group.
-    returned: changed
-    type: bool
-    sample: true
+  description: The new auto_sync value of the device group.
+  returned: changed
+  type: bool
+  sample: true
 max_incremental_sync_size:
-    description: The new sync size of the device group
-    returned: changed
-    type: int
-    sample: 1000
+  description: The new sync size of the device group
+  returned: changed
+  type: int
+  sample: 1000
 '''
 
 try:
@@ -155,13 +155,15 @@ except ImportError:
     # Ansible 2.3??
     BOOLEANS_TRUE = frozenset(('y', 'yes', 'on', '1', 'true', 't', 1, 1.0, True))
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

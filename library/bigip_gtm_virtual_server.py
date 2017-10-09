@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_virtual_server
 short_description: Manages F5 BIG-IP GTM virtual servers
@@ -54,7 +54,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Enable virtual server
   bigip_gtm_virtual_server:
     server: lb.mydomain.com

@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_wide_ip
 short_description: Manages F5 BIG-IP GTM wide ip
@@ -81,7 +81,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set lb method
   bigip_gtm_wide_ip:
     server: lb.mydomain.com
@@ -92,7 +92,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 lb_method:
   description: The new load balancing method used by the wide IP.
   returned: changed

@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_pool
 short_description: Manages F5 BIG-IP GTM pools
@@ -22,11 +22,11 @@ version_added: "2.4"
 options:
   state:
     description:
-        - Pool member state. When C(present), ensures that the pool is
-          created and enabled. When C(absent), ensures that the pool is
-          removed from the system. When C(enabled) or C(disabled), ensures
-          that the pool is enabled or disabled (respectively) on the remote
-          device.
+      - Pool member state. When C(present), ensures that the pool is
+        created and enabled. When C(absent), ensures that the pool is
+        removed from the system. When C(enabled) or C(disabled), ensures
+        that the pool is enabled or disabled (respectively) on the remote
+        device.
     required: True
     choices:
       - present
@@ -137,57 +137,59 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-RETURN = '''
+RETURN = r'''
 preferred_lb_method:
-    description: New preferred load balancing method for the pool.
-    returned: changed
-    type: string
-    sample: "topology"
+  description: New preferred load balancing method for the pool.
+  returned: changed
+  type: string
+  sample: topology
 alternate_lb_method:
-    description: New alternate load balancing method for the pool.
-    returned: changed
-    type: string
-    sample: "drop-packet"
+  description: New alternate load balancing method for the pool.
+  returned: changed
+  type: string
+  sample: drop-packet
 fallback_lb_method:
-    description: New fallback load balancing method for the pool.
-    returned: changed
-    type: string
-    sample: "fewest-hops"
+  description: New fallback load balancing method for the pool.
+  returned: changed
+  type: string
+  sample: fewest-hops
 fallback_ip:
-    description: New fallback IP used when load balacing using the C(fallback_ip) method.
-    returned: changed
-    type: string
-    sample: "10.10.10.10"
+  description: New fallback IP used when load balacing using the C(fallback_ip) method.
+  returned: changed
+  type: string
+  sample: 10.10.10.10
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create a GTM pool
   bigip_gtm_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_pool"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_pool
   delegate_to: localhost
 
 - name: Disable pool
   bigip_gtm_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "disabled"
-      name: "my_pool"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: disabled
+    name: my_pool
   delegate_to: localhost
 '''
 
 
 from distutils.version import LooseVersion
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 try:
     from netaddr import IPAddress, AddrFormatError

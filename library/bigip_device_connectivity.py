@@ -83,70 +83,72 @@ author:
 EXAMPLES = r'''
 - name: Configure device connectivity for standard HA pair
   bigip_device_connectivity:
-      config_sync_ip: "10.1.30.1"
-      mirror_primary_address: "10.1.30.1"
-      unicast_failover:
-          - address: "10.1.30.1"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
+    config_sync_ip: 10.1.30.1
+    mirror_primary_address: 10.1.30.1
+    unicast_failover:
+      - address: 10.1.30.1
+    server: lb.mydomain.com
+    user: admin
+    password: secret
   delegate_to: localhost
 '''
 
 RETURN = r'''
 changed:
-    description: Denotes if the F5 configuration was updated.
-    returned: always
-    type: bool
+  description: Denotes if the F5 configuration was updated.
+  returned: always
+  type: bool
 config_sync_ip:
-    description: The new value of the C(config_sync_ip) setting.
-    returned: changed
-    type: string
-    sample: "10.1.1.1"
+  description: The new value of the C(config_sync_ip) setting.
+  returned: changed
+  type: string
+  sample: 10.1.1.1
 mirror_primary_address:
-    description: The new value of the C(mirror_primary_address) setting.
-    returned: changed
-    type: string
-    sample: "10.1.1.2"
+  description: The new value of the C(mirror_primary_address) setting.
+  returned: changed
+  type: string
+  sample: 10.1.1.2
 mirror_secondary_address:
-    description: The new value of the C(mirror_secondary_address) setting.
-    return: changed
-    type: string
-    sample: "10.1.1.3"
+  description: The new value of the C(mirror_secondary_address) setting.
+  return: changed
+  type: string
+  sample: 10.1.1.3
 unicast_failover:
-    description: The new value of the C(unicast_failover) setting.
-    return: changed
-    type: list
-    sample: [{'address': '10.1.1.2', 'port': 1026}]
+  description: The new value of the C(unicast_failover) setting.
+  return: changed
+  type: list
+  sample: [{'address': '10.1.1.2', 'port': 1026}]
 failover_multicast:
-    description: Whether a failover multicast attribute has been changed or not.
-    return: changed
-    type: bool
+  description: Whether a failover multicast attribute has been changed or not.
+  return: changed
+  type: bool
 multicast_interface:
-    description: The new value of the C(multicast_interface) setting.
-    return: changed
-    type: string
-    sample: "eth0"
+  description: The new value of the C(multicast_interface) setting.
+  return: changed
+  type: string
+  sample: eth0
 multicast_address:
-    description: The new value of the C(multicast_address) setting.
-    return: changed
-    type: string
-    sample: "224.0.0.245"
+  description: The new value of the C(multicast_address) setting.
+  return: changed
+  type: string
+  sample: 224.0.0.245
 multicast_port:
-    description: The new value of the C(multicast_port) setting.
-    return: changed
-    type: string
-    sample: 1026
+  description: The new value of the C(multicast_port) setting.
+  return: changed
+  type: string
+  sample: 1026
 '''
 
 from netaddr import IPAddress, AddrFormatError
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

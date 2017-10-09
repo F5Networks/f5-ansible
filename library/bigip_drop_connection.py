@@ -25,7 +25,6 @@ notes:
     - "F5 developed module 'f5-sdk' required"
     - "Best run as a local_action in your playbook"
     - "Requires administrative privileges for user"
-
 requirements:
     - f5-sdk
 options:

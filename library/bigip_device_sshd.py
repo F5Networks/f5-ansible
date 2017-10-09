@@ -106,47 +106,47 @@ EXAMPLES = r'''
 
 RETURN = '''
 allow:
-    description: >
-        Specifies, if you have enabled SSH access, the IP address or address
-        range for other systems that can use SSH to communicate with this
-        system.
-    returned: changed
-    type: string
-    sample: "192.0.2.*"
+  description: >
+    Specifies, if you have enabled SSH access, the IP address or address
+    range for other systems that can use SSH to communicate with this
+    system.
+  returned: changed
+  type: string
+  sample: 192.0.2.*
 banner:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 banner_text:
-    description: >
-        Specifies the text included on the pre-login banner that
-        displays when a user attempts to login to the system using SSH.
-    returned: changed and success
-    type: string
-    sample: "This is a corporate device. Connecting to it without..."
+  description: >
+    Specifies the text included on the pre-login banner that
+    displays when a user attempts to login to the system using SSH.
+  returned: changed and success
+  type: string
+  sample: This is a corporate device. Connecting to it without...
 inactivity_timeout:
-    description: >
-        The number of seconds before inactivity causes an SSH.
-        session to log out
-    returned: changed
-    type: int
-    sample: "10"
+  description: >
+    The number of seconds before inactivity causes an SSH
+    session to log out.
+  returned: changed
+  type: int
+  sample: 10
 log_level:
-    description: The minimum SSHD message level to include in the system log.
-    returned: changed
-    type: string
-    sample: "debug"
+  description: The minimum SSHD message level to include in the system log.
+  returned: changed
+  type: string
+  sample: debug
 login:
-    description: Specifies that the system accepts SSH communications or not.
-    return: changed
-    type: bool
-    sample: true
+  description: Specifies that the system accepts SSH communications or not.
+  return: changed
+  type: bool
+  sample: true
 port:
-    description: Port that you want the SSH daemon to run on.
-    return: changed
-    type: int
-    sample: 22
+  description: Port that you want the SSH daemon to run on.
+  return: changed
+  type: int
+  sample: 22
 '''
 
 

@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_gtm_server
 short_description: Manages F5 BIG-IP GTM servers
@@ -108,48 +108,52 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create server "GTM_Server"
   bigip_gtm_server:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: 'GTM_Server'
-      datacenter: '/Common/New York'
-      product: 'bigip'
-      link_discovery: 'disabled'
-      virtual_server_discovery: 'disabled'
-      devices:
-        - {'name': 'server_1', 'address': '1.1.1.1'}
-        - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
-        - {'name': 'server_2', 'address': '2.2.2.2'}
-        - {'name': 'server_3', 'addresses': [{'address':'3.3.3.1'},{'address':'3.3.3.2'}]}
-        - {'name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: GTM_Server
+    datacenter: /Common/New York
+    product: bigip
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - {'name': 'server_1', 'address': '1.1.1.1'}
+      - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
+      - {'name': 'server_2', 'address': '2.2.2.2'}
+      - {'name': 'server_3', 'addresses': [{'address':'3.3.3.1'},{'address':'3.3.3.2'}]}
+      - {'name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
   delegate_to: localhost
 
 - name: Create server "GTM_Server" with expanded keys
   bigip_gtm_server:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: 'GTM_Server'
-      datacenter: '/Common/New York'
-      product: 'bigip'
-      link_discovery: 'disabled'
-      virtual_server_discovery: 'disabled'
-      devices:
-        - name: server_1
-          address: '1.1.1.1'
-        - name: 'server_2',
-          address: '2.2.2.1',
-          translation:'192.168.2.1'
-        - name: 'server_2',
-          address: '2.2.2.2'
-        - name: 'server_3',
-          addresses:
-            - address:'3.3.3.1',
-            - address:'3.3.3.2'
-        - name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: GTM_Server
+    datacenter: /Common/New York
+    product: bigip
+    link_discovery: disabled
+    virtual_server_discovery: disabled
+    devices:
+      - name: server_1
+        address: 1.1.1.1
+      - name: server_2
+        address: 2.2.2.1
+        translation: 192.168.2.1
+      - name: server_2
+        address: 2.2.2.2
+      - name: server_3
+        addresses:
+          - address: 3.3.3.1
+          - address: 3.3.3.2
+      - name: server_4
+        addresses:
+          - address: 4.4.4.1
+            translation: 192.168.14.1
+          - address: 4.4.4.2
   delegate_to: localhost
 '''
 
@@ -160,10 +164,14 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import defaultdict
-from ansible.module_utils.f5_utils import iteritems
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

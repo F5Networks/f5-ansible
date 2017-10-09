@@ -67,32 +67,32 @@ author:
 EXAMPLES = r'''
 - name: Sync configuration from device to group
   bigip_configsync_actions:
-      device_group: "foo-group"
-      sync_device_to_group: yes
-      server: "lb01.mydomain.com"
-      user: "admin"
-      password: "secret"
-      validate_certs: no
+    device_group: foo-group
+    sync_device_to_group: yes
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    validate_certs: no
   delegate_to: localhost
 
 - name: Sync configuration from most recent device to the current host
   bigip_configsync_actions:
-      device_group: "foo-group"
-      sync_most_recent_to_device: yes
-      server: "lb01.mydomain.com"
-      user: "admin"
-      password: "secret"
-      validate_certs: no
+    device_group: foo-group
+    sync_most_recent_to_device: yes
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    validate_certs: no
   delegate_to: localhost
 
 - name: Perform an initial sync of a device to a new device group
   bigip_configsync_actions:
-      device_group: "new-device-group"
-      sync_device_to_group: yes
-      server: "lb01.mydomain.com"
-      user: "admin"
-      password: "secret"
-      validate_certs: no
+    device_group: new-device-group
+    sync_device_to_group: yes
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    validate_certs: no
   delegate_to: localhost
 '''
 

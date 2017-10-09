@@ -54,30 +54,30 @@ author:
 EXAMPLES = r'''
 - name: Add an A record to organization.com zone
   bigip_dns_record:
-      user: "admin"
-      password: "secret"
-      hostname: "lb.mydomain.com"
-      type: "A"
-      zone: "organization.com"
-      state: "present"
-      options:
-          hostname: "elliot.organization.com"
-          ip_address: "10.1.1.1"
+    user: admin
+    password: secret
+    hostname: lb.mydomain.com
+    type: A
+    zone: organization.com
+    state: present
+    options:
+      hostname: elliot.organization.com
+      ip_address: 10.1.1.1
   delegate_to: localhost
 
 - name: Add an A record to organization.com zone
   local_action:
-      module: bigip_dns_record
-      user: "admin"
-      password: "secret"
-      hostname: "lb.mydomain.com"
-      type: "A"
-      zone: "organization.com"
-      state: "present"
-      ttl: "10"
-      options:
-          domain_name: "elliot.organization.com"
-          ip_address: "10.1.1.1"
+    module: bigip_dns_record
+    user: admin
+    password: secret
+    hostname: lb.mydomain.com
+    type: A
+    zone: organization.com
+    state: present
+    ttl: 10
+    options:
+      domain_name: elliot.organization.com
+      ip_address: 10.1.1.1
 '''
 
 from distutils.version import StrictVersion
