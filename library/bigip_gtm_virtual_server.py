@@ -68,12 +68,16 @@ EXAMPLES = '''
 
 RETURN = '''# '''
 
+import traceback
+
 try:
     import bigsuds
 except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
+    pass  # Handled by f5_utils.bigsuds_found
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.f5_utils import bigip_api, bigsuds_found, f5_argument_spec
+from ansible.module_utils._text import to_native
 
 
 def server_exists(api, server):
@@ -82,8 +86,8 @@ def server_exists(api, server):
     try:
         api.GlobalLB.Server.get_object_status([server])
         result = True
-    except bigsuds.OperationFailed, e:
-        if "was not found" in str(e):
+    except bigsuds.OperationFailed as e:
+        if "was not found" in to_native(e):
             result = False
         else:
             # genuine exception
@@ -98,8 +102,8 @@ def virtual_server_exists(api, name, server):
         virtual_server_id = {'name': name, 'server': server}
         api.GlobalLB.VirtualServerV2.get_object_status([virtual_server_id])
         result = True
-    except bigsuds.OperationFailed, e:
-        if "was not found" in str(e):
+    except bigsuds.OperationFailed as e:
+        if "was not found" in to_native(e):
             result = False
         else:
             # genuine exception
@@ -211,8 +215,8 @@ def main():
                 else:
                     result = {'changed': True}
 
-    except Exception, e:
-        module.fail_json(msg="received exception: %s" % e)
+    except Exception as e:
+        module.fail_json(msg="received exception: %s" % to_native(e), exception=traceback.format_exc())
 
     module.exit_json(**result)
 

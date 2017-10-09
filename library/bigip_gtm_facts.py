@@ -171,17 +171,20 @@ virtual_server:
             translation_port: "0"
 '''
 
-try:
-    from distutils.version import LooseVersion
-    from f5.bigip.contexts import TransactionContextManager
-    from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
+import re
 
-    HAS_F5SDK = True
+from ansible.module_utils.f5_utils import f5_argument_spec
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
+from distutils.version import LooseVersion
+from f5.bigip import ManagementRoot
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
-
-import re
 
 
 class BigIpGtmFactsCommon(object):
