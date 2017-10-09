@@ -1,9 +1,9 @@
 ---
 
-#- name: Create a new partition - Issue 254
-#  bigip_partition:
-#      name: "issue-254"
-#      state: "present"
+- name: Create a new partition - Issue 254
+  bigip_partition:
+      name: "issue-254"
+      state: "present"
 
 - name: Create HTTP iApp template - Issue 254
   bigip_iapp_template:
@@ -50,7 +50,7 @@
       that:
           - result|changed
 
-#- name: Remove partition - Issue 254
-#  bigip_partition:
-#      name: "issue-254"
-#      state: "absent"
+- name: Remove partition - Issue 254
+  bigip_partition:
+      name: "issue-254"
+      state: "absent"
