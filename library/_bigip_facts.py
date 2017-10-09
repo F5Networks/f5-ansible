@@ -88,16 +88,18 @@ EXAMPLES = r'''
   delegate_to: localhost
 '''
 
-try:
-    from suds import MethodNotFound, WebFault
-except ImportError:
-    bigsuds_found = False
-else:
-    bigsuds_found = True
-
 import fnmatch
 import re
 import traceback
+
+try:
+    from suds import MethodNotFound, WebFault
+except ImportError:
+    pass  # Handle via f5_utils.bigsuds_found
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.f5_utils import bigip_api, bigsuds_found, f5_argument_spec
+from ansible.module_utils.six.moves import map, zip
 
 
 class F5(object):
@@ -1643,7 +1645,7 @@ def main():
                       'pool', 'provision', 'rule', 'self_ip', 'software',
                       'system_info', 'traffic_group', 'trunk',
                       'virtual_address', 'virtual_server', 'vlan')
-    include_test = map(lambda x: x in valid_includes, include)
+    include_test = (x in valid_includes for x in include)
     if not all(include_test):
         module.fail_json(msg="value of include must be one or more of: %s, got: %s" % (",".join(valid_includes), ",".join(include)))
 
@@ -1712,9 +1714,6 @@ def main():
 
     module.exit_json(**result)
 
-# include magic from lib/ansible/module_common.py
-from ansible.module_utils.basic import *
-from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
