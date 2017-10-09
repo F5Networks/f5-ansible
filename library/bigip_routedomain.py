@@ -174,9 +174,13 @@ service_policy:
 try:
     from f5.bigip import ManagementRoot
     from icontrol.session import iControlUnexpectedHTTPError
-    HAS_F5SDK = True
 except ImportError:
-    HAS_F5SDK = False
+    pass  # Handled via f5_utils.HAS_F5SDK
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.ec2 import camel_dict_to_snake_dict
+from ansible.module_utils.f5_utils import F5ModuleError, HAS_F5SDK, f5_argument_spec
+
 
 PROTOCOLS = [
     'BFD', 'BGP', 'IS-IS', 'OSPFv2', 'OSPFv3', 'PIM', 'RIP', 'RIPng'
@@ -522,9 +526,6 @@ def main():
     except F5ModuleError as e:
         module.fail_json(msg=str(e))
 
-from ansible.module_utils.basic import *
-from ansible.module_utils.ec2 import camel_dict_to_snake_dict
-from ansible.module_utils.f5_utils import *
 
 if __name__ == '__main__':
     main()
