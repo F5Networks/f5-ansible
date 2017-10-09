@@ -1,3 +1,5 @@
+---
+
 - name: Create app service integration iApp template
   bigip_iapp_template:
       content: "{{ lookup('file', item) }}"
