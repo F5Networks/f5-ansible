@@ -66,6 +66,68 @@
     state: absent
   delegate_to: localhost
 
+- name: Configure a service, via payload, with strict updates disabled
+  bigip_iapp_service:
+    name: issue-00359
+    template: f5.http.v1.2.0rc4
+    state: present
+    parameters: "{{ lookup('file', 'issue-00359-strict-updates-disabled.parameters.json') }}"
+  register: result
+  delegate_to: localhost
+
+- name: Assert Configure a service, via payload, with strict updates disabled
+  assert:
+    that:
+      - result|changed
+
+- name: Configure a service, via payload, with strict updates disabled - Idempotent check
+  bigip_iapp_service:
+    name: issue-00359
+    template: f5.http.v1.2.0rc4
+    state: present
+    parameters: "{{ lookup('file', 'issue-00359-strict-updates-disabled.parameters.json') }}"
+  register: result
+  delegate_to: localhost
+
+- name: Assert Configure a service, via payload, with strict updates disabled - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Configure a service, via payload, with strict updates enabled
+  bigip_iapp_service:
+    name: issue-00359
+    template: f5.http.v1.2.0rc4
+    state: present
+    parameters: "{{ lookup('file', 'issue-00359-strict-updates-enabled.parameters.json') }}"
+  register: result
+  delegate_to: localhost
+
+- name: Assert Configure a service, via payload, with strict updates enabled
+  assert:
+    that:
+      - result|changed
+
+- name: Configure a service, via payload, with strict updates enabled - Idempotent check
+  bigip_iapp_service:
+    name: issue-00359
+    template: f5.http.v1.2.0rc4
+    state: present
+    parameters: "{{ lookup('file', 'issue-00359-strict-updates-enabled.parameters.json') }}"
+  register: result
+  delegate_to: localhost
+
+- name: Assert Configure a service, via payload, with strict updates enabled - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove iApp service
+  bigip_iapp_service:
+    name: issue-00359
+    state: absent
+  delegate_to: localhost
+
 - name: Remove template
   bigip_iapp_template:
     name: f5.http.v1.2.0rc4
