@@ -18,7 +18,7 @@ all-tests: pycodestyle
 
 docs:
 	rm docs/modules/* || true
-	python scripts/plugin_formatter.py --module-dir library/ --template-dir scripts/ --output-dir docs/modules/ -v
+	python devtools/bin//plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v
 	cd docs && make html
 
 style:
@@ -67,7 +67,7 @@ remove-images:
 	docker rmi --force $$(docker images -a -q)
 
 remove-containers:
-	docker rm $(docker ps -a -q)
+	docker rm $$(docker ps -a -q)
 
 jenkins:
 	openstack stack create -t heat/jenkins-secondary.yaml -e heat/jenkins-secondary-params.yaml jenkins-secondary-01 --wait
