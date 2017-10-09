@@ -82,16 +82,13 @@ options:
   target_username:
     description:
       - Specifies the user name, if the monitored target requires authentication.
-    version_added: 2.5
   target_password:
     description:
       - Specifies the password, if the monitored target requires authentication.
-    version_added: 2.5
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -176,8 +173,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
