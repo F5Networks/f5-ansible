@@ -1,22 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
 
 ANSIBLE_METADATA = {
     'status': ['preview'],
@@ -105,7 +95,6 @@ ciphers:
 '''
 
 import os
-import q
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
@@ -229,7 +218,6 @@ class Parameters(AnsibleF5Parameters):
             return None
         result = []
         for item in self._values['cert_key_chain']:
-            q.q(self._values['cert_key_chain'])
             key = self._key_filename(item)
             cert = self._cert_filename(item)
             chain = self._get_chain_value(item)
@@ -404,7 +392,6 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        q.q(params)
         result = self.client.api.tm.ltm.profile.client_ssls.client_ssl.load(
             name=self.want.name,
             partition=self.want.partition
