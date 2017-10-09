@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_selfip
 short_description: Manage Self-IPs on a BIG-IP system
@@ -83,7 +83,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create Self IP
   bigip_selfip:
     address: 10.10.10.10
@@ -183,7 +183,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 allow_service:
   description: Services that allowed via this Self IP
   returned: changed
