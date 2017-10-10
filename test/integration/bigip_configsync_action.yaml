@@ -18,16 +18,28 @@
 #
 #    ansible-playbook -i notahost, test/integration/bigip_configsync_actions.yaml
 #
-# Tested platforms:
-#
-#    - 11.6.1
-#    - 12.1.2
-#
 
 - name: Test the bigip_configsync_actions module
   hosts: "f5-test"
   connection: local
   any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+    __metadata__:
+      version: 1.0
+      tested_platforms:
+        - 11.6.1
+        - 12.1.2
+      callgraph_exclude:
+        - pycallgraph.*
+
+        # Ansible related
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
 
   environment:
       F5_SERVER: "{{ ansible_host }}"

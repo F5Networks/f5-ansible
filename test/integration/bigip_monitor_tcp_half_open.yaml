@@ -18,24 +18,36 @@
 #
 #    ansible-playbook -i notahost, test/integration/bigip_monitor_tcp_half_open.yaml
 #
-# Tested platforms:
-#
-#    - 12.0.0
-#    - 12.1.0
-#    - 12.1.0 HF1
-#    - 12.1.0 HF2
-#    - 12.1.1
-#    - 12.1.1 HF1
-#    - 12.1.1 HF2
-#    - 12.1.2
-#    - 12.1.2 HF1
-#    - 13.0.0
-#    - 13.0.0 HF1
-#
 
 - name: Test the bigip_monitor_tcp_half_open module
   hosts: "f5-test[0]"
   connection: local
+
+  vars:
+    limit_to: '*'
+    __metadata__:
+      version: 1.0
+      tested_platforms:
+        - 12.0.0
+        - 12.1.0
+        - 12.1.0-hf1
+        - 12.1.0-hf2
+        - 12.1.1
+        - 12.1.1-hf1
+        - 12.1.1-hf2
+        - 12.1.2
+        - 12.1.2-hf1
+        - 13.0.0
+        - 13.0.0-hf1
+      callgraph_exclude:
+        - pycallgraph.*
+
+        # Ansible related
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
 
   environment:
       F5_SERVER: "{{ ansible_host }}"
