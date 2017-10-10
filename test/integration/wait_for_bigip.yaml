@@ -1,4 +1,3 @@
----
 
 # Test the wait_for_bigip module
 #
@@ -10,19 +9,18 @@
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/wait_for_bigip.yaml
+#    ansible-playbook -i notahost, test/integration/wait_for_bigip.yaml
 #
 # Examples:
 #
-#    Run all tests on the wait_for_bigip module
+#    Run all tests on the {module} module
 #
-#    ansible-playbook -i notahost, playbooks/wait_for_bigip.yaml
+#    ansible-playbook -i notahost, test/integration/wait_for_bigip.yaml
 #
 
 - name: Test the wait_for_bigip module
   hosts: "f5-test[0]"
   connection: local
-  any_errors_fatal: true
 
   vars:
     limit_to: '*'
@@ -41,11 +39,11 @@
         - ansible.module_utils.six.*
 
   environment:
-      F5_SERVER: "{{ ansible_host }}"
-      F5_USER: "{{ bigip_username }}"
-      F5_PASSWORD: "{{ bigip_password }}"
-      F5_SERVER_PORT: "{{ bigip_port }}"
-      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "{{ bigip_username }}"
+    F5_PASSWORD: "{{ bigip_password }}"
+    F5_SERVER_PORT: "{{ bigip_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-      - wait_for_bigip
+    - wait_for_bigip
