@@ -18,15 +18,27 @@
 #
 #    ansible-playbook -i notahost, playbooks/iworkflow_license_pool.yaml
 #
-# Tested platforms:
-#
-#    - 2.1.0
-#
 
 - name: Test the iworkflow_license_pool module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+    __metadata__:
+      version: 1.0
+      tested_platforms:
+        - 2.1.0
+      callgraph_exclude:
+        - pycallgraph.*
+
+        # Ansible related
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
 
   environment:
       F5_SERVER: "{{ ansible_host }}"

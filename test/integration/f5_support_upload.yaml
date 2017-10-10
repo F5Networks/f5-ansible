@@ -18,17 +18,28 @@
 #
 #    ansible-playbook -i notahost, test/integration/f5_support_upload.yaml
 #
-# Tested platforms:
-#
-#    - NA
-#
 
 - name: Test the f5_support_upload module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
 
-  environment:
+  vars:
+    limit_to: '*'
+    __metadata__:
+      version: 1.0
+      tested_platforms:
+        - NA
+      callgraph_exclude:
+        - pycallgraph.*
+
+        # Ansible related
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
+
   environment:
       F5_SERVER: "{{ ansible_host }}"
       F5_USER: "{{ bigip_username }}"

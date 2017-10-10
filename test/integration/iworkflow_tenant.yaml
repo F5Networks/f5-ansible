@@ -18,15 +18,27 @@
 #
 #    ansible-playbook -i notahost, playbooks/iworkflow_tenant.yaml
 #
-# Tested platforms:
-#
-#    - NA
-#
 
 - name: Test the iworkflow_tenant module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+    __metadata__:
+      version: 1.0
+      tested_platforms:
+        - NA
+      callgraph_exclude:
+        - pycallgraph.*
+
+        # Ansible related
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
 
   environment:
       F5_SERVER: "{{ ansible_host }}"
