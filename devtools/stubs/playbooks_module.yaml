@@ -23,21 +23,20 @@
   connection: local
 
   vars:
-    limit_to: "*"
+    limit_to: '*'
     __metadata__:
-      version: "1.0"
+      version: 1.0
       tested_platforms:
-        - "NA"
+        - NA
       callgraph_exclude:
-        - "pycallgraph.*"
+        - pycallgraph.*
 
         # Ansible related
-        - "ansible.module_utils.basic.AnsibleModule.*"
-        - "ansible.module_utils.basic.*"
-        - "ansible.module_utils.parsing.*"
-        - "ansible.module_utils._text.*"
-        - "ansible.module_utils.six.*"
-
+        - ansible.module_utils.basic.AnsibleModule.*
+        - ansible.module_utils.basic.*
+        - ansible.module_utils.parsing.*
+        - ansible.module_utils._text.*
+        - ansible.module_utils.six.*
 
 {% raw %}  environment:
     F5_SERVER: "{{ ansible_host }}"
