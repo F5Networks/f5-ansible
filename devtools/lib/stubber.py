@@ -50,11 +50,12 @@ def stub_roles_yaml_files(module):
         defaults_file = '{0}/test/integration/targets/{1}/tasks/{2}'.format(TOP_LEVEL, module, file)
         touch(defaults_file)
     main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(TOP_LEVEL, module)
+
+    template = JINJA_ENV.get_template('test_integration_targets_main.yaml')
+    content = template.render()
+
     with open(main_tests, 'w') as fh:
-        fh.write("---\n\n")
-        fh.write("- import_tasks: setup.yaml\n\n")
-        fh.write("# tests go here\n\n")
-        fh.write("- import_tasks: teardown.yaml")
+        fh.write(content)
 
 
 def stub_playbook_file(module):
