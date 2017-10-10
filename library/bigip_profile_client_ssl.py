@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
@@ -65,33 +63,33 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create client SSL profile
   bigip_profile_client_ssl:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_profile"
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_profile
   delegate_to: localhost
 
 - name: Create client SSL profile with specific ciphers
   bigip_profile_client_ssl:
-      state: "present"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my_profile"
-      ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_profile
+    ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 ciphers:
-    description: The ciphers applied to the profile.
-    returned: changed
-    type: string
-    sample: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+  description: The ciphers applied to the profile.
+  returned: changed
+  type: string
+  sample: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
 '''
 
 import os
