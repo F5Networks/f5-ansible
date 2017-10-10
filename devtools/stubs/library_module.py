@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: {{ module }}
-short_description: __SHORT_DESCRIPTION__.
+short_description: __SHORT_DESCRIPTION__
 description:
   - __LONG DESCRIPTION__.
 version_added: "2.5"
