@@ -21,6 +21,7 @@ listed below.
    :caption: User Documentation
 
    usage/getting_started
+   usage/connection-local-or-delegate-to
    usage/versions
    usage/support
 
