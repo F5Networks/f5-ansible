@@ -139,5 +139,5 @@ controller (instead of the remote webserver), what will the value of the
 
 If you answered `my-web-server` then DING! DING! DING! WE HAVE A WINNER!
 
-This is *context* the task executed on `localhost` using `my-web-server`'s context,
+This is **context**. The task executed on `localhost` using `my-web-server`'s context,
 and therefore, its `facts`.
