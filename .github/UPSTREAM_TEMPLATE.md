@@ -44,7 +44,7 @@ Paste a list of Python versions this was tested on.
 
 Check the tested versions
 -->
-- [ ] 2.7.10
+- [ ] 2.7.14
 - [ ] 3.5.4
 - [ ] 3.6.2
 
