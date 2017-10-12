@@ -343,22 +343,31 @@ class Parameters(AnsibleF5Parameters):
     def netmask(self):
         if self._values['netmask'] is None:
             return None
-        try:
-            address = '0.0.0.0/' + self._values['netmask']
-            ip = IPNetwork(address)
-            result = ip.prefixlen
-        except (AddrFormatError, ValueError):
+
+        # Check if numeric
+        if isinstance(self._values['netmask'], int):
+            result = int(self._values['netmask'])
+            if 0 < result < 256:
+                return result
+            raise F5ModuleError(
+                'The provided netmask must be a valid IP or CIDR master'
+            )
+        else:
             try:
-                result = int(self._values['netmask'])
-            except ValueError:
-                raise F5ModuleError(
-                    'The provided netmask is neither in IP or CIDR format'
-                )
-        if 0 < result < 33:
-            return result
-        raise F5ModuleError(
-            'The provided netmask must be a valid IP or CIDR master'
-        )
+                # IPv4 netmask
+                address = '0.0.0.0/' + self._values['netmask']
+                ip = IPNetwork(address)
+            except AddrFormatError as ex:
+                try:
+                    # IPv6 netmask
+                    address = '::/' + self._values['netmask']
+                    ip = IPNetwork(address)
+                except AddrFormatError as ex:
+                    raise F5ModuleError(
+                        'The provided netmask is neither in IP or CIDR format'
+                    )
+            result = int(ip.prefixlen)
+        return result
 
     @property
     def allow_service(self):

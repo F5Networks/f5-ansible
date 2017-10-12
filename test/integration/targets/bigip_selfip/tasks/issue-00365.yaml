@@ -1,0 +1,45 @@
+---
+
+- name: Ensure internal VLAN exists
+  bigip_vlan:
+    name: internal
+
+- name: Create self-IPs
+  bigip_selfip:
+      name: "issue-00365"
+      address: "2606:ae00:2e10:101::6"
+      netmask: "ffff:ffff:ffff:ffff::"
+      vlan: "internal"
+      state: present
+  delegate_to: localhost
+  register: result
+
+- name: Assert Create self-IPs
+  assert:
+      that:
+          - result|changed
+
+- name: Create self-IPs
+  bigip_selfip:
+      name: "issue-00365"
+      address: "2606:ae00:2e10:101::6"
+      netmask: "ffff:ffff:ffff:ffff::"
+      vlan: "internal"
+      state: present
+  delegate_to: localhost
+  register: result
+
+- name: Assert Create self-IPs - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Remove self-IPs
+  bigip_selfip:
+      name: "issue-00365"
+      state: absent
+
+- name: Remove VLANs
+  bigip_vlan:
+    name: internal
+    state: absent
