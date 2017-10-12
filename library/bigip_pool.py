@@ -97,13 +97,13 @@ options:
   host:
     description:
       - Pool member IP.
-    deprecated: Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
+      - Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
     aliases:
       - address
   port:
     description:
       - Pool member port.
-    deprecated: Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
+      - Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
   partition:
     description:
       - Device partition to manage resources on.
@@ -115,6 +115,7 @@ notes:
   - Best run as a local_action in your playbook.
 requirements:
   - f5-sdk
+  - Python >= 2.7
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
