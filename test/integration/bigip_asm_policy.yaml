@@ -1,0 +1,48 @@
+---
+
+# Test the bigip_asm_policy module
+#
+# Running this playbook assumes that you have a BIG-IP installation at the
+# ready to receive the commands issued in this Playbook.
+#
+# This module will run tests against a BIG-IP host to verify that the
+# bigip_asm_policy module behaves as expected.
+#
+# Usage:
+#
+#    ansible-playbook -i notahost, playbooks/bigip_asm_policy.yaml
+#
+# Examples:
+#
+#    Run all tests on the bigip_asm_policy module
+#
+#    ansible-playbook -i notahost, playbooks/bigip_asm_policy.yaml
+#
+# Tested platforms:
+#
+#    - 12.0.0
+#    - 12.1.0
+#    - 12.1.0 HF1
+#    - 12.1.0 HF2
+#    - 12.1.1
+#    - 12.1.1 HF1
+#    - 12.1.1 HF2
+#    - 12.1.2
+#    - 12.1.2 HF1
+#    - 13.0.0
+#
+
+- name: Test the bigip_asm_policy module
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  environment:
+      F5_SERVER: "{{ ansible_host }}"
+      F5_USER: "{{ bigip_username }}"
+      F5_PASSWORD: "{{ bigip_password }}"
+      F5_SERVER_PORT: "{{ bigip_port }}"
+      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+
+  roles:
+      - bigip_asm_policy

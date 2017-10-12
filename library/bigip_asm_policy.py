@@ -24,10 +24,138 @@ ANSIBLE_METADATA = {
     'metadata_version': '1.0'
 }
 
+DOCUMENTATION = '''
+---
+module: bigip_asm_policy
+short_description: Manage BIG-IP ASM policies
+description:
+   - Manage BIG-IP ASM policies
+version_added: "2.4"
+options:
+  active:
+    description:
+      - If C(yes) will apply and activate existing inactive policy. If C(no), it will deactivate existing active policy.
+        Generally should be C(yes) only in cases where you want to activate new or existing policy.
+    default: no
+    choices:
+      - yes
+      - no
+  name:
+    description:
+      - The ASM policy to manage or create.
+    required: True
+  state:
+    description:
+      - When C(state) is C(present), and C(file) or C(template) parameter is provided, new ASM policy is imported and 
+        created with the given C(name). When C(state) is present and no C(file) or C(template) parameter is provided 
+        new blank ASM policy is created with the given C(name). When C(state) is C(absent), ensures that the policy is 
+        removed, even if it is currently active.
+    choices:
+      - present
+      - absent
+  file:
+    description:
+      - Full path to a policy file to be imported into the BIG-IP ASM.
+  template:
+    description:
+     - An ASM policy built-in template. If the template does not exist we will raise an error.
+extends_documentation_fragment: f5
+requirements:
+  - f5-sdk
+author:
+  - Wojciech Wypior (@wojtek0806)
+'''
 
-# To do list:
-# Unit tests
-# Functional tests
+EXAMPLES = '''
+- name: Import and activate ASM policy
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "new_asm_policy"
+      file: "/root/asm_policy.xml"
+      active: "yes"
+      state: "present"
+  delegate_to: localhost
+
+- name: Import ASM policy from template
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "new_sharepoint_policy"
+      template: "POLICY_TEMPLATE_SHAREPOINT_2007_HTTP"
+      state: "present"
+  delegate_to: localhost
+
+- name: Create blank ASM policy
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "new_blank_policy"
+      state: "present"
+  delegate_to: localhost
+  
+- name: Create blank ASM policy and activate
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "new_blank_policy"
+      active: "yes"
+      state: "present"
+  delegate_to: localhost
+
+- name: Activate ASM policy
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "inactive_policy"
+      active: "yes"
+      state: "present"
+  delegate_to: localhost
+
+- name: Deactivate ASM policy
+  bigip_asm_policy:
+      server: "bigip.localhost.localdomain"
+      user: "admin"
+      password: "admin"
+      name: "active_policy"
+      state: "present"
+  delegate_to: localhost
+  
+'''
+
+RETURN = '''
+active:
+    description: Set when activating/deactivating ASM policy
+    returned: changed
+    type: bool
+    sample: yes
+state:
+    description: Action performed on the target device.
+    returned: changed
+    type: string
+    sample: "absent"
+file:
+    description: Local path to ASM policy XML file.
+    returned: changed
+    type: string
+    sample: "/root/some_policy.xml"
+template:
+    description: Name of the built-in ASM policy template
+    returned: changed
+    type: string
+    sample: "POLICY_TEMPLATE_SHAREPOINT_2007_HTTP"
+name:
+    description: Name of the ASM policy to be managed/created
+    returned: changed
+    type: string
+    sample: "Asm_APP1_Transparent"
+'''
+
 
 
 import os
@@ -74,7 +202,7 @@ class Parameters(AnsibleF5Parameters):
                     self._values[map_key] = v
 
     updatables = [
-        'active', 'name'
+        'active'
     ]
 
     returnables = [
@@ -101,7 +229,7 @@ class Parameters(AnsibleF5Parameters):
     def _template_exists_on_device(self, name):
         collection = self._templates_on_device()
         for resource in collection:
-            if resource.name == name:
+            if resource.name == name.upper():
                 self._set_template_selflink(resource)
                 return True
         return False
@@ -148,9 +276,7 @@ class ModuleManager(object):
         state = self.want.state
 
         try:
-            if state == "activate":
-                changed = self.activated()
-            elif state == "present":
+            if state == "present":
                 changed = self.present()
             elif state == "absent":
                 changed = self.absent()
@@ -183,33 +309,11 @@ class ModuleManager(object):
             return True
         return False
 
-    def activated(self):
-        if self.exists():
-            if self.is_activated():
-                return False
-            else:
-                if self.client.check_mode:
-                    return True
-                self.activate()
-                return True
-        else:
-            self._set_changed_options()
-            if self.client.check_mode:
-                return True
-            self.install()
-            self.activate()
-            return True
-
     def present(self):
         if self.exists():
-            return False
+            return self.update()
         else:
-            self.want.active = False
-            self._set_changed_options()
-            if self.client.check_mode:
-                return True
-            self.install()
-            return True
+            return self.create()
 
     def absent(self):
         if not self.exists():
@@ -226,13 +330,59 @@ class ModuleManager(object):
         result = self.policy_exists_on_device()
         return result
 
+    def create(self):
+        self._set_changed_options()
+        if self.client.check_mode:
+            return True
+        if self.install():
+            if self.want.active:
+                self.activate()
+                return True
+            else:
+                return True
+        else:
+            return False
+
+    def update(self):
+        policy = self.return_policy()
+        self.have = Parameters(policy.attrs)
+        if not self.should_update():
+            return False
+        if self.client.check_mode:
+            return True
+        if self.update_on_device():
+            return True
+        else:
+            return False
+
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
+    def update_on_device(self):
+        if self.want.active:
+            if self.is_activated():
+                return False
+            else:
+                if self.client.check_mode:
+                    return True
+                self.activate()
+                return True
+        else:
+            if not self.is_activated():
+                return False
+            if self.client.check_mode:
+                return True
+            self.deactivate()
+            return True
+
     def install(self):
         template = self.want.template
         path = self.want.file
-        if self.client.check_mode:
-            return True
         if template is None and path is None:
-            self.create()
+            self.create_blank()
             return True
         if template is None:
             task = self.import_policy_to_device()
@@ -245,7 +395,7 @@ class ModuleManager(object):
                 raise F5ModuleError('Import policy task failed.')
         return False
 
-    def create(self):
+    def create_blank(self):
         self.create_policy_on_device()
         if self.policy_exists_on_device():
             return True
@@ -259,11 +409,16 @@ class ModuleManager(object):
     def activate(self):
         task = self.apply_policy_on_device()
         if self.wait_for_task(task):
-            self.want.active = True
-            self._set_changed_options()
             return True
         else:
             raise F5ModuleError('Apply policy task failed.')
+
+    def deactivate(self):
+        result = self.deactivate_policy_on_device()
+        if result:
+            return True
+        else:
+            raise F5ModuleError('Policy deactivation failed.')
 
     def wait_for_task(self, task):
         while True:
@@ -287,7 +442,6 @@ class ModuleManager(object):
         if policy.active is True:
             return True
         else:
-            self._update_changed_options()
             return False
 
     def return_policy(self):
@@ -299,7 +453,6 @@ class ModuleManager(object):
     def policy_exists_on_device(self):
         policy = self.return_policy()
         if policy:
-            self.have = Parameters(policy.attrs)
             return True
         else:
             return False
@@ -324,6 +477,14 @@ class ModuleManager(object):
         result = self.client.api.tm.asm.tasks.apply_policy_s.apply_policy.create(policyReference=link)
         return result
 
+    def deactivate_policy_on_device(self):
+        policy = self.return_policy()
+        policy.modify(active=False)
+        if policy.active is False:
+            return True
+        else:
+            return False
+
     def create_policy_from_template_on_device(self):
         result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(
             name=self.want.name, policyTemplateReference=self.want.template_link
@@ -344,7 +505,6 @@ class ModuleManager(object):
 
 class ArgumentSpec(object):
     def __init__(self):
-        self.states = ['absent', 'activate', 'present']
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
@@ -352,9 +512,9 @@ class ArgumentSpec(object):
             ),
             file=dict(),
             template=dict(),
-            state=dict(
-                default='activate',
-                choices=self.states
+            active=dict(
+                default='no',
+                type='bool'
             )
         )
         self.f5_product_name = 'bigip'
