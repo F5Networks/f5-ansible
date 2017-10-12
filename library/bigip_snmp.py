@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 module: bigip_snmp
 short_description: Manipulate general SNMP settings on a BIG-IP
 description:
@@ -60,61 +60,63 @@ author:
     - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set snmp contact
   bigip_snmp:
-      contact: "Joe User"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      validate_certs: "false"
+    contact: "Joe User"
+    password: "secret"
+    server: "lb.mydomain.com"
+    user: "admin"
+    validate_certs: "false"
   delegate_to: localhost
 
 - name: Set snmp location
   bigip_snmp:
-      location: "US West 1"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      validate_certs: "false"
+    location: "US West 1
+    password: "secret
+    server: "lb.mydomain.com
+    user: "admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 agent_status_traps:
-    description: Value that the agent status traps was set to.
-    returned: changed
-    type: string
-    sample: "enabled"
+  description: Value that the agent status traps was set to.
+  returned: changed
+  type: string
+  sample: enabled
 agent_authentication_traps:
-    description: Value that the authentication status traps was set to.
-    returned: changed
-    type: string
-    sample: "enabled"
+  description: Value that the authentication status traps was set to.
+  returned: changed
+  type: string
+  sample: enabled
 device_warning_traps:
-    description: Value that the warning status traps was set to.
-    returned: changed
-    type: string
-    sample: "enabled"
+  description: Value that the warning status traps was set to.
+  returned: changed
+  type: string
+  sample: enabled
 contact:
-    description: The new value for the person who administers SNMP on the device.
-    returned: changed
-    type: string
-    sample: Joe User
+  description: The new value for the person who administers SNMP on the device.
+  returned: changed
+  type: string
+  sample: Joe User
 location:
-    description: The new value for the system's physical location.
-    returned: changed
-    type: string
-    sample: "US West 1a"
+  description: The new value for the system's physical location.
+  returned: changed
+  type: string
+  sample: US West 1a
 '''
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

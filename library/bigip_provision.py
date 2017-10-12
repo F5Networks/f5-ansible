@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_provision
 short_description: Manage BIG-IP module provisioning
@@ -73,34 +73,34 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Provision PEM at "nominal" level
   bigip_provision:
-      server: "lb.mydomain.com"
-      module: "pem"
-      level: "nominal"
-      password: "secret"
-      user: "admin"
-      validate_certs: "no"
+    server: lb.mydomain.com
+    module: pem
+    level: nominal
+    password: secret
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Provision a dedicated SWG. This will unprovision every other module
   bigip_provision:
-      server: "lb.mydomain.com"
-      module: "swg"
-      password: "secret"
-      level: "dedicated"
-      user: "admin"
-      validate_certs: "no"
+    server: lb.mydomain.com
+    module: swg
+    password: secret
+    level: dedicated
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 level:
-    description: The new provisioning level of the module.
-    returned: changed
-    type: string
-    sample: "minimum"
+  description: The new provisioning level of the module.
+  returned: changed
+  type: string
+  sample: minimum
 '''
 
 import time

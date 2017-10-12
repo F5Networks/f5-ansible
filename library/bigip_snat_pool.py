@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_snat_pool
 short_description: Manage SNAT pools on a BIG-IP
@@ -67,69 +67,72 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add the SNAT pool 'my-snat-pool'
   bigip_snat_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my-snat-pool"
-      state: "present"
-      members:
-          - 10.10.10.10
-          - 20.20.20.20
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my-snat-pool
+    state: present
+    members:
+      - 10.10.10.10
+      - 20.20.20.20
   delegate_to: localhost
 
 - name: Change the SNAT pool's members to a single member
   bigip_snat_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my-snat-pool"
-      state: "present"
-      member: "30.30.30.30"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my-snat-pool
+    state: present
+    member: 30.30.30.30
   delegate_to: localhost
 
 - name: Append a new list of members to the existing pool
   bigip_snat_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "my-snat-pool"
-      state: "present"
-      members:
-          - 10.10.10.10
-          - 20.20.20.20
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my-snat-pool
+    state: present
+    members:
+      - 10.10.10.10
+      - 20.20.20.20
   delegate_to: localhost
 
 - name: Remove the SNAT pool 'my-snat-pool'
   bigip_snat_pool:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "johnd"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: johnd
+    state: absent
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 members:
-    description:
-      - List of members that are part of the SNAT pool.
-    returned: changed and success
-    type: list
-    sample: "['10.10.10.10']"
+  description:
+    - List of members that are part of the SNAT pool.
+  returned: changed and success
+  type: list
+  sample: "['10.10.10.10']"
 '''
 
 import os
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError,
-    iteritems
-)
+
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 try:
     from netaddr import IPAddress, AddrFormatError

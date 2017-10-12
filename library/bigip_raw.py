@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_raw
 short_description: Run raw commands on F5 devices
@@ -80,24 +80,24 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Run show version on remote devices
   bigip_raw:
     commands: show sys version
-    server: "lb.mydomain.com"
-    password: "secret"
-    user: "admin"
-    validate_certs: "no"
+    server: lb.mydomain.com
+    password: "secret
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Run show version and check to see if output contains BIG-IP
   bigip_raw:
     commands: show sys version
     wait_for: result[0] contains BIG-IP
-    server: "lb.mydomain.com"
-    password: "secret"
-    user: "admin"
-    validate_certs: "no"
+    server: lb.mydomain.com
+    password: secret
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Run multiple commands on remote nodes
@@ -105,10 +105,10 @@ EXAMPLES = '''
     commands:
       - show sys version
       - list ltm virtual
-    server: "lb.mydomain.com"
-    password: "secret"
-    user: "admin"
-    validate_certs: "no"
+    server: lb.mydomain.com
+    password: secret
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Run multiple commands and evaluate the output
@@ -119,31 +119,29 @@ EXAMPLES = '''
     wait_for:
       - result[0] contains BIG-IP
       - result[1] contains my-vs
-    server: "lb.mydomain.com"
-    password: "secret"
-    user: "admin"
-    validate_certs: "no"
+    server: lb.mydomain.com
+    password: secret
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 stdout:
-    description: The set of responses from the commands
-    returned: always
-    type: list
-    sample: ['...', '...']
-
+  description: The set of responses from the commands
+  returned: always
+  type: list
+  sample: ['...', '...']
 stdout_lines:
-    description: The value of stdout split into a list
-    returned: always
-    type: list
-    sample: [['...', '...'], ['...'], ['...']]
-
+  description: The value of stdout split into a list
+  returned: always
+  type: list
+  sample: [['...', '...'], ['...'], ['...']]
 failed_conditions:
-    description: The list of conditionals that have failed
-    returned: failed
-    type: list
-    sample: ['...', '...']
+  description: The list of conditionals that have failed
+  returned: failed
+  type: list
+  sample: ['...', '...']
 '''
 
 import time
@@ -152,13 +150,17 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 from ansible.module_utils.netcli import FailedConditionsError
 from ansible.module_utils.six import string_types
 from ansible.module_utils.netcli import Conditional
 from ansible.module_utils.network_common import ComplexList
 from ansible.module_utils.network_common import to_list
 from collections import deque
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

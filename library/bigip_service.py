@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_service
 short_description: Manage BIG-IP service states
@@ -74,14 +74,14 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Restart the BIG-IP sshd service
   bigip_service:
-      server: "big-ip"
-      name: "sshd"
-      user: "admin"
-      password: "admin"
-      state: "restarted"
+    server: lb.mydomain.com
+    name: sshd
+    user: admin
+    password: secret
+    state: restarted
   delegate_to: localhost
 '''
 

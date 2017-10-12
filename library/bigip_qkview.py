@@ -89,25 +89,25 @@ author:
 EXAMPLES = '''
 - name: Fetch a qkview from the remote device
   bigip_qkview:
-      asm_request_log: "yes"
-      exclude:
-          - audit
-          - secure
-      dest: "/tmp/localhost.localdomain.qkview"
+    asm_request_log: yes
+    exclude:
+      - audit
+      - secure
+    dest: /tmp/localhost.localdomain.qkview
   delegate_to: localhost
 '''
 
 RETURN = '''
 stdout:
-    description: The set of responses from the commands
-    returned: always
-    type: list
-    sample: ['...', '...']
+  description: The set of responses from the commands
+  returned: always
+  type: list
+  sample: ['...', '...']
 stdout_lines:
-    description: The value of stdout split into a list
-    returned: always
-    type: list
-    sample: [['...', '...'], ['...'], ['...']]
+  description: The value of stdout split into a list
+  returned: always
+  type: list
+  sample: [['...', '...'], ['...'], ['...']]
 '''
 
 import re
@@ -116,13 +116,15 @@ import os
 from distutils.version import LooseVersion
 
 from ansible.module_utils.six import string_types
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

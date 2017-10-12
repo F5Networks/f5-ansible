@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
@@ -93,91 +93,95 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create a route domain
   bigip_routedomain:
-      id: "1234"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
+    id: 1234
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
   delegate_to: localhost
 
 - name: Set VLANs on the route domain
   bigip_routedomain:
-      id: "1234"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
-      vlans:
-          - net1
-          - foo
+    id: 1234
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+    vlans:
+      - net1
+      - foo
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 id:
-    description: The ID of the route domain that was changed
-    returned: changed
-    type: int
-    sample: 2
+  description: The ID of the route domain that was changed
+  returned: changed
+  type: int
+  sample: 2
 description:
-    description: The description of the route domain
-    returned: changed
-    type: string
-    sample: "route domain foo"
+  description: The description of the route domain
+  returned: changed
+  type: string
+  sample: route domain foo
 strict:
-    description: The new strict isolation setting
-    returned: changed
-    type: string
-    sample: "enabled"
+  description: The new strict isolation setting
+  returned: changed
+  type: string
+  sample: enabled
 parent:
-    description: The new parent route domain
-    returned: changed
-    type: int
-    sample: 0
+  description: The new parent route domain
+  returned: changed
+  type: int
+  sample: 0
 vlans:
-    description: List of new VLANs the route domain is applied to
-    returned: changed
-    type: list
-    sample: ['/Common/http-tunnel', '/Common/socks-tunnel']
+  description: List of new VLANs the route domain is applied to
+  returned: changed
+  type: list
+  sample: ['/Common/http-tunnel', '/Common/socks-tunnel']
 routing_protocol:
-    description: List of routing protocols applied to the route domain
-    returned: changed
-    type: list
-    sample: ['bfd', 'bgp']
+  description: List of routing protocols applied to the route domain
+  returned: changed
+  type: list
+  sample: ['bfd', 'bgp']
 bwc_policy:
-    description: The new bandwidth controller
-    returned: changed
-    type: string
-    sample: /Common/foo
+  description: The new bandwidth controller
+  returned: changed
+  type: string
+  sample: /Common/foo
 connection_limit:
-    description: The new connection limit for the route domain
-    returned: changed
-    type: integer
-    sample: 100
+  description: The new connection limit for the route domain
+  returned: changed
+  type: integer
+  sample: 100
 flow_eviction_policy:
-    description: The new eviction policy to use with this route domain
-    returned: changed
-    type: string
-    sample: /Common/default-eviction-policy
+  description: The new eviction policy to use with this route domain
+  returned: changed
+  type: string
+  sample: /Common/default-eviction-policy
 service_policy:
-    description: The new service policy to use with this route domain
-    returned: changed
-    type: string
-    sample: /Common-my-service-policy
+  description: The new service policy to use with this route domain
+  returned: changed
+  type: string
+  sample: /Common-my-service-policy
 '''
 
 try:
     from f5.bigip import ManagementRoot
-    from icontrol.session import iControlUnexpectedHTTPError
 except ImportError:
     pass  # Handled via f5_utils.HAS_F5SDK
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.ec2 import camel_dict_to_snake_dict
 from ansible.module_utils.f5_utils import F5ModuleError, HAS_F5SDK, f5_argument_spec
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 PROTOCOLS = [
