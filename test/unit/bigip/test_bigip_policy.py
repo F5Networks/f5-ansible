@@ -40,13 +40,15 @@ try:
     from library.bigip_policy import SimpleManager
     from library.bigip_policy import ComplexManager
     from library.bigip_policy import ArgumentSpec
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_policy import Parameters
         from ansible.modules.network.f5.bigip_policy import ModuleManager
-        from ansible.modules.network.f5.bigip_policy import SimpleTrafficPolicyManager
-        from ansible.modules.network.f5.bigip_policy import ComplexTrafficPolicyManager
+        from ansible.modules.network.f5.bigip_policy import SimpleManager
+        from ansible.modules.network.f5.bigip_policy import ComplexManager
         from ansible.modules.network.f5.bigip_policy import ArgumentSpec
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

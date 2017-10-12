@@ -40,6 +40,7 @@ try:
     from library.bigip_qkview import MadmLocationManager
     from library.bigip_qkview import BulkLocationManager
     from library.bigip_qkview import ArgumentSpec
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_qkview import Parameters
@@ -47,6 +48,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_qkview import MadmLocationManager
         from ansible.modules.network.f5.bigip_qkview import BulkLocationManager
         from ansible.modules.network.f5.bigip_qkview import ArgumentSpec
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

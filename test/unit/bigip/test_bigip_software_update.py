@@ -34,9 +34,11 @@ from ansible.module_utils._text import to_bytes
 
 try:
     from library.bigip_software_update import Parameters
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_software_update import Parameters
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

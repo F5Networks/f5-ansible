@@ -41,6 +41,7 @@ try:
     from library.bigip_irule import ArgumentSpec
     from library.bigip_irule import GtmManager
     from library.bigip_irule import LtmManager
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_irule import Parameters
@@ -48,6 +49,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_irule import ArgumentSpec
         from ansible.modules.network.f5.bigip_irule import GtmManager
         from ansible.modules.network.f5.bigip_irule import LtmManager
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

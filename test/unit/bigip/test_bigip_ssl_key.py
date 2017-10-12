@@ -39,12 +39,14 @@ try:
     from library.bigip_ssl_key import Parameters
     from library.bigip_ssl_key import ModuleManager
     from library.bigip_ssl_key import HAS_F5SDK
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_ssl_key import ArgumentSpec
         from ansible.modules.network.f5.bigip_ssl_key import Parameters
         from ansible.modules.network.f5.bigip_ssl_key import ModuleManager
         from ansible.modules.network.f5.bigip_ssl_key import HAS_F5SDK
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

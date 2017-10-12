@@ -42,6 +42,7 @@ try:
     from library.bigip_user import ArgumentSpec
     from library.bigip_user import UnparitionedManager
     from library.bigip_user import PartitionedManager
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_user import Parameters
@@ -49,6 +50,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_user import ArgumentSpec
         from ansible.modules.network.f5.bigip_user import UnparitionedManager
         from ansible.modules.network.f5.bigip_user import PartitionedManager
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

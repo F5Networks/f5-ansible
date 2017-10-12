@@ -40,12 +40,15 @@ try:
     from library.bigip_remote_syslog import ArgumentSpec
     from library.bigip_remote_syslog import HAS_F5SDK
     from library.bigip_remote_syslog import HAS_NETADDR
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_remote_syslog import Parameters
         from ansible.modules.network.f5.bigip_remote_syslog import ModuleManager
         from ansible.modules.network.f5.bigip_remote_syslog import ArgumentSpec
         from ansible.modules.network.f5.bigip_remote_syslog import HAS_F5SDK
+        from ansible.modules.network.f5.bigip_remote_syslog import HAS_NETADDR
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 

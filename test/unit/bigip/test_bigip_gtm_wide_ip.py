@@ -42,6 +42,7 @@ try:
     from library.bigip_gtm_wide_ip import ArgumentSpec
     from library.bigip_gtm_wide_ip import UntypedManager
     from library.bigip_gtm_wide_ip import TypedManager
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_gtm_wide_ip import Parameters
@@ -49,6 +50,7 @@ except ImportError:
         from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
         from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
         from ansible.modules.network.f5.bigip_gtm_wide_ip import TypedManager
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
