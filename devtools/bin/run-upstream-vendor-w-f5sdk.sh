@@ -45,5 +45,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7.10 python test/ansible/sanity/short-description-ends-with-period.py
+if [ $? -ne 0 ]; then
+    echo "FAILED"
+    exit 1
+fi
 
 echo "SUCCESS"
