@@ -350,7 +350,7 @@ class Parameters(AnsibleF5Parameters):
             if 0 < result < 256:
                 return result
             raise F5ModuleError(
-                'The provided netmask must be a valid IP or CIDR master'
+                'The provided netmask {0} is neither in IP or CIDR format'.format(result)
             )
         else:
             try:
@@ -364,7 +364,7 @@ class Parameters(AnsibleF5Parameters):
                     ip = IPNetwork(address)
                 except AddrFormatError as ex:
                     raise F5ModuleError(
-                        'The provided netmask is neither in IP or CIDR format'
+                        'The provided netmask {0} is neither in IP or CIDR format'.format(self._values['netmask'])
                     )
             result = int(ip.prefixlen)
         return result
@@ -715,7 +715,7 @@ class Difference(object):
                 return nipnet
         except AddrFormatError:
             raise F5ModuleError(
-                'The provided address/netmask value was invalid'
+                'The provided address/netmask value "{0}" was invalid'.format(self.have.ip)
             )
 
     @property
