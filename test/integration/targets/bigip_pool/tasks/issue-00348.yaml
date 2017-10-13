@@ -2,7 +2,7 @@
 
 - name: Include issue variables
   include_vars:
-      file: issue-348.yaml
+      file: issue-00348.yaml
 
 - name: Create pool with multiple monitors
   bigip_pool:
