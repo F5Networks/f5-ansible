@@ -581,14 +581,14 @@
 
 - import_tasks: pool_with_member.yaml
 
-- import_tasks: issue-331.yaml
-  tags: issue-331
+- import_tasks: issue-00331.yaml
+  tags: issue-00331
 
-- import_tasks: issue-340.yaml
-  tags: issue-340
+- import_tasks: issue-00340.yaml
+  tags: issue-00340
 
-- import_tasks: issue-341.yaml
-  tags: issue-341
+- import_tasks: issue-00341.yaml
+  tags: issue-00341
 
-- import_tasks: issue-348.yaml
-  tags: issue-348
+- import_tasks: issue-00348.yaml
+  tags: issue-00348
