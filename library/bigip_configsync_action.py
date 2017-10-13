@@ -349,10 +349,14 @@ class ArgumentSpec(object):
 
 def main():
     if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
+        raise F5ModuleError(
+            "The python 'f5-sdk' module is required. This can be done with 'pip install f5-sdk'"
+        )
 
     if not HAS_OBJPATH:
-        raise F5ModuleError("The python objectpath module is required")
+        raise F5ModuleError(
+            "The python 'objectpath' module is required. This can be done with 'pip install objectpath'"
+        )
 
     spec = ArgumentSpec()
 
