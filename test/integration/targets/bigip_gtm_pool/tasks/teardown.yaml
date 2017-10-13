@@ -1,0 +1,6 @@
+---
+
+- name: De-provision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent

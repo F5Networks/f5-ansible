@@ -27,7 +27,6 @@ options:
         removed from the system. When C(enabled) or C(disabled), ensures
         that the pool is enabled or disabled (respectively) on the remote
         device.
-    required: True
     choices:
       - present
       - absent
@@ -121,8 +120,7 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as
@@ -185,6 +183,9 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -212,7 +213,7 @@ class Parameters(AnsibleF5Parameters):
     }
     updatables = [
         'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
-        'fallback_ip'
+        'fallback_ip', 'state'
     ]
     returnables = [
         'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
@@ -220,8 +221,38 @@ class Parameters(AnsibleF5Parameters):
     ]
     api_attributes = [
         'loadBalancingMode', 'alternateMode', 'fallbackMode', 'verifyMemberAvailability',
-        'fallbackIpv4', 'fallbackIpv6', 'fallbackIp'
+        'fallbackIpv4', 'fallbackIpv6', 'fallbackIp', 'enabled', 'disabled'
     ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -296,25 +327,52 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def enabled(self):
-        if self._values['state'] == 'disabled':
-            return False
-        elif self._values['state'] in ['present', 'enabled']:
-            return True
-        elif self._values['enabled'] is True:
-            return True
-        else:
+        if self._values['enabled'] is None:
             return None
+        return True
 
     @property
     def disabled(self):
-        if self._values['state'] == 'disabled':
-            return True
-        elif self._values['state'] in ['present', 'enabled']:
-            return False
-        elif self._values['disabled'] is True:
-            return True
-        else:
+        if self._values['disabled'] is None:
             return None
+        return True
+
+
+class Changes(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def state(self):
+        if self.want.state == 'disabled' and self.have.enabled:
+            return dict(
+                disabled=True
+            )
+        elif self.want.state in ['present', 'enabled'] and self.have.disabled:
+            return dict(
+                enabled=True
+            )
 
 
 class ModuleManager(object):
@@ -359,7 +417,7 @@ class BaseManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def _set_changed_options(self):
         changed = {}
@@ -367,24 +425,23 @@ class BaseManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-
-        if self.want.state == 'disabled' and self.have.enabled:
-            changed['state'] = self.want.state
-        elif self.want.state in ['present', 'enabled'] and self.have.disabled:
-            changed['state'] = self.want.state
-
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             return True
         return False
 
@@ -433,6 +490,10 @@ class BaseManager(object):
         return True
 
     def create(self):
+        if self.want.state == 'disabled':
+            self.want.update({'disabled': True})
+        elif self.want.state in ['present', 'enabled']:
+            self.want.update({'enabled': True})
         self._set_changed_options()
         if self.client.check_mode:
             return True
@@ -486,7 +547,7 @@ class TypedManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         pools = self.client.api.tm.gtm.pools
         collection = getattr(pools, self.want.collection)
         resource = getattr(collection, self.want.type)
@@ -539,7 +600,7 @@ class UntypedManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.gtm.pools.pool.load(
             name=self.want.name,
             partition=self.want.partition

@@ -1,0 +1,39 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Remove GTM pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: "absent"
+    type: "a"
+
+- name: Create disabled pool, type 'a', no preferred LB method
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: "disabled"
+    type: "a"
+  register: result
+
+- name: Assert Create disabled pool, type 'a', no preferred LB method
+  assert:
+    that:
+      - result|changed
+
+- name: Create disabled pool, type 'a', no preferred LB method - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: "disabled"
+    type: "a"
+  register: result
+
+- name: Assert Create disabled pool, type 'a', no preferred LB method - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove GTM pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    state: "absent"
+    type: "a"
