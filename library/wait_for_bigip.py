@@ -14,15 +14,34 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: wait_for_bigip
-short_description: __SHORT_DESCRIPTION__.
+short_description: Wait for a BIG-IP condition before continuing
 description:
-  - __LONG DESCRIPTION__.
+  - You can wait for BIG-IP to be "ready". By "ready", we mean that BIG-IP is ready
+    to accept configuration.
+  - This module can take into account situations where the device is in the middle
+    of rebooting due to a configuration change.
 version_added: "2.5"
 options:
-  name:
+  timeout:
     description:
-      - Specifies the name of the ... .
-    required: True
+      - Maximum number of seconds to wait for.
+      - When used without other conditions it is equivalent of just sleeping.
+      - The default timeout is deliberately set to 2 hours because no individual
+        REST API.
+    default: 7200
+  delay:
+    description:
+      - Number of seconds to wait before starting to poll.
+    default: 0
+  sleep:
+    default: 1
+    description:
+      - Number of seconds to sleep between checks, before 2.3 this was hardcoded to 1 second.
+  msg:
+    required: false
+    default: null
+    description:
+      - This overrides the normal error message from a failure to meet the required conditions.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -34,36 +53,45 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Wait for BIG-IP to be ready to take configuration
   wait_for_bigip:
-    name: "foo"
-    password: "secret"
-    server: "lb.mydomain.com"
-    state: "present"
-    user: "admin"
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+  delegate_to: localhost
+
+- name: Wait a maximum of 300 seconds for BIG-IP to be ready to take configuration
+  wait_for_bigip:
+    timeout: 300
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+  delegate_to: localhost
+
+- name: Wait for BIG-IP to be ready, don't start checking for 10 seconds
+  wait_for_bigip:
+    delay: 10
+    password: secret
+    server: lb.mydomain.com
+    user: admin
   delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: string
-  sample: Foo is bar
+# only common fields returned
 '''
 
+import datetime
+import signal
+import time
 
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.six import iteritems
-from collections import defaultdict
+from ansible.module_utils.f5_utils import F5_COMMON_ARGS
+from f5.bigip import ManagementRoot as BigIpMgmt
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -71,52 +99,88 @@ except ImportError:
     HAS_F5SDK = False
 
 
+def hard_timeout(client, want, start):
+    elapsed = datetime.datetime.utcnow() - start
+    client.module.fail_json(
+        msg=want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
+    )
+
+
+class AnsibleF5ClientStub(AnsibleF5Client):
+    """Interim class to disconnect Params from connection
+
+    This module is an interim class that was made to separate the Ansible Module
+    Parameters from the connection to BIG-IP.
+
+    Since this module needs to be able to control the connection process, the default
+    class is not appropriate. Therefore, we overload it and re-define out the
+    connection related work to a separate method.
+
+    This class should serve as a reason to break apart this work itself into separate
+    classes in module_utils. There will be on-going work to do this and, when done,
+    the result will replace this work here.
+
+    """
+    def __init__(self, argument_spec=None, supports_check_mode=False,
+                 mutually_exclusive=None, required_together=None,
+                 required_if=None, required_one_of=None, add_file_common_args=False,
+                 f5_product_name='bigip'):
+        self.f5_product_name = f5_product_name
+
+        merged_arg_spec = dict()
+        merged_arg_spec.update(F5_COMMON_ARGS)
+        if argument_spec:
+            merged_arg_spec.update(argument_spec)
+            self.arg_spec = merged_arg_spec
+
+        mutually_exclusive_params = []
+        if mutually_exclusive:
+            mutually_exclusive_params += mutually_exclusive
+
+        required_together_params = []
+        if required_together:
+            required_together_params += required_together
+
+        self.module = AnsibleModule(
+            argument_spec=merged_arg_spec,
+            supports_check_mode=supports_check_mode,
+            mutually_exclusive=mutually_exclusive_params,
+            required_together=required_together_params,
+            required_if=required_if,
+            required_one_of=required_one_of,
+            add_file_common_args=add_file_common_args
+        )
+
+        self.check_mode = self.module.check_mode
+        self._connect_params = self._get_connect_params()
+
+    def connect(self):
+        try:
+            if 'transport' not in self.module.params or self.module.params['transport'] != 'cli':
+                self.api = self._get_mgmt_root(
+                    self.f5_product_name, **self._connect_params
+                )
+            return True
+        except Exception:
+            return False
+
+    def _get_mgmt_root(self, type, **kwargs):
+        if type == 'bigip':
+            result = BigIpMgmt(
+                kwargs['server'],
+                kwargs['user'],
+                kwargs['password'],
+                port=kwargs['server_port'],
+                timeout=1,
+                token='tmos'
+            )
+            return result
+
+
 class Parameters(AnsibleF5Parameters):
-    api_map = {
-
-    }
-
-    api_attributes = [
-
-    ]
-
     returnables = [
-
+        'elapsed'
     ]
-
-    updatables = [
-
-    ]
-
-    def __init__(self, params=None):
-        self._values = defaultdict(lambda: None)
-        self._values['__warnings'] = []
-        if params:
-            self.update(params=params)
-
-    def update(self, params=None):
-        if params:
-            for k, v in iteritems(params):
-                if self.api_map is not None and k in self.api_map:
-                    map_key = self.api_map[k]
-                else:
-                    map_key = k
-
-                # Handle weird API parameters like `dns.proxy.__iter__` by
-                # using a map provided by the module developer
-                class_attr = getattr(type(self), map_key, None)
-                if isinstance(class_attr, property):
-                    # There is a mapped value for the api_map key
-                    if class_attr.fset is None:
-                        # If the mapped value does not have
-                        # an associated setter
-                        self._values[map_key] = v
-                    else:
-                        # The mapped value has a setter
-                        setattr(self, map_key, v)
-                else:
-                    # If the mapped value is not a @property
-                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -128,120 +192,23 @@ class Parameters(AnsibleF5Parameters):
             pass
         return result
 
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
-
 
 class Changes(Parameters):
     pass
 
 
-class Difference(object):
-    def __init__(self, want, have=None):
-        self.want = want
-        self.have = have
-
-    def compare(self, param):
-        try:
-            result = getattr(self, param)
-            return result
-        except AttributeError:
-            return self.__default(param)
-
-    def __default(self, param):
-        attr1 = getattr(self.want, param)
-        try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
-        except AttributeError:
-            return attr1
-
-
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
+        self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Changes(changed)
-
-    def _update_changed_options(self):
-        """Sets the changed updatables when updating a resource
-
-        A module needs to know what changed to determine whether to update
-        a resource (or set of resources). This method accomplishes this by
-        invoking the Difference engine code.
-
-        Each parameter in the `Parameter` class' `updatables` array will be
-        given to the Difference engine's `compare` method. This is done in the
-        order the updatables are listed in the array.
-
-        The `compare` method updates the `changes` dictionary if the following
-        way,
-
-        * If `None` is returned, a change will not be registered.
-        * If a dictionary is returned, the `changes` dictionary will be updated
-          with the values in what was returned.
-        * Otherwise, the `changes` dictionary's key (the parameter being
-          compared) will be set to the value that is returned by `compare`
-
-        The dictionary behavior is in place to allow you to change the key
-        that is set in the `changes` dictionary. There are frequently cases
-        where there is not a clean API map that can be set, nor a way to
-        otherwise allow you to change the attribute name of the resource being
-        updated before it is sent off to the remote device. Using a dictionary
-        return value of `compare` allows you to do this.
-
-        Returns:
-            bool: True when changes are present. False otherwise.
-        """
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                if isinstance(change, dict):
-                    changed.update(change)
-                else:
-                    changed[k] = change
-        if changed:
-            self.changes = Changes(changed)
-            return True
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
+        self.changes = Parameters()
 
     def exec_module(self):
-        changed = False
         result = dict()
-        state = self.want.state
 
         try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
+            changed = self.execute()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
@@ -259,86 +226,122 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
-    def present(self):
-        if self.exists():
-            return self.update()
-        else:
-            return self.create()
+    def execute(self):
+        signal.signal(
+            signal.SIGALRM,
+            lambda sig, frame: hard_timeout(self.client, self.want, start)
+        )
 
-    def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        # setup handler before scheduling signal, to eliminate a race
+        signal.alarm(int(self.want.timeout))
+
+        start = datetime.datetime.utcnow()
+        if self.want.delay:
+            time.sleep(float(self.want.delay))
+        end = start + datetime.timedelta(seconds=int(self.want.timeout))
+        while datetime.datetime.utcnow() < end:
+            time.sleep(int(self.want.sleep))
+            try:
+                # The first test verifies that the REST API is available; this is done
+                # by repeatedly trying to login to it.
+                connected = self.client.connect()
+                if not connected:
+                    continue
+
+                if self._device_is_rebooting():
+                    # Wait for the reboot to happen and then start from the beginning
+                    # of the waiting.
+                    continue
+
+                if self._is_mprov_running_on_device():
+                    self._wait_for_module_provisioning()
+                break
+            except Exception:
+                # The types of exception's we're handling here are "REST API is not
+                # ready" exceptions.
+                #
+                # For example,
+                #
+                # Typically caused by device starting up:
+                #
+                #   icontrol.exceptions.iControlUnexpectedHTTPError: 404 Unexpected Error:
+                #       Not Found for uri: https://localhost:10443/mgmt/tm/sys/
+                #   icontrol.exceptions.iControlUnexpectedHTTPError: 503 Unexpected Error:
+                #       Service Temporarily Unavailable for uri: https://localhost:10443/mgmt/tm/sys/
+                #
+                #
+                # Typically caused by a device being down
+                #
+                #   requests.exceptions.SSLError: HTTPSConnectionPool(host='localhost', port=10443):
+                #       Max retries exceeded with url: /mgmt/tm/sys/ (Caused by SSLError(
+                #       SSLError("bad handshake: SysCallError(-1, 'Unexpected EOF')",),))
+                #
+                #
+                # Typically caused by device still booting
+                #
+                #   raise SSLError(e, request=request)\nrequests.exceptions.SSLError:
+                #   HTTPSConnectionPool(host='localhost', port=10443): Max retries
+                #   exceeded with url: /mgmt/shared/authn/login (Caused by
+                #   SSLError(SSLError(\"bad handshake: SysCallError(-1, 'Unexpected EOF')\",),)),
+                continue
+        else:
+            elapsed = datetime.datetime.utcnow() - start
+            self.client.module.fail_json(
+                msg=self.want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
+            )
+        elapsed = datetime.datetime.utcnow() - start
+        result = dict(
+            elapsed=elapsed.seconds
         )
         return result
 
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+    def _device_is_rebooting(self):
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "runlevel"'
+        )
+        try:
+            if '6' in output.commandResult:
+                return True
+        except AttributeError:
             return False
-        if self.client.check_mode:
-            return True
-        self.update_on_device()
-        return True
 
-    def remove(self):
-        if self.client.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
+    def _wait_for_module_provisioning(self):
+        # To prevent things from running forever, the hack is to check
+        # for mprov's status twice. If mprov is finished, then in most
+        # cases (not ASM) the provisioning is probably ready.
+        nops = 0
+        # Sleep a little to let provisioning settle and begin properly
+        time.sleep(5)
+        while nops < 4:
+            try:
+                if not self._is_mprov_running_on_device():
+                    nops += 1
+                else:
+                    nops = 0
+            except Exception:
+                # This can be caused by restjavad restarting.
+                pass
+            time.sleep(10)
 
-    def create(self):
-        self._set_changed_options()
-        if self.client.check_mode:
-            return True
-        self.create_on_device()
-        return True
-
-    def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+    def _is_mprov_running_on_device(self):
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "ps aux | grep \'[m]prov\'"'
         )
-
-    def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
-
-    def absent(self):
-        if self.exists():
-            return self.remove()
+        if hasattr(output, 'commandResult'):
+            return True
         return False
-
-    def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        if resource:
-            resource.delete()
-
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return Parameters(result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            timeout=dict(default=7200),
+            delay=dict(default=0),
+            sleep=dict(default=1),
+            msg=dict()
         )
         self.f5_product_name = 'bigip'
 
@@ -349,10 +352,10 @@ def main():
 
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    client = AnsibleF5ClientStub(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        f5_product_name=spec.f5_product_name,
     )
 
     try:

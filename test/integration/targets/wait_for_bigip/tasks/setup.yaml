@@ -1,0 +1,10 @@
+---
+
+- name: Reboot BIG-IP
+  bigip_command:
+    commands: tmsh reboot
+  ignore_errors: true
+
+- name: Wait for shutdown to happen
+  pause:
+    seconds: 90
