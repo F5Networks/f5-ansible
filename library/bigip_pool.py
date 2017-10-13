@@ -399,12 +399,9 @@ class Parameters(AnsibleF5Parameters):
         return lb_method
 
     def _fqdn_name(self, value):
-        if value.startswith('/'):
-            name = os.path.basename(value)
-            result = '/{0}/{1}'.format(self.partition, name)
-        else:
-            result = '/{0}/{1}'.format(self.partition, value)
-        return result
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     @property
     def monitors_list(self):

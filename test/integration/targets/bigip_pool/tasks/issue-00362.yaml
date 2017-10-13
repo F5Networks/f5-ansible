@@ -1,0 +1,48 @@
+---
+
+- name: Include issue variables
+  include_vars:
+    file: issue-00362.yaml
+
+- name: Create partition
+  bigip_partition:
+    name: "{{ f5_partition }}"
+
+- name: Add pool
+  bigip_pool:
+    state: present
+    monitor_type: "{{ f5_pool_monitor_type }}"
+    monitors: "{{ f5_pool_monitors }}"
+    partition: "{{ f5_partition }}"
+    name: "{{ f5_pool_name }}"
+  register: result
+
+- name: Assert Add Pool
+  assert:
+    that:
+      - result|changed
+
+- name: Add pool - Idempotent check
+  bigip_pool:
+    state: present
+    monitor_type: "{{ f5_pool_monitor_type }}"
+    monitors: "{{ f5_pool_monitors }}"
+    partition: "{{ f5_partition }}"
+    name: "{{ f5_pool_name }}"
+  register: result
+
+- name: Assert Add Pool - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove pool
+  bigip_pool:
+    name: "{{ f5_pool_name }}"
+    partition: "{{ f5_partition }}"
+    state: absent
+
+- name: Remove partition
+  bigip_partition:
+    name: "{{ f5_partition }}"
+    state: absent

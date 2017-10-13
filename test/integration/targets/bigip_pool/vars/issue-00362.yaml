@@ -1,0 +1,6 @@
+---
+
+f5_pool_name: new-test-pool
+f5_pool_monitors: /Common/http
+f5_pool_monitor_type: and_list
+f5_partition: PROD
