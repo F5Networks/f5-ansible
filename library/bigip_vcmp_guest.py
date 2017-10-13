@@ -1,33 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
 
 ANSIBLE_METADATA = {
     'status': ['preview'],
     'supported_by': 'community',
-    'metadata_version': '1.0'
+    'metadata_version': '1.1'
 }
 
 DOCUMENTATION = '''
 ---
 module: bigip_vcmp_guest
-short_description: Manages vCMP guests on a BIG-IP.
+short_description: Manages vCMP guests on a BIG-IP
 description:
   - Manages vCMP guests on a BIG-IP. This functionality only exists on
     actual hardware and must be enabled by provisioning C(vcmp) with the
@@ -76,7 +66,7 @@ options:
   delete_virtual_disk:
     description:
       - When C(state) is C(absent), will additionally delete the virtual disk associated
-        with the vCMP guest. By default, this value is 
+        with the vCMP guest. By default, this value is C(no).
     default: no
   mgmt_address:
     description:
@@ -347,12 +337,9 @@ class ModuleManager(object):
             )
 
     def _fqdn_name(self, value):
-        if value.startswith('/'):
-            name = os.path.basename(value)
-            result = '/{0}/{1}'.format(self.partition, name)
-        else:
-            result = '/{0}/{1}'.format(self.partition, value)
-        return result
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     def present(self):
         if self.exists():
