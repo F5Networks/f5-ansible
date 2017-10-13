@@ -1,0 +1,6 @@
+---
+
+issue_315:
+  - address: 10.2.1.1/24
+    name: internal_self
+    vlan: internal

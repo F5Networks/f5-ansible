@@ -4,63 +4,51 @@
   bigip_vlan:
     name: internal
 
-- set_fact:
-    self_ips:
-      - address: 10.2.1.1/24
-        name: internal_self
-        vlan: internal
+- name: Include issue variables
+  include_vars:
+    file: issue-00315.yaml
 
 - name: Create self-IPs
   bigip_selfip:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-      name: "{{ item.name }}"
-      address: "{{ item.address|ipaddr('address') }}"
-      netmask: "{{ item.address|ipaddr('netmask') }}"
-      vlan: "{{ item.vlan }}"
-      route_domain: "{{ item.route_domain|default(omit) }}"
-      allow_service: default
-      state: present
+    name: "{{ item.name }}"
+    address: "{{ item.address|ipaddr('address') }}"
+    netmask: "{{ item.address|ipaddr('netmask') }}"
+    vlan: "{{ item.vlan }}"
+    route_domain: "{{ item.route_domain|default(omit) }}"
+    allow_service: default
+    state: present
   delegate_to: localhost
-  with_items: "{{ self_ips }}"
+  with_items: "{{ issue_315 }}"
   register: result
 
 - name: Assert Create self-IPs
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create self-IPs - Idempotent check
   bigip_selfip:
-      password: "{{ bigip_password }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      validate_certs: "{{ validate_certs }}"
-      name: "{{ item.name }}"
-      address: "{{ item.address|ipaddr('address') }}"
-      netmask: "{{ item.address|ipaddr('netmask') }}"
-      vlan: "{{ item.vlan }}"
-      route_domain: "{{ item.route_domain|default(omit) }}"
-      allow_service: default
-      state: present
+    name: "{{ item.name }}"
+    address: "{{ item.address|ipaddr('address') }}"
+    netmask: "{{ item.address|ipaddr('netmask') }}"
+    vlan: "{{ item.vlan }}"
+    route_domain: "{{ item.route_domain|default(omit) }}"
+    allow_service: default
+    state: present
   delegate_to: localhost
-  with_items: "{{ self_ips }}"
+  with_items: "{{ issue_315 }}"
   register: result
 
 - name: Assert Create self-IPs - Idempotent check
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove self-IPs
   bigip_selfip:
-      name: "{{ item.name }}"
-      state: absent
-  with_items: "{{ self_ips }}"
+    name: "{{ item.name }}"
+    state: absent
+  with_items: "{{ issue_315 }}"
 
 - name: Remove VLANs
   bigip_vlan:
