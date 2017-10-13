@@ -228,7 +228,6 @@ class BaseManager(object):
 
 
 class ImageFactManager(BaseManager):
-
     def get_facts(self):
         to_return = dict()
         collection = self.get_facts_from_device()
@@ -241,7 +240,6 @@ class ImageFactManager(BaseManager):
 
 
 class HotfixFactManager(BaseManager):
-
     def get_facts(self):
         to_return = dict()
         collection = self.get_facts_from_device()
@@ -254,7 +252,6 @@ class HotfixFactManager(BaseManager):
 
 
 class VolumeFactManager(BaseManager):
-
     def get_facts(self):
         to_return = dict()
         collection = self.get_facts_from_device()
