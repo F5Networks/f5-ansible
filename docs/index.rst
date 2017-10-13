@@ -22,6 +22,7 @@ listed below.
 
    usage/getting_started
    usage/connection-local-or-delegate-to
+   usage/installing-modules
    usage/versions
    usage/support
 
