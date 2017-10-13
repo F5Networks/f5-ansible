@@ -111,13 +111,11 @@ def touch(fname, times=None):
 
 
 def stub_unit_test_file(module, extension):
-    test_dir = get_test_dir(module)
-
-    test_dir_path = '{0}/test/unit/{1}'.format(TOP_LEVEL, test_dir)
+    test_dir_path = '{0}/test/unit/'.format(TOP_LEVEL)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/unit/{1}/test_{2}{3}'.format(
-        TOP_LEVEL, test_dir, module, extension
+    test_file = '{0}/test/unit/test_{1}{2}'.format(
+        TOP_LEVEL, module, extension
     )
 
     template = JINJA_ENV.get_template('tests_unit_module.py')
@@ -126,22 +124,6 @@ def stub_unit_test_file(module, extension):
     fh = open(test_file, 'w')
     fh.write(content)
     fh.close()
-
-
-def get_test_dir(module):
-    if module.startswith('bigip'):
-        test_dir = 'bigip'
-    elif module.startswith('iworkflow'):
-        test_dir = 'iworkflow'
-    elif module.startswith('bigiq'):
-        test_dir = 'bigiq'
-    elif module.startswith('wait'):
-        test_dir = 'bigip'
-    elif module.startswith('f5'):
-        test_dir = 'f5'
-    else:
-        test_dir = 'misc'
-    return test_dir
 
 
 def unstub_roles_dirs(module):
@@ -170,13 +152,11 @@ def unstub_module_documentation(module):
 
 
 def unstub_unit_test_file(module, extension):
-    test_dir = get_test_dir(module)
-
-    test_dir_path = '{0}/test/unit/{1}'.format(TOP_LEVEL, test_dir)
+    test_dir_path = '{0}/test/unit/'.format(TOP_LEVEL)
     if not os.path.exists(test_dir_path):
         os.makedirs(test_dir_path)
-    test_file = '{0}/test/unit/{1}/test_{2}{3}'.format(
-        TOP_LEVEL, test_dir, module, extension
+    test_file = '{0}/test/unit/test_{1}{2}'.format(
+        TOP_LEVEL, module, extension
     )
     if os.path.exists(test_file):
         os.remove(test_file)
