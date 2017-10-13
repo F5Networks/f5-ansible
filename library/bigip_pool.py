@@ -110,7 +110,7 @@ options:
     default: Common
     version_added: 2.5
 notes:
-  - Requires BIG-IP software version >= 11.
+  - Requires BIG-IP software version >= 12.
   - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
   - Best run as a local_action in your playbook.
 requirements:
