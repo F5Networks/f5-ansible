@@ -307,6 +307,8 @@ class Parameters(AnsibleF5Parameters):
             return None
         if self._values['fallback_ip'] == 'any':
             return 'any'
+        if self._values['fallback_ip'] == 'any6':
+            return 'any6'
         try:
             address = IPAddress(self._values['fallback_ip'])
             if address.version == 4:
