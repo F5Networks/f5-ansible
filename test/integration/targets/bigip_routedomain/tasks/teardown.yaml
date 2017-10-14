@@ -1,0 +1,7 @@
+---
+
+- name: Remove policies
+  bigip_command:
+    commands:
+      - tmsh delete net bwc policy {{ valid_bwc_policy }}
+      - tmsh create net servce policy {{ valid_service_policy }}

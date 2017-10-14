@@ -1,11 +1,11 @@
 ---
 
-- name: Collect BIG-IP facts
-  bigip_facts:
-      include: "system_info"
-  register: result
+- import_tasks: setup.yaml
+- import_tasks: common-tasks.yaml
+- import_tasks: teardown.yaml
 
-- include: common-tasks.yaml
+- import_tasks: issue-00051.yaml
+  tags: issue-00051
 
-- include: issue-51.yaml
-  tags: issue-51
+- import_tasks: issue-00379.yaml
+  tags: issue-00379

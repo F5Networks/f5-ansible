@@ -1,0 +1,32 @@
+---
+
+- name: Include issue variables
+  include_vars:
+    file: issue-00379.yaml
+
+- name: Create route domain
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+  register: result
+
+- name: Assert Create route domain
+  assert:
+    that:
+      - result|changed
+
+- name: Create route domain - Idempotent check
+  bigip_routedomain:
+    id: "{{ route_domain_id }}"
+    name: "{{ route_domain_name }}"
+  register: result
+
+- name: Assert Create route domain - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove route domain
+  bigip_routedomain:
+    name: "{{ route_domain_name }}"
+    state: absent

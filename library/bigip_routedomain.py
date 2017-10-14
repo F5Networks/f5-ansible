@@ -17,9 +17,15 @@ DOCUMENTATION = r'''
 module: bigip_routedomain
 short_description: Manage route domains on a BIG-IP
 description:
-  - Manage route domains on a BIG-IP
+  - Manage route domains on a BIG-IP.
 version_added: "2.2"
 options:
+  name:
+    description:
+      - The name of the route domain.
+      - When creating a new route domain, if this value is not specified, then the
+        value of C(id) will be used for it.
+    version_added: 2.5
   bwc_policy:
     description:
       - The bandwidth controller for the route domain.
@@ -38,7 +44,11 @@ options:
   id:
     description:
       - The unique identifying integer representing the route domain.
-    required: true
+      - This field is required when creating a new route domain.
+      - In version 2.5, this value is no longer used to reference a route domain when
+        making modifications to it (for instance during update and delete operations).
+        Instead, the C(name) parameter is used. In version 2.6, the C(name) value will
+        become a required parameter.
   parent:
     description:
       Specifies the route domain the system searches when it cannot
@@ -96,6 +106,7 @@ author:
 EXAMPLES = r'''
 - name: Create a route domain
   bigip_routedomain:
+    name: foo
     id: 1234
     password: secret
     server: lb.mydomain.com
@@ -105,7 +116,7 @@ EXAMPLES = r'''
 
 - name: Set VLANs on the route domain
   bigip_routedomain:
-    id: 1234
+    name: bar
     password: secret
     server: lb.mydomain.com
     state: present
@@ -199,8 +210,6 @@ class BigIpRouteDomain(object):
         # The params that change in the module
         self.cparams = dict()
 
-        kwargs['name'] = str(kwargs['id'])
-
         # Stores the params that are sent to the module
         self.params = kwargs
         self.api = ManagementRoot(kwargs['server'],
@@ -215,6 +224,9 @@ class BigIpRouteDomain(object):
 
         if self.params['check_mode']:
             return True
+
+        if self.params['name'] is None:
+            self.params['name'] = str(self.params['id'])
 
         rd = self.api.tm.net.route_domains.route_domain.load(
             name=self.params['name'],
@@ -246,6 +258,10 @@ class BigIpRouteDomain(object):
         parameters that are supported by the module.
         """
         p = dict()
+
+        if self.params['name'] is None:
+            self.params['name'] = str(self.params['id'])
+
         r = self.api.tm.net.route_domains.route_domain.load(
             name=self.params['name'],
             partition=self.params['partition']
@@ -293,6 +309,13 @@ class BigIpRouteDomain(object):
         params['id'] = self.params['id']
         params['name'] = self.params['name']
         params['partition'] = self.params['partition']
+
+        if params['name'] is None:
+            self.params['name'] = str(self.params['id'])
+        elif params['id'] is None:
+            raise F5ModuleError(
+                "The 'id' parameter is required when creating new route domains."
+            )
 
         partition = self.params['partition']
         description = self.params['description']
@@ -368,6 +391,9 @@ class BigIpRouteDomain(object):
         changed = False
         params = dict()
         current = self.read()
+
+        if self.params['name'] is None:
+            self.params['name'] = str(self.params['id'])
 
         check_mode = self.params['check_mode']
         partition = self.params['partition']
@@ -477,12 +503,14 @@ class BigIpRouteDomain(object):
         return True
 
     def exists(self):
+        if self.params['name'] is None:
+            self.params['name'] = str(self.params['id'])
         return self.api.tm.net.route_domains.route_domain.exists(
             name=self.params['name'],
             partition=self.params['partition']
         )
 
-    def flush(self):
+    def exec_module(self):
         result = dict()
         state = self.params['state']
 
@@ -501,7 +529,8 @@ def main():
     argument_spec = f5_argument_spec()
 
     meta_args = dict(
-        id=dict(required=True, type='int'),
+        name=dict(required=False),
+        id=dict(required=False, type='int'),
         description=dict(required=False, default=None),
         strict=dict(required=False, default=None, choices=STRICTS),
         parent=dict(required=False, type='int', default=None),
@@ -517,12 +546,13 @@ def main():
 
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=True
+        supports_check_mode=True,
+        required_one_of=[['name', 'id']]
     )
 
     try:
         obj = BigIpRouteDomain(check_mode=module.check_mode, **module.params)
-        result = obj.flush()
+        result = obj.exec_module()
 
         module.exit_json(**result)
     except F5ModuleError as e:

@@ -1,6 +1,6 @@
 ---
 
-- include: issue-51-setup.yaml
+- include: issue-00051-setup.yaml
 
 - name: Create route domain
   bigip_routedomain:
