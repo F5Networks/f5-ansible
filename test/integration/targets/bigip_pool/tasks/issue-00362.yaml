@@ -42,6 +42,38 @@
     partition: "{{ f5_partition }}"
     state: absent
 
+- name: Add pool without monitors
+  bigip_pool:
+    state: present
+    partition: "{{ f5_partition }}"
+    name: "{{ f5_pool_name }}"
+  register: result
+
+- name: Assert Add Pool without monitors
+  assert:
+    that:
+      - result|changed
+
+- name: Set monitors on pool
+  bigip_pool:
+    state: present
+    monitor_type: "{{ f5_pool_monitor_type }}"
+    monitors: "{{ f5_pool_monitors }}"
+    partition: "{{ f5_partition }}"
+    name: "{{ f5_pool_name }}"
+  register: result
+
+- name: Assert Set monitors on pool
+  assert:
+    that:
+      - result|changed
+
+- name: Remove pool
+  bigip_pool:
+    name: "{{ f5_pool_name }}"
+    partition: "{{ f5_partition }}"
+    state: absent
+
 - name: Remove partition
   bigip_partition:
     name: "{{ f5_partition }}"
