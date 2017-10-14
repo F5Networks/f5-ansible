@@ -109,6 +109,7 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
+from f5.sdk_exception import LazyAttributesRequired
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -270,24 +271,27 @@ class ModuleManager(object):
         # Sleep a little to let provisioning settle and begin properly
         time.sleep(5)
 
-        while nops < 4:
+        while nops < 3:
             try:
                 if not self._is_mprov_running_on_device():
                     nops += 1
                 else:
                     nops = 0
-            except Exception:
+            except Exception as ex:
                 # This can be caused by restjavad restarting.
                 pass
-            time.sleep(10)
+            time.sleep(5)
 
     def _is_mprov_running_on_device(self):
         output = self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "ps aux | grep \'[m]prov\'"'
         )
-        if hasattr(output, 'commandResult'):
-            return True
+        try:
+            if hasattr(output, 'commandResult'):
+                return True
+        except LazyAttributesRequired:
+            pass
         return False
 
     def _get_last_reboot(self):
@@ -295,8 +299,11 @@ class ModuleManager(object):
             'run',
             utilCmdArgs='-c "/usr/bin/last reboot | head - 1"'
         )
-        if hasattr(output, 'commandResult'):
-            return str(output.commandResult)
+        try:
+            if hasattr(output, 'commandResult'):
+                return str(output.commandResult)
+        except LazyAttributesRequired:
+            pass
         return None
 
     def _wait_for_reboot(self):
