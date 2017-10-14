@@ -22,6 +22,13 @@
 
 - name: Wait for BIG-IP to actually be ready
   wait_for_bigip:
+  register: result
+
+- name: Assert Wait for BIG-IP to actually be ready
+  assert:
+    that:
+      - result|changed
+      - "'elapsed' in result"
 
 - name: Attempt to make a change, no failure
   bigip_pool:
