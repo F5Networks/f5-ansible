@@ -91,6 +91,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import F5_COMMON_ARGS
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from f5.bigip import ManagementRoot as BigIpMgmt
 
 try:
@@ -181,6 +183,35 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'elapsed'
     ]
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+        self._values['__warnings'] = []
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -290,10 +321,8 @@ class ModuleManager(object):
                 msg=self.want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
             )
         elapsed = datetime.datetime.utcnow() - start
-        result = dict(
-            elapsed=elapsed.seconds
-        )
-        return result
+        self.changes.update({'elapsed': elapsed.seconds})
+        return True
 
     def _device_is_rebooting(self):
         output = self.client.api.tm.util.bash.exec_cmd(
