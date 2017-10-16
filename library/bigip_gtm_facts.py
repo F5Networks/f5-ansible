@@ -117,6 +117,8 @@ pool:
         qos_topology: 0
         qos_vs_capacity: 0
         qos_vs_score: 0
+        availability_state: offline
+        enabled_state: disabled
         ttl: 30
         type: naptr
         verify_member_availability: disabled
@@ -183,7 +185,9 @@ from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from distutils.version import LooseVersion
+from f5.utils.responses.handlers import Stats
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -288,6 +292,35 @@ class Parameters(AnsibleF5Parameters):
 
 
 class BaseParameters(AnsibleF5Parameters):
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+        self._values['__warnings'] = []
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
     @property
     def enabled(self):
         if self._values['enabled'] is None:
@@ -346,7 +379,8 @@ class PoolParameters(BaseParameters):
         'load_balancing_mode', 'manual_resume', 'max_answers_returned', 'members',
         'name', 'partition', 'qos_hit_ratio', 'qos_hops', 'qos_kilobytes_second',
         'qos_lcs', 'qos_packet_rate', 'qos_rtt', 'qos_topology', 'qos_vs_capacity',
-        'qos_vs_score', 'ttl', 'type', 'full_path'
+        'qos_vs_score', 'ttl', 'type', 'full_path', 'availability_state',
+        'enabled_state',
     ]
 
     @property
@@ -437,6 +471,39 @@ class PoolParameters(BaseParameters):
             return None
         return int(self._values['qos_vs_score'])
 
+    @property
+    def availability_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats'].stat.status_availabilityState
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def enabled_state(self):
+        if self._values['stats'] is None:
+            return None
+        try:
+            result = self._values['stats'].stat.status_enabledState
+            return result['description']
+        except AttributeError:
+            return None
+
+    @property
+    def availability_status(self):
+        # This fact is a combination of the availability_state and enabled_state
+        #
+        # The purpose of the fact is to give a higher-level view of the availability
+        # of the pool, that can be used in playbooks. If you need further detail,
+        # consider using the following facts together
+        #
+        # - availability_state
+        # - enabled_state
+        pass
+        # AS offline, ES enabled = red
+        # AS offline, ES disabled = black
 
 class WideIpParameters(BaseParameters):
     api_map = {
@@ -646,6 +713,8 @@ class TypedPoolFactManager(TypedManager):
         )
         for item in result:
             attrs = item.attrs
+            stats = Stats(item.stats.load())
+            attrs['stats'] = stats
             params = PoolParameters(attrs)
             results.append(params)
         return results
@@ -663,8 +732,11 @@ class UntypedPoolFactManager(UntypedManager):
                 params='expandSubcollections=true'
             )
         )
+
         for item in result:
             attrs = item.attrs
+            stats = Stats(item.stats.load())
+            attrs['stats'] = stats
             params = PoolParameters(attrs)
             results.append(params)
         return results
@@ -703,7 +775,7 @@ class TypedWideIpFactManager(TypedManager):
         )
         for item in result:
             attrs = item.attrs
-            params = PoolParameters(attrs)
+            params = WideIpParameters(attrs)
             results.append(params)
         return results
 
@@ -722,7 +794,7 @@ class UntypedWideIpFactManager(UntypedManager):
         )
         for item in result:
             attrs = item.attrs
-            params = PoolParameters(attrs)
+            params = WideIpParameters(attrs)
             results.append(params)
         return results
 
@@ -746,7 +818,7 @@ class ServerFactManager(UntypedManager):
         )
         for item in result:
             attrs = item.attrs
-            params = PoolParameters(attrs)
+            params = ServerParameters(attrs)
             results.append(params)
         return results
 
