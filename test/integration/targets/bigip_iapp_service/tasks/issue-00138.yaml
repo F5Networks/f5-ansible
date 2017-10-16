@@ -2,7 +2,7 @@
 
 - name: Add the iApp contained in template indicated in the content field
   bigip_iapp_template:
-      content: "{{ lookup('template', 'issue-138/original.iapp') }}"
+      content: "{{ lookup('template', 'issue-00138/original.iapp') }}"
       force: "yes"
       state: "present"
   delegate_to: localhost
@@ -20,7 +20,7 @@
 
 - name: Update iApp
   bigip_iapp_template:
-      content: "{{ lookup('template', 'issue-138/updated.iapp') }}"
+      content: "{{ lookup('template', 'issue-00138/updated.iapp') }}"
       force: "yes"
       state: "present"
   delegate_to: localhost
