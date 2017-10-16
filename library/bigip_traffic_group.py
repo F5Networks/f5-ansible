@@ -14,14 +14,14 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_traffic_group
-short_description: __SHORT_DESCRIPTION__
+short_description: Manages traffic groups on BIG-IP
 description:
-  - __LONG DESCRIPTION__.
+  - Supports managing traffic groups and their attributes on a BIG-IP.
 version_added: "2.5"
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - The name of the traffic group
     required: True
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -34,7 +34,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Create a traffic group
   bigip_traffic_group:
     name: foo
     password: secret
@@ -45,16 +45,7 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: string
-  sample: Foo is bar
+# only common fields returned
 '''
 
 
@@ -266,7 +257,7 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
+        result = self.client.api.tm.cm.traffic_groups.traffic_group.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -298,7 +289,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
+        self.client.api.tm.cm.traffic_groups.traffic_group.create(
             name=self.want.name,
             partition=self.want.partition,
             **params
@@ -306,7 +297,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.cm.traffic_groups.traffic_group.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -318,7 +309,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.cm.traffic_groups.traffic_group.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -326,7 +317,7 @@ class ModuleManager(object):
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.cm.traffic_groups.traffic_group.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -338,7 +329,7 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True)
         )
         self.f5_product_name = 'bigip'
 
