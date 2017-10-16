@@ -155,6 +155,12 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    @property
+    def partition(self):
+        raise F5ModuleError(
+            "Partition cannot be changed for a traffic group. Only /Common is allowed."
+        )
+
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -282,6 +288,10 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.partition.lower().strip('/') != 'common':
+            raise F5ModuleError(
+                "Traffic groups can only be created in the /Common partition"
+            )
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -329,7 +339,8 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            name=dict(required=True)
+            name=dict(required=True),
+            state=dict(default='present', choices=['absent', 'present'])
         )
         self.f5_product_name = 'bigip'
 
