@@ -67,7 +67,18 @@ options:
         service has created, if they are not updated directly through the
         iApp.
       - When C(no), allows updates outside of the iApp.
+      - If this option is specified in the Ansible task, it will take precedence
+        over any similar setting in the iApp Server payload that you provide in
+        the C(parameters) field.
     default: yes
+  traffic_group:
+    description:
+      - The traffic group for the iApp service. When creating a new service, if
+        this value is not specified, the default of C(/Common/traffic-group-local-only)
+        will be used.
+      - If this option is specified in the Ansible task, it will take precedence
+        over any similar setting in the iApp Server payload that you provide in
+        the C(parameters) field.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -204,11 +215,14 @@ RETURN = r'''
 # only common fields returned
 '''
 
+import time
+
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -220,7 +234,8 @@ from deepdiff import DeepDiff
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'strictUpdates': 'strict_updates'
+        'strictUpdates': 'strict_updates',
+        'trafficGroup': 'traffic_group',
     }
     returnables = []
     api_attributes = [
@@ -228,7 +243,41 @@ class Parameters(AnsibleF5Parameters):
         'inheritedDevicegroup', 'inheritedTrafficGroup', 'trafficGroup',
         'strictUpdates'
     ]
-    updatables = ['tables', 'variables', 'lists', 'strict_updates']
+    updatables = ['tables', 'variables', 'lists', 'strict_updates', 'traffic_group']
+
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        if params:
+            self.update(params=params)
+        self._values['__warnings'] = []
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     def to_return(self):
         result = {}
@@ -365,14 +414,7 @@ class Parameters(AnsibleF5Parameters):
     def template(self):
         if self._values['template'] is None:
             return None
-        if self._values['template'].startswith("/" + self.partition):
-            return self._values['template']
-        elif self._values['template'].startswith("/"):
-            return self._values['template']
-        else:
-            return '/{0}/{1}'.format(
-                self.partition, self._values['template']
-            )
+        return self._fqdn_name(self._values['template'])
 
     @template.setter
     def template(self, value):
@@ -390,11 +432,33 @@ class Parameters(AnsibleF5Parameters):
             return 'disabled'
 
         # This will be automatically `None` if it was not set by the
-        # parameters setter
+        # `parameters` setter
         elif self.strictUpdates:
             return self.strictUpdates
         else:
             return self._values['strict_updates']
+
+    @property
+    def traffic_group(self):
+        if self._values['traffic_group'] is None and self.trafficGroup is None:
+            return None
+
+        # Specifying the value overrides any associated value in the payload
+        elif self._values['traffic_group']:
+            result = self._fqdn_name(self._values['traffic_group'])
+
+        # This will be automatically `None` if it was not set by the
+        # `parameters` setter
+        elif self.trafficGroup:
+            result = self._fqdn_name(self.trafficGroup)
+        else:
+            result = self._fqdn_name(self._values['traffic_group'])
+        if result.startswith('/Common/'):
+            return result
+        else:
+            raise F5ModuleError(
+                "Traffic groups can only exist in /Common"
+            )
 
 
 class Changes(Parameters):
@@ -421,6 +485,11 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def traffic_group(self):
+        if self.want.traffic_group != self.have.traffic_group:
+            return self.want.traffic_group
 
 
 class ModuleManager(object):
@@ -489,6 +558,8 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.traffic_group is None and self.want.trafficGroup is None:
+            self.want.update({'traffic_group': '/Common/traffic-group-local-only'})
         if self.client.check_mode:
             return True
         self.create_on_device()
@@ -575,7 +646,8 @@ class ArgumentSpec(object):
             ),
             strict_updates=dict(
                 type='bool'
-            )
+            ),
+            traffic_group=dict()
         )
         self.f5_product_name = 'bigip'
 
