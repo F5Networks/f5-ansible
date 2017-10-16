@@ -322,7 +322,7 @@ class ModuleManager(object):
             )
         elapsed = datetime.datetime.utcnow() - start
         self.changes.update({'elapsed': elapsed.seconds})
-        return True
+        return False
 
     def _device_is_rebooting(self):
         output = self.client.api.tm.util.bash.exec_cmd(
