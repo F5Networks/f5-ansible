@@ -497,13 +497,24 @@ class PoolParameters(BaseParameters):
         #
         # The purpose of the fact is to give a higher-level view of the availability
         # of the pool, that can be used in playbooks. If you need further detail,
-        # consider using the following facts together
+        # consider using the following facts together.
         #
         # - availability_state
         # - enabled_state
-        pass
-        # AS offline, ES enabled = red
-        # AS offline, ES disabled = black
+        #
+        if self.enabled_state == 'enabled':
+            if self.availability_state == 'offline':
+                return 'red'
+            elif self.availability_state == 'available':
+                return 'green'
+            elif self.availability_state == 'unknown':
+                return 'blue'
+            else:
+                return 'none'
+        else:
+            # disabled
+            return 'black'
+
 
 class WideIpParameters(BaseParameters):
     api_map = {
