@@ -164,6 +164,7 @@ failed_conditions:
   sample: ['...', '...']
 '''
 
+import re
 import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -323,10 +324,12 @@ class ModuleManager(object):
 
     def execute_on_device(self, commands):
         responses = []
+        escape_patterns = r'([$' + "'])"
         for item in to_list(commands):
+            command = re.sub(escape_patterns, r'\\\1', item['command'])
             output = self.client.api.tm.util.bash.exec_cmd(
                 'run',
-                utilCmdArgs='-c "{0}"'.format(item['command'])
+                utilCmdArgs='-c "{0}"'.format(command)
             )
             if hasattr(output, 'commandResult'):
                 responses.append(str(output.commandResult))

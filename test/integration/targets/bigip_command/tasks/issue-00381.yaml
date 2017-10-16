@@ -1,0 +1,36 @@
+---
+
+- name: Include issue variables
+  include_vars:
+    file: issue-00381.yaml
+
+- name: Set SNMP Configuration Extras
+  bigip_command:
+    commands:
+      - 'modify sys snmp allowed-addresses replace-all-with { {{ snmp_whitelist }} }'
+      - 'modify sys snmp communities replace-all-with { {{ snmp_comm_name }} { community-name {{ snmp_community }} }}'
+
+- name: Set SNMP Contact & Location Details
+  bigip_snmp:
+    contact: "{{ snmp_contact }}"
+    location: "{{ snmp_location }}"
+
+- name: Set SNMP Trap Target
+  bigip_snmp_trap:
+    community: "{{ snmp_community }}"
+    destination: "{{ item.value }}"
+    name: "{{ item.key }}"
+    network: default
+    snmp_version: 2c
+  with_dict: "{{ snmp_trap_target }}"
+
+- name: Ensure proper community exists
+  bigip_command:
+    commands:
+      - 'list sys snmp communities'
+  register: result
+
+- name: Assert Ensure proper community exists
+  assert:
+    that:
+      - "'{{ snmp_community}}' in result.stdout|first"

@@ -84,3 +84,6 @@
           - tmsh modify sys db setup.run value false
           - "tmsh show sys clock"
   register: result
+
+- import_tasks: issue-00381.yaml
+  tags: issue-00381
