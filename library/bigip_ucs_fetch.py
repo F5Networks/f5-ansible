@@ -286,7 +286,7 @@ class ModuleManager(object):
         /mgmt/tm/sys/ucs endpoint. Therefore you need to do everything
         through tmsh over REST.
 
-        :return: Bool
+        :return: bool
         """
         version = self.client.api.tmos_version
         if LooseVersion(version) < LooseVersion('12.1.0'):
