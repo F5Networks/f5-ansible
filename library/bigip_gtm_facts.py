@@ -236,14 +236,17 @@ class BaseManager(object):
             results.append(facts)
         return results
 
+    def read_stats_from_device(self, resource):
+        stats = Stats(resource.stats.load())
+        return stats.stat
+
 
 class UntypedManager(BaseManager):
     def exec_module(self):
         results = []
-        collection = self.read_collection_from_device()
-        for resource in collection:
-            facts = resource.to_return()
-            filtered = [(k, v) for k, v in iteritems(facts) if self.filter_matches_name(k)]
+        facts = self.read_facts()
+        for item in facts:
+            filtered = [(k, v) for k, v in iteritems(item) if self.filter_matches_name(k)]
             if filtered:
                 results.append(dict(filtered))
         return results
@@ -253,11 +256,14 @@ class TypedManager(BaseManager):
     def exec_module(self):
         results = []
         for collection, type in iteritems(self.types):
-            collection = self.read_collection_from_device(collection)
-            for resource in collection:
-                facts = resource.to_return()
-                facts['type'] = type
-                filtered = [(k, v) for k, v in iteritems(facts) if self.filter_matches_name(k)]
+            facts = self.read_facts(collection)
+            if not facts:
+                continue
+            for x in facts:
+                x.update({'type': type})
+            for item in facts:
+                attrs = item.to_return()
+                filtered = [(k, v) for k, v in iteritems(attrs) if self.filter_matches_name(k)]
                 if filtered:
                     results.append(dict(filtered))
         return results
@@ -380,7 +386,7 @@ class PoolParameters(BaseParameters):
         'name', 'partition', 'qos_hit_ratio', 'qos_hops', 'qos_kilobytes_second',
         'qos_lcs', 'qos_packet_rate', 'qos_rtt', 'qos_topology', 'qos_vs_capacity',
         'qos_vs_score', 'ttl', 'type', 'full_path', 'availability_state',
-        'enabled_state',
+        'enabled_state', 'availability_status'
     ]
 
     @property
@@ -476,7 +482,7 @@ class PoolParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats'].stat.status_availabilityState
+            result = self._values['stats']['status_availabilityState']
             return result['description']
         except AttributeError:
             return None
@@ -486,7 +492,7 @@ class PoolParameters(BaseParameters):
         if self._values['stats'] is None:
             return None
         try:
-            result = self._values['stats'].stat.status_enabledState
+            result = self._values['stats']['status_enabledState']
             return result['description']
         except AttributeError:
             return None
@@ -713,8 +719,17 @@ class TypedPoolFactManager(TypedManager):
         super(TypedPoolFactManager, self).__init__(client)
         self.want = PoolParameters(self.client.module.params)
 
-    def read_collection_from_device(self, collection_name):
+    def read_facts(self, collection):
         results = []
+        collection = self.read_collection_from_device(collection)
+        for resource in collection:
+            attrs = resource.attrs
+            attrs['stats'] = self.read_stats_from_device(resource)
+            params = PoolParameters(attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self, collection_name):
         pools = self.client.api.tm.gtm.pools
         collection = getattr(pools, collection_name)
         result = collection.get_collection(
@@ -722,13 +737,7 @@ class TypedPoolFactManager(TypedManager):
                 params='expandSubcollections=true'
             )
         )
-        for item in result:
-            attrs = item.attrs
-            stats = Stats(item.stats.load())
-            attrs['stats'] = stats
-            params = PoolParameters(attrs)
-            results.append(params)
-        return results
+        return result
 
 
 class UntypedPoolFactManager(UntypedManager):
@@ -736,21 +745,23 @@ class UntypedPoolFactManager(UntypedManager):
         super(UntypedPoolFactManager, self).__init__(client)
         self.want = PoolParameters(self.client.module.params)
 
-    def read_collection_from_device(self):
+    def read_facts(self):
         results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            attrs = resource.attrs
+            attrs['stats'] = self.read_stats_from_device(resource)
+            params = PoolParameters(attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
         result = self.client.api.tm.gtm.pools.get_collection(
             requests_params=dict(
                 params='expandSubcollections=true'
             )
         )
-
-        for item in result:
-            attrs = item.attrs
-            stats = Stats(item.stats.load())
-            attrs['stats'] = stats
-            params = PoolParameters(attrs)
-            results.append(params)
-        return results
+        return result
 
 
 class WideIpFactManager(BaseManager):
@@ -775,20 +786,24 @@ class TypedWideIpFactManager(TypedManager):
         super(TypedWideIpFactManager, self).__init__(client)
         self.want = WideIpParameters(self.client.module.params)
 
-    def read_collection_from_device(self, collection_name):
+    def read_facts(self, collection):
         results = []
-        pools = self.client.api.tm.gtm.pools
-        collection = getattr(pools, collection_name)
+        collection = self.read_collection_from_device(collection)
+        for resource in collection:
+            attrs = resource.attrs
+            params = WideIpParameters(attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self, collection_name):
+        wideips = self.client.api.tm.gtm.wideips
+        collection = getattr(wideips, collection_name)
         result = collection.get_collection(
             requests_params=dict(
                 params='expandSubcollections=true'
             )
         )
-        for item in result:
-            attrs = item.attrs
-            params = WideIpParameters(attrs)
-            results.append(params)
-        return results
+        return result
 
 
 class UntypedWideIpFactManager(UntypedManager):
@@ -796,18 +811,22 @@ class UntypedWideIpFactManager(UntypedManager):
         super(UntypedWideIpFactManager, self).__init__(client)
         self.want = WideIpParameters(self.client.module.params)
 
-    def read_collection_from_device(self):
+    def read_facts(self):
         results = []
-        result = self.client.api.tm.gtm.pools.get_collection(
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            attrs = resource.attrs
+            params = WideIpParameters(attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
+        result = self.client.api.tm.gtm.wideips.get_collection(
             requests_params=dict(
                 params='expandSubcollections=true'
             )
         )
-        for item in result:
-            attrs = item.attrs
-            params = WideIpParameters(attrs)
-            results.append(params)
-        return results
+        return result
 
 
 class ServerFactManager(UntypedManager):
@@ -820,18 +839,22 @@ class ServerFactManager(UntypedManager):
         result = dict(server=facts, virtual_server=facts)
         return result
 
-    def read_collection_from_device(self):
+    def read_facts(self):
         results = []
+        collection = self.read_collection_from_device()
+        for resource in collection:
+            attrs = resource.attrs
+            params = WideIpParameters(attrs)
+            results.append(params)
+        return results
+
+    def read_collection_from_device(self):
         result = self.client.api.tm.gtm.servers.get_collection(
             requests_params=dict(
                 params='expandSubcollections=true'
             )
         )
-        for item in result:
-            attrs = item.attrs
-            params = ServerParameters(attrs)
-            results.append(params)
-        return results
+        return result
 
 
 class ModuleManager(object):
@@ -874,12 +897,9 @@ class ModuleManager(object):
 
     def execute_managers(self, managers):
         results = dict()
-        raw = dict()
         for manager in managers:
             result = manager.exec_module()
-            raw.update(result)
             results.update(result)
-        results['raw'] = json.dumps(raw)
         return results
 
     def get_manager(self, which):
