@@ -40,12 +40,14 @@ try:
     from library.wait_for_bigip import Parameters
     from library.wait_for_bigip import ModuleManager
     from library.wait_for_bigip import ArgumentSpec
+    from library.wait_for_bigip import AnsibleF5ClientStub
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
         from ansible.modules.network.f5.wait_for_bigip import Parameters
         from ansible.modules.network.f5.wait_for_bigip import ModuleManager
         from ansible.modules.network.f5.wait_for_bigip import ArgumentSpec
+        from ansible.modules.network.f5.wait_for_bigip import AnsibleF5ClientStub
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -79,35 +81,60 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            delay=3,
+            timeout=500,
+            sleep=10,
+            msg='We timed out during waiting for BIG-IP :-('
+        )
 
-    def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = Parameters(args)
+        assert p.delay == 3
+        assert p.timeout == 500
+        assert p.sleep == 10
+        assert p.msg == 'We timed out during waiting for BIG-IP :-('
+
+    def test_module_string_parameters(self):
+        args = dict(
+            delay='3',
+            timeout='500',
+            sleep='10',
+            msg='We timed out during waiting for BIG-IP :-('
+        )
+
+        p = Parameters(args)
+        assert p.delay == 3
+        assert p.timeout == 500
+        assert p.sleep == 10
+        assert p.msg == 'We timed out during waiting for BIG-IP :-('
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise Exception('You must write a creation test')
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_wait_already_available(self, *args):
+        set_module_args(dict(
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5ClientStub(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm._connect_to_device = Mock(return_value=True)
+        mm._device_is_rebooting = Mock(return_value=False)
+        mm._is_mprov_running_on_device = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False
+        assert results['elapsed'] == 1
