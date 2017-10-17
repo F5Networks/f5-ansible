@@ -101,10 +101,10 @@ except ImportError:
     HAS_F5SDK = False
 
 
-def hard_timeout(client, want, start):
+def hard_timeout(client, start):
     elapsed = datetime.datetime.utcnow() - start
     client.module.fail_json(
-        msg=want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
+        "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
     )
 
 
@@ -260,7 +260,7 @@ class ModuleManager(object):
     def execute(self):
         signal.signal(
             signal.SIGALRM,
-            lambda sig, frame: hard_timeout(self.client, self.want, start)
+            lambda sig, frame: hard_timeout(self.client, start)
         )
 
         # setup handler before scheduling signal, to eliminate a race
