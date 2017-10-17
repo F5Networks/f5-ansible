@@ -106,7 +106,6 @@ EXAMPLES = r'''
   bigip_monitor_tcp_half_open:
     server: lb.mydomain.com
     user: admin
-    ip: *
     port: 514
     password: secret
     name: my_tcp_monitor
