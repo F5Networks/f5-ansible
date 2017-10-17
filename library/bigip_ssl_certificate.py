@@ -73,7 +73,7 @@ notes:
     a role context.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 1.5.0
+    - f5-sdk >= 3.0.3
     - BIG-IP >= v12
 author:
     - Tim Rupp (@caphrim007)
