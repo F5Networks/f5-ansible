@@ -1,8 +1,0 @@
----
-
-- name: Create pool
-  bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      state: "present"
-  register: result
