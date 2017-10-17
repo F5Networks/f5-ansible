@@ -275,7 +275,7 @@ class ModuleManager(object):
             try:
                 # The first test verifies that the REST API is available; this is done
                 # by repeatedly trying to login to it.
-                connected = self.client.connect()
+                connected = self._connect_to_device()
                 if not connected:
                     continue
 
@@ -323,6 +323,10 @@ class ModuleManager(object):
         elapsed = datetime.datetime.utcnow() - start
         self.changes.update({'elapsed': elapsed.seconds})
         return False
+
+    def _connect_to_device(self):
+        result = self.client.connect()
+        return result
 
     def _device_is_rebooting(self):
         output = self.client.api.tm.util.bash.exec_cmd(
