@@ -31,9 +31,9 @@ UPSTREAM_FIXTURE_FILE = '{0}/test/units/modules/network/f5/fixtures/{1}'
 UPSTREAM_UNIT_TEST = '{0}/test/units/modules/network/f5/test_{1}.py'
 UPSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
 UPSTREAM_MODULE = '{0}/lib/ansible/modules/network/f5/{1}.py'
-DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/{1}/fixtures/{2}'
-DOWNSTREAM_UNIT_TEST = '{0}/test/unit/{1}/test_{2}.py'
-DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{2}'
+DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/fixtures/{1}'
+DOWNSTREAM_UNIT_TEST = '{0}/test/unit/test_{1}.py'
+DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
 DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 
 
@@ -55,13 +55,6 @@ def exit_success(message):
 def module_name(module):
     filename, extension = os.path.splitext(module)
     return filename
-
-
-def product(module):
-    if module.startswith('bigip_'):
-        return 'bigip'
-    elif module.startswith('bigiq_'):
-        return 'bigiq'
 
 
 def module_file_present(module):
@@ -97,9 +90,8 @@ def get_fixtures(module):
     result = []
     pattern1 = r"load_fixture\(\'(?P<fixture>[^']+)"
     pattern2 = r"fixtures\/(?P<fixture>[^']+)"
-    p = product(module)
     p1 = subprocess.Popen(
-        ['egrep', '(load_fixture|fixtures)', 'test/unit/{0}/test_{1}.py'.format(p, module)],
+        ['egrep', '(load_fixture|fixtures)', 'test/unit/test_{0}.py'.format(module)],
         stdout=subprocess.PIPE
     )
     p2 = subprocess.Popen(
@@ -134,9 +126,8 @@ def copy_module(module, upstream_dir):
 def copy_unit_tests(module, upstream_dir):
     upstream = os.path.realpath(upstream_dir)
     r = root_dir()
-    p = product(module)
     dest = UPSTREAM_UNIT_TEST.format(upstream, module)
-    src = DOWNSTREAM_UNIT_TEST.format(r, p, module)
+    src = DOWNSTREAM_UNIT_TEST.format(r, module)
     shutil.copy(src, dest)
 
 
@@ -144,10 +135,9 @@ def copy_unit_test_fixtures(module, upstream_dir):
     fixtures = get_fixtures(module)
     upstream = os.path.realpath(upstream_dir)
     r = root_dir()
-    p = product(module)
     for fixture in fixtures:
         dest = UPSTREAM_FIXTURE_FILE.format(upstream, fixture)
-        src = DOWNSTREAM_FIXTURE_FILE.format(r, p, fixture)
+        src = DOWNSTREAM_FIXTURE_FILE.format(r, fixture)
         shutil.copy(src, dest)
 
 
