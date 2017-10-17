@@ -15,6 +15,18 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
 docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7.10 \
     ./devtools/bin/copy-upstream.py ${MODULE}
 
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7.10 pycodestyle library/${MODULE}.py
+if [ $? -ne 0 ]; then
+    echo "FAILED"
+    exit 1
+fi
+
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7.10 pycodestyle test/unit/test_${MODULE}.py
+if [ $? -ne 0 ]; then
+    echo "FAILED"
+    exit 1
+fi
+
 docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7.10 ./devtools/bin/uv-check.sh ${MODULE} 2.7
 if [ $? -ne 0 ]; then
     echo "FAILED"
