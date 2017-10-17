@@ -38,8 +38,6 @@ options:
     description:
       - Number of seconds to sleep between checks, before 2.3 this was hardcoded to 1 second.
   msg:
-    required: false
-    default: null
     description:
       - This overrides the normal error message from a failure to meet the required conditions.
 notes:
@@ -93,18 +91,18 @@ from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import F5_COMMON_ARGS
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
-from f5.bigip import ManagementRoot as BigIpMgmt
 
 try:
+    from f5.bigip import ManagementRoot as BigIpMgmt
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
 
 
-def hard_timeout(client, start):
+def hard_timeout(client, want, start):
     elapsed = datetime.datetime.utcnow() - start
     client.module.fail_json(
-        "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
+        want.msg or "Timeout when waiting for BIG-IP", elapsed=elapsed.seconds
     )
 
 
@@ -223,6 +221,24 @@ class Parameters(AnsibleF5Parameters):
             pass
         return result
 
+    @property
+    def delay(self):
+        if self._values['delay'] is None:
+            return None
+        return int(self._values['delay'])
+
+    @property
+    def timeout(self):
+        if self._values['timeout'] is None:
+            return None
+        return int(self._values['timeout'])
+
+    @property
+    def sleep(self):
+        if self._values['sleep'] is None:
+            return None
+        return int(self._values['sleep'])
+
 
 class Changes(Parameters):
     pass
@@ -260,7 +276,7 @@ class ModuleManager(object):
     def execute(self):
         signal.signal(
             signal.SIGALRM,
-            lambda sig, frame: hard_timeout(self.client, start)
+            lambda sig, frame: hard_timeout(self.client, self.want, start)
         )
 
         # setup handler before scheduling signal, to eliminate a race
@@ -371,9 +387,9 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            timeout=dict(default=7200),
-            delay=dict(default=0),
-            sleep=dict(default=1),
+            timeout=dict(default=7200, type='int'),
+            delay=dict(default=0, type='int'),
+            sleep=dict(default=1, type='int'),
             msg=dict()
         )
         self.f5_product_name = 'bigip'
