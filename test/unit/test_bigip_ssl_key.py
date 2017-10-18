@@ -92,8 +92,8 @@ class TestParameters(unittest.TestCase):
         p = Parameters(args)
         assert p.name == 'cert1'
         assert p.key_filename == 'cert1.key'
-        assert '-----BEGIN RSA PRIVATE KEY-----' in p.key_content
-        assert '-----END RSA PRIVATE KEY-----' in p.key_content
+        assert '-----BEGIN RSA PRIVATE KEY-----' in p.content
+        assert '-----END RSA PRIVATE KEY-----' in p.content
         assert p.key_checksum == '91bdddcf0077e2bb2a0258aae2ae3117be392e83'
         assert p.state == 'present'
         assert p.user == 'admin'
