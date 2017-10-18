@@ -100,7 +100,7 @@ def get_fixtures(module):
     )
     p1.stdout.close()
     stdout, stderr = p2.communicate()
-    stdout = str(stdout).split("\n")
+    stdout = stdout.decode('utf-8').split("\n")
     stdout = [x.strip() for x in stdout if x]
 
     for x in stdout:
