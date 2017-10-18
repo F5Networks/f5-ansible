@@ -16,9 +16,9 @@ tld = dirname(dirname(dirname(dirname(os.path.realpath(__file__)))))
 sys.path.append(tld)
 
 for file in os.listdir(tld + '/library'):
-    if file == '__init__.py':
+    if file in ['__init__.py',]:
         continue
-    elif file.endswith('.pyc'):
+    elif not file.endswith('.py'):
         continue
     importable = 'library.{0}'.format(os.path.splitext(file)[0])
 
