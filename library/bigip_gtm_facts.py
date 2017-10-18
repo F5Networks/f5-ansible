@@ -187,9 +187,9 @@ from ansible.module_utils.parsing.convert_bool import BOOLEANS_FALSE
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
 from distutils.version import LooseVersion
-from f5.utils.responses.handlers import Stats
 
 try:
+    from f5.utils.responses.handlers import Stats
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
