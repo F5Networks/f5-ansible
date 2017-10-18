@@ -13,7 +13,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: wait_for_bigip
+module: bigip_wait
 short_description: Wait for a BIG-IP condition before continuing
 description:
   - You can wait for BIG-IP to be "ready". By "ready", we mean that BIG-IP is ready
@@ -52,14 +52,14 @@ author:
 
 EXAMPLES = r'''
 - name: Wait for BIG-IP to be ready to take configuration
-  wait_for_bigip:
+  bigip_wait:
     password: secret
     server: lb.mydomain.com
     user: admin
   delegate_to: localhost
 
 - name: Wait a maximum of 300 seconds for BIG-IP to be ready to take configuration
-  wait_for_bigip:
+  bigip_wait:
     timeout: 300
     password: secret
     server: lb.mydomain.com
@@ -67,7 +67,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Wait for BIG-IP to be ready, don't start checking for 10 seconds
-  wait_for_bigip:
+  bigip_wait:
     delay: 10
     password: secret
     server: lb.mydomain.com

@@ -37,17 +37,17 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.wait_for_bigip import Parameters
-    from library.wait_for_bigip import ModuleManager
-    from library.wait_for_bigip import ArgumentSpec
-    from library.wait_for_bigip import AnsibleF5ClientStub
+    from library.bigip_wait import Parameters
+    from library.bigip_wait import ModuleManager
+    from library.bigip_wait import ArgumentSpec
+    from library.bigip_wait import AnsibleF5ClientStub
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
-        from ansible.modules.network.f5.wait_for_bigip import Parameters
-        from ansible.modules.network.f5.wait_for_bigip import ModuleManager
-        from ansible.modules.network.f5.wait_for_bigip import ArgumentSpec
-        from ansible.modules.network.f5.wait_for_bigip import AnsibleF5ClientStub
+        from ansible.modules.network.f5.bigip_wait import Parameters
+        from ansible.modules.network.f5.bigip_wait import ModuleManager
+        from ansible.modules.network.f5.bigip_wait import ArgumentSpec
+        from ansible.modules.network.f5.bigip_wait import AnsibleF5ClientStub
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")

@@ -3,7 +3,7 @@
 - import_tasks: setup.yaml
 
 - name: Wait for BIG-IP to be ready for configuration
-  wait_for_bigip:
+  bigip_wait:
     timeout: 10
   ignore_errors: true
 
@@ -21,7 +21,7 @@
       - not result|changed
 
 - name: Wait for BIG-IP to actually be ready
-  wait_for_bigip:
+  bigip_wait:
   register: result
 
 - name: Assert Wait for BIG-IP to actually be ready
