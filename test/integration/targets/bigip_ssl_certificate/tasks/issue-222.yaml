@@ -1,7 +1,5 @@
 ---
 
-- include: setup.yaml
-
 - name: Import a certificate, key and CA chain, password protected key
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
@@ -59,5 +57,3 @@
   assert:
     that:
         - not result|changed
-
-- include: teardown.yaml

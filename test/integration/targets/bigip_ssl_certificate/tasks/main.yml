@@ -243,3 +243,7 @@
 - include: issue-222.yaml
   tags:
       - issue-222.yaml
+
+- import_tasks: make-cert/main.yaml
+  when: result is not defined
+  tags: generate_certs

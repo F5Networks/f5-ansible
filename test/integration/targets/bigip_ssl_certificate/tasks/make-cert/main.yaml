@@ -1,0 +1,9 @@
+---
+
+- import_tasks: setup.yaml
+
+- import_tasks: create-root-pair.yaml
+- import_tasks: create-intermediate-pair.yaml
+- import_tasks: sign-server-and-client-certs.yaml
+
+- meta: end_play
