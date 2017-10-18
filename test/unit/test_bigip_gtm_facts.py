@@ -20,18 +20,43 @@ from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.six import iteritems
 
 try:
     from library.bigip_gtm_facts import Parameters
+    from library.bigip_gtm_facts import ServerParameters
+    from library.bigip_gtm_facts import PoolParameters
+    from library.bigip_gtm_facts import WideIpParameters
     from library.bigip_gtm_facts import ModuleManager
+    from library.bigip_gtm_facts import ServerFactManager
+    from library.bigip_gtm_facts import PoolFactManager
+    from library.bigip_gtm_facts import TypedPoolFactManager
+    from library.bigip_gtm_facts import UntypedPoolFactManager
+    from library.bigip_gtm_facts import WideIpFactManager
+    from library.bigip_gtm_facts import TypedWideIpFactManager
+    from library.bigip_gtm_facts import UntypedWideIpFactManager
     from library.bigip_gtm_facts import ArgumentSpec
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from f5.bigip.tm.gtm.pool import A
+    from f5.utils.responses.handlers import Stats
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_gtm_pool import Parameters
+        from ansible.modules.network.f5.bigip_gtm_pool import ServerParameters
+        from ansible.modules.network.f5.bigip_gtm_pool import PoolParameters
+        from ansible.modules.network.f5.bigip_gtm_pool import WideIpParameters
         from ansible.modules.network.f5.bigip_gtm_pool import ModuleManager
+        from ansible.modules.network.f5.bigip_gtm_pool import ServerFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import PoolFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import TypedPoolFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import UntypedPoolFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import WideIpFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import TypedWideIpFactManager
+        from ansible.modules.network.f5.bigip_gtm_pool import UntypedWideIpFactManager
         from ansible.modules.network.f5.bigip_gtm_pool import ArgumentSpec
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from f5.bigip.tm.gtm.pool import A
+        from f5.utils.responses.handlers import Stats
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
@@ -62,23 +87,27 @@ def load_fixture(name):
     return data
 
 
+class FakeStatResource(object):
+    def __init__(self, obj):
+        self.entries = obj
+
+
+class FakeARecord(A):
+    def __init__(self, *args, **kwargs):
+        attrs = kwargs.pop('attrs', {})
+        for key, value in iteritems(attrs):
+            setattr(self, key, value)
+
+
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            name='foo',
-            preferred_lb_method='topology',
-            alternate_lb_method='ratio',
-            fallback_lb_method='fewest-hops',
-            fallback_ip='10.10.10.10',
-            type='a'
+            include=['pool'],
+            filter='name.*'
         )
         p = Parameters(args)
-        assert p.name == 'foo'
-        assert p.preferred_lb_method == 'topology'
-        assert p.alternate_lb_method == 'ratio'
-        assert p.fallback_lb_method == 'fewest-hops'
-        assert p.fallback_ip == '10.10.10.10'
-        assert p.type == 'a'
+        assert p.include == ['pool']
+        assert p.filter == 'name.*'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -88,15 +117,18 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_pool(self, *args):
+    def test_get_typed_pool_facts(self, *args):
         set_module_args(dict(
-            name='foo',
-            preferred_lb_method='round-robin',
-            type='a',
+            include='pool',
             password='passsword',
             server='localhost',
             user='admin'
         ))
+
+        fixture1 = load_fixture('load_gtm_pool_a_collection.json')
+        fixture2 = load_fixture('load_gtm_pool_a_example_stats.json')
+        collection = [FakeARecord(attrs=x) for x in fixture1['items']]
+        stats = Stats(FakeStatResource(fixture2['entries']))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -105,17 +137,22 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        tm = TypedManager(client)
-        tm.exists = Mock(side_effect=[False, True])
-        tm.create_on_device = Mock(return_value=True)
+        tfm = TypedPoolFactManager(client)
+        tfm.read_collection_from_device = Mock(return_value=collection)
+        tfm.read_stats_from_device = Mock(return_value=stats.stat)
+
+        tm = PoolFactManager(client)
+        tm.version_is_less_than_12 = Mock(return_value=False)
+        tm.get_manager = Mock(return_value=tfm)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.version_is_less_than_12 = Mock(return_value=False)
         mm.get_manager = Mock(return_value=tm)
         mm.gtm_provisioned = Mock(return_value=True)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert results['preferred_lb_method'] == 'round-robin'
+        assert 'pool' in results
+        assert len(results['pool']) > 0
+        assert 'load_balancing_mode' in results['pool'][0]
