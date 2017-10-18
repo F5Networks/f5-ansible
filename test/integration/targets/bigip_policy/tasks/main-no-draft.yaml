@@ -7,128 +7,140 @@
 
 - name: Create a published policy
   bigip_policy:
-      name: "{{ policy_name1 }}"
-      state: "present"
+    name: "{{ policy_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Create a published policy
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create a published policy - Idempotent check
   bigip_policy:
-      name: "{{ policy_name1 }}"
-      state: "present"
+    name: "{{ policy_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Create a published policy - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove a published policy
   bigip_policy:
-      name: "{{ policy_name1 }}"
-      state: "absent"
+    name: "{{ policy_name1 }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove a published policy
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove a published policy - Idempotent check
   bigip_policy:
-      name: "{{ policy_name1 }}"
-      state: "absent"
+    name: "{{ policy_name1 }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove a published policy - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create policy w/base rules
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      rules:
-          - "rule1"
-          - "rule2"
-          - "rule3"
+    name: "{{ policy_name2 }}"
+    rules:
+      - "rule1"
+      - "rule2"
+      - "rule3"
   register: result
 
 - name: Assert Create draft policy w/base rules
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create policy w/base rules - Idempotent check
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      rules:
-          - "rule1"
-          - "rule2"
-          - "rule3"
+    name: "{{ policy_name2 }}"
+    rules:
+      - "rule1"
+      - "rule2"
+      - "rule3"
   register: result
 
 - name: Assert Create draft policy w/base rules - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set strategy of policy
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      strategy: "{{ strategy2 }}"
+    name: "{{ policy_name2 }}"
+    strategy: "{{ strategy2 }}"
   register: result
 
 - name: Assert Set strategy of policy
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set strategy of policy - Idempotent check
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      strategy: "{{ strategy2 }}"
+    name: "{{ policy_name2 }}"
+    strategy: "{{ strategy2 }}"
   register: result
 
 - name: Assert Set strategy of policy - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change rule order of policy
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      rules:
-          - "rule2"
-          - "rule1"
-          - "rule3"
+    name: "{{ policy_name2 }}"
+    rules:
+      - "rule2"
+      - "rule1"
+      - "rule3"
   register: result
 
 - name: Assert Change rule order of policy
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change rule order of policy - Idempotent check
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      rules:
-          - "rule2"
-          - "rule1"
-          - "rule3"
+    name: "{{ policy_name2 }}"
+    rules:
+      - "rule2"
+      - "rule1"
+      - "rule3"
   register: result
 
 - name: Assert Change rule order of policy - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove a policy
   bigip_policy:
-      name: "{{ policy_name2 }}"
-      state: "absent"
+    name: "{{ policy_name2 }}"
+    state: "absent"
   register: result
+
+- name: Create a published policy, expected failure
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: "draft"
+  register: result
+  ignore_errors: true
+
+- name: Assert Create a published policy, expected failure
+  assert:
+    that:
+      - not result|changed
