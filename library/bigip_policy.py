@@ -156,10 +156,10 @@ from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
 from distutils.version import LooseVersion
-from f5.sdk_exception import NonExtantPolicyRule
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from f5.sdk_exception import NonExtantPolicyRule
 except ImportError:
     HAS_F5SDK = False
 
