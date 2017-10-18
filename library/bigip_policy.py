@@ -27,7 +27,9 @@ version_added: "2.5"
 options:
   description:
     description:
-      - The description to attach to the Partition.
+      - The description to attach to the policy.
+      - This parameter is only supported on versions of BIG-IP >= 12.1.0. On earlier
+        versions it will simply be ignored.
   name:
     description:
       - The name of the policy to create.
@@ -36,9 +38,11 @@ options:
     description:
       - When C(state) is C(present), ensures that the policy exists and is
         published. When C(state) is C(absent), ensures that the policy is removed,
-        even if it is currently drafted. When C(state) is C(draft), ensures that
-        the policy exists and is drafted. When modifying rules, it is required
-        that policies first be in a draft.
+        even if it is currently drafted.
+      - When C(state) is C(draft), ensures that the policy exists and is drafted.
+        When modifying rules, it is required that policies first be in a draft.
+      - Drafting is only supported on versions of BIG-IP >= 12.1.0. On versions
+        prior to that, specifying a C(state) of C(draft) will raise an error.
     choices:
       - present
       - absent
@@ -152,7 +156,6 @@ from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
 from distutils.version import LooseVersion
-from f5.bigip.contexts import TransactionContextManager
 from f5.sdk_exception import NonExtantPolicyRule
 
 try:
@@ -162,23 +165,12 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
-    api_attributes = [
-        'strategy', 'description'
-    ]
-
-    updatables = [
-        'strategy', 'description', 'rules'
-    ]
-
-    returnables = [
-        'strategy', 'description', 'rules'
-    ]
-
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
         if params:
             self.update(params=params)
-        self._values['__warnings'] = []
+        self._values['__warning'] = []
+        self._values['__deprecated'] = []
 
     def update(self, params=None):
         if params:
@@ -274,35 +266,59 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class SimpleParameters(Parameters):
+    api_attributes = [
+        'strategy'
+    ]
+
+    updatables = [
+        'strategy', 'rules'
+    ]
+
+    returnables = [
+        'strategy', 'rules'
+    ]
+
+
+class ComplexParameters(Parameters):
+    api_attributes = [
+        'strategy', 'description'
+    ]
+
+    updatables = [
+        'strategy', 'description', 'rules'
+    ]
+
+    returnables = [
+        'strategy', 'description', 'rules'
+    ]
+
+
 class BaseManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Changes(changed)
+    def _announce_deprecations(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__deprecated', [])
+        if self.have:
+            warnings += self.have._values.get('__deprecated', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                changed[k] = change
-        if changed:
-            self.changes = Changes(changed)
-            return True
-        return False
+    def _announce_warnings(self):
+        warnings = []
+        if self.want:
+            warnings += self.want._values.get('__warning', [])
+        if self.have:
+            warnings += self.have._values.get('__warning', [])
+        for warning in warnings:
+            self.client.module.warn(warning['msg'])
 
     def present(self):
         if self.exists():
@@ -340,15 +356,47 @@ class BaseManager(object):
 
 
 class SimpleManager(BaseManager):
+    def __init__(self, client):
+        super(SimpleManager, self).__init__(client)
+        self.want = SimpleParameters(self.client.module.params)
+        self.changes = SimpleChanges()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in SimpleParameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = SimpleChanges(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = SimpleParameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            self.changes = SimpleChanges(changed)
+            return True
+        return False
+
     def exec_module(self):
         changed = False
         result = dict()
         state = self.want.state
 
         try:
-            if state == "present":
+            if state == 'draft':
+                raise F5ModuleError(
+                    "The 'draft' status is not available on BIG-IP versions < 12.1.0"
+                )
+            if state == 'present':
                 changed = self.present()
-            elif state == "absent":
+            elif state == 'absent':
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
@@ -356,6 +404,8 @@ class SimpleManager(BaseManager):
         changes = self.changes.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations()
+        self._announce_warnings()
         return result
 
     def read_current_from_device(self):
@@ -364,7 +414,7 @@ class SimpleManager(BaseManager):
             partition=self.want.partition
         )
         rules = self._get_rule_names(resource)
-        result = Parameters(resource.attrs)
+        result = SimpleParameters(resource.attrs)
         result.update(dict(rules=rules))
         return result
 
@@ -378,18 +428,13 @@ class SimpleManager(BaseManager):
     def update_on_device(self):
         params = self.changes.api_params()
 
-        # Using a transaction because the rule ordering cannot be changed
-        # by just patching the policy endpoint. You instead need to patch
-        # each of the rule endpoints.
-        tx = self.client.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            resource = api.tm.ltm.policys.policy.load(
-                name=self.want.name,
-                partition=self.want.partition
-            )
-            if params:
-                resource.modify(**params)
-            self._upsert_policy_rules_on_device(resource)
+        resource = self.client.api.tm.ltm.policys.policy.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if params:
+            resource.modify(**params)
+        self._upsert_policy_rules_on_device(resource)
 
     def create(self):
         self._validate_creation_parameters()
@@ -402,15 +447,13 @@ class SimpleManager(BaseManager):
     def create_on_device(self):
         params = self.want.api_params()
 
-        tx = self.client.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            params = dict(
-                name=self.want.name,
-                partition=self.want.partition,
-                **params
-            )
-            resource = api.tm.ltm.policys.policy.create(**params)
-            self._upsert_policy_rules_on_device(resource)
+        params = dict(
+            name=self.want.name,
+            partition=self.want.partition,
+            **params
+        )
+        resource = self.client.api.tm.ltm.policys.policy.create(**params)
+        self._upsert_policy_rules_on_device(resource)
         return True
 
     def update(self):
@@ -445,6 +488,34 @@ class SimpleManager(BaseManager):
 
 
 class ComplexManager(BaseManager):
+    def __init__(self, client):
+        super(ComplexManager, self).__init__(client)
+        self.want = ComplexParameters(self.client.module.params)
+        self.changes = ComplexChanges()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in ComplexParameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = ComplexChanges(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = ComplexParameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                changed[k] = change
+        if changed:
+            self.changes = ComplexChanges(changed)
+            return True
+        return False
+
     def exec_module(self):
         changed = False
         result = dict()
@@ -528,7 +599,7 @@ class ComplexManager(BaseManager):
             )
 
         rules = self._get_rule_names(resource)
-        result = Parameters(resource.attrs)
+        result = ComplexParameters(resource.attrs)
         result.update(dict(rules=rules))
         return result
 
@@ -572,19 +643,14 @@ class ComplexManager(BaseManager):
     def update_on_device(self):
         params = self.changes.api_params()
 
-        # Using a transaction because the rule ordering cannot be changed
-        # by just patching the policy endpoint. You instead need to patch
-        # each of the rule endpoints.
-        tx = self.client.api.tm.transactions.transaction
-        with TransactionContextManager(tx) as api:
-            resource = api.tm.ltm.policys.policy.load(
-                name=self.want.name,
-                partition=self.want.partition,
-                subPath='Drafts'
-            )
-            if params:
-                resource.modify(**params)
-            self._upsert_policy_rules_on_device(resource)
+        resource = self.client.api.tm.ltm.policys.policy.load(
+            name=self.want.name,
+            partition=self.want.partition,
+            subPath='Drafts'
+        )
+        if params:
+            resource.modify(**params)
+        self._upsert_policy_rules_on_device(resource)
 
     def publish(self):
         resource = self.client.api.tm.ltm.policys.policy.load(
@@ -633,8 +699,32 @@ class ComplexManager(BaseManager):
             return self.publish()
 
 
-class Changes(Parameters):
-    pass
+class SimpleChanges(SimpleParameters):
+    api_attributes = [
+        'strategy'
+    ]
+
+    updatables = [
+        'strategy', 'rules'
+    ]
+
+    returnables = [
+        'strategy', 'rules'
+    ]
+
+
+class ComplexChanges(ComplexParameters):
+    api_attributes = [
+        'strategy', 'description'
+    ]
+
+    updatables = [
+        'strategy', 'description', 'rules'
+    ]
+
+    returnables = [
+        'strategy', 'description', 'rules'
+    ]
 
 
 class Difference(object):
@@ -670,15 +760,15 @@ class ModuleManager(object):
 
     def exec_module(self):
         if self.version_is_less_than_12():
-            manager = self.get_manager('simple_traffic')
+            manager = self.get_manager('simple')
         else:
-            manager = self.get_manager('complex_traffic')
+            manager = self.get_manager('complex')
         return manager.exec_module()
 
     def get_manager(self, type):
-        if type == 'traffic':
+        if type == 'simple':
             return SimpleManager(self.client)
-        elif type == 'complex_traffic':
+        elif type == 'complex':
             return ComplexManager(self.client)
 
     def version_is_less_than_12(self):
