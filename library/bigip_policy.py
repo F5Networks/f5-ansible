@@ -147,6 +147,25 @@ EXAMPLES = r'''
       - rule3
 '''
 
+RETURN = r'''
+strategy:
+  description: The new strategy set on the policy.
+  returned: changed and success
+  type: int
+  sample: first-match
+description:
+  description:
+    - The new description of the policy.
+    - This value is only returned for BIG-IP devices >= 12.1.0.
+  returned: changed and success
+  type: string
+  sample: This is my description
+rules:
+  description: List of the rules, and their order, applied to the policy.
+  returned: changed and success
+  type: list
+  sample: ['/Common/rule1', '/Common/rule2']
+'''
 import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
