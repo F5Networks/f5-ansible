@@ -1,43 +1,37 @@
 ---
 
+# Copyright (c) 2017 F5 Networks Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 - job:
     name: ci.f5.f5-ansible-public-to-private
-    project-type: freestyle
+    project-type: workflow
     defaults: global
     description: >
       Pulls public source code for F5 Ansible modules into a private
       gitswarm repository.
     disabled: false
     display-name: ci.f5.f5-ansible-public-to-private
-    concurrent: false
-    build-discarder:
-      days-to-keep: -1
-      num-to-keep: 1
-      artifact-days-to-keep: -1
-      artifact-num-to-keep: 5
+    concurrent: true
+    logrotate:
+      daysToKeep: -1
+      numToKeep: 1
+      artifactDaysToKeep: -1
+      artifactNumToKeep: 5
     parameters:
       !include: ci.f5.f5-ansible-public-to-private-parameters.include.yaml
-    scm:
-      - git:
-          url: "https://github.com/F5Networks/f5-ansible.git/"
-          name: "f5ansible"
-          branches:
-            - "*/devel"
-          per-build-tag: false
-          skip-tag: true
-    builders:
-      - shell: |
-          #!/bin/bash
-          ssh-agent
-          git remote add downstream ${DOWNSTREAM_URL}
-          git fetch downstream
-          git push -f downstream origin/devel:refs/heads/devel
-    triggers:
-      - pollscm:
-          cron: "*/1 * * * *"
-          ignore-post-commit-hooks: false
-    wrappers:
-      - workspace-cleanup:
-          dirmatch: false
-      - ssh-agent-credentials:
-          !include: ci.f5.f5-ansible-public-to-private-ssh-agent-credentials.include.yaml
+    dsl:
+      !include-raw: ./ci.f5.f5-ansible-public-to-private.groovy
