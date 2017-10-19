@@ -315,8 +315,6 @@ class LtmManager(BaseManager):
 
     def create_on_device(self):
         params = self.want.api_params()
-        import q
-        q.q(params)
         resource = self.client.api.tm.ltm.rules.rule
         resource.create(
             name=self.want.name,
