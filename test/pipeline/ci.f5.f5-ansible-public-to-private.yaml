@@ -31,6 +31,10 @@
       numToKeep: 1
       artifactDaysToKeep: -1
       artifactNumToKeep: 5
+    triggers:
+      - pollscm:
+          cron: "@midnight"
+          ignore-post-commit-hooks: false
     parameters:
       !include: ci.f5.f5-ansible-public-to-private-parameters.include.yaml
     dsl:
