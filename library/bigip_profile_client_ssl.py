@@ -82,6 +82,19 @@ EXAMPLES = r'''
     name: my_profile
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
   delegate_to: localhost
+  
+- name: Create a client SSL profile with a cert/key/chain setting
+  bigip_profile_client_ssl:
+    state: present
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: my_profile
+    cert_key_chain:
+      - cert: bigip_ssl_cert1
+        key: bigip_ssl_key1
+        chain: bigip_ssl_cert1
+  delegate_to: localhost
 '''
 
 RETURN = r'''
