@@ -17,6 +17,7 @@ tabulate
 # Debugging
 q
 pycallgraph
+pydevd
 
 # Used for code style checking
 pycodestyle
