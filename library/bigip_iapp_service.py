@@ -74,7 +74,7 @@ options:
   traffic_group:
     description:
       - The traffic group for the iApp service. When creating a new service, if
-        this value is not specified, the default of C(/Common/traffic-group-local-only)
+        this value is not specified, the default of C(/Common/traffic-group-1)
         will be used.
       - If this option is specified in the Ansible task, it will take precedence
         over any similar setting in the iApp Server payload that you provide in
@@ -559,7 +559,7 @@ class ModuleManager(object):
     def create(self):
         self._set_changed_options()
         if self.want.traffic_group is None and self.want.trafficGroup is None:
-            self.want.update({'traffic_group': '/Common/traffic-group-local-only'})
+            self.want.update({'traffic_group': '/Common/traffic-group-1'})
         if self.client.check_mode:
             return True
         self.create_on_device()
