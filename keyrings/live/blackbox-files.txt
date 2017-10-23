@@ -1,3 +1,4 @@
+devtools/secrets/jenkins_jobs.ini.secret
 test/heat/jenkins-secondary-params.yaml
 test/pipeline/ci.f5.f5-ansible-public-to-private-parameters.include.yaml
 test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
