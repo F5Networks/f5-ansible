@@ -72,3 +72,5 @@ test/runner/roles/harness/vars/*.yaml
 /test/runner/roles/harness/vars/TwoArmed-iworkflow-2.1.0.yaml
 /test/pipeline/ci.f5.f5-ansible-public-to-private-parameters.include.yaml
 /test/pipeline/ci.f5.f5-ansible-public-to-private-ssh-agent-credentials.include.yaml
+/test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
+/devtools/secrets/jenkins_jobs.ini.secret
