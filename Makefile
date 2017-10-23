@@ -33,6 +33,9 @@ bigip_%:
 iworkflow_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
 
+wait_for_%:
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
+
 unit:
 	pytest -s test/
 
@@ -63,10 +66,10 @@ fetch-upstream:
 upgrade-ansible:
 	pip install --upgrade git+https://github.com/ansible/ansible.git
 
-remove-images:
+clean-images:
 	docker rmi --force $$(docker images -a -q)
 
-remove-containers:
+clean-containers:
 	docker rm $$(docker ps -a -q)
 
 jenkins:
