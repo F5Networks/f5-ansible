@@ -33,9 +33,6 @@ bigip_%:
 iworkflow_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
 
-wait_for_%:
-	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
-
 unit:
 	pytest -s test/
 
