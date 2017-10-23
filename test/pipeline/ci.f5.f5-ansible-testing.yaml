@@ -1,0 +1,45 @@
+---
+
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+- project:
+    name: f5-ansible-integration
+    python:
+      - 2.7.10
+      - 3.5.4
+      - 3.6.2
+    harness:
+      - TwoArmed-bigip-12.0.0
+      - TwoArmed-bigip-12.1.0
+      - TwoArmed-bigip-12.1.0-hf1
+      - TwoArmed-bigip-12.1.0-hf2
+      - TwoArmed-bigip-12.1.1
+      - TwoArmed-bigip-12.1.1-hf1
+      - TwoArmed-bigip-12.1.1-hf2
+      - TwoArmed-bigip-12.1.2
+      - TwoArmed-bigip-12.1.2-hf1
+      - TwoArmed-bigip-13.0.0
+      - TwoArmed-bigip-13.0.0-hf1
+    jobs:
+      - ci.f5.f5-ansible-py{python}-{harness}
+
+- job-template:
+    name: ci.f5.f5-ansible-py{python}-{harness}
+    project-type: pipeline
+    defaults: global
+    description: >
+      Runs integration tests for f5-ansible code base using {python} and
+      test harness {harness}.
+    disabled: false
+    display-name: ci.f5.f5-ansible-py{python}-{harness}
+    concurrent: true
+    build-discarder:
+      days-to-keep: 5
+      num-to-keep: 1
+      artifact-days-to-keep: -1
+      artifact-num-to-keep: 5
+    parameters:
+      !include: ./ci.f5.f5-ansible-testing-parameters.yaml
+    dsl:
+      !include-jinja2: ./ci.f5.f5-ansible-testing.groovy

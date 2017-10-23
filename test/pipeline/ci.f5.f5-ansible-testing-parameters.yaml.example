@@ -1,0 +1,12 @@
+- string:
+    name: DOCKER_IMAGE
+    default: f5ansible/py{python}
+    description: "Docker image to use for the test"
+- string:
+    name: HARNESS
+    default: '{harness}'
+    description: "Harness to run the tests on"
+- string:
+    name: DOCKER_REGISTRY
+    default: dockerhub
+    description: "Docker registry to get images from"
