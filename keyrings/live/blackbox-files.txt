@@ -1,5 +1,6 @@
 test/heat/jenkins-secondary-params.yaml
 test/pipeline/ci.f5.f5-ansible-public-to-private-parameters.include.yaml
+test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.0.0.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.1.0-hf1.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.1.0-hf2.yaml
