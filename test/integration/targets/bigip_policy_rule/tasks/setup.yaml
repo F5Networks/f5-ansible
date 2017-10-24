@@ -1,0 +1,32 @@
+---
+
+- name: Provision ASM to test attaching ASM policies to LTM policy
+  bigip_provision:
+    module: asm
+
+- name: Create a pool for testing forwarding to pools
+  bigip_pool:
+    name: foo-pool
+    lb_method: round_robin
+
+- name: Create published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: present
+  register: result
+
+- name: Assert Create a published policy
+  assert:
+    that:
+      - result|changed
+
+- name: Create draft policy
+  bigip_policy:
+    name: "{{ policy_name2 }}"
+    state: draft
+  register: result
+
+- name: Assert Create draft policy
+  assert:
+    that:
+      - result|changed

@@ -1,0 +1,20 @@
+---
+
+- name: Remove policies
+  bigip_policy:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ policy_name1 }}"
+    - "{{ policy_name2 }}"
+
+- name: Remove pools
+  bigip_pool:
+    name: foo-pool
+    lb_method: round_robin
+    state: absent
+
+- name: Deprovision ASM
+  bigip_provision:
+    module: asm
+    state: absent
