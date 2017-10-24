@@ -67,6 +67,7 @@
         with_first_found:
             - files:
                   - "{{ harness }}.yaml"
+                  - "{{ harness }}.example.yaml"
               paths:
                   - "{{ playbook_dir|dirname }}/roles/harness/vars/"
 
@@ -74,6 +75,12 @@
         include_vars:
             file: "{{ harness_vars_file }}"
             name: "harness_vars"
+
+      - name: Write parameters to temporary file
+        copy:
+            src: "{{ harness_vars_file }}"
+            remote_src: "yes"
+            dest: "{{ result.path }}/params.yaml.tpl"
 
       - name: Template parameters to temporary dest
         template:
