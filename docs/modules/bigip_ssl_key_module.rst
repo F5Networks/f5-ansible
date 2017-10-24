@@ -1,8 +1,8 @@
 .. _bigip_ssl_key:
 
 
-bigip_ssl_key - Import/Delete SSL keys from BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ssl_key - Import/Delete SSL keys from BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -97,21 +97,21 @@ Examples
     
     - name: Use a file lookup to import key
       bigip_ssl_key:
-          name: "key-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          content: "{{ lookup('file', '/path/to/key.key') }}"
+        name: key-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        content: "{{ lookup('file', '/path/to/key.key') }}"
       delegate_to: localhost
     
     - name: Delete key
       bigip_ssl_key:
-          name: "key-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "absent"
+        name: key-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
       delegate_to: localhost
 
 Return Values

@@ -1,8 +1,8 @@
 .. _bigip_monitor_tcp_echo:
 
 
-bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -150,21 +150,21 @@ Examples
     
     - name: Create TCP Echo Monitor
       bigip_monitor_tcp_echo:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          ip: 10.10.10.10
-          password: "secret"
-          name: "my_tcp_monitor"
+        state: present
+        server: lb.mydomain.com
+        user: admin
+        ip: 10.10.10.10
+        password: secret
+        name: my_tcp_monitor
       delegate_to: localhost
     
     - name: Remove TCP Echo Monitor
       bigip_monitor_tcp_echo:
-          state: "absent"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_tcp_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_tcp_monitor
       delegate_to: localhost
 
 Return Values

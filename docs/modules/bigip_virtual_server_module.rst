@@ -1,8 +1,8 @@
 .. _bigip_virtual_server:
 
 
-bigip_virtual_server - Manage LTM virtual servers on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_virtual_server - Manage LTM virtual servers on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.1
 
@@ -15,7 +15,7 @@ bigip_virtual_server - Manage LTM virtual servers on a BIG-IP.
 Synopsis
 --------
 
-* Manage LTM virtual servers on a BIG-IP
+* Manage LTM virtual servers on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -54,11 +54,21 @@ Options
         <td></td>
         <td><div>Destination IP of the virtual server (only host is currently supported). Required when state=present and vs does not exist.</div></br>
     <div style="font-size: small;">aliases: address, ip<div>        </td></tr>
+                <tr><td>disabled_vlans<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>List of VLANs to be disabled. If the partition is not specified in the VLAN, then the <code>partition</code> option of this module will be used.</div><div>This parameter is mutually exclusive with the <code>enabled_vlans</code> parameters.</div>        </td></tr>
                 <tr><td>enabled_vlans<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>List of VLANs to be enabled. When a VLAN named <code>ALL</code> is used, all VLANs will be allowed. VLANs can be specified with or without the leading partition. If the partition is not specified in the VLAN, then the `partition` option of this module will be used.</div>        </td></tr>
+        <td><div>List of VLANs to be enabled. When a VLAN named <code>all</code> is used, all VLANs will be allowed. VLANs can be specified with or without the leading partition. If the partition is not specified in the VLAN, then the <code>partition</code> option of this module will be used.</div><div>This parameter is mutually exclusive with the <code>disabled_vlans</code> parameter.</div>        </td></tr>
+                <tr><td>fallback_persistence_profile<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div>        </td></tr>
                 <tr><td>irules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
@@ -91,12 +101,36 @@ Options
     <td></td>
         <td></td>
         <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div>        </td></tr>
-                <tr><td>profiles<br/><div style="font-size: small;"></div></td>
+                <tr><td rowspan="2">profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td></td><td></td>
+    <td> <div>List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides of the connection (client-side and server-side).</div><div>If you only want to apply a particular profile to the client-side of the connection, specify <code>client-side</code> for the profile's <code>context</code>.</div><div>If you only want to apply a particular profile to the server-side of the connection, specify <code>server-side</code> for the profile's <code>context</code>.</div><div>If <code>context</code> is not provided, it will default to <code>all</code>.</div></br>
+    <div style="font-size: small;">aliases: all_profiles<div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object profiles</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>name<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
         <td></td>
-        <td><div>List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be used by the virtual server. The module will delegate to the device whether the specified profile list is valid or not.</div></br>
-    <div style="font-size: small;">aliases: all_profiles<div>        </td></tr>
+                <td></td>
+                <td><div>Name of the profile.</div>        </td></tr>
+                    <tr><td>context<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>all</td>
+                <td><ul><li>all</li><li>server-side</li><li>client-side</li></ul></td>
+                <td><div>The side of the connection on which the profile should be applied.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>route_advertisement_state<br/><div style="font-size: small;"> (added in 2.3)</div></td>
     <td>no</td>
     <td></td>
@@ -143,49 +177,54 @@ Examples
  ::
 
     
-    - name: Add virtual server
-      bigip_virtual_server:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: present
-          partition: Common
-          name: my-virtual-server
-          destination: "10.10.10.10"
-          port: 443
-          pool: "my-pool"
-          snat: Automap
-          description: Test Virtual Server
-          profiles_both:
-              - http
-              - fix
-          profiles_server_side:
-              - clientssl
-          profiles_client_side:
-              - ilx
-          enabled_vlans:
-              - /Common/vlan2
-      delegate_to: localhost
-    
     - name: Modify Port of the Virtual Server
       bigip_virtual_server:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: present
-          partition: Common
-          name: my-virtual-server
-          port: 8080
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        state: present
+        partition: Common
+        name: my-virtual-server
+        port: 8080
       delegate_to: localhost
     
     - name: Delete virtual server
       bigip_virtual_server:
-          server: lb.mydomain.net
-          user: admin
-          password: secret
-          state: absent
-          partition: Common
-          name: my-virtual-server
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        state: absent
+        partition: Common
+        name: my-virtual-server
+      delegate_to: localhost
+    
+    - name: Add virtual server
+      bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        state: present
+        partition: Common
+        name: my-virtual-server
+        destination: 10.10.10.10
+        port: 443
+        pool: my-pool
+        snat: Automap
+        description: Test Virtual Server
+        profiles:
+          - http
+          - fix
+          - name: clientssl
+            context: server-side
+          - name: ilx
+            context: client-side
+        policies:
+          - my-ltm-policy-for-asm
+          - ltm-uri-policy
+          - ltm-policy-2
+          - ltm-policy-3
+        enabled_vlans:
+          - /Common/vlan2
       delegate_to: localhost
 
 Return Values

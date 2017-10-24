@@ -1,8 +1,8 @@
 .. _bigip_snmp:
 
 
-bigip_snmp - Manipulate general SNMP settings on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_snmp - Manipulate general SNMP settings on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -100,20 +100,20 @@ Examples
     
     - name: Set snmp contact
       bigip_snmp:
-          contact: "Joe User"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "false"
+        contact: "Joe User"
+        password: "secret"
+        server: "lb.mydomain.com"
+        user: "admin"
+        validate_certs: "false"
       delegate_to: localhost
     
     - name: Set snmp location
       bigip_snmp:
-          location: "US West 1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "false"
+        location: "US West 1
+        password: "secret
+        server: "lb.mydomain.com
+        user: "admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

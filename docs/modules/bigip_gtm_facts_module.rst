@@ -1,8 +1,8 @@
 .. _bigip_gtm_facts:
 
 
-bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -85,11 +85,11 @@ Examples
     
     - name: Get pool facts
       bigip_gtm_facts:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          include: "pool"
-          filter: "my_pool"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        include: pool
+        filter: my_pool
       delegate_to: localhost
 
 Return Values
@@ -110,24 +110,24 @@ Common return values are documented here :doc:`common_return_values`, the follow
 
         <tr>
         <td> virtual_server </td>
-        <td> Contains the virtual server enabled and availability status, and address </td>
+        <td> Contains the virtual server enabled and availability status, and address. </td>
         <td align=center> changed </td>
-        <td align=center> dict </td>
-        <td align=center> {'virtual_server': [{'product': 'single-bigip', 'virtual_servers': [{'limit_max_pps_status': 'disabled', 'name': 'jsdfhsd', 'destination': '10.10.10.10:0', 'enabled': 'True', 'translation_address': 'none', 'limit_max_pps': '0', 'limit_max_bps': '0', 'limit_max_bps_status': 'disabled', 'limit_max_connections': '0', 'limit_max_connections_status': 'disabled', 'full_path': 'jsdfhsd', 'translation_port': '0'}], 'addresses': [{'translation': 'none', 'name': '10.10.10.10', 'device_name': '/Common/qweqwe'}], 'datacenter': '/Common/xfxgh', 'limit_cpu_usage': '0', 'expose_route_domains': 'no', 'virtual_server_discovery': 'disabled', 'iq_allow_snmp': 'yes', 'iq_allow_service_check': 'yes', 'limit_max_bps_status': 'disabled', 'limit_max_connections': '0', 'limit_cpu_usage_status': 'disabled', 'limit_max_pps_status': 'disabled', 'link_discovery': 'disabled', 'iq_allow_path': 'yes', 'monitor': '/Common/bigip ', 'limit_mem_avail_status': 'disabled', 'limit_mem_avail': '0', 'partition': 'Common', 'enabled': 'True', 'name': 'qweqwe', 'limit_max_pps': '0', 'limit_max_bps': '0', 'limit_max_connections_status': 'disabled', 'full_path': '/Common/qweqwe'}]} </td>
+        <td align=center> list </td>
+        <td align=center> {'virtual_server': [{'product': 'single-bigip', 'virtual_servers': [{'limit_max_pps_status': 'disabled', 'name': 'jsdfhsd', 'destination': '10.10.10.10:0', 'enabled': True, 'translation_address': 'none', 'limit_max_pps': 0, 'limit_max_bps': 0, 'limit_max_bps_status': 'disabled', 'limit_max_connections': 0, 'limit_max_connections_status': 'disabled', 'full_path': 'jsdfhsd', 'translation_port': 0}], 'addresses': [{'translation': 'none', 'name': '10.10.10.10', 'device_name': '/Common/qweqwe'}], 'datacenter': '/Common/xfxgh', 'limit_cpu_usage': 0, 'expose_route_domains': False, 'virtual_server_discovery': 'disabled', 'iq_allow_snmp': True, 'iq_allow_service_check': True, 'limit_max_bps_status': 'disabled', 'limit_max_connections': 0, 'limit_cpu_usage_status': 'disabled', 'limit_max_pps_status': 'disabled', 'link_discovery': 'disabled', 'iq_allow_path': True, 'monitor': '/Common/bigip', 'limit_mem_avail_status': 'disabled', 'limit_mem_avail': 0, 'partition': 'Common', 'enabled': True, 'name': 'qweqwe', 'limit_max_pps': 0, 'limit_max_bps': 0, 'limit_max_connections_status': 'disabled', 'full_path': '/Common/qweqwe'}]} </td>
     </tr>
             <tr>
         <td> wide_ip </td>
         <td> Contains the lb method for the wide ip and the pools that are within the wide ip. </td>
         <td align=center> changed </td>
-        <td align=center> dict </td>
-        <td align=center> {'wide_ip': [{'pool_lb_mode': 'round-robin', 'last_resort_pool': '', 'persist_cidr_ipv4': '32', 'persist_cidr_ipv6': '128', 'name': 'foo.ok.com', 'failure_rcode_response': 'disabled', 'failure_rcode': 'noerror', 'partition': 'Common', 'enabled': 'True', 'failure_rcode_ttl': '0', 'ttl_persistence': '3600', 'full_path': '/Common/foo.ok.com', 'pools': [{'partition': 'Common', 'ratio': '1', 'name': 'd3qw', 'order': '0'}], 'minimal_response': 'enabled', 'type': 'naptr', 'persistence': 'disabled'}]} </td>
+        <td align=center> list </td>
+        <td align=center> {'wide_ip': [{'pool_lb_mode': 'round-robin', 'last_resort_pool': '', 'persist_cidr_ipv4': 32, 'persist_cidr_ipv6': 128, 'name': 'foo.ok.com', 'failure_rcode_response': 'disabled', 'failure_rcode': 'noerror', 'partition': 'Common', 'enabled': True, 'failure_rcode_ttl': 0, 'ttl_persistence': 3600, 'full_path': '/Common/foo.ok.com', 'pools': [{'partition': 'Common', 'ratio': 1, 'name': 'd3qw', 'order': 0}], 'minimal_response': 'enabled', 'type': 'naptr', 'persistence': 'disabled'}]} </td>
     </tr>
             <tr>
         <td> pool </td>
         <td> Contains the pool object status and enabled status. </td>
         <td align=center> changed </td>
-        <td align=center> dict </td>
-        <td align=center> {'pool': [{'verify_member_availability': 'disabled', 'partition': 'Common', 'qos_packet_rate': '1', 'qos_hit_ratio': '5', 'alternate_mode': 'round-robin', 'members': [{'ratio': '1', 'name': 'ok3.com', 'service': '80', 'member_order': '0', 'disabled': 'True', 'flags': 'a', 'preference': '10', 'order': '10', 'full_path': 'ok3.com'}], 'ttl': '30', 'qos_vs_score': '0', 'qos_topology': '0', 'load_balancing_mode': 'round-robin', 'max_answers_returned': '1', 'fallback_mode': 'return-to-dns', 'qos_rtt': '50', 'name': 'd3qw', 'qos_kilobytes_second': '3', 'qos_lcs': '30', 'enabled': 'True', 'qos_vs_capacity': '0', 'qos_hops': '0', 'manual_resume': 'disabled', 'full_path': '/Common/d3qw', 'type': 'naptr', 'dynamic_ratio': 'disabled'}]} </td>
+        <td align=center> list </td>
+        <td align=center> {'pool': [{'verify_member_availability': 'disabled', 'partition': 'Common', 'qos_packet_rate': 1, 'qos_hit_ratio': 5, 'alternate_mode': 'round-robin', 'members': [{'ratio': 1, 'name': 'ok3.com', 'service': 80, 'member_order': 0, 'disabled': True, 'flags': 'a', 'preference': 10, 'order': 10, 'full_path': 'ok3.com'}], 'ttl': 30, 'enabled_state': 'disabled', 'qos_vs_score': 0, 'qos_topology': 0, 'load_balancing_mode': 'round-robin', 'max_answers_returned': 1, 'fallback_mode': 'return-to-dns', 'qos_rtt': 50, 'name': 'd3qw', 'qos_hops': 0, 'qos_kilobytes_second': 3, 'qos_lcs': 30, 'enabled': True, 'qos_vs_capacity': 0, 'availability_state': 'offline', 'manual_resume': 'disabled', 'full_path': '/Common/d3qw', 'type': 'naptr', 'dynamic_ratio': 'disabled'}]} </td>
     </tr>
         
     </table>

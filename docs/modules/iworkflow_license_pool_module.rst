@@ -1,8 +1,8 @@
 .. _iworkflow_license_pool:
 
 
-iworkflow_license_pool - Manage license pools in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_license_pool - Manage license pools in iWorkflow
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

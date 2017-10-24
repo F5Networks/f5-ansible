@@ -39,22 +39,22 @@ Options
     </tr>
                 <tr><td>contact<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The name of the contact for the data center.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The description of the data center.</div>        </td></tr>
                 <tr><td>enabled<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Whether the data center should be enabled. At least one of <code>state</code> and <code>enabled</code> are required.</div><div>Deprecated in 2.4. Use <code>state</code> and either <code>enabled</code> or <code>disabled</code> instead.</div>        </td></tr>
                 <tr><td>location<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>The location of the data center.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -105,11 +105,11 @@ Examples
     
     - name: Create data center "New York"
       bigip_gtm_datacenter:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "New York"
-          location: "222 West 23rd"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: New York
+        location: 222 West 23rd
       delegate_to: localhost
 
 Return Values

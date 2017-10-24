@@ -1,8 +1,8 @@
 .. _bigip_command:
 
 
-bigip_command - Run arbitrary command on F5 devices.
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_command - Run arbitrary command on F5 devices
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -72,7 +72,7 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>transport<br/><div style="font-size: small;"></div></td>
+                <tr><td>transport<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>yes</td>
     <td>rest</td>
         <td><ul><li>rest</li><li>cli</li></ul></td>
@@ -107,20 +107,20 @@ Examples
     - name: run show version on remote devices
       bigip_command:
         commands: show sys version
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: run show version and check to see if output contains BIG-IP
       bigip_command:
         commands: show sys version
         wait_for: result[0] contains BIG-IP
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: run multiple commands on remote nodes
@@ -128,10 +128,10 @@ Examples
         commands:
           - show sys version
           - list ltm virtual
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: run multiple commands and evaluate the output
@@ -142,10 +142,10 @@ Examples
         wait_for:
           - result[0] contains BIG-IP
           - result[1] contains my-vs
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: tmsh prefixes will automatically be handled
@@ -153,10 +153,10 @@ Examples
         commands:
           - show sys version
           - tmsh list ltm virtual
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

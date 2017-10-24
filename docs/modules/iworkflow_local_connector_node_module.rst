@@ -1,8 +1,8 @@
 .. _iworkflow_local_connector_node:
 
 
-iworkflow_local_connector_node - Manages L2/L3 configuration of a BIG-IP via iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_local_connector_node - Manages L2/L3 configuration of a BIG-IP via iWorkflow
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 

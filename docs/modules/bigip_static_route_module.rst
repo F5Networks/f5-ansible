@@ -1,8 +1,8 @@
 .. _bigip_static_route:
 
 
-bigip_static_route - Manipulate static routes on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_static_route - Manipulate static routes on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 

@@ -1,8 +1,8 @@
 .. _bigip_pool:
 
 
-bigip_pool - Manages F5 BIG-IP LTM pools.
-+++++++++++++++++++++++++++++++++++++++++
+bigip_pool - Manages F5 BIG-IP LTM pools
+++++++++++++++++++++++++++++++++++++++++
 
 
 
@@ -21,6 +21,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk
+  * Python >= 2.7
 
 
 Options
@@ -45,7 +46,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Pool member IP.</div></br>
+        <td><div>Pool member IP.</div><div>Deprecated in 2.4. Use the <code>bigip_pool_member</code> module instead.</div></br>
     <div style="font-size: small;">aliases: address<div>        </td></tr>
                 <tr><td>lb_method<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
@@ -82,7 +83,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Pool member port.</div>        </td></tr>
+        <td><div>Pool member port.</div><div>Deprecated in 2.4. Use the <code>bigip_pool_member</code> module instead.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -136,113 +137,113 @@ Examples
     
     - name: Create pool
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          lb_method: "least_connection_member"
-          slow_ramp_time: 120
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        lb_method: least_connection_member
+        slow_ramp_time: 120
       delegate_to: localhost
     
     - name: Modify load balancer method
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          lb_method: "round_robin"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        lb_method: round_robin
       delegate_to: localhost
     
     - name: Add pool member
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          host: "{{ ansible_default_ipv4['address'] }}"
-          port: 80
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        host: "{{ ansible_default_ipv4['address'] }}"
+        port: 80
       delegate_to: localhost
     
     - name: Set a single monitor (with enforcement)
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          monitor_type: "single"
-          monitors:
-              - http
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        monitor_type: single
+        monitors:
+          - http
       delegate_to: localhost
     
     - name: Set a single monitor (without enforcement)
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          monitors:
-              - http
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        monitors:
+          - http
       delegate_to: localhost
     
     - name: Set multiple monitors (all must succeed)
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          monitor_type: "and_list"
-          monitors:
-              - http
-              - tcp
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        monitor_type: and_list
+        monitors:
+          - http
+          - tcp
       delegate_to: localhost
     
     - name: Set multiple monitors (at least 1 must succeed)
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          name: "my-pool"
-          partition: "Common"
-          monitor_type: "m_of_n"
-          quorum: 1
-          monitors:
-              - http
-              - tcp
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        name: my-pool
+        partition: Common
+        monitor_type: m_of_n
+        quorum: 1
+        monitors:
+          - http
+          - tcp
       delegate_to: localhost
-      
+    
     - name: Remove pool member from pool
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "absent"
-          name: "my-pool"
-          partition: "Common"
-          host: "{{ ansible_default_ipv4['address'] }}"
-          port: 80
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        host: "{{ ansible_default_ipv4['address'] }}"
+        port: 80
       delegate_to: localhost
     
     - name: Delete pool
       bigip_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "absent"
-          name: "my-pool"
-          partition: "Common"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
       delegate_to: localhost
 
 Return Values
@@ -312,7 +313,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> reselect_tries </td>
-        <td> The new value that is set for the number of tries to contact member </td>
+        <td> The new value that is set for the number of tries to contact member. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
         <td align=center> 10 </td>
@@ -326,7 +327,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> quorum </td>
-        <td> The quorum that was set on the pool </td>
+        <td> The quorum that was set on the pool. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
         <td align=center> 2 </td>
@@ -339,7 +340,7 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 11.
+    - Requires BIG-IP software version >= 12.
     - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
     - Best run as a local_action in your playbook.
 

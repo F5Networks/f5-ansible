@@ -1,8 +1,8 @@
 .. _bigip_snmp_trap:
 
 
-bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

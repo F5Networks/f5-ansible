@@ -1,8 +1,8 @@
 .. _bigip_qkview:
 
 
-bigip_qkview - Manage qkviews on the device.
-++++++++++++++++++++++++++++++++++++++++++++
+bigip_qkview - Manage qkviews on the device
++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -115,11 +115,11 @@ Examples
     
     - name: Fetch a qkview from the remote device
       bigip_qkview:
-          asm_request_log: "yes"
-          exclude:
-              - audit
-              - secure
-          dest: "/tmp/localhost.localdomain.qkview"
+        asm_request_log: yes
+        exclude:
+          - audit
+          - secure
+        dest: /tmp/localhost.localdomain.qkview
       delegate_to: localhost
 
 Return Values

@@ -1,8 +1,8 @@
 .. _bigip_iapp_template:
 
 
-bigip_iapp_template - Manages TCL iApp templates on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_iapp_template - Manages TCL iApp templates on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -72,7 +72,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the iRule should exist or not.</div>        </td></tr>
+        <td><div>Whether the iApp template should exist or not.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -96,30 +96,30 @@ Examples
     
     - name: Add the iApp contained in template iapp.tmpl
       bigip_iapp_template:
-          content: "{{ lookup('template', 'iapp.tmpl') }}"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        content: "{{ lookup('template', 'iapp.tmpl') }}"
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Update a template in place
       bigip_iapp_template:
-          content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Update a template in place that has existing services created from it.
       bigip_iapp_template:
-          content: "{{ lookup('template', 'iapp-new.tmpl') }}"
-          force: yes
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        content: "{{ lookup('template', 'iapp-new.tmpl') }}"
+        force: yes
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
 

@@ -1,8 +1,8 @@
 .. _bigip_vcmp_guest:
 
 
-bigip_vcmp_guest - Manages vCMP guests on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_vcmp_guest - Manages vCMP guests on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>When <code>state</code> is <code>absent</code>, will additionally delete the virtual disk associated with the vCMP guest. By default, this value is</div>        </td></tr>
+        <td><div>When <code>state</code> is <code>absent</code>, will additionally delete the virtual disk associated with the vCMP guest. By default, this value is <code>no</code>.</div>        </td></tr>
                 <tr><td>initial_image<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

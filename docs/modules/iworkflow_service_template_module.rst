@@ -1,8 +1,8 @@
 .. _iworkflow_service_template:
 
 
-iworkflow_service_template - Manages Service Templates on iWorkflow.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_service_template - Manages Service Templates on iWorkflow
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

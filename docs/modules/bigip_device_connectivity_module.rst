@@ -1,8 +1,8 @@
 .. _bigip_device_connectivity:
 
 
-bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -115,13 +115,13 @@ Examples
     
     - name: Configure device connectivity for standard HA pair
       bigip_device_connectivity:
-          config_sync_ip: "10.1.30.1"
-          mirror_primary_address: "10.1.30.1"
-          unicast_failover:
-              - address: "10.1.30.1"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
+        config_sync_ip: 10.1.30.1
+        mirror_primary_address: 10.1.30.1
+        unicast_failover:
+          - address: 10.1.30.1
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
 
 Return Values

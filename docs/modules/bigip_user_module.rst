@@ -1,8 +1,8 @@
 .. _bigip_user:
 
 
-bigip_user - Manage user accounts and user attributes on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_user - Manage user accounts and user attributes on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

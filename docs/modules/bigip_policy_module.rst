@@ -1,8 +1,8 @@
 .. _bigip_policy:
 
 
-bigip_policy - Manage general policy configuration on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_policy - Manage general policy configuration on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -47,7 +47,7 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the policy to create.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
@@ -105,69 +105,66 @@ Examples
     
     - name: Create policy which is immediately published
       bigip_policy:
-          name: "Policy-Foo"
-          state: "present"
+        name: Policy-Foo
+        state: present
       delegate_to: localhost
     
     - name: Add a rule to the new policy - Immediately published
       bigip_policy_rule:
-          policy: "Policy-Foo"
-          name: "ABC"
-          conditions:
-              - http_uri: "yes"
-                path: "yes"
-                starts_with:
-                    - "/ABC"
-          actions:
-              - forward: "yes"
-                select: "yes"
-                pool: "pool-svrs"
+        policy: Policy-Foo
+        name: ABC
+        conditions:
+          - type: http_uri
+            path_starts_with:
+              - /ABC
+              - foo
+              - bar
+            path_ends_with:
+              - baz
+        actions:
+          - forward: yes
+            select: yes
+            pool: pool-svrs
     
     - name: Add multiple rules to the new policy - Added in the order they are specified
       bigip_policy_rule:
-          policy: "Policy-Foo"
-          name: "{{ item.name }}"
-          conditions: "{{ item.conditions }}"
-          actions: "{{ item.actions }}"
+        policy: Policy-Foo
+        name: "{{ item.name }}"
+        conditions: "{{ item.conditions }}"
+        actions: "{{ item.actions }}"
       with_items:
-          - name: rule1
-            actions:
-                - forward: "yes"
-                  select: "yes"
-                  pool: "pool-svrs"
-            conditions:
-                - http_uri: "yes"
-                  path: "yes"
-                  starts-with:
-                      - /euro
-          - name: HomePage
-            actions:
-                - forward: yes
-                  select: yes
-                  pool: "pool-svrs"
-            conditions:
-                - http-uri: yes
-                  path: yes
-                  starts-with:
-                      - /HomePage/
-                      
+        - name: rule1
+          actions:
+            - type: forward
+              pool: pool-svrs
+          conditions:
+            - type: http_uri
+              path_starts_with: /euro
+        - name: HomePage
+          actions:
+            - type: forward
+              pool: pool-svrs
+          conditions:
+            - type: http_uri
+              path_starts_with: /HomePage/
+    
     - name: Create policy specify default rules - Immediately published
       bigip_policy:
-          name: "Policy-Bar"
-          state: "present"
-          rules:
-              - rule1
-              - rule2
-              - rule3
+        name: Policy-Bar
+        state: present
+        rules:
+          - rule1
+          - rule2
+          - rule3
     
     - name: Create policy specify default rules - Left in a draft
       bigip_policy:
-          name: "Policy-Baz"
-          state: "draft"
-          rules:
-              - rule1
-              - rule2
-              - rule3
+        name: Policy-Baz
+        state: draft
+        rules:
+          - rule1
+          - rule2
+          - rule3
 
 
 Notes

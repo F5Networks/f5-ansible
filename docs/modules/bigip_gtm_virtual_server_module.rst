@@ -15,7 +15,7 @@ bigip_gtm_virtual_server - Manages F5 BIG-IP GTM virtual servers
 Synopsis
 --------
 
-* Manages F5 BIG-IP GTM virtual servers
+* Manages F5 BIG-IP GTM virtual servers.
 
 
 Requirements (on host that executes module)
@@ -39,9 +39,9 @@ Options
     </tr>
                 <tr><td>host<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>Virtual server host</div></br>
+        <td><div>Virtual server host.</div></br>
     <div style="font-size: small;">aliases: address<div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -50,9 +50,9 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>Virtual server port</div>        </td></tr>
+        <td><div>Virtual server port.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -67,7 +67,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Virtual server state</div>        </td></tr>
+        <td><div>Virtual server state.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -82,12 +82,12 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Virtual server name</div>        </td></tr>
+        <td><div>Virtual server name.</div>        </td></tr>
                 <tr><td>virtual_server_server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Virtual server server</div>        </td></tr>
+        <td><div>Virtual server server.</div>        </td></tr>
         </table>
     </br>
 
@@ -99,15 +99,15 @@ Examples
  ::
 
     
-      - name: Enable virtual server
-        local_action: >
-          bigip_gtm_virtual_server
-          server=192.0.2.1
-          user=admin
-          password=mysecret
-          virtual_server_name=myname
-          virtual_server_server=myserver
-          state=enabled
+    - name: Enable virtual server
+      bigip_gtm_virtual_server:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        virtual_server_name: myname
+        virtual_server_server: myserver
+        state: enabled
+      delegate_to: localhost
 
 
 Notes
@@ -115,7 +115,7 @@ Notes
 
 .. note::
     - Requires BIG-IP software version >= 11.4
-    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
+    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)"
     - Best run as a local_action in your playbook
     - Tested with manager and above account privilege level
 

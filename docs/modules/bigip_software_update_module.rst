@@ -1,8 +1,8 @@
 .. _bigip_software_update:
 
 
-bigip_software_update - Manage the software update settings of a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_software_update - Manage the software update settings of a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

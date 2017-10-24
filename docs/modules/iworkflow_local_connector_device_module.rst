@@ -1,8 +1,8 @@
 .. _iworkflow_local_connector_device:
 
 
-iworkflow_local_connector_device - Manipulate cloud local connector devices in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_local_connector_device - Manipulate cloud local connector devices in iWorkflow
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

@@ -1,8 +1,8 @@
 .. _bigip_software:
 
 
-bigip_software - Manage BIG-IP software versions and hotfixes.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_software - Manage BIG-IP software versions and hotfixes
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

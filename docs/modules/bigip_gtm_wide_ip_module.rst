@@ -1,8 +1,8 @@
 .. _bigip_gtm_wide_ip:
 
 
-bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip.
-++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.0
 
@@ -101,11 +101,11 @@ Examples
     
     - name: Set lb method
       bigip_gtm_wide_ip:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          lb_method: "round-robin"
-          name: "my-wide-ip.example.com"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        lb_method: round-robin
+        name: my-wide-ip.example.com
       delegate_to: localhost
 
 Return Values

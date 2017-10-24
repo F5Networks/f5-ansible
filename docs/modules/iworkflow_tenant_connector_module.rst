@@ -1,8 +1,8 @@
 .. _iworkflow_tenant_connector:
 
 
-iworkflow_tenant_connector - Manage connectors associated with tenants in iWorkflow.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_tenant_connector - Manage connectors associated with tenants in iWorkflow
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

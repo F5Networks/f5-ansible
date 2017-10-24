@@ -1,8 +1,8 @@
 .. _bigip_device_group:
 
 
-bigip_device_group - Manage device groups on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_group - Manage device groups on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -110,21 +110,21 @@ Examples
     
     - name: Create a sync-only device group
       bigip_device_group:
-          name: "foo-group"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        name: foo-group
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Create a sync-only device group with auto-sync enabled
       bigip_device_group:
-          name: "foo-group"
-          auto_sync: "yes"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        name: foo-group
+        auto_sync: yes
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
 Return Values

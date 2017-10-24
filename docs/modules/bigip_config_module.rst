@@ -1,8 +1,8 @@
 .. _bigip_config:
 
 
-bigip_config - Manage BIG-IP configuration sections.
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_config - Manage BIG-IP configuration sections
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -96,29 +96,29 @@ Examples
     - name: Save the running configuration of the BIG-IP
       bigip_config:
         save: yes
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Reset the BIG-IP configuration, for example, to RMA the device
       bigip_config:
         reset: yes
         save: yes
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Load an SCF configuration
       bigip_config:
         merge_content: "{{ lookup('file', '/path/to/config.scf') }}"
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

@@ -1,8 +1,8 @@
 .. _iworkflow_tenant:
 
 
-iworkflow_tenant - Manage tenants in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_tenant - Manage tenants in iWorkflow
+++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

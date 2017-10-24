@@ -1,8 +1,8 @@
 .. _iworkflow_license_pool_member:
 
 
-iworkflow_license_pool_member - Manages members in a license pool.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_license_pool_member - Manages members in a license pool
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

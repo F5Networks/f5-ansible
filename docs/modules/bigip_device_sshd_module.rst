@@ -1,8 +1,8 @@
 .. _bigip_device_sshd:
 
 
-bigip_device_sshd - Manage the SSHD settings of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_sshd - Manage the SSHD settings of a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -44,27 +44,27 @@ Options
         <td><div>Specifies, if you have enabled SSH access, the IP address or address range for other systems that can use SSH to communicate with this system.</div>        </td></tr>
                 <tr><td>banner<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Whether to enable the banner or not.</div>        </td></tr>
                 <tr><td>banner_text<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the text to include on the pre-login banner that displays when a user attempts to login to the system using SSH.</div>        </td></tr>
                 <tr><td>inactivity_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the number of seconds before inactivity causes an SSH session to log out.</div>        </td></tr>
                 <tr><td>log_level<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>debug</li><li>debug1</li><li>debug2</li><li>debug3</li><li>error</li><li>fatal</li><li>info</li><li>quiet</li><li>verbose</li></ul></td>
         <td><div>Specifies the minimum SSHD message level to include in the system log.</div>        </td></tr>
                 <tr><td>login<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies, when checked <code>enabled</code>, that the system accepts SSH communications.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -74,7 +74,7 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Port that you want the SSH daemon to run on.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
@@ -110,28 +110,28 @@ Examples
     
     - name: Set the banner for the SSHD service from a string
       bigip_device_sshd:
-          banner: "enabled"
-          banner_text: "banner text goes here"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
+        banner: enabled
+        banner_text: banner text goes here
+        password: secret
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
     
     - name: Set the banner for the SSHD service from a file
       bigip_device_sshd:
-          banner: "enabled"
-          banner_text: "{{ lookup('file', '/path/to/file') }}"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
+        banner: enabled
+        banner_text: "{{ lookup('file', '/path/to/file') }}"
+        password: secret
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
     
     - name: Set the SSHD service to run on port 2222
       bigip_device_sshd:
-          password: "secret"
-          port: 2222
-          server: "lb.mydomain.com"
-          user: "admin"
+        password: secret
+        port: 2222
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 Return Values
@@ -175,7 +175,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> inactivity_timeout </td>
-        <td> The number of seconds before inactivity causes an SSH. session to log out
+        <td> The number of seconds before inactivity causes an SSH session to log out.
  </td>
         <td align=center> changed </td>
         <td align=center> int </td>
@@ -193,7 +193,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> port </td>

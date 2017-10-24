@@ -1,8 +1,8 @@
 .. _bigip_ssl_certificate:
 
 
-bigip_ssl_certificate - Import/Delete certificates from BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ssl_certificate - Import/Delete certificates from BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 1.5.0
+  * f5-sdk >= 3.0.3
   * BIG-IP >= v12
 
 

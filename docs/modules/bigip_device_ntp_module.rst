@@ -1,8 +1,8 @@
 .. _bigip_device_ntp:
 
 
-bigip_device_ntp - Manage NTP servers on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_ntp - Manage NTP servers on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -90,21 +90,21 @@ Examples
     
     - name: Set NTP server
       bigip_device_ntp:
-          ntp_servers:
-              - "192.0.2.23"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "no"
+        ntp_servers:
+          - 192.0.2.23
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Set timezone
       bigip_device_ntp:
-          password: "secret"
-          server: "lb.mydomain.com"
-          timezone: "America/Los_Angeles"
-          user: "admin"
-          validate_certs: "no"
+        password: secret
+        server: lb.mydomain.com
+        timezone: America/Los_Angeles
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values
@@ -135,7 +135,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> The timezone that was set on the device </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
         
     </table>

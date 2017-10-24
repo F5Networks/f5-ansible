@@ -1,8 +1,8 @@
 .. _iworkflow_license:
 
 
-iworkflow_license - Manage license of iWorkflow itself.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_license - Manage license of iWorkflow itself
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

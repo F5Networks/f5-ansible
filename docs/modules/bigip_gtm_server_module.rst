@@ -1,8 +1,8 @@
 .. _bigip_gtm_server:
 
 
-bigip_gtm_server - Manages F5 BIG-IP GTM servers.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_server - Manages F5 BIG-IP GTM servers
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -105,45 +105,49 @@ Examples
     
     - name: Create server "GTM_Server"
       bigip_gtm_server:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: 'GTM_Server'
-          datacenter: '/Common/New York'
-          product: 'bigip'
-          link_discovery: 'disabled'
-          virtual_server_discovery: 'disabled'
-          devices:
-            - {'name': 'server_1', 'address': '1.1.1.1'}
-            - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
-            - {'name': 'server_2', 'address': '2.2.2.2'}
-            - {'name': 'server_3', 'addresses': [{'address':'3.3.3.1'},{'address':'3.3.3.2'}]}
-            - {'name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: GTM_Server
+        datacenter: /Common/New York
+        product: bigip
+        link_discovery: disabled
+        virtual_server_discovery: disabled
+        devices:
+          - {'name': 'server_1', 'address': '1.1.1.1'}
+          - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
+          - {'name': 'server_2', 'address': '2.2.2.2'}
+          - {'name': 'server_3', 'addresses': [{'address':'3.3.3.1'},{'address':'3.3.3.2'}]}
+          - {'name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
       delegate_to: localhost
     
     - name: Create server "GTM_Server" with expanded keys
       bigip_gtm_server:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: 'GTM_Server'
-          datacenter: '/Common/New York'
-          product: 'bigip'
-          link_discovery: 'disabled'
-          virtual_server_discovery: 'disabled'
-          devices:
-            - name: server_1
-              address: '1.1.1.1'
-            - name: 'server_2',
-              address: '2.2.2.1',
-              translation:'192.168.2.1'
-            - name: 'server_2',
-              address: '2.2.2.2'
-            - name: 'server_3',
-              addresses:
-                - address:'3.3.3.1',
-                - address:'3.3.3.2'
-            - name': 'server_4', 'addresses': [{'address':'4.4.4.1','translation':'192.168.14.1'}, {'address':'4.4.4.2'}]}
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: GTM_Server
+        datacenter: /Common/New York
+        product: bigip
+        link_discovery: disabled
+        virtual_server_discovery: disabled
+        devices:
+          - name: server_1
+            address: 1.1.1.1
+          - name: server_2
+            address: 2.2.2.1
+            translation: 192.168.2.1
+          - name: server_2
+            address: 2.2.2.2
+          - name: server_3
+            addresses:
+              - address: 3.3.3.1
+              - address: 3.3.3.2
+          - name: server_4
+            addresses:
+              - address: 4.4.4.1
+                translation: 192.168.14.1
+              - address: 4.4.4.2
       delegate_to: localhost
 
 

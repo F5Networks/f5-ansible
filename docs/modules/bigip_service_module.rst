@@ -80,11 +80,11 @@ Examples
     
     - name: Restart the BIG-IP sshd service
       bigip_service:
-          server: "big-ip"
-          name: "sshd"
-          user: "admin"
-          password: "admin"
-          state: "restarted"
+        server: lb.mydomain.com
+        name: sshd
+        user: admin
+        password: secret
+        state: restarted
       delegate_to: localhost
 
 

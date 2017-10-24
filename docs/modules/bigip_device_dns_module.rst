@@ -105,16 +105,16 @@ Examples
     
     - name: Set the DNS settings on the BIG-IP
       bigip_device_dns:
-          name_servers:
-              - 208.67.222.222
-              - 208.67.220.220
-          search:
-              - localdomain
-              - lab.local
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "no"
+        name_servers:
+          - 208.67.222.222
+          - 208.67.220.220
+        search:
+          - localdomain
+          - lab.local
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

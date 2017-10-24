@@ -1,8 +1,8 @@
 .. _bigiq_license_pool_member:
 
 
-bigiq_license_pool_member - __SHORT_DESCRIPTION__.
-++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_license_pool_member - __SHORT_DESCRIPTION__
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

@@ -1,10 +1,10 @@
-.. _bigip_partition:
+.. _wait_for_bigip:
 
 
-bigip_partition - Manage BIG-IP partitions
-++++++++++++++++++++++++++++++++++++++++++
+wait_for_bigip - Wait for a BIG-IP condition before continuing
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -15,14 +15,14 @@ bigip_partition - Manage BIG-IP partitions
 Synopsis
 --------
 
-* Manage BIG-IP partitions
+* You can wait for BIG-IP to be "ready". By "ready", we mean that BIG-IP is ready to accept configuration.
+* This module can take into account situations where the device is in the middle of rebooting due to a configuration change.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
-  * requests
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -38,21 +38,21 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>description<br/><div style="font-size: small;"></div></td>
+                <tr><td>delay<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>The description to attach to the Partition</div>        </td></tr>
+        <td><div>Number of seconds to wait before starting to poll.</div>        </td></tr>
+                <tr><td>msg<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>This overrides the normal error message from a failure to meet the required conditions.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>route_domain<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The default Route Domain to assign to the Partition. If no route domain is specified, then the default route domain for the system (typically zero) will be used only when creating a new partition. <code>route_domain</code> and <code>route_domain_id</code> are mutually exclusive.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -63,6 +63,16 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>sleep<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>1</td>
+        <td></td>
+        <td><div>Number of seconds to sleep between checks, before 2.3 this was hardcoded to 1 second.</div>        </td></tr>
+                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>7200</td>
+        <td></td>
+        <td><div>Maximum number of seconds to wait for.</div><div>When used without other conditions it is equivalent of just sleeping.</div><div>The default timeout is deliberately set to 2 hours because no individual REST API</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -84,14 +94,35 @@ Examples
  ::
 
     
+    - name: Wait for BIG-IP to be ready to take configuration
+      wait_for_bigip:
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+      delegate_to: localhost
     
+    - name: Wait a maximum of 300 seconds for BIG-IP to be ready to take configuration
+      wait_for_bigip:
+        timeout: 300
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+      delegate_to: localhost
+    
+    - name: Wait for BIG-IP to be ready, don't start checking for 10 seconds
+      wait_for_bigip:
+        delay: 10
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+      delegate_to: localhost
 
 
 Notes
 -----
 
 .. note::
-    - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
 
 
 

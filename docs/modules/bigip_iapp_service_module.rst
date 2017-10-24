@@ -1,8 +1,8 @@
 .. _bigip_iapp_service:
 
 
-bigip_iapp_service - Manages TCL iApp services on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_iapp_service - Manages TCL iApp services on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -52,7 +52,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div>        </td></tr>
+        <td><div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div><div>These parameters typically consist of the <code>lists</code>, <code>tables</code>, and <code>variables</code> fields.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
@@ -78,11 +78,21 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div>        </td></tr>
+                <tr><td>strict_updates<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>True</td>
+        <td></td>
+        <td><div>Indicates whether the application service is tied to the template, so when the template is updated, the application service changes to reflect the updates.</div><div>When <code>yes</code>, disallows any updates to the resources that the iApp service has created, if they are not updated directly through the iApp.</div><div>When <code>no</code>, allows updates outside of the iApp.</div><div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Server payload that you provide in the <code>parameters</code> field.</div>        </td></tr>
                 <tr><td>template<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>The iApp template from which to instantiate a new service. This template must exist on your BIG-IP before you can successfully create a service. This parameter is required if the <code>state</code> parameter is <code>present</code>.</div>        </td></tr>
+                <tr><td>traffic_group<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The traffic group for the iApp service. When creating a new service, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div><div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Server payload that you provide in the <code>parameters</code> field.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -106,64 +116,119 @@ Examples
     
     - name: Create HTTP iApp service from iApp template
       bigip_iapp_service:
-          name: "foo-service"
-          template: "f5.http"
-          parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        name: foo-service
+        template: f5.http
+        parameters: "{{ lookup('file', 'f5.http.parameters.json') }}"
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Upgrade foo-service to v1.2.0rc4 of the f5.http template
       bigip_iapp_service:
-          name: "foo-service"
-          template: "f5.http.v1.2.0rc4"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        name: foo-service
+        template: f5.http.v1.2.0rc4
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Configure a service using parameters in YAML
       bigip_iapp_service:
-          name: "tests"
-          template: "web_frontends"
-          password: "admin"
-          server: "{{ inventory_hostname }}"
-          server_port: "{{ bigip_port }}"
-          validate_certs: "{{ validate_certs }}"
-          state: "present"
-          user: "admin"
-          parameters:
-              variables:
-                  - name: "var__vs_address"
-                    value: "1.1.1.1"
-                  - name: "pm__apache_servers_for_http"
-                    value: "2.2.2.1:80"
-                  - name: "pm__apache_servers_for_https"
-                    value: "2.2.2.2:80"
+        name: tests
+        template: web_frontends
+        password: admin
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
+        state: present
+        user: admin
+        parameters:
+          variables:
+            - name: var__vs_address
+              value: 1.1.1.1
+            - name: pm__apache_servers_for_http
+              value: 2.2.2.1:80
+            - name: pm__apache_servers_for_https
+              value: 2.2.2.2:80
       delegate_to: localhost
     
     - name: Re-configure a service whose underlying iApp was updated in place
       bigip_iapp_service:
-          name: "tests"
-          template: "web_frontends"
-          password: "admin"
-          force: yes
-          server: "{{ inventory_hostname }}"
-          server_port: "{{ bigip_port }}"
-          validate_certs: "{{ validate_certs }}"
-          state: "present"
-          user: "admin"
-          parameters:
-              variables:
-                  - name: "var__vs_address"
-                    value: "1.1.1.1"
-                  - name: "pm__apache_servers_for_http"
-                    value: "2.2.2.1:80"
-                  - name: "pm__apache_servers_for_https"
-                    value: "2.2.2.2:80"
+        name: tests
+        template: web_frontends
+        password: admin
+        force: yes
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
+        state: present
+        user: admin
+        parameters:
+          variables:
+            - name: var__vs_address
+              value: 1.1.1.1
+            - name: pm__apache_servers_for_http
+              value: 2.2.2.1:80
+            - name: pm__apache_servers_for_https
+              value: 2.2.2.2:80
+      delegate_to: localhost
+    
+    - name: Try to remove the iApp template before the associated Service is removed
+      bigip_iapp_template:
+        name: web_frontends
+        state: absent
+      register: result
+      failed_when:
+        - not result|success
+        - "'referenced by one or more applications' not in result.msg"
+    
+    - name: Configure a service using more complicated parameters
+      bigip_iapp_service:
+        name: tests
+        template: web_frontends
+        password: admin
+        server: "{{ inventory_hostname }}"
+        server_port: "{{ bigip_port }}"
+        validate_certs: "{{ validate_certs }}"
+        state: present
+        user: admin
+        parameters:
+          variables:
+            - name: var__vs_address
+              value: 1.1.1.1
+            - name: pm__apache_servers_for_http
+              value: 2.2.2.1:80
+            - name: pm__apache_servers_for_https
+              value: 2.2.2.2:80
+          lists:
+            - name: irules__irules
+              value:
+                - foo
+                - bar
+          tables:
+            - name: basic__snatpool_members
+            - name: net__snatpool_members
+            - name: optimizations__hosts
+            - name: pool__hosts
+              columnNames:
+                - name
+              rows:
+                - row:
+                    - internal.company.bar
+            - name: pool__members
+              columnNames:
+                - addr
+                - port
+                - connection_limit
+              rows:
+                - row:
+                    - "none"
+                    - 80
+                    - 0
+            - name: server_pools__servers
       delegate_to: localhost
 
 

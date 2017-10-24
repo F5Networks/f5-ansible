@@ -1,8 +1,8 @@
 .. _bigip_monitor_tcp:
 
 
-bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 1.4
 
@@ -187,23 +187,23 @@ Examples
     
     - name: Create TCP Monitor
       bigip_monitor_tcp:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_tcp_monitor"
-          type: "tcp"
-          send: "tcp string to send"
-          receive: "tcp string to receive"
+        state: present
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_tcp_monitor
+        type: tcp
+        send: tcp string to send
+        receive: tcp string to receive
       delegate_to: localhost
     
     - name: Remove TCP Monitor
       bigip_monitor_tcp:
-          state: "absent"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_tcp_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: "my_tcp_monitor
       delegate_to: localhost
 
 Return Values

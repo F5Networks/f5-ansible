@@ -1,8 +1,8 @@
 .. _bigip_monitor_https:
 
 
-bigip_monitor_https - Manages F5 BIG-IP LTM https monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -94,7 +94,7 @@ Options
     <td>/Common/https</td>
         <td></td>
         <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>https</code> parent on the <code>Common</code> partition.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
@@ -123,7 +123,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\r\n</code> will be used.</div>        </td></tr>
+        <td><div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\\r\\n</code> will be used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -177,21 +177,21 @@ Examples
     
     - name: Create HTTPS Monitor
       bigip_monitor_https:
-          state: "present"
-          ip: "10.10.10.10"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_http_monitor"
+        state: present
+        ip: 10.10.10.10
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_http_monitor
       delegate_to: localhost
     
     - name: Remove HTTPS Monitor
       bigip_monitor_https:
-          state: "absent"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_http_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_http_monitor
       delegate_to: localhost
 
 Return Values

@@ -1,8 +1,8 @@
 .. _bigip_raw:
 
 
-bigip_raw - Run raw commands on F5 devices.
-+++++++++++++++++++++++++++++++++++++++++++
+bigip_raw - Run raw commands on F5 devices
+++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -102,20 +102,20 @@ Examples
     - name: Run show version on remote devices
       bigip_raw:
         commands: show sys version
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: "secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Run show version and check to see if output contains BIG-IP
       bigip_raw:
         commands: show sys version
         wait_for: result[0] contains BIG-IP
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Run multiple commands on remote nodes
@@ -123,10 +123,10 @@ Examples
         commands:
           - show sys version
           - list ltm virtual
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Run multiple commands and evaluate the output
@@ -137,10 +137,10 @@ Examples
         wait_for:
           - result[0] contains BIG-IP
           - result[1] contains my-vs
-        server: "lb.mydomain.com"
-        password: "secret"
-        user: "admin"
-        validate_certs: "no"
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

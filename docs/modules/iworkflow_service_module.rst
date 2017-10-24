@@ -1,8 +1,8 @@
 .. _iworkflow_service:
 
 
-iworkflow_service - Manages L4/L7 Services on iWorkflow.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_service - Manages L4/L7 Services on iWorkflow
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

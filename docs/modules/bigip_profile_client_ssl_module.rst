@@ -139,21 +139,21 @@ Examples
     
     - name: Create client SSL profile
       bigip_profile_client_ssl:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_profile"
+        state: present
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_profile
       delegate_to: localhost
     
     - name: Create client SSL profile with specific ciphers
       bigip_profile_client_ssl:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_profile"
-          ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
+        state: present
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_profile
+        ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
       delegate_to: localhost
 
 Return Values

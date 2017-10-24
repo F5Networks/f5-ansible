@@ -1,31 +1,62 @@
-.. __bigip_monitor_http:
+.. _bigip_monitor_http:
 
 
-_bigip_monitor_http - Manages F5 BIG-IP LTM http monitors
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_http - Manages F5 BIG-IP LTM http monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 1.4
+.. versionadded:: 2.5
 
 
 .. contents::
    :local:
    :depth: 2
 
-DEPRECATED
-----------
-
-Deprecated in 2.5. Use ``bigip_monitor_http`` instead.
 
 Synopsis
 --------
 
-* Manages F5 BIG-IP LTM monitors via iControl SOAP API
+* M
+* a
+* n
+* a
+* g
+* e
+* s
+*  
+* F
+* 5
+*  
+* B
+* I
+* G
+* -
+* I
+* P
+*  
+* L
+* T
+* M
+*  
+* h
+* t
+* t
+* p
+*  
+* m
+* o
+* n
+* i
+* t
+* o
+* r
+* s
+* .
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
+  * f5-sdk >= 2.2.3
 
 
 Options
@@ -43,35 +74,30 @@ Options
     </tr>
                 <tr><td>interval<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>The interval specifying how frequently the monitor instance of this template will run. By default, this interval is used for up and down states. The default API setting is 5.</div>        </td></tr>
+        <td><div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
                 <tr><td>ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>IP address part of the ipport definition. The default API setting is "0.0.0.0".</div>        </td></tr>
+        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Monitor name</div></br>
+        <td><div>Monitor name.</div></br>
     <div style="font-size: small;">aliases: monitor<div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>http</td>
+    <td>/Common/http</td>
         <td></td>
-        <td><div>The parent template of this monitor template</div>        </td></tr>
-                <tr><td>parent_partition<br/><div style="font-size: small;"></div></td>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>http</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
-        <td><div>Partition for the parent monitor</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>Partition for the monitor</div>        </td></tr>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -79,24 +105,24 @@ Options
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>Port address part of the ip/port definition. The default API setting is 0.</div>        </td></tr>
+        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'. Note that if specifying an IP address, a value between 1 and 65535 must be specified.</div>        </td></tr>
                 <tr><td>receive<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td>none</td>
+    <td>no</td>
+    <td></td>
         <td></td>
-        <td><div>The receive string for the monitor call</div>        </td></tr>
+        <td><div>The receive string for the monitor call.</div>        </td></tr>
                 <tr><td>receive_disable<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td>none</td>
+    <td>no</td>
+    <td></td>
         <td></td>
-        <td><div>The receive disable string for the monitor call</div>        </td></tr>
+        <td><div>This setting works like <code>receive</code>, except that the system marks the node or pool member disabled when its response matches the <code>receive_disable</code> string but not <code>receive</code>. To use this setting, you must specify both <code>receive_disable</code> and <code>receive</code>.</div>        </td></tr>
                 <tr><td>send<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td>none</td>
+    <td>no</td>
+    <td></td>
         <td></td>
-        <td><div>The send string for the monitor call</div>        </td></tr>
+        <td><div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\r\n</code> will be used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -107,21 +133,26 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
+                <tr><td>target_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Monitor state</div>        </td></tr>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the password, if the monitored target requires authentication.</div>        </td></tr>
+                <tr><td>target_username<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the user name, if the monitored target requires authentication.</div>        </td></tr>
                 <tr><td>time_until_up<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. The default API setting is 0.</div>        </td></tr>
+        <td><div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. If this parameter is not provided when creating a new monitor, then the default value will be 0.</div>        </td></tr>
                 <tr><td>timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>none</td>
+    <td></td>
         <td></td>
-        <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. The default API setting is 16.</div>        </td></tr>
+        <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -143,35 +174,112 @@ Examples
  ::
 
     
-    - name: BIGIP F5 | Create HTTP Monitor
+    - name: Create HTTP Monitor
       bigip_monitor_http:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_http_monitor"
-          send: "http string to send"
-          receive: "http string to receive"
+        state: present
+        ip: 10.10.10.10
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_http_monitor
       delegate_to: localhost
     
-    - name: BIGIP F5 | Remove HTTP Monitor
+    - name: Remove HTTP Monitor
       bigip_monitor_http:
-        state: "absent"
-        server: "lb.mydomain.com"
-        user: "admin"
-        password: "secret"
-        name: "my_http_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_http_monitor
+      delegate_to: localhost
+    
+    - name: Include a username and password in the HTTP monitor
+      bigip_monitor_http:
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_http_monitor
+        target_username: monitor_user
+        target_password: monitor_pass
       delegate_to: localhost
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> ip </td>
+        <td> The new IP of IP/port definition. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 10.12.13.14 </td>
+    </tr>
+            <tr>
+        <td> interval </td>
+        <td> The new interval in which to run the monitor check. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
+    </tr>
+            <tr>
+        <td> parent </td>
+        <td> New parent template of the monitor. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> http </td>
+    </tr>
+            <tr>
+        <td> timeout </td>
+        <td> The new timeout in which the remote system must respond to the monitor. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10 </td>
+    </tr>
+            <tr>
+        <td> time_until_up </td>
+        <td> The new time in which to mark a system as up after first successful response. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 11
-    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
-    - Best run as a local_action in your playbook
-    - Monitor API documentation: https://devcentral.f5.com/wiki/iControl.LocalLB__Monitor.ashx
+    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - Requires BIG-IP software version >= 12
+
+
+
+Status
+~~~~~~
+
+This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
+
+
+Support
+~~~~~~~
+
+This module is community maintained without core committer oversight.
+
+For more information on what this means please read :doc:`modules_support`
 
 
 For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

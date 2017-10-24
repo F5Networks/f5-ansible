@@ -1,8 +1,8 @@
 .. _bigip_irule:
 
 
-bigip_irule - Manage iRules across different modules on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_irule - Manage iRules across different modules on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -105,24 +105,24 @@ Examples
     
     - name: Add the iRule contained in template irule.tcl to the LTM module
       bigip_irule:
-          content: "{{ lookup('template', 'irule.tcl') }}"
-          module: "ltm"
-          name: "MyiRule"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        content: "{{ lookup('template', 'irule.tcl') }}"
+        module: ltm
+        name: MyiRule
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Add the iRule contained in static file irule.tcl to the LTM module
       bigip_irule:
-          module: "ltm"
-          name: "MyiRule"
-          password: "secret"
-          server: "lb.mydomain.com"
-          src: "irule.tcl"
-          state: "present"
-          user: "admin"
+        module: ltm
+        name: MyiRule
+        password: secret
+        server: lb.mydomain.com
+        src: irule.tcl
+        state: present
+        user: admin
       delegate_to: localhost
 
 Return Values

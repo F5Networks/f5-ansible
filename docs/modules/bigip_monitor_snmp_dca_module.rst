@@ -1,8 +1,8 @@
 .. _bigip_monitor_snmp_dca:
 
 
-bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitors.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitors
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -156,20 +156,20 @@ Examples
     
     - name: Create SNMP DCS monitor
       bigip_monitor_snmp_dca:
-          state: "present"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_monitor"
+        state: present
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_monitor
       delegate_to: localhost
     
     - name: Remove TCP Echo Monitor
       bigip_monitor_snmp_dca:
-          state: "absent"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_monitor
       delegate_to: localhost
 
 Return Values

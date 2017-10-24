@@ -1,8 +1,8 @@
 .. _bigip_virtual_address:
 
 
-bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

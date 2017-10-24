@@ -1,8 +1,8 @@
 .. _bigip_monitor_tcp_half_open:
 
 
-bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp half-open monitors.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp half-open monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -112,6 +112,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be '*'. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -155,21 +160,30 @@ Examples
     
     - name: Create TCP Monitor
       bigip_monitor_tcp_half_open:
-          state: "present"
-          ip: "10.10.10.10"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_tcp_monitor"
+        state: present
+        ip: 10.10.10.10
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_tcp_monitor
       delegate_to: localhost
     
     - name: Remove TCP Monitor
       bigip_monitor_tcp_half_open:
-          state: "absent"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_tcp_monitor"
+        state: absent
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_tcp_monitor
+      delegate_to: localhost
+    
+    - name: Add half-open monitor for all addresses, port 514
+      bigip_monitor_tcp_half_open:
+        server: lb.mydomain.com
+        user: admin
+        port: 514
+        password: secret
+        name: my_tcp_monitor
       delegate_to: localhost
 
 Return Values

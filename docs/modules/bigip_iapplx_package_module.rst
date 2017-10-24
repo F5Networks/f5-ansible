@@ -1,8 +1,8 @@
 .. _bigip_iapplx_package:
 
 
-bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_iapplx_package - Manages Javascript iApp packages on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -86,29 +86,29 @@ Examples
     
     - name: Add an iAppLX package
       bigip_iapplx_package:
-          package: "MyApp-0.1.0-0001.noarch.rpm"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        package: MyApp-0.1.0-0001.noarch.rpm
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Add an iAppLX package stored in a role
       bigip_iapplx_package:
-          package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        package: "{{ roles_path }}/files/MyApp-0.1.0-0001.noarch.rpm'"
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Remove an iAppLX package
       bigip_iapplx_package:
-          package: "MyApp-0.1.0-0001.noarch.rpm"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
+        package: MyApp-0.1.0-0001.noarch.rpm
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
       delegate_to: localhost
 
 

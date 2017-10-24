@@ -42,17 +42,17 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>A sequence of options for the view</div>        </td></tr>
+        <td><div>A sequence of options for the view.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>BIG-IP password</div>        </td></tr>
+        <td><div>BIG-IP password.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>BIG-IP host</div>        </td></tr>
+        <td><div>BIG-IP host.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -62,13 +62,13 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>BIG-IP username</div></br>
+        <td><div>BIG-IP username.</div></br>
     <div style="font-size: small;">aliases: username<div>        </td></tr>
                 <tr><td>zone<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The name of the zone</div>        </td></tr>
+        <td><div>The name of the zone.</div>        </td></tr>
         </table>
     </br>
 
@@ -81,17 +81,16 @@ Examples
 
     
     - name: Add a view, named "internal", to organization.com zone
-      local_action:
-          module: bigip_view
-          username: 'admin'
-          password: 'admin'
-          hostname: 'bigip.organization.com'
-          zone_names:
-              - 'organization.com'
-          state: 'present'
-          options:
-              - domain_name: elliot.organization.com
-              ip_address: 10.1.1.1
+      module: bigip_view:
+        username: admin
+        password: secret
+        server: lb.mydomain.com
+        zone_names:
+          - organization.com
+        state: present
+        options:
+          - domain_name: elliot.organization.com
+            ip_address: 10.1.1.1
 
 
 Notes

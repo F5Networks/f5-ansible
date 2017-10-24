@@ -15,7 +15,7 @@ bigip_routedomain - Manage route domains on a BIG-IP
 Synopsis
 --------
 
-* Manage route domains on a BIG-IP
+* Manage route domains on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -58,10 +58,15 @@ Options
         <td></td>
         <td><div>The eviction policy to use with this route domain. Apply an eviction policy to provide customized responses to flow overflows and slow flows on the route domain.</div>        </td></tr>
                 <tr><td>id<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The unique identifying integer representing the route domain.</div>        </td></tr>
+        <td><div>The unique identifying integer representing the route domain.</div><div>This field is required when creating a new route domain.</div><div>In version 2.5, this value is no longer used to reference a route domain when making modifications to it (for instance during update and delete operations). Instead, the <code>name</code> parameter is used. In version 2.6, the <code>name</code> value will become a required parameter.</div>        </td></tr>
+                <tr><td>name<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The name of the route domain.</div><div>When creating a new route domain, if this value is not specified, then the value of <code>id</code> will be used for it.</div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -135,23 +140,24 @@ Examples
     
     - name: Create a route domain
       bigip_routedomain:
-          id: "1234"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
+        name: foo
+        id: 1234
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
     
     - name: Set VLANs on the route domain
       bigip_routedomain:
-          id: "1234"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
-          vlans:
-              - net1
-              - foo
+        name: bar
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+        vlans:
+          - net1
+          - foo
       delegate_to: localhost
 
 Return Values

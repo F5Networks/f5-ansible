@@ -1,8 +1,8 @@
-.. _bigip_dns_record_facts:
+.. _bigip_sys_connection:
 
 
-bigip_dns_record_facts - foo
-++++++++++++++++++++++++++++
+bigip_sys_connection - Run commands on F5 devices via api
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -15,7 +15,7 @@ bigip_dns_record_facts - foo
 Synopsis
 --------
 
-* foo
+* Run commands on F5 devices via api
 
 
 Requirements (on host that executes module)
@@ -37,6 +37,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>command<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>Command to run</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -51,21 +56,34 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>BIG-IP username</div></br>
-    <div style="font-size: small;">aliases: username<div>        </td></tr>
+        <td><div>BIG-IP username</div>        </td></tr>
         </table>
     </br>
 
 
 
+Examples
+--------
 
+ ::
+
+    
+    - name: Show connections to LTM virtual server
+      local_action: >
+          bigip_sys_connection
+          server={{ f5_ltm_server }}
+          user={{ f5_ltm_username }}
+          password={{ f5_ltm_password }}
+          command="tmsh show sys connection cs-server-addr {{ ip_address }}"
 
 
 Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the remote host. This is as easy as pip install f5-sdk
+    - F5 developed module 'f5-sdk' required
+    - Best run as a local_action in your playbook
+    - Requires administrative privileges for user
 
 
 

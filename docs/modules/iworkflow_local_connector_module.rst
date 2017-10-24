@@ -1,8 +1,8 @@
 .. _iworkflow_bigip_connector:
 
 
-iworkflow_bigip_connector - Manipulate cloud BIG-IP connectors in iWorkflow.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+iworkflow_bigip_connector - Manipulate cloud BIG-IP connectors in iWorkflow
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

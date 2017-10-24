@@ -1,8 +1,8 @@
 .. _bigip_ucs:
 
 
-bigip_ucs - Manage upload, installation and removal of UCS files.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_ucs - Manage upload, installation and removal of UCS files
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

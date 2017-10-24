@@ -1,8 +1,8 @@
 .. _bigip_selfip:
 
 
-bigip_selfip - Manage Self-IPs on a BIG-IP system.
-++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_selfip - Manage Self-IPs on a BIG-IP system
++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
@@ -121,100 +121,100 @@ Examples
     
     - name: Create Self IP
       bigip_selfip:
-          address: "10.10.10.10"
-          name: "self1"
-          netmask: "255.255.255.0"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "no"
-          vlan: "vlan1"
+        address: 10.10.10.10
+        name: self1
+        netmask: 255.255.255.0
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
+        vlan: vlan1
       delegate_to: localhost
     
     - name: Create Self IP with a Route Domain
       bigip_selfip:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          validate_certs: "no"
-          name: "self1"
-          address: "10.10.10.10"
-          netmask: "255.255.255.0"
-          vlan: "vlan1"
-          route_domain: "10"
-          allow_service: "default"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        validate_certs: no
+        name: self1
+        address: 10.10.10.10
+        netmask: 255.255.255.0
+        vlan: vlan1
+        route_domain: 10
+        allow_service: default
       delegate_to: localhost
     
     - name: Delete Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Allow management web UI to be accessed on this Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
-          allow_service:
-              - "tcp:443"
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
+        allow_service:
+          - tcp:443
       delegate_to: localhost
     
     - name: Allow HTTPS and SSH access to this Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
-          allow_service:
-              - "tcp:443"
-              - "tpc:22"
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
+        allow_service:
+          - tcp:443
+          - tcp:22
       delegate_to: localhost
     
     - name: Allow all services access to this Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
-          allow_service:
-              - all
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
+        allow_service:
+          - all
       delegate_to: localhost
     
     - name: Allow only GRE and IGMP protocols access to this Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
-          allow_service:
-              - gre:0
-              - igmp:0
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
+        allow_service:
+          - gre:0
+          - igmp:0
       delegate_to: localhost
     
     - name: Allow all TCP, but no other protocols access to this Self IP
       bigip_selfip:
-          name: "self1"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "absent"
-          user: "admin"
-          validate_certs: "no"
-          allow_service:
-              - tcp:0
+        name: self1
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+        validate_certs: no
+        allow_service:
+          - tcp:0
       delegate_to: localhost
 
 Return Values

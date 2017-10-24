@@ -1,8 +1,8 @@
 .. _bigip_software_facts:
 
 
-bigip_software_facts - Collect software facts from BIG-IP devices.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_software_facts - Collect software facts from BIG-IP devices
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 

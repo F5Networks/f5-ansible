@@ -1,8 +1,8 @@
 .. _iworkflow_user:
 
 
-iworkflow_user - Manage users in iWorkflow.
-+++++++++++++++++++++++++++++++++++++++++++
+iworkflow_user - Manage users in iWorkflow
+++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 

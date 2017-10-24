@@ -1,8 +1,8 @@
 .. _bigip_device_trust:
 
 
-bigip_device_trust - Manage the trust relationships between BIG-IPs.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_device_trust - Manage the trust relationships between BIG-IPs
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -100,13 +100,13 @@ Examples
     
     - name: Add trusts for all peer devices to Active device
       bigip_device_trust:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          peer_server: "{{ item.ansible_host }}"
-          peer_hostname: "{{ item.inventory_hostname }}"
-          peer_user: "{{ item.bigip_username }}"
-          peer_password: "{{ item.bigip_password }}"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        peer_server: "{{ item.ansible_host }}"
+        peer_hostname: "{{ item.inventory_hostname }}"
+        peer_user: "{{ item.bigip_username }}"
+        peer_password: "{{ item.bigip_password }}"
       with_items: hostvars
       when: inventory_hostname in groups['master']
       delegate_to: localhost

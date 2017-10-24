@@ -1,8 +1,8 @@
 .. _bigip_snat_pool:
 
 
-bigip_snat_pool - Manage SNAT pools on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_snat_pool - Manage SNAT pools on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -101,45 +101,45 @@ Examples
     
     - name: Add the SNAT pool 'my-snat-pool'
       bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my-snat-pool
+        state: present
+        members:
+          - 10.10.10.10
+          - 20.20.20.20
       delegate_to: localhost
     
     - name: Change the SNAT pool's members to a single member
       bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          member: "30.30.30.30"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my-snat-pool
+        state: present
+        member: 30.30.30.30
       delegate_to: localhost
     
     - name: Append a new list of members to the existing pool
       bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my-snat-pool"
-          state: "present"
-          members:
-              - 10.10.10.10
-              - 20.20.20.20
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my-snat-pool
+        state: present
+        members:
+          - 10.10.10.10
+          - 20.20.20.20
       delegate_to: localhost
     
     - name: Remove the SNAT pool 'my-snat-pool'
       bigip_snat_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "johnd"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: johnd
+        state: absent
       delegate_to: localhost
 
 Return Values

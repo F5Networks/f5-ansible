@@ -1,8 +1,8 @@
 .. _bigip_gtm_pool:
 
 
-bigip_gtm_pool - Manages F5 BIG-IP GTM pools.
-+++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_pool - Manages F5 BIG-IP GTM pools
+++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -84,7 +84,7 @@ Options
         <td></td>
         <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td></td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Pool member state. When <code>present</code>, ensures that the pool is created and enabled. When <code>absent</code>, ensures that the pool is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool is enabled or disabled (respectively) on the remote device.</div>        </td></tr>
@@ -116,19 +116,19 @@ Examples
     
     - name: Create a GTM pool
       bigip_gtm_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "my_pool"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: my_pool
       delegate_to: localhost
     
     - name: Disable pool
       bigip_gtm_pool:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "disabled"
-          name: "my_pool"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: disabled
+        name: my_pool
       delegate_to: localhost
 
 Return Values

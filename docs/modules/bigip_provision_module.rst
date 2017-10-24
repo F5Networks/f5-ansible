@@ -1,8 +1,8 @@
 .. _bigip_provision:
 
 
-bigip_provision - Manage BIG-IP module provisioning.
-++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_provision - Manage BIG-IP module provisioning
++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.4
 
@@ -90,22 +90,22 @@ Examples
     
     - name: Provision PEM at "nominal" level
       bigip_provision:
-          server: "lb.mydomain.com"
-          module: "pem"
-          level: "nominal"
-          password: "secret"
-          user: "admin"
-          validate_certs: "no"
+        server: lb.mydomain.com
+        module: pem
+        level: nominal
+        password: secret
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Provision a dedicated SWG. This will unprovision every other module
       bigip_provision:
-          server: "lb.mydomain.com"
-          module: "swg"
-          password: "secret"
-          level: "dedicated"
-          user: "admin"
-          validate_certs: "no"
+        server: lb.mydomain.com
+        module: swg
+        password: secret
+        level: dedicated
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

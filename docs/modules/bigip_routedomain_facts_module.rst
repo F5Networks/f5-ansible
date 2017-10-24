@@ -80,10 +80,10 @@ Examples
     
     - name: Get the facts for a route domain
       bigip_routedomain_facts:
-          id: "1234"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
+        id: 1234
+        password: secret
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 Return Values
@@ -118,8 +118,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> connection_limit </td>
-        <td> Maximum number of concurrent connections allowed for the route domain
- </td>
+        <td> Maximum number of concurrent connections allowed for the route domain </td>
         <td align=center> changed </td>
         <td align=center> integer </td>
         <td align=center> 0 </td>
@@ -133,8 +132,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> routing_protocol </td>
-        <td> Dynamic routing protocols for the system to use in the route domain
- </td>
+        <td> Dynamic routing protocols for the system to use in the route domain </td>
         <td align=center> changed </td>
         <td align=center> list </td>
         <td align=center> ['BGP', 'OSPFv2'] </td>

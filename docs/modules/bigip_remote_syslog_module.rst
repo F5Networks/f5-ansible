@@ -1,8 +1,8 @@
 .. _bigip_remote_syslog:
 
 
-bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -90,21 +90,21 @@ Examples
     
     - name: Add a remote syslog server to log to
       bigip_remote_syslog:
-          remote_host: "10.10.10.10"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "false"
+        remote_host: 10.10.10.10
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
       delegate_to: localhost
     
     - name: Add a remote syslog server on a non-standard port to log to
       bigip_remote_syslog:
-          remote_host: "10.10.10.10"
-          remote_port: "1234"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          validate_certs: "false"
+        remote_host: 10.10.10.10
+        remote_port: 1234
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values

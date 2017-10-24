@@ -1,8 +1,8 @@
 .. _bigip_policy_rule:
 
 
-bigip_policy_rule - Manage LTM policy rules on a BIG-IP.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_policy_rule - Manage LTM policy rules on a BIG-IP
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -42,18 +42,42 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The actions that you want the policy rule to perform</div>        </td></tr>
-                <tr><td>conditions<br/><div style="font-size: small;"></div></td>
+        <td><div>The actions that you want the policy rule to perform.</div><div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div><div>Available <code>type</code> values are <code>forward</code>.</div>        </td></tr>
+                <tr><td>append<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
+        <td><ul><li>True</li><li>False</li><li>actions</li><li>conditions</li></ul></td>
+        <td><div>When <code>yes</code>, will append all <code>conditions</code> and <code>actions</code> to the given rule if they do not already exist.</div><div>When <code>actions</code>, will only append the specified actions. If <code>conditions</code> are also provided, the existing conditions will be overwritten with the new list in the <code>conditions</code> parameter.</div><div>When <code>conditions</code>, will only append the specified conditions. If <code>actions</code> are also provided, the existing actions will be overwritten with the new list in the <code>actions</code> parameter.</div>        </td></tr>
+                <tr><td rowspan="2">conditions<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td><td></td>
+    <td> <div>A list of attributes that describe the condition.</div><div>See suboptions for details on how to construct each list entry.</div><div>The ordering of this list is important, the module will ensure the order is kept when modifying the task.</div><div>The suboption options listed below are not required for all condition types, read the description for more details.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object conditions</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>type<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
         <td></td>
-        <td><div>A list of attributes that describe the condition. The available attributes vary by the condition, however, each condition requires that a <code>type</code> be specified.</div><div>Available <code>type</code> values are <code>client-ssl</code>, <code>cpu-usage</code>, <code>geo-ip</code>, <code>http-basic-auth</code>, <code>http-cookie</code>, <code>http-header</code>, <code>http-host</code>, <code>http-method</code>, <code>http-referer</code>, <code>http-set-cookie</code>, <code>http-status</code>, <code>http-uri</code>, <code>http-user-agent</code>, <code>http-version</code>, <code>ssl-certificate</code>, <code>ssl-extension</code>, <code>tcp</code>, <code>web-socket</code>.</div>        </td></tr>
+                <td><ul><li>http_uri</li></ul></td>
+                <td><div>The condition type. This value controls what below options are required.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The name of the rule.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
@@ -67,7 +91,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The name of the policy that you want to associate this rule with</div>        </td></tr>
+        <td><div>The name of the policy that you want to associate this rule with.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -105,57 +129,47 @@ Examples
 
     
     vars:
-        policy_rules:
-            - name: rule1
-              actions:
-                  - forward: "yes"
-                    select: "yes"
-                    pool: "pool-svrs"
-              conditions:
-                  - http_uri: "yes"
-                    path: "yes"
-                    starts-with:
-                        - /euro
-            - name: HomePage
-              actions:
-                  - forward: yes
-                    select: yes
-                    pool: "pool-svrs"
-              conditions:
-                  - http-uri: yes
-                    path: yes
-                    starts-with:
-                        - /HomePage/
+      policy_rules:
+        - name: rule1
+          actions:
+        - type: forward
+          pool: pool-svrs
+      conditions:
+        - type: http_uri
+          path_starts_with: /euro
+        - name: rule2
+          actions:
+        - type: forward
+          pool: pool-svrs
+      conditions:
+        - type: http_uri
+          path_starts_with: /HomePage/
     
     - name: Create policies
       bigip_policy:
-          name: "Policy-Foo"
-          state: present
+        name: Policy-Foo
+        state: present
       delegate_to: localhost
     
     - name: Add a rule to the new policy
       bigip_policy_rule:
-          policy: "Policy-Foo"
-          name: "ABC"
-          ordinal: 11
-          conditions:
-              - http_uri: "yes"
-                path: "yes"
-                starts_with:
-                    - "/ABC"
-          actions:
-              - forward: "yes"
-                select: "yes"
-                pool: "pool-svrs"
+        policy: Policy-Foo
+        name: rule3
+        conditions:
+          - type: http_uri
+            path_starts_with: /ABC
+        actions:
+          - type: forward
+            pool: pool-svrs
     
     - name: Add multiple rules to the new policy
       bigip_policy_rule:
-          policy: "Policy-Foo"
-          name: "{{ item.name }}"
-          conditions: "{{ item.conditions }}"
-          actions: "{{ item.actions }}"
+        policy: Policy-Foo
+        name: "{{ item.name }}"
+        conditions: "{{ item.conditions }}"
+        actions: "{{ item.actions }}"
       with_items:
-          - policy_rules
+        - policy_rules
 
 
 Notes

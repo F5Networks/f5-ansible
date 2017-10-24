@@ -1,8 +1,8 @@
 .. _bigip_hostname:
 
 
-bigip_hostname - Manage the hostname of a BIG-IP.
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_hostname - Manage the hostname of a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
@@ -80,10 +80,10 @@ Examples
     
     - name: Set the hostname of the BIG-IP
       bigip_hostname:
-          hostname: "bigip.localhost.localdomain"
-          password: "admin"
-          server: "bigip.localhost.localdomain"
-          user: "admin"
+        hostname: bigip.localhost.localdomain
+        password: secret
+        server: lb.mydomain.com
+        user: admin
       delegate_to: localhost
 
 Return Values

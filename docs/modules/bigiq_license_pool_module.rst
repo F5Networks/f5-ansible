@@ -1,8 +1,8 @@
 .. _bigiq_license_pool:
 
 
-bigiq_license_pool - Manages license pools of different types.
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_license_pool - Manages license pools of different types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
