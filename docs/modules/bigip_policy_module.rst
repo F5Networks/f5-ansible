@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The description to attach to the Partition.</div>        </td></tr>
+        <td><div>The description to attach to the policy.</div><div>This parameter is only supported on versions of BIG-IP &gt;= 12.1.0. On earlier versions it will simply be ignored.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -76,7 +76,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>present</li><li>absent</li><li>draft</li></ul></td>
-        <td><div>When <code>state</code> is <code>present</code>, ensures that the policy exists and is published. When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently drafted. When <code>state</code> is <code>draft</code>, ensures that the policy exists and is drafted. When modifying rules, it is required that policies first be in a draft.</div>        </td></tr>
+        <td><div>When <code>state</code> is <code>present</code>, ensures that the policy exists and is published. When <code>state</code> is <code>absent</code>, ensures that the policy is removed, even if it is currently drafted.</div><div>When <code>state</code> is <code>draft</code>, ensures that the policy exists and is drafted. When modifying rules, it is required that policies first be in a draft.</div><div>Drafting is only supported on versions of BIG-IP &gt;= 12.1.0. On versions prior to that, specifying a <code>state</code> of <code>draft</code> will raise an error.</div>        </td></tr>
                 <tr><td>strategy<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -166,6 +166,46 @@ Examples
           - rule2
           - rule3
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> rules </td>
+        <td> List of the rules, and their order, applied to the policy. </td>
+        <td align=center> changed and success </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/rule1', '/Common/rule2'] </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> ['The new description of the policy.', 'This value is only returned for BIG-IP devices >= 12.1.0.'] </td>
+        <td align=center> changed and success </td>
+        <td align=center> string </td>
+        <td align=center> This is my description </td>
+    </tr>
+            <tr>
+        <td> strategy </td>
+        <td> The new strategy set on the policy. </td>
+        <td align=center> changed and success </td>
+        <td align=center> int </td>
+        <td align=center> first-match </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

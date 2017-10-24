@@ -92,7 +92,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The traffic group for the iApp service. When creating a new service, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div><div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Server payload that you provide in the <code>parameters</code> field.</div>        </td></tr>
+        <td><div>The traffic group for the iApp service. When creating a new service, if this value is not specified, the default of <code>/Common/traffic-group-1</code> will be used.</div><div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Server payload that you provide in the <code>parameters</code> field.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
