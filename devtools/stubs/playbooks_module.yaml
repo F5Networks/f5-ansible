@@ -25,8 +25,12 @@
   vars:
     limit_to: '*'
     __metadata__:
-      version: 1.0
+      version: 1.1
+      tested_versions:
+        - NA
       tested_platforms:
+        - NA
+      supported_harnesses:
         - NA
       callgraph_exclude:
         - pycallgraph.*
