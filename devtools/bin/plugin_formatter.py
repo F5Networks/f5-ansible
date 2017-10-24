@@ -145,6 +145,8 @@ def list_modules(module_dir, depth=0):
     for module_path in files:
         if module_path.endswith('__init__.py'):
             continue
+        if 'module_utils' in module_path:
+            continue
         category = categories
         mod_path_only = module_path
         # Start at the second directory because we don't want the "vendor"
@@ -249,7 +251,7 @@ def process_module(module, options, env, template, outputname, module_map, alias
         if os.path.islink(fname):
             return  # ignore, its an alias
         deprecated = True
-        module = module.replace("_","",1)
+        #module = module.replace("_","",1)
 
     print("rendering: %s" % module)
 
@@ -332,8 +334,6 @@ def process_module(module, options, env, template, outputname, module_map, alias
 
 def print_modules(module, category_file, deprecated, options, env, template, outputname, module_map, aliases):
     modstring = module
-    if modstring.startswith('_'):
-        modstring = module[1:]
     modname = modstring
     if module in deprecated:
         modstring = modstring + DEPRECATED
