@@ -31,7 +31,7 @@ New keys,
 
 **Example**
 
-.. code-block: yaml
+.. code-block:: yaml
 
    __metadata__:
      version: 1.1
@@ -77,7 +77,7 @@ Initial version of the playbook metadata keys include
 
 **Example**
 
-.. code-block: yaml
+.. code-block:: yaml
 
    __metadata__:
      version: 1.0
