@@ -207,6 +207,10 @@ class Parameters(AnsibleF5Parameters):
             commands = map(self._ensure_tmsh_prefix, list(commands))
         return list(commands)
 
+    @property
+    def user_commands(self):
+        return map(self._ensure_tmsh_prefix, list(self._values['commands']))
+
     def _ensure_tmsh_prefix(self, cmd):
         cmd = cmd.strip()
         if cmd[0:5] != 'tmsh ':
@@ -243,16 +247,17 @@ class ModuleManager(object):
         result = dict()
 
         try:
-            self.execute()
+            changed = self.execute()
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
         result.update(**self.changes.to_return())
-        result.update(dict(changed=True))
+        result.update(dict(changed=changed))
         return result
 
     def execute(self):
         warnings = list()
+        changed = ('tmsh modify', 'tmsh create', 'tmsh delete')
 
         commands = self.parse_commands(warnings)
 
@@ -292,6 +297,9 @@ class ModuleManager(object):
             'stdout_lines': self._to_lines(responses),
             'warnings': warnings
         })
+        if any(x for x in self.want.user_commands if x.startswith(changed)):
+            return True
+        return False
 
     def parse_commands(self, warnings):
         results = []
