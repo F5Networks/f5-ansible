@@ -7,7 +7,7 @@
 # First parameter is the module
 #
 
-set -x
+#set -x
 MODULE=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
 
