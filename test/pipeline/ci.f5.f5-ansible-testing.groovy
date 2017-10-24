@@ -5,7 +5,7 @@
 
 timestamps {
   node('openstack') {
-    load './test/pipeline/ci.f5.f5-ansible-testing.modules.groovy'
+    def modules = readYaml file: 'test/pipeline/ci.f5.f5-ansible-testing.modules.yaml'
     milestone(label: 'Job-AttemptingToStart')
     cleanWs()
 
@@ -42,7 +42,7 @@ timestamps {
           docker.withRegistry("${DOCKER_REGISTRY}") {
             docker.image("${DOCKER_IMAGE}").inside {
               dir('test/integration') {
-                for (module in modules) {
+                for (module in modules['modules']) {
 
                   def yamlData = readYaml file: './test/integration/'
                   if !yamlData['vars']['__metadata__'].containsKey('tested_harnesses') {
