@@ -880,3 +880,57 @@ again in the docs.
        - enabled
        - disabled
    ...
+
+
+
+Do not decompose to a *_device method if the using method is itself an *_device method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This convention is in place to limit the total amount of function decomposition that you
+will inevitably try to put into the code. Some level of decomposition is good because it
+isolated the code that targets the device (what we refer to as `*_device` methods) from the
+code in the module that does not communicate with the device.
+
+This method of isolation is how we extend modules when there is a divergence in the API code,
+or when the means of transporting information from and to the device changes.
+
+You can take this decomposition too far though. Refer to the examples below for an illustration
+of this. When you go to far, the correction is to merge the two methods.
+
+**BAD**
+
+.. code-block::python
+
+   ...
+   def upload_to_device(self):
+       self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
+
+   def import_to_device(self):
+       self.upload_to_device()
+       tasks = self.client.api.tm.asm.tasks
+       result = tasks.import_policy_s.import_policy.create(
+           name=self.want.name, filename=name
+       )
+       return result
+   ...
+
+**GOOD**
+
+.. code-block::python
+
+   ...
+   def import_to_device(self):
+       self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
+       tasks = self.client.api.tm.asm.tasks
+       result = tasks.import_policy_s.import_policy.create(
+           name=self.want.name, filename=name
+       )
+       return result
+   ...
+
+This convention remains valid when the particular line of code that you are using is a single
+line. Therefore, if the `upload_file` line were used in many places in the code, it is **still**
+correct to merge the methods instead of having a different method for it.
+
+The only time when it would be correct to decompose it is if the "other" methods were **not**
+`*_device` methods.
