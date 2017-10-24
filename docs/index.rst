@@ -34,7 +34,7 @@ listed below.
    modules/modules_by_category
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Developer Documentation
 
    development/cla-landing
