@@ -60,9 +60,9 @@ author:
 EXAMPLES = r'''
 - name: Import and activate ASM policy
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_asm_policy
     file: /root/asm_policy.xml
     active: yes
@@ -71,9 +71,9 @@ EXAMPLES = r'''
 
 - name: Import ASM policy from template
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_sharepoint_policy
     template: POLICY_TEMPLATE_SHAREPOINT_2007_HTTP
     state: present
@@ -81,18 +81,18 @@ EXAMPLES = r'''
 
 - name: Create blank ASM policy
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_blank_policy
     state: present
   delegate_to: localhost
   
 - name: Create blank ASM policy and activate
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_blank_policy
     active: yes
     state: present
@@ -100,9 +100,9 @@ EXAMPLES = r'''
 
 - name: Activate ASM policy
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: inactive_policy
     active: yes
     state: present
@@ -110,18 +110,18 @@ EXAMPLES = r'''
 
 - name: Deactivate ASM policy
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: active_policy
     state: present
   delegate_to: localhost
 
 - name: Import and activate ASM policy in Role
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_asm_policy
     file: "{{ role_path }}/files/asm_policy.xml"
     active: yes
@@ -130,9 +130,9 @@ EXAMPLES = r'''
 
 - name: Import ASM binary policy
   bigip_asm_policy:
-    server: bigip.localhost.localdomain
+    server: lb.mydomain.com
     user: admin
-    password: admin
+    password: secret
     name: new_asm_policy
     file: "/root/asm_policy.plc"
     active: yes
