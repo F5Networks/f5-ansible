@@ -1,13 +1,16 @@
 Getting Started
 ===============
 
-This document will show you how to begin using the F5 Ansible modules.
+This document explains how to begin using the F5 Ansible modules.
+
 You will create a pool, add two nodes to that pool, and finally assign a
 virtual server to serve requests to the nodes in the pool.
 
+**Note:** F5 Ansible modules are not supported by F5.
+
 First, obtain `Python 2.7`_ and `Ansible`_ if you do not already have them.
 
-The version of Ansible that is required is at least 2.2.0.
+Ansible 2.2.0 is the minimum required version.
 
 Installing Ansible
 ------------------
