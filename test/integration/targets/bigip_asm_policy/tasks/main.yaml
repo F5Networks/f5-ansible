@@ -22,6 +22,50 @@
     that:
       - not result|changed
 
+- name: Set ASM policy as active, compact XML file
+  bigip_asm_policy:
+    name: foo-policy
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, compact XML file
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as active, compact XML file - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, compact XML file - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set ASM policy as inactive, compact XML file
+  bigip_asm_policy:
+    name: foo-policy
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, compact XML file
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as inactive, compact XML file - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, compact XML file - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
 - name: Remove ASM policy
   bigip_asm_policy:
     name: foo-policy
@@ -66,6 +110,50 @@
     that:
       - not result|changed
 
+- name: Set ASM policy as active, non-compact XML file
+  bigip_asm_policy:
+    name: foo-policy2
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, non-compact XML file
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as active, non-compact XML file - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy2
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, non-compact XML file - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set ASM policy as inactive, non-compact XML file
+  bigip_asm_policy:
+    name: foo-policy2
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, non-compact XML file
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as inactive, non-compact XML file - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy2
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, non-compact XML file - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
 - name: Remove ASM policy
   bigip_asm_policy:
     name: foo-policy2
@@ -106,6 +194,50 @@
   register: result
 
 - name: Assert Create ASM policy, binary - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set ASM policy as active, binary
+  bigip_asm_policy:
+    name: foo-policy3
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, binary
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as active, binary - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy3
+    active: yes
+  register: result
+
+- name: Assert Set ASM policy as active, binary - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set ASM policy as inactive, binary
+  bigip_asm_policy:
+    name: foo-policy3
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, binary
+  assert:
+    that:
+      - result|changed
+
+- name: Set ASM policy as inactive, binary - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy3
+    active: no
+  register: result
+
+- name: Assert Set ASM policy as inactive, binary - Idempotent check
   assert:
     that:
       - not result|changed

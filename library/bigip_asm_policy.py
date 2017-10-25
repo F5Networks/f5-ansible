@@ -148,7 +148,7 @@ name:
 
 import os
 import time
-from icontrol.exceptions import iControlUnexpectedHTTPError
+
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
@@ -201,7 +201,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     api_attributes = [
-        'name', 'file'
+        'name', 'file', 'active'
     ]
     api_map = {
         'filename': 'file'
@@ -249,6 +249,35 @@ class Changes(Parameters):
     pass
 
 
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def active(self):
+        if self.want.active is True and self.have.active is False:
+            return True
+        if self.want.active is False and self.have.active is True:
+            return False
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -284,14 +313,25 @@ class ModuleManager(object):
         if changed:
             self.changes = Changes(changed)
 
+    def should_update(self):
+        result = self._update_changed_options()
+        if result:
+            return True
+        return False
+
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
             self.changes = Changes(changed)
             return True
@@ -320,14 +360,13 @@ class ModuleManager(object):
         self._set_changed_options()
         if self.client.check_mode:
             return True
-        if self.want.template is None and self.want.path is None:
-            self.create_blank()
-            return True
-        if self.want.template is not None:
-            task = self.create_policy_from_template_on_device()
-        if self.want.path is not None:
-            task = self.import_to_device()
 
+        if self.want.template is None and self.want.file is None:
+            self.create_blank()
+        elif self.want.template is not None:
+            task = self.create_policy_from_template_on_device()
+        elif self.want.file is not None:
+            task = self.import_to_device()
         if not task:
             return False
         if not self.wait_for_task(task):
@@ -340,42 +379,46 @@ class ModuleManager(object):
             return True
 
     def update(self):
-        self.have = Parameters(policy.attrs)
+        self.have = self.read_current_from_device()
         if not self.should_update():
             return False
         if self.client.check_mode:
             return True
-        if self.update_on_device():
+        self.update_on_device()
+        if self.changes.active:
+            self.activate()
+        return True
+
+    def activate(self):
+        self.have = self.read_current_from_device()
+        task = self.apply_on_device()
+        if self.wait_for_task(task):
             return True
         else:
-            return False
+            raise F5ModuleError('Apply policy task failed.')
 
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
+    def wait_for_task(self, task):
+        while True:
+            task.refresh()
+            if task.status in ['COMPLETED', 'FAILURE']:
+                break
+            time.sleep(1)
+        if task.status == 'FAILURE':
+            return False
+        if task.status == 'COMPLETED':
             return True
-        return False
 
     def update_on_device(self):
-        if self.want.active:
-            if self.is_activated():
-                return False
-            else:
-                if self.client.check_mode:
-                    return True
-                self.activate()
-                return True
-        else:
-            if not self.is_activated():
-                return False
-            if self.client.check_mode:
-                return True
-            self.deactivate()
-            return True
+        params = self.changes.api_params()
+        policies = self.client.api.tm.asm.policies_s.get_collection()
+        resource = next((p for p in policies if p.name == self.want.name), None)
+        if resource:
+            if not params['active']:
+                resource.modify(**params)
 
     def create_blank(self):
         self.create_on_device()
-        if self.policy_exists_on_device():
+        if self.exists():
             return True
         else:
             raise F5ModuleError(
@@ -392,39 +435,8 @@ class ModuleManager(object):
             )
         return True
 
-    def activate(self):
-        task = self.apply_on_device()
-        if self.wait_for_task(task):
-            return True
-        else:
-            raise F5ModuleError('Apply policy task failed.')
-
-    def deactivate(self):
-        result = self.deactivate_on_device()
-        if result:
-            return True
-        else:
-            raise F5ModuleError('Policy deactivation failed.')
-
-    def wait_for_task(self, task):
-        while True:
-            task.refresh()
-            if task.status in ['COMPLETED', 'FAILURE']:
-                break
-            time.sleep(1)
-        if task.status == 'FAILURE':
-            return False
-        if task.status == 'COMPLETED':
-            return True
-
     def is_activated(self):
-        result = self.policy_active()
-        if self.client.check_mode:
-            return True
-        return result
-
-    def policy_active(self):
-        if self.want.policy.active is True:
+        if self.want.active is True:
             return True
         else:
             return False
@@ -433,7 +445,10 @@ class ModuleManager(object):
         policies = self.client.api.tm.asm.policies_s.get_collection()
         for policy in policies:
             if policy.name == self.want.name:
-                return Parameters(policy.attrs)
+                params = policy.attrs
+                params.update(dict(self_link=policy.selfLink))
+                return Parameters(params)
+        raise F5ModuleError("The policy was not found")
 
     def import_to_device(self):
         self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
@@ -446,30 +461,24 @@ class ModuleManager(object):
         return result
 
     def apply_on_device(self):
-        policy = self.read_current_from_device()
         tasks = self.client.api.tm.asm.tasks
         result = tasks.apply_policy_s.apply_policy.create(
-            policyReference={'link': policy.selflink}
+            policyReference={'link': self.have.self_link}
         )
         return result
 
-    def deactivate_on_device(self):
-        policy = self.read_current_from_device()
-        policy.modify(active=False)
-        if policy.active is False:
-            return True
-        else:
-            return False
-
     def create_policy_from_template_on_device(self):
-        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(
+        tasks = self.client.api.tm.asm.tasks
+        result = tasks.import_policy_s.import_policy.create(
             name=self.want.name,
             policyTemplateReference=self.want.template_link
         )
         return result
 
     def create_on_device(self):
-        result = self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
+        result = self.client.api.tm.asm.policies_s.policy.create(
+            name=self.want.name
+        )
         return result
 
     def remove_from_device(self):
@@ -496,6 +505,16 @@ class ArgumentSpec(object):
         self.f5_product_name = 'bigip'
 
 
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
@@ -514,8 +533,10 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
