@@ -392,11 +392,9 @@ class Parameters(AnsibleF5Parameters):
                 )
             )
             lb_method = lb_map.get(lb_method, lb_method.replace('_', '-'))
-        try:
-            assert lb_method in spec.lb_choice
-        except AssertionError:
-            raise F5ModuleError('Provided lb_method is unknown')
-        return lb_method
+        if 'lb_method' in spec.lb_choice:
+            return lb_method
+        raise F5ModuleError('Provided lb_method is unknown')
 
     def _fqdn_name(self, value):
         if value is not None and not value.startswith('/'):
