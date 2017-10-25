@@ -22,3 +22,13 @@ def fqdn_name(partition, value):
     if value is not None and not value.startswith('/'):
         return '/{0}/{1}'.format(partition, value)
     return value
+
+
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
