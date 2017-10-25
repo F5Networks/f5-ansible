@@ -1,0 +1,292 @@
+[
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2007_http.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2007_HTTP",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2007 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/jmHjN-Fpm-SGwYQsrZp57A?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2007 (http)",
+      "id": "jmHjN-Fpm-SGwYQsrZp57A"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2007_https.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2007_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2007 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/WuteMKQSy5DG6VLSU2WHkA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2007 (https)",
+      "id": "WuteMKQSy5DG6VLSU2WHkA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2003_http.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTP",
+      "userDefined": false,
+      "description": "Generic template for OWA 2003 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/CBd6J_LuWnlejAIz0PcXcQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2003 (http)",
+      "id": "CBd6J_LuWnlejAIz0PcXcQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2003_https.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for OWA 2003 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/-fo5iE6DFnIMSwXwPIo29w?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2003 (https)",
+      "id": "-fo5iE6DFnIMSwXwPIo29w"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/oracle11i_http.xml",
+      "name": "POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTP",
+      "userDefined": false,
+      "description": "Generic template for Oracle 11i (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/hGKdiXU7US4S4qtgexijUQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "Oracle Applications 11i (http)",
+      "id": "hGKdiXU7US4S4qtgexijUQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/oracle11i_https.xml",
+      "name": "POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for Oracle 11i (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/AlCV_-gzrv8gUz9ZiyPe6w?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "Oracle Applications 11i (https)",
+      "id": "AlCV_-gzrv8gUz9ZiyPe6w"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/lotus_domino_http.xml",
+      "name": "POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP",
+      "userDefined": false,
+      "description": "Generic template for Lotus Domino 6.5 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/9oHczRWAfKs-GjW-m5Gz1Q?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "LotusDomino 6.5 (http)",
+      "id": "9oHczRWAfKs-GjW-m5Gz1Q"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/lotus_domino_https.xml",
+      "name": "POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for Lotus Domino 6.5 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/45heXhfbH1hM9n_SDdCjxg?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "LotusDomino 6.5 (https)",
+      "id": "45heXhfbH1hM9n_SDdCjxg"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2007_http.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTP",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/z5Q7J4SzfXwRhVIDaGY2_A?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2007 (http)",
+      "id": "z5Q7J4SzfXwRhVIDaGY2_A"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2007_https.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/bmW29lohtd96h6JP8-cbvQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2007 (https)",
+      "id": "bmW29lohtd96h6JP8-cbvQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sap_netweaver_http.xml",
+      "name": "POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTP",
+      "userDefined": false,
+      "description": "Generic template for SAP NetWeaver 7 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/qoJKpWVoP3w-h-ZcY9ZDhQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SAP NetWeaver 7 (http)",
+      "id": "qoJKpWVoP3w-h-ZcY9ZDhQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sap_netweaver_https.xml",
+      "name": "POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for SAP NetWeaver 7 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/QIn4nq73KOQ52uZVIYwGFw?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SAP NetWeaver 7 (https)",
+      "id": "QIn4nq73KOQ52uZVIYwGFw"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/psp9_http.xml",
+      "name": "POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTP",
+      "userDefined": false,
+      "description": "Generic Template for PeopleSoft Portal 9 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/y9Xv2QFLZymBaovG6YwM_g?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "PeopleSoft Portal 9 (http)",
+      "id": "y9Xv2QFLZymBaovG6YwM_g"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/psp9_https.xml",
+      "name": "POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTPS",
+      "userDefined": false,
+      "description": "Generic Template for PeopleSoft Portal 9 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/vvgF82QfeXQ4TvOv8DXSsQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "PeopleSoft Portal 9 (https)",
+      "id": "vvgF82QfeXQ4TvOv8DXSsQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/oracle10g_http.xml",
+      "name": "POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTP",
+      "userDefined": false,
+      "description": "Generic Template for Oracle 10g Portal (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/fZr6ZcOCuQbzHtp9uwOVLw?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "Oracle 10g Portal (http)",
+      "id": "fZr6ZcOCuQbzHtp9uwOVLw"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/oracle10g_https.xml",
+      "name": "POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTPS",
+      "userDefined": false,
+      "description": "Generic Template for Oracle 10g Portal (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/tnoA-x1mpp4OaDu1diQ00w?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "Oracle 10g Portal (https)",
+      "id": "tnoA-x1mpp4OaDu1diQ00w"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2003_http.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2003_HTTP",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2003 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/20tf2HkLhMeCEaV81oFBRg?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2003 (http)",
+      "id": "20tf2HkLhMeCEaV81oFBRg"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2003_https.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2003_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2003 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/mq9DFHXX7ek9A07I4Kq9sg?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2003 (https)",
+      "id": "mq9DFHXX7ek9A07I4Kq9sg"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/active_sync_http.xml",
+      "name": "POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTP",
+      "userDefined": false,
+      "description": "Generic template for ActiveSync (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/xh7yKYkxqypMMjpMSLN5TA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "ActiveSync v1.0 v2.0 (http)",
+      "id": "xh7yKYkxqypMMjpMSLN5TA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/active_sync_https.xml",
+      "name": "POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for ActiveSync (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/p5vOLlogJAyXkWbzBQsSSA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "ActiveSync v1.0 v2.0 (https)",
+      "id": "p5vOLlogJAyXkWbzBQsSSA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2007_as_http.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTP",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 with ActiveSync (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/NF5tndJyJPgyJHo4yuWnOQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2007 with ActiveSync (http)",
+      "id": "NF5tndJyJPgyJHo4yuWnOQ"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2007_as_https.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 with ActiveSync (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/mXUJ9ie4MSScJnqQmXPRmw?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2007 with ActiveSync (https)",
+      "id": "mXUJ9ie4MSScJnqQmXPRmw"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2003_as_http.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTP",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 with ActiveSync (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/a1sFvwa6KvSrE0kkHbAhQA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2003 with ActiveSync (http)",
+      "id": "a1sFvwa6KvSrE0kkHbAhQA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2003_as_https.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for OWA 2007 with ActiveSync (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/Ciyz5vyAMyH3njGAZ7FCKw?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2003 with ActiveSync (https)",
+      "id": "Ciyz5vyAMyH3njGAZ7FCKw"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2010_http.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTP",
+      "userDefined": false,
+      "description": "Generic template for OWA 2010 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/cYVKzRJXXnmtMmLCkt3lJA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2010 (http)",
+      "id": "cYVKzRJXXnmtMmLCkt3lJA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/owa2010_https.xml",
+      "name": "POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for OWA 2010 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/y-MGFg0PpY2rMi11PLYgcg?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "OWA Exchange 2010 (https)",
+      "id": "y-MGFg0PpY2rMi11PLYgcg"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2010_http.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2010_HTTP",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2010 (http)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/aaOB25WXRl3aDej65xkP4Q?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2010 (http)",
+      "id": "aaOB25WXRl3aDej65xkP4Q"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/sharepoint2010_https.xml",
+      "name": "POLICY_TEMPLATE_SHAREPOINT_2010_HTTPS",
+      "userDefined": false,
+      "description": "Generic template for SharePoint 2010 (https)",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/ciqlzCmTSn6oBBuFr_6_DA?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "SharePoint 2010 (https)",
+      "id": "ciqlzCmTSn6oBBuFr_6_DA"
+    },
+    {
+      "fileName": "/ts/install/policy_templates/generic.xml",
+      "name": "POLICY_TEMPLATE_RAPID_DEPLOYMENT",
+      "userDefined": false,
+      "description": "Rapid Deployment security policy",
+      "selfLink": "https://localhost/mgmt/tm/asm/policy-templates/EY4J-L6HK0AXUYXIc0VjDQ?ver=12.1.2",
+      "kind": "tm:asm:policy-templates:policy-templatestate",
+      "title": "Rapid Deployment security policy",
+      "id": "EY4J-L6HK0AXUYXIc0VjDQ"
+    }
+  ]
