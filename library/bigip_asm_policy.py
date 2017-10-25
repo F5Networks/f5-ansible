@@ -1,41 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.0'
-}
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
 
-DOCUMENTATION = '''
+
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
+
+DOCUMENTATION = r'''
 ---
 module: bigip_asm_policy
 short_description: Manage BIG-IP ASM policies
 description:
    - Manage BIG-IP ASM policies
-version_added: "2.4"
+version_added: "2.5"
 options:
   active:
     description:
-      - If C(yes) will apply and activate existing inactive policy. If C(no), it will deactivate existing active policy.
-        Generally should be C(yes) only in cases where you want to activate new or existing policy.
+      - If C(yes) will apply and activate existing inactive policy. If C(no), it will
+        deactivate existing active policy. Generally should be C(yes) only in cases where
+        you want to activate new or existing policy.
     default: no
     choices:
       - yes
@@ -46,10 +35,12 @@ options:
     required: True
   state:
     description:
-      - When C(state) is C(present), and C(file) or C(template) parameter is provided, new ASM policy is imported and 
-        created with the given C(name). When C(state) is present and no C(file) or C(template) parameter is provided 
-        new blank ASM policy is created with the given C(name). When C(state) is C(absent), ensures that the policy is 
-        removed, even if it is currently active.
+      - When C(state) is C(present), and C(file) or C(template) parameter is provided,
+        new ASM policy is imported and created with the given C(name).
+      - When C(state) is present and no C(file) or C(template) parameter is provided 
+        new blank ASM policy is created with the given C(name).
+      - When C(state) is C(absent), ensures that the policy is removed, even if it is
+        currently active.
     choices:
       - present
       - absent
@@ -66,109 +57,109 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Import and activate ASM policy
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "new_asm_policy"
-      file: "/root/asm_policy.xml"
-      active: "yes"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_asm_policy
+    file: /root/asm_policy.xml
+    active: yes
+    state: present
   delegate_to: localhost
 
 - name: Import ASM policy from template
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "new_sharepoint_policy"
-      template: "POLICY_TEMPLATE_SHAREPOINT_2007_HTTP"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_sharepoint_policy
+    template: POLICY_TEMPLATE_SHAREPOINT_2007_HTTP
+    state: present
   delegate_to: localhost
 
 - name: Create blank ASM policy
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "new_blank_policy"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_blank_policy
+    state: present
   delegate_to: localhost
   
 - name: Create blank ASM policy and activate
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "new_blank_policy"
-      active: "yes"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_blank_policy
+    active: yes
+    state: present
   delegate_to: localhost
 
 - name: Activate ASM policy
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "inactive_policy"
-      active: "yes"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: inactive_policy
+    active: yes
+    state: present
   delegate_to: localhost
 
 - name: Deactivate ASM policy
   bigip_asm_policy:
-      server: "bigip.localhost.localdomain"
-      user: "admin"
-      password: "admin"
-      name: "active_policy"
-      state: "present"
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: active_policy
+    state: present
   delegate_to: localhost
-  
 '''
 
-RETURN = '''
+RETURN = r'''
 active:
-    description: Set when activating/deactivating ASM policy
-    returned: changed
-    type: bool
-    sample: yes
+  description: Set when activating/deactivating ASM policy
+  returned: changed
+  type: bool
+  sample: yes
 state:
-    description: Action performed on the target device.
-    returned: changed
-    type: string
-    sample: "absent"
+  description: Action performed on the target device.
+  returned: changed
+  type: string
+  sample: absent
 file:
-    description: Local path to ASM policy XML file.
-    returned: changed
-    type: string
-    sample: "/root/some_policy.xml"
+  description: Local path to ASM policy XML file.
+  returned: changed
+  type: string
+  sample: /root/some_policy.xml
 template:
-    description: Name of the built-in ASM policy template
-    returned: changed
-    type: string
-    sample: "POLICY_TEMPLATE_SHAREPOINT_2007_HTTP"
+  description: Name of the built-in ASM policy template
+  returned: changed
+  type: string
+  sample: POLICY_TEMPLATE_SHAREPOINT_2007_HTTP
 name:
-    description: Name of the ASM policy to be managed/created
-    returned: changed
-    type: string
-    sample: "Asm_APP1_Transparent"
+  description: Name of the ASM policy to be managed/created
+  returned: changed
+  type: string
+  sample: Asm_APP1_Transparent
 '''
-
-
 
 import os
 import time
 from icontrol.exceptions import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    defaultdict,
-    HAS_F5SDK,
-    F5ModuleError,
-    iteritems,
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -218,27 +209,21 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def template(self):
-        tmpl_name = self._values['template']
-        if tmpl_name is None:
+        if self._values['template'] is None:
             return None
-        if self._template_exists_on_device(tmpl_name):
-            return self._values['template']
-        else:
-            raise F5ModuleError('Template with the given name: {0} does not exist'.format(tmpl_name))
+        return self._values['template']
 
-    def _template_exists_on_device(self, name):
-        collection = self._templates_on_device()
+    @property
+    def template_link(self):
+        if self._values['template_link'] is not None:
+            return self._values['template_link']
+        collection = self._templates_from_device()
         for resource in collection:
-            if resource.name == name.upper():
-                self._set_template_selflink(resource)
-                return True
-        return False
+            if resource.name == self.template.upper():
+                return dict(link=resource.selfLink)
+        return None
 
-    def _set_template_selflink(self, template):
-        link = {'link': template.selfLink}
-        self._values['template_link'] = link
-
-    def _templates_on_device(self):
+    def _templates_from_device(self):
         collection = self.client.api.tm.asm.policy_templates_s.get_collection()
         return collection
 
@@ -253,12 +238,15 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for api_attribute in self.api_attributes:
             if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self,
-                                                self.api_map[api_attribute])
+                result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
+
+
+class Changes(Parameters):
+    pass
 
 
 class ModuleManager(object):
@@ -268,7 +256,7 @@ class ModuleManager(object):
         self.want = Parameters()
         self.want.client = self.client
         self.want.update(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def exec_module(self):
         changed = False
@@ -294,7 +282,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -305,7 +293,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             return True
         return False
 
@@ -319,32 +307,39 @@ class ModuleManager(object):
         if not self.exists():
             return False
         else:
-            if self.client.check_mode:
-                return True
-            self.delete()
-            return True
+            return self.remove()
 
     def exists(self):
-        if self.client.check_mode:
+        policies = self.client.api.tm.asm.policies_s.get_collection()
+        if any(p.name == self.want.name for p in policies):
             return True
-        result = self.policy_exists_on_device()
-        return result
+        return False
 
     def create(self):
+        task = None
         self._set_changed_options()
         if self.client.check_mode:
             return True
-        if self.install():
-            if self.want.active:
-                self.activate()
-                return True
-            else:
-                return True
-        else:
+        if self.want.template is None and self.want.path is None:
+            self.create_blank()
+            return True
+        if self.want.template is not None:
+            task = self.create_policy_from_template_on_device()
+        if self.want.path is not None:
+            task = self.import_to_device()
+
+        if not task:
             return False
+        if not self.wait_for_task(task):
+            raise F5ModuleError('Import policy task failed.')
+
+        if self.want.active:
+            self.activate()
+            return True
+        else:
+            return True
 
     def update(self):
-        policy = self.return_policy()
         self.have = Parameters(policy.attrs)
         if not self.should_update():
             return False
@@ -378,43 +373,34 @@ class ModuleManager(object):
             self.deactivate()
             return True
 
-    def install(self):
-        template = self.want.template
-        path = self.want.file
-        if template is None and path is None:
-            self.create_blank()
-            return True
-        if template is None:
-            task = self.import_policy_to_device()
-        if path is None:
-            task = self.create_policy_from_template_on_device()
-        if task:
-            if self.wait_for_task(task):
-                return True
-            else:
-                raise F5ModuleError('Import policy task failed.')
-        return False
-
     def create_blank(self):
-        self.create_policy_on_device()
+        self.create_on_device()
         if self.policy_exists_on_device():
             return True
         else:
-            raise F5ModuleError('Failed to create ASM policy: {0}'.format(self.want.name))
+            raise F5ModuleError(
+                'Failed to create ASM policy: {0}'.format(self.want.name)
+            )
 
-    def delete(self):
-        result = self.delete_policy_on_device()
-        return result
+    def remove(self):
+        if self.client.check_mode:
+            return True
+        self.remove_from_device()
+        if self.exists():
+            raise F5ModuleError(
+                'Failed to delete ASM policy: {0}'.format(self.want.name)
+            )
+        return True
 
     def activate(self):
-        task = self.apply_policy_on_device()
+        task = self.apply_on_device()
         if self.wait_for_task(task):
             return True
         else:
             raise F5ModuleError('Apply policy task failed.')
 
     def deactivate(self):
-        result = self.deactivate_policy_on_device()
+        result = self.deactivate_on_device()
         if result:
             return True
         else:
@@ -438,47 +424,37 @@ class ModuleManager(object):
         return result
 
     def policy_active(self):
-        policy = self.return_policy()
-        if policy.active is True:
+        if self.want.policy.active is True:
             return True
         else:
             return False
 
-    def return_policy(self):
-        policies = self.policies_on_device()
+    def read_current_from_device(self):
+        policies = self.client.api.tm.asm.policies_s.get_collection()
         for policy in policies:
             if policy.name == self.want.name:
-                return policy
+                return Parameters(policy.attrs)
 
-    def policy_exists_on_device(self):
-        policy = self.return_policy()
-        if policy:
-            return True
-        else:
-            return False
-
-    def policies_on_device(self):
-        policies = self.client.api.tm.asm.policies_s.get_collection()
-        return policies
-
-    def upload_to_device(self):
+    def import_to_device(self):
         self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
-
-    def import_policy_to_device(self):
-        self.upload_to_device()
         time.sleep(2)
         name = os.path.split(self.want.file)[1]
-        result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(name=self.want.name, filename=name)
+        tasks = self.client.api.tm.asm.tasks
+        result = tasks.import_policy_s.import_policy.create(
+            name=self.want.name, filename=name
+        )
         return result
 
-    def apply_policy_on_device(self):
-        policy = self.return_policy()
-        link = {'link': policy.selflink}
-        result = self.client.api.tm.asm.tasks.apply_policy_s.apply_policy.create(policyReference=link)
+    def apply_on_device(self):
+        policy = self.read_current_from_device()
+        tasks = self.client.api.tm.asm.tasks
+        result = tasks.apply_policy_s.apply_policy.create(
+            policyReference={'link': policy.selflink}
+        )
         return result
 
-    def deactivate_policy_on_device(self):
-        policy = self.return_policy()
+    def deactivate_on_device(self):
+        policy = self.read_current_from_device()
         policy.modify(active=False)
         if policy.active is False:
             return True
@@ -487,20 +463,20 @@ class ModuleManager(object):
 
     def create_policy_from_template_on_device(self):
         result = self.client.api.tm.asm.tasks.import_policy_s.import_policy.create(
-            name=self.want.name, policyTemplateReference=self.want.template_link
+            name=self.want.name,
+            policyTemplateReference=self.want.template_link
         )
         return result
 
-    def create_policy_on_device(self):
+    def create_on_device(self):
         result = self.client.api.tm.asm.policies_s.policy.create(name=self.want.name)
         return result
 
-    def delete_policy_on_device(self):
-        policy = self.return_policy()
-        policy.delete()
-        if policy.exists():
-            raise F5ModuleError('Failed to delete ASM policy: {0}'.format(self.want.name))
-        return True
+    def remove_from_device(self):
+        policies = self.client.api.tm.asm.policies_s.get_collection()
+        resource = next((p for p in policies if p.name == self.want.name), None)
+        if resource:
+            resource.delete()
 
 
 class ArgumentSpec(object):
