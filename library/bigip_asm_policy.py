@@ -116,6 +116,28 @@ EXAMPLES = r'''
     name: active_policy
     state: present
   delegate_to: localhost
+
+- name: Import and activate ASM policy in Role
+  bigip_asm_policy:
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_asm_policy
+    file: "{{ role_path }}/files/asm_policy.xml"
+    active: yes
+    state: present
+  delegate_to: localhost
+
+- name: Import ASM binary policy
+  bigip_asm_policy:
+    server: bigip.localhost.localdomain
+    user: admin
+    password: admin
+    name: new_asm_policy
+    file: "/root/asm_policy.plc"
+    active: yes
+    state: present
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -130,7 +152,7 @@ state:
   type: string
   sample: absent
 file:
-  description: Local path to ASM policy XML file.
+  description: Local path to ASM policy file.
   returned: changed
   type: string
   sample: /root/some_policy.xml
