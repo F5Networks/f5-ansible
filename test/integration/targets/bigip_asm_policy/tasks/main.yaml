@@ -1,22 +1,23 @@
 ---
 
-- name:
+- name: Create ASM policy, compact XML file
   bigip_asm_policy:
-      n: "{{ valid_hostname }}"
+      name: foo-policy
+      file: "{{ role_path }}/files/policy_default_compact_format_enabled.xml"
   register: result
 
-- name: Assert Change the hostname
+- name: Assert Create ASM policy, compact XML file
   assert:
       that:
           - result|changed
-          - result['hostname'] == valid_hostname
 
-- name: Change the hostname - Idempotent check
-  bigip_hostname:
-      hostname: "{{ valid_hostname }}"
+- name: Create ASM policy, compact XML file - Idempotent check
+  bigip_asm_policy:
+      name: foo-policy
+      file: "{{ role_path }}/files/policy_default_compact_format_enabled.xml"
   register: result
 
-- name: Assert Change the hostname - Idempotent check
+- name: Assert Create ASM policy, compact XML file - Idempotent check
   assert:
       that:
-          - not result|changed
+          - result|changed
