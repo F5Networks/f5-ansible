@@ -5,3 +5,6 @@
       include: "{{ item }}"
   register: result
   with_items: "{{ valid_includes }}"
+
+- import_tasks: issue-00393.yaml
+  tags: issue-00393

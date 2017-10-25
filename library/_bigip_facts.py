@@ -966,6 +966,9 @@ class Nodes(object):
     def get_address(self):
         return self.api.LocalLB.NodeAddressV2.get_address(nodes=self.nodes)
 
+    def get_name(self):
+        return [x[x.rfind('/') + 1:] for x in self.nodes]
+
     def get_connection_limit(self):
         return self.api.LocalLB.NodeAddressV2.get_connection_limit(nodes=self.nodes)
 
@@ -1525,7 +1528,7 @@ def generate_rule_dict(f5, regex):
 
 def generate_node_dict(f5, regex):
     nodes = Nodes(f5.get_api(), regex)
-    fields = ['address', 'connection_limit', 'description', 'dynamic_ratio',
+    fields = ['name', 'address', 'connection_limit', 'description', 'dynamic_ratio',
               'monitor_instance', 'monitor_rule', 'monitor_status',
               'object_status', 'rate_limit', 'ratio', 'session_status']
     return generate_dict(nodes, fields)
