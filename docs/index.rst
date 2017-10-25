@@ -27,13 +27,11 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    :caption: User Documentation
 
    usage/getting_started.rst
-   usage/installing-modules.rst
-   usage/versions.rst
    usage/support.rst
    usage/playbook_tutorial.rst
    usage/connection-local-or-delegate-to.rst
+   usage/installing-modules.rst
    usage/filing-issues.rst
-
 
 .. toctree::
    :maxdepth: 2

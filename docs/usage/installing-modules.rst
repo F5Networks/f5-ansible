@@ -1,18 +1,18 @@
-Install Unstable F5 Modules
----------------------------
+Install unstable F5 Modules
+===========================
 
-Some of the modules in this repository come with Ansible out of the box. Those modules are considered "stable."
+When you install Ansible, it includes some F5 modules. These modules are "stable."
 
-Other modules in this repository do not yet come with Ansible out of the box. Those modules are considered "unstable."
+Other F5 modules are not yet installed when you install Ansible. These modules are "unstable."
 
 The tutorials on this site generally use modules that are stable.
 
-There is a chance, however, that you might need to use unstable modules. In particular, you'll encounter this if you need to test something or if you just can't wait for a module to become stable.
+You might need to use unstable modules. For example, you may need to test something, or you just can't wait for a module to become stable.
 
-There are a couple of ways to install these unstable modules on your system.
+You can install these unstable modules on your system in one of a few ways.
 
 In a relative location (recommended)
-````````````````````````````````````
+------------------------------------
 
 Ansible allows you to put modules in a location that is relative to the project you are working on.
 
@@ -25,9 +25,9 @@ Inside the `ansible.cfg` file, add the following code.
    [defaults]
    library=./library
 
-This code instructs Ansible to look for modules in a directory called `library` that can be found relative to where the `ansible.cfg` file exists.
+This code instructs Ansible to look for modules in a directory called `library` that is relative to where the `ansible.cfg` file exists.
 
-So, again, you can take the modules in the `f5-ansible` repository and put them in a directory that you specify.
+You can take the modules in the `f5-ansible` repository and put them in that directory.
 
 .. note::
 
@@ -50,7 +50,7 @@ In the example above, when looking for a module named `foo.py`, Ansible will fol
 Whichever method you choose is up to you.
 
 In your Ansible install directory
-`````````````````````````````````
+---------------------------------
 
 Different systems can put Ansible in different locations. The recommended way to install Ansible (via `pip`) puts the modules here:
 
@@ -77,7 +77,7 @@ This command overwrites *all* of the modules with the ones in this repository. I
 This example copies only the `bigip_iapp_service` module.
 
 Caveats
-```````
+-------
 
 If you use method #1 and then update your Ansible installation, the update will *remove* the changes you had made to your installation.
 

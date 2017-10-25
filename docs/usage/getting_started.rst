@@ -1,30 +1,30 @@
 Getting Started
----------------
+===============
 
 This document explains how to begin using the F5 Ansible modules.
 
 **Note:** F5 Ansible modules are not currently supported by F5.
 
 Install Python
-``````````````
+--------------
 
 Install the latest version of Python (2.7 minimum) if you do not already have it.
 
 * |install_python|
 
 Install Ansible
-```````````````
+---------------
 
 Then, install Ansible (2.2.0 minimum):
 
 * |install_ansible|
-  
+
 F5 recommends that you install Ansible by using virtualenv/pip. For an example, see :doc:`virtualenv`.
 
 *  |install_ansible_pip|
 
 Install Ansible Dependencies
-````````````````````````````
+----------------------------
 
 In addition to Ansible, you should install a few additional Python modules.
 
@@ -38,7 +38,7 @@ At minimum, you should add `f5-sdk`.
 You can install these by using pip (either globally or within a virtual environment), for example:
 
 .. code-block:: terminal
-  
+
    (myansible) $ pip install f5-sdk bigsuds netaddr deepdiff
 
 To view dependencies for a specific module, view the module's Documentation > Requirements section.
