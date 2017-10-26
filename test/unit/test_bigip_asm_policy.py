@@ -1,21 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 F5 Networks Inc.
-#
-# This file is part of Ansible
-#
-# Ansible is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Ansible is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
@@ -37,20 +23,27 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_asm_policy import Parameters
+    from library.bigip_asm_policy import V1Parameters
+    from library.bigip_asm_policy import V2Parameters
     from library.bigip_asm_policy import ModuleManager
+    from library.bigip_asm_policy import V1Manager
+    from library.bigip_asm_policy import V2Manager
     from library.bigip_asm_policy import ArgumentSpec
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_asm_policy import Parameters
+        from ansible.modules.network.f5.bigip_asm_policy import V1Parameters
+        from ansible.modules.network.f5.bigip_asm_policy import V2Parameters
         from ansible.modules.network.f5.bigip_asm_policy import ModuleManager
+        from ansible.modules.network.f5.bigip_asm_policy import V1Manager
+        from ansible.modules.network.f5.bigip_asm_policy import V2Manager
         from ansible.modules.network.f5.bigip_asm_policy import ArgumentSpec
+        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
 
 fixture_path = os.path.join(os.path.dirname(__file__), 'fixtures')
 fixture_data = {}
-policy_path = os.path.join(os.path.dirname(__file__), 'fixtures/extra_files')
 
 
 def set_module_args(args):
@@ -69,25 +62,6 @@ def load_fixture(name):
     return data
 
 
-class BigIpObj(object):
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-        self.attrs = self.__dict__
-
-    def refresh(self):
-        pass
-
-    def delete(self):
-        pass
-
-    def exists(self):
-        pass
-
-    @property
-    def status(self):
-        return
-
-
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
@@ -96,7 +70,7 @@ class TestParameters(unittest.TestCase):
             file='/var/fake/fake.xml'
         )
 
-        p = Parameters(args)
+        p = V1Parameters(args)
         assert p.name == 'fake_policy'
         assert p.state == 'present'
         assert p.file == '/var/fake/fake.xml'
@@ -105,48 +79,21 @@ class TestParameters(unittest.TestCase):
         args = dict(
             name='fake_policy',
             state='present',
-            template='fake_template_builtin'
+            template='LotusDomino 6.5 (http)'
         )
 
-        # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_template_exists_on_device') as obj:
-            obj.return_value = True
-
-        p = Parameters(args)
+        p = V1Parameters(args)
         assert p.name == 'fake_policy'
         assert p.state == 'present'
-        assert p.template == 'fake_template_builtin'
+        assert p.template == 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-class TestLocalManager(unittest.TestCase):
+class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
-        self.policy = os.path.join(policy_path, 'fake_policy.xml')
-        self.policy_absent = []
-        self.policy_present = []
-        self.policy_active = []
-        self.policy_inactive = []
-        self.policy_templates = []
-        self.templates = load_fixture('list_asm_policy_templates.json')
-        self.policies = load_fixture('list_asm_policies_policy_not_present.json')
-        self.policies2 = load_fixture('list_asm_policies_policy_present.json')
-        self.policies3 = load_fixture('list_asm_policy_inactive.json')
-        self.policies4 = load_fixture('list_asm_policy_active.json')
-        self.import_start = BigIpObj(**load_fixture('import_policy_task_started.json'))
-        self.apply_start = BigIpObj(**load_fixture('apply_asm_policy_started.json'))
-        self.import_from_template_start = BigIpObj(**load_fixture('import_policy_from_template_task_started.json'))
-        for item in self.templates:
-            self.policy_templates.append(BigIpObj(**item))
-        for item in self.policies:
-            self.policy_absent.append(BigIpObj(**item))
-        for item in self.policies2:
-            self.policy_present.append(BigIpObj(**item))
-        for item in self.policies3:
-            self.policy_inactive.append(BigIpObj(**item))
-        for item in self.policies4:
-            self.policy_active.append(BigIpObj(**item))
+        self.policy = os.path.join(fixture_path, 'fake_policy.xml')
 
     def test_activate_import_from_file(self, *args):
         set_module_args(dict(
@@ -159,20 +106,26 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_absent)
-            mm.import_to_device = Mock(return_value=self.import_start)
-            mm.apply_on_device = Mock(return_value=self.apply_start)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
@@ -182,7 +135,7 @@ class TestLocalManager(unittest.TestCase):
     def test_activate_import_from_template(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            template='POLICY_TEMPLATE_SHAREPOINT_2007_HTTP',
+            template='OWA Exchange 2007 (https)',
             state='present',
             active='yes',
             server='localhost',
@@ -190,24 +143,31 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+        v1.create_from_template_on_device = Mock(return_value=True)
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_absent)
-            mm.create_policy_from_template_on_device = Mock(return_value=self.import_from_template_start)
-            mm.apply_on_device = Mock(return_value=self.apply_start)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
-        assert results['template'] == 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP'
+        assert results['template'] == 'OWA Exchange 2007 (https)'
         assert results['active'] is True
 
     def test_activate_create_by_name(self, *args):
@@ -220,20 +180,28 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.create_on_device = Mock(return_value=True)
+        v1.create_blank = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(side_effect=[self.policy_absent, self.policy_present])
-            mm.create_on_device = Mock(return_value=True)
-            mm.apply_on_device = Mock(return_value=self.apply_start)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
@@ -249,19 +217,26 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=True)
+        v1.update_on_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_inactive)
-            mm.apply_on_device = Mock(return_value=self.apply_start)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['active'] is True
@@ -276,6 +251,7 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_active.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -283,9 +259,15 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.exit_json = Mock(return_value=False)
-        mm.policies_on_device = Mock(return_value=self.policy_active)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
         results = mm.exec_module()
 
         assert results['changed'] is False
@@ -297,8 +279,10 @@ class TestLocalManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin',
+            active='no'
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_active.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -306,10 +290,16 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.update_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.exit_json = Mock(return_value=False)
-        mm.policies_on_device = Mock(return_value=self.policy_active)
-        mm.deactivate_on_device = Mock(return_value=True)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
         results = mm.exec_module()
 
         assert results['changed'] is True
@@ -322,8 +312,10 @@ class TestLocalManager(unittest.TestCase):
             server='localhost',
             password='password',
             user='admin',
+            active='no'
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -331,9 +323,15 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.exit_json = Mock(return_value=False)
-        mm.policies_on_device = Mock(return_value=self.policy_inactive)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
         results = mm.exec_module()
 
         assert results['changed'] is False
@@ -348,6 +346,7 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -355,12 +354,18 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_absent)
-            mm.import_to_device = Mock(return_value=self.import_start)
-            results = mm.exec_module()
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
@@ -370,13 +375,14 @@ class TestLocalManager(unittest.TestCase):
     def test_import_from_template(self, *args):
         set_module_args(dict(
             name='fake_policy',
-            template='POLICY_TEMPLATE_SHAREPOINT_2007_HTTP',
+            template='LotusDomino 6.5 (http)',
             state='present',
             server='localhost',
             password='password',
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
@@ -384,16 +390,22 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_absent)
-            mm.create_policy_from_template_on_device = Mock(return_value=self.import_from_template_start)
-            results = mm.exec_module()
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.create_from_template_on_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.read_current_from_device = Mock(return_value=current)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
-        assert results['template'] == 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP'
+        assert results['template'] == 'LotusDomino 6.5 (http)'
         assert results['active'] is False
 
     def test_create_by_name(self, *args):
@@ -405,19 +417,28 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(side_effect=[True, True])
+        v1.create_on_device = Mock(return_value=True)
+        v1.create_blank = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='COMPLETED'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(side_effect=[self.policy_absent, self.policy_present])
-            mm.create_on_device = Mock(return_value=True)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['name'] == 'fake_policy'
@@ -439,42 +460,18 @@ class TestLocalManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'exists', return_value=False):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_present)
+        v1 = V1Manager(client)
+        v1.exists = Mock(side_effect=[True, False])
+        v1.remove_from_device = Mock(return_value=True)
 
-            results = mm.exec_module()
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        results = mm.exec_module()
 
         assert results['changed'] is True
-
-    def test_template_not_present_raises(self, *args):
-        set_module_args(dict(
-            name='fake_policy',
-            template='foo_bar',
-            state='present',
-            server='localhost',
-            password='password',
-            user='admin',
-        ))
-
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
-        )
-        msg = 'Template with the given name: foo_bar does not exist'
-        # Override methods to force specific logic in the module to happen
-        with patch.object(Parameters, '_template_exists_on_device') as obj:
-            obj.return_value = False
-
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.exists = Mock(return_value=False)
-            with pytest.raises(F5ModuleError) as err:
-                mm.exec_module()
-
-        assert err.value.message == msg
 
     def test_policy_import_raises(self, *args):
         set_module_args(dict(
@@ -492,16 +489,21 @@ class TestLocalManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
         msg = 'Import policy task failed.'
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, return_value='FAILURE'):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.exists = Mock(return_value=False)
-            mm.import_to_device = Mock(return_value=self.import_start)
-            with pytest.raises(F5ModuleError) as err:
-                mm.exec_module()
-        assert err.value.message == msg
+        # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.import_to_device = Mock(return_value=True)
+        v1.wait_for_task = Mock(return_value=False)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        with pytest.raises(F5ModuleError) as err:
+            mm.exec_module()
+        assert str(err.value) == msg
 
     def test_activate_policy_raises(self, *args):
         set_module_args(dict(
@@ -513,22 +515,30 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
+        current = V1Parameters(load_fixture('load_asm_policy_inactive.json'))
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods to force specific logic in the module to happen
         msg = 'Apply policy task failed.'
-        with patch.object(BigIpObj, 'status', new_callable=PropertyMock, side_effect=['COMPLETED', 'FAILURE']):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_present)
-            mm.apply_on_device = Mock(return_value=self.apply_start)
-            with pytest.raises(F5ModuleError) as err:
-                mm.exec_module()
-        assert err.value.message == msg
+        # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=True)
+        v1.wait_for_task = Mock(return_value=False)
+        v1.update_on_device = Mock(return_value=True)
+        v1.read_current_from_device = Mock(return_value=current)
+        v1.apply_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        with pytest.raises(F5ModuleError) as err:
+            mm.exec_module()
+        assert str(err.value) == msg
 
     def test_create_policy_raises(self, *args):
         set_module_args(dict(
@@ -547,13 +557,18 @@ class TestLocalManager(unittest.TestCase):
 
         msg = 'Failed to create ASM policy: fake_policy'
         # Override methods to force specific logic in the module to happen
+        v1 = V1Manager(client)
+        v1.exists = Mock(return_value=False)
+        v1.create_on_device = Mock(return_value=False)
+
+        # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.exit_json = Mock(return_value=False)
-        mm.policies_on_device = Mock(return_value=self.policy_absent)
-        mm.create_on_device = Mock(return_value=False)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
         with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_delete_policy_raises(self, *args):
         set_module_args(dict(
@@ -571,10 +586,15 @@ class TestLocalManager(unittest.TestCase):
         )
         msg = 'Failed to delete ASM policy: fake_policy'
         # Override methods to force specific logic in the module to happen
-        with patch.object(BigIpObj, 'exists', return_value=True):
-            mm = ModuleManager(client)
-            mm.exit_json = Mock(return_value=False)
-            mm.policies_on_device = Mock(return_value=self.policy_present)
-            with pytest.raises(F5ModuleError) as err:
-                mm.exec_module()
-        assert err.value.message == msg
+        v1 = V1Manager(client)
+        v1.exists = Mock(side_effect=[True, True])
+        v1.remove_from_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.version_is_less_than_13 = Mock(return_value=False)
+        mm.get_manager = Mock(return_value=v1)
+
+        with pytest.raises(F5ModuleError) as err:
+            mm.exec_module()
+        assert str(err.value) == msg
