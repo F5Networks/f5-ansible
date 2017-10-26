@@ -17,7 +17,7 @@ DOCUMENTATION = r'''
 module: bigip_asm_policy
 short_description: Manage BIG-IP ASM policies
 description:
-   - Manage BIG-IP ASM policies
+   - Manage BIG-IP ASM policies.
 version_added: "2.5"
 options:
   active:
@@ -49,7 +49,47 @@ options:
       - Full path to a policy file to be imported into the BIG-IP ASM.
   template:
     description:
-     - An ASM policy built-in template. If the template does not exist we will raise an error.
+      - An ASM policy built-in template. If the template does not exist we will raise an error.
+      - Once the policy has been created, this value cannot change.
+      - The C(Comprehensive), C(Drupal), C(Fundamental), C(Joomla),
+        C(Vulnerability Assessment Baseline), and C(Wordpress) templates are only available
+        on BIG-IP versions >= 13.
+    choices:
+      - ActiveSync v1.0 v2.0 (http)
+      - ActiveSync v1.0 v2.0 (https)
+      - Comprehensive
+      - Drupal
+      - Fundamental
+      - Joomla
+      - LotusDomino 6.5 (http)
+      - LotusDomino 6.5 (https)
+      - OWA Exchange 2003 (http)
+      - OWA Exchange 2003 (https)
+      - OWA Exchange 2003 with ActiveSync (http)
+      - OWA Exchange 2003 with ActiveSync (https)
+      - OWA Exchange 2007 (http)
+      - OWA Exchange 2007 (https)
+      - OWA Exchange 2007 with ActiveSync (http)
+      - OWA Exchange 2007 with ActiveSync (https)
+      - OWA Exchange 2010 (http)
+      - OWA Exchange 2010 (https)
+      - Oracle 10g Portal (http)
+      - Oracle 10g Portal (https)
+      - Oracle Applications 11i (http)
+      - Oracle Applications 11i (https)
+      - PeopleSoft Portal 9 (http)
+      - PeopleSoft Portal 9 (https)
+      - Rapid Deployment Policy
+      - SAP NetWeaver 7 (http)
+      - SAP NetWeaver 7 (https)
+      - SharePoint 2003 (http)
+      - SharePoint 2003 (https)
+      - SharePoint 2007 (http)
+      - SharePoint 2007 (https)
+      - SharePoint 2010 (http)
+      - SharePoint 2010 (https)
+      - Vulnerability Assessment Baseline
+      - Wordpress
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk
@@ -75,7 +115,7 @@ EXAMPLES = r'''
     user: admin
     password: secret
     name: new_sharepoint_policy
-    template: POLICY_TEMPLATE_SHAREPOINT_2007_HTTP
+    template: SharePoint 2007 (http)
     state: present
   delegate_to: localhost
 
@@ -160,7 +200,7 @@ template:
   description: Name of the built-in ASM policy template
   returned: changed
   type: string
-  sample: POLICY_TEMPLATE_SHAREPOINT_2007_HTTP
+  sample: OWA Exchange 2007 (https)
 name:
   description: Name of the ASM policy to be managed/created
   returned: changed
@@ -177,6 +217,7 @@ from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
+from distutils.version import LooseVersion
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -230,12 +271,6 @@ class Parameters(AnsibleF5Parameters):
     }
 
     @property
-    def template(self):
-        if self._values['template'] is None:
-            return None
-        return self._values['template']
-
-    @property
     def template_link(self):
         if self._values['template_link'] is not None:
             return self._values['template_link']
@@ -265,6 +300,95 @@ class Parameters(AnsibleF5Parameters):
                 result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
+
+
+class V1Parameters(Parameters):
+    @property
+    def template(self):
+        if self._values['template'] is None:
+            return None
+        template_map = {
+            'ActiveSync v1.0 v2.0 (http)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTP',
+            'ActiveSync v1.0 v2.0 (https)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTPS',
+            'LotusDomino 6.5 (http)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP',
+            'LotusDomino 6.5 (https)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTPS',
+            'OWA Exchange 2003 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTP',
+            'OWA Exchange 2003 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTPS',
+            'OWA Exchange 2003 with ActiveSync (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTP',
+            'OWA Exchange 2003 with ActiveSync (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTPS',
+            'OWA Exchange 2007 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTP',
+            'OWA Exchange 2007 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTPS',
+            'OWA Exchange 2007 with ActiveSync (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTP',
+            'OWA Exchange 2007 with ActiveSync (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTPS',
+            'OWA Exchange 2010 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTP',
+            'OWA Exchange 2010 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTPS',
+            'Oracle 10g Portal (http)': 'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTP',
+            'Oracle 10g Portal (https)': 'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTPS',
+            'Oracle Applications 11i (http)': 'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTP',
+            'Oracle Applications 11i (https)': 'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTPS',
+            'PeopleSoft Portal 9 (http)': 'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTP',
+            'PeopleSoft Portal 9 (https)': 'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTPS',
+            'Rapid Deployment Policy': 'POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            'SAP NetWeaver 7 (http)': 'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTP',
+            'SAP NetWeaver 7 (https)': 'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTPS',
+            'SharePoint 2003 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2003_HTTP',
+            'SharePoint 2003 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2003_HTTPS',
+            'SharePoint 2007 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP',
+            'SharePoint 2007 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTPS',
+            'SharePoint 2010 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTP',
+            'SharePoint 2010 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTPS'
+        }
+        if self._values['template'] in template_map:
+            return template_map[self._values['template']]
+        else:
+            raise F5ModuleError(
+                "The specified template is not valid for this version of BIG-IP."
+            )
+
+
+class V2Parameters(Parameters):
+    @property
+    def template(self):
+        if self._values['template'] is None:
+            return None
+        template_map = {
+            'ActiveSync v1.0 v2.0 (http)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTP',
+            'ActiveSync v1.0 v2.0 (https)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTPS',
+            'Comprehensive': 'POLICY_TEMPLATE_COMPREHENSIVE', #v13
+            'Drupal': 'POLICY_TEMPLATE_DRUPAL', #v13
+            'Fundamental': 'POLICY_TEMPLATE_FUNDAMENTAL', #v13
+            'Joomla': 'POLICY_TEMPLATE_JOOMLA', #v13
+            'LotusDomino 6.5 (http)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP',
+            'LotusDomino 6.5 (https)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTPS',
+            'OWA Exchange 2003 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTP',
+            'OWA Exchange 2003 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTPS',
+            'OWA Exchange 2003 with ActiveSync (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTP',
+            'OWA Exchange 2003 with ActiveSync (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTPS',
+            'OWA Exchange 2007 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTP',
+            'OWA Exchange 2007 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTPS',
+            'OWA Exchange 2007 with ActiveSync (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTP',
+            'OWA Exchange 2007 with ActiveSync (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTPS',
+            'OWA Exchange 2010 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTP',
+            'OWA Exchange 2010 (https)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTPS',
+            'Oracle 10g Portal (http)': 'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTP',
+            'Oracle 10g Portal (https)': 'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTPS',
+            'Oracle Applications 11i (http)': 'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTP',
+            'Oracle Applications 11i (https)': 'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTPS',
+            'PeopleSoft Portal 9 (http)': 'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTP',
+            'PeopleSoft Portal 9 (https)': 'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTPS',
+            'Rapid Deployment Policy': 'POLICY_TEMPLATE_RAPID_DEPLOYMENT',
+            'SAP NetWeaver 7 (http)': 'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTP',
+            'SAP NetWeaver 7 (https)': 'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTPS',
+            'SharePoint 2003 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2003_HTTP',
+            'SharePoint 2003 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2003_HTTPS',
+            'SharePoint 2007 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP',
+            'SharePoint 2007 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTPS',
+            'SharePoint 2010 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTP',
+            'SharePoint 2010 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTPS',
+            'Vulnerability Assessment Baseline': 'POLICY_TEMPLATE_VULNERABILITY_ASSESSMENT', # v13
+            'Wordpress': 'POLICY_TEMPLATE_WORDPRESS' #v13
+        }
+        return template_map[self._values['template']]
 
 
 class Changes(Parameters):
@@ -300,13 +424,10 @@ class Difference(object):
             return False
 
 
-class ModuleManager(object):
+class BaseManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters()
-        self.want.client = self.client
-        self.want.update(self.client.module.params)
         self.changes = Changes()
 
     def exec_module(self):
@@ -510,15 +631,95 @@ class ModuleManager(object):
             resource.delete()
 
 
+class ModuleManager(object):
+    def __init__(self, client):
+        self.client = client
+
+    def exec_module(self):
+        if self.version_is_less_than_13():
+            manager = self.get_manager('v1')
+        else:
+            manager = self.get_manager('v2')
+        return manager.exec_module()
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(self.client)
+        elif type == 'v2':
+            return V2Manager(self.client)
+
+    def version_is_less_than_13(self):
+        version = self.client.api.tmos_version
+        if LooseVersion(version) < LooseVersion('13.0.0'):
+            return True
+        else:
+            return False
+
+
+class V1Manager(BaseManager):
+    def __init__(self, client):
+        super(V1Manager, self).__init__(client)
+        self.want = V1Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
+
+
+class V2Manager(BaseManager):
+    def __init__(self, client):
+        super(V2Manager, self).__init__(client)
+        self.want = V2Parameters()
+        self.want.client = self.client
+        self.want.update(self.client.module.params)
+
+
 class ArgumentSpec(object):
     def __init__(self):
+        self.template_map = [
+            'ActiveSync v1.0 v2.0 (http)',
+            'ActiveSync v1.0 v2.0 (https)',
+            'Comprehensive',
+            'Drupal',
+            'Fundamental',
+            'Joomla',
+            'LotusDomino 6.5 (http)',
+            'LotusDomino 6.5 (https)',
+            'OWA Exchange 2003 (http)',
+            'OWA Exchange 2003 (https)',
+            'OWA Exchange 2003 with ActiveSync (http)',
+            'OWA Exchange 2003 with ActiveSync (https)',
+            'OWA Exchange 2007 (http)',
+            'OWA Exchange 2007 (https)',
+            'OWA Exchange 2007 with ActiveSync (http)',
+            'OWA Exchange 2007 with ActiveSync (https)',
+            'OWA Exchange 2010 (http)',
+            'OWA Exchange 2010 (https)',
+            'Oracle 10g Portal (http)',
+            'Oracle 10g Portal (https)',
+            'Oracle Applications 11i (http)',
+            'Oracle Applications 11i (https)',
+            'PeopleSoft Portal 9 (http)',
+            'PeopleSoft Portal 9 (https)',
+            'Rapid Deployment Policy',
+            'SAP NetWeaver 7 (http)',
+            'SAP NetWeaver 7 (https)',
+            'SharePoint 2003 (http)',
+            'SharePoint 2003 (https)',
+            'SharePoint 2007 (http)',
+            'SharePoint 2007 (https)',
+            'SharePoint 2010 (http)',
+            'SharePoint 2010 (https)',
+            'Vulnerability Assessment Baseline',
+            'Wordpress',
+        ]
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
                 required=True,
             ),
             file=dict(),
-            template=dict(),
+            template=dict(
+                choices=self.template_map
+            ),
             active=dict(
                 default='no',
                 type='bool'
