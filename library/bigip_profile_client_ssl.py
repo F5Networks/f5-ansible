@@ -226,10 +226,6 @@ class Parameters(AnsibleF5Parameters):
             return None
         result = []
         for item in self._values['cert_key_chain']:
-            key = self._key_filename(item)
-            cert = self._cert_filename(item)
-            chain = self._get_chain_value(item)
-
             if 'key' in item and 'cert' not in item:
                 raise F5ModuleError(
                     "When providing a 'key', you must also provide a 'cert'"
@@ -238,6 +234,12 @@ class Parameters(AnsibleF5Parameters):
                 raise F5ModuleError(
                     "When providing a 'cert', you must also provide a 'key'"
                 )
+            key = self._key_filename(item['key'])
+            cert = self._cert_filename(item['cert'])
+            if 'chain' in item:
+                chain = self._get_chain_value(item['chain'])
+            else:
+                chain = "none"
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
             result.append({
