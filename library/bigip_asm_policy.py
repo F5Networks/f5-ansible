@@ -392,7 +392,48 @@ class V2Parameters(Parameters):
 
 
 class Changes(Parameters):
-    pass
+    @property
+    def template(self):
+        if self._values['template'] is None:
+            return None
+        template_map = {
+            'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTP': 'ActiveSync v1.0 v2.0 (http)',
+            'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTPS': 'ActiveSync v1.0 v2.0 (https)',
+            'POLICY_TEMPLATE_COMPREHENSIVE': 'Comprehensive',
+            'POLICY_TEMPLATE_DRUPAL': 'Drupal',
+            'POLICY_TEMPLATE_FUNDAMENTAL': 'Fundamental',
+            'POLICY_TEMPLATE_JOOMLA': 'Joomla',
+            'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP': 'LotusDomino 6.5 (http)',
+            'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTPS': 'LotusDomino 6.5 (https)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTP': 'OWA Exchange 2003 (http)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTPS': 'OWA Exchange 2003 (https)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTP': 'OWA Exchange 2003 with ActiveSync (http)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2003_WITH_ACTIVESYNC_HTTPS': 'OWA Exchange 2003 with ActiveSync (https)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTP': 'OWA Exchange 2007 (http)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2007_HTTPS': 'OWA Exchange 2007 (https)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTP': 'OWA Exchange 2007 with ActiveSync (http)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2007_WITH_ACTIVESYNC_HTTPS': 'OWA Exchange 2007 with ActiveSync (https)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTP': 'OWA Exchange 2010 (http)',
+            'POLICY_TEMPLATE_OWA_EXCHANGE_2010_HTTPS': 'OWA Exchange 2010 (https)',
+            'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTP': 'Oracle 10g Portal (http)',
+            'POLICY_TEMPLATE_ORACLE_10G_PORTAL_HTTPS': 'Oracle 10g Portal (https)',
+            'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTP': 'Oracle Applications 11i (http)',
+            'POLICY_TEMPLATE_ORACLE_APPLICATIONS_11I_HTTPS': 'Oracle Applications 11i (https)',
+            'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTP': 'PeopleSoft Portal 9 (http)',
+            'POLICY_TEMPLATE_PEOPLESOFT_PORTAL_9_HTTPS': 'PeopleSoft Portal 9 (https)',
+            'POLICY_TEMPLATE_RAPID_DEPLOYMENT': 'Rapid Deployment Policy',
+            'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTP': 'SAP NetWeaver 7 (http)',
+            'POLICY_TEMPLATE_SAP_NETWEAVER_7_HTTPS': 'SAP NetWeaver 7 (https)',
+            'POLICY_TEMPLATE_SHAREPOINT_2003_HTTP': 'SharePoint 2003 (http)',
+            'POLICY_TEMPLATE_SHAREPOINT_2003_HTTPS': 'SharePoint 2003 (https)',
+            'POLICY_TEMPLATE_SHAREPOINT_2007_HTTP': 'SharePoint 2007 (http)',
+            'POLICY_TEMPLATE_SHAREPOINT_2007_HTTPS': 'SharePoint 2007 (https)',
+            'POLICY_TEMPLATE_SHAREPOINT_2010_HTTP': 'SharePoint 2010 (http)',
+            'POLICY_TEMPLATE_SHAREPOINT_2010_HTTPS': 'SharePoint 2010 (https)',
+            'POLICY_TEMPLATE_VULNERABILITY_ASSESSMENT': 'Vulnerability Assessment Baseline',
+            'POLICY_TEMPLATE_WORDPRESS': 'Wordpress',
+        }
+        return template_map[self._values['template']]
 
 
 class Difference(object):
@@ -500,20 +541,24 @@ class BaseManager(object):
 
     def create(self):
         task = None
+        if self.want.active is None:
+            self.want.update(dict(active=False))
+
         self._set_changed_options()
         if self.client.check_mode:
             return True
 
         if self.want.template is None and self.want.file is None:
             self.create_blank()
-        elif self.want.template is not None:
-            task = self.create_policy_from_template_on_device()
-        elif self.want.file is not None:
-            task = self.import_to_device()
-        if not task:
-            return False
-        if not self.wait_for_task(task):
-            raise F5ModuleError('Import policy task failed.')
+        else:
+            if self.want.template is not None:
+                task = self.create_from_template_on_device()
+            elif self.want.file is not None:
+                task = self.import_to_device()
+            if not task:
+                return False
+            if not self.wait_for_task(task):
+                raise F5ModuleError('Import policy task failed.')
 
         if self.want.active:
             self.activate()
@@ -610,7 +655,7 @@ class BaseManager(object):
         )
         return result
 
-    def create_policy_from_template_on_device(self):
+    def create_from_template_on_device(self):
         tasks = self.client.api.tm.asm.tasks
         result = tasks.import_policy_s.import_policy.create(
             name=self.want.name,
@@ -721,7 +766,6 @@ class ArgumentSpec(object):
                 choices=self.template_map
             ),
             active=dict(
-                default='no',
                 type='bool'
             )
         )
