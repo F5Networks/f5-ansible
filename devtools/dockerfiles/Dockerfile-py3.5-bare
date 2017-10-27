@@ -35,6 +35,7 @@ RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
 RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml
 RUN ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml
 RUN ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem
+RUN ln -s /here/devtools/secrets/jenkins_jobs.ini.secret /etc/jenkins_jobs/jenkins_jobs.ini
 
 # Conveniance aliases
 RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
