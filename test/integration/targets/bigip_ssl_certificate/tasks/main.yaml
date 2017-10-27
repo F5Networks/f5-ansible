@@ -240,9 +240,17 @@
       - "cert4"
       - "cert5"
 
-- include: issue-222.yaml
+- name: Import a certificate and key, no passphrase on private key, dots in name
+  bigip_ssl_certificate:
+      cert_content: "{{ lookup('file', 'cert1.crt') }}"
+      key_content: "{{ lookup('file', 'cert1.key') }}"
+      name: "wildcard.foo.local"
+      state: "present"
+  register: result
+
+- import_tasks: issue-00222.yaml
   tags:
-      - issue-222.yaml
+      - issue-00222.yaml
 
 - import_tasks: make-cert/main.yaml
   when: result is not defined
