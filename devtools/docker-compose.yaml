@@ -20,7 +20,7 @@ services:
     image: f5ansible/py2.7:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py2.7
+      dockerfile: devtools/dockerfiles/Dockerfile-py2.7
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -31,8 +31,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -55,7 +53,7 @@ services:
     image: f5ansible/py2.7-bare:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py2.7-bare
+      dockerfile: devtools/dockerfiles/Dockerfile-py2.7-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -66,8 +64,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -90,7 +86,7 @@ services:
     image: f5ansible/py3.5:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py3.5
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.5
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -101,8 +97,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -125,7 +119,7 @@ services:
     image: f5ansible/py3.5-bare:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py3.5-bare
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.5-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -136,8 +130,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -160,7 +152,7 @@ services:
     image: f5ansible/py3.6:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py3.6
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.6
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -171,8 +163,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -195,7 +185,7 @@ services:
     image: f5ansible/py3.6-bare:devel
     build:
       context: ..
-      dockerfile: dockerfiles/Dockerfile-py3.6-bare
+      dockerfile: devtools/dockerfiles/Dockerfile-py3.6-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -206,8 +196,6 @@ services:
         target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
-      - source: jenkins_jobs
-        target: jenkins_jobs
     extra_hosts:
       - "localhost:1.2.3.4"
     volumes:
@@ -235,5 +223,3 @@ secrets:
     file: ./secrets/cacerts.pem.secret
   .gitconfig:
     file: ./secrets/gitconfig.secret
-  jenkins_jobs:
-    file: ./secrets/jenkins_jobs.ini.secret
