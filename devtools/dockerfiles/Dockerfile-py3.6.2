@@ -4,6 +4,7 @@ MAINTAINER @caphrim007
 # Directories used to hold command configs
 RUN mkdir -p /root/.config/openstack
 RUN mkdir -p /etc/jenkins_jobs
+RUN mkdir -p /tmp/ansible.junit
 
 # Misc symlinks
 RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
