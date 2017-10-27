@@ -15,7 +15,7 @@ HARNESS=(
     bigip-12.1.1 bigip-12.1.1-hf1 bigip-12.1.1-hf2 bigip-12.1.2
     bigip-12.1.2-hf1 bigip-13.0.0 bigip-13.0.0-hf1 bigip-13.0.0-hf2
     )
-PYTHONS=( py2.7.10 py3.5.4 py3.6.2)
+PYTHONS=( py2.7 py3.5 py3.6)
 HOST="localhost"
 PORT="10443"
 SNAPSHOT="Snapshot 1"
