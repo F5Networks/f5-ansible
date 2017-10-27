@@ -41,6 +41,7 @@ pytest-xdist
 flake8
 jenkins-job-builder
 junit_xml
+junitparser
 
 # For standing up test infrastructure
 shade
