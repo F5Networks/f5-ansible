@@ -37,6 +37,7 @@ Check the tested versions
 - [ ] 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
 - [ ] 13.0.0 (BIGIP-13.0.0.0.0.1645)
 - [ ] 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
+- [ ] 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
 ##### Python VERSION
 <!---
