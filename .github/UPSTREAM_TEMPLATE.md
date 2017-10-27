@@ -19,35 +19,54 @@
 
 ```
 
-##### BIGIP VERSION
+##### TESTED VERSIONS
 <!---
 Paste a list of BIG-IP versions this was tested on.
 This is usually reflected in the playbook that runs the functional test.
 
 Check the tested versions
 -->
-- [ ] 12.0.0 (BIGIP-12.0.0.0.0.606)
-- [ ] 12.1.0 (BIGIP-12.1.0.0.0.1434)
-- [ ] 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
-- [ ] 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
-- [ ] 12.1.1 (BIGIP-12.1.1.0.0.184)
-- [ ] 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
-- [ ] 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
-- [ ] 12.1.2 (BIGIP-12.1.2.0.0.249)
-- [ ] 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
-- [ ] 13.0.0 (BIGIP-13.0.0.0.0.1645)
-- [ ] 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
-- [ ] 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
+**Python 2.7.14**
+- [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
+- [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
+- [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
+- [ ] BIG-IP 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
+- [ ] BIG-IP 12.1.1 (BIGIP-12.1.1.0.0.184)
+- [ ] BIG-IP 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
+- [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
+- [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
+- [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
+- [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
+- [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
-##### Python VERSION
-<!---
-Paste a list of Python versions this was tested on.
+**Python 3.5.4**
+- [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
+- [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
+- [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
+- [ ] BIG-IP 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
+- [ ] BIG-IP 12.1.1 (BIGIP-12.1.1.0.0.184)
+- [ ] BIG-IP 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
+- [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
+- [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
+- [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
+- [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
+- [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
-Check the tested versions
--->
-- [ ] 2.7.14
-- [ ] 3.5.4
-- [ ] 3.6.2
+**Python 3.6.2**
+- [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
+- [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
+- [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
+- [ ] BIG-IP 12.1.0-hf2 (BIGIP-12.1.0.2.0.1468-HF2)
+- [ ] BIG-IP 12.1.1 (BIGIP-12.1.1.0.0.184)
+- [ ] BIG-IP 12.1.1-hf1 (BIGIP-12.1.1.1.0.196-HF1)
+- [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
+- [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
+- [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
+- [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
+- [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
 ##### CHECKLIST
 <!---
@@ -87,27 +106,29 @@ Ensure all the following are complete
 
 This must be done inside of Ansible's source tree. (`cd local/ansible`)
 
-- [ ] Module code in Ansible repo passes `ansible-test units --python 2.7 MODULE_NAME`
-- [ ] Module code in Ansible repo passes `ansible-test units --python 3.5 MODULE_NAME`
-- [ ] Module code in Ansible repo passes `ansible-test units --python 3.6 MODULE_NAME`
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test validate-modules`
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test pep8`
+- [ ] `./devtools/bin/run-upstream-vendor-w-f5sdk.sh MODULE_NAME`
+  - [ ] Module code in Ansible repo passes `ansible-test units --python 2.7 MODULE_NAME`
+  - [ ] Module code in Ansible repo passes `ansible-test units --python 3.5 MODULE_NAME`
+  - [ ] Module code in Ansible repo passes `ansible-test units --python 3.6 MODULE_NAME`
+  - [ ] Module code in Ansible repo passes `ansible-test sanity --test validate-modules`
+  - [ ] Module code in Ansible repo passes `ansible-test sanity --test pep8`
 
 #### Upstream vendor related, without f5-sdk
 
 This must be done inside of Ansible's source tree. (`cd local/ansible`) 
 
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 2.7`
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.5`
-- [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.6`
-- [ ] Module code in Ansible repo passes `nosetests test/units/modules/network/f5/test_MODULE_NAME.py` using venv made with requirements.bare.txt
+- [ ] `./devtools/bin/run-upstream-vendor-wo-f5sdk.sh MODULE_NAME`
+  - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 2.7`
+  - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.5`
+  - [ ] Module code in Ansible repo passes `ansible-test sanity --test import --python 3.6`
+  - [ ] Module code in Ansible repo passes `nosetests test/units/modules/network/f5/test_MODULE_NAME.py` using venv made with requirements.bare.txt
 
 #### Upstream vendor related, misc
 - [ ] Module PR has been mentioned as a comment for the next Networking Team meeting here https://github.com/ansible/community/issues/247
 
 #### Upstream vendor, sanity related
 - [ ] Command `bash test/ansible/sanity/integration-test-idempotent-names.sh` passes
-- [ ] Command `./test/ansible/sanity/short-description-ends-with-period.py` passes
+- [ ] Command `python ./test/ansible/sanity/short-description-ends-with-period.py` passes
 
 ##### SUMMARY
 <!--- Explain the problem briefly -->
