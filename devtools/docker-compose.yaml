@@ -42,11 +42,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
   py2.7.10-bare:
     image: f5ansible/py2.7.10-bare:devel
     build:
@@ -73,11 +77,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
   py3.5.4:
     image: f5ansible/py3.5.4:devel
     build:
@@ -104,11 +112,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
   py3.5.4-bare:
     image: f5ansible/py3.5.4-bare:devel
     build:
@@ -135,11 +147,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
   py3.6.2:
     image: f5ansible/py3.6.2:devel
     build:
@@ -166,11 +182,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
   py3.6.2-bare:
     image: f5ansible/py3.6.2-bare:devel
     build:
@@ -197,11 +217,15 @@ services:
       - type: bind
         source: ~/.gnupg
         target: /gpg
+      - type: bind
+        source: ../tmp/ansible.junit/
+        target: /tmp/ansible.junit
     environment:
       - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
+      - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
 secrets:
   clouds.yaml:
     file: ./secrets/clouds.yaml.secret
