@@ -16,11 +16,11 @@ networks:
       config:
         - subnet: 2.2.2.0/24
 services:
-  py2.7.10:
-    image: f5ansible/py2.7.10:devel
+  py2.7:
+    image: f5ansible/py2.7:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py2.7.10
+      dockerfile: dockerfiles/Dockerfile-py2.7
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -51,11 +51,11 @@ services:
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
-  py2.7.10-bare:
-    image: f5ansible/py2.7.10-bare:devel
+  py2.7-bare:
+    image: f5ansible/py2.7-bare:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py2.7.10-bare
+      dockerfile: dockerfiles/Dockerfile-py2.7-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -86,11 +86,11 @@ services:
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
-  py3.5.4:
-    image: f5ansible/py3.5.4:devel
+  py3.5:
+    image: f5ansible/py3.5:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.5.4
+      dockerfile: dockerfiles/Dockerfile-py3.5
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -121,11 +121,11 @@ services:
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
-  py3.5.4-bare:
-    image: f5ansible/py3.5.4-bare:devel
+  py3.5-bare:
+    image: f5ansible/py3.5-bare:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.5.4-bare
+      dockerfile: dockerfiles/Dockerfile-py3.5-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -156,11 +156,11 @@ services:
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
-  py3.6.2:
-    image: f5ansible/py3.6.2:devel
+  py3.6:
+    image: f5ansible/py3.6:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2
+      dockerfile: dockerfiles/Dockerfile-py3.6
     command: /bin/bash
     secrets:
       - source: clouds.yaml
@@ -191,11 +191,11 @@ services:
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
-  py3.6.2-bare:
-    image: f5ansible/py3.6.2-bare:devel
+  py3.6-bare:
+    image: f5ansible/py3.6-bare:devel
     build:
       context: ..
-      dockerfile: ./devtools/dockerfiles/Dockerfile-py3.6.2-bare
+      dockerfile: dockerfiles/Dockerfile-py3.6-bare
     command: /bin/bash
     secrets:
       - source: clouds.yaml
