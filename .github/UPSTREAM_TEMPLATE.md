@@ -26,7 +26,7 @@ This is usually reflected in the playbook that runs the functional test.
 
 Check the tested versions
 -->
-**Python 2.7.14**
+**Python 2.7**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
 - [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
 - [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
@@ -40,7 +40,7 @@ Check the tested versions
 - [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 - [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
-**Python 3.5.4**
+**Python 3.5**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
 - [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
 - [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
@@ -54,7 +54,7 @@ Check the tested versions
 - [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 - [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
 
-**Python 3.6.2**
+**Python 3.6**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
 - [ ] BIG-IP 12.1.0 (BIGIP-12.1.0.0.0.1434)
 - [ ] BIG-IP 12.1.0-hf1 (BIGIP-12.1.0.1.0.1447-HF1)
