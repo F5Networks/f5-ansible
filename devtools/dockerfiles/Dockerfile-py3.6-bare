@@ -1,4 +1,4 @@
-FROM python:3.6.2
+FROM python:3.6
 MAINTAINER @caphrim007
 
 # Directories used to hold command configs
@@ -67,8 +67,8 @@ RUN ln -sf /usr/lib/python3/dist-packages/apt /usr/local/lib/python3.6/apt
 #
 # Note that the entire codebase is **NOT** installed because it is instead
 # provided as a bind-mount when using docker-compose.
-COPY requirements.test.txt /tmp/__src__/requirements.test.txt
-RUN pip install -r /tmp/__src__/requirements.test.txt
+COPY requirements.bare.txt /tmp/__src__/requirements.bare.txt
+RUN pip install -r /tmp/__src__/requirements.bare.txt
 
 # Clears any cache that may have been saved when running the package installation
 # steps earlier.
