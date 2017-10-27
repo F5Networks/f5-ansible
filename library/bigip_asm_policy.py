@@ -37,7 +37,7 @@ options:
     description:
       - When C(state) is C(present), and C(file) or C(template) parameter is provided,
         new ASM policy is imported and created with the given C(name).
-      - When C(state) is present and no C(file) or C(template) parameter is provided 
+      - When C(state) is present and no C(file) or C(template) parameter is provided
         new blank ASM policy is created with the given C(name).
       - When C(state) is C(absent), ensures that the policy is removed, even if it is
         currently active.
@@ -127,7 +127,7 @@ EXAMPLES = r'''
     name: new_blank_policy
     state: present
   delegate_to: localhost
-  
+
 - name: Create blank ASM policy and activate
   bigip_asm_policy:
     server: lb.mydomain.com
@@ -354,10 +354,10 @@ class V2Parameters(Parameters):
         template_map = {
             'ActiveSync v1.0 v2.0 (http)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTP',
             'ActiveSync v1.0 v2.0 (https)': 'POLICY_TEMPLATE_ACTIVESYNC_V1_0_V2_0_HTTPS',
-            'Comprehensive': 'POLICY_TEMPLATE_COMPREHENSIVE', #v13
-            'Drupal': 'POLICY_TEMPLATE_DRUPAL', #v13
-            'Fundamental': 'POLICY_TEMPLATE_FUNDAMENTAL', #v13
-            'Joomla': 'POLICY_TEMPLATE_JOOMLA', #v13
+            'Comprehensive': 'POLICY_TEMPLATE_COMPREHENSIVE',  # v13
+            'Drupal': 'POLICY_TEMPLATE_DRUPAL',  # v13
+            'Fundamental': 'POLICY_TEMPLATE_FUNDAMENTAL',  # v13
+            'Joomla': 'POLICY_TEMPLATE_JOOMLA',  # v13
             'LotusDomino 6.5 (http)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTP',
             'LotusDomino 6.5 (https)': 'POLICY_TEMPLATE_LOTUSDOMINO_6_5_HTTPS',
             'OWA Exchange 2003 (http)': 'POLICY_TEMPLATE_OWA_EXCHANGE_2003_HTTP',
@@ -385,8 +385,8 @@ class V2Parameters(Parameters):
             'SharePoint 2007 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2007_HTTPS',
             'SharePoint 2010 (http)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTP',
             'SharePoint 2010 (https)': 'POLICY_TEMPLATE_SHAREPOINT_2010_HTTPS',
-            'Vulnerability Assessment Baseline': 'POLICY_TEMPLATE_VULNERABILITY_ASSESSMENT', # v13
-            'Wordpress': 'POLICY_TEMPLATE_WORDPRESS' #v13
+            'Vulnerability Assessment Baseline': 'POLICY_TEMPLATE_VULNERABILITY_ASSESSMENT',  # v13
+            'Wordpress': 'POLICY_TEMPLATE_WORDPRESS'  # v13
         }
         return template_map[self._values['template']]
 
