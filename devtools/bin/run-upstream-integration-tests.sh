@@ -13,7 +13,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
 HARNESS=(
     bigip-12.0.0 bigip-12.1.0 bigip-12.1.0-hf1 bigip-12.1.0-hf2
     bigip-12.1.1 bigip-12.1.1-hf1 bigip-12.1.1-hf2 bigip-12.1.2
-    bigip-12.1.2-hf1 bigip-13.0.0 bigip-13.0.0-hf1
+    bigip-12.1.2-hf1 bigip-13.0.0 bigip-13.0.0-hf1 bigip-13.0.0-hf2
     )
 PYTHONS=( py2.7.10 py3.5.4 py3.6.2)
 HOST="localhost"
