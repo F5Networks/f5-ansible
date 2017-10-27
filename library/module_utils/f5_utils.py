@@ -216,4 +216,3 @@ class AnsibleF5Parameters(object):
 
 class F5ModuleError(Exception):
     pass
-
