@@ -216,7 +216,6 @@ vlan:
   sample: vlan1
 '''
 
-import os
 import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
