@@ -1,0 +1,6 @@
+---
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
+    state: absent

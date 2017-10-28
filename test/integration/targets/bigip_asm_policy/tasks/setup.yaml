@@ -1,0 +1,10 @@
+---
+
+- name: Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
+- name: Provision ASM
+  bigip_provision:
+    name: asm
