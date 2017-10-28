@@ -82,7 +82,7 @@ EXAMPLES = r'''
     name: my_profile
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
   delegate_to: localhost
-  
+
 - name: Create a client SSL profile with a cert/key/chain setting
   bigip_profile_client_ssl:
     state: present
