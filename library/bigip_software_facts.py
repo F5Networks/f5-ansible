@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_software_facts
 short_description: Collect software facts from BIG-IP devices
@@ -46,57 +46,57 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Gather image facts filter on version
   bigip_software_facts:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      include: "image"
-      filter: "version:12.1.1"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    include: image
+    filter: version:12.1.1
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 images:
-    description:
-        List of base image ISOs that are present on the unit.
-    returned: changed
-    type: list of dict
-    sample:
-        images:
-            - build: 0.0.184
-              fileSize: 1997 MB,
-              lastModified: Sun Oct  2 20:50:04 2016,
-              name: BIGIP-12.1.1.0.0.184.iso,
-              product: BIG-IP,
-              version: 12.1.1
+  description:
+    List of base image ISOs that are present on the unit.
+  returned: changed
+  type: list of dict
+  sample:
+    images:
+      - build: 0.0.184
+        fileSize: 1997 MB,
+        lastModified: Sun Oct  2 20:50:04 2016,
+        name: BIGIP-12.1.1.0.0.184.iso,
+        product: BIG-IP,
+        version: 12.1.1
 hotfixes:
-    description:
-        List of hotfix ISOs that are present on the unit.
-    returned: changed
-    type: list of dict
-    sample:
-        hotfixes:
-            - build: 2.0.204
-              fileSize: 1997 MB,
-              lastModified: Sun Oct  2 20:50:04 2016,
-              name: 12.1.1-hf2.iso,
-              product: BIG-IP,
-              version: 12.1.1
+  description:
+    List of hotfix ISOs that are present on the unit.
+  returned: changed
+  type: list of dict
+  sample:
+    hotfixes:
+      - build: 2.0.204
+        fileSize: 1997 MB,
+        lastModified: Sun Oct  2 20:50:04 2016,
+        name: 12.1.1-hf2.iso,
+        product: BIG-IP,
+        version: 12.1.1
 volumes:
-    description:
-        List the volumes present on device.
-    returned: changed
-    type: list of dict
-    sample:
-       volumes:
-            - basebuild: 0.0.184,
-              build: 0.0.184,
-              name: HD1.2,
-              product: BIG-IP,
-              status: complete,
-              version: 12.1.1
+  description:
+    List the volumes present on device.
+  returned: changed
+  type: list of dict
+  sample:
+    volumes:
+      - basebuild: 0.0.184,
+        build: 0.0.184,
+        name: HD1.2,
+        product: BIG-IP,
+        status: complete,
+        version: 12.1.1
 '''
 
 
