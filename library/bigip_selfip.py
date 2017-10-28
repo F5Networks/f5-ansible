@@ -599,7 +599,6 @@ class ModuleManager(object):
             self.want.update({'traffic_group': '/Common/traffic-group-local-only'})
         if self.want.route_domain is None:
             self.want.update({'route_domain': 0})
-
         if self.want.check_mode:
             return True
         self.create_on_device()
@@ -609,12 +608,10 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to create the Self IP")
 
     def create_on_device(self):
-        params = self.changes.api_params()
+        params = self.want.api_params()
         self.client.api.tm.net.selfips.selfip.create(
             name=self.want.name,
             partition=self.want.partition,
-            address=self.want.address,
-            vlan=self.want.vlan,
             **params
         )
 
@@ -740,9 +737,8 @@ class Difference(object):
 
     @property
     def traffic_group(self):
-        if self.want.traffic_group == self.have.traffic_group:
-            return None
-        return self.want.traffic_group
+        if self.want.traffic_group != self.have.traffic_group:
+            return self.want.traffic_group
 
 
 class ArgumentSpec(object):
