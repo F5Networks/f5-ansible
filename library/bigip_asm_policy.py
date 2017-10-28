@@ -47,6 +47,9 @@ options:
   file:
     description:
       - Full path to a policy file to be imported into the BIG-IP ASM.
+      - Policy files exported from newer versions of BIG-IP cannot be imported into older
+        versions of BIG-IP. The opposite, however, is true; you can import older into
+        newer.
   template:
     description:
       - An ASM policy built-in template. If the template does not exist we will raise an error.
