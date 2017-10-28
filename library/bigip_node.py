@@ -32,7 +32,7 @@ options:
         exist.
       - Be particularly careful about changing the status of a node whose FQDN
         cannot be resolved. These situations disable your ability to change their
-        C(state) to C(disabled) or C(offline). They will remain in an 
+        C(state) to C(disabled) or C(offline). They will remain in an
         *Unavailable - Enabled* state.
     default: present
     choices:
