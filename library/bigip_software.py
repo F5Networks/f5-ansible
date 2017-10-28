@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_software
 short_description: Manage BIG-IP software versions and hotfixes
@@ -126,7 +126,7 @@ authors:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Remove uploaded hotfix
   bigip_software:
       server: "lb.mydomain.com"
@@ -238,155 +238,155 @@ EXAMPLES = '''
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-      software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-      software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      state: "activated"
-      reuse_inactive_volume: True
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+    hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+    software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+    software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+    state: activated
+    reuse_inactive_volume: True
   delegate_to: localhost
 
 - name: Download hotfix image
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+    hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+    state: present
   delegate_to: localhost
 
 - name: Remove uploaded hotfix image
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
   delegate_to: localhost
 
 - name: Install (download, install) base image
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-      software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      volume: "HD1.1"
-      state: "installed"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+    software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+    volume: HD1.1
+    state: installed
   delegate_to: localhost
 
 - name: Install (download, install) base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-      software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-      software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      state: "installed"
-      volume: "HD1.2"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+    hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+    software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+    software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+    state: installed
+    volume: HD1.2
    delegate_to: localhost
 
 - name: Download hotfix image (name mismatch)
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/12.1.2-HF1.iso"
-      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/12.1.2-HF1.iso"
+    hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
+    state: present
   delegate_to: localhost
 
 - name: Download software image (name mismatch)
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "http://fake.com/BIGIP-12.1.2.iso"
-      software_md5sum: "http://fake.com/12.1.2.md5"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: "http://fake.com/BIGIP-12.1.2.iso"
+    software_md5sum: "http://fake.com/12.1.2.md5"
+    state: present
   delegate_to: localhost
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-      hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      state: "activated"
-      reuse_inactive_volume: True
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+    hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    state: activated
+    reuse_inactive_volume: True
   delegate_to: localhost
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "/root/Hotfix-12.1.2.1.0.271-HF1.iso"
-      software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-      software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-      state: "activated"
-      reuse_inactive_volume: True
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: /root/Hotfix-12.1.2.1.0.271-HF1.iso
+    software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+    software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+    state: activated
+    reuse_inactive_volume: True
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 force:
-    description: Set when forcing the ISO upload/download.
-    returned: changed
-    type: bool
-    sample: yes
+  description: Set when forcing the ISO upload/download.
+  returned: changed
+  type: bool
+  sample: yes
 state:
-    description: Action performed on the target device.
-    returned: changed
-    type: string
-    sample: "absent"
+  description: Action performed on the target device.
+  returned: changed
+  type: string
+  sample: absent
 reuse_inactive_volume:
-    description: Create volume or reuse existing volume.
-    returned: changed
-    type: bool
-    sample: no
+  description: Create volume or reuse existing volume.
+  returned: changed
+  type: bool
+  sample: no
 software:
-    description: Local path, or remote link to the software ISO image.
-    returned: changed
-    type: string
-    sample: "http://someweb.com/fake/software.iso"
+  description: Local path, or remote link to the software ISO image.
+  returned: changed
+  type: string
+  sample: "http://someweb.com/fake/software.iso"
 hotfix:
-    description: Local path, or remote link to the hotfix ISO image.
-    returned: changed
-    type: string
-    sample: "/root/hotfixes/hotfix.iso"
+  description: Local path, or remote link to the hotfix ISO image.
+  returned: changed
+  type: string
+  sample: /root/hotfixes/hotfix.iso
 software_md5:
-    description: MD5 sum file for the remote software ISO image.
-    returned: changed
-    type: string
-    sample: "http://someweb.com/fake/software.iso.md5"
+  description: MD5 sum file for the remote software ISO image.
+  returned: changed
+  type: string
+  sample: "http://someweb.com/fake/software.iso.md5"
 hotfix_md5:
-    description: MD5 sum file for the remote hotfix ISO image.
-    returned: changed
-    type: string
-    sample: "http://someweb.com/fake/hotfix.iso.md5"
+  description: MD5 sum file for the remote hotfix ISO image.
+  returned: changed
+  type: string
+  sample: "http://someweb.com/fake/hotfix.iso.md5"
 build:
-    description: Build of the remote ISO image.
-    returned: changed
-    type: string
-    sample: "0.0.249"
+  description: Build of the remote ISO image.
+  returned: changed
+  type: string
+  sample: 0.0.249
 version:
-    description: Version of the remote ISO image.
-    returned: changed
-    type: string
-    sample: "12.1.1"
+  description: Version of the remote ISO image.
+  returned: changed
+  type: string
+  sample: 12.1.1
 volume:
-    description: Volume to install desired image on
-    returned: changed
-    type: string
-    sample: "HD1.2"
+  description: Volume to install desired image on
+  returned: changed
+  type: string
+  sample: HD1.2
 '''
 
 import io
