@@ -706,7 +706,7 @@ class VirtualServerParameters(Parameters):
 
     @property
     def vlans_disabled(self):
-        if None in self._values['enabled_vlans']:
+        if self._values['enabled_vlans'] is None:
             return True
         if any(x.lower() for x in self._values['enabled_vlans'] if x in ['', 'all']):
             return True
