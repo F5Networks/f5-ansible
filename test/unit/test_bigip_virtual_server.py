@@ -68,6 +68,116 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
+    def test_destination_mutex_1(self):
+        args = dict(
+            destination='1.1.1.1'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+
+    def test_destination_mutex_2(self):
+        args = dict(
+            destination='1.1.1.1%2'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_3(self):
+        args = dict(
+            destination='1.1.1.1:80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.port == 80
+
+    def test_destination_mutex_4(self):
+        args = dict(
+            destination='1.1.1.1%2:80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.port == 80
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_5(self):
+        args = dict(
+            destination='/Common/1.1.1.1'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+
+    def test_destination_mutex_6(self):
+        args = dict(
+            destination='/Common/1.1.1.1%2'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_7(self):
+        args = dict(
+            destination='/Common/1.1.1.1:80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.port == 80
+
+    def test_destination_mutex_8(self):
+        args = dict(
+            destination='/Common/1.1.1.1%2:80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '1.1.1.1'
+        assert p.destination_tuple.port == 80
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_9(self):
+        args = dict(
+            destination='2700:bc00:1f10:101::6'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
+
+    def test_destination_mutex_10(self):
+        args = dict(
+            destination='2700:bc00:1f10:101::6%2'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
+        assert p.destination_tuple.route_domain == 2
+
+    def test_destination_mutex_11(self):
+        args = dict(
+            destination='2700:bc00:1f10:101::6.80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
+        assert p.destination_tuple.port == 80
+
+    def test_destination_mutex_12(self):
+        args = dict(
+            destination='2700:bc00:1f10:101::6%2.80'
+        )
+        p = VirtualServerParameters(args)
+        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
+        assert p.destination_tuple.port == 80
+        assert p.destination_tuple.route_domain == 2
+
+#
+#    def test_destination_mutex_6(self):
+#        args = dict(
+#            destination='/Common/2700:bc00:1f10:101::6'
+#        )
+#        p = VirtualServerParameters(args)
+#        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
+#
+#    def test_destination_mutex_5(self):
+#        args = dict(
+#            destination='/Common/2700:bc00:1f10:101::6'
+#        )
+#        p = VirtualServerParameters(args)
+#        assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
 
     def test_module_no_partition_prefix_parameters(self):
         args = dict(
@@ -82,9 +192,12 @@ class TestParameters(unittest.TestCase):
             pool='my-pool',
             snat='Automap',
             description='Test Virtual Server',
-            profiles_both=['fix'],
-            profiles_server_side=['clientssl'],
-            profiles_client_side=['ilx'],
+            profiles=[
+                dict(
+                    name='fix',
+                    context='all'
+                )
+            ],
             enabled_vlans=['vlan2']
         )
         p = VirtualServerParameters(args)
@@ -98,9 +211,9 @@ class TestParameters(unittest.TestCase):
         assert p.pool == '/Common/my-pool'
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
-        assert {'context': 'all', 'name': 'fix'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'clientssl'} in p.profiles_server_side
-        assert {'context': 'clientside', 'name': 'ilx'} in p.profiles_client_side
+        assert len(p.profiles) == 1
+        assert 'context' in p.profiles[0]
+        assert 'name' in p.profiles[0]
         assert '/Common/vlan2' in p.enabled_vlans
 
     def test_module_partition_prefix_parameters(self):
@@ -116,9 +229,12 @@ class TestParameters(unittest.TestCase):
             pool='/Common/my-pool',
             snat='Automap',
             description='Test Virtual Server',
-            profiles_both=['fix'],
-            profiles_server_side=['serverssl'],
-            profiles_client_side=['ilx'],
+            profiles=[
+                dict(
+                    name='fix',
+                    context='all'
+                )
+            ],
             enabled_vlans=['/Common/vlan2']
         )
         p = VirtualServerParameters(args)
@@ -132,9 +248,9 @@ class TestParameters(unittest.TestCase):
         assert p.pool == '/Common/my-pool'
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
-        assert {'context': 'all', 'name': 'fix'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'serverssl'} in p.profiles_server_side
-        assert {'context': 'clientside', 'name': 'ilx'} in p.profiles_client_side
+        assert len(p.profiles) == 1
+        assert 'context' in p.profiles[0]
+        assert 'name' in p.profiles[0]
         assert '/Common/vlan2' in p.enabled_vlans
 
     def test_api_parameters_variables(self):
@@ -235,8 +351,7 @@ class TestParameters(unittest.TestCase):
         assert p.destination == '/Common/10.10.10.10:443'
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
-        assert {'context': 'all', 'name': 'http'} in p.profiles_both
-        assert {'context': 'serverside', 'name': 'serverssl'} in p.profiles_server_side
+        assert {'context': 'all', 'name': 'http'} in p.profiles
         assert '/Common/net1' in p.enabled_vlans
 
 
@@ -250,7 +365,12 @@ class TestManager(unittest.TestCase):
     def test_create_virtual_server(self, *args):
         set_module_args(dict(
             all_profiles=[
-                'http', 'clientssl'
+                dict(
+                    name='http'
+                ),
+                dict(
+                    name='clientssl'
+                )
             ],
             description="Test Virtual Server",
             destination="10.10.10.10",
@@ -272,14 +392,13 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=False),
-            create_on_device=Mock(return_value=True)
-        )
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=False)
+        vsm.create_on_device = Mock(return_value=True)
 
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+        results = mm.exec_module()
 
         assert results['changed'] is True
 
@@ -308,13 +427,13 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=False)
-        )
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=False)
 
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+
+        results = mm.exec_module()
 
         assert results['changed'] is False
 
@@ -351,14 +470,14 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=False),
-            update_on_device=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=current)
-        )
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=False)
+        vsm.update_on_device = Mock(return_value=True)
+        vsm.read_current_from_device = Mock(return_value=current)
+
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+        results = mm.exec_module()
 
         assert results['changed'] is False
 
@@ -385,15 +504,14 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=current),
-            update_on_device=Mock(return_value=True)
-        )
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device = Mock(return_value=current)
+        vsm.update_on_device = Mock(return_value=True)
 
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+        results = mm.exec_module()
 
         assert results['changed'] is True
 
@@ -420,14 +538,13 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=current)
-        )
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device = Mock(return_value=current)
 
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+        results = mm.exec_module()
 
         assert results['changed'] is False
 
@@ -456,16 +573,62 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods to force specific logic in the module to happen
-        patches = dict(
-            exists=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=current)
-        )
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device=Mock(return_value=current)
 
-        with patch.multiple(VirtualServerManager, **patches) as vsm:
-            mm = ModuleManager(client)
-            results = mm.exec_module()
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+
+        results = mm.exec_module()
 
         assert results['changed'] is False
+
+    def test_modify_profiles(self, *args):
+        set_module_args(dict(
+            name="my-virtual-server",
+            partition="Common",
+            password="secret",
+            profiles=[
+                'http', 'clientssl'
+            ],
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = VirtualServerParameters(load_fixture('load_ltm_virtual_2.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device=Mock(return_value=current)
+        vsm.update_on_device = Mock(return_value=True)
+
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert len(results['profiles']) == 2
+        assert 'name' in results['profiles'][0]
+        assert 'context' in results['profiles'][0]
+        assert results['profiles'][0]['name'] == 'http'
+        assert results['profiles'][0]['context'] == 'all'
+        assert 'name' in results['profiles'][1]
+        assert 'context' in results['profiles'][1]
+        assert results['profiles'][1]['name'] == 'clientssl'
+        assert results['profiles'][1]['context'] == 'clientside'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -496,18 +659,17 @@ class TestDeprecatedAnsible24Manager(unittest.TestCase):
 
         vsm_current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
         vam_current = VirtualAddressParameters(load_fixture('load_ltm_virtual_1_address.json'))
-        vsm_patches = dict(
-            exists=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=vsm_current)
-        )
-        vam_patches = dict(
-            exists=Mock(return_value=True),
-            read_current_from_device=Mock(return_value=vam_current)
-        )
 
-        with patch.multiple(VirtualServerManager, **vsm_patches):
-            with patch.multiple(VirtualAddressManager, **vam_patches):
-                mm = ModuleManager(client)
-                results = mm.exec_module()
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device = Mock(return_value=vsm_current)
+        vam = VirtualAddressManager(client)
+        vam.exists = Mock(return_value=True)
+        vam.read_current_from_device = Mock(return_value=vam_current)
+
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(side_effect=[vsm, vam])
+
+        results = mm.exec_module()
 
         assert results['changed'] is False
