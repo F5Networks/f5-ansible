@@ -46,7 +46,7 @@ listed below.
    development/code-conventions
    development/upstreaming
    development/writing-a-module
-   development/deprecating_code.rst
+   development/deprecating-code.rst
    development/design-decisions.rst
    development/dealing-with-replace-all.rst
    development/module-patterns.rst
