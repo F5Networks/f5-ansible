@@ -2,11 +2,11 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/57
 
-- name: Include issue variables
+- name: Issue 57 - Include issue variables
   include_vars:
     file: issue-00057.yaml
 
-- name: Create partition
+- name: Issue 57 - Create partition
   bigip_partition:
     name: "{{ i57_partition }}"
 
@@ -65,7 +65,7 @@
     that:
       - result|changed
 
-- name: Remove partition
+- name: Issue 57 - Remove partition
   bigip_partition:
     name: "{{ i57_partition }}"
     state: absent

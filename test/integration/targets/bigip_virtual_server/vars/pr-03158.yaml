@@ -1,0 +1,7 @@
+---
+
+members_list:
+  - 10.10.10.10
+  - 20.20.20.20
+snat_pool_name: my-snat-pool
+pool_name: foo.pool
