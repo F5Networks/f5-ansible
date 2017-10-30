@@ -4,23 +4,23 @@
 
 - name: Issue 38 - Create pool
   bigip_pool:
-      name: "test_pool"
-      state: "present"
+    name: "test_pool"
+    state: "present"
   register: result
 
 - name: Issue 38 - Assert Create pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Issue 38 - Add virtual server
   bigip_virtual_server:
-      destination: "{{ item.lip }}"
-      name: "{{ item.lname }}"
-      port: "{{ item.lport }}"
-      pool: "{{ item.lpool|default(omit) }}"
-      snat: "Automap"
-      state: "present"
+    destination: "{{ item.lip }}"
+    name: "{{ item.lname }}"
+    port: "{{ item.lport }}"
+    pool: "{{ item.lpool|default(omit) }}"
+    snat: "Automap"
+    state: "present"
   with_items:
     - lname: 'VS_HTTP1'
       lip: '1.2.3.4'
@@ -32,11 +32,11 @@
 
 - name: Issue 38 - Delete virtual server
   bigip_virtual_server:
-      destination: "{{ item.lip }}"
-      name: "{{ item.lname }}"
-      port: "{{ item.lport }}"
-      pool: "{{ item.lpool|default(omit) }}"
-      state: "absent"
+    destination: "{{ item.lip }}"
+    name: "{{ item.lname }}"
+    port: "{{ item.lport }}"
+    pool: "{{ item.lpool|default(omit) }}"
+    state: "absent"
   with_items:
     - lname: 'VS_HTTP1'
       lip: '1.2.3.4'
@@ -48,11 +48,11 @@
 
 - name: Issue 38 - Delete pool
   bigip_pool:
-      name: "test_pool"
-      state: "absent"
+    name: "test_pool"
+    state: "absent"
   register: result
 
 - name: Issue 38 - Assert Delete pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed

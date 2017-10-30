@@ -2,11 +2,11 @@
 
 - name: Issue 402 - Add virtual server
   bigip_virtual_server:
-      destination: 3.4.5.6
-      name: issue-00402
-      port: 80
-      enabled_vlans: all
-      state: present
+    destination: 3.4.5.6
+    name: issue-00402
+    port: 80
+    enabled_vlans: all
+    state: present
   register: result
 
 - name: Assert Issue 402 - Add virtual server
@@ -16,11 +16,11 @@
 
 - name: Issue 402 - Add virtual server - Idempotent check
   bigip_virtual_server:
-      destination: 3.4.5.6
-      name: issue-00402
-      port: 80
-      enabled_vlans: all
-      state: present
+    destination: 3.4.5.6
+    name: issue-00402
+    port: 80
+    enabled_vlans: all
+    state: present
   register: result
 
 - name: Assert Issue 402 - Add virtual server - Idempotent check
@@ -28,7 +28,7 @@
     that:
       - not result|changed
 
-- name: Issue 402 - Add virtual server
+- name: Issue 402 - Remove virtual server
   bigip_virtual_server:
-      name: issue-00402
-      state: absent
+    name: issue-00402
+    state: absent
