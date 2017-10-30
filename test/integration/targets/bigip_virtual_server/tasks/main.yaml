@@ -241,21 +241,21 @@
   register: result
 
 # Tests for different issues filed on Github
-- include: issue-38.yaml
-  tags: issue-38
+- import_tasks: issue-00038.yaml
+  tags: issue-00038
 
-- include: issue-53.yaml
-  tags: issue-53
+- import_tasks: issue-00053.yaml
+  tags: issue-00053
 
-- include: issue-57.yaml
-  tags: issue-57
+- import_tasks: issue-00057.yaml
+  tags: issue-00057
 
-- include: issue-59.yaml
-  tags: issue-59
+- import_tasks: issue-00059.yaml
+  tags: issue-00059
 
-- include: issue-101.yaml
-  tags: issue-101
+- import_tasks: issue-00101.yaml
+  tags: issue-00101
 
 # Tests for different pull requests filed on Github
-- include: pr-3158.yaml
-  tags: pr-3158
+- import_tasks: pr-03158.yaml
+  tags: pr-03158

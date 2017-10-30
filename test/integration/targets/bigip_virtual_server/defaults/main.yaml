@@ -17,10 +17,3 @@ snat_pool_name: "my-snat-pool"
 members_list:
     - 10.10.10.10
     - 11.11.11.11
-
-# Settings related to issue-53
-i53_default_persistence_profile: "cookie"
-i53_fallback_persistence_profile: "dest_addr"
-
-# Settings related to issue-57
-i57_partition: "GEN"

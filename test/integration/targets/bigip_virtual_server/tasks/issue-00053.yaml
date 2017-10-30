@@ -2,6 +2,10 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/53
 
+- name: Include issue variables
+  include_vars:
+    file: issue-00053.yaml
+
 - name: Issue 53 - Create virtual server
   bigip_virtual_server:
       name: "issue53"
