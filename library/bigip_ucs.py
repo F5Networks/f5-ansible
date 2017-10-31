@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_ucs
 short_description: Manage upload, installation and removal of UCS files
@@ -116,67 +116,67 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Upload UCS
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: present
   delegate_to: localhost
 
 - name: Install (upload, install) UCS.
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
-      state: "installed"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: installed
   delegate_to: localhost
 
 - name: Install (upload, install) UCS without installing the license portion
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
-      state: "installed"
-      no_license: "yes"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: installed
+    no_license: yes
   delegate_to: localhost
 
 - name: Install (upload, install) UCS except the license, and bypassing the platform check
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
-      state: "installed"
-      no_license: "yes"
-      no_platform_check: "yes"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: installed
+    no_license: yes
+    no_platform_check: yes
   delegate_to: localhost
 
 - name: Install (upload, install) UCS using a passphrase necessary to load the UCS
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "/root/bigip.localhost.localdomain.ucs"
-      state: "installed"
-      passphrase: "MyPassphrase1234"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: /root/bigip.localhost.localdomain.ucs
+    state: installed
+    passphrase: MyPassphrase1234
   delegate_to: localhost
 
 - name: Remove uploaded UCS file
   bigip_ucs:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      ucs: "bigip.localhost.localdomain.ucs"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    ucs: bigip.localhost.localdomain.ucs
+    state: absent
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 # only common fields returned
 '''
 
@@ -186,14 +186,16 @@ import time
 
 from collections import OrderedDict
 from distutils.version import LooseVersion
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError,
-    iteritems
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

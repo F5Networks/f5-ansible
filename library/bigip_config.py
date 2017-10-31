@@ -125,7 +125,6 @@ try:
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.basic import BOOLEANS
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
