@@ -139,8 +139,8 @@ class Parameters(AnsibleF5Parameters):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         stdout, stderr = p.communicate()
         if not stdout:
-            return self.package_file
-        return stdout
+            return str(self.package_file)
+        return stdout.decode('utf-8')
 
     @property
     def package_root(self):
