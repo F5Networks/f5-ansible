@@ -101,10 +101,6 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {
-        'remotePort': 'remote_port'
-    }
-
     updatables = [
         'remote_port', 'local_ip', 'remoteServers'
     ]
@@ -197,10 +193,22 @@ class Parameters(AnsibleF5Parameters):
             )
 
 
+class Changes(Parameters):
+    @property
+    def remote_port(self):
+        return self._values['remote_port']
+
+    @property
+    def local_ip(self):
+        return self._values['local_ip']
+
+
 class Difference(object):
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
+        self._local_ip = None
+        self._remote_port = None
 
     def compare(self, param):
         try:
@@ -247,10 +255,12 @@ class Difference(object):
             if self.want.remote_port is not None:
                 if int(item['remotePort']) != self.want.remote_port:
                     item['remotePort'] = self.want.remote_port
+                    self._remote_port = self.want.remote_port
                     changed = True
             if self.want.local_ip is not None:
                 if item['localIp'] != self.want.local_ip:
                     item['localIp'] = self.want.local_ip
+                    self._local_ip = self.want.local_ip
                     changed = True
         else:
             changed = True
@@ -262,8 +272,10 @@ class Difference(object):
             )
             if self.want.remote_port is not None:
                 current_hosts[host]['remotePort'] = self.want.remote_port
+                self._remote_port = self.want.remote_port
             if self.want.local_ip is not None:
                 current_hosts[host]['localIp'] = self.want.local_ip
+                self._local_ip = self.want.local_ip
         if changed:
             result = [v for (k, v) in iteritems(current_hosts)]
             return result
@@ -271,11 +283,15 @@ class Difference(object):
 
     @property
     def remote_port(self):
-        return None
+        _ = self.remoteServers
+        if self._remote_port:
+            return self._remote_port
 
     @property
     def local_ip(self):
-        return None
+        _ = self.remoteServers
+        if self._local_ip:
+            return self._local_ip
 
 
 class ModuleManager(object):
@@ -283,7 +299,7 @@ class ModuleManager(object):
         self.client = client
         self.have = None
         self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.changes = Changes()
 
     def _set_changed_options(self):
         changed = {}
@@ -291,7 +307,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             self.changes.update({'remote_host': self.want.remote_host})
 
     def _update_changed_options(self):
@@ -308,7 +324,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Changes(changed)
             self.changes.update({'remote_host': self.want.remote_host})
             return True
         return False
