@@ -1,0 +1,13 @@
+---
+
+- name: Issue 00405 - Create remote syslog
+  bigip_remote_syslog:
+    local_ip: 172.16.10.21
+    remote_host: 1.1.1.1
+    remote_port: 514
+    state: present
+
+- name: Issue 00405 - Remove remote syslog
+  bigip_remote_syslog:
+    remote_host: 1.1.1.1
+    state: absent

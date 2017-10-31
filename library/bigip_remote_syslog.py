@@ -229,9 +229,13 @@ class Difference(object):
         """
 
         changed = False
-        if self.have.remoteServers is None:
+        if self.want.remote_host is None:
             return None
-        current_hosts = dict((d['host'], d) for (i, d) in enumerate(self.have.remoteServers))
+        if self.have.remoteServers is None:
+            remote = dict()
+        else:
+            remote = self.have.remoteServers
+        current_hosts = dict((d['host'], d) for (i, d) in enumerate(remote))
 
         if self.want.state == 'absent':
             del current_hosts[self.want.remote_host]
@@ -241,7 +245,7 @@ class Difference(object):
         if self.want.remote_host in current_hosts:
             item = current_hosts[self.want.remote_host]
             if self.want.remote_port is not None:
-                if item['remotePort'] != self.want.remote_port:
+                if int(item['remotePort']) != self.want.remote_port:
                     item['remotePort'] = self.want.remote_port
                     changed = True
             if self.want.local_ip is not None:
@@ -263,6 +267,15 @@ class Difference(object):
         if changed:
             result = [v for (k, v) in iteritems(current_hosts)]
             return result
+        return None
+
+    @property
+    def remote_port(self):
+        return None
+
+    @property
+    def local_ip(self):
+        return None
 
 
 class ModuleManager(object):
@@ -290,7 +303,10 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
             self.changes = Parameters(changed)
             self.changes.update({'remote_host': self.want.remote_host})
