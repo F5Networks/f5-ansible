@@ -146,6 +146,10 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class Changes(Parameters):
+    pass
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
