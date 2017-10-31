@@ -25,6 +25,7 @@ listed below.
    usage/installing-modules
    usage/versions
    usage/support
+   usage/filing-issues.rst
 
 .. toctree::
    :maxdepth: 2
