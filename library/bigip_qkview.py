@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_qkview
 short_description: Manage qkviews on the device
@@ -86,7 +86,7 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Fetch a qkview from the remote device
   bigip_qkview:
     asm_request_log: yes
@@ -97,7 +97,7 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 stdout:
   description: The set of responses from the commands
   returned: always
