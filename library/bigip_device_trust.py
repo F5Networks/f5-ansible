@@ -65,6 +65,7 @@ notes:
       pip install f5-sdk.
 requirements:
   - f5-sdk
+  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
