@@ -30,7 +30,8 @@ Some things we want to know are
 * Whether you have uploaded a qkview to F5 (we will ask you to contact us offline if you have so we can find your
   account)
 
-and the list goes on and on. It all helps, us get a better idea of how your device is configured and how your Ansible
+and the list goes on and on. Don't worry, you don't need to remember all of the above after reading this, we'll
+ask you again in the Issue template. It all helps, us get a better idea of how your device is configured and how your Ansible
 environment is configured.
 
 Some of the things that we **do not** want, and will **never** ask for are
