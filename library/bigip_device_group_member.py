@@ -190,7 +190,11 @@ class ModuleManager(object):
 
     def exists(self):
         self.have = self.read_current_from_device()
-        if self.have.device_group.devices_s.devices.exists(name=self.want.name):
+        exists = self.have.device_group.devices_s.devices.exists(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if exists:
             return True
         return False
 
@@ -211,7 +215,8 @@ class ModuleManager(object):
 
     def create_on_device(self):
         self.have.device_group.devices_s.devices.create(
-            name=self.want.name
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def absent(self):
@@ -221,7 +226,8 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         resource = self.have.device_group.devices_s.devices.load(
-            name=self.want.name
+            name=self.want.name,
+            partition=self.want.partition
         )
         if resource:
             resource.delete()
@@ -229,7 +235,8 @@ class ModuleManager(object):
     def read_current_from_device(self):
         try:
             resource = self.client.api.tm.cm.device_groups.device_group.load(
-                name=self.want.device_group
+                name=self.want.device_group,
+                partition=self.want.partition
             )
             return Parameters({"device_group": resource})
         except iControlUnexpectedHTTPError:
