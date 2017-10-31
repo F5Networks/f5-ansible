@@ -190,7 +190,7 @@ class ModuleManager(object):
 
     def exists(self):
         self.have = self.read_current_from_device()
-        if self.have.device_group.devices_s.exists(name=self.want.name):
+        if self.have.device_group.devices_s.devices.exists(name=self.want.name):
             return True
         return False
 
