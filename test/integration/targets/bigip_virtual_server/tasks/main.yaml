@@ -259,6 +259,9 @@
 - import_tasks: issue-00402.yaml
   tags: issue-00402
 
+- import_tasks: issue-00403.yaml
+  tags: issue-00403
+
 # Tests for different pull requests filed on Github
 - import_tasks: pr-03158.yaml
   tags: pr-03158

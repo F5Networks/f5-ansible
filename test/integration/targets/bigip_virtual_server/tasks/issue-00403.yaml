@@ -1,0 +1,43 @@
+---
+
+- name: Issue 403 - Create a VLAN
+  bigip_vlan:
+    name: issue-00403
+
+- name: Issue 403 - Add virtual server
+  bigip_virtual_server:
+    destination: 3.4.5.6
+    name: issue-00403
+    port: 80
+    disabled_vlans: issue-00403
+    state: present
+  register: result
+
+- name: Assert Issue 403 - Add virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 403 - Add virtual server - Idempotent check
+  bigip_virtual_server:
+    destination: 3.4.5.6
+    name: issue-00403
+    port: 80
+    disabled_vlans: issue-00403
+    state: present
+  register: result
+
+- name: Assert Issue 403 - Add virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 403 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00403
+    state: absent
+
+- name: Issue 403 - Remove VLAN
+  bigip_vlan:
+    name: issue-00403
+    state: absent

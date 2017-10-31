@@ -366,7 +366,7 @@ class VirtualServerParameters(Parameters):
         'policies',
         'port',
         'profiles',
-        'snat',
+        'snat'
     ]
 
     def __init__(self, params=None):
@@ -702,38 +702,43 @@ class VirtualServerParameters(Parameters):
     def vlans_enabled(self):
         if self._values['enabled_vlans'] is None:
             return False
+        if self._values['disabled_vlans'] is not None:
+            return False
         return True
 
     @property
     def vlans_disabled(self):
         if self._values['enabled_vlans'] is None:
             return True
-        if any(x.lower() for x in self._values['enabled_vlans'] if x in ['', 'all']):
+        if self._values['disabled_vlans'] is not None:
             return True
         return False
 
     @property
     def enabled_vlans(self):
-        if self._values['vlans'] is None:
+        if self._values['enabled_vlans'] is None:
             return None
-        elif any(x.lower() for x in self._values['vlans'] if x == 'all'):
+        elif any(x.lower() for x in self._values['enabled_vlans'] if x == 'all'):
             return []
-        results = list(set([self._fqdn_name(x) for x in self._values['vlans']]))
+        results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
         return results
 
     @property
     def disabled_vlans(self):
-        return None
+        if self._values['disabled_vlans'] is None:
+            return None
+        results = list(set([self._fqdn_name(x) for x in self._values['disabled_vlans']]))
+        return results
 
     @property
     def vlans(self):
-        if self.diabled_vlans:
+        if self.kind == 'tm:ltm:virtual:virtualstate':
+            return self._values['vlans']
+
+        disabled = self.disabled_vlans
+        if disabled:
             return self.disabled_vlans
         return self.enabled_vlans
-
-    @enabled_vlans.setter
-    def enabled_vlans(self, value):
-        self._values['vlans'] = value
 
     @property
     def state(self):
@@ -788,6 +793,16 @@ class VirtualServerChanges(VirtualServerParameters):
     def destination(self):
         return self._values['destination']
 
+    @property
+    def vlans(self):
+        if self._values['vlans'] is None:
+            return None
+        elif len(self._values['vlans']) == 0:
+            return []
+        elif any(x for x in self._values['vlans'] if x.lower() == '/common/all'):
+            return []
+        return self._values['vlans']
+
 
 class VirtualAddressChanges(VirtualAddressParameters):
     pass
@@ -838,15 +853,30 @@ class Difference(object):
             return self.want._fqdn_name(want)
 
     @property
-    def enabled_vlans(self):
+    def vlans(self):
         if self.want.vlans is None:
             return None
         elif self.want.vlans == [] and self.have.vlans is None:
             return None
         elif self.want.vlans == self.have.vlans:
             return None
+        elif any(x.lower().endswith('/all') for x in self.want.vlans):
+            if self.have.vlans is None:
+                return None
+            else:
+                return dict(vlans=[])
         else:
-            return self.want.vlans
+            return dict(vlans=self.want.vlans)
+
+    @property
+    def enabled_vlans(self):
+        result = self.vlans
+        return result
+
+    @property
+    def disabled_vlans(self):
+        result = self.vlans
+        return result
 
     @property
     def port(self):
