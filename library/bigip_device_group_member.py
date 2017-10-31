@@ -190,7 +190,7 @@ class ModuleManager(object):
 
     def exists(self):
         self.have = self.read_current_from_device()
-        if self.have.device_group.devices.exists(name=self.want.name):
+        if self.have.device_group.devices_s.exists(name=self.want.name):
             return True
         return False
 
@@ -210,7 +210,7 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        self.have.device_group.devices.device.create(
+        self.have.device_group.devices_s.devices.create(
             name=self.want.name
         )
 
@@ -220,7 +220,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.have.device_group.devices.device.load(
+        resource = self.have.device_group.devices_s.devices.load(
             name=self.want.name
         )
         if resource:
