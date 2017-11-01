@@ -374,17 +374,19 @@ class VirtualServerParameters(Parameters):
             'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
         ]
 
+    def is_valid_ip(self, value):
+        try:
+            netaddr.IPAddress(value)
+            return True
+        except (netaddr.core.AddrFormatError, ValueError):
+            return False
+
+
+class VirtualServerApiParameters(VirtualServerParameters):
     @property
     def destination(self):
         if self._values['destination'] is None:
             return None
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            return self.destination_from_api
-        else:
-            return self.destination_from_module
-
-    @property
-    def destination_from_api(self):
         destination = self.destination_tuple
         if destination.port is None:
             if destination.route_domain is None:
@@ -407,41 +409,6 @@ class VirtualServerParameters(Parameters):
                     self._fqdn_name(destination.ip),
                     destination.route_domain,
                     destination.port
-                )
-        return result
-
-    @property
-    def destination_from_module(self):
-        addr = self._values['destination'].split("%")[0]
-        if not self.is_valid_ip(addr):
-            raise F5ModuleError(
-                "The provided destination is not a valid IP address"
-            )
-        result = self._format_destination(addr, self.port, self.route_domain)
-        return result
-
-    def _format_destination(self, address, port, route_domain):
-        if port is None:
-            if route_domain is None:
-                result = '{0}'.format(
-                    self._fqdn_name(address)
-                )
-            else:
-                result = '{0}%{1}'.format(
-                    self._fqdn_name(address),
-                    route_domain
-                )
-        else:
-            if route_domain is None:
-                result = '{0}:{1}'.format(
-                    self._fqdn_name(address),
-                    port
-                )
-            else:
-                result = '{0}%{1}:{2}'.format(
-                    self._fqdn_name(address),
-                    route_domain,
-                    port
                 )
         return result
 
@@ -541,18 +508,93 @@ class VirtualServerParameters(Parameters):
             result = Destination(ip=None, port=None, route_domain=None)
             return result
 
-    def is_valid_ip(self, value):
-        try:
-            netaddr.IPAddress(value)
-            return True
-        except (netaddr.core.AddrFormatError, ValueError):
-            return False
+    @property
+    def port(self):
+        destination = self.destination_tuple
+        self._values['port'] = destination.port
+        return destination.port
+
+    @property
+    def route_domain(self):
+        destination = self.destination_tuple
+        self._values['route_domain'] = destination.route_domain
+        return destination.route_domain
+
+    @property
+    def profiles(self):
+        if 'items' not in self._values['profiles']:
+            return None
+        result = []
+        for item in self._values['profiles']['items']:
+            context = item['context']
+            name = item['name']
+            if context in ['all', 'serverside', 'clientside']:
+                result.append(dict(name=name, context=context))
+            else:
+                raise F5ModuleError(
+                    "Unknown profile context found: '{0}'".format(context)
+                )
+        return result
+
+    @property
+    def policies(self):
+        if 'items' not in self._values['policies']:
+            return None
+        result = []
+        for item in self._values['policies']['items']:
+            name = item['name']
+            partition = item['partition']
+            result.append(dict(name=name, partition=partition))
+        return result
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return None
+        # These persistence profiles are always lists when we get them
+        # from the REST API even though there can only be one. We'll
+        # make it a list again when we get to the Difference engine.
+        return self._values['default_persistence_profile'][0]
+
+
+class VirtualServerModuleParameters(VirtualServerParameters):
+    @property
+    def destination(self):
+        addr = self._values['destination'].split("%")[0]
+        if not self.is_valid_ip(addr):
+            raise F5ModuleError(
+                "The provided destination is not a valid IP address"
+            )
+        result = self._format_destination(addr, self.port, self.route_domain)
+        return result
+
+    def _format_destination(self, address, port, route_domain):
+        if port is None:
+            if route_domain is None:
+                result = '{0}'.format(
+                    self._fqdn_name(address)
+                )
+            else:
+                result = '{0}%{1}'.format(
+                    self._fqdn_name(address),
+                    route_domain
+                )
+        else:
+            if route_domain is None:
+                result = '{0}:{1}'.format(
+                    self._fqdn_name(address),
+                    port
+                )
+            else:
+                result = '{0}%{1}:{2}'.format(
+                    self._fqdn_name(address),
+                    route_domain,
+                    port
+                )
+        return result
 
     @property
     def port(self):
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            destination = self.destination_tuple
-            self._values['port'] = destination.port
         if self._values['port'] is None:
             return None
         if self._values['port'] == '*':
@@ -587,14 +629,6 @@ class VirtualServerParameters(Parameters):
     def profiles(self):
         if self._values['profiles'] is None:
             return None
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            result = self.profiles_from_api
-        else:
-            result = self.profiles_from_module
-        return result
-
-    @property
-    def profiles_from_module(self):
         result = []
         for profile in self._values['profiles']:
             tmp = dict()
@@ -636,33 +670,9 @@ class VirtualServerParameters(Parameters):
             profile['context'] = 'clientside'
 
     @property
-    def profiles_from_api(self):
-        if 'items' not in self._values['profiles']:
-            return None
-        result = []
-        for item in self._values['profiles']['items']:
-            context = item['context']
-            name = item['name']
-            if context in ['all', 'serverside', 'clientside']:
-                result.append(dict(name=name, context=context))
-            else:
-                raise F5ModuleError(
-                    "Unknown profile context found: '{0}'".format(context)
-                )
-        return result
-
-    @property
     def policies(self):
         if self._values['policies'] is None:
             return None
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            result = self.policies_from_api
-        else:
-            result = self.policies_from_module
-        return result
-
-    @property
-    def policies_from_module(self):
         result = []
         policies = [self._fqdn_name(p) for p in self._values['policies']]
         policies = set(policies)
@@ -680,17 +690,6 @@ class VirtualServerParameters(Parameters):
         return result
 
     @property
-    def policies_from_api(self):
-        if 'items' not in self._values['policies']:
-            return None
-        result = []
-        for item in self._values['policies']['items']:
-            name = item['name']
-            partition = item['partition']
-            result.append(dict(name=name, partition=partition))
-        return result
-
-    @property
     def pool(self):
         if self._values['pool'] is None:
             return None
@@ -699,16 +698,16 @@ class VirtualServerParameters(Parameters):
     @property
     def vlans_enabled(self):
         if self._values['enabled_vlans'] is None:
-            return False
-        if self._values['disabled_vlans'] is not None:
-            return False
-        return True
+            return None
+        if self._values['disabled_vlans'] is None:
+            return True
+        return False
 
     @property
     def vlans_disabled(self):
+        if self._values['disabled_vlans'] is None:
+            return None
         if self._values['enabled_vlans'] is None:
-            return True
-        if self._values['disabled_vlans'] is not None:
             return True
         return False
 
@@ -730,9 +729,6 @@ class VirtualServerParameters(Parameters):
 
     @property
     def vlans(self):
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            return self._values['vlans']
-
         disabled = self.disabled_vlans
         if disabled:
             return self.disabled_vlans
@@ -748,24 +744,16 @@ class VirtualServerParameters(Parameters):
     def snat(self):
         if self._values['snat'] is None:
             return None
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            return self._values['snat']
-        else:
-            lowercase = self._values['snat'].lower()
-            if lowercase in ['automap', 'none']:
-                return dict(type=lowercase)
-            snat_pool = self._fqdn_name(self._values['snat'])
-            return dict(pool=snat_pool, type='snat')
+        lowercase = self._values['snat'].lower()
+        if lowercase in ['automap', 'none']:
+            return dict(type=lowercase)
+        snat_pool = self._fqdn_name(self._values['snat'])
+        return dict(pool=snat_pool, type='snat')
 
     @property
     def default_persistence_profile(self):
         if self._values['default_persistence_profile'] is None:
             return None
-        if self.kind == 'tm:ltm:virtual:virtualstate':
-            # These persistence profiles are always lists when we get them
-            # from the REST API even though there can only be one. We'll
-            # make it a list again when we get to the Difference engine.
-            return self._values['default_persistence_profile'][0]
         profile = self._fqdn_name(self._values['default_persistence_profile'])
         parts = profile.split('/')
         if len(parts) != 3:
@@ -862,18 +850,35 @@ class Difference(object):
             if self.have.vlans is None:
                 return None
             else:
-                return dict(vlans=[])
+                return []
         else:
-            return dict(vlans=self.want.vlans)
+            return self.want.vlans
+
+    def _update_vlan_status(self, result):
+        if self.want.vlans_disabled is not None:
+            if self.want.vlans_disabled != self.have.vlans_disabled:
+                result['vlans_disabled'] = self.want.vlans_disabled
+                result['vlans_enabled'] = not self.want.vlans_disabled
+        elif self.want.vlans_enabled is not None:
+            if self.want.vlans_enabled != self.have.vlans_enabled:
+                result['vlans_disabled'] = not self.want.vlans_enabled
+                result['vlans_enabled'] = self.want.vlans_enabled
 
     @property
     def enabled_vlans(self):
-        result = self.vlans
-        return result
+        return self.vlan_status
 
     @property
     def disabled_vlans(self):
-        result = self.vlans
+        return self.vlan_status
+
+    @property
+    def vlan_status(self):
+        result = dict()
+        vlans = self.vlans
+        if vlans is not None:
+            result['vlans'] = vlans
+        self._update_vlan_status(result)
         return result
 
     @property
@@ -930,18 +935,14 @@ class Difference(object):
         if self.want.snat is None:
             return None
         if self.want.snat['type'] != self.have.snat['type']:
-            result = dict(
-                snat=self.want.snat
-            )
+            result = dict(snat=self.want.snat)
             return result
 
         if self.want.snat.get('pool', None) is None:
             return None
 
         if self.want.snat['pool'] != self.have.snat['pool']:
-            result = dict(
-                snat=self.want.snat
-            )
+            result = dict(snat=self.want.snat)
             return result
 
 
@@ -1072,7 +1073,7 @@ class VirtualServerManager(BaseManager):
     def __init__(self, client):
         super(VirtualServerManager, self).__init__(client)
         self.have = None
-        self.want = VirtualServerParameters(self.client.module.params)
+        self.want = VirtualServerModuleParameters(self.client.module.params)
         self.changes = VirtualServerChanges()
 
     def _set_changed_options(self):
@@ -1142,7 +1143,7 @@ class VirtualServerManager(BaseManager):
         )
         params = result.attrs
         params.update(dict(kind=result.to_dict().get('kind', None)))
-        result = VirtualServerParameters(result.attrs)
+        result = VirtualServerApiParameters(params)
         return result
 
     def create_on_device(self):
