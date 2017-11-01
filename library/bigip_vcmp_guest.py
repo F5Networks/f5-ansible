@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_vcmp_guest
 short_description: Manages vCMP guests on a BIG-IP
@@ -101,44 +101,45 @@ notes:
     BIG-IP chassis will be available before all vCMP guests are online.
 requirements:
   - f5-sdk >= 2.2.3
+  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create a vCMP guest
   bigip_vcmp_guest:
-      name: "foo"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
-      mgmt_network: "bridge"
-      mgmt_address: "10.20.30.40/24"
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+    mgmt_network: bridge
+    mgmt_address: 10.20.30.40/24
   delegate_to: localhost
 
 - name: Create a vCMP guest with specific VLANs
   bigip_vcmp_guest:
-      name: "foo"
-      password: "secret"
-      server: "lb.mydomain.com"
-      state: "present"
-      user: "admin"
-      mgmt_network: "bridge"
-      mgmt_address: "10.20.30.40/24"
-      vlans:
-          - vlan1
-          - vlan2
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+    mgmt_network: bridge
+    mgmt_address: 10.20.30.40/24
+    vlans:
+      - vlan1
+      - vlan2
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 vlans:
-    description: The VLANs assigned to the vCMP guest, in their full path format.
-    returned: changed
-    type: list
-    sample: ['/Common/vlan1', '/Common/vlan2']
+  description: The VLANs assigned to the vCMP guest, in their full path format.
+  returned: changed
+  type: list
+  sample: ['/Common/vlan1', '/Common/vlan2']
 '''
 
 
@@ -146,9 +147,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 
 try:
@@ -156,6 +156,11 @@ try:
     HAS_NETADDR = True
 except ImportError:
     HAS_NETADDR = False
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
