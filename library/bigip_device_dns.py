@@ -279,17 +279,15 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        tx = self.client.api.tm.transactions.transaction
-        with BigIpTxContext(tx) as api:
-            cache = api.tm.sys.dbs.db.load(name='dns.cache')
-            dns = api.tm.sys.dns.load()
+        cache = self.client.api.tm.sys.dbs.db.load(name='dns.cache')
+        dns = self.client.api.tm.sys.dns.load()
 
-            # Empty values can be supplied, but you cannot supply the
-            # None value, so we check for that specifically
-            if self.want.cache is not None:
-                cache.update(value=self.want.cache)
-            if params:
-                dns.update(**params)
+        # Empty values can be supplied, but you cannot supply the
+        # None value, so we check for that specifically
+        if self.want.cache is not None:
+            cache.update(value=self.want.cache)
+        if params:
+            dns.update(**params)
 
     def _absent_changed_options(self):
         changed = {}
@@ -322,10 +320,8 @@ class ModuleManager(object):
 
     def absent_on_device(self):
         params = self.changes.api_params()
-        tx = self.client.api.tm.transactions.transaction
-        with BigIpTxContext(tx) as api:
-            dns = api.tm.sys.dns.load()
-            dns.update(**params)
+        resource = self.client.api.tm.sys.dns.load()
+        resource.update(**params)
 
 
 class ArgumentSpec(object):
