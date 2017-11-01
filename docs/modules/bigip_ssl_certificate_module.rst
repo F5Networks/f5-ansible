@@ -111,43 +111,43 @@ Examples
     
     - name: Import PEM Certificate from local disk
       bigip_ssl_certificate:
-          name: "certificate-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          cert_src: "/path/to/cert.crt"
-          key_src: "/path/to/key.key"
+        name: certificate-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        cert_src: /path/to/cert.crt
+        key_src: /path/to/key.key
       delegate_to: localhost
     
     - name: Use a file lookup to import PEM Certificate
       bigip_ssl_certificate:
-          name: "certificate-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
-          key_content: "{{ lookup('file', '/path/to/key.key') }}"
+        name: certificate-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
+        key_content: "{{ lookup('file', '/path/to/key.key') }}"
       delegate_to: localhost
     
     - name: Use a file lookup to import CA certificate chain
       bigip_ssl_certificate:
-          name: "ca-chain-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
+        name: ca-chain-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
       delegate_to: localhost
     
     - name: "Delete Certificate"
       bigip_ssl_certificate:
-          name: "certificate-name"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "absent"
+        name: certificate-name
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
       delegate_to: localhost
 
 Return Values
@@ -225,6 +225,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module does not behave like other modules that you might include in roles where referencing files or templates first looks in the role's files or templates directory. To have it behave that way, use the Ansible file or template lookup (see Examples). The lookups behave as expected in a role context.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

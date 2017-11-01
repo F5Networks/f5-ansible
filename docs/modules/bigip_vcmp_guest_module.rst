@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 2.2.3
+  * netaddr
 
 
 Options
@@ -115,27 +116,27 @@ Examples
     
     - name: Create a vCMP guest
       bigip_vcmp_guest:
-          name: "foo"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
-          mgmt_network: "bridge"
-          mgmt_address: "10.20.30.40/24"
+        name: foo
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+        mgmt_network: bridge
+        mgmt_address: 10.20.30.40/24
       delegate_to: localhost
     
     - name: Create a vCMP guest with specific VLANs
       bigip_vcmp_guest:
-          name: "foo"
-          password: "secret"
-          server: "lb.mydomain.com"
-          state: "present"
-          user: "admin"
-          mgmt_network: "bridge"
-          mgmt_address: "10.20.30.40/24"
-          vlans:
-              - vlan1
-              - vlan2
+        name: foo
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+        mgmt_network: bridge
+        mgmt_address: 10.20.30.40/24
+        vlans:
+          - vlan1
+          - vlan2
       delegate_to: localhost
 
 Return Values
@@ -172,6 +173,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module can take a lot of time to deploy vCMP guests. This is an intrinsic limitation of the vCMP system because it is booting real VMs on the BIG-IP device. This boot time is very similar in length to the time it takes to boot VMs on any other virtualization platform; public or private.
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

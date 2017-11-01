@@ -85,11 +85,11 @@ Examples
     
     - name: Download a new UCS
       bigip_ucs_fetch:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          src: "cs_backup.ucs"
-          dest: "/tmp/cs_backup.ucs"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        src: cs_backup.ucs
+        dest: /tmp/cs_backup.ucs
       delegate_to: localhost
 
 Return Values
@@ -162,7 +162,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Permissions of the target UCS, after execution </td>
         <td align=center> success </td>
         <td align=center> string </td>
-        <td align=center> 0644 </td>
+        <td align=center> 420 </td>
     </tr>
             <tr>
         <td> owner </td>

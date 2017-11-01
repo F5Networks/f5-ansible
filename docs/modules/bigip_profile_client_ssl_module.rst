@@ -155,7 +155,7 @@ Examples
         name: my_profile
         ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE-RSA-AES128-CBC-SHA"
       delegate_to: localhost
-      
+    
     - name: Create a client SSL profile with a cert/key/chain setting
       bigip_profile_client_ssl:
         state: present
@@ -202,6 +202,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP software version >= 12
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

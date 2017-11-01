@@ -123,210 +123,210 @@ Examples
     
     - name: Remove uploaded hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        state: absent
       delegate_to: localhost
     
     - name: Upload hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        state: present
       delegate_to: localhost
     
     - name: Remove uploaded base image
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        state: absent
       delegate_to: localhost
     
     - name: Upload base image
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        state: present
       delegate_to: localhost
     
     - name: Upload base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        state: present
       delegate_to: localhost
     
     - name: Remove uploaded base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        state: absent
       delegate_to: localhost
     
     - name: Install (upload, install) base image. Create volume if not exists
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          volume: "HD1.1"
-          state: "installed"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        volume: HD1.1
+        state: installed
       delegate_to: localhost
     
     - name: Install (upload, install) base image and hotfix. Create volume if not exists
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          volume: "HD1.1"
-          state: "installed"
+        server: lb.mydomain.com
+        user: admin
+        password: "secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        volume: HD1.1
+        state: installed
       delegate_to: localhost
     
     - name: Activate (upload, install, reboot) base image. Create volume if not exists
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          volume: "HD1.1"
-          state: "activated"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        volume: HD1.1
+        state: activated
       delegate_to: localhost
     
     - name: Activate (upload, install, reboot) base image and hotfix. Create volume if not exists
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          volume: "HD1.1"
-          state: "activated"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        volume: HD1.1
+        state: activated
       delegate_to: localhost
     
     - name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-          reuse_inactive_volume: yes
-          state: "activated"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+        reuse_inactive_volume: yes
+        state: activated
       delegate_to: localhost
     
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-          state: "activated"
-          reuse_inactive_volume: True
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+        hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+        software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+        software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+        state: activated
+        reuse_inactive_volume: True
       delegate_to: localhost
     
     - name: Download hotfix image
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+        hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+        state: present
       delegate_to: localhost
     
     - name: Remove uploaded hotfix image
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
       delegate_to: localhost
     
     - name: Install (download, install) base image
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-          volume: "HD1.1"
-          state: "installed"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+        software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+        volume: HD1.1
+        state: installed
       delegate_to: localhost
     
     - name: Install (download, install) base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-          state: "installed"
-          volume: "HD1.2"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+        hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+        software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+        software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+        state: installed
+        volume: HD1.2
        delegate_to: localhost
     
     - name: Download hotfix image (name mismatch)
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/12.1.2-HF1.iso"
-          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/12.1.2-HF1.iso"
+        hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
+        state: present
       delegate_to: localhost
     
     - name: Download software image (name mismatch)
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          software: "http://fake.com/BIGIP-12.1.2.iso"
-          software_md5sum: "http://fake.com/12.1.2.md5"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        software: "http://fake.com/BIGIP-12.1.2.iso"
+        software_md5sum: "http://fake.com/12.1.2.md5"
+        state: present
       delegate_to: localhost
     
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
-          hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
-          software: "/root/BIGIP-11.6.0.0.0.401.iso"
-          state: "activated"
-          reuse_inactive_volume: True
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
+        hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
+        software: /root/BIGIP-11.6.0.0.0.401.iso
+        state: activated
+        reuse_inactive_volume: True
       delegate_to: localhost
     
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          hotfix: "/root/Hotfix-12.1.2.1.0.271-HF1.iso"
-          software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
-          software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
-          state: "activated"
-          reuse_inactive_volume: True
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        hotfix: /root/Hotfix-12.1.2.1.0.271-HF1.iso
+        software: "http://fake.com/BIGIP-12.1.2.0.0.249.iso"
+        software_md5sum: "http://fake.com/BIGIP-12.1.2.0.0.249.iso.md5"
+        state: activated
+        reuse_inactive_volume: True
       delegate_to: localhost
 
 Return Values
@@ -426,6 +426,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
     - Requires the isoparser Python package on the host. This can be installed with pip install isoparser
     - Requires the lxml Python package on the host. This can be installed with pip install lxml
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

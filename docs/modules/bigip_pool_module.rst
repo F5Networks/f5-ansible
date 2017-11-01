@@ -343,6 +343,7 @@ Notes
     - Requires BIG-IP software version >= 12.
     - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
     - Best run as a local_action in your playbook.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -90,29 +90,29 @@ Examples
     
     - name: Set the boot.quiet DB variable on the BIG-IP
       bigip_sys_db:
-          user: "admin"
-          password: "secret"
-          server: "lb.mydomain.com"
-          key: "boot.quiet"
-          value: "disable"
+        user: admin
+        password: secret
+        server: lb.mydomain.com
+        key: boot.quiet
+        value: disable
       delegate_to: localhost
     
     - name: Disable the initial setup screen
       bigip_sys_db:
-          user: "admin"
-          password: "secret"
-          server: "lb.mydomain.com"
-          key: "setup.run"
-          value: "false"
+        user: admin
+        password: secret
+        server: lb.mydomain.com
+        key: setup.run
+        value: false
       delegate_to: localhost
     
     - name: Reset the initial setup screen
       bigip_sys_db:
-          user: "admin"
-          password: "secret"
-          server: "lb.mydomain.com"
-          key: "setup.run"
-          state: "reset"
+        user: admin
+        password: secret
+        server: lb.mydomain.com
+        key: setup.run
+        state: reset
       delegate_to: localhost
 
 Return Values
@@ -136,7 +136,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> The default value of the key </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> name </td>
@@ -150,7 +150,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> The value that you set the key to </td>
         <td align=center> changed and success </td>
         <td align=center> string </td>
-        <td align=center> false </td>
+        <td align=center> False </td>
     </tr>
         
     </table>
@@ -162,6 +162,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP version 12.0.0 or greater
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

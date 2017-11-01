@@ -120,11 +120,11 @@ Examples
     
     - name: Disable the setup utility
       bigip_sys_global:
-          gui_setup: "disabled"
-          password: "secret"
-          server: "lb.mydomain.com"
-          user: "admin"
-          state: "present"
+        gui_setup: disabled
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        state: present
       delegate_to: localhost
 
 Return Values
@@ -145,7 +145,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
 
         <tr>
         <td> security_banner </td>
-        <td> The new setting for whether the system should display an advisory message on the login screen or not
+        <td> The new setting for whether the system should display an advisory message on the login screen or not.
  </td>
         <td align=center> changed </td>
         <td align=center> string </td>
@@ -153,8 +153,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> net_reboot </td>
-        <td> The new setting for whether the system should boot to an ISO on the network or not
- </td>
+        <td> The new setting for whether the system should boot to an ISO on the network or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
@@ -184,8 +183,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
     </tr>
             <tr>
         <td> mgmt_dhcp </td>
-        <td> The new setting for whether the mgmt interface should DHCP or not
- </td>
+        <td> The new setting for whether the mgmt interface should DHCP or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
@@ -213,6 +211,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
