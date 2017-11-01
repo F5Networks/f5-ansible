@@ -66,10 +66,10 @@ images:
   sample:
     images:
       - build: 0.0.184
-        fileSize: 1997 MB,
-        lastModified: Sun Oct  2 20:50:04 2016,
-        name: BIGIP-12.1.1.0.0.184.iso,
-        product: BIG-IP,
+        fileSize: 1997 MB
+        lastModified: Sun Oct  2 20:50:04 2016
+        name: BIGIP-12.1.1.0.0.184.iso
+        product: BIG-IP
         version: 12.1.1
 hotfixes:
   description:
@@ -79,10 +79,10 @@ hotfixes:
   sample:
     hotfixes:
       - build: 2.0.204
-        fileSize: 1997 MB,
-        lastModified: Sun Oct  2 20:50:04 2016,
-        name: 12.1.1-hf2.iso,
-        product: BIG-IP,
+        fileSize: 1997 MB
+        lastModified: Sun Oct  2 20:50:04 2016
+        name: 12.1.1-hf2.iso
+        product: BIG-IP
         version: 12.1.1
 volumes:
   description:
@@ -91,11 +91,11 @@ volumes:
   type: list of dict
   sample:
     volumes:
-      - basebuild: 0.0.184,
-        build: 0.0.184,
-        name: HD1.2,
-        product: BIG-IP,
-        status: complete,
+      - basebuild: 0.0.184
+        build: 0.0.184
+        name: HD1.2
+        product: BIG-IP
+        status: complete
         version: 12.1.1
 '''
 
