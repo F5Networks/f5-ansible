@@ -214,7 +214,6 @@ state:
   sample: m_of_n
 '''
 
-import os
 import re
 import time
 
