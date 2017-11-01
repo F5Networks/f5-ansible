@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 module: bigip_static_route
 short_description: Manipulate static routes on a BIG-IP
 description:
@@ -84,54 +84,55 @@ notes:
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 2.2.3
+    - netaddr
 author:
     - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create static route with gateway address
   bigip_static_route:
-      destination: "10.10.10.10"
-      gateway_address: "10.2.2.3"
-      name: "test-route
-      password: "secret"
-      server: "lb.mydomain.come"
-      user: "admin"
-      validate_certs: "no"
+    destination: 10.10.10.10
+    gateway_address: 10.2.2.3
+    name: test-route
+    password: secret
+    server: lb.mydomain.come
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 vlan:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 gateway_address:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 destination:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 pool:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 description:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 reject:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 '''
 
 
