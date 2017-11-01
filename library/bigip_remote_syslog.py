@@ -43,6 +43,7 @@ notes:
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk >= 2.2.0
+  - netaddr
 author:
   - Tim Rupp (@caphrim007)
 '''
