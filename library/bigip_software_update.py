@@ -49,9 +49,11 @@ author:
 '''
 
 EXAMPLES = r'''
+
 '''
 
 RETURN = r'''
+# only common fields returned
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
