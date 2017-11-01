@@ -23,10 +23,14 @@ version is add the bottom.
 1.1
 ~~~
 
+Release date: March 2018
+Ansible version 2.5
+
 New keys,
 
 * `tested_versions`
 * `supported_harnesses`
+* `coding_standards`
 * Original `tested_platforms` values have been moved to `tested_versions`
 
 **Example**
@@ -54,6 +58,7 @@ New keys,
        - viprion 4200
      supported_harnesses:
        - TwoArmed-bigip-12.1.1
+     coding_standards: v3
      callgraph_exclude:
        - pycallgraph.*
 
@@ -67,6 +72,9 @@ New keys,
 
 1.0 (unused)
 ~~~~~~~~~~~~
+
+Release date: September 2017
+Ansible version 2.4
 
 Initial version of the playbook metadata keys include
 
