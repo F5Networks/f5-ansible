@@ -256,7 +256,6 @@ class Parameters(AnsibleF5Parameters):
         cmd = 'tmsh load sys ucs /var/local/ucs/{0}'.format(self.basename)
         # Append any options that might be specified
         options = OrderedDict(sorted(self.options.items(), key=lambda t: t[0]))
-        print(options)
         for k, v in iteritems(options):
             if v is False or v is None:
                 continue
