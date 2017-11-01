@@ -1,0 +1,7 @@
+---
+
+destination: 6.2.3.4
+vs_name: issue-00409
+vs_port1: 8080
+lb_method: round-robin
+pool_name: pool-issue-00409

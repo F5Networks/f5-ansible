@@ -11,12 +11,18 @@
       state: "present"
   register: result
 
-- name: Collect BIG-IP facts, address class
+- name: Collect BIG-IP facts
   _bigip_facts:
       include:
         - node
   register: result
-  with_items: "{{ valid_includes }}"
+
+- name: Assert facts
+  assert:
+    that:
+      - "'node' in result"
+      - "'name' in result['node']['/Common/foo.example']"
+      - result['node']['/Common/foo.example']['name'] == 'foo.example'
 
 - name: Remove node
   bigip_node:
