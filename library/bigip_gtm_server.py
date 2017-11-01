@@ -158,7 +158,6 @@ EXAMPLES = r'''
 '''
 
 import collections
-import os
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
