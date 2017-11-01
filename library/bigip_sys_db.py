@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_sys_db
 short_description: Manage BIG-IP system database variables
@@ -51,51 +51,51 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Set the boot.quiet DB variable on the BIG-IP
   bigip_sys_db:
-      user: "admin"
-      password: "secret"
-      server: "lb.mydomain.com"
-      key: "boot.quiet"
-      value: "disable"
+    user: admin
+    password: secret
+    server: lb.mydomain.com
+    key: boot.quiet
+    value: disable
   delegate_to: localhost
 
 - name: Disable the initial setup screen
   bigip_sys_db:
-      user: "admin"
-      password: "secret"
-      server: "lb.mydomain.com"
-      key: "setup.run"
-      value: "false"
+    user: admin
+    password: secret
+    server: lb.mydomain.com
+    key: setup.run
+    value: false
   delegate_to: localhost
 
 - name: Reset the initial setup screen
   bigip_sys_db:
-      user: "admin"
-      password: "secret"
-      server: "lb.mydomain.com"
-      key: "setup.run"
-      state: "reset"
+    user: admin
+    password: secret
+    server: lb.mydomain.com
+    key: setup.run
+    state: reset
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 name:
-    description: The key in the system database that was specified
-    returned: changed and success
-    type: string
-    sample: "setup.run"
+  description: The key in the system database that was specified
+  returned: changed and success
+  type: string
+  sample: setup.run
 default_value:
-    description: The default value of the key
-    returned: changed and success
-    type: string
-    sample: "true"
+  description: The default value of the key
+  returned: changed and success
+  type: string
+  sample: true
 value:
-    description: The value that you set the key to
-    returned: changed and success
-    type: string
-    sample: "false"
+  description: The value that you set the key to
+  returned: changed and success
+  type: string
+  sample: false
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
