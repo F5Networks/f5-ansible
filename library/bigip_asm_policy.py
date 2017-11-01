@@ -95,7 +95,7 @@ options:
       - Wordpress
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk
+  - f5-sdk >= 3.0.4
 author:
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -283,9 +283,18 @@ class Parameters(AnsibleF5Parameters):
                 return dict(link=resource.selfLink)
         return None
 
+    @property
+    def full_path(self):
+        return self._fqdn_name(self.name)
+
     def _templates_from_device(self):
         collection = self.client.api.tm.asm.policy_templates_s.get_collection()
         return collection
+
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     def to_return(self):
         result = {}
@@ -635,7 +644,7 @@ class BaseManager(object):
     def read_current_from_device(self):
         policies = self.client.api.tm.asm.policies_s.get_collection()
         for policy in policies:
-            if policy.name == self.want.name:
+            if policy.name == self.want.name and policy.partition == self.want.partition:
                 params = policy.attrs
                 params.update(dict(self_link=policy.selfLink))
                 return Parameters(params)
@@ -647,7 +656,9 @@ class BaseManager(object):
         name = os.path.split(self.want.file)[1]
         tasks = self.client.api.tm.asm.tasks
         result = tasks.import_policy_s.import_policy.create(
-            name=self.want.name, filename=name
+            name=self.want.name,
+            partition=self.want.partition,
+            filename=name
         )
         return result
 
@@ -662,13 +673,15 @@ class BaseManager(object):
         tasks = self.client.api.tm.asm.tasks
         result = tasks.import_policy_s.import_policy.create(
             name=self.want.name,
+            partition=self.want.partition,
             policyTemplateReference=self.want.template_link
         )
         return result
 
     def create_on_device(self):
         result = self.client.api.tm.asm.policies_s.policy.create(
-            name=self.want.name
+            name=self.want.name,
+            partition=self.want.partition
         )
         return result
 
