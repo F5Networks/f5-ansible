@@ -182,15 +182,20 @@ RETURN = r'''
 
 import os
 import re
+import sys
 import time
 
-from collections import OrderedDict
 from distutils.version import LooseVersion
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    pass
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -387,7 +392,7 @@ class BaseManager(object):
 
     def wait_for_rest_api_restart(self):
         time.sleep(5)
-        for x in xrange(0, 60):
+        for x in range(0, 60):
             try:
                 self.client.reconnect()
                 break
@@ -582,6 +587,9 @@ class ArgumentSpec(object):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if sys.version_info < (2, 7):
+        raise F5ModuleError("F5 Ansible modules require Python >= 2.7")
 
     spec = ArgumentSpec()
 
