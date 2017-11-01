@@ -129,111 +129,111 @@ authors:
 EXAMPLES = r'''
 - name: Remove uploaded hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    state: absent
   delegate_to: localhost
 
 - name: Upload hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    state: present
   delegate_to: localhost
 
 - name: Remove uploaded base image
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    state: absent
   delegate_to: localhost
 
 - name: Upload base image
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    state: present
   delegate_to: localhost
 
 - name: Upload base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    state: present
   delegate_to: localhost
 
 - name: Remove uploaded base image and hotfix
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    state: absent
   delegate_to: localhost
 
 - name: Install (upload, install) base image. Create volume if not exists
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      volume: "HD1.1"
-      state: "installed"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    volume: HD1.1
+    state: installed
   delegate_to: localhost
 
 - name: Install (upload, install) base image and hotfix. Create volume if not exists
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      volume: "HD1.1"
-      state: "installed"
+    server: lb.mydomain.com
+    user: admin
+    password: "secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    volume: HD1.1
+    state: installed
   delegate_to: localhost
 
 - name: Activate (upload, install, reboot) base image. Create volume if not exists
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      volume: "HD1.1"
-      state: "activated"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    volume: HD1.1
+    state: activated
   delegate_to: localhost
 
 - name: Activate (upload, install, reboot) base image and hotfix. Create volume if not exists
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      volume: "HD1.1"
-      state: "activated"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    volume: HD1.1
+    state: activated
   delegate_to: localhost
 
 - name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
   bigip_software:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      software: "/root/BIGIP-11.6.0.0.0.401.iso"
-      hotfix: "/root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso"
-      reuse_inactive_volume: yes
-      state: "activated"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    software: /root/BIGIP-11.6.0.0.0.401.iso
+    hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
+    reuse_inactive_volume: yes
+    state: activated
   delegate_to: localhost
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
@@ -396,10 +396,10 @@ import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import defaultdict
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from lxml import etree
 from requests.exceptions import ConnectionError
 
