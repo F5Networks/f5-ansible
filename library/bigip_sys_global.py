@@ -156,7 +156,9 @@ except ImportError:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.ec2 import camel_dict_to_snake_dict
-from ansible.module_utils.f5_utils import F5ModuleError, HAS_F5SDK, f5_argument_spec
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import f5_argument_spec
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
