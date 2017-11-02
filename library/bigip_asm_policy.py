@@ -102,6 +102,7 @@ requirements:
   - f5-sdk >= 3.0.4
 author:
   - Wojciech Wypior (@wojtek0806)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
@@ -551,7 +552,7 @@ class BaseManager(object):
 
     def exists(self):
         policies = self.client.api.tm.asm.policies_s.get_collection()
-        if any(p.name == self.want.name for p in policies):
+        if any(p.name == self.want.name and p.partition == self.want.partition for p in policies):
             return True
         return False
 
@@ -615,7 +616,9 @@ class BaseManager(object):
     def update_on_device(self):
         params = self.changes.api_params()
         policies = self.client.api.tm.asm.policies_s.get_collection()
-        resource = next((p for p in policies if p.name == self.want.name), None)
+        name = self.want.name
+        partition = self.want.partition
+        resource = next((p for p in policies if p.name == name and p.partition == partition), None)
         if resource:
             if not params['active']:
                 resource.modify(**params)
@@ -691,7 +694,9 @@ class BaseManager(object):
 
     def remove_from_device(self):
         policies = self.client.api.tm.asm.policies_s.get_collection()
-        resource = next((p for p in policies if p.name == self.want.name), None)
+        name = self.want.name
+        partition = self.want.partition
+        resource = next((p for p in policies if p.name == name and p.partition == partition), None)
         if resource:
             resource.delete()
 
