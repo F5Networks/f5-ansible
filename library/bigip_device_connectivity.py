@@ -40,7 +40,9 @@ options:
         and C(port) are supported with dictionary structure where C(address) is the
         local IP address that the system uses for failover operations. Port
         specifies the port that the system uses for failover operations. If C(port)
-        is not specified, the default value C(1026) will be used.
+        is not specified, the default value C(1026) will be used.  If you are
+        specifying the (recommended) management IP address, use 'management-ip' in 
+        the address field
   failover_multicast:
     description:
       - When C(yes), ensures that the Failover Multicast configuration is enabled
@@ -86,6 +88,7 @@ EXAMPLES = r'''
     config_sync_ip: 10.1.30.1
     mirror_primary_address: 10.1.30.1
     unicast_failover:
+      - address: management-ip
       - address: 10.1.30.1
     server: lb.mydomain.com
     user: admin
@@ -239,11 +242,7 @@ class Parameters(AnsibleF5Parameters):
     def unicastAddress(self, value):
         result = []
         for item in value:
-            if item['ip'] == 'management-ip':
-                del item['ip']
-                item['address'] = self._values['management_ip']
-            else:
-                item['address'] = item.pop('ip')
+            item['address'] = item.pop('ip')
             result.append(item)
         if result:
             self._values['unicast_failover'] = result
@@ -286,8 +285,11 @@ class Parameters(AnsibleF5Parameters):
 
     def _validate_unicast_failover_address(self, address):
         try:
-            result = IPAddress(address)
-            return str(result)
+            if address != 'management-ip':
+                result = IPAddress(address)
+                return str(result)
+            else:
+                return address
         except KeyError:
             raise F5ModuleError(
                 "An 'address' must be supplied when configuring unicast failover"
@@ -492,3 +494,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
