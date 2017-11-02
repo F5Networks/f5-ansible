@@ -1,25 +1,23 @@
-Versions
-========
+BIG-IP Versions
+---------------
 
-There are a number of versions of software the F5 officially supports
-that `can be found here`_. This should not be considered the list that
-the Ansible modules support though.
+There are a number of versions of software that F5 officially supports. For the full list, see |bigip_support|.
 
-We're doing our best to move more towards using the REST API, so with that
-in mind, we're also moving many of the Ansible modules along in terms of
-supported BIG-IP versions.
+This should not be considered the list that the Ansible modules support though.
 
-Generally speaking, the versions of BIG-IP that are tested and supported
-by the Ansible modules include:
+We're doing our best to move more towards using the REST API, so with that in mind, we're also moving many of the Ansible modules along in terms of supported BIG-IP versions.
 
-  * 11.6.0
-  * 12.0.0
-  * 12.1.0
+Generally speaking, the versions of BIG-IP that are tested and supported by the Ansible modules include:
 
-So that the oldest that we're willing to aim for is when the REST interface
-went GA.
+* 11.6.0
+* 12.0.0
+* 12.1.0
 
-If you're seriously interested in the Ansible modules, then consider it a
-reason to upgrade if you have not yet done so.
+So that the oldest that we're willing to aim for is when the REST interface went GA.
 
-.. _can be found here: https://support.f5.com/kb/en-us/solutions/public/5000/900/sol5903.html
+If you're seriously interested in the Ansible modules, then consider it a reason to upgrade if you have not yet done so.
+
+
+.. |bigip_support| raw:: html
+
+   <a href="https://support.f5.com/csp/article/K5903" target="_blank">this webpage</a>
