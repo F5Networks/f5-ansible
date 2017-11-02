@@ -93,6 +93,10 @@ options:
       - SharePoint 2010 (https)
       - Vulnerability Assessment Baseline
       - Wordpress
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk >= 3.0.4
