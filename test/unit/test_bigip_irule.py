@@ -201,7 +201,7 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='foo',
             module='gtm',
-            src='/path/to/irules/foo.tcl',
+            src='{0}/create_ltm_irule.tcl'.format(fixture_path),
             partition='Common',
             server='localhost',
             password='password',
@@ -235,7 +235,7 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['content'] == 'this is my content'
         assert results['module'] == 'gtm'
-        assert results['src'] == '/path/to/irules/foo.tcl'
+        assert results['src'] == '{0}/create_ltm_irule.tcl'.format(fixture_path)
         assert len(results.keys()) == 4
 
     def test_module_mutual_exclusion(self, *args):
