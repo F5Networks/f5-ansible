@@ -99,6 +99,29 @@ class TestManager(unittest.TestCase):
 
         results = mm.exec_module()
 
+        assert results['changed'] is False
+        self.assertEqual(self.run_commands.call_count, 0)
+        self.assertEqual(self.execute_on_device.call_count, 1)
+
+    def test_run_single_modification_command(self, *args):
+        set_module_args(dict(
+            commands=[
+                "tmsh create ltm virtual foo"
+            ],
+            server='localhost',
+            user='admin',
+            password='password'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        results = mm.exec_module()
+
         assert results['changed'] is True
         self.assertEqual(self.run_commands.call_count, 0)
         self.assertEqual(self.execute_on_device.call_count, 1)

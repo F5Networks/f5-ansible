@@ -1,22 +1,16 @@
 ---
 
-- name:
-  bigip_asm_policy:
-      n: "{{ valid_hostname }}"
-  register: result
+- import_tasks: setup.yaml
 
-- name: Assert Change the hostname
-  assert:
-      that:
-          - result|changed
-          - result['hostname'] == valid_hostname
+# This is being left here for later BIG-IP versions to ensure that they
+# can still import older policies.
+- import_tasks: v1-policy.yaml
 
-- name: Change the hostname - Idempotent check
-  bigip_hostname:
-      hostname: "{{ valid_hostname }}"
-  register: result
+- import_tasks: v2-policy.yaml
+  when: system_info.product_information.product_version >= "13.0.0"
 
-- name: Assert Change the hostname - Idempotent check
-  assert:
-      that:
-          - not result|changed
+- import_tasks: common.yaml
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-00406.yaml
+  tags: issue-00406

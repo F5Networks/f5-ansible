@@ -8,3 +8,4 @@ nose
 mock
 pycodestyle
 netaddr
+click

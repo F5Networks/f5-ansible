@@ -77,7 +77,13 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -140,6 +146,10 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class Changes(Parameters):
+    pass
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -180,7 +190,11 @@ class ModuleManager(object):
 
     def exists(self):
         self.have = self.read_current_from_device()
-        if self.have.device_group.devices.exists(name=self.want.name):
+        exists = self.have.device_group.devices_s.devices.exists(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        if exists:
             return True
         return False
 
@@ -200,8 +214,9 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        self.have.device_group.devices.device.create(
-            name=self.want.name
+        self.have.device_group.devices_s.devices.create(
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def absent(self):
@@ -210,8 +225,9 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.have.device_group.devices.device.load(
-            name=self.want.name
+        resource = self.have.device_group.devices_s.devices.load(
+            name=self.want.name,
+            partition=self.want.partition
         )
         if resource:
             resource.delete()
@@ -219,7 +235,8 @@ class ModuleManager(object):
     def read_current_from_device(self):
         try:
             resource = self.client.api.tm.cm.device_groups.device_group.load(
-                name=self.want.device_group
+                name=self.want.device_group,
+                partition=self.want.partition
             )
             return Parameters({"device_group": resource})
         except iControlUnexpectedHTTPError:

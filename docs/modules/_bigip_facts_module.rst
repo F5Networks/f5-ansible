@@ -110,6 +110,7 @@ Notes
     - Best run as a local_action in your playbook
     - Tested with manager and above account privilege level
     - ``provision`` facts were added in 2.2
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.

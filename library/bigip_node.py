@@ -32,7 +32,7 @@ options:
         exist.
       - Be particularly careful about changing the status of a node whose FQDN
         cannot be resolved. These situations disable your ability to change their
-        C(state) to C(disabled) or C(offline). They will remain in an 
+        C(state) to C(disabled) or C(offline). They will remain in an
         *Unavailable - Enabled* state.
     default: present
     choices:
@@ -214,7 +214,6 @@ state:
   sample: m_of_n
 '''
 
-import os
 import re
 import time
 
@@ -468,7 +467,7 @@ class Difference(object):
     def state(self):
         result = None
         if self.want.state in ['present', 'enabled']:
-            if self.have.session != 'user-enabled':
+            if self.have.session not in ['user-enabled', 'monitor-enabled']:
                 result = dict(
                     session='user-enabled',
                     state='user-up',
@@ -516,6 +515,7 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
+        import q; q.q(changed)
         if changed:
             self.changes = Changes(changed)
             return True

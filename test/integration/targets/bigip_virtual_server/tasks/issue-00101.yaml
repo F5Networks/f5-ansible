@@ -1,0 +1,104 @@
+---
+
+- name: Issue 101 - Create a policy
+  bigip_policy:
+    name: portal_policy
+    rules:
+      - rule1
+
+- name: Issue 101 - Create pool
+  bigip_pool:
+    lb_method: round_robin
+    name: pool-servers
+    state: present
+
+- name: Issue 101 - Create MKTX_Session_Logging iRule
+  bigip_irule:
+    content: when HTTP_REQUEST {}
+    module: ltm
+    name: session_logging
+
+- name: Issue 101 - Create F5Weblogging_math iRule
+  bigip_irule:
+    content: when HTTP_REQUEST {}
+    module: ltm
+    name: web_logging
+
+- name: Issue 101 - Create SNAT pool from list of members
+  bigip_snat_pool:
+    name: Floating_SNAT
+    members:
+      - 10.10.10.10
+      - 20.20.20.20
+
+- name: Issue 101 - Create virtual server
+  bigip_virtual_server:
+    name: portal.org.com
+    all_rules:
+      - session_logging
+      - web_logging
+    default_persistence_profile: cookie
+    all_profiles:
+      - clientssl
+      - http
+      - httpcompression
+      - oneconnect
+      - tcp
+    destination: 13.13.13.13
+    all_policies: portal_policy
+    snat: Floating_SNAT
+    port: 443
+    pool: pool-servers
+  register: result
+
+- name: Issue 101 - Create virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 101 - Create virtual server - Idempotent check
+  bigip_virtual_server:
+    name: portal.org.com
+    all_rules:
+      - session_logging
+      - web_logging
+    default_persistence_profile: cookie
+    all_profiles:
+      - clientssl
+      - http
+      - httpcompression
+      - oneconnect
+      - tcp
+    destination: 13.13.13.13
+    all_policies: portal_policy
+    snat: Floating_SNAT
+    port: 443
+    pool: pool-servers
+  register: result
+
+- name: Issue 101 - Create virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 101 - Remove virtual server
+  bigip_virtual_server:
+    name: portal.org.com
+    state: absent
+  register: result
+
+- name: Issue 101 - Create SNAT pool from list of members
+  bigip_snat_pool:
+    name: Floating_SNAT
+    state: absent
+
+- name: Issue 101 - Remove pool
+  bigip_pool:
+    lb_method: round_robin
+    name: pool-servers
+    state: absent
+
+- name: Issue 101 - Remove policy
+  bigip_policy:
+    name: portal_policy
+    state: absent

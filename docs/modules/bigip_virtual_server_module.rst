@@ -118,10 +118,10 @@ Options
     <th class="head">comments</th>
     </tr>
                     <tr><td>name<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
+        <td>no</td>
         <td></td>
                 <td></td>
-                <td><div>Name of the profile.</div>        </td></tr>
+                <td><div>Name of the profile.</div><div>If this is not specified, then it is assumed that the profile item is only a name of a profile.</div><div>This must be specified if a context is specified.</div>        </td></tr>
                     <tr><td>context<br/><div style="font-size: small;"></div></td>
         <td>no</td>
         <td>all</td>
@@ -261,6 +261,7 @@ Notes
     - Requires BIG-IP software version >= 11
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

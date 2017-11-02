@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 module: bigip_ssl_certificate
 short_description: Import/Delete certificates from BIG-IP
 description:
@@ -73,97 +73,97 @@ notes:
     a role context.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 3.0.3
-    - BIG-IP >= v12
+  - f5-sdk >= 3.0.3
+  - BIG-IP >= v12
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Import PEM Certificate from local disk
   bigip_ssl_certificate:
-      name: "certificate-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      cert_src: "/path/to/cert.crt"
-      key_src: "/path/to/key.key"
+    name: certificate-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    cert_src: /path/to/cert.crt
+    key_src: /path/to/key.key
   delegate_to: localhost
 
 - name: Use a file lookup to import PEM Certificate
   bigip_ssl_certificate:
-      name: "certificate-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
-      key_content: "{{ lookup('file', '/path/to/key.key') }}"
+    name: certificate-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
+    key_content: "{{ lookup('file', '/path/to/key.key') }}"
   delegate_to: localhost
 
 - name: Use a file lookup to import CA certificate chain
   bigip_ssl_certificate:
-      name: "ca-chain-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
+    name: ca-chain-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
   delegate_to: localhost
 
 - name: "Delete Certificate"
   bigip_ssl_certificate:
-      name: "certificate-name"
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "absent"
+    name: certificate-name
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 cert_name:
-    description: The name of the certificate that the user provided
-    returned: created
-    type: string
-    sample: "cert1"
+  description: The name of the certificate that the user provided
+  returned: created
+  type: string
+  sample: cert1
 key_filename:
-    description:
-        - The name of the SSL certificate key. The C(key_filename) and
-          C(cert_filename) will be similar to each other, however the
-          C(key_filename) will have a C(.key) extension.
-    returned: created
-    type: string
-    sample: "cert1.key"
+  description:
+    - The name of the SSL certificate key. The C(key_filename) and
+      C(cert_filename) will be similar to each other, however the
+      C(key_filename) will have a C(.key) extension.
+  returned: created
+  type: string
+  sample: cert1.key
 key_checksum:
-    description: SHA1 checksum of the key that was provided.
-    returned: changed and created
-    type: string
-    sample: "cf23df2207d99a74fbe169e3eba035e633b65d94"
+  description: SHA1 checksum of the key that was provided.
+  returned: changed and created
+  type: string
+  sample: cf23df2207d99a74fbe169e3eba035e633b65d94
 key_source_path:
-    description: Path on BIG-IP where the source of the key is stored
-    returned: created
-    type: string
-    sample: "/var/config/rest/downloads/cert1.key"
+  description: Path on BIG-IP where the source of the key is stored
+  returned: created
+  type: string
+  sample: /var/config/rest/downloads/cert1.key
 cert_filename:
-    description:
-        - The name of the SSL certificate. The C(cert_filename) and
-          C(key_filename) will be similar to each other, however the
-          C(cert_filename) will have a C(.crt) extension.
-    returned: created
-    type: string
-    sample: "cert1.crt"
+  description:
+    - The name of the SSL certificate. The C(cert_filename) and
+      C(key_filename) will be similar to each other, however the
+      C(cert_filename) will have a C(.crt) extension.
+  returned: created
+  type: string
+  sample: cert1.crt
 cert_checksum:
-    description: SHA1 checksum of the cert that was provided.
-    returned: changed and created
-    type: string
-    sample: "f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
+  description: SHA1 checksum of the cert that was provided.
+  returned: changed and created
+  type: string
+  sample: f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0
 cert_source_path:
-    description: Path on BIG-IP where the source of the certificate is stored.
-    returned: created
-    type: string
-    sample: "/var/config/rest/downloads/cert1.crt"
+  description: Path on BIG-IP where the source of the certificate is stored.
+  returned: created
+  type: string
+  sample: /var/config/rest/downloads/cert1.crt
 '''
 
 
@@ -180,8 +180,12 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 from ansible.module_utils.f5_utils import iteritems
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

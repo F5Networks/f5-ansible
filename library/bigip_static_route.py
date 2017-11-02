@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 module: bigip_static_route
 short_description: Manipulate static routes on a BIG-IP
 description:
@@ -84,54 +84,55 @@ notes:
 extends_documentation_fragment: f5
 requirements:
     - f5-sdk >= 2.2.3
+    - netaddr
 author:
     - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Create static route with gateway address
   bigip_static_route:
-      destination: "10.10.10.10"
-      gateway_address: "10.2.2.3"
-      name: "test-route
-      password: "secret"
-      server: "lb.mydomain.come"
-      user: "admin"
-      validate_certs: "no"
+    destination: 10.10.10.10
+    gateway_address: 10.2.2.3
+    name: test-route
+    password: secret
+    server: lb.mydomain.come
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 vlan:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 gateway_address:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 destination:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 pool:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 description:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 reject:
-    description: Whether the banner is enabled or not.
-    returned: changed
-    type: string
-    sample: "true"
+  description: Whether the banner is enabled or not.
+  returned: changed
+  type: string
+  sample: true
 '''
 
 
@@ -142,13 +143,15 @@ except ImportError:
     HAS_NETADDR = False
 
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

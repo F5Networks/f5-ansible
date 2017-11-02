@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
+sudo ifconfig lo0 -alias 1.2.3.4
+sudo ifconfig lo0 alias 1.2.3.4
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py3.5

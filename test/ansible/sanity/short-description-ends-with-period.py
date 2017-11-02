@@ -16,7 +16,7 @@ tld = dirname(dirname(dirname(dirname(os.path.realpath(__file__)))))
 sys.path.append(tld)
 
 for file in os.listdir(tld + '/library'):
-    if file in ['__init__.py',]:
+    if file in ['__init__.py']:
         continue
     elif not file.endswith('.py'):
         continue

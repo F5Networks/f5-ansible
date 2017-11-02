@@ -42,11 +42,12 @@ Options
     <td>nominal</td>
         <td><ul><li>dedicated</li><li>nominal</li><li>minimum</li></ul></td>
         <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not run.</div>        </td></tr>
-                <tr><td>module<br/><div style="font-size: small;"></div></td>
+                <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td><ul><li>am</li><li>afm</li><li>apm</li><li>asm</li><li>avr</li><li>fps</li><li>gtm</li><li>ilx</li><li>lc</li><li>ltm</li><li>pem</li><li>sam</li><li>swg</li><li>vcmp</li></ul></td>
-        <td><div>The module to provision in BIG-IP.</div>        </td></tr>
+        <td><div>The module to provision in BIG-IP.</div></br>
+    <div style="font-size: small;">aliases: module<div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -140,6 +141,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

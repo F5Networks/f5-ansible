@@ -88,6 +88,11 @@ def parse_args():
 
 def get_fixtures(module):
     result = []
+
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
     pattern1 = r"load_fixture\(\'(?P<fixture>[^']+)"
     pattern2 = r"fixtures\/(?P<fixture>[^']+)"
     p1 = subprocess.Popen(
@@ -124,6 +129,10 @@ def copy_module(module, upstream_dir):
 
 
 def copy_unit_tests(module, upstream_dir):
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
     upstream = os.path.realpath(upstream_dir)
     r = root_dir()
     dest = UPSTREAM_UNIT_TEST.format(upstream, module)
@@ -132,6 +141,10 @@ def copy_unit_tests(module, upstream_dir):
 
 
 def copy_unit_test_fixtures(module, upstream_dir):
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
     fixtures = get_fixtures(module)
     upstream = os.path.realpath(upstream_dir)
     r = root_dir()

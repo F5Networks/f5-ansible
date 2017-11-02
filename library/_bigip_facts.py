@@ -474,6 +474,9 @@ class VirtualServers(object):
     def get_list(self):
         return self.virtual_servers
 
+    def get_name(self):
+        return [x[x.rfind('/') + 1:] for x in self.virtual_servers]
+
     def get_actual_hardware_acceleration(self):
         return self.api.LocalLB.VirtualServer.get_actual_hardware_acceleration(self.virtual_servers)
 
@@ -623,6 +626,9 @@ class Pools(object):
 
     def get_list(self):
         return self.pool_names
+
+    def get_name(self):
+        return [x[x.rfind('/') + 1:] for x in self.pool_names]
 
     def get_action_on_service_down(self):
         return self.api.LocalLB.Pool.get_action_on_service_down(self.pool_names)
@@ -965,6 +971,9 @@ class Nodes(object):
 
     def get_address(self):
         return self.api.LocalLB.NodeAddressV2.get_address(nodes=self.nodes)
+
+    def get_name(self):
+        return [x[x.rfind('/') + 1:] for x in self.nodes]
 
     def get_connection_limit(self):
         return self.api.LocalLB.NodeAddressV2.get_connection_limit(nodes=self.nodes)
@@ -1464,7 +1473,8 @@ def generate_vs_dict(f5, regex):
               'source_address_translation_snat_pool',
               'source_address_translation_type', 'source_port_behavior',
               'staged_firewall_policy', 'translate_address_state',
-              'translate_port_state', 'type', 'vlan', 'wildmask']
+              'translate_port_state', 'type', 'vlan', 'wildmask',
+              'name']
     return generate_dict(virtual_servers, fields)
 
 
@@ -1481,7 +1491,7 @@ def generate_pool_dict(f5, regex):
               'profile', 'queue_depth_limit',
               'queue_on_connection_limit_state', 'queue_time_limit',
               'reselect_tries', 'server_ip_tos', 'server_link_qos',
-              'simple_timeout', 'slow_ramp_time']
+              'simple_timeout', 'slow_ramp_time', 'name']
     return generate_dict(pools, fields)
 
 
@@ -1525,7 +1535,7 @@ def generate_rule_dict(f5, regex):
 
 def generate_node_dict(f5, regex):
     nodes = Nodes(f5.get_api(), regex)
-    fields = ['address', 'connection_limit', 'description', 'dynamic_ratio',
+    fields = ['name', 'address', 'connection_limit', 'description', 'dynamic_ratio',
               'monitor_instance', 'monitor_rule', 'monitor_status',
               'object_status', 'rate_limit', 'ratio', 'session_status']
     return generate_dict(nodes, fields)
@@ -1633,7 +1643,9 @@ def main():
     if validate_certs:
         import ssl
         if not hasattr(ssl, 'SSLContext'):
-            module.fail_json(msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task')
+            module.fail_json(
+                msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task'
+            )
 
     if fact_filter:
         regex = fnmatch.translate(fact_filter)
@@ -1707,7 +1719,10 @@ def main():
                saved_recursive_query_state != "STATE_ENABLED":
                 f5.set_recursive_query_state(saved_recursive_query_state)
 
-        result = {'ansible_facts': facts}
+        result = dict(
+            ansible_facts=facts,
+        )
+        result.update(**facts)
 
     except Exception as e:
         module.fail_json(msg="received exception: %s\ntraceback: %s" % (e, traceback.format_exc()))

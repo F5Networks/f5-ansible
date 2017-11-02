@@ -25,6 +25,7 @@ inventory/group_vars/secret.yaml
 test/integration/inventory/hosts
 test/integration/inventory/group_vars/all.yaml
 ./ansible/
+tmp/ansible.junit/*.xml
 
 examples/hosts.ini
 **/.DS_Store
@@ -74,3 +75,4 @@ test/runner/roles/harness/vars/*.yaml
 /test/pipeline/ci.f5.f5-ansible-public-to-private-ssh-agent-credentials.include.yaml
 /test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
 /devtools/secrets/jenkins_jobs.ini.secret
+/test/heat/ansible-dci-agent-params.yaml

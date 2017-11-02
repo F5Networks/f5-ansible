@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 2.2.3
+  * netaddr
 
 
 Options
@@ -120,13 +121,13 @@ Examples
     
     - name: Create static route with gateway address
       bigip_static_route:
-          destination: "10.10.10.10"
-          gateway_address: "10.2.2.3"
-          name: "test-route
-          password: "secret"
-          server: "lb.mydomain.come"
-          user: "admin"
-          validate_certs: "no"
+        destination: 10.10.10.10
+        gateway_address: 10.2.2.3
+        name: test-route
+        password: secret
+        server: lb.mydomain.come
+        user: admin
+        validate_certs: no
       delegate_to: localhost
 
 Return Values
@@ -150,42 +151,42 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> gateway_address </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> description </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> reject </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> vlan </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> pool </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> true </td>
+        <td align=center> True </td>
     </tr>
         
     </table>
@@ -197,6 +198,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

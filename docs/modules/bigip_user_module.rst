@@ -111,56 +111,56 @@ Examples
     
     - name: Add the user 'johnd' as an admin
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          username_credential: "johnd"
-          password_credential: "password"
-          full_name: "John Doe"
-          partition_access: "all:admin"
-          update_password: "on_create"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        username_credential: johnd
+        password_credential: password
+        full_name: John Doe
+        partition_access: all:admin
+        update_password: on_create
+        state: present
       delegate_to: localhost
     
     - name: Change the user "johnd's" role and shell
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          username_credential: "johnd"
-          partition_access: "NewPartition:manager"
-          shell: "tmsh"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        username_credential: johnd
+        partition_access: NewPartition:manager
+        shell: tmsh
+        state: present
       delegate_to: localhost
     
     - name: Make the user 'johnd' an admin and set to advanced shell
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "johnd"
-          partition_access: "all:admin"
-          shell: "bash"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: johnd
+        partition_access: all:admin
+        shell: bash
+        state: present
       delegate_to: localhost
     
     - name: Remove the user 'johnd'
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          name: "johnd"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        name: johnd
+        state: absent
       delegate_to: localhost
     
     - name: Update password
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          username_credential: "johnd"
-          password_credential: "newsupersecretpassword"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        username_credential: johnd
+        password_credential: newsupersecretpassword
       delegate_to: localhost
     
     # Note that the second time this task runs, it would fail because
@@ -172,22 +172,22 @@ Examples
     #   * Include `ignore_errors` on this task
     - name: Change the Admin password
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          username_credential: "admin"
-          password_credential: "NewSecretPassword"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: present
+        username_credential: admin
+        password_credential: NewSecretPassword
       delegate_to: localhost
     
     - name: Change the root user's password
       bigip_user:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          username_credential: "root"
-          password_credential: "secret"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        username_credential: root
+        password_credential: secret
+        state: present
       delegate_to: localhost
 
 Return Values
@@ -237,6 +237,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

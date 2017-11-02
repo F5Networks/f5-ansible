@@ -1,0 +1,45 @@
+---
+
+- name: Import ASM policy from template
+  bigip_asm_policy:
+    name: foo-policy4
+    template: SharePoint 2007 (http)
+  register: result
+
+- name: Assert Import ASM policy from template
+  assert:
+    that:
+      - result|changed
+
+- name: Import ASM policy from template - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy4
+    template: SharePoint 2007 (http)
+  register: result
+
+- name: Assert Import ASM policy from template - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove ASM policy
+  bigip_asm_policy:
+    name: foo-policy4
+    state: absent
+  register: result
+
+- name: Assert Remove ASM policy
+  assert:
+    that:
+      - result|changed
+
+- name: Remove ASM policy - Idempotent check
+  bigip_asm_policy:
+    name: foo-policy4
+    state: absent
+  register: result
+
+- name: Assert Remove ASM policy - Idempotent check
+  assert:
+    that:
+      - not result|changed

@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_ucs_fetch
 short_description: Fetches a UCS file from remote nodes
@@ -77,75 +75,75 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Download a new UCS
   bigip_ucs_fetch:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      src: "cs_backup.ucs"
-      dest: "/tmp/cs_backup.ucs"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    src: cs_backup.ucs
+    dest: /tmp/cs_backup.ucs
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 checksum:
-    description: The SHA1 checksum of the downloaded file
-    returned: success or changed
-    type: string
-    sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
+  description: The SHA1 checksum of the downloaded file
+  returned: success or changed
+  type: string
+  sample: 7b46bbe4f8ebfee64761b5313855618f64c64109
 dest:
-    description: Location on the ansible host that the UCS was saved to
-    returned: success
-    type: string
-    sample: "/path/to/file.txt"
+  description: Location on the ansible host that the UCS was saved to
+  returned: success
+  type: string
+  sample: /path/to/file.txt
 src:
-    description:
-        - Name of the UCS file on the remote BIG-IP to download. If not
-          specified, then this will be a randomly generated filename
-    returned: changed
-    type: string
-    sample: "cs_backup.ucs"
+  description:
+    - Name of the UCS file on the remote BIG-IP to download. If not
+      specified, then this will be a randomly generated filename
+  returned: changed
+  type: string
+  sample: cs_backup.ucs
 backup_file:
-    description: Name of backup file created
-    returned: changed and if backup=yes
-    type: string
-    sample: "/path/to/file.txt.2015-02-12@22:09~"
+  description: Name of backup file created
+  returned: changed and if backup=yes
+  type: string
+  sample: /path/to/file.txt.2015-02-12@22:09~
 gid:
-    description: Group id of the UCS file, after execution
-    returned: success
-    type: int
-    sample: 100
+  description: Group id of the UCS file, after execution
+  returned: success
+  type: int
+  sample: 100
 group:
-    description: Group of the UCS file, after execution
-    returned: success
-    type: string
-    sample: "httpd"
+  description: Group of the UCS file, after execution
+  returned: success
+  type: string
+  sample: httpd
 owner:
-    description: Owner of the UCS file, after execution
-    returned: success
-    type: string
-    sample: "httpd"
+  description: Owner of the UCS file, after execution
+  returned: success
+  type: string
+  sample: httpd
 uid:
-    description: Owner id of the UCS file, after execution
-    returned: success
-    type: int
-    sample: 100
+  description: Owner id of the UCS file, after execution
+  returned: success
+  type: int
+  sample: 100
 md5sum:
-    description: The MD5 checksum of the downloaded file
-    returned: changed or success
-    type: string
-    sample: 96cacab4c259c4598727d7cf2ceb3b45
+  description: The MD5 checksum of the downloaded file
+  returned: changed or success
+  type: string
+  sample: 96cacab4c259c4598727d7cf2ceb3b45
 mode:
-    description: Permissions of the target UCS, after execution
-    returned: success
-    type: string
-    sample: "0644"
+  description: Permissions of the target UCS, after execution
+  returned: success
+  type: string
+  sample: 0644
 size:
-    description: Size of the target UCS, after execution
-    returned: success
-    type: int
-    sample: 1220
+  description: Size of the target UCS, after execution
+  returned: success
+  type: int
+  sample: 1220
 '''
 
 import os
@@ -156,10 +154,14 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import iteritems
-from ansible.module_utils.f5_utils import defaultdict
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from distutils.version import LooseVersion
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

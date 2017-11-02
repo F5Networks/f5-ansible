@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_sys_global
 short_description: Manage BIG-IP global settings
@@ -88,68 +88,64 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Disable the setup utility
   bigip_sys_global:
-      gui_setup: "disabled"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      state: "present"
+    gui_setup: disabled
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    state: present
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 banner_text:
-    description: The new text to present in the advisory banner.
-    returned: changed
-    type: string
-    sample: "This is a corporate device. Do not touch."
+  description: The new text to present in the advisory banner.
+  returned: changed
+  type: string
+  sample: This is a corporate device. Do not touch.
 console_timeout:
-    description: >
-      The new number of seconds of inactivity before the system
-      logs off a user that is logged on.
-    returned: changed
-    type: integer
-    sample: 600
+  description: >
+    The new number of seconds of inactivity before the system
+    logs off a user that is logged on.
+  returned: changed
+  type: integer
+  sample: 600
 gui_setup:
-    description: The new setting for the Setup utility.
-    returned: changed
-    type: string
-    sample: enabled
+  description: The new setting for the Setup utility.
+  returned: changed
+  type: string
+  sample: enabled
 lcd_display:
-    description: The new setting for displaying the system menu on the LCD.
-    returned: changed
-    type: string
-    sample: enabled
+  description: The new setting for displaying the system menu on the LCD.
+  returned: changed
+  type: string
+  sample: enabled
 mgmt_dhcp:
-    description: >
-      The new setting for whether the mgmt interface should DHCP
-      or not
-    returned: changed
-    type: string
-    sample: enabled
+  description: The new setting for whether the mgmt interface should DHCP or not.
+  returned: changed
+  type: string
+  sample: enabled
 net_reboot:
-    description: >
-      The new setting for whether the system should boot to an ISO on the
-      network or not
-    returned: changed
-    type: string
-    sample: enabled
+  description: The new setting for whether the system should boot to an ISO on the network or not.
+  returned: changed
+  type: string
+  sample: enabled
 quiet_boot:
-    description: >
-      The new setting for whether the system should suppress information to
-      the console during boot or not.
-    returned: changed
-    type: string
-    sample: enabled
+  description: >
+    The new setting for whether the system should suppress information to
+    the console during boot or not.
+  returned: changed
+  type: string
+  sample: enabled
 security_banner:
-    description: >
-      The new setting for whether the system should display an advisory message
-      on the login screen or not
-    returned: changed
-    type: string
-    sample: enabled
+  description: >
+    The new setting for whether the system should display an advisory message
+    on the login screen or not.
+  returned: changed
+  type: string
+  sample: enabled
 '''
 
 try:
@@ -160,7 +156,9 @@ except ImportError:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.ec2 import camel_dict_to_snake_dict
-from ansible.module_utils.f5_utils import F5ModuleError, HAS_F5SDK, f5_argument_spec
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import f5_argument_spec
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError

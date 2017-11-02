@@ -1,0 +1,129 @@
+---
+
+- name: Issue 00408 - Create pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+    state: present
+
+- name: Issue 00408 - Create iRules
+  bigip_irule:
+    content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+
+- name: Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - External
+    - Internal
+
+- name: Issue 00408 - Add VS on BIG-IP
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    #enabled_vlans: "External"
+    disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+  register: result
+
+- name: Issue 00408 - Assert Add VS on BIG-IP
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00408 - Add VS on BIG-IP - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    #enabled_vlans: "External"
+    disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+  register: result
+
+- name: Issue 00408 - Assert Add VS on BIG-IP - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00408 - Switch VLANs on VS
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    enabled_vlans: "External"
+    #disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+  register: result
+
+- name: Issue 00408 - Assert Switch VLANs on VS
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00408 - Switch VLANs on VS - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules: ["irule1","irule2"]
+    enabled_vlans: "External"
+    #disabled_vlans: Internal
+    pool: web-pool
+    snat: automap
+    profiles: http
+  register: result
+
+- name: Issue 00408 - Assert Switch VLANs on VS - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00408 - Remove VS
+  bigip_virtual_server:
+    name: httpvs2
+    state: absent
+
+- name: Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - External
+    - Internal
+
+- name: Issue 00408 - Remove iRules
+  bigip_irule:
+    name: "{{ item }}"
+    module: ltm
+    state: absent
+  loop:
+    - irule1
+    - irule2
+
+- name: Issue 00408 - Remove pool
+  bigip_pool:
+    lb_method: round_robin
+    name: web-pool
+    state: absent

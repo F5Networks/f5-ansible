@@ -8,7 +8,6 @@ __metaclass__ = type
 
 import os
 import json
-import pytest
 import sys
 
 from nose.plugins.skip import SkipTest
@@ -20,7 +19,6 @@ from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigip_node import Parameters
@@ -66,31 +64,84 @@ def load_fixture(name):
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
-            monitor_type='m_of_n',
-            host='192.168.1.1'
+            host='10.20.30.40',
+            name='10.20.30.40'
         )
 
         p = Parameters(args)
-        assert p.monitor == 'min 1 of'
-        assert p.host == '192.168.1.1'
+        assert p.host == '10.20.30.40'
+        assert p.name == '10.20.30.40'
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_ltm_node_1.json')
+
+        p = Parameters(args)
+        assert p.address == '1.2.3.4'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise Exception('You must write a creation test')
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_node(self, *args):
+        set_module_args(dict(
+            host='10.20.30.40',
+            name='mytestserver',
+            monitors=[
+                '/Common/icmp'
+            ],
+            partition='Common',
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_selfip_idempotent(self, *args):
+        set_module_args(dict(
+            host='10.20.30.40',
+            name='mytestserver',
+            monitors=[
+                '/Common/icmp'
+            ],
+            partition='Common',
+            state='present',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        current = Parameters(load_fixture('load_ltm_node_3.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[True, True])
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is False

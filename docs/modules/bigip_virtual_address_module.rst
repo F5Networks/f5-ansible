@@ -18,6 +18,11 @@ Synopsis
 * Manage LTM virtual addresses on a BIG-IP.
 
 
+Requirements (on host that executes module)
+-------------------------------------------
+
+  * f5-sdk
+  * netaddr
 
 
 Options
@@ -122,22 +127,22 @@ Examples
     
     - name: Add virtual address
       bigip_virtual_address:
-          server: "lb.mydomain.net"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          partition: "Common"
-          address: "10.10.10.10"
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        state: present
+        partition: Common
+        address: 10.10.10.10
       delegate_to: localhost
     
     - name: Enable route advertisement on the virtual address
       bigip_virtual_address:
-          server: "lb.mydomain.net"
-          user: "admin"
-          password: "secret"
-          state: "present"
-          address: "10.10.10.10"
-          use_route_advertisement: yes
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        state: present
+        address: 10.10.10.10
+        use_route_advertisement: yes
       delegate_to: localhost
 
 Return Values
@@ -222,6 +227,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

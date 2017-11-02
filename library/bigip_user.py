@@ -8,13 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_user
 short_description: Manage user accounts and user attributes on a BIG-IP
@@ -88,59 +86,59 @@ author:
   - Wojciech Wypior (@wojtek0806)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Add the user 'johnd' as an admin
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      username_credential: "johnd"
-      password_credential: "password"
-      full_name: "John Doe"
-      partition_access: "all:admin"
-      update_password: "on_create"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    username_credential: johnd
+    password_credential: password
+    full_name: John Doe
+    partition_access: all:admin
+    update_password: on_create
+    state: present
   delegate_to: localhost
 
 - name: Change the user "johnd's" role and shell
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      username_credential: "johnd"
-      partition_access: "NewPartition:manager"
-      shell: "tmsh"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    username_credential: johnd
+    partition_access: NewPartition:manager
+    shell: tmsh
+    state: present
   delegate_to: localhost
 
 - name: Make the user 'johnd' an admin and set to advanced shell
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "johnd"
-      partition_access: "all:admin"
-      shell: "bash"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: johnd
+    partition_access: all:admin
+    shell: bash
+    state: present
   delegate_to: localhost
 
 - name: Remove the user 'johnd'
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      name: "johnd"
-      state: "absent"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    name: johnd
+    state: absent
   delegate_to: localhost
 
 - name: Update password
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      username_credential: "johnd"
-      password_credential: "newsupersecretpassword"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    username_credential: johnd
+    password_credential: newsupersecretpassword
   delegate_to: localhost
 
 # Note that the second time this task runs, it would fail because
@@ -152,43 +150,43 @@ EXAMPLES = '''
 #   * Include `ignore_errors` on this task
 - name: Change the Admin password
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      state: "present"
-      username_credential: "admin"
-      password_credential: "NewSecretPassword"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: present
+    username_credential: admin
+    password_credential: NewSecretPassword
   delegate_to: localhost
 
 - name: Change the root user's password
   bigip_user:
-      server: "lb.mydomain.com"
-      user: "admin"
-      password: "secret"
-      username_credential: "root"
-      password_credential: "secret"
-      state: "present"
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    username_credential: root
+    password_credential: secret
+    state: present
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 full_name:
-    description: Full name of the user
-    returned: changed and success
-    type: string
-    sample: "John Doe"
+  description: Full name of the user
+  returned: changed and success
+  type: string
+  sample: John Doe
 partition_access:
-    description:
-      - List of strings containing the user's roles and which partitions they
-        are applied to. They are specified in the form "partition:role".
-    returned: changed and success
-    type: list
-    sample: "['all:admin']"
+  description:
+    - List of strings containing the user's roles and which partitions they
+      are applied to. They are specified in the form "partition:role".
+  returned: changed and success
+  type: list
+  sample: ['all:admin']
 shell:
-    description: The shell assigned to the user account
-    returned: changed and success
-    type: string
-    sample: "tmsh"
+  description: The shell assigned to the user account
+  returned: changed and success
+  type: string
+  sample: tmsh
 '''
 
 import os
@@ -200,13 +198,17 @@ from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import defaultdict
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-from ansible.module_utils.f5_utils import iteritems
+from ansible.module_utils.six import iteritems
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

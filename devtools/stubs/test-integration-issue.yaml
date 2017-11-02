@@ -1,0 +1,7 @@
+---
+
+- name: Issue {{ issue_number )) - Include issue variables
+  include_vars:
+    file: issue-{{ issue_number }}.yaml
+
+# Test issue goes here

@@ -8,7 +8,7 @@
 - name: Create a published policy
   bigip_policy:
     name: "{{ policy_name1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create a published policy
@@ -19,7 +19,7 @@
 - name: Create a published policy - Idempotent check
   bigip_policy:
     name: "{{ policy_name1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create a published policy - Idempotent check
@@ -30,7 +30,7 @@
 - name: Remove a published policy
   bigip_policy:
     name: "{{ policy_name1 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove a published policy
@@ -41,7 +41,7 @@
 - name: Remove a published policy - Idempotent check
   bigip_policy:
     name: "{{ policy_name1 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove a published policy - Idempotent check
@@ -53,9 +53,9 @@
   bigip_policy:
     name: "{{ policy_name2 }}"
     rules:
-      - "rule1"
-      - "rule2"
-      - "rule3"
+      - rule1
+      - rule2
+      - rule3
   register: result
 
 - name: Assert Create draft policy w/base rules
@@ -67,9 +67,9 @@
   bigip_policy:
     name: "{{ policy_name2 }}"
     rules:
-      - "rule1"
-      - "rule2"
-      - "rule3"
+      - rule1
+      - rule2
+      - rule3
   register: result
 
 - name: Assert Create draft policy w/base rules - Idempotent check
@@ -103,9 +103,9 @@
   bigip_policy:
     name: "{{ policy_name2 }}"
     rules:
-      - "rule2"
-      - "rule1"
-      - "rule3"
+      - rule2
+      - rule1
+      - rule3
   register: result
 
 - name: Assert Change rule order of policy
@@ -117,9 +117,9 @@
   bigip_policy:
     name: "{{ policy_name2 }}"
     rules:
-      - "rule2"
-      - "rule1"
-      - "rule3"
+      - rule2
+      - rule1
+      - rule3
   register: result
 
 - name: Assert Change rule order of policy - Idempotent check
@@ -130,13 +130,13 @@
 - name: Remove a policy
   bigip_policy:
     name: "{{ policy_name2 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Create a published policy, expected failure
   bigip_policy:
     name: "{{ policy_name1 }}"
-    state: "draft"
+    state: draft
   register: result
   ignore_errors: true
 

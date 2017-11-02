@@ -115,60 +115,60 @@ Examples
     
     - name: Upload UCS
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
-          state: "present"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: present
       delegate_to: localhost
     
     - name: Install (upload, install) UCS.
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
-          state: "installed"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: installed
       delegate_to: localhost
     
     - name: Install (upload, install) UCS without installing the license portion
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
-          state: "installed"
-          no_license: "yes"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: installed
+        no_license: yes
       delegate_to: localhost
     
     - name: Install (upload, install) UCS except the license, and bypassing the platform check
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
-          state: "installed"
-          no_license: "yes"
-          no_platform_check: "yes"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: installed
+        no_license: yes
+        no_platform_check: yes
       delegate_to: localhost
     
     - name: Install (upload, install) UCS using a passphrase necessary to load the UCS
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "/root/bigip.localhost.localdomain.ucs"
-          state: "installed"
-          passphrase: "MyPassphrase1234"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: /root/bigip.localhost.localdomain.ucs
+        state: installed
+        passphrase: MyPassphrase1234
       delegate_to: localhost
     
     - name: Remove uploaded UCS file
       bigip_ucs:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          ucs: "bigip.localhost.localdomain.ucs"
-          state: "absent"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        ucs: bigip.localhost.localdomain.ucs
+        state: absent
       delegate_to: localhost
 
 
@@ -186,6 +186,7 @@ Notes
     - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the ``bigip_hostname`` Ansible module in a task before using this module.
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

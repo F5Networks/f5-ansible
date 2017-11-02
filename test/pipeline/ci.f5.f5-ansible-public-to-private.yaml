@@ -13,11 +13,11 @@
     disabled: false
     display-name: ci.f5.f5-ansible-public-to-private
     concurrent: true
-    logrotate:
-      daysToKeep: -1
-      numToKeep: 1
-      artifactDaysToKeep: -1
-      artifactNumToKeep: 5
+    build-discarder:
+      days-to-keep: 5
+      num-to-keep: 1
+      artifact-days-to-keep: -1
+      artifact-num-to-keep: 5
     triggers:
       - pollscm:
           cron: "@midnight"

@@ -86,7 +86,6 @@ EXAMPLES = r'''
 '''
 
 import socket
-import time
 
 try:
     import bigsuds

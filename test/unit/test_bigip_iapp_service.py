@@ -74,7 +74,7 @@ class TestParameters(unittest.TestCase):
         assert p.deviceGroup == 'none'
         assert p.inheritedTrafficGroup == 'true'
         assert p.inheritedDevicegroup == 'true'
-        assert p.trafficGroup == '/Common/traffic-group-local-only'
+        assert p.traffic_group == '/Common/traffic-group-local-only'
 
     def test_module_parameters_lists(self):
         args = load_fixture('create_iapp_service_parameters_f5_http.json')
@@ -279,7 +279,7 @@ class TestParameters(unittest.TestCase):
             trafficGroup='/Common/traffic-group-local-only'
         )
         p = Parameters(args)
-        assert p.trafficGroup == '/Common/traffic-group-local-only'
+        assert p.traffic_group == '/Common/traffic-group-local-only'
 
     def test_module_template_same_partition(self):
         args = dict(

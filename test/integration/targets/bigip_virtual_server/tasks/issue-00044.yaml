@@ -1,0 +1,131 @@
+---
+
+- name: Issue 00044 - Create pool
+  bigip_pool:
+    name: mypool
+    state: present
+
+- name: Issue 00408 - Create iRules
+  bigip_irule:
+    content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - myirule
+    - myirule2
+    - zrule
+
+- name: Issue 00044 - Add virtual server
+  bigip_virtual_server:
+    state: present
+    name: issue-00044
+    destination: 1.1.1.1
+    port: 80
+    pool: mypool
+    snat: Automap
+    all_profiles:
+      - http
+      - tcp
+    all_rules:
+      - myirule
+      - myirule2
+  register: result
+
+- name: Issue 00044 - Assert Add virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00044 - Add virtual server - Idempotent check
+  bigip_virtual_server:
+    state: present
+    name: issue-00044
+    destination: 1.1.1.1
+    port: 80
+    pool: mypool
+    snat: Automap
+    all_profiles:
+      - http
+      - tcp
+    all_rules:
+      - myirule
+      - myirule2
+  register: result
+
+- name: Issue 00044 - Assert Add virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00044 - Change rules
+  bigip_virtual_server:
+    state: present
+    name: issue-00044
+    destination: 1.1.1.1
+    port: 80
+    pool: mypool
+    snat: Automap
+    all_profiles:
+      - http
+      - tcp
+    all_rules:
+      - zrule
+      - myirule
+      - myirule2
+  register: result
+
+- name: Issue 00044 - Assert Change rules
+  assert:
+    that:
+      - result|changed
+
+
+
+
+
+- name: Issue 00044 - Change rules - Idempotent check
+  bigip_virtual_server:
+    state: present
+    name: issue-00044
+    destination: 1.1.1.1
+    port: 80
+    pool: mypool
+    snat: Automap
+    all_profiles:
+      - http
+      - tcp
+    all_rules:
+      - zrule
+      - myirule
+      - myirule2
+  register: result
+
+- name: Issue 00044 - Assert Change rules - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+
+
+
+- name: Issue 00044 - Remove virtual server
+  bigip_virtual_server:
+    state: absent
+    name: issue-00044
+  register: result
+
+
+- name: Issue 00408 - Remove iRules
+  bigip_irule:
+    module: ltm
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - myirule
+    - myirule2
+    - zrule
+
+- name: Issue 00044 - Remove pool
+  bigip_pool:
+    name: mypool
+    state: absent

@@ -32,6 +32,8 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    usage/support.rst
    usage/playbook_tutorial.rst
    usage/connection-local-or-delegate-to.rst
+   usage/filing-issues.rst
+
 
 .. toctree::
    :maxdepth: 2

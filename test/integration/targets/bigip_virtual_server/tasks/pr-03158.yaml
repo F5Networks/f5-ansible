@@ -1,0 +1,91 @@
+---
+
+# @see https://github.com/ansible/ansible-modules-extras/pull/3158
+
+- name: Pull Request 3158 - Include issue variables
+  include_vars:
+    file: pr-03158.yaml
+
+- name: Pull Request 3158 - Create pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      state: present
+  register: result
+
+- name: Pull Request 3158 - Create SNAT pool from list of members
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      members: "{{ members_list }}"
+  register: result
+
+- name: Pull Request 3158 - Add virtual server with custom SNAT pool
+  bigip_virtual_server:
+      state: present
+      name: "{{ vs_name }}"
+      destination: "{{ node_host }}"
+      port: "{{ vs_port1 }}"
+      pool: "{{ pool_name }}"
+      snat: "{{ snat_pool_name }}"
+      description: "{{ vs_description }}"
+      all_profiles: "{{ vs_profiles1 }}"
+      enabled_vlans: "{{ enabled_vlans }}"
+  register: result
+
+- name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool
+  assert:
+      that:
+          - result|changed
+
+- name: Pull Request 3158 - Add virtual server with custom SNAT pool - Idempotent check
+  bigip_virtual_server:
+      state: present
+      name: "{{ vs_name }}"
+      destination: "{{ node_host }}"
+      port: "{{ vs_port1 }}"
+      pool: "{{ pool_name }}"
+      snat: "{{ snat_pool_name }}"
+      description: "{{ vs_description }}"
+      all_profiles: "{{ vs_profiles1 }}"
+      enabled_vlans: "{{ enabled_vlans }}"
+  register: result
+
+- name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool - Idempotent check
+  assert:
+      that:
+          - not result|changed
+
+- name: Pull Request 3158 - Set SNAT back to Automap
+  bigip_virtual_server:
+      state: present
+      name: "{{ vs_name }}"
+      destination: "{{ node_host }}"
+      port: "{{ vs_port1 }}"
+      pool: "{{ pool_name }}"
+      snat: Automap
+      description: "{{ vs_description }}"
+      all_profiles: "{{ vs_profiles1 }}"
+      enabled_vlans: "{{ enabled_vlans }}"
+  register: result
+
+- name: Pull Request 3158 - Set SNAT back to Automap
+  assert:
+      that:
+          - result|changed
+
+- name: Pull Request 3158 - Delete VLAN virtual server
+  bigip_virtual_server:
+      name: "{{ vs_name }}"
+      state: absent
+  register: result
+
+- name: Pull Request 3158 - Delete SNAT pool
+  bigip_snat_pool:
+      name: "{{ snat_pool_name }}"
+      state: absent
+  register: result
+
+- name: Pull Request 3158 - Delete pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      state: absent
+  register: result

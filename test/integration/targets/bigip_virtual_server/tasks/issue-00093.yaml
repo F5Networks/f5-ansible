@@ -1,0 +1,66 @@
+---
+
+- name: Issue 00093 - Include issue variables
+  include_vars:
+    file: issue-00093.yaml
+
+- name: Issue 00093 - Create partition
+  bigip_partition:
+    name: "{{ issue_partition }}"
+
+- name: Issue 00093 - Create pool
+  bigip_pool:
+    lb_method: round_robin
+    name: qa_sites_http_0
+    partition: "{{ issue_partition }}"
+
+- name: Issue 00093 - Create virtual server
+  bigip_virtual_server:
+    description: Sites pool - https
+    destination: 10.10.10.10
+    name: issue-00093
+    partition: "{{ issue_partition }}"
+    pool: qa_sites_http_0
+    port: 0
+    snat: Automap
+    state: present
+  register: result
+
+- name: Issue 00093 - Create virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00093 - Create virtual server - Idempotent check
+  bigip_virtual_server:
+    description: Sites pool - https
+    destination: 10.10.10.10
+    name: issue-00093
+    partition: "{{ issue_partition }}"
+    pool: qa_sites_http_0
+    port: 0
+    snat: Automap
+    state: present
+  register: result
+
+- name: Issue 00093 - Create virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00093 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00093
+    partition: "{{ issue_partition }}"
+    state: absent
+
+- name: Issue 00093 - Remove pool
+  bigip_pool:
+    name: qa_sites_http_0
+    partition: "{{ issue_partition }}"
+    state: absent
+
+- name: Issue 00093 - Remove partition
+  bigip_partition:
+    name: "{{ issue_partition }}"
+    state: absent

@@ -3,6 +3,7 @@
 #
 # Copyright: (c) 2017, F5 Networks Inc.
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
@@ -343,6 +344,16 @@ class ArgumentSpec(object):
         self.f5_product_name = 'bigip'
 
 
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
@@ -358,8 +369,10 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 

@@ -104,7 +104,7 @@ EXAMPLES = r'''
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 allow:
   description: >
     Specifies, if you have enabled SSH access, the IP address or address

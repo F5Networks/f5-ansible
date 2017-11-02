@@ -110,28 +110,28 @@ Examples
     
     - name: Create snmp v1 trap
       bigip_snmp_trap:
-          community: "general"
-          destination: "1.2.3.4"
-          name: "my-trap1"
-          network: "management"
-          port: "9000"
-          snmp_version: "1"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
+        community: general
+        destination: 1.2.3.4
+        name: my-trap1
+        network: management
+        port: 9000
+        snmp_version: 1
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
     
     - name: Create snmp v2 trap
       bigip_snmp_trap:
-          community: "general"
-          destination: "5.6.7.8"
-          name: "my-trap2"
-          network: "default"
-          port: "7000"
-          snmp_version: "2c"
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
+        community: general
+        destination: 5.6.7.8
+        name: my-trap2
+        network: default
+        port: 7000
+        snmp_version: 2c
+        server: lb.mydomain.com
+        user: admin
+        password: secret
       delegate_to: localhost
 
 Return Values
@@ -196,6 +196,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module only supports version v1 and v2c of SNMP.
     - The ``network`` option is not supported on versions of BIG-IP < 12.1.0 because the platform did not support that option until 12.1.0. If used on versions < 12.1.0, it will simply be ignored.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

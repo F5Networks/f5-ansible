@@ -85,11 +85,11 @@ Examples
     
     - name: Gather image facts filter on version
       bigip_software_facts:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          include: "image"
-          filter: "version:12.1.1"
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        include: image
+        filter: version:12.1.1
       delegate_to: localhost
 
 Return Values
@@ -113,21 +113,21 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <td> List of base image ISOs that are present on the unit. </td>
         <td align=center> changed </td>
         <td align=center> list of dict </td>
-        <td align=center> {'images': [{'product': 'BIG-IP,', 'version': '12.1.1', 'name': 'BIGIP-12.1.1.0.0.184.iso,', 'lastModified': 'Sun Oct  2 20:50:04 2016,', 'fileSize': '1997 MB,', 'build': '0.0.184'}]} </td>
+        <td align=center> {'images': [{'product': 'BIG-IP', 'version': '12.1.1', 'name': 'BIGIP-12.1.1.0.0.184.iso', 'lastModified': 'Sun Oct  2 20:50:04 2016', 'fileSize': '1997 MB', 'build': '0.0.184'}]} </td>
     </tr>
             <tr>
         <td> hotfixes </td>
         <td> List of hotfix ISOs that are present on the unit. </td>
         <td align=center> changed </td>
         <td align=center> list of dict </td>
-        <td align=center> {'hotfixes': [{'product': 'BIG-IP,', 'version': '12.1.1', 'name': '12.1.1-hf2.iso,', 'lastModified': 'Sun Oct  2 20:50:04 2016,', 'fileSize': '1997 MB,', 'build': '2.0.204'}]} </td>
+        <td align=center> {'hotfixes': [{'product': 'BIG-IP', 'version': '12.1.1', 'name': '12.1.1-hf2.iso', 'lastModified': 'Sun Oct  2 20:50:04 2016', 'fileSize': '1997 MB', 'build': '2.0.204'}]} </td>
     </tr>
             <tr>
         <td> volumes </td>
         <td> List the volumes present on device. </td>
         <td align=center> changed </td>
         <td align=center> list of dict </td>
-        <td align=center> {'volumes': [{'status': 'complete,', 'product': 'BIG-IP,', 'version': '12.1.1', 'name': 'HD1.2,', 'basebuild': '0.0.184,', 'build': '0.0.184,'}]} </td>
+        <td align=center> {'volumes': [{'status': 'complete', 'product': 'BIG-IP', 'version': '12.1.1', 'name': 'HD1.2', 'basebuild': '0.0.184', 'build': '0.0.184'}]} </td>
     </tr>
         
     </table>
@@ -138,6 +138,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -32,6 +32,7 @@
         - NA
       supported_harnesses:
         - NA
+      coding_standards: v3
       callgraph_exclude:
         - pycallgraph.*
 

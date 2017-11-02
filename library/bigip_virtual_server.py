@@ -8,18 +8,16 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    'status': ['preview'],
-    'supported_by': 'community',
-    'metadata_version': '1.1'
-}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'],
+                    'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_virtual_server
 short_description: Manage LTM virtual servers on a BIG-IP
 description:
-  - Manage LTM virtual servers on a BIG-IP
+  - Manage LTM virtual servers on a BIG-IP.
 version_added: "2.1"
 options:
   state:
@@ -54,9 +52,29 @@ options:
         and virtual server does not exist.
   profiles:
     description:
-      - List of all Profiles (HTTP, ClientSSL, ServerSSL, etc) that must be
-        used by the virtual server. The module will delegate to the device
-        whether the specified profile list is valid or not.
+      - List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides
+        of the connection (client-side and server-side).
+      - If you only want to apply a particular profile to the client-side of
+        the connection, specify C(client-side) for the profile's C(context).
+      - If you only want to apply a particular profile to the server-side of
+        the connection, specify C(server-side) for the profile's C(context).
+      - If C(context) is not provided, it will default to C(all).
+    suboptions:
+      name:
+        description:
+          - Name of the profile.
+          - If this is not specified, then it is assumed that the profile item is
+            only a name of a profile.
+          - This must be specified if a context is specified.
+        required: false
+      context:
+        description:
+          - The side of the connection on which the profile should be applied.
+        choices:
+          - all
+          - server-side
+          - client-side
+        default: all
     aliases:
       - all_profiles
   irules:
@@ -68,13 +86,25 @@ options:
   enabled_vlans:
     version_added: "2.2"
     description:
-      - List of VLANs to be enabled. When a VLAN named C(ALL) is used, all
+      - List of VLANs to be enabled. When a VLAN named C(all) is used, all
         VLANs will be allowed. VLANs can be specified with or without the
         leading partition. If the partition is not specified in the VLAN,
-        then the `partition` option of this module will be used.
+        then the C(partition) option of this module will be used.
+      - This parameter is mutually exclusive with the C(disabled_vlans) parameter.
+  disabled_vlans:
+    version_added: 2.5
+    description:
+      - List of VLANs to be disabled. If the partition is not specified in the VLAN,
+        then the C(partition) option of this module will be used.
+      - This parameter is mutually exclusive with the C(enabled_vlans) parameters.
   pool:
     description:
       - Default pool for the virtual server.
+  policies:
+    description:
+      - Specifies the policies for the virtual server
+    aliases:
+      - all_policies
   snat:
     description:
       - Source network address policy.
@@ -94,15 +124,19 @@ options:
       - enabled
       - disabled
     version_added: "2.3"
-    deprecated: Deprecated in 2.4. Use the bigip_virtual_address module instead.
+    deprecated: Deprecated in 2.4. Use the C(bigip_virtual_address) module instead.
   description:
     description:
       - Virtual server description.
+  fallback_persistence_profile:
+    description:
+      - Specifies the persistence profile you want the system to use if it
+        cannot use the specified default persistence profile.
+    version_added: 2.3
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 11
@@ -118,75 +152,79 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
-- name: Add virtual server
-  bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: present
-      partition: Common
-      name: my-virtual-server
-      destination: "10.10.10.10"
-      port: 443
-      pool: "my-pool"
-      snat: Automap
-      description: Test Virtual Server
-      profiles_both:
-          - http
-          - fix
-      profiles_server_side:
-          - clientssl
-      profiles_client_side:
-          - ilx
-      enabled_vlans:
-          - /Common/vlan2
-  delegate_to: localhost
-
+EXAMPLES = r'''
 - name: Modify Port of the Virtual Server
   bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: present
-      partition: Common
-      name: my-virtual-server
-      port: 8080
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    name: my-virtual-server
+    port: 8080
   delegate_to: localhost
 
 - name: Delete virtual server
   bigip_virtual_server:
-      server: lb.mydomain.net
-      user: admin
-      password: secret
-      state: absent
-      partition: Common
-      name: my-virtual-server
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: absent
+    partition: Common
+    name: my-virtual-server
+  delegate_to: localhost
+
+- name: Add virtual server
+  bigip_virtual_server:
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    state: present
+    partition: Common
+    name: my-virtual-server
+    destination: 10.10.10.10
+    port: 443
+    pool: my-pool
+    snat: Automap
+    description: Test Virtual Server
+    profiles:
+      - http
+      - fix
+      - name: clientssl
+        context: server-side
+      - name: ilx
+        context: client-side
+    policies:
+      - my-ltm-policy-for-asm
+      - ltm-uri-policy
+      - ltm-policy-2
+      - ltm-policy-3
+    enabled_vlans:
+      - /Common/vlan2
   delegate_to: localhost
 '''
 
-RETURN = '''
+RETURN = r'''
 ---
 deleted:
-    description: Name of a virtual server that was deleted
-    returned: changed
-    type: string
-    sample: "my-virtual-server"
+  description: Name of a virtual server that was deleted
+  returned: changed
+  type: string
+  sample: my-virtual-server
 '''
 
 
 import netaddr
 import re
 
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Client,
-    AnsibleF5Parameters,
-    HAS_F5SDK,
-    F5ModuleError,
-    iControlUnexpectedHTTPError,
-    defaultdict,
-    iteritems
-)
+from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.f5_utils import AnsibleF5Parameters
+from ansible.module_utils.f5_utils import HAS_F5SDK
+from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
+from collections import namedtuple
 
 
 class Parameters(AnsibleF5Parameters):
@@ -219,56 +257,10 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    @property
-    def destination(self):
-        if self._values['destination'] is None:
-            return None
-        destination = self._values['destination']
-        try:
-            netaddr.IPAddress(destination.split("%")[0])
-        except netaddr.core.AddrFormatError:
-            raise F5ModuleError(
-                "The provided destination is not a valid IP address"
-            )
-        result = '/{0}/{1}:{2}'.format(
-            self.partition, self._values['destination'], self.port
-        )
-        return result
-
-    @destination.setter
-    def destination(self, value):
-        if value is None:
-            return
-        matches = re.search(r'.*\/(?P<destination>.*):(?P<port>\d+)', value)
-        if matches:
-            self._values['destination'] = matches.group('destination')
-            self._values['port'] = matches.group('port')
-        else:
-            self._values['destination'] = value
-
-    @property
-    def destination_address(self):
-        return self._values['destination']
-
-    @destination_address.setter
-    def destination_address(self, value):
-        self._values['destination'] = value
-
-    @property
-    def port(self):
-        if self._values['port'] is None:
-            return None
-        try:
-            port = int(self._values['port'])
-        except ValueError:
-            raise F5ModuleError(
-                "The specified port was not a valid integer"
-            )
-        if 0 <= port <= 65535:
-            return port
-        raise F5ModuleError(
-            "Valid ports must be in range 0 - 65535"
-        )
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     def to_return(self):
         result = {}
@@ -322,24 +314,311 @@ class VirtualAddressParameters(Parameters):
 
 class VirtualServerParameters(Parameters):
     api_map = {
-        'sourceAddressTranslation': 'snat'
+        'sourceAddressTranslation': 'snat',
+        'fallbackPersistence': 'fallback_persistence_profile',
+        'persist': 'default_persistence_profile',
+        'vlansEnabled': 'vlans_enabled',
+        'vlansDisabled': 'vlans_disabled',
+        'profilesReference': 'profiles',
+        'policiesReference': 'policies',
+        'rules': 'irules'
     }
 
     api_attributes = [
-        'destination', 'enabled', 'disabled', 'pool',
-        'vlans', 'persist', 'sourceAddressTranslation', 'profiles',
-        'vlansEnabled', 'vlansDisabled'
+        'destination',
+        'disabled',
+        'enabled',
+        'fallbackPersistence',
+        'persist',
+        'policies',
+        'pool',
+        'profiles',
+        'rules',
+        'sourceAddressTranslation',
+        'vlans',
+        'vlansEnabled',
+        'vlansDisabled',
     ]
 
     updatables = [
-        'destination', 'enabled', 'disabled', 'pool', 'port',
-        'irules', 'profiles', 'enabled_vlans', 'default_persistence_profile'
+        'default_persistence_profile',
+        'destination',
+        'disabled',
+        'disabled_vlans',
+        'enabled',
+        'enabled_vlans',
+        'fallback_persistence_profile',
+        'irules',
+        'pool',
+        'policies',
+        'port',
+        'profiles',
+        'snat',
     ]
 
     returnables = [
-        'destination', 'enabled', 'disabled', 'pool', 'port',
-        'irules', 'profiles', 'enabled_vlans', 'default_persistence_profile'
+        'default_persistence_profile',
+        'destination',
+        'disabled',
+        'disabled_vlans',
+        'enabled',
+        'enabled_vlans',
+        'fallback_persistence_profile',
+        'irules',
+        'pool',
+        'policies',
+        'port',
+        'profiles',
+        'snat'
     ]
+
+    def __init__(self, params=None):
+        super(VirtualServerParameters, self).__init__(params)
+        self.profiles_mutex = [
+            'sip', 'sipsession', 'iiop', 'rtsp', 'http', 'diameter',
+            'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
+        ]
+
+    def is_valid_ip(self, value):
+        try:
+            netaddr.IPAddress(value)
+            return True
+        except (netaddr.core.AddrFormatError, ValueError):
+            return False
+
+
+class VirtualServerApiParameters(VirtualServerParameters):
+    @property
+    def destination(self):
+        if self._values['destination'] is None:
+            return None
+        destination = self.destination_tuple
+        if destination.port is None:
+            if destination.route_domain is None:
+                result = '{0}'.format(
+                    self._fqdn_name(destination.ip)
+                )
+            else:
+                result = '{0}%{1}'.format(
+                    self._fqdn_name(destination.ip),
+                    destination.route_domain
+                )
+        else:
+            if destination.route_domain is None:
+                result = '{0}:{1}'.format(
+                    self._fqdn_name(destination.ip),
+                    destination.port
+                )
+            else:
+                result = '{0}%{1}:{2}'.format(
+                    self._fqdn_name(destination.ip),
+                    destination.route_domain,
+                    destination.port
+                )
+        return result
+
+    @property
+    def destination_tuple(self):
+        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain'])
+
+        # Remove the partition
+        if self._values['destination'] is None:
+            result = Destination(ip=None, port=None, route_domain=None)
+            return result
+        destination = re.sub(r'^/[a-zA-Z_.-]+/', '', self._values['destination'])
+
+        if self.is_valid_ip(destination):
+            result = Destination(
+                ip=destination,
+                port=None,
+                route_domain=None
+            )
+            return result
+
+        # Covers the following examples
+        #
+        # /Common/2700:bc00:1f10:101::6%2.80
+        # 2700:bc00:1f10:101::6%2.80
+        # 1.1.1.1%2:80
+        # /Common/1.1.1.1%2:80
+        #
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+)'
+        matches = re.search(pattern, destination)
+        if matches:
+            try:
+                port = int(matches.group('port'))
+            except ValueError:
+                # Can be a port of "any". This only happens with IPv6
+                port = matches.group('port')
+            ip = matches.group('ip')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=matches.group('ip'),
+                port=port,
+                route_domain=int(matches.group('route_domain'))
+            )
+            return result
+
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)'
+        matches = re.search(pattern, destination)
+        if matches:
+            ip = matches.group('ip')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=matches.group('ip'),
+                port=None,
+                route_domain=int(matches.group('route_domain'))
+            )
+            return result
+
+        parts = destination.split('.')
+        if len(parts) == 4:
+            # IPv4
+            ip, port = destination.split(':')
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=ip,
+                port=int(port),
+                route_domain=None
+            )
+            return result
+        elif len(parts) == 2:
+            # IPv6
+            ip, port = destination.split('.')
+            try:
+                port = int(port)
+            except ValueError:
+                # Can be a port of "any". This only happens with IPv6
+                pass
+            if not self.is_valid_ip(ip):
+                raise F5ModuleError(
+                    "The provided destination is not a valid IP address"
+                )
+            result = Destination(
+                ip=ip,
+                port=port,
+                route_domain=None
+            )
+            return result
+        else:
+            result = Destination(ip=None, port=None, route_domain=None)
+            return result
+
+    @property
+    def port(self):
+        destination = self.destination_tuple
+        self._values['port'] = destination.port
+        return destination.port
+
+    @property
+    def route_domain(self):
+        destination = self.destination_tuple
+        self._values['route_domain'] = destination.route_domain
+        return destination.route_domain
+
+    @property
+    def profiles(self):
+        if 'items' not in self._values['profiles']:
+            return None
+        result = []
+        for item in self._values['profiles']['items']:
+            context = item['context']
+            name = item['name']
+            if context in ['all', 'serverside', 'clientside']:
+                result.append(dict(name=name, context=context))
+            else:
+                raise F5ModuleError(
+                    "Unknown profile context found: '{0}'".format(context)
+                )
+        return result
+
+    @property
+    def policies(self):
+        if 'items' not in self._values['policies']:
+            return None
+        result = []
+        for item in self._values['policies']['items']:
+            name = item['name']
+            partition = item['partition']
+            result.append(dict(name=name, partition=partition))
+        return result
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return None
+        # These persistence profiles are always lists when we get them
+        # from the REST API even though there can only be one. We'll
+        # make it a list again when we get to the Difference engine.
+        return self._values['default_persistence_profile'][0]
+
+
+class VirtualServerModuleParameters(VirtualServerParameters):
+    @property
+    def destination(self):
+        addr = self._values['destination'].split("%")[0]
+        if not self.is_valid_ip(addr):
+            raise F5ModuleError(
+                "The provided destination is not a valid IP address"
+            )
+        result = self._format_destination(addr, self.port, self.route_domain)
+        return result
+
+    def _format_destination(self, address, port, route_domain):
+        if port is None:
+            if route_domain is None:
+                result = '{0}'.format(
+                    self._fqdn_name(address)
+                )
+            else:
+                result = '{0}%{1}'.format(
+                    self._fqdn_name(address),
+                    route_domain
+                )
+        else:
+            if route_domain is None:
+                result = '{0}:{1}'.format(
+                    self._fqdn_name(address),
+                    port
+                )
+            else:
+                result = '{0}%{1}:{2}'.format(
+                    self._fqdn_name(address),
+                    route_domain,
+                    port
+                )
+        return result
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        if self._values['port'] == '*':
+            return 0
+        self._check_port()
+        return int(self._values['port'])
+
+    def _check_port(self):
+        try:
+            port = int(self._values['port'])
+        except ValueError:
+            raise F5ModuleError(
+                "The specified port was not a valid integer"
+            )
+        if 0 <= port <= 65535:
+            return port
+        raise F5ModuleError(
+            "Valid ports must be in range 0 - 65535"
+        )
 
     @property
     def irules(self):
@@ -347,117 +626,118 @@ class VirtualServerParameters(Parameters):
         if self._values['irules'] is None:
             return None
         for irule in self._values['irules']:
-            if not irule.startswith(self.partition):
-                irule = '/{0}/{1}'.format(self.partition, irule)
-            results.append(irule)
+            result = self._fqdn_name(irule)
+            results.append(result)
         return results
 
     @property
-    def profiles_both(self):
-        result = []
-        mutually_exclusive_profiles = [
-            'sip', 'sipsession', 'iiop', 'rtsp', 'http', 'diameter',
-            'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
-        ]
-        if self._values['profiles_both'] is None:
+    def profiles(self):
+        if self._values['profiles'] is None:
             return None
-        profiles = set(self._values['profiles_both'])
-        mutually_exclusive = [x for x in profiles if x in mutually_exclusive_profiles]
+        result = []
+        for profile in self._values['profiles']:
+            tmp = dict()
+            if isinstance(profile, dict):
+                tmp.update(profile)
+                self._handle_profile_context(tmp)
+                if 'name' not in profile:
+                    tmp['name'] = profile
+                self._handle_clientssl_profile_nuances(tmp)
+            else:
+                tmp['name'] = profile
+                tmp['context'] = 'all'
+                self._handle_clientssl_profile_nuances(tmp)
+            result.append(tmp)
+        mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
         if len(mutually_exclusive) > 1:
             raise F5ModuleError(
                 "Profiles {0} are mutually exclusive".format(
-                    ', '.join(mutually_exclusive_profiles).strip()
+                    ', '.join(self.profiles_mutex).strip()
                 )
             )
-        for profile in profiles:
-            result.append({
-                'name': str(profile),
-                'context': 'all'
-            })
         return result
 
-    @property
-    def profiles_client_side(self):
-        result = []
-        if self._values['profiles_client_side'] is None:
-            return None
-        profiles = set(self._values['profiles_client_side'])
-        for profile in profiles:
-            result.append({
-                'name': str(profile),
-                'context': 'clientside'
-            })
-        return result
+    def _handle_profile_context(self, tmp):
+        if 'context' not in tmp:
+            tmp['context'] = 'all'
+        else:
+            if 'name' not in tmp:
+                raise F5ModuleError(
+                    "A profile name must be specified when a context is specified."
+                )
+        tmp['context'] = tmp['context'].replace('server-side', 'serverside')
+        tmp['context'] = tmp['context'].replace('client-side', 'clientside')
+
+    def _handle_clientssl_profile_nuances(self, profile):
+        if profile['name'] != 'clientssl':
+            return
+        if profile['context'] != 'clientside':
+            profile['context'] = 'clientside'
 
     @property
-    def profiles_server_side(self):
-        result = []
-        if self._values['profiles_server_side'] is None:
+    def policies(self):
+        if self._values['policies'] is None:
             return None
-        profiles = set(self._values['profiles_server_side'])
-        for profile in profiles:
-            result.append({
-                'name': str(profile),
-                'context': 'serverside'
-            })
+        result = []
+        policies = [self._fqdn_name(p) for p in self._values['policies']]
+        policies = set(policies)
+        for policy in policies:
+            parts = policy.split('/')
+            if len(parts) != 3:
+                raise F5ModuleError(
+                    "The specified policy '{0}' is malformed".format(policy)
+                )
+            tmp = dict(
+                name=parts[2],
+                partition=parts[1]
+            )
+            result.append(tmp)
         return result
 
     @property
     def pool(self):
         if self._values['pool'] is None:
             return None
-        if self._values['pool'].startswith('/' + self.partition):
-            return self._values['pool']
-        else:
-            return '/{0}/{1}'.format(self.partition, self._values['pool'])
+        return self._fqdn_name(self._values['pool'])
 
     @property
-    def vlansEnabled(self):
+    def vlans_enabled(self):
         if self._values['enabled_vlans'] is None:
-            return False
-        return True
+            return None
+        if self._values['disabled_vlans'] is None:
+            return True
+        return False
 
     @property
-    def vlansDisabled(self):
-        if self._values['enabled_vlans'] in [None, '', 'ALL']:
+    def vlans_disabled(self):
+        if self._values['disabled_vlans'] is None:
+            return None
+        if self._values['enabled_vlans'] is None:
             return True
         return False
 
     @property
     def enabled_vlans(self):
-        if self._values['vlans'] is None:
+        if self._values['enabled_vlans'] is None:
             return None
-        elif 'ALL' in self._values['vlans']:
+        elif any(x.lower() for x in self._values['enabled_vlans'] if x == 'all'):
             return []
-        results = []
-        vlans = set(self._values['vlans'])
-        for vlan in vlans:
-            if vlan.startswith('/' + self.partition):
-                results.append(vlan)
-            else:
-                vlan = '/{0}/{1}'.format(self.partition, vlan)
-                results.append(vlan)
-        return list(set(results))
+        results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
+        return results
 
     @property
     def disabled_vlans(self):
-        return None
+        if self._values['disabled_vlans'] is None:
+            return None
+        results = list(set([self._fqdn_name(x) for x in self._values['disabled_vlans']]))
+        return results
 
     @property
     def vlans(self):
-        if self.diabled_vlans:
+        disabled = self.disabled_vlans
+        if disabled:
             return self.disabled_vlans
         return self.enabled_vlans
-
-    @enabled_vlans.setter
-    def enabled_vlans(self, value):
-        self._values['vlans'] = value
-
-    @property
-    def description(self):
-        if self._values['description'] is None:
-            return None
-        return str(self._values['description'])
 
     @property
     def state(self):
@@ -466,60 +746,63 @@ class VirtualServerParameters(Parameters):
         return self._values['state']
 
     @property
-    def default_persistence_profile(self):
-        if self._values['default_persistence_profile'] is None:
-            return None
-        return str(self._values['default_persistence_profile'])
-
-    @property
     def snat(self):
         if self._values['snat'] is None:
             return None
         lowercase = self._values['snat'].lower()
         if lowercase in ['automap', 'none']:
-            return dict(
-                type=lowercase
-            )
-        snat_pool = '/{0}/{1}'.format(
-            self.partition, self._values['snat']
-        )
-        return dict(
-            pool=snat_pool,
-            type='snat'
-        )
+            return dict(type=lowercase)
+        snat_pool = self._fqdn_name(self._values['snat'])
+        return dict(pool=snat_pool, type='snat')
 
     @property
-    def profilesReference(self):
-        return self._values['profilesReference']
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return None
+        profile = self._fqdn_name(self._values['default_persistence_profile'])
+        parts = profile.split('/')
+        if len(parts) != 3:
+            raise F5ModuleError(
+                "The specified 'default_persistence_profile' is malformed"
+            )
+        result = dict(
+            name=parts[2],
+            partition=parts[1]
+        )
+        return result
 
-    @profilesReference.setter
-    def profilesReference(self, value):
-        self._values['profiles_both'] = []
-        self._values['profiles_client_side'] = []
-        self._values['profiles_server_side'] = []
+    @property
+    def fallback_persistence_profile(self):
+        if self._values['fallback_persistence_profile'] is None:
+            return None
+        result = self._fqdn_name(self._values['fallback_persistence_profile'])
+        return result
 
-        if 'items' not in value:
-            return
 
-        for item in value['items']:
-            context = str(item['context'])
-            name = str(item['name'])
-            if context == 'all':
-                self._values['profiles_both'].append(name)
-            elif context == 'serverside':
-                self._values['profiles_server_side'].append(name)
-            elif context == 'clientside':
-                self._values['profiles_client_side'].append(name)
-            else:
-                raise F5ModuleError(
-                    "Unknown profile context found"
-                )
+class VirtualServerChanges(VirtualServerParameters):
+    @property
+    def destination(self):
+        return self._values['destination']
+
+    @property
+    def vlans(self):
+        if self._values['vlans'] is None:
+            return None
+        elif len(self._values['vlans']) == 0:
+            return []
+        elif any(x for x in self._values['vlans'] if x.lower() == '/common/all'):
+            return []
+        return self._values['vlans']
+
+
+class VirtualAddressChanges(VirtualAddressParameters):
+    pass
 
 
 class Difference(object):
     def __init__(self, want, have=None):
-        self.want = want
         self.have = have
+        self.want = want
 
     def compare(self, param):
         try:
@@ -529,40 +812,143 @@ class Difference(object):
             result = self.__default(param)
             return result
 
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
     @property
     def destination(self):
-        if self.want.destination is None and self.want.port is None:
+        addr_tuple = [self.want.destination, self.want.port, self.want.route_domain]
+        if all(x for x in addr_tuple if x is None):
             return None
 
-        if self.want.destination is None:
-            self.want.destination_address = self.have.destination_address
-        elif self.want.port is None:
-            self.want.update({'port': self.have.port})
+        have = self.have.destination_tuple
 
-        if self.want.destination == self.have.destination:
-            return None
-        else:
-            return self.want.destination
+        if self.want.port is None:
+            self.want.update({'port': have.port})
+        if self.want.route_domain is None:
+            self.want.update({'route_domain': have.route_domain})
+        if self.want.destination_address is None:
+            self.want.destination_address = have.ip
+
+        want = self.want._format_destination(
+            self.want.destination_address, self.want.port, self.want.route_domain
+        )
+        if want != self.have.destination:
+            return self.want._fqdn_name(want)
 
     @property
-    def enabled_vlans(self):
+    def vlans(self):
         if self.want.vlans is None:
             return None
         elif self.want.vlans == [] and self.have.vlans is None:
             return None
         elif self.want.vlans == self.have.vlans:
             return None
+        elif any(x.lower().endswith('/all') for x in self.want.vlans):
+            if self.have.vlans is None:
+                return None
+            else:
+                return []
         else:
             return self.want.vlans
 
-    def __default(self, param):
-        attr1 = getattr(self.want, param)
-        try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
-        except AttributeError:
-            return attr1
+    def _update_vlan_status(self, result):
+        if self.want.vlans_disabled is not None:
+            if self.want.vlans_disabled != self.have.vlans_disabled:
+                result['vlans_disabled'] = self.want.vlans_disabled
+                result['vlans_enabled'] = not self.want.vlans_disabled
+        elif self.want.vlans_enabled is not None:
+            if self.want.vlans_enabled != self.have.vlans_enabled:
+                result['vlans_disabled'] = not self.want.vlans_enabled
+                result['vlans_enabled'] = self.want.vlans_enabled
+
+    @property
+    def enabled_vlans(self):
+        return self.vlan_status
+
+    @property
+    def disabled_vlans(self):
+        return self.vlan_status
+
+    @property
+    def vlan_status(self):
+        result = dict()
+        vlans = self.vlans
+        if vlans is not None:
+            result['vlans'] = vlans
+        self._update_vlan_status(result)
+        return result
+
+    @property
+    def port(self):
+        result = self.destination
+        if result is not None:
+            return dict(
+                destination=result
+            )
+
+    @property
+    def profiles(self):
+        if self.want.profiles is None:
+            return None
+        auto_assigned = [
+            {('tcp', 'all')},
+            {('udp', 'all')},
+            {('sctp', 'all')}
+        ]
+        want = set([(p['name'], p['context']) for p in self.want.profiles])
+        have = set([(p['name'], p['context']) for p in self.have.profiles])
+        if want != have:
+            diff = have.difference(want)
+            if any(x.issubset(diff) for x in auto_assigned):
+                # This handles cases when tcp, udp, or sctp are auto-assigned because you
+                # provided a profile (such as http or clientssl) that requires them.
+                #
+                # I think these are the only profiles that are auto-assigned.
+                return None
+            return self.want.profiles
+
+    @property
+    def default_persistence_profile(self):
+        if self.want.default_persistence_profile is None:
+            return None
+        w_name = self.want.default_persistence_profile.get('name', None)
+        w_partition = self.want.default_persistence_profile.get('partition', None)
+        h_name = self.want.default_persistence_profile.get('name', None)
+        h_partition = self.want.default_persistence_profile.get('partition', None)
+        if w_name != h_name or w_partition != h_partition:
+            return [self.want.default_persistence_profile]
+
+    @property
+    def policies(self):
+        if self.want.policies is None:
+            return None
+        want = set([(p['name'], p['partition']) for p in self.want.policies])
+        have = set([(p['name'], p['partition']) for p in self.have.policies])
+        if not want == have:
+            return self.want.profiles
+
+    @property
+    def snat(self):
+        if self.want.snat is None:
+            return None
+        if self.want.snat['type'] != self.have.snat['type']:
+            result = dict(snat=self.want.snat)
+            return result
+
+        if self.want.snat.get('pool', None) is None:
+            return None
+
+        if self.want.snat['pool'] != self.have.snat['pool']:
+            result = dict(snat=self.want.snat)
+            return result
 
 
 class ModuleManager(object):
@@ -601,8 +987,8 @@ class ModuleManager(object):
     def set_name_of_virtual_address(self):
         mgr = VirtualServerManager(self.client)
         params = mgr.read_current_from_device()
-        name = params.destination_address
-        self.client.module.params['name'] = name
+        destination = params.destination_tuple
+        self.client.module.params['name'] = destination.ip
 
 
 class BaseManager(object):
@@ -664,6 +1050,12 @@ class BaseManager(object):
     def create(self):
         if self.client.check_mode:
             return True
+
+        # This must be changed back to a list to make a valid REST API
+        # value. The module manipulates this as a normal dictionary
+        if self.want.default_persistence_profile is not None:
+            self.want.update({'default_persistence_profile': [self.want.default_persistence_profile]})
+
         self.create_on_device()
         return True
 
@@ -678,15 +1070,16 @@ class BaseManager(object):
             return True
         self.remove_from_device()
         if self.exists():
-            raise F5ModuleError("Failed to delete the virtual server")
+            raise F5ModuleError("Failed to delete the resource")
         return True
 
 
 class VirtualServerManager(BaseManager):
     def __init__(self, client):
         super(VirtualServerManager, self).__init__(client)
-        self.want = VirtualServerParameters(self.client.module.params)
-        self.changes = VirtualServerParameters()
+        self.have = None
+        self.want = VirtualServerModuleParameters(self.client.module.params)
+        self.changes = VirtualServerChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -694,7 +1087,7 @@ class VirtualServerManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = VirtualServerParameters(changed)
+            self.changes = VirtualServerChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -705,9 +1098,12 @@ class VirtualServerManager(BaseManager):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = VirtualServerParameters(changed)
+            self.changes = VirtualServerChanges(changed)
             return True
         return False
 
@@ -750,7 +1146,9 @@ class VirtualServerManager(BaseManager):
                 )
             )
         )
-        result = VirtualServerParameters(result.attrs)
+        params = result.attrs
+        params.update(dict(kind=result.to_dict().get('kind', None)))
+        result = VirtualServerApiParameters(params)
         return result
 
     def create_on_device(self):
@@ -775,7 +1173,7 @@ class VirtualAddressManager(BaseManager):
         super(VirtualAddressManager, self).__init__(client)
         self.want = VirtualAddressParameters(self.client.module.params)
         self.have = None
-        self.changes = VirtualAddressParameters()
+        self.changes = VirtualAddressChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -783,7 +1181,7 @@ class VirtualAddressManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = VirtualAddressParameters(changed)
+            self.changes = VirtualAddressChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -794,9 +1192,12 @@ class VirtualAddressManager(BaseManager):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = VirtualAddressParameters(changed)
+            self.changes = VirtualAddressChanges(changed)
             return True
         return False
 
@@ -842,15 +1243,17 @@ class ArgumentSpec(object):
             port=dict(
                 type='int'
             ),
-            profiles_both=dict(
+            profiles=dict(
                 type='list',
-                aliases=['all_profiles']
+                aliases=['all_profiles'],
+                options=dict(
+                    name=dict(required=False),
+                    context=dict(default='all', choices=['all', 'server-side', 'client-side'])
+                )
             ),
-            profiles_client_side=dict(
-                type='list'
-            ),
-            profiles_server_side=dict(
-                type='list'
+            policies=dict(
+                type='list',
+                aliases=['all_policies']
             ),
             irules=dict(
                 type='list',
@@ -859,15 +1262,32 @@ class ArgumentSpec(object):
             enabled_vlans=dict(
                 type='list'
             ),
+            disabled_vlans=dict(
+                type='list'
+            ),
             pool=dict(),
             description=dict(),
             snat=dict(),
             route_advertisement_state=dict(
                 choices=['enabled', 'disabled']
             ),
-            default_persistence_profile=dict()
+            default_persistence_profile=dict(),
+            fallback_persistence_profile=dict()
         )
         self.f5_product_name = 'bigip'
+        self.mutually_exclusive = [
+            ['enabled_vlans', 'disabled_vlans']
+        ]
+
+
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
 
 
 def main():
@@ -879,15 +1299,19 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        f5_product_name=spec.f5_product_name,
+        mutually_exclusive=spec.mutually_exclusive
     )
 
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()

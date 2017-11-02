@@ -100,19 +100,19 @@ Examples
     
     - name: Set snmp contact
       bigip_snmp:
-        contact: "Joe User"
-        password: "secret"
-        server: "lb.mydomain.com"
-        user: "admin"
-        validate_certs: "false"
+        contact: Joe User
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        validate_certs: false
       delegate_to: localhost
     
     - name: Set snmp location
       bigip_snmp:
-        location: "US West 1
-        password: "secret
-        server: "lb.mydomain.com
-        user: "admin
+        location: US West 1
+        password: secret
+        server: lb.mydomain.com
+        user: admin
         validate_certs: no
       delegate_to: localhost
 
@@ -176,6 +176,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
