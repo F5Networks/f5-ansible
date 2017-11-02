@@ -100,6 +100,11 @@ options:
   pool:
     description:
       - Default pool for the virtual server.
+  policies:
+    description:
+      - Specifies the policies for the virtual server
+    aliases:
+      - all_policies
   snat:
     description:
       - Source network address policy.
