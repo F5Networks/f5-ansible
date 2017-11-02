@@ -1,5 +1,5 @@
 Support
-=======
+-------
 
 The F5 Ansible modules are developed primarily with the REST API in mind. Due
 to this requirement, we often take the approach that newer versions of BIG-IP
@@ -10,7 +10,7 @@ The versions of BIG-IP that support these modules typically start at version
 functionality that is needed by them.
 
 Incentives
-----------
+``````````
 
 Fortunately or unfortunately, the Ansible modules are not recognized by F5 as
 a supported product at this time.
@@ -24,7 +24,7 @@ focus more on older releases of BIG-IP. Consider these modules as an incentive
 to upgrade your BIG-IP to a later version.
 
 Finding assistance
-------------------
+``````````````````
 
 If you need help with anything related to these modules, it is recommended
 that you open an issue on Github
@@ -45,7 +45,7 @@ forum. If you need more in-depth technical know-how, you're free to ask
 us to ping you offline and we can handle things there.
 
 Credentials and secret things
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+`````````````````````````````
 
 It's considered bad form to expose credentials in a Github issue. Please
 be diligent of that!
@@ -67,7 +67,7 @@ to diagnose and test your problems. Therefore we never need this information
 to provide your with assistance.
 
 How to know which modules are supported
----------------------------------------
+```````````````````````````````````````
 
 Remember that, ultimately, this repository contains *experimental* code.
 
