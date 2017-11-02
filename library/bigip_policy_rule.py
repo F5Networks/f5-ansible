@@ -225,6 +225,7 @@ class ModuleParameters(Parameters):
 
     @property
     def conditions(self):
+        pass
 
 
 class Changes(Parameters):
@@ -441,14 +442,15 @@ class ArgumentSpec(object):
         actions_suboption_spec = dict(
             type=dict(
                 choices=[
-                    'forward'
+                    'forward',
+                    'enable'
                 ]
             )
         )
         self.argument_spec = dict(
             append=dict(
-                choices=['actions', 'conditions'] + BOOLEANS)
-            ,
+                choices=['actions', 'conditions'] + list(BOOLEANS)
+            ),
             actions=dict(
                 type='list',
                 options=actions_suboption_spec
