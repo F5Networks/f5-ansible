@@ -2,9 +2,9 @@ FROM python:2.7
 MAINTAINER @caphrim007
 
 # Directories used to hold command configs
-RUN mkdir -p /root/.config/openstack
-RUN mkdir -p /etc/jenkins_jobs
-RUN mkdir -p /tmp/ansible.junit
+RUN mkdir -p /root/.config/openstack && \
+    mkdir -p /etc/jenkins_jobs && \
+    mkdir -p /tmp/ansible.junit
 
 # Misc symlinks
 RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
@@ -32,15 +32,17 @@ RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
 # This variable, however, has a deficiency in that it is unable to find a secrets
 # file that may reside in the same directory as it. Therefore we cannot use this
 # environment variable because we then cannot use secrets.
-RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml
-RUN ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml
-RUN ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem
-RUN ln -s /here/devtools/secrets/jenkins_jobs.ini.secret /etc/jenkins_jobs/jenkins_jobs.ini
+RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml && \
+    ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml && \
+    ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem && \
+    ln -s /here/devtools/secrets/jenkins_jobs.ini.secret /etc/jenkins_jobs/jenkins_jobs.ini
 
 # Conveniance aliases
-RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc
-RUN echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc
-RUN echo 'alias rq="rm -f /tmp/q"' >> ~/.bashrc
+RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc && \
+    echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc && \
+    echo 'alias rq="rm -f /tmp/q"' >> ~/.bashrc && \
+    echo 'export PATH=$PATH:/here/devtools/bin' >> ~/.bashrc && \
+    echo 'eval "$(_F5ANSIBLE_COMPLETE=source /here/devtools/bin/f5ansible)"' >> ~/.bashrc
 
 # Required package installation
 RUN apt-get update && apt-get install -y \
@@ -60,9 +62,9 @@ RUN cd /tmp && git clone https://github.com/StackExchange/blackbox.git \
     && cd blackbox && make manual-install
 
 # Because python gets installed in /usr/local/bin instead of /usr/bin
-RUN ln -sf /usr/lib/python2.7/dist-packages/apt_pkg.so /usr/local/lib/python2.7/apt_pkg.so
-RUN ln -sf /usr/lib/python2.7/dist-packages/apt_inst.so /usr/local/lib/python2.7/apt_inst.so
-RUN ln -sf /usr/lib/python2.7/dist-packages/apt /usr/local/lib/python2.7/apt
+RUN ln -sf /usr/lib/python2.7/dist-packages/apt_pkg.so /usr/local/lib/python2.7/apt_pkg.so && \
+    ln -sf /usr/lib/python2.7/dist-packages/apt_inst.so /usr/local/lib/python2.7/apt_inst.so && \
+    ln -sf /usr/lib/python2.7/dist-packages/apt /usr/local/lib/python2.7/apt
 
 # The dependencies of the f5-ansible repository are installed here.
 #
