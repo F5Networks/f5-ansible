@@ -1,0 +1,132 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017 F5 Networks Inc.
+# GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+import click
+import os
+import subprocess
+import sys
+import yaml
+
+from six import iteritems
+from os.path import dirname
+from os.path import abspath
+
+TOP_LEVEL_DIR = dirname(dirname(dirname(abspath(__file__))))
+
+
+class Root(object):
+    def __init__(self, debug=False):
+        self.debug = debug
+
+
+def delete_lo_interface_alias(alias_host):
+    proc = subprocess.Popen(
+        ['sudo', 'ifconfig', 'lo0', '-alias', alias_host],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        print(stderr.decode('utf-8'))
+        sys.exit(1)
+
+
+def create_lo_interface_alias(alias_host):
+    proc = subprocess.Popen(
+        ['sudo', 'ifconfig', 'lo0', 'alias', alias_host],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        print(stderr.decode('utf-8'))
+        sys.exit(1)
+
+
+def list_available_docker_compose_services():
+    result = []
+    compose_yaml = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+    with open(compose_yaml) as fh:
+        content = yaml.load(fh)
+    if 'services' not in content:
+        click.echo("docker-compose file is missing 'services' section", err=True)
+    for k, v in iteritems(content['services']):
+        result.append(k)
+    result.sort()
+    result = list(set(result))
+    return result
+
+
+def run_container(service):
+    compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+
+    print(compose_file, extend_file)
+    cmd = ['docker-compose', '-f', compose_file]
+    if os.path.exists(extend_file):
+        cmd += ['-f', extend_file]
+    cmd += ['run', '--rm', service]
+
+    proc = subprocess.Popen(cmd)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        click.echo(stderr.decode('utf-8'), err=True)
+        sys.exit(1)
+
+
+@click.group()
+@click.option('--debug/--no-debug', default=False,
+              envvar='F5ANSIBLE_DEBUG')
+@click.pass_context
+def cli(ctx, debug):
+    ctx.obj = Root(debug)
+
+
+@cli.command(name='module-upstream')
+@click.argument('module', required=True)
+@click.option('--upstream-dir',
+              default='local/ansible', show_default=True)
+def module_upstream(module, upstream_dir):
+    pass
+
+
+@cli.command(name='module-stub')
+@click.argument('module', required=True)
+def module_stub(module):
+    pass
+
+
+@cli.command(name='container-run')
+@click.argument('service', required=True)
+@click.option('--alias-host', default='1.2.3.4')
+def container_run(service, alias_host):
+    delete_lo_interface_alias(alias_host)
+    create_lo_interface_alias(alias_host)
+    services = list_available_docker_compose_services()
+    if service not in services:
+        click.echo("The provided service is invalid.", err=True)
+        click.echo("Available services are {0}".format(', '.join(services)))
+        sys.exit(1)
+    run_container(service)
+
+"""
+docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7
+"""
+if __name__ == '__main__':
+    # module-upstream module-name,
+    # module-stub list of module names
+    # module-unstub list of module names
+    # issue-stub (issue number, module)
+    # issue-unstub (issue number, module)
+    # harness-list
+    # harness-create (harness name)
+    # harness-delete
+    # container-run (name)
+    # container-build (all, specific list)
+    # container-fetch
+    # test-integration (python ver, bigip ver, list of modules; default all)
+    # test-unit --sdk --no-sdk
+    cli()
