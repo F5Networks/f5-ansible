@@ -1,0 +1,33 @@
+---
+
+- name: Issue 00385 - Create virtual server
+  bigip_virtual_server:
+    destination: 2700:bc00:1f10:101::6
+    name: issue-00385
+    port: 0
+    state: present
+  register: result
+
+- name: Assert Issue 00385 - Create virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00385 - Create virtual server - Idempotent check
+  bigip_virtual_server:
+    destination: 2700:bc00:1f10:101::6
+    name: issue-00385
+    port: 0
+    state: present
+  register: result
+
+- name: Assert Issue 00385 - Create virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00385 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00385
+    state: absent
+  register: result

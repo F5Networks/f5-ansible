@@ -50,6 +50,8 @@ options:
     description:
       - Port of the virtual server. Required when C(state) is C(present)
         and virtual server does not exist.
+      - If you do not want to specify a particular port, use the value C(0).
+        The result is that the virtual server will listen on any port.
   profiles:
     description:
       - List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides
@@ -386,6 +388,42 @@ class VirtualServerParameters(Parameters):
         except (netaddr.core.AddrFormatError, ValueError):
             return False
 
+    def _format_port_for_destination(self, ip, port):
+        addr = netaddr.IPAddress(ip)
+        if addr.version == 6:
+            if port == 0:
+                result = '.any'
+            else:
+                result = '.{0}'.format(port)
+        else:
+            result = ':{0}'.format(port)
+        return result
+
+    def _format_destination(self, address, port, route_domain):
+        if port is None:
+            if route_domain is None:
+                result = '{0}'.format(
+                    self._fqdn_name(address)
+                )
+            else:
+                result = '{0}%{1}'.format(
+                    self._fqdn_name(address),
+                    route_domain
+                )
+        else:
+            port = self._format_port_for_destination(address, port)
+            if route_domain is None:
+                result = '{0}{1}'.format(
+                    self._fqdn_name(address),
+                    port
+                )
+            else:
+                result = '{0}%{1}{2}'.format(
+                    self._fqdn_name(address),
+                    route_domain,
+                    port
+                )
+        return result
 
 class VirtualServerApiParameters(VirtualServerParameters):
     @property
@@ -393,28 +431,7 @@ class VirtualServerApiParameters(VirtualServerParameters):
         if self._values['destination'] is None:
             return None
         destination = self.destination_tuple
-        if destination.port is None:
-            if destination.route_domain is None:
-                result = '{0}'.format(
-                    self._fqdn_name(destination.ip)
-                )
-            else:
-                result = '{0}%{1}'.format(
-                    self._fqdn_name(destination.ip),
-                    destination.route_domain
-                )
-        else:
-            if destination.route_domain is None:
-                result = '{0}:{1}'.format(
-                    self._fqdn_name(destination.ip),
-                    destination.port
-                )
-            else:
-                result = '{0}%{1}:{2}'.format(
-                    self._fqdn_name(destination.ip),
-                    destination.route_domain,
-                    destination.port
-                )
+        result = self._format_destination(destination.ip, destination.port, destination.route_domain)
         return result
 
     @property
@@ -441,8 +458,9 @@ class VirtualServerApiParameters(VirtualServerParameters):
         # 2700:bc00:1f10:101::6%2.80
         # 1.1.1.1%2:80
         # /Common/1.1.1.1%2:80
+        # /Common/2700:bc00:1f10:101::6%2.any
         #
-        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+)'
+        pattern = r'(?P<ip>[^%]+)%(?P<route_domain>[0-9]+)[:.](?P<port>[0-9]+|any)'
         matches = re.search(pattern, destination)
         if matches:
             try:
@@ -450,6 +468,8 @@ class VirtualServerApiParameters(VirtualServerParameters):
             except ValueError:
                 # Can be a port of "any". This only happens with IPv6
                 port = matches.group('port')
+                if port == 'any':
+                    port = 0
             ip = matches.group('ip')
             if not self.is_valid_ip(ip):
                 raise F5ModuleError(
@@ -498,6 +518,8 @@ class VirtualServerApiParameters(VirtualServerParameters):
                 port = int(port)
             except ValueError:
                 # Can be a port of "any". This only happens with IPv6
+                if port == 'any':
+                    port = 0
                 pass
             if not self.is_valid_ip(ip):
                 raise F5ModuleError(
@@ -573,36 +595,11 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         result = self._format_destination(addr, self.port, self.route_domain)
         return result
 
-    def _format_destination(self, address, port, route_domain):
-        if port is None:
-            if route_domain is None:
-                result = '{0}'.format(
-                    self._fqdn_name(address)
-                )
-            else:
-                result = '{0}%{1}'.format(
-                    self._fqdn_name(address),
-                    route_domain
-                )
-        else:
-            if route_domain is None:
-                result = '{0}:{1}'.format(
-                    self._fqdn_name(address),
-                    port
-                )
-            else:
-                result = '{0}%{1}:{2}'.format(
-                    self._fqdn_name(address),
-                    route_domain,
-                    port
-                )
-        return result
-
     @property
     def port(self):
         if self._values['port'] is None:
             return None
-        if self._values['port'] == '*':
+        if self._values['port'] in ['*', 'any']:
             return 0
         self._check_port()
         return int(self._values['port'])
