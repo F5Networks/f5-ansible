@@ -10,7 +10,6 @@
   bigip_pool:
     lb_method: round_robin
     name: pool-servers
-    state: present
 
 - name: Issue 101 - Create MKTX_Session_Logging iRule
   bigip_irule:
