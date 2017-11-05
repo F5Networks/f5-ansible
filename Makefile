@@ -47,3 +47,6 @@ clean-containers:
 
 jenkins:
 	openstack stack create -t heat/jenkins-secondary.yaml -e heat/jenkins-secondary-params.yaml jenkins-secondary-01 --wait
+
+generate-certs:
+	cd test/integration && ansible-playbook -i inventory/hosts bigip_ssl_certificate.yaml --tags generate_certs
