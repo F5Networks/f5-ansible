@@ -9,6 +9,7 @@ new_certs_dir     = $dir/newcerts
 database          = $dir/index.txt
 serial            = $dir/serial
 RANDFILE          = $dir/private/.rand
+unique_subject    = no
 
 private_key       = $dir/private/intermediate.key.pem
 certificate       = $dir/certs/intermediate.cert.pem
@@ -96,6 +97,7 @@ nsComment = "OpenSSL Generated Server Certificate"
 subjectKeyIdentifier = hash
 authorityKeyIdentifier = keyid,issuer:always
 keyUsage = critical, digitalSignature, keyEncipherment
+authorityInfoAccess = OCSP;URI:http://ocsp.example.com
 extendedKeyUsage = serverAuth
 
 [ crl_ext ]

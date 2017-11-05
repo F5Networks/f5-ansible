@@ -1,0 +1,38 @@
+---
+
+- name: Create a private key and encrypt it with AES-256 encryption
+  command: >
+    openssl genrsa -aes256
+      -passout pass:default
+      -out intermediate/private/ocsp.example.com.key.pem 4096
+  args:
+    chdir: "{{ ca_dir }}"
+
+- name: Create request file
+  command: >
+    openssl req -passin pass:default
+      -config intermediate/openssl.cnf -new -sha256
+      -subj "/C=GB/ST=England/O=Alice Ltd/OU=Alice Ltd Certificate Authority/CN=ocsp.example.com"
+      -key intermediate/private/ocsp.example.com.key.pem
+      -out intermediate/csr/ocsp.example.com.csr.pem
+  args:
+    chdir: "{{ ca_dir }}"
+
+- name: Sign the CSR with the intermediate CA
+  command: >
+    openssl ca -config intermediate/openssl.cnf
+      -passin pass:default
+      -extensions ocsp -days 375 -notext -md sha256
+      -in intermediate/csr/ocsp.example.com.csr.pem
+      -out intermediate/certs/ocsp.example.com.cert.pem
+      -batch
+  args:
+    chdir: "{{ ca_dir }}"
+
+- name: Get cert output to make sure it is correct
+  command: >
+    openssl x509 -noout -text
+      -passin pass:default
+      -in intermediate/certs/ocsp.example.com.cert.pem
+  args:
+    chdir: "{{ ca_dir }}"
