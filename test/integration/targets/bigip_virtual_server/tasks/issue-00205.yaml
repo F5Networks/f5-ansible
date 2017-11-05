@@ -1,0 +1,41 @@
+---
+
+- name: Issue 00205 - Include issue variables
+  include_vars:
+    file: issue-00205.yaml
+
+- name: Issue 00205 - Add FastL4 virtual server
+  bigip_virtual_server:
+    destination: 1.1.1.1
+    name: issue-00205a
+    port: 80
+    profiles:
+      - fastL4
+    state: present
+  register: result
+
+- name: Issue 00205 - Assert Add FastL4 virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00205 - Add FastL4 virtual server - Idempotent check
+  bigip_virtual_server:
+    destination: 1.1.1.1
+    name: issue-00205a
+    port: 80
+    profiles:
+      - fastL4
+    state: present
+  register: result
+
+- name: Issue 00205 - Assert Add FastL4 virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove virtual server
+  bigip_virtual_server:
+    name: issue-00205a
+    state: absent
+  register: result
