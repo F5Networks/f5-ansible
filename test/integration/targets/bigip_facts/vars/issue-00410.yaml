@@ -1,0 +1,4 @@
+---
+
+lb_method: round-robin
+pool_name: pool-issue-00410

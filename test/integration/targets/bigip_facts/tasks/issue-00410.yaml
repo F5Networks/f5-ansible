@@ -1,0 +1,30 @@
+---
+
+- name: Issue 00410 - Include issue variables
+  include_vars:
+      file: issue-00410.yaml
+
+- name: Issue 00410 - Create pool
+  bigip_pool:
+      lb_method: "{{ lb_method }}"
+      name: "{{ pool_name }}"
+      state: present
+  register: result
+
+- name: Issue 00410 - Collect BIG-IP facts
+  _bigip_facts:
+      include:
+        - pool
+  register: result
+
+- name: Issue 00410 - Assert facts
+  assert:
+    that:
+      - "'pool' in result"
+      - "'name' in result['pool']['/Common/pool-issue-00410']"
+      - result['pool']['/Common/pool-issue-00410']['lb_method'] == 'round-robin'
+
+- name: Issue 00410 - Remove pool
+  bigip_pool:
+      name: "{{ pool_name }}"
+      state: absent
