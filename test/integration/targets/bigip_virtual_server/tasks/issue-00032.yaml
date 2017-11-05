@@ -55,11 +55,6 @@
 
 - name: Issue 32 - Delete pool
   bigip_pool:
-    name: "test_pool"
+    name: "mypool"
     state: "absent"
   register: result
-
-- name: Issue 32 - Assert Delete pool
-  assert:
-    that:
-      - result|changed
