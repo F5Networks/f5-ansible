@@ -21,6 +21,7 @@ docs/_modules/list_of_*.rst
 docs/_modules/*_module.rst
 
 inventory/group_vars/secret.yaml
+devtools/docker-compose.site.yaml
 
 test/integration/inventory/hosts
 test/integration/inventory/group_vars/all.yaml
