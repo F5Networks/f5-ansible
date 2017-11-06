@@ -1,0 +1,34 @@
+---
+
+- name: Issue 00416 - Add an iRule
+  bigip_irule:
+    name: issue-00416
+    content: "{{ lookup('file', 'issue-00416.tcl') }}"
+    module: ltm
+    state: present
+  register: result
+
+- name: Issue 00416 - Assert Add an iRule
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00416 - Add an iRule - Idempotent check
+  bigip_irule:
+    name: issue-00416
+    content: "{{ lookup('file', 'issue-00416.tcl') }}"
+    module: ltm
+    state: present
+  register: result
+
+- name: Issue 00416 - Assert Add an iRule - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00416 - Remove iRule
+  bigip_irule:
+    name: issue-00416
+    module: ltm
+    state: absent
+  register: result
