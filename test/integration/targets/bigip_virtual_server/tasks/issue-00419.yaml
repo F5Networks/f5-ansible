@@ -1,0 +1,65 @@
+---
+
+- name: Issue 00419 - Include issue variables
+  include_vars:
+    file: issue-00419.yaml
+
+- name: Issue 00419 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - vlan1
+    - vlan2
+
+- name: Issue 00419 - Build Virtual Servers
+  bigip_virtual_server:
+    state: present
+    name: 1.2.3.4
+    description: My description
+    destination: '::'
+    port: "0"
+    all_profiles:
+      - fastL4
+    enabled_vlans:
+      - vlan1
+      - vlan2
+    snat: automap
+  register: result
+
+- name: Issue 00419 - Assert Build Virtual Servers
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00419 - Build Virtual Servers - Idempotent check
+  bigip_virtual_server:
+    state: present
+    name: 1.2.3.4
+    description: My description
+    destination: '::'
+    port: "0"
+    all_profiles:
+      - fastL4
+    enabled_vlans:
+      - vlan1
+      - vlan2
+    snat: automap
+  register: result
+
+- name: Issue 00419 - Assert Build Virtual Servers - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00419 - Remove virtual server
+  bigip_virtual_server:
+    state: absent
+    name: 1.2.3.4
+
+- name: Issue 00419 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - vlan1
+    - vlan2

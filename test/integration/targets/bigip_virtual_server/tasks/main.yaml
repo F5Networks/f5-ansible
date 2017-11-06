@@ -46,198 +46,198 @@
 
 - name: Modify port of the Virtual Server - Idempotent check
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      state: "present"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    state: present
   register: result
 
 - name: Assert Modify port of the Virtual Server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable route advertisement
   bigip_virtual_server:
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      route_advertisement_state: "enabled"
-      state: "present"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    route_advertisement_state: enabled
+    state: present
   register: result
 
 - name: Assert Enable route advertisement
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable route advertisement - Idempotent check
   bigip_virtual_server:
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      route_advertisement_state: "enabled"
-      state: "present"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    route_advertisement_state: enabled
+    state: present
   register: result
 
 - name: Assert Enable route advertisement - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable route advertisement
   bigip_virtual_server:
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      route_advertisement_state: "disabled"
-      state: "present"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    route_advertisement_state: disabled
+    state: present
   register: result
 
 - name: Assert Disable route advertisement
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable route advertisement - Idempotent check
   bigip_virtual_server:
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      route_advertisement_state: "disabled"
-      state: "present"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    route_advertisement_state: disabled
+    state: present
   register: result
 
 - name: Assert Disable route advertisement - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete virtual server
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      state: "absent"
+    name: "{{ vs_name }}"
+    state: absent
   register: result
 
 - name: Assert Delete virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete virtual server - Idempotent check
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      state: "absent"
+    name: "{{ vs_name }}"
+    state: absent
   register: result
 
 - name: Assert Delete virtual server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Add virtual server for VLAN test
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
   register: result
 
 - name: Assert Add virtual server for VLAN test
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN on virtual server
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
-      enabled_vlans: "{{ enabled_vlans }}"
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
+    enabled_vlans: "{{ enabled_vlans }}"
   register: result
 
 - name: Assert Set VLAN on virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN on virtual server - Idempotent check
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
-      enabled_vlans: "{{ enabled_vlans }}"
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
+    enabled_vlans: "{{ enabled_vlans }}"
   register: result
 
 - name: Assert Set VLAN on virtual server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set ALL VLAN on virtual server
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
-      enabled_vlans: "ALL"
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
+    enabled_vlans: ALL
   register: result
 
 - name: Assert Set ALL VLAN on virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set ALL VLAN on virtual server - Idempotent check
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
-      enabled_vlans: "ALL"
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
+    enabled_vlans: ALL
   register: result
 
 - name: Assert Set ALL VLAN on virtual server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete VLAN virtual server
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      state: "absent"
+    name: "{{ vs_name }}"
+    state: absent
   register: result
 
 - name: Assert Delete VLAN virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Add virtual server (FastHTTP)
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles_fasthttp }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: "present"
+    all_profiles: "{{ vs_profiles_fasthttp }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
   register: result
 
 # Tests for different issues filed on Github
@@ -279,6 +279,9 @@
 
 - import_tasks: issue-00408.yaml
   tags: issue-00408
+
+- import_tasks: issue-00419.yaml
+  tags: issue-00419
 
 # Tests for different pull requests filed on Github
 - import_tasks: pr-03158.yaml

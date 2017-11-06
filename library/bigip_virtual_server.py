@@ -204,6 +204,15 @@ EXAMPLES = r'''
     enabled_vlans:
       - /Common/vlan2
   delegate_to: localhost
+
+- name: Add FastL4 virtual server
+  bigip_virtual_server:
+    destination: 1.1.1.1
+    name: fastl4_vs
+    port: 80
+    profiles:
+      - fastL4
+    state: present
 '''
 
 RETURN = r'''
@@ -327,6 +336,7 @@ class VirtualServerParameters(Parameters):
     }
 
     api_attributes = [
+        'description',
         'destination',
         'disabled',
         'enabled',
@@ -339,10 +349,11 @@ class VirtualServerParameters(Parameters):
         'sourceAddressTranslation',
         'vlans',
         'vlansEnabled',
-        'vlansDisabled',
+        'vlansDisabled'
     ]
 
     updatables = [
+        'description',
         'default_persistence_profile',
         'destination',
         'disabled',
@@ -359,6 +370,7 @@ class VirtualServerParameters(Parameters):
     ]
 
     returnables = [
+        'description',
         'default_persistence_profile',
         'destination',
         'disabled',
