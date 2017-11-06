@@ -1,11 +1,20 @@
 ---
 
-- name: Provision vCMP
-  bigip_provision:
-      module: "vcmp"
-      state: "absent"
+- name: Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - vlan1
+    - vlan2
+    - vlan3
 
 - name: Upload initial image to be used
   bigip_software:
       base_image: "{{ initial_image }}"
-      state: "absent"
+      state: absent
+
+- name: Provision vCMP
+  bigip_provision:
+      module: vcmp
+      state: absent

@@ -2,10 +2,18 @@
 
 - name: Provision vCMP
   bigip_provision:
-      module: "vcmp"
-      level: "dedicated"
+    module: vcmp
+    level: dedicated
 
 - name: Upload initial image to be used
   bigip_software:
-      base_image: "{{ initial_image }}"
-      state: "present"
+    base_image: "{{ initial_image }}"
+    state: present
+
+- name: Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - vlan1
+    - vlan2
+    - vlan3

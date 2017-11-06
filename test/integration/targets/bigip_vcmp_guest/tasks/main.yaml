@@ -1,31 +1,158 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
-- name: Create a vCMP guest
+- name: Create a deployed vCMP guest
   bigip_vcmp_guest:
-      name: "guest1"
-      mgmt_network: "bridged"
-      mgmt_address: "10.10.10.10/24"
-      initial_image: "{{ initial_image }}"
+    name: "guest1"
+    mgmt_network: "bridged"
+    mgmt_address: "10.10.10.10/24"
+    initial_image: "{{ initial_image|basename }}"
   register: result
 
-- name: Assert Create a vCMP guest
+- name: Assert Create a deployed vCMP guest
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
-- name: Create a vCMP guest - Idempotent check
+- name: Create a deployed vCMP guest - Idempotent check
   bigip_vcmp_guest:
-      name: "guest1"
-      mgmt_network: "bridged"
-      mgmt_address: "10.10.10.10/24"
-      initial_image: "{{ initial_image }}"
+    name: "guest1"
+    mgmt_network: "bridged"
+    mgmt_address: "10.10.10.10/24"
+    initial_image: "{{ initial_image|basename }}"
   register: result
 
-- name: Assert Create a vCMP guest - Idempotent check
+- name: Assert Create a deployed vCMP guest - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
-- include: teardown.yaml
+- name: Change VLANs for the guest
+  bigip_vcmp_guest:
+    name: guest1
+    vlans:
+      - vlan1
+      - vlan2
+  register: result
+
+- name: Assert Change VLANs for the guest
+  assert:
+    that:
+      - result|changed
+
+- name: Change VLANs for the guest - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    vlans:
+      - vlan1
+      - vlan2
+  register: result
+
+- name: Assert Change VLANs for the guest - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Change state to disabled
+  bigip_vcmp_guest:
+    name: guest1
+    state: disabled
+  register: result
+
+- name: Assert Change state to disabled
+  assert:
+    that:
+      - result|changed
+
+- name: Change state to disabled - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    state: disabled
+  register: result
+
+- name: Assert Change state to disabled - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Change state to provisioned
+  bigip_vcmp_guest:
+    name: guest1
+    state: provisioned
+  register: result
+
+- name: Assert Change state to provisioned
+  assert:
+    that:
+      - result|changed
+
+- name: Change state to provisioned - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    state: provisioned
+  register: result
+
+- name: Assert Change state to provisioned - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Change state to configured
+  bigip_vcmp_guest:
+    name: guest1
+    state: configured
+  register: result
+
+- name: Assert Change state to configured
+  assert:
+    that:
+      - result|changed
+
+- name: Change state to configured - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    state: configured
+  register: result
+
+- name: Assert Change state to configured - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Change state to disabled from configured - The same state technically
+  bigip_vcmp_guest:
+    name: guest1
+    state: disabled
+  register: result
+
+- name: Assert Change state to disabled from configured - The same state technically
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove vCMP guest and disk
+  bigip_vcmp_guest:
+    name: guest1
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Assert Remove vCMP guest and disk
+  assert:
+    that:
+      - result|changed
+
+- name: Remove vCMP guest and disk - Idempotent check
+  bigip_vcmp_guest:
+    name: guest1
+    state: absent
+    delete_virtual_disk: yes
+  register: result
+
+- name: Assert Remove vCMP guest and disk - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- import_tasks: teardown.yaml
