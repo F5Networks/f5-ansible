@@ -147,9 +147,10 @@
           - not result|changed
 
 # Tests for different issues filed on Github
-- include: issue-42.yaml
-  tags: issue-42
-- include: issue-316.yaml
-  tags: issue-316
+- include: issue-00042.yaml
+  tags: issue-00042
+
+- include: issue-00316.yaml
+  tags: issue-00316
 
 - include: teardown.yaml
