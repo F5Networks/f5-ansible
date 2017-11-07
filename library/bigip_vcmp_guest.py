@@ -100,6 +100,15 @@ options:
       - provisioned
       - present
       - absent
+  cores_per_slot:
+    description:
+      - Specifies the number of cores that the system allocates to the guest.
+      - Each core represents a portion of CPU and memory. Therefore, the amount of
+        memory allocated per core is directly tied to the amount of CPU. This amount
+        of memory varies per hardware platform type.
+      - The number you can specify depends on the type of hardware you have.
+      - In the event of a reboot, the system persists the guest to the same slot on
+        which it ran prior to the reboot.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -191,7 +200,8 @@ class Parameters(AnsibleF5Parameters):
         'managementNetwork': 'mgmt_network',
         'managementIp': 'mgmt_address',
         'initialImage': 'initial_image',
-        'virtualDisk': 'virtual_disk'
+        'virtualDisk': 'virtual_disk',
+        'coresPerSlot': 'cores_per_slot'
     }
 
     api_attributes = [
@@ -572,7 +582,7 @@ class ModuleManager(object):
         :return:
         """
         try:
-            res = self.client.api.tm.vcmp.guests.guest.load(name='guest1')
+            res = self.client.api.tm.vcmp.guests.guest.load(name=self.want.name)
             Stats(res.stats.load())
             return False
         except iControlUnexpectedHTTPError as ex:
@@ -582,7 +592,7 @@ class ModuleManager(object):
 
     def is_provisioned(self):
         try:
-            res = self.client.api.tm.vcmp.guests.guest.load(name='guest1')
+            res = self.client.api.tm.vcmp.guests.guest.load(name=self.want.name)
             stats = Stats(res.stats.load())
             if stats.stat['requestedState']['description'] == 'provisioned':
                 if stats.stat['vmStatus']['description'] == 'stopped':
@@ -593,7 +603,7 @@ class ModuleManager(object):
 
     def is_deployed(self):
         try:
-            res = self.client.api.tm.vcmp.guests.guest.load(name='guest1')
+            res = self.client.api.tm.vcmp.guests.guest.load(name=self.want.name)
             stats = Stats(res.stats.load())
             if stats.stat['requestedState']['description'] == 'deployed':
                 if stats.stat['vmStatus']['description'] == 'running':
@@ -671,7 +681,8 @@ class ArgumentSpec(object):
             ),
             delete_virtual_disk=dict(
                 type='bool', default='no'
-            )
+            ),
+            cores_per_slot=dict(type='int')
         )
         self.f5_product_name = 'bigip'
         self.required_if = [
