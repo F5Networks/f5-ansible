@@ -147,6 +147,7 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -195,6 +196,8 @@ class Parameters(AnsibleF5Parameters):
             return None
         elif self._values['multicast_address'] in ["none", "any6", '']:
             return "any6"
+        elif self._values['multicast_address'] == 'any':
+            return 'any'
         result = self._get_validated_ip_address('multicast_address')
         return result
 
@@ -334,22 +337,22 @@ class Parameters(AnsibleF5Parameters):
 class Changes(Parameters):
     @property
     def mirror_primary_address(self):
-        if self._values['mirror_primary_address'] == 'any6':
-            return "none"
+        if self._values['mirror_primary_address'] == ['any6', 'none', 'any']:
+            return "any6"
         else:
             return self._values['mirror_primary_address']
 
     @property
     def mirror_secondary_address(self):
-        if self._values['mirror_secondary_address'] == 'any6':
-            return "none"
+        if self._values['mirror_secondary_address'] == ['any6', 'none', 'any']:
+            return "any6"
         else:
             return self._values['mirror_secondary_address']
 
     @property
     def multicast_address(self):
-        if self._values['multicast_address'] == 'any6':
-            return "none"
+        if self._values['multicast_address'] == ['any6', 'none', 'any']:
+            return "any"
         else:
             return self._values['multicast_address']
 
@@ -361,12 +364,67 @@ class Changes(Parameters):
             return self._values['unicast_failover']
         return "none"
 
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    def to_tuple(self, failovers):
+        result = []
+        for x in failovers:
+            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            result += tmp
+        return result
+
+    @property
+    def unicast_failover(self):
+        if self.want.unicast_failover == [] and self.have.unicast_failover is None:
+            return None
+        if self.want.unicast_failover is None:
+            return None
+        if self.have.unicast_failover is None:
+            return self.want.unicast_failover
+        want = self.to_tuple(self.want.unicast_failover)
+        have = self.to_tuple(self.have.unicast_failover)
+        if set(want) == set(have):
+            return None
+        else:
+            return self.want.unicast_failover
+
     @property
     def failover_multicast(self):
         values = ['multicast_address', 'multicast_interface', 'multicast_port']
-        if all(self._values[x] in [None, 'any6'] for x in values):
-            return None
-        return True
+        if self.want.failover_multicast is False:
+            if self.have.multicast_interface == 'eth0' and self.have.multicast_address == 'any' and self.have.multicast_port == 0:
+                return None
+            else:
+                result = dict(
+                    failover_multicast=True,
+                    multicast_port=0,
+                    multicast_interface='eth0',
+                    multicast_address='any'
+                )
+                return result
+        else:
+            if all(self.have._values[x] in [None, 'any6', 'any'] for x in values):
+                return True
 
 
 class ModuleManager(object):
@@ -376,13 +434,18 @@ class ModuleManager(object):
         self.changes = Changes()
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
             self.changes = Changes(changed)
             return True
@@ -419,14 +482,8 @@ class ModuleManager(object):
         self.update_on_device()
         return True
 
-    def remove(self):
-        if self.client.check_mode:
-            return True
-        self.remove_from_device()
-        return True
-
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         collection = self.client.api.tm.cm.devices.get_collection()
         for resource in collection:
             if resource.selfDevice == 'true':
@@ -471,6 +528,9 @@ class ArgumentSpec(object):
             )
         )
         self.f5_product_name = 'bigip'
+        self.required_together = [
+            ['multicast_address', 'multicast_interface', 'multicast_port']
+        ]
 
 
 def main():
