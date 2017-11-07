@@ -575,7 +575,7 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         vsm = VirtualServerManager(client)
         vsm.exists = Mock(return_value=True)
-        vsm.read_current_from_device=Mock(return_value=current)
+        vsm.read_current_from_device = Mock(return_value=current)
 
         mm = ModuleManager(client)
         mm.get_manager = Mock(return_value=vsm)
@@ -611,7 +611,7 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         vsm = VirtualServerManager(client)
         vsm.exists = Mock(return_value=True)
-        vsm.read_current_from_device=Mock(return_value=current)
+        vsm.read_current_from_device = Mock(return_value=current)
         vsm.update_on_device = Mock(return_value=True)
 
         mm = ModuleManager(client)
