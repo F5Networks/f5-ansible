@@ -437,6 +437,7 @@ class VirtualServerParameters(Parameters):
                 )
         return result
 
+
 class VirtualServerApiParameters(VirtualServerParameters):
     @property
     def destination(self):
