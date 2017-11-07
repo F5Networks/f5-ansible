@@ -62,3 +62,4 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    development/ssh-functionality-for-modules.rst
    development/issue-management.rst
    development/pulling-docker-containers.rst
+   development/tutorials/adding-new-admin-to-encrypted-files.rst
