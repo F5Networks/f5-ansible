@@ -3,13 +3,13 @@ Install Ansible by using virtualenv
 
 To keep up with the latest version of Ansible and F5 Ansible modules, F5 recommends using virtualenv.
 
-Installing virtualenv
----------------------
+Install virtualenv
+------------------
 
 .. note:: To install Python virtualenv, you need administrative/root access. Use caution if you are installing on a shared system to ensure you do not impact your co-workers!
 
 Mac OS
-^^^^^^
+``````
 
 Pip does not come pre-installed on a Mac. To install pip, run the following commands:
 
@@ -23,7 +23,7 @@ Pip does not come pre-installed on a Mac. To install pip, run the following comm
    pip install virtualenv
 
 RHEL/CentOS 7
-^^^^^^^^^^^^^
+`````````````
 
 On RHEL/CentOS, You can install by using yum.
 
@@ -32,7 +32,7 @@ On RHEL/CentOS, You can install by using yum.
    sudo yum install python-virtualenv
 
 Ubuntu/Debian
-^^^^^^^^^^^^^
+`````````````
 
 On Ubuntu/Debian, you can install by using apt.
 
@@ -40,8 +40,8 @@ On Ubuntu/Debian, you can install by using apt.
 
    sudo apt install python-virtualenv
 
-Setting up virtualenv
----------------------
+Set up virtualenv
+-----------------
 
 After you install virtualenv, you can create a "virtual environment" to host your local copy of Ansible.
 
@@ -51,7 +51,7 @@ After you install virtualenv, you can create a "virtual environment" to host you
 
 In your current working directory, you will find a new directory called myansible (you do not have to call it "myansible", I just chose that name as an example, you could also call it "ansible24", etc...).
 
-This directory contains a copy of Python that is configured to install any modules within that local directory. When you use this method, you can install Python modules without stomping on the system-wide ones.
+This directory contains a copy of Python that will install any modules within that local directory. When you use this method, you can install Python modules without stomping on the system-wide ones.
 
 To use this new location, you must activate it.
 
@@ -71,7 +71,7 @@ Now that the virtualenv is active, all future Python commands (such as pip) will
   
 Let's install Ansible to make it possible to use the modules.
 
-First, make sure `ansible` is installed.
+First, make sure you installed `ansible`.
 
 .. code-block:: bash
 
@@ -94,15 +94,15 @@ The output should resemble the following:
 
 Now you can create your first playbook. The remainder of the Ansible playbooks will be in a file called ``site.yaml``.
 
-Installing modules
-------------------
+Install modules
+---------------
 
 Refer to the documentation on `installing the modules here <installing-modules.html>`_.
 
 This is useful if you want to run the latest/development version of the F5 Ansible module.  If you are using Ansible 2.4.0 or newer you may want to skip this step.
 
-Upgrading Ansible
------------------
+Upgrade Ansible
+---------------
 
 If you need to upgrade Ansible (i.e. from 2.3.0 to 2.4.0) you can run the following command:
 
@@ -111,8 +111,8 @@ If you need to upgrade Ansible (i.e. from 2.3.0 to 2.4.0) you can run the follow
    (myansible) $ pip install --upgrade ansible
    
 
-Installing the latest development version of Ansible and F5 modules
--------------------------------------------------------------------
+Install the latest development version of Ansible and F5 modules
+----------------------------------------------------------------
 
 The following example shows how to install the latest development version of Ansible and the F5 Ansible modules.
 
