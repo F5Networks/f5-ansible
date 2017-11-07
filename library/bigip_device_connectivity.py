@@ -41,7 +41,7 @@ options:
         local IP address that the system uses for failover operations. Port
         specifies the port that the system uses for failover operations. If C(port)
         is not specified, the default value C(1026) will be used.  If you are
-        specifying the (recommended) management IP address, use 'management-ip' in 
+        specifying the (recommended) management IP address, use 'management-ip' in
         the address field
   failover_multicast:
     description:
@@ -554,4 +554,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
