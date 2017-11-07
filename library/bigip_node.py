@@ -515,7 +515,6 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
-        import q; q.q(changed)
         if changed:
             self.changes = Changes(changed)
             return True
