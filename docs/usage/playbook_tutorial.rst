@@ -22,9 +22,9 @@ Your BIG-IP is probably not called ``big-ip01.internal``. It might be a differen
    <a href="https://github.com/F5Networks/f5-ansible/blob/master/examples/getting-started.yaml" target="_blank">this yaml file</a>
 
 Add a pool
-~~~~~~~~~~
+----------
 
-A pool represents a collection of resources. These resource typically deliver a service that is identical. By assigning them to a pool, the BIG-IP is able to distribute requests amongst all of them.
+A pool represents a collection of resources. These resource typically deliver a service that is identical. By assigning them to a pool, the BIG-IP is able to distribute requests among them.
 
 Add the following to your ``site.yaml`` to create a pool called ``web``:
 
@@ -43,7 +43,7 @@ Add the following to your ``site.yaml`` to create a pool called ``web``:
          delegate_to: localhost
 
 Add two nodes
-~~~~~~~~~~~~~
+-------------
 
 Now you want to create the nodes in your BIG-IP configuration. Nodes represent the actual devices on your network. They could be physical gear, VMs, or other devices.
 
@@ -76,7 +76,7 @@ To add the two nodes, put the following in your ``site.yaml``:
     It is important that the remaining tasks align vertically with the ``Add a pool`` task above. If the spacing doesn't line up, Ansible will raise an error.
 
 Add the nodes to the pool
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 With the pool created and your nodes in place, you now want to add those nodes to the pool. At this point you can refer to those nodes as pool members.
 
@@ -101,9 +101,9 @@ With the pool created and your nodes in place, you now want to add those nodes t
                name: "node-2"
 
 Add a virtual server
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
-Now that your pool is set up and the nodes are members of that pool, you want to create a VIP so that external requests can be delivered to the pool members.
+Now that you created your pool and the nodes are members of that pool, you want to create a virtual IP address so that external requests go to the pool members.
 
 The below example uses ``172.16.10.108`` as the external address, so you likely need to change it for your own environment.
 
@@ -132,3 +132,5 @@ More info
 ---------
 
 Curious what else is possible with the current modules? Interested in test-driving the modules under development? Refer to the sidebar for links relevant to your interests.
+
+Want to know the difference between `delegate_to` and `connection:local`? See :doc:`connection-local-or-delegate-to`.
