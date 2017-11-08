@@ -14,7 +14,7 @@ all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
 	pycodestyle library/*.py
 
-all-tests: pycodestyle
+all-tests: style
 
 docs:
 	rm docs/modules/* || true
