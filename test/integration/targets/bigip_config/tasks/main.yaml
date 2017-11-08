@@ -6,33 +6,33 @@
 
 - name: Save the running BIG-IP configuration to disk
   bigip_config:
-      save: True
+    save: True
   register: result
 
 - name: Reset device
   bigip_config:
-      reset: True
-      save: True
+    reset: True
+    save: True
   register: result
 
 - name: Reset device, load new running configuration, save it
   bigip_config:
-      reset: True
-      save: True
-      merge_content: "{{ lookup('file', 'bigip.scf') }}"
-      verify: False
+    reset: True
+    save: True
+    merge_content: "{{ lookup('file', 'bigip.scf') }}"
+    verify: False
   register: result
 
 - name: Ensure virtual server description is same as in SCF file
   bigip_virtual_server:
-      description: "my description"
-      destination: "10.10.10.10"
-      name: "bar10"
-      port: "80"
-      state: "present"
+    description: "my description"
+    destination: "10.10.10.10"
+    name: "bar10"
+    port: "80"
+    state: "present"
   register: result
 
 - name: Assert Ensure virtual server description is same as in SCF file
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
