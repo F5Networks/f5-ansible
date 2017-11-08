@@ -72,6 +72,7 @@ try:
 except ImportError:
     HAS_F5SDK = False
 
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
