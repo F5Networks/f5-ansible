@@ -1,13 +1,20 @@
 [f5-test]
-bigip1 ansible_host=10.144.128.41 ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
-bigip2 ansible_host=10.144.128.42 ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+bigip1 ansible_host=localhost ansible_python_interpreter=/usr/local/bin/python
+
+[f5-metal]
+bigip2 ansible_host=172.16.1.10 bigip_port=443 ansible_python_interpreter=/usr/local/bin/python
 
 [secret:children]
 f5-test
+f5-metal
+
+[f5-host]
+bigip3 ansible_host=1.2.3.4 ansible_ssh_port=2222 ansible_ssh_user=root ansible_ssh_pass=default
 
 [bigip]
 bigip1
 bigip2
+localhost
 
 [localhost]
-localhost ansible_python_interpreter=/Users/trupp/src/envs/ansible-2.0/bin/python
+localhost ansible_python_interpreter=/usr/local/bin/python
