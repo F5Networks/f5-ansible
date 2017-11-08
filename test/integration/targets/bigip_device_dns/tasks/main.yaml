@@ -2,292 +2,292 @@
 
 - name: Enable cache
   bigip_device_dns:
-      cache: "enable"
+    cache: "enable"
   register: result
 
 - name: Assert Enable cache
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable cache - Idempotent check
   bigip_device_dns:
-      cache: "enable"
+    cache: "enable"
   register: result
 
 - name: Assert Enable cache - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable cache
   bigip_device_dns:
-      cache: "disable"
+    cache: "disable"
   register: result
 
 - name: Assert Disable cache
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable cache - Idempotent check
   bigip_device_dns:
-      cache: "disable"
+    cache: "disable"
   register: result
 
 - name: Assert Disable cache - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable cache - Incorrect value
   bigip_device_dns:
-      cache: "disabled"
+    cache: "disabled"
   register: result
   ignore_errors: true
 
 - name: Assert Enable cache - Incorrect value
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set IP version 6
   bigip_device_dns:
-      ip_version: "6"
+    ip_version: "6"
   register: result
 
 - name: Assert Set IP version 6
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set IP version 6 - Idempotent check
   bigip_device_dns:
-      ip_version: "6"
+    ip_version: "6"
   register: result
 
 - name: Assert Set IP version 6 - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set IP version 4
   bigip_device_dns:
-      ip_version: "4"
+    ip_version: "4"
   register: result
 
 - name: Assert Set IP version 4
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set IP version 4 - Idempotent check
   bigip_device_dns:
-      ip_version: "4"
+    ip_version: "4"
   register: result
 
 - name: Assert Set IP version 4 - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set Unknown IP version
   bigip_device_dns:
-      ip_version: "10"
+    ip_version: "10"
   register: result
   ignore_errors: true
 
 - name: Assert Set Unknown IP version
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 # Sending a string to a parameter that is expected to be a list will
 # cast the string to a list automatically, making this method valid
 - name: Set a nameserver
   bigip_device_dns:
-      name_servers: "10.10.10.10"
+    name_servers: "10.10.10.10"
   register: result
   ignore_errors: true
 
 - name: Assert Set a nameserver
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a nameserver
   bigip_device_dns:
-      name_servers:
-          - "12.12.12.12"
+    name_servers:
+      - "12.12.12.12"
   register: result
 
 - name: Assert Set a nameserver
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a nameserver - Idempotent check
   bigip_device_dns:
-      name_servers:
-          - "12.12.12.12"
+    name_servers:
+      - "12.12.12.12"
   register: result
 
 - name: Assert Set a nameserver - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set an empty nameserver
   bigip_device_dns:
-      name_servers:
-          - ""
+    name_servers:
+      - ""
   register: result
 
 - name: Assert Set an empty nameserver
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set an empty nameserver - Idempotent check
   bigip_device_dns:
-      name_servers:
-          - ""
+    name_servers:
+      - ""
   register: result
 
 - name: Assert Set an empty nameserver - Idempotent check
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a list of name servers
   bigip_device_dns:
-      name_servers:
-          - "10.10.10.10"
-          - "11.11.11.11"
-          - "12.12.12.12"
+    name_servers:
+      - "10.10.10.10"
+      - "11.11.11.11"
+      - "12.12.12.12"
   register: result
 
 - name: Assert Set a list of name servers
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a list of name servers - Idempotent check
   bigip_device_dns:
-      name_servers:
-          - "10.10.10.10"
-          - "11.11.11.11"
-          - "12.12.12.12"
+    name_servers:
+      - "10.10.10.10"
+      - "11.11.11.11"
+      - "12.12.12.12"
   register: result
 
 - name: Assert Set a list of name servers - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Absent a name server
   bigip_device_dns:
-      name_servers:
-          - "10.10.10.10"
-      state: "absent"
+    name_servers:
+      - "10.10.10.10"
+    state: "absent"
   register: result
 
 - name: Assert Absent a name server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Absent a name server - Idempotent check
   bigip_device_dns:
-      name_servers:
-          - "10.10.10.10"
-      state: "absent"
+    name_servers:
+      - "10.10.10.10"
+    state: "absent"
   register: result
 
 - name: Assert Absent a name server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set a search domain
   bigip_device_dns:
-      search:
-         - "foo.com"
+    search:
+      - "foo.com"
   register: result
 
 - name: Assert Set a search domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a search domain - Idempotent check
   bigip_device_dns:
-      search:
-          - "foo.com"
+    search:
+      - "foo.com"
   register: result
 
 - name: Assert Set a search domain - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set an empty search domain
   bigip_device_dns:
-      search:
-          - ""
+    search:
+      - ""
   register: result
 
 - name: Assert Set an empty search domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a list of search domains
   bigip_device_dns:
-      search:
-          - "alice.com"
-          - "bob.org"
-          - "carol.edu"
+    search:
+      - "alice.com"
+      - "bob.org"
+      - "carol.edu"
   register: result
 
 - name: Assert Set a list of search domains
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set a list of search domains - Idempotent check
   bigip_device_dns:
-      search:
-          - "alice.com"
-          - "bob.org"
-          - "carol.edu"
+    search:
+      - "alice.com"
+      - "bob.org"
+      - "carol.edu"
   register: result
 
 - name: Assert Set a list of search domains - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Absent a search domain
   bigip_device_dns:
-      search:
-          - "alice.com"
-      state: "absent"
+    search:
+      - "alice.com"
+    state: "absent"
   register: result
 
 - name: Assert Absent a search domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Absent a search domain - Idempotent check
   bigip_device_dns:
-      search:
-          - "alice.com"
-      state: "absent"
+    search:
+      - "alice.com"
+    state: "absent"
   register: result
 
 - name: Assert Absent a search domain - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
