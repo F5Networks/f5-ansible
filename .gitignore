@@ -9,6 +9,7 @@ Vagrantfile
 vault.txt
 **.cache/
 cache/
+local/ansible
 
 # Byte-compiled files
 __pycache__/
