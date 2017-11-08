@@ -305,25 +305,6 @@
     that:
       - not result|changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Issue 00406 - Create ASM policy, compact XML file
   bigip_asm_policy:
     name: "{{ policy_4 }}"
@@ -660,12 +641,6 @@
       - not result|changed
   when: system_info.product_information.product_version >= "13.0.0"
 
-
-
-
-
-
-
 - name: Issue 00406 - Import ASM policy from template
   bigip_asm_policy:
     name: "{{ policy_7 }}"
@@ -713,12 +688,6 @@
   assert:
     that:
       - not result|changed
-
-
-
-
-
-
 
 - name: Issue 00406 - Remove partition
   bigip_partition:
