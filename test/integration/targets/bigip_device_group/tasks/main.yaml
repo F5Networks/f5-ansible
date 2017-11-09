@@ -2,177 +2,177 @@
 
 - name: Create device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
+    name: "{{ device_group_name }}"
   register: result
 
 - name: Create device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
+    name: "{{ device_group_name }}"
   register: result
 
 - name: Create device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set auto-sync on device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      auto_sync: "yes"
+    name: "{{ device_group_name }}"
+    auto_sync: "yes"
   register: result
 
 - name: Set auto-sync on device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set auto-sync on device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      auto_sync: "yes"
+    name: "{{ device_group_name }}"
+    auto_sync: "yes"
   register: result
 
 - name: Set auto-sync on device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create sync-failover device group
   bigip_device_group:
-      name: "{{ device_group_name2 }}"
-      type: "sync-failover"
+    name: "{{ device_group_name2 }}"
+    type: "sync-failover"
   register: result
 
 - name: Create sync-failover device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create sync-failover device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name2 }}"
-      type: "sync-failover"
+    name: "{{ device_group_name2 }}"
+    type: "sync-failover"
   register: result
 
 - name: Create sync-failover device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set description on device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      description: "this is a description"
+    name: "{{ device_group_name }}"
+    description: "this is a description"
   register: result
 
 - name: Set description on device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set description on device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      description: "this is a description"
+    name: "{{ device_group_name }}"
+    description: "this is a description"
   register: result
 
 - name: Set description on device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set save-on-auto-sync on device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      save_on_auto_sync: "yes"
+    name: "{{ device_group_name }}"
+    save_on_auto_sync: "yes"
   register: result
 
 - name: Set save-on-auto-sync on device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set save-on-auto-sync on device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      save_on_auto_sync: "yes"
+    name: "{{ device_group_name }}"
+    save_on_auto_sync: "yes"
   register: result
 
 - name: Set save-on-auto-sync on device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set full-sync on device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      full_sync: "yes"
+    name: "{{ device_group_name }}"
+    full_sync: "yes"
   register: result
 
 - name: Set full-sync on device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set full-sync on device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      full_sync: "yes"
+    name: "{{ device_group_name }}"
+    full_sync: "yes"
   register: result
 
 - name: Set full-sync on device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set max incremental sync size on device group
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      max_incremental_sync_size: "2048"
+    name: "{{ device_group_name }}"
+    max_incremental_sync_size: "2048"
   register: result
 
 - name: Set max incremental sync size on device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set max incremental sync size on device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      max_incremental_sync_size: "2048"
+    name: "{{ device_group_name }}"
+    max_incremental_sync_size: "2048"
   register: result
 
 - name: Set max incremental sync size on device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove device group
   bigip_device_group:
-      name: "{{ item }}"
-      state: "absent"
+    name: "{{ item }}"
+    state: "absent"
   register: result
-  with_items:
-      - "{{ device_group_name }}"
-      - "{{ device_group_name2 }}"
+  loop:
+    - "{{ device_group_name }}"
+    - "{{ device_group_name2 }}"
 
 - name: Remove device group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove device group - Idempotent check
   bigip_device_group:
-      name: "{{ device_group_name }}"
-      state: "absent"
+    name: "{{ device_group_name }}"
+    state: "absent"
   register: result
 
 - name: Remove device group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

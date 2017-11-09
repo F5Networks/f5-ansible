@@ -1,209 +1,209 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
 - name: Set the SSHD allow string to a specific IP
   bigip_device_sshd:
-      allow:
-          - "{{ allow[0] }}"
+    allow:
+      - "{{ allow[0] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to a specific IP
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD allow string to a specific IP - Idempotent check
   bigip_device_sshd:
-      allow:
-          - "{{ allow[0] }}"
+    allow:
+      - "{{ allow[0] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to a specific IP - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD allow string to deny all
   bigip_device_sshd:
-      allow:
-          - "{{ allow[1] }}"
+    allow:
+      - "{{ allow[1] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to deny all
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD allow string to deny all - Idempotent check
   bigip_device_sshd:
-      allow:
-          - "{{ allow[1] }}"
+    allow:
+      - "{{ allow[1] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to deny all - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD allow string to allow all
   bigip_device_sshd:
-      allow:
-          - "{{ allow[2] }}"
+    allow:
+      - "{{ allow[2] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to allow all
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD allow string to allow all - Idempotent check
   bigip_device_sshd:
-      allow:
-          - "{{ allow[2] }}"
+    allow:
+      - "{{ allow[2] }}"
   register: result
 
 - name: Assert Set the SSHD allow string to allow all - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Turn on the SSHD banner
   bigip_device_sshd:
-      banner: "enabled"
+    banner: "enabled"
   register: result
 
 - name: Assert Turn on the SSHD banner
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Turn on the SSHD banner - Idempotent check
   bigip_device_sshd:
-      banner: "enabled"
+    banner: "enabled"
   register: result
 
 - name: Assert Turn on the SSHD banner - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Turn off the SSHD banner
   bigip_device_sshd:
-      banner: "disabled"
+    banner: "disabled"
   register: result
 
 - name: Assert Turn off the SSHD banner
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Turn off the SSHD banner - Idempotent check
   bigip_device_sshd:
-      banner: "disabled"
+    banner: "disabled"
   register: result
 
 - name: Assert Turn off the SSHD banner - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD banner from a template
   bigip_device_sshd:
-      banner_text: "{{ lookup('template', 'banner.txt') }}"
+    banner_text: "{{ lookup('template', 'banner.txt') }}"
   register: result
 
 - name: Assert Set the SSHD banner from a template
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD banner from a template - Idempotent check
   bigip_device_sshd:
-      banner_text: "{{ lookup('template', 'banner.txt') }}"
+    banner_text: "{{ lookup('template', 'banner.txt') }}"
   register: result
 
 - name: Assert Set the SSHD banner from a template - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD banner from a file
   bigip_device_sshd:
-      banner_text: "{{ lookup('file', 'banner.txt') }}"
+    banner_text: "{{ lookup('file', 'banner.txt') }}"
   register: result
 
 - name: Assert Set the SSHD banner from a file
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD banner from a file - Idempotent check
   bigip_device_sshd:
-      banner_text: "{{ lookup('file', 'banner.txt') }}"
+    banner_text: "{{ lookup('file', 'banner.txt') }}"
   register: result
 
 - name: Assert Set the SSHD banner from a file - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD inactivity timeout (Good)
   bigip_device_sshd:
-      inactivity_timeout: "{{ item }}"
+    inactivity_timeout: "{{ item }}"
   register: result
-  with_items: "{{ inactivity_timeout_good }}"
+  loop: "{{ inactivity_timeout_good }}"
 
 - name: Assert Set the SSHD inactivity timeout (Good)
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD inactivity timeout (Bad)
   bigip_device_sshd:
-      inactivity_timeout: "{{ item }}"
+    inactivity_timeout: "{{ item }}"
   register: result
   ignore_errors: true
-  with_items: "{{ inactivity_timeout_bad }}"
+  loop: "{{ inactivity_timeout_bad }}"
 
 - name: Assert Set the SSHD inactivity timeout (Bad)
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD log level (Good)
   bigip_device_sshd:
-      log_level: "{{ item }}"
+    log_level: "{{ item }}"
   register: result
-  with_items: "{{ log_level_good }}"
+  loop: "{{ log_level_good }}"
 
 - name: Assert Set the SSHD log level (Good)
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set the SSHD log level (Bad)
   bigip_device_sshd:
-      log_level: "{{ item }}"
+    log_level: "{{ item }}"
   register: result
   ignore_errors: true
-  with_items: "{{ log_level_bad }}"
+  loop: "{{ log_level_bad }}"
 
 - name: Assert Set the SSHD log level (Bad)
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set the SSHD login
   bigip_device_sshd:
-      login: "{{ item }}"
+    login: "{{ item }}"
   register: result
-  with_items: "{{ login }}"
+  loop: "{{ login }}"
 
 - name: Assert Set the SSHD login
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
-- include: v12-tests.yaml
+- import_tasks: v12-tests.yaml
   when: system_info.product_information.product_version >= "12.0.0"
