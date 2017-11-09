@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y \
     python-dev python-pip vim git-core wget curl \
     libffi-dev libssl-dev libxml2-dev libxslt1-dev \
     libjpeg62-turbo-dev zlib1g-dev python-apt-common \
-    python-apt jq sshpass rpm
+    python-apt jq sshpass rpm less
 
 # Install required pip packages
 RUN pip install --upgrade pip
