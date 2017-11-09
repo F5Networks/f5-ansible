@@ -2,5 +2,5 @@
 
 - name: Collect BIG-IP facts
   bigip_facts:
-      include: "system_info"
+    include: "system_info"
   register: result
