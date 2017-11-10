@@ -4,115 +4,115 @@
 
 - name: Get GTM pool facts
   bigip_gtm_facts:
-      include: pool
+    include: pool
   register: result
 
 - name: Assert Get GTM pool facts
   assert:
-      that:
-          - result|changed
-          - "'pool' in result"
-          - "'{{ result|json_query('pool[*].name')|first }}' == 'foo.pool'"
+    that:
+      - result|changed
+      - "'pool' in result"
+      - "'{{ result|json_query('pool[*].name')|first }}' == 'foo.pool'"
 
 - name: Get GTM wide_ip facts
   bigip_gtm_facts:
-      include: wide_ip
+    include: wide_ip
   register: result
 
 - name: Assert Get GTM wide_ip facts
   assert:
-      that:
-          - result|changed
-          - "'wide_ip' in result"
+    that:
+      - result|changed
+      - "'wide_ip' in result"
 
 - name: Get GTM server facts
   bigip_gtm_facts:
-      include: server
+    include: server
   register: result
 
 - name: Assert Get GTM server facts
   assert:
-      that:
-          - result|changed
-          - "'server' in result"
+    that:
+      - result|changed
+      - "'server' in result"
 
 - name: Get GTM virtual_server facts (deprecated)
   bigip_gtm_facts:
-      include: virtual_server
+    include: virtual_server
   register: result
 
 - name: Assert Get GTM virtual_server facts (deprecated)
   assert:
-      that:
-          - result|changed
-          - "'virtual_server' in result"
+    that:
+      - result|changed
+      - "'virtual_server' in result"
 
 - name: Get GTM pool facts, many
   bigip_gtm_facts:
-      include:
-          - pool
-          - wide_ip
+    include:
+      - pool
+      - wide_ip
   register: result
 
 - name: Assert Get GTM pool facts, many
   assert:
-      that:
-          - result|changed
-          - "'pool' in result"
-          - "'wide_ip' in result"
+    that:
+      - result|changed
+      - "'pool' in result"
+      - "'wide_ip' in result"
 
 - name: Get GTM pool facts, all
   bigip_gtm_facts:
-      include: all
+    include: all
   register: result
 
 - name: Assert Get GTM pool facts, many
   assert:
-      that:
-          - result|changed
-          - "'pool' in result"
-          - "'wide_ip' in result"
-          - "'server' in result"
+    that:
+      - result|changed
+      - "'pool' in result"
+      - "'wide_ip' in result"
+      - "'server' in result"
 
 - name: Get GTM pool facts, all specific
   bigip_gtm_facts:
-      include:
-        - pool
-        - wide_ip
-        - server
+    include:
+    - pool
+    - wide_ip
+    - server
   register: result
 
 - name: Assert Get GTM pool facts, many
   assert:
-      that:
-          - result|changed
-          - "'pool' in result"
-          - "'wide_ip' in result"
-          - "'server' in result"
+    that:
+      - result|changed
+      - "'pool' in result"
+      - "'wide_ip' in result"
+      - "'server' in result"
 
 - name: Get GTM pool facts with filter
   bigip_gtm_facts:
-      include: pool
-      filter: '{{ pool_filter }}'
+    include: pool
+    filter: '{{ pool_filter }}'
   register: result
 
 - name: Assert Get GTM pool facts with filter
   assert:
-      that:
-          - result|changed
-          - result.pool|length == 1
+    that:
+      - result|changed
+      - result.pool|length == 1
 
 - name: Get GTM pool facts with bad filter
   bigip_gtm_facts:
-      include: pool
-      filter: '{{ pool_filter_bad }}'
+    include: pool
+    filter: '{{ pool_filter_bad }}'
   register: result
 
 - name: Assert Get GTM pool facts with bad filter
   assert:
-      that:
-          - result|changed
-          - result.pool|length == 0
+    that:
+      - result|changed
+      - result.pool|length == 0
 
 - import_tasks: teardown.yaml
 

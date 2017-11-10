@@ -2,27 +2,27 @@
 
 - name: Include issue variables
   include_vars:
-      file: issue-00409.yaml
+    file: issue-00409.yaml
 
 - name: Add virtual server
   bigip_virtual_server:
-      destination: "{{ destination }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      state: present
+    destination: "{{ destination }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
 
 - name: Create pool
   bigip_pool:
-      lb_method: "{{ lb_method }}"
-      name: "{{ pool_name }}"
-      state: present
+    lb_method: "{{ lb_method }}"
+    name: "{{ pool_name }}"
+    state: present
   register: result
 
 - name: Collect BIG-IP facts
   _bigip_facts:
-      include:
-        - pool
-        - virtual_server
+    include:
+      - pool
+      - virtual_server
   register: result
 
 - name: Assert facts
@@ -37,10 +37,10 @@
 
 - name: Remove pool
   bigip_pool:
-      name: "{{ pool_name }}"
-      state: absent
+    name: "{{ pool_name }}"
+    state: absent
 
 - name: Remove virtual server
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      state: absent
+    name: "{{ vs_name }}"
+    state: absent

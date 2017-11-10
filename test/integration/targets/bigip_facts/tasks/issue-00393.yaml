@@ -2,19 +2,19 @@
 
 - name: Include issue variables
   include_vars:
-      file: issue-00393.yaml
+    file: issue-00393.yaml
 
 - name: Create node
   bigip_node:
-      host: "{{ node_host_ipv4 }}"
-      name: "{{ node_name }}"
-      state: "present"
+    host: "{{ node_host_ipv4 }}"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
 
 - name: Collect BIG-IP facts
   _bigip_facts:
-      include:
-        - node
+    include:
+      - node
   register: result
 
 - name: Assert facts
@@ -26,6 +26,6 @@
 
 - name: Remove node
   bigip_node:
-      name: "{{ node_name }}"
-      state: "absent"
+    name: "{{ node_name }}"
+    state: "absent"
   register: result

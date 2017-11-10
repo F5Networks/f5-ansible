@@ -28,15 +28,15 @@
 
 - name: Get GTM pool facts
   bigip_gtm_facts:
-      include: pool
+    include: pool
   register: result
 
 - name: Assert Get GTM pool facts
   assert:
       that:
-          - result|changed
-          - "'pool' in result"
-          - "'availability_status' in result['pool'][0]"
+        - result|changed
+        - "'pool' in result"
+        - "'availability_status' in result['pool'][0]"
 
 - name: Remove pool
   bigip_gtm_pool:
