@@ -2,70 +2,70 @@
 
 - name: Create pool
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      state: "present"
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create pool - Idempotent check
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      state: "present"
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change pool preferred_lb_method, ratio_member
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
-      name: "{{ pool_name }}"
-      state: "present"
+    preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+    name: "{{ pool_name }}"
+    state: "present"
   register: result
 
 - name: Assert Change pool lb_method, ratio_member
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool preferred_lb_method, ratio_member - Idempotent check
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
-      name: "{{ pool_name }}"
-      state: "present"
+    preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+    name: "{{ pool_name }}"
+    state: "present"
   register: result
 
 - name: Assert Change pool preferred_lb_method, ratio_member - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete pool
   bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      state: "absent"
+    name: "{{ pool_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      state: "absent"
+    name: "{{ pool_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

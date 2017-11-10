@@ -2,76 +2,76 @@
 
 - name: Create pool, type 'cname'
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      state: "present"
-      type: "cname"
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: "present"
+    type: "cname"
   register: result
 
 - name: Assert Create pool, type 'cname'
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create pool, type 'cname' - Idempotent check
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method }}"
-      name: "{{ pool_name }}"
-      state: "present"
-      type: "cname"
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    state: "present"
+    type: "cname"
   register: result
 
 - name: Assert Create pool, 'cname' - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change pool type 'cname' lb_method to ratio
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
-      name: "{{ pool_name }}"
-      state: "present"
-      type: "cname"
+    preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+    name: "{{ pool_name }}"
+    state: "present"
+    type: "cname"
   register: result
 
 - name: Assert Change pool type 'cname' lb_method to ratio
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool type 'cname' lb_method to ratio - Idempotent check
   bigip_gtm_pool:
-      preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
-      name: "{{ pool_name }}"
-      state: "present"
-      type: "cname"
+    preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
+    name: "{{ pool_name }}"
+    state: "present"
+    type: "cname"
   register: result
 
 - name: Assert Change pool type 'cname' lb_method to ratio - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete pool
   bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      state: "absent"
-      type: "cname"
+    name: "{{ pool_name }}"
+    state: "absent"
+    type: "cname"
   register: result
 
 - name: Assert Delete pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
-      name: "{{ pool_name }}"
-      state: "absent"
-      type: "cname"
+    name: "{{ pool_name }}"
+    state: "absent"
+    type: "cname"
   register: result
 
 - name: Assert Delete pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

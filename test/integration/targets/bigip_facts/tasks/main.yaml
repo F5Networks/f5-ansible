@@ -2,9 +2,9 @@
 
 - name: Collect BIG-IP facts, address class
   bigip_facts:
-      include: "{{ item }}"
+    include: "{{ item }}"
   register: result
-  with_items: "{{ valid_includes }}"
+  loop: "{{ valid_includes }}"
 
 - import_tasks: issue-00393.yaml
   tags: issue-00393

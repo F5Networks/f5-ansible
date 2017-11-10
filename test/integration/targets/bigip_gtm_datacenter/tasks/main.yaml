@@ -2,154 +2,154 @@
 
 - name: Create datacenter
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Create datacenter
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create datacenter - Idepotent check
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Create datacenter - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set datacenter location
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      location: "{{ valid_location }}"
+    name: "{{ dc_name }}"
+    location: "{{ valid_location }}"
   register: result
 
 - name: Assert Set datacenter location
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set datacenter location - Idepotent check
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      location: "{{ valid_location }}"
+    name: "{{ dc_name }}"
+    location: "{{ valid_location }}"
   register: result
 
 - name: Assert Set datacenter location - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set datacenter contact
   bigip_gtm_datacenter:
-      contact: "{{ valid_contact }}"
-      name: "{{ dc_name }}"
+    contact: "{{ valid_contact }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Set datacenter contact
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set datacenter contact - Idepotent check
   bigip_gtm_datacenter:
-      contact: "{{ valid_contact }}"
-      name: "{{ dc_name }}"
+    contact: "{{ valid_contact }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Set datacenter contact - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set datacenter description
   bigip_gtm_datacenter:
-      description: "{{ valid_description }}"
-      name: "{{ dc_name }}"
+    description: "{{ valid_description }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Set datacenter description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set datacenter description - Idepotent check
   bigip_gtm_datacenter:
-      description: "{{ valid_description }}"
-      name: "{{ dc_name }}"
+    description: "{{ valid_description }}"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Set datacenter description - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable datacenter
   bigip_gtm_datacenter:
-      state: "disabled"
-      name: "{{ dc_name }}"
+    state: "disabled"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Disable datacenter
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable datacenter - Idepotent check
   bigip_gtm_datacenter:
-      state: "disabled"
-      name: "{{ dc_name }}"
+    state: "disabled"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Disable datacenter - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable datacenter
   bigip_gtm_datacenter:
-      state: "enabled"
-      name: "{{ dc_name }}"
+    state: "enabled"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Enable datacenter
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable datacenter - Idepotent check
   bigip_gtm_datacenter:
-      state: "enabled"
-      name: "{{ dc_name }}"
+    state: "enabled"
+    name: "{{ dc_name }}"
   register: result
 
 - name: Assert Enable datacenter - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete datacenter
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      state: "absent"
+    name: "{{ dc_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete datacenter
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
-      name: "{{ dc_name }}"
-      state: "absent"
+    name: "{{ dc_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete datacenter - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
-- include: legacy.yaml
+- import_tasks: legacy.yaml
