@@ -41,10 +41,9 @@ examples/hosts.ini
 **/keyrings/*gpg-agent*
 
 # Encrypted files
-test/heat/jenkins-secondary-params.yaml
 test/runner/roles/harness/vars/*.yaml
 !test/runner/roles/harness/vars/*.example.yaml
-/test/heat/jenkins-secondary-params.yaml
+/test/heat/jenkins-secondary/parameters.yaml
 /test/runner/roles/harness/vars/DualDUT-bigip-12.0.0.yaml
 /test/runner/roles/harness/vars/DualDUT-bigip-12.1.0.yaml
 /test/runner/roles/harness/vars/DualDUT-bigip-12.1.0-hf1.yaml
@@ -77,4 +76,4 @@ test/runner/roles/harness/vars/*.yaml
 /test/pipeline/ci.f5.f5-ansible-public-to-private-ssh-agent-credentials.include.yaml
 /test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
 /devtools/secrets/jenkins_jobs.ini.secret
-/test/heat/ansible-dci-agent-params.yaml
+/test/heat/ansible-dci-agent/parameters.yaml
