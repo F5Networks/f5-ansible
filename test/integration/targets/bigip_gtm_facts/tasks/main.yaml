@@ -77,9 +77,9 @@
 - name: Get GTM pool facts, all specific
   bigip_gtm_facts:
     include:
-    - pool
-    - wide_ip
-    - server
+      - pool
+      - wide_ip
+      - server
   register: result
 
 - name: Assert Get GTM pool facts, many
