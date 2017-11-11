@@ -8,15 +8,38 @@ __metaclass__ = type
 
 import click
 import os
+import re
+import shutil
 import subprocess
 import sys
 import yaml
 
-from six import iteritems
-from os.path import dirname
+
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
 from os.path import abspath
+from os.path import dirname
+from six import iteritems
+
 
 TOP_LEVEL_DIR = dirname(dirname(dirname(abspath(__file__))))
+
+# Stubber related
+JINJA_ENV = Environment(
+    loader=FileSystemLoader([
+        os.path.join(os.path.dirname(os.path.dirname(__file__)),'stubs')
+    ])
+)
+
+# Used for copying files upstream
+UPSTREAM_FIXTURE_FILE = '{0}/test/units/modules/network/f5/fixtures/{1}'
+UPSTREAM_UNIT_TEST = '{0}/test/units/modules/network/f5/test_{1}.py'
+UPSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
+UPSTREAM_MODULE = '{0}/lib/ansible/modules/network/f5/{1}.py'
+DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/fixtures/{1}'
+DOWNSTREAM_UNIT_TEST = '{0}/test/unit/test_{1}.py'
+DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
+DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 
 
 class Root(object):
@@ -31,6 +54,8 @@ def delete_lo_interface_alias(alias_host):
     )
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
+        if "Can't assign requested address" in stderr:
+            return
         print(stderr.decode('utf-8'))
         sys.exit(1)
 
@@ -53,6 +78,7 @@ def list_available_docker_compose_services():
         content = yaml.load(fh)
     if 'services' not in content:
         click.echo("docker-compose file is missing 'services' section", err=True)
+        sys.exit(1)
     for k, v in iteritems(content['services']):
         result.append(k)
     result.sort()
@@ -60,11 +86,9 @@ def list_available_docker_compose_services():
     return result
 
 
-def run_container(service):
+def _start_container(service):
     compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
     extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
-
-    print(compose_file, extend_file)
     cmd = ['docker-compose', '-f', compose_file]
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
@@ -77,6 +101,227 @@ def run_container(service):
         sys.exit(1)
 
 
+def _build_container(service):
+    compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+    cmd = ['docker-compose', '-f', compose_file]
+    if os.path.exists(extend_file):
+        cmd += ['-f', extend_file]
+    cmd += ['build', '--force-rm', '--no-cache', service]
+
+    proc = subprocess.Popen(cmd)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        click.echo(stderr.decode('utf-8'), err=True)
+        sys.exit(1)
+
+
+def module_file_present(module):
+    module_dir = '{0}/library/{1}.py'.format(TOP_LEVEL_DIR, module)
+    if os.path.exists(module_dir):
+        return True
+    return False
+
+
+def module_file_absent(module):
+    result = module_file_present(module)
+    return not result
+
+
+def module_name(module):
+    filename, extension = os.path.splitext(module)
+    return filename
+
+
+def get_fixtures(module):
+    result = []
+
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
+    pattern1 = r"load_fixture\(\'(?P<fixture>[^']+)"
+    pattern2 = r"fixtures\/(?P<fixture>[^']+)"
+    p1 = subprocess.Popen(
+        ['egrep', '(load_fixture|fixtures)', 'test/unit/test_{0}.py'.format(module)],
+        stdout=subprocess.PIPE
+    )
+    p2 = subprocess.Popen(
+        ['egrep', '-v', '(def load_fixture|fixture_path)'],
+        stdin=p1.stdout, stdout=subprocess.PIPE
+    )
+    p1.stdout.close()
+    stdout, stderr = p2.communicate()
+    stdout = stdout.decode('utf-8').split("\n")
+    stdout = [x.strip() for x in stdout if x]
+
+    for x in stdout:
+        matches = re.search(pattern1, x)
+        if matches:
+            result.append(matches.group('fixture'))
+            continue
+        matches = re.search(pattern2, x)
+        if matches:
+            result.append(matches.group('fixture'))
+            continue
+    return result
+
+
+def copy_module(module, upstream_dir):
+    upstream = os.path.realpath(upstream_dir)
+    dest = UPSTREAM_MODULE.format(upstream, module)
+    src = DOWNSTREAM_MODULE.format(TOP_LEVEL_DIR, module)
+    shutil.copy(src, dest)
+
+
+def copy_unit_tests(module, upstream_dir):
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
+    upstream = os.path.realpath(upstream_dir)
+    dest = UPSTREAM_UNIT_TEST.format(upstream, module)
+    src = DOWNSTREAM_UNIT_TEST.format(TOP_LEVEL_DIR, module)
+    shutil.copy(src, dest)
+
+
+def copy_unit_test_fixtures(module, upstream_dir):
+    # Handle deprecated modules
+    if module.startswith('_'):
+        module = module[1:]
+
+    fixtures = get_fixtures(module)
+    upstream = os.path.realpath(upstream_dir)
+    for fixture in fixtures:
+        dest = UPSTREAM_FIXTURE_FILE.format(upstream, fixture)
+        src = DOWNSTREAM_FIXTURE_FILE.format(TOP_LEVEL_DIR, fixture)
+        shutil.copy(src, dest)
+
+
+def stub_roles_dirs(module):
+    # Create role containing all of your future functional tests
+    for dir in ['defaults', 'tasks']:
+        directory = '{0}/test/integration/targets/{1}/{2}'.format(TOP_LEVEL_DIR, module, dir)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+
+def stub_roles_yaml_files(module):
+    # Create default vars to contain any playbook variables
+    for dir in ['defaults', 'tasks']:
+        defaults_file = '{0}/test/integration/targets/{1}/{2}/main.yaml'.format(TOP_LEVEL_DIR, module, dir)
+        touch(defaults_file)
+    for file in ['setup.yaml', 'teardown.yaml']:
+        defaults_file = '{0}/test/integration/targets/{1}/tasks/{2}'.format(TOP_LEVEL_DIR, module, file)
+        touch(defaults_file)
+    main_tests = '{0}/test/integration/targets/{1}/tasks/main.yaml'.format(TOP_LEVEL_DIR, module)
+
+    template = JINJA_ENV.get_template('test_integration_targets_main.yaml')
+    content = template.render()
+
+    with open(main_tests, 'w') as fh:
+        fh.write(content)
+
+
+def stub_playbook_file(module):
+    # Stub out the test playbook
+    playbook_file = '{0}/test/integration/{1}.yaml'.format(TOP_LEVEL_DIR, module)
+
+    template = JINJA_ENV.get_template('playbooks_module.yaml')
+    content = template.render(module=module)
+
+    fh = open(playbook_file, 'w')
+    fh.write(content)
+    fh.close()
+
+
+def stub_library_file(module, extension):
+    # Create your new module python file
+    library_file = '{0}/library/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
+
+    template = JINJA_ENV.get_template('library_module.py')
+    content = template.render(module=module)
+
+    fh = open(library_file, 'w')
+    fh.write(content)
+    fh.close()
+
+
+def stub_module_documentation(module):
+    # Create the documentation link for your module
+    documentation_file = '{0}/docs/modules/{1}.rst'.format(TOP_LEVEL_DIR, module)
+    touch(documentation_file)
+
+
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
+
+def stub_unit_test_file(module, extension):
+    test_dir_path = '{0}/test/unit/'.format(TOP_LEVEL_DIR)
+    if not os.path.exists(test_dir_path):
+        os.makedirs(test_dir_path)
+    test_file = '{0}/test/unit/test_{1}{2}'.format(
+        TOP_LEVEL_DIR, module, extension
+    )
+
+    template = JINJA_ENV.get_template('tests_unit_module.py')
+    content = template.render(module=module)
+
+    fh = open(test_file, 'w')
+    fh.write(content)
+    fh.close()
+
+
+def unstub_roles_dirs(module):
+    for dir in ['defaults', 'tasks']:
+        directory = '{0}/test/integration/targets/{1}/{2}'.format(TOP_LEVEL_DIR, module, dir)
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+
+
+def unstub_playbook_file(module):
+    playbook_file = '{0}/test/integration/{1}.yaml'.format(TOP_LEVEL_DIR, module)
+    if os.path.exists(playbook_file):
+        os.remove(playbook_file)
+
+
+def unstub_library_file(module, extension):
+    library_file = '{0}/library/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
+    if os.path.exists(library_file):
+        os.remove(library_file)
+
+
+def unstub_module_documentation(module):
+    documentation_file = '{0}/docs/modules/{1}.rst'.format(TOP_LEVEL_DIR, module)
+    if os.path.exists(documentation_file):
+        os.remove(documentation_file)
+
+
+def unstub_unit_test_file(module, extension):
+    test_dir_path = '{0}/test/unit/'.format(TOP_LEVEL_DIR)
+    if not os.path.exists(test_dir_path):
+        os.makedirs(test_dir_path)
+    test_file = '{0}/test/unit/test_{1}{2}'.format(
+        TOP_LEVEL_DIR, module, extension
+    )
+    if os.path.exists(test_file):
+        os.remove(test_file)
+
+
+def in_container():
+    """Check to see if we are running in a container
+
+    :return:
+    """
+    with open('/proc/1/cgroup') as fh:
+        lines = fh.readlines()
+    if any('/docker/' in x for x in lines):
+        return True
+    return False
+
+
 @click.group()
 @click.option('--debug/--no-debug', default=False,
               envvar='F5ANSIBLE_DEBUG')
@@ -85,24 +330,137 @@ def cli(ctx, debug):
     ctx.obj = Root(debug)
 
 
+@cli.group()
+def start():
+    pass
+
+
+@cli.group()
+def stop():
+    pass
+
+
+@cli.group()
+def fetch():
+    pass
+
+
+@cli.group()
+def build():
+    pass
+
+
+@cli.group()
+def stub():
+    pass
+
+
+@cli.group()
+def unstub():
+    pass
+
+
+@cli.group()
+def build():
+    pass
+
+
 @cli.command(name='module-upstream')
 @click.argument('module', required=True)
 @click.option('--upstream-dir',
               default='local/ansible', show_default=True)
 def module_upstream(module, upstream_dir):
-    pass
+    module = module_name(module)
+    root_dest = '{0}/local/ansible/'.format(TOP_LEVEL_DIR)
+    if not os.path.exists(root_dest):
+        click.echo("The specified upstream directory does not exist", err=True)
+        sys.exit(1)
+
+    try:
+        copy_module(module, upstream_dir)
+        copy_unit_tests(module, upstream_dir)
+        copy_unit_test_fixtures(module, upstream_dir)
+        click.echo("Copy complete")
+    except Exception as ex:
+        click.echo(str(ex), err=True)
+        sys.exit()
 
 
-@cli.command(name='module-stub')
+@stub.command(name='module')
 @click.argument('module', required=True)
-def module_stub(module):
+def stub_module(module):
+    module, extension = os.path.splitext(module)
+    extension = extension + '.py' if extension == '' else extension
+    stub_roles_dirs(module)
+    stub_roles_yaml_files(module)
+    stub_playbook_file(module)
+    stub_library_file(module, extension)
+    stub_module_documentation(module)
+    stub_unit_test_file(module, extension)
+
+
+@stub.command(name='issue')
+@click.argument('module', required=True)
+@click.argument('issue', required=True)
+def stub_issue(module, issue):
     pass
 
 
-@cli.command(name='container-run')
+@unstub.command(name='module')
+@click.argument('module', required=True)
+def unstub_module(module):
+    module, extension = os.path.splitext(module)
+    extension = extension + '.py' if extension == '' else extension
+    unstub_roles_dirs(module)
+    unstub_playbook_file(module)
+    unstub_library_file(module, extension)
+    unstub_module_documentation(module)
+    unstub_unit_test_file(module, extension)
+
+
+@unstub.command(name='issue')
+@click.argument('module', required=True)
+@click.argument('issue', required=True)
+def unstub_issue(module, issue):
+    pass
+
+
+@build.command(name='container')
+@click.argument('service', nargs=-1)
+def build_container(service):
+    if in_container():
+        click.echo("This command can only be run OUTSIDE a container", err=True)
+        sys.exit(1)
+    services = list_available_docker_compose_services()
+    if service not in services:
+        click.echo("The provided service is invalid.", err=True)
+        click.echo("Available services are {0}".format(', '.join(services)))
+        sys.exit(1)
+    _build_container(service)
+
+
+@start.command(name='container')
 @click.argument('service', required=True)
 @click.option('--alias-host', default='1.2.3.4')
-def container_run(service, alias_host):
+def start_container(service, alias_host):
+    """Runs a given container
+
+    Will start a named container (service) on the local host's docker.
+
+    This command will take into account a user's docker site.yaml file
+    should it exist.
+
+    For the container to provide a link back to the host (for cases when
+    you are communicating with a VM on the host) this command will attempt
+    to add a local ifconfig alias for lo0; see `create_lo_interface_alias`.
+
+    :param service:
+    :param alias_host:
+    :return:
+    """
+    if in_container():
+        click.echo("This command can only be run OUTSIDE a container", err=True)
+        sys.exit(1)
     delete_lo_interface_alias(alias_host)
     create_lo_interface_alias(alias_host)
     services = list_available_docker_compose_services()
@@ -110,23 +468,61 @@ def container_run(service, alias_host):
         click.echo("The provided service is invalid.", err=True)
         click.echo("Available services are {0}".format(', '.join(services)))
         sys.exit(1)
-    run_container(service)
+    _start_container(service)
+
+
+@start.command(name='container')
+@click.argument('harness', required=True)
+def start_harness(harness):
+    pass
+
+
+@stop.command(name='container')
+@click.argument('harness', required=True)
+def stop_harness(harness):
+    pass
+
+
+@fetch.command(name='containers')
+def fetch_containers():
+    """Fetches containers for use in dev/test
+
+    :return:
+    """
+    if in_container():
+        click.echo("This command can only be run OUTSIDE a container", err=True)
+        sys.exit(1)
+
+    compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+    cmd = ['docker-compose', '-f', compose_file]
+    if os.path.exists(extend_file):
+        cmd += ['-f', extend_file]
+    cmd += ['pull']
+
+    proc = subprocess.Popen(cmd)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        click.echo(stderr.decode('utf-8'), err=True)
+        sys.exit(1)
+
+@fetch.command(name='ansible')
+def fetch_ansible():
+    """Downloads a remote copy of Ansible and configures it for you
+
+    :return:
+    """
+    pass
 
 """
 docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7
 """
 if __name__ == '__main__':
-    # module-upstream module-name,
-    # module-stub list of module names
-    # module-unstub list of module names
-    # issue-stub (issue number, module)
-    # issue-unstub (issue number, module)
-    # harness-list
-    # harness-create (harness name)
-    # harness-delete
-    # container-run (name)
-    # container-build (all, specific list)
-    # container-fetch
-    # test-integration (python ver, bigip ver, list of modules; default all)
-    # test-unit --sdk --no-sdk
+    # list harness
+    # show harness-command --harness-name
+    # pull container
+    # merge junit (use for DCI before uploading)
+    # upload junit (send junit results to dci)
+    # test integration (python ver, bigip ver, list of modules; default all)
+    # test unit --sdk --no-sdk
     cli()
