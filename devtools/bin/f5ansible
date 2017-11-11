@@ -14,22 +14,27 @@ import subprocess
 import sys
 import yaml
 
-
-from jinja2 import Environment
-from jinja2 import FileSystemLoader
 from os.path import abspath
 from os.path import dirname
 from six import iteritems
 
+try:
+    from jinja2 import Environment
+    from jinja2 import FileSystemLoader
+    HAS_JINJA = True
+except ImportError:
+    HAS_JINJA = False
+
 
 TOP_LEVEL_DIR = dirname(dirname(dirname(abspath(__file__))))
 
-# Stubber related
-JINJA_ENV = Environment(
-    loader=FileSystemLoader([
-        os.path.join(os.path.dirname(os.path.dirname(__file__)),'stubs')
-    ])
-)
+if HAS_JINJA:
+    # Stubber related
+    JINJA_ENV = Environment(
+        loader=FileSystemLoader([
+            os.path.join(os.path.dirname(os.path.dirname(__file__)),'stubs')
+        ])
+    )
 
 # Used for copying files upstream
 UPSTREAM_FIXTURE_FILE = '{0}/test/units/modules/network/f5/fixtures/{1}'
@@ -315,8 +320,11 @@ def in_container():
 
     :return:
     """
-    with open('/proc/1/cgroup') as fh:
-        lines = fh.readlines()
+    try:
+        with open('/proc/1/cgroup') as fh:
+            lines = fh.readlines()
+    except IOError:
+        return False
     if any('/docker/' in x for x in lines):
         return True
     return False
@@ -389,6 +397,14 @@ def module_upstream(module, upstream_dir):
 @stub.command(name='module')
 @click.argument('module', required=True)
 def stub_module(module):
+    """Create module stubs
+
+    :param module:
+    :return:
+    """
+    if not HAS_JINJA:
+        click.echo("The jinja library is required", err=True)
+        sys.exit(1)
     module, extension = os.path.splitext(module)
     extension = extension + '.py' if extension == '' else extension
     stub_roles_dirs(module)
@@ -403,7 +419,9 @@ def stub_module(module):
 @click.argument('module', required=True)
 @click.argument('issue', required=True)
 def stub_issue(module, issue):
-    pass
+    if not HAS_JINJA:
+        click.echo("The jinja library is required", err=True)
+        sys.exit(1)
 
 
 @unstub.command(name='module')
@@ -484,7 +502,10 @@ def stop_harness(harness):
 
 
 @fetch.command(name='containers')
-def fetch_containers():
+@click.option('--site-override',
+              default=None,
+              help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
+def fetch_containers(site_override):
     """Fetches containers for use in dev/test
 
     :return:
@@ -494,7 +515,13 @@ def fetch_containers():
         sys.exit(1)
 
     compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
-    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+    if site_override:
+        extend_file = site_override
+        if not os.path.exists(extend_file):
+            click.echo("The specified override '{0}' was found found".format(extend_file), err=True)
+            sys.exit(1)
+    else:
+        extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
     cmd = ['docker-compose', '-f', compose_file]
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
