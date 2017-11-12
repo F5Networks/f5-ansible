@@ -136,9 +136,15 @@ def list_available_docker_compose_services():
     return result
 
 
-def _start_container(service):
+def _start_container(service, site_override):
     compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
-    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+    if site_override:
+        extend_file = site_override
+        if not os.path.exists(extend_file):
+            click.echo("The specified override '{0}' was found found".format(extend_file), err=True)
+            sys.exit(1)
+    else:
+        extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
     cmd = ['docker-compose', '-f', compose_file]
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
@@ -151,9 +157,15 @@ def _start_container(service):
         sys.exit(1)
 
 
-def _build_container(service):
+def _build_container(service, site_override):
     compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
-    extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+    if site_override:
+        extend_file = site_override
+        if not os.path.exists(extend_file):
+            click.echo("The specified override '{0}' was found found".format(extend_file), err=True)
+            sys.exit(1)
+    else:
+        extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
     cmd = ['docker-compose', '-f', compose_file]
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
@@ -491,7 +503,10 @@ def unstub_issue(module, issue):
 
 @build.command(name='container')
 @click.argument('service', nargs=-1)
-def build_container(service):
+@click.option('--site-override',
+              default=None,
+              help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
+def build_container(service, site_override):
     if in_container():
         click.echo("This command can only be run OUTSIDE a container", err=True)
         sys.exit(1)
@@ -500,14 +515,17 @@ def build_container(service):
         click.echo("The provided service is invalid.", err=True)
         click.echo("Available services are {0}".format(', '.join(services)))
         sys.exit(1)
-    _build_container(service)
+    _build_container(service, site_override)
 
 
 @start.command(name='container')
 @click.argument('service', required=True)
 @click.option('--alias-host', default='1.2.3.4')
+@click.option('--site-override',
+              default=None,
+              help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
 @click.pass_obj
-def start_container(cli, service, alias_host):
+def start_container(cli, service, alias_host, site_override):
     """Runs a given container
 
     Will start a named container (service) on the local host's docker.
@@ -533,7 +551,7 @@ def start_container(cli, service, alias_host):
         click.echo("The provided service is invalid.", err=True)
         click.echo("Available services are {0}".format(', '.join(services)))
         sys.exit(1)
-    _start_container(service)
+    _start_container(service, site_override)
 
 
 @start.command(name='harness')
