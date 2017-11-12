@@ -162,7 +162,12 @@ resources:
           - path: /tmp/secondary-private-key
             permissions: 600
             owner: root:root
-            content: { get_param: secondary_private_key }
+            content:
+             str_replace:
+               params:
+                 __secondary_private_key__: { get_param: secondary_private_key }
+               template: |
+                 __secondary_private_key__
 
           - path: /tmp/docker-compose.site.yaml
             permissions: 0755
@@ -244,25 +249,34 @@ resources:
                       - docker
                       - jenkins
 
+          - path: /tmp/install-f5ansible.sh
+            permissions: 0755
+            owner: root:root
+            content: |
+              git clone https://github.com/F5Networks/f5-ansible.git /opt/f5-ansible
+              source /root/.bashrc
+              mkvirtualenv f5ansible
+              workon f5ansible
+              cd /opt/f5-ansible
+              pip install -r requirements.test.txt
+              echo 'eval "$(_F5ANSIBLE_COMPLETE=source /opt/f5-ansible/devtools/bin/f5ansible)"' >> ~/.bashrc
+              echo 'export PATH=$PATH:/opt/f5-ansible/devtools/bin/' >> ~/.bashrc
+
           - path: /tmp/install-containers.sh
             permissions: 0755
             owner: root:root
             content: |
-              git clone https://github.com/F5Networks/f5-ansible.git
-              source `which virtualenvwrapper.sh`
-              mkvirtualenv f5ansible
-              workon f5ansible
-              cd f5-ansible
-              pip install -r requirements.test.txt
-              ./devtools/bin/f5ansible
+              /opt/f5-ansible/devtools/bin/f5ansible fetch containers --site-override /tmp/docker-compose.site.yaml
 
           - path: /tmp/setup-virtualenvwrapper.sh
             permissions: 0755
             owner: root:root
             content: |
+              echo "export WORKON_HOME=/root/envs" >> /root/.bashrc
               echo "source `which virtualenvwrapper.sh`" >> /root/.bashrc
-              mkdir -p ~/envs
-              source `which virtualenvwrapper.sh`
+              mkdir -p /root/envs
+              export WORKON_HOME=/root/envs
+              source /usr/local/bin/virtualenvwrapper.sh
 
           - path: /tmp/onboard.sh
             permissions: 0755
@@ -293,6 +307,11 @@ resources:
                   chmod 600 /root/.ssh/id_rsa /root/.ssh/id_rsa.pub
 
                   /tmp/setup-virtualenvwrapper.sh
+                  /tmp/install-f5ansible.sh
+                  /tmp/install-containers.sh
+                  if [ $? -ne 0 ]; then
+                    wc_notify --insecure --data-binary '{"status": "FAILURE", "data": "Failed to install containers"}'
+                  fi
                   /tmp/setup-gnupg.sh
 
                   wc_notify --insecure --data-binary '{"status": "SUCCESS"}'
