@@ -53,33 +53,71 @@ DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 
 
 class Root(object):
-    def __init__(self, debug=False):
-        self.debug = debug
-        if debug:
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+        if verbose == 3:
             logger.setLevel(logging.DEBUG)
-        else:
+        elif verbose == 2:
             logger.setLevel(logging.INFO)
+        elif verbose == 1:
+            logger.setLevel(logging.WARNING)
+        else:
+            logger.setLevel(logging.NOTSET)
 
 
-def delete_lo_interface_alias(alias_host):
-    cmd = ['sudo', 'ifconfig', 'lo0', '-alias', alias_host]
+def platform_type():
+    cmd = ['uname', '-s']
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
+        click.echo(stderr.decode('utf-8'), err=True)
+        sys.exit(1)
+    output = stdout.decode('utf-8')
+    if output.startswith('Linux'):
+        return 'Linux'
+    elif output.startswith('Darwin'):
+        return 'Mac'
+    elif output.startswith('CYGWIN'):
+        return 'Cygwin'
+    elif output.startswith('MINGW'):
+        return 'MinGw'
+    else:
+        return 'Unknown'
+
+
+def delete_lo_interface_alias(alias_host):
+    if platform_type() == 'Darwin':
+        cmd = ['sudo', 'ifconfig', 'lo0', '-alias', alias_host]
+    elif platform_type() == 'Linux':
+        cmd = ['sudo', 'ip', 'addr', 'del', '1.2.3.4/8', 'dev', 'lo', 'label', 'lo']
+    else:
+        logger.error('Platform not currently supported')
+        return
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+    stdout, stderr = proc.communicate()
+    if proc.returncode == 0:
+        logger.info('')
         if "Can't assign requested address" in stderr:
             return
-        print(stderr.decode('utf-8'))
+        click.echo(stderr.decode('utf-8'), err=True)
         sys.exit(1)
 
 
 def create_lo_interface_alias(alias_host):
-    cmd = ['sudo', 'ifconfig', 'lo0', 'alias', alias_host]
+    if platform_type() == 'Darwin':
+        cmd = ['sudo', 'ifconfig', 'lo0', 'alias', alias_host]
+    elif platform_type() == 'Linux':
+        cmd = ['sudo', 'ip', 'addr', 'add', '1.2.3.4/8', 'dev', 'lo', 'label', 'lo']
+    else:
+        logger.error('Platform not currently supported')
+        return
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
-        print(stderr.decode('utf-8'))
+        click.echo(stderr.decode('utf-8'), err=True)
         sys.exit(1)
 
 
@@ -339,11 +377,11 @@ def in_container():
 
 
 @click.group()
-@click.option('--debug/--no-debug', default=False,
-              envvar='F5ANSIBLE_DEBUG')
+@click.option('-v', '--verbose', count=True, default=0,
+              envvar='F5ANSIBLE_VERBOSE')
 @click.pass_context
-def cli(ctx, debug):
-    ctx.obj = Root(debug)
+def cli(ctx, verbose):
+    ctx.obj = Root(verbose)
 
 
 @cli.group()
