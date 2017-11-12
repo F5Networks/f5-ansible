@@ -18,6 +18,11 @@ from os.path import abspath
 from os.path import dirname
 from six import iteritems
 
+import logging
+logging.basicConfig()
+logger = logging.getLogger('f5ansible')
+
+
 try:
     from jinja2 import Environment
     from jinja2 import FileSystemLoader
@@ -50,13 +55,16 @@ DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 class Root(object):
     def __init__(self, debug=False):
         self.debug = debug
+        if debug:
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(logging.INFO)
 
 
 def delete_lo_interface_alias(alias_host):
-    proc = subprocess.Popen(
-        ['sudo', 'ifconfig', 'lo0', '-alias', alias_host],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    cmd = ['sudo', 'ifconfig', 'lo0', '-alias', alias_host]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         if "Can't assign requested address" in stderr:
@@ -66,10 +74,9 @@ def delete_lo_interface_alias(alias_host):
 
 
 def create_lo_interface_alias(alias_host):
-    proc = subprocess.Popen(
-        ['sudo', 'ifconfig', 'lo0', 'alias', alias_host],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    cmd = ['sudo', 'ifconfig', 'lo0', 'alias', alias_host]
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         print(stderr.decode('utf-8'))
@@ -98,7 +105,7 @@ def _start_container(service):
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
     cmd += ['run', '--rm', service]
-
+    logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     proc = subprocess.Popen(cmd)
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
@@ -113,7 +120,7 @@ def _build_container(service):
     if os.path.exists(extend_file):
         cmd += ['-f', extend_file]
     cmd += ['build', '--force-rm', '--no-cache', service]
-
+    logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     proc = subprocess.Popen(cmd)
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
@@ -122,8 +129,9 @@ def _build_container(service):
 
 
 def module_file_present(module):
-    module_dir = '{0}/library/{1}.py'.format(TOP_LEVEL_DIR, module)
-    if os.path.exists(module_dir):
+    module_file = '{0}/library/{1}.py'.format(TOP_LEVEL_DIR, module)
+    if os.path.exists(module_file):
+        logger.debug('Module file "{0}" exists'.format(module_file))
         return True
     return False
 
@@ -460,7 +468,8 @@ def build_container(service):
 @start.command(name='container')
 @click.argument('service', required=True)
 @click.option('--alias-host', default='1.2.3.4')
-def start_container(service, alias_host):
+@click.pass_obj
+def start_container(cli, service, alias_host):
     """Runs a given container
 
     Will start a named container (service) on the local host's docker.
@@ -489,13 +498,13 @@ def start_container(service, alias_host):
     _start_container(service)
 
 
-@start.command(name='container')
+@start.command(name='harness')
 @click.argument('harness', required=True)
 def start_harness(harness):
     pass
 
 
-@stop.command(name='container')
+@stop.command(name='harness')
 @click.argument('harness', required=True)
 def stop_harness(harness):
     pass
