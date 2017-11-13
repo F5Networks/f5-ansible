@@ -29,6 +29,14 @@ Paste verbatim output from “tmsh show sys version” between quotes below
 
 ```
 
+##### LIBRARY VERSIONS
+<!---
+Paste verbatim output from “pip freeze | egrep '(f5-sdk|bigsuds)'” between quotes below
+-->
+```
+
+```
+
 ##### CONFIGURATION
 <!---
 Mention any settings you have changed/added/removed in ansible.cfg
