@@ -60,10 +60,10 @@
       - test-force
 
 # Issues on f5-ansible
-- include: issue-126.yaml
+- include: issue-00126.yaml
   tags:
-      - issue-126
+      - issue-00126
 
-- include: issue-136.yaml
+- include: issue-00136.yaml
   tags:
-      - issue-136
+      - issue-00136
