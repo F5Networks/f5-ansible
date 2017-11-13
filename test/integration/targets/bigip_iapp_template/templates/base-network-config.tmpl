@@ -1,0 +1,44 @@
+cli admin-partitions {
+    update-partition Common
+}
+
+sys application template base-network-config {
+    actions {
+        definition {
+            implementation {
+                set cfg {
+                  net vlan ha {
+                    mtu 1450
+                    interfaces {
+                      __ha_interface__ { }
+                    }
+
+                  }
+                }
+                puts "Finished iApp $tmsh::app_name.app generated with tmsh2iapp version 20170711.1"
+            }
+            presentation {
+                section var {
+                        string ha_interface display "xxlarge"
+                        string provider_interface display "xxlarge"
+                }
+                section local {
+                        string bigip_names display "xxlarge"
+                        string ha_prefix display "xxlarge"
+                        string provider_prefix display "xxlarge"
+                }
+                text {
+                        var "General variables"
+                        var.ha_interface "__var__ha_interface__"
+                        var.provider_interface "__var__provider_interface__"
+
+                        local "Per BIG-IP local variables"
+                        local.bigip_names "List of all the BIG-IP names in the cluster"
+                        local.ha_prefix "__local__ha_prefix__"
+                        local.provider_prefix "__local__provider_prefix__"
+                }
+            }
+            role-acl { admin manager resource-admin }
+        }
+    }
+}

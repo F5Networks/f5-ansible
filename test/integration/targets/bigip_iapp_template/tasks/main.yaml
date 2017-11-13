@@ -55,15 +55,15 @@
   register: result
   with_items: "{{ template_list }}"
 
-- include: test-force.yaml
-  tags:
-      - test-force
+- import_tasks: test-force.yaml
+  tags: test-force
 
 # Issues on f5-ansible
-- include: issue-00126.yaml
-  tags:
-      - issue-00126
+- import_tasks: issue-00126.yaml
+  tags: issue-00126
 
-- include: issue-00136.yaml
-  tags:
-      - issue-00136
+- import_tasks: issue-00136.yaml
+  tags: issue-00136
+
+- import_tasks: issue-00438.yaml
+  tags: issue-00438
