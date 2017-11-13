@@ -1,19 +1,19 @@
 ---
 
 - name: Test type 'A' Wide IP
-  import_tasks: type-a-gtm-wideip.yaml
+  include: type-a-gtm-wideip.yaml
 
 - name: Test type 'NAPTR' Wide IP
-  import_tasks: type-naptr-gtm-wideip.yaml
+  include: type-naptr-gtm-wideip.yaml
 
 - name: Test type 'SRV' Wide IP
-  import_tasks: type-srv-gtm-wideip.yaml
+  include: type-srv-gtm-wideip.yaml
 
 - name: Test type 'CNAME' Wide IP
-  import_tasks: type-cname-gtm-wideip.yaml
+  include: type-cname-gtm-wideip.yaml
 
 - name: Test type 'AAAA' Wide IP
-  import_tasks: type-aaaa-gtm-wideip.yaml
+  include: type-aaaa-gtm-wideip.yaml
 
 - name: Test type 'MX' Wide IP
-  import_tasks: type-mx-gtm-wideip.yaml
+  include: type-mx-gtm-wideip.yaml
