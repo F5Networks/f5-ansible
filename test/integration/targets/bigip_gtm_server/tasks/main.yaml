@@ -2,140 +2,140 @@
 
 - name: Create datacenter
   bigip_gtm_datacenter:
-      name: "{{ dc_name1 }}"
+    name: "{{ dc_name1 }}"
 
 - name: Create second datacenter
   bigip_gtm_datacenter:
-      name: "{{ dc_name2 }}"
+    name: "{{ dc_name2 }}"
 
 - name: Create GTM server
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            address: "1.1.1.1"
-            translation: "2.2.2.2"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        address: "1.1.1.1"
+        translation: "2.2.2.2"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Create GTM server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create GTM server - Idempotent check
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            address: "1.1.1.1"
-            translation: "2.2.2.2"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        address: "1.1.1.1"
+        translation: "2.2.2.2"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Create GTM server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update device using single address
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            address: "2.2.2.2"
-            translation: "1.1.1.1"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        address: "2.2.2.2"
+        translation: "1.1.1.1"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Update device using single address
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update device using single address - Idempotent check
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            address: "2.2.2.2"
-            translation: "1.1.1.1"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        address: "2.2.2.2"
+        translation: "1.1.1.1"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Update device using single address - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update device using multiple addresses
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            addresses:
-              - address: "4.4.4.1"
-                translation: "192.168.14.10"
-              - address: "4.4.4.2"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        addresses:
+          - address: "4.4.4.1"
+            translation: "192.168.14.10"
+          - address: "4.4.4.2"
             translation: "1.1.1.1"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Update device using multiple addresses
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update device using multiple addresses - Idempotent check
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      devices:
-          - name: "foo"
-            addresses:
-              - address: "4.4.4.1"
-                translation: "192.168.14.10"
-              - address: "4.4.4.2"
+    name: "{{ server_name }}"
+    devices:
+      - name: "foo"
+        addresses:
+          - address: "4.4.4.1"
+            translation: "192.168.14.10"
+          - address: "4.4.4.2"
             translation: "1.1.1.1"
-      datacenter: "{{ dc_name1 }}"
-      state: "present"
+    datacenter: "{{ dc_name1 }}"
+    state: "present"
   register: result
 
 - name: Assert Update device using multiple addresses - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove GTM server
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      state: "absent"
+    name: "{{ server_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove GTM server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove GTM server - Idempotent check
   bigip_gtm_server:
-      name: "{{ server_name }}"
-      state: "absent"
+    name: "{{ server_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove GTM server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove datacenters
   bigip_gtm_datacenter:
-      name: "{{ item }}"
-      state: "absent"
-  with_items:
-      - "{{ dc_name1 }}"
-      - "{{ dc_name2 }}"
+    name: "{{ item }}"
+    state: "absent"
+  loop:
+    - "{{ dc_name1 }}"
+    - "{{ dc_name2 }}"

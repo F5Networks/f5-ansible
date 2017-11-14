@@ -2,35 +2,35 @@
 
 - name: Create virtual server
   bigip_gtm_virtual_server:
-      address: "10.10.10.10"
-      port: 443
-      state: "present"
-      virtual_server_name: "{{ valid_vs_name }}"
-      virtual_server_server: "{{ valid_vs_server }}"
+    address: "10.10.10.10"
+    port: 443
+    state: "present"
+    virtual_server_name: "{{ valid_vs_name }}"
+    virtual_server_server: "{{ valid_vs_server }}"
   register: result
 
 - name: Assert Create virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create virtual server - Idempotent check
   bigip_gtm_virtual_server:
-      address: "10.10.10.10"
-      port: 443
-      state: "present"
-      virtual_server_name: "{{ valid_vs_name }}"
-      virtual_server_server: "{{ valid_vs_server }}"
+    address: "10.10.10.10"
+    port: 443
+    state: "present"
+    virtual_server_name: "{{ valid_vs_name }}"
+    virtual_server_server: "{{ valid_vs_server }}"
   register: result
 
 - name: Assert Create virtual server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable virtual server
   bigip_gtm_virtual_server:
-      state: "enabled"
-      virtual_server_name: "{{ valid_vs_name }}"
-      virtual_server_server: "{{ valid_vs_server }}"
+    state: "enabled"
+    virtual_server_name: "{{ valid_vs_name }}"
+    virtual_server_server: "{{ valid_vs_server }}"
   register: result
