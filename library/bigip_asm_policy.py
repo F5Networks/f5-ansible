@@ -560,7 +560,10 @@ class BaseManager(object):
         task = None
         if self.want.active is None:
             self.want.update(dict(active=False))
-
+        if not os.path.exists(self.want.file):
+            raise F5ModuleError(
+                "The specified ASM policy file does not exist"
+            )
         self._set_changed_options()
         if self.client.check_mode:
             return True
