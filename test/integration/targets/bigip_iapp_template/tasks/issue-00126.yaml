@@ -2,12 +2,12 @@
 
 - name: Issue 00126 - Create iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', 'web_frontends.tmpl') }}"
-      state: "present"
+    content: "{{ lookup('file', 'web_frontends.tmpl') }}"
+    state: "present"
   register: result
 
 - name: Issue 00126 - Remove iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', 'web_frontends.tmpl') }}"
-      state: "absent"
+    content: "{{ lookup('file', 'web_frontends.tmpl') }}"
+    state: "absent"
   register: result

@@ -2,64 +2,64 @@
 
 - name: Create HTTP iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', item) }}"
-  with_items:
-      - web_frontends.iapp
+    content: "{{ lookup('file', item) }}"
+  loop:
+    - web_frontends.iapp
   register: result
 
 - name: Create a service based on an existing iApp
   bigip_iapp_service:
-      name: "tests"
-      template: "web_frontends"
-      state: "present"
-      parameters:
-          variables:
-              - name: "var__vs_address"
-                value: "1.1.1.1"
-              - name: "pm__apache_servers_for_http"
-                value: "2.2.2.1:80"
-              - name: "pm__apache_servers_for_https"
-                value: "2.2.2.2:80"
+    name: "tests"
+    template: "web_frontends"
+    state: "present"
+    parameters:
+      variables:
+        - name: "var__vs_address"
+          value: "1.1.1.1"
+        - name: "pm__apache_servers_for_http"
+          value: "2.2.2.1:80"
+        - name: "pm__apache_servers_for_https"
+          value: "2.2.2.2:80"
   delegate_to: localhost
 
 - name: Create a service based on an existing iApp - Idempotent check
   bigip_iapp_service:
-      name: "tests"
-      template: "web_frontends"
-      state: "present"
-      parameters:
-          variables:
-              - name: "var__vs_address"
-                value: "1.1.1.1"
-              - name: "pm__apache_servers_for_http"
-                value: "2.2.2.1:80"
-              - name: "pm__apache_servers_for_https"
-                value: "2.2.2.2:80"
+    name: "tests"
+    template: "web_frontends"
+    state: "present"
+    parameters:
+      variables:
+        - name: "var__vs_address"
+          value: "1.1.1.1"
+        - name: "pm__apache_servers_for_http"
+          value: "2.2.2.1:80"
+        - name: "pm__apache_servers_for_https"
+          value: "2.2.2.2:80"
   delegate_to: localhost
 
 - name: Update a service based on an existing iApp
   bigip_iapp_service:
-      name: "tests"
-      template: "web_frontends"
-      state: "present"
-      parameters:
-          variables:
-              - name: "var__vs_address"
-                value: "1.1.1.100"
-              - name: "pm__apache_servers_for_http"
-                value: "20.20.20.1:80"
-              - name: "pm__apache_servers_for_https"
-                value: "3.3.3.3:80"
+    name: "tests"
+    template: "web_frontends"
+    state: "present"
+    parameters:
+      variables:
+        - name: "var__vs_address"
+          value: "1.1.1.100"
+        - name: "pm__apache_servers_for_http"
+          value: "20.20.20.1:80"
+        - name: "pm__apache_servers_for_https"
+          value: "3.3.3.3:80"
   delegate_to: localhost
 
 - name: Remove web_frontends service
   bigip_iapp_service:
-      name: "tests"
-      state: "absent"
+    name: "tests"
+    state: "absent"
   delegate_to: localhost
 
 - name: Remove HTTP iApp template
   bigip_iapp_template:
-      name: "tests"
-      state: "absent"
+    name: "tests"
+    state: "absent"
   register: result

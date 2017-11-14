@@ -1,11 +1,11 @@
 ---
 
-- include: test-force-with-service.yaml
+- import_tasks: test-force-with-service.yaml
   tags:
-      - test-force
-- include: test-force-without-service.yaml
+    - test-force
+- import_tasks: test-force-without-service.yaml
   tags:
-      - test-force
-- include: test-no-force-with-service.yaml
+    - test-force
+- import_tasks: test-no-force-with-service.yaml
   tags:
-      - test-force
+    - test-force

@@ -2,58 +2,58 @@
 
 - name: Create iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+    content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
   register: result
 
 - name: Assert Create iApp template
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create iApp template - Idempotent check
   bigip_iapp_template:
-      content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
+    content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
   register: result
 
 - name: Assert Create iApp template - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete iApp template
   bigip_iapp_template:
-      name: "{{ template_name }}"
-      state: "absent"
+    name: "{{ template_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete iApp template
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete iApp template - Idempotent check
   bigip_iapp_template:
-      name: "{{ template_name }}"
-      state: "absent"
+    name: "{{ template_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete iApp template - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create list of iApp template
   bigip_iapp_template:
-      content: "{{ lookup('file', item) }}"
+    content: "{{ lookup('file', item) }}"
   register: result
-  with_items: "{{ template_list }}"
+  loop: "{{ template_list }}"
 
 - name: Delete list of iApp template
   bigip_iapp_template:
-      name: "{{ item|basename|splitext|first }}"
-      state: "absent"
+    name: "{{ item|basename|splitext|first }}"
+    state: "absent"
   register: result
-  with_items: "{{ template_list }}"
+  loop: "{{ template_list }}"
 
 - import_tasks: test-force.yaml
   tags: test-force
