@@ -1,0 +1,32 @@
+---
+
+- name: Issue 00429 - Include issue variables
+  include_vars:
+    file: issue-00429.yaml
+
+- name: Issue 00429 - Add hostname to remote syslog
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    state: present
+  register: result
+
+- name: Issue 00429 - Assert Add hostname to remote syslog
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00429 - Add hostname to remote syslog - Idempotent check
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    state: present
+  register: result
+
+- name: Issue 00429 - Assert Add hostname to remote syslog - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00429 - Remove hostname from remote syslog
+  bigip_remote_syslog:
+    remote_host: "{{ remote_host1 }}"
+    state: absent

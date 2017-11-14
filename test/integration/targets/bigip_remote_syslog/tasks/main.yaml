@@ -71,7 +71,7 @@
       remote_host: "{{ item }}"
       state: "absent"
   register: result
-  with_items:
+  loop:
       - "{{ remote_host1 }}"
       - "{{ remote_host2 }}"
 
@@ -85,7 +85,7 @@
       remote_host: "{{ item }}"
       state: "absent"
   register: result
-  with_items:
+  loop:
       - "{{ remote_host1 }}"
       - "{{ remote_host2 }}"
 
@@ -96,3 +96,6 @@
 
 - import_tasks: issue-00405.yaml
   tags: issue-00405
+
+- import_tasks: issue-00429.yaml
+  tags: issue-00429
