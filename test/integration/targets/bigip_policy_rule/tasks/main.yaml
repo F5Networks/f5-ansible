@@ -2,6 +2,321 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create rule for published policy, no actions, no conditions
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+  register: result
 
-- import_tasks: teardown.yaml
+- name: Assert Create rule for published policy, no actions, no conditions
+  assert:
+    that:
+      - result|changed
+
+- name: Create rule for published policy, no actions, no conditions - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+  register: result
+
+- name: Assert Create rule for published policy, no actions, no conditions - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove rule from published policy
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule from published policy
+  assert:
+    that:
+      - result|changed
+
+- name: Remove rule from published policy - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule from published policy - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Create rule for draft policy, no actions, no conditions
+  bigip_policy_rule:
+    policy: "{{ policy_name2 }}"
+    name: rule1
+  register: result
+
+- name: Assert Create rule for draft policy, no actions, no conditions
+  assert:
+    that:
+      - result|changed
+
+- name: Create rule for draft policy, no actions, no conditions - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name2 }}"
+    name: rule1
+  register: result
+
+- name: Assert Create rule for draft policy, no actions, no conditions - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove rule from draft policy
+  bigip_policy_rule:
+    policy: "{{ policy_name2 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule from draft policy
+  assert:
+    that:
+      - result|changed
+
+- name: Remove rule from draft policy - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name2 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule from draft policy - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Create published rule, actions mutex check - EXPECTED FAILURE
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo
+        asm_policy: bar
+  register: result
+  ignore_errors: true
+
+- name: Assert Create published rule, actions mutex check - EXPECTED FAILURE
+  assert:
+    that:
+      - not result|changed
+      - result|failed
+      - "'parameters are mutually exclusive' in result.msg"
+
+- name: Create published rule with actions
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Assert Create published rule with actions
+  assert:
+    that:
+      - result|changed
+
+- name: Create published rule with actions - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+  register: result
+
+- name: Assert Create published rule with actions - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Add actions to a rule
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+      - type: forward
+        pool: foo-pool2
+  register: result
+
+- name: Assert Add actions to a rule
+  assert:
+    that:
+      - result|changed
+
+- name: Add actions to a rule - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+      - type: forward
+        pool: foo-pool2
+  register: result
+
+- name: Assert Add actions to a rule - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Replace a forward action with an ASM action
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+      - type: enable
+        asm_policy: foo-policy
+  register: result
+
+- name: Assert Replace a forward action with an ASM action
+  assert:
+    that:
+      - result|changed
+
+- name: Replace a forward action with an ASM action - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: forward
+        pool: foo-pool
+      - type: enable
+        asm_policy: foo-policy
+  register: result
+
+- name: Assert Replace a forward action with an ASM action - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Add a http_uri condition
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /blogs
+          - /admin
+  register: result
+
+- name: Assert Add a http_uri condition
+  assert:
+    that:
+      - result|changed
+
+- name: Add a http_uri condition - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    conditions:
+      - type: http_uri
+        path_begins_with_any:
+          - /blogs
+          - /admin
+  register: result
+
+- name: Assert Add a http_uri condition - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set ignore action
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: ignore
+  register: result
+
+- name: Assert Set ignore action
+  assert:
+    that:
+      - result|changed
+
+- name: Set ignore action - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    actions:
+      - type: ignore
+  register: result
+
+- name: Assert Set ignore action - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set all traffic condition
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    conditions:
+      - type: all_traffic
+  register: result
+
+- name: Assert Set all traffic condition
+  assert:
+    that:
+      - result|changed
+
+- name: Set all traffic condition - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    conditions:
+      - type: all_traffic
+  register: result
+
+- name: Assert Set all traffic condition - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+
+
+
+
+
+
+- name: Remove rule
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule
+  assert:
+    that:
+      - result|changed
+
+- name: Remove rule - Idempotent check
+  bigip_policy_rule:
+    policy: "{{ policy_name1 }}"
+    name: rule1
+    state: absent
+  register: result
+
+- name: Assert Remove rule - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+
+#- import_tasks: teardown.yaml

@@ -6,8 +6,17 @@
 
 - name: Create a pool for testing forwarding to pools
   bigip_pool:
-    name: foo-pool
-    lb_method: round_robin
+    name: "{{ item }}"
+    lb_method: round-robin
+  loop:
+    - foo-pool
+    - foo-pool2
+
+- name: Create ASM policy, compact XML file
+  bigip_asm_policy:
+    name: foo-policy
+    file: "{{ role_path }}/files/v2_policy_default_compact_format_enabled.xml"
+  register: result
 
 - name: Create published policy
   bigip_policy:
@@ -15,18 +24,8 @@
     state: present
   register: result
 
-- name: Assert Create a published policy
-  assert:
-    that:
-      - result|changed
-
 - name: Create draft policy
   bigip_policy:
     name: "{{ policy_name2 }}"
     state: draft
   register: result
-
-- name: Assert Create draft policy
-  assert:
-    that:
-      - result|changed
