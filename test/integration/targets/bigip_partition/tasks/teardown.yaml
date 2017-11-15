@@ -2,8 +2,8 @@
 
 - name: Remove route domains
   bigip_routedomain:
-      id: "{{ item }}"
-      state: "absent"
-  with_items:
-      - 1
-      - 2
+    id: "{{ item }}"
+    state: "absent"
+  loop:
+    - 1
+    - 2

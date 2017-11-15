@@ -14,7 +14,7 @@
 - name: Assert Create a published policy
   assert:
     that:
-       - result|changed
+      - result|changed
 
 - name: Create a published policy - Idempotent check
   bigip_policy:

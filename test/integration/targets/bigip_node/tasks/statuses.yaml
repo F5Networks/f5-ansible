@@ -13,99 +13,99 @@
 
 - name: Create present node
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "present"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "present"
   register: result
 
 - name: Assert Create present node
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create present node - Idempotent check
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "present"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "present"
   register: result
 
 - name: Assert Create present node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - name: Create enabled node
   bigip_node:
-      fqdn: "google.com"
-      name: "google.com"
-      state: "enabled"
+    fqdn: "google.com"
+    name: "google.com"
+    state: "enabled"
   register: result
 
 - name: Assert Create enabled node
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create enabled node - Idempotent check
   bigip_node:
-      fqdn: "google.com"
-      name: "google.com"
-      state: "enabled"
+    fqdn: "google.com"
+    name: "google.com"
+    state: "enabled"
   register: result
 
 - name: Assert Create enabled node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - name: Create disabled node
   bigip_node:
-      fqdn: "mit.edu"
-      name: "mit.edu"
-      state: "disabled"
+    fqdn: "mit.edu"
+    name: "mit.edu"
+    state: "disabled"
   register: result
 
 - name: Assert Create disabled node
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create disabled node - Idempotent check
   bigip_node:
-      fqdn: "mit.edu"
-      name: "mit.edu"
-      state: "disabled"
+    fqdn: "mit.edu"
+    name: "mit.edu"
+    state: "disabled"
   register: result
 
 - name: Assert Create disabled node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - name: Create offline node
   bigip_node:
-      fqdn: "apple.com"
-      name: "apple.com"
-      state: "offline"
+    fqdn: "apple.com"
+    name: "apple.com"
+    state: "offline"
   register: result
 
 - name: Assert Create offline node
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create offline node - Idempotent check
   bigip_node:
-      fqdn: "apple.com"
-      name: "apple.com"
-      state: "offline"
+    fqdn: "apple.com"
+    name: "apple.com"
+    state: "offline"
   register: result
 
 - name: Assert Create offline node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - import_tasks: status-disabled.yaml
 - import_tasks: status-enabled.yaml
@@ -114,12 +114,12 @@
 
 - name: Remove nodes
   bigip_node:
-      name: "{{ item }}"
-      state: "absent"
-  with_items:
-      - "google.com"
-      - "mit.edu"
-      - "apple.com"
-      - "microsoft.com"
-      - "google-public-dns-a.google.com"
-      - "mit-v6"
+    name: "{{ item }}"
+    state: "absent"
+  loop:
+    - "google.com"
+    - "mit.edu"
+    - "apple.com"
+    - "microsoft.com"
+    - "google-public-dns-a.google.com"
+    - "mit-v6"
