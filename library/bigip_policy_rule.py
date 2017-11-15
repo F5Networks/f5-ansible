@@ -209,16 +209,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
-        return result
-
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
@@ -282,6 +272,7 @@ class ApiParameters(Parameters):
                 action['type'] = 'enable'
                 del action['enable']
             result.append(action)
+        result = sorted(result, key=lambda x: x['name'])
         return result
 
     @property
@@ -330,6 +321,7 @@ class ModuleParameters(Parameters):
             elif item['type'] == 'ignore':
                 return [dict(type='ignore')]
             result.append(action)
+        result = sorted(result, key=lambda x: x['name'])
         return result
 
     @property
@@ -348,6 +340,7 @@ class ModuleParameters(Parameters):
             elif item['type'] == 'all_traffic':
                 return [dict(type='all_traffic')]
             result.append(action)
+        result = sorted(result, key=lambda x: x['name'])
         return result
 
     def _handle_http_uri_condition(self, action, item):
@@ -413,8 +406,6 @@ class ModuleParameters(Parameters):
 
 
 class Changes(Parameters):
-    returnables = []
-
     def to_return(self):
         result = {}
         try:
@@ -427,7 +418,44 @@ class Changes(Parameters):
 
 
 class ReportableChanges(Changes):
-    pass
+    returnables = [
+        'description', 'actions', 'conditions'
+    ]
+
+    @property
+    def actions(self):
+        result = []
+        if self._values['actions'] is None:
+            return [dict(type='ignore')]
+        for item in self._values['actions']:
+            action = dict()
+            if 'forward' in item:
+                action.update(item)
+                action['type'] = 'forward'
+                del action['forward']
+            elif 'enable' in item:
+                action.update(item)
+                action['type'] = 'enable'
+                del action['enable']
+            result.append(action)
+        result = sorted(result, key=lambda x: x['name'])
+        return result
+
+    @property
+    def conditions(self):
+        result = []
+        if self._values['conditions'] is None:
+            return [dict(type='all_traffic')]
+        for item in self._values['conditions']:
+            action = dict()
+            if 'httpUri' in item:
+                action.update(item)
+                action['type'] = 'http_uri'
+                del action['httpUri']
+            result.append(action)
+        # Names contains the index in which the rule is at.
+        result = sorted(result, key=lambda x: x['name'])
+        return result
 
 
 class UsableChanges(Changes):
@@ -587,7 +615,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
