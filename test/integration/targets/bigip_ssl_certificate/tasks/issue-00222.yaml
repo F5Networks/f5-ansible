@@ -1,59 +1,31 @@
 ---
 
-- name: Import a certificate, key and CA chain, password protected key
+- name: Issue 00222 - Import a CA chain certificate
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert2"
-      passphrase: "default"
-      state: "present"
-  register: result
-
-- name: Assert Import a certificate, key and CA chain, password protected key
-  assert:
-    that:
-        - result|changed
-
-- name: Import a certificate, key and CA chain, password protected key - Idempotent check
-  bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert2"
-      passphrase: "default"
-      state: "present"
-  register: result
-
-- name: Assert Import a certificate, key and CA chain, password protected key - Idempotent check
-  assert:
-    that:
-        - not result|changed
-
-- name: Import a certificate, key and CA chain, password protected key
-  bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
+      cert_content: "{{ lookup('file', 'chain2.crt') }}"
       name: "cert2"
       state: "absent"
   register: result
 
-- name: Assert Import a certificate, key and CA chain, password protected key
+- name: Issue 00222 - Assert Import a CA chain certificate
   assert:
     that:
         - result|changed
 
-- name: Import a certificate, key and CA chain, password protected key - Idempotent check
+- name: Issue 00222 - Import a CA chain certificate - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      chain_content: "{{ lookup('file', 'ca-chain.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
+      cert_content: "{{ lookup('file', 'chain2.crt') }}"
       name: "cert2"
       state: "absent"
   register: result
 
-- name: Assert Import a certificate, key and CA chain, password protected key - Idempotent check
+- name: Issue 00222 - Assert Import a CA chain certificate - Idempotent check
   assert:
     that:
         - not result|changed
+
+- name: Issue 00222 - Remove CA chain certificate
+  bigip_ssl_certificate:
+      name: "cert2"
+      state: "absent"
+  register: result
