@@ -2,144 +2,144 @@
 
 - name: Create TCP Monitor - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      state: "present"
+    name: "{{ monitor_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create TCP Monitor - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      state: "present"
+    name: "{{ monitor_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create TCP Monitor - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change IP - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      ip: "10.10.10.10"
+    name: "{{ monitor_name }}"
+    ip: "10.10.10.10"
   register: result
 
 - name: Assert Change IP - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change IP - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      ip: "10.10.10.10"
+    name: "{{ monitor_name }}"
+    ip: "10.10.10.10"
   register: result
 
 - name: Assert Change IP - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change interval, less than timeout - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      interval: 2
+    name: "{{ monitor_name }}"
+    interval: 2
   register: result
 
 - name: Assert Change interval, less than timeout - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change interval, less than timeout - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      interval: 2
+    name: "{{ monitor_name }}"
+    interval: 2
   register: result
 
 - name: Assert Change interval, less than timeout - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change interval, greater than timeout, expect failure - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      interval: 200
+    name: "{{ monitor_name }}"
+    interval: 200
   register: result
   ignore_errors: true
 
 - name: Assert Change interval, greater than timeout, expect failure - Echo
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change timeout - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      timeout: 80
+    name: "{{ monitor_name }}"
+    timeout: 80
   register: result
 
 - name: Assert Change timeout - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change timeout - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      timeout: 80
+    name: "{{ monitor_name }}"
+    timeout: 80
   register: result
 
 - name: Assert Change timeout - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change time until up - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      time_until_up: 80
+    name: "{{ monitor_name }}"
+    time_until_up: 80
   register: result
 
 - name: Assert Change time until up - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change time until up - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      time_until_up: 80
+    name: "{{ monitor_name }}"
+    time_until_up: 80
   register: result
 
 - name: Assert Change time until up - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove TCP Monitor - Echo
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      state: "absent"
+    name: "{{ monitor_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove TCP Monitor - Echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
-      name: "{{ monitor_name }}"
-      state: "absent"
+    name: "{{ monitor_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove TCP Monitor - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
