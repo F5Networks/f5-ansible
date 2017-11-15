@@ -162,7 +162,8 @@ class Parameters(AnsibleF5Parameters):
         'multicastIp': 'multicast_address',
         'multicastPort': 'multicast_port',
         'mirrorIp': 'mirror_primary_address',
-        'mirrorSecondaryIp': 'mirror_secondary_address'
+        'mirrorSecondaryIp': 'mirror_secondary_address',
+        'managementIp': 'management_ip'
     }
     api_attributes = [
         'configsyncIp', 'multicastInterface', 'multicastIp', 'multicastPort',
@@ -218,15 +219,6 @@ class Parameters(AnsibleF5Parameters):
             return "any6"
         result = self._get_validated_ip_address('mirror_secondary_address')
         return result
-
-    @property
-    def managementIp(self):
-        result = self._values['management_ip']
-        return result
-
-    @managementIp.setter
-    def managementIp(self, value):
-        self._values['management_ip'] = value
 
     @property
     def config_sync_ip(self):
@@ -389,8 +381,14 @@ class Difference(object):
     def to_tuple(self, failovers):
         result = []
         for x in failovers:
-            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
-            result += tmp
+            for k, v in iteritems(x):
+                # Have to do this in cases where the BIG-IP stores the word
+                # "management-ip" when you specify the management IP address.
+                #
+                # Otherwise, a difference would be registered.
+                if v == self.have.management_ip:
+                    v = 'management-ip'
+                result += [(str(k), str(v))]
         return result
 
     @property
