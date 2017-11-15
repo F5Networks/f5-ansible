@@ -91,7 +91,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.</div>        </td></tr>
+        <td><div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.  If you are specifying the (recommended) management IP address, use 'management-ip' in the address field</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -118,6 +118,7 @@ Examples
         config_sync_ip: 10.1.30.1
         mirror_primary_address: 10.1.30.1
         unicast_failover:
+          - address: management-ip
           - address: 10.1.30.1
         server: lb.mydomain.com
         user: admin

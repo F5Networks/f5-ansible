@@ -11,6 +11,7 @@ All Modules
   bigip_device_dns - Manage BIG-IP device DNS settings <bigip_device_dns_module>
   bigip_device_group - Manage device groups on a BIG-IP <bigip_device_group_module>
   bigip_device_group_member - Manages members in a device group <bigip_device_group_member_module>
+  bigip_device_httpd - Manage HTTPD related settings on BIG-IP <bigip_device_httpd_module>
   bigip_device_ntp - Manage NTP servers on a BIG-IP <bigip_device_ntp_module>
   bigip_device_sshd - Manage the SSHD settings of a BIG-IP <bigip_device_sshd_module>
   bigip_device_trust - Manage the trust relationships between BIG-IPs <bigip_device_trust_module>

@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.3
   * netaddr
 
 
@@ -38,6 +38,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>cores_per_slot<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the number of cores that the system allocates to the guest.</div><div>Each core represents a portion of CPU and memory. Therefore, the amount of memory allocated per core is directly tied to the amount of CPU. This amount of memory varies per hardware platform type.</div><div>The number you can specify depends on the type of hardware you have.</div><div>In the event of a reboot, the system persists the guest to the same slot on which it ran prior to the reboot.</div>        </td></tr>
                 <tr><td>delete_virtual_disk<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -52,7 +57,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the IP address, and subnet or subnet mask that you use to access the guest when you want to manage a module running within the guest. This parameter is required if the <code>mgmt_network</code> parameter is <code>bridged</code>.</div><div>If you do not specify a network or network mask, a default of <code>/24</code> (<code>255.255.255.0</code>) will be assumed.</div>        </td></tr>
+        <td><div>Specifies the IP address, and subnet or subnet mask that you use to access the guest when you want to manage a module running within the guest. This parameter is required if the <code>mgmt_network</code> parameter is <code>bridged</code>.</div><div>When creating a new guest, if you do not specify a network or network mask, a default of <code>/24</code> (<code>255.255.255.0</code>) will be assumed.</div>        </td></tr>
                 <tr><td>mgmt_network<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -62,7 +67,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the gateway address for the <code>mgmt_address</code>.</div>        </td></tr>
+        <td><div>Specifies the gateway address for the <code>mgmt_address</code>.</div><div>If this value is not specified when creating a new guest, it is set to <code>none</code>.</div><div>The value <code>none</code> can be used during an update to remove this value.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -86,8 +91,8 @@ Options
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
-        <td><ul><li>disabled</li><li>provisioned</li><li>deployed</li><li>absent</li><li>present</li></ul></td>
-        <td><div>The state of the  on the system. When <code>present</code>, guarantees that the VLAN exists with the provided attributes. When <code>absent</code>, removes the VLAN from the system.</div>        </td></tr>
+        <td><ul><li>configured</li><li>disabled</li><li>provisioned</li><li>present</li><li>absent</li></ul></td>
+        <td><div>The state of the vCMP guest on the system. Each state implies the actions of all states before it.</div><div>When <code>configured</code>, guarantees that the vCMP guest exists with the provided attributes. Additionally, ensures that the vCMP guest is turned off.</div><div>When <code>disabled</code>, behaves the same as <code>configured</code> the name of this state is just a convenience for the user that is more understandable.</div><div>When <code>provisioned</code>, will ensure that the guest is created and installed. This state will not start the guest; use <code>deployed</code> for that. This state is one step beyond <code>present</code> as <code>present</code> will not install the guest; only setup the configuration for it to be installed.</div><div>When <code>present</code>, ensures the guest is properly provisioned and starts the guest so that it is in a running state.</div><div>When <code>absent</code>, removes the vCMP from the system.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -138,6 +143,13 @@ Examples
           - vlan1
           - vlan2
       delegate_to: localhost
+    
+    - name: Remove vCMP guest and disk
+      bigip_vcmp_guest:
+        name: guest1
+        state: absent
+        delete_virtual_disk: yes
+      register: result
 
 Return Values
 -------------

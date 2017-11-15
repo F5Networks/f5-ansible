@@ -91,6 +91,12 @@ Options
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>policies<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the policies for the virtual server</div></br>
+    <div style="font-size: small;">aliases: all_policies<div>        </td></tr>
                 <tr><td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -100,7 +106,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div>        </td></tr>
+        <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div><div>If you do not want to specify a particular port, use the value <code>0</code>. The result is that the virtual server will listen on any port.</div>        </td></tr>
                 <tr><td rowspan="2">profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td><td></td>
@@ -226,6 +232,15 @@ Examples
         enabled_vlans:
           - /Common/vlan2
       delegate_to: localhost
+    
+    - name: Add FastL4 virtual server
+      bigip_virtual_server:
+        destination: 1.1.1.1
+        name: fastl4_vs
+        port: 80
+        profiles:
+          - fastL4
+        state: present
 
 Return Values
 -------------

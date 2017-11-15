@@ -99,6 +99,11 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>The virtual address state. If <code>absent</code>, an attempt to delete the virtual address will be made. This will only succeed if this virtual address is not in use by a virtual server. <code>present</code> creates the virtual address and enables it. If <code>enabled</code>, enable the virtual address if it exists. If <code>disabled</code>, create the virtual address if needed, and set state to <code>disabled</code>.</div>        </td></tr>
+                <tr><td>traffic_group<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The traffic group for the virtual address. When creating a new address, if this value is not specified, the default of <code>/Common/traffic-group-1</code> will be used.</div>        </td></tr>
                 <tr><td>use_route_advertisement<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

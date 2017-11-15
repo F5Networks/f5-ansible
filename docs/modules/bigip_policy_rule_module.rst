@@ -38,20 +38,44 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>actions<br/><div style="font-size: small;"></div></td>
+                <tr><td rowspan="2">actions<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td></td><td></td>
+    <td> <div>The actions that you want the policy rule to perform.</div><div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div><div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div><div>Available <code>type</code> values are <code>forward</code>.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object actions</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>type<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
         <td></td>
-        <td><div>The actions that you want the policy rule to perform.</div><div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div><div>Available <code>type</code> values are <code>forward</code>.</div>        </td></tr>
-                <tr><td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li><li>actions</li><li>conditions</li></ul></td>
-        <td><div>When <code>yes</code>, will append all <code>conditions</code> and <code>actions</code> to the given rule if they do not already exist.</div><div>When <code>actions</code>, will only append the specified actions. If <code>conditions</code> are also provided, the existing conditions will be overwritten with the new list in the <code>conditions</code> parameter.</div><div>When <code>conditions</code>, will only append the specified conditions. If <code>actions</code> are also provided, the existing actions will be overwritten with the new list in the <code>actions</code> parameter.</div>        </td></tr>
+                <td><ul><li>forward</li><li>enable</li><li>ignore</li></ul></td>
+                <td><div>The action type. This value controls what below options are required.</div><div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code> with this rule.</div><div>When <code>type</code> is <code>enable</code>, will associate a given <code>asm_policy</code> with this rule.</div><div>When <code>type</code> is <code>ignore</code>, will remove all existing actions from this rule.</div>        </td></tr>
+                    <tr><td>asm_policy<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>ASM policy to enable.</div><div>This parameter is only valid with the <code>enable</code> type.</div>        </td></tr>
+                    <tr><td>pool<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Pool that you want to forward traffic to.</div><div>This parameter is only valid with the <code>forward</code> type.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td rowspan="2">conditions<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td><td></td>
-    <td> <div>A list of attributes that describe the condition.</div><div>See suboptions for details on how to construct each list entry.</div><div>The ordering of this list is important, the module will ensure the order is kept when modifying the task.</div><div>The suboption options listed below are not required for all condition types, read the description for more details.</div>    </tr>
+    <td> <div>A list of attributes that describe the condition.</div><div>See suboptions for details on how to construct each list entry.</div><div>The ordering of this list is important, the module will ensure the order is kept when modifying the task.</div><div>The suboption options listed below are not required for all condition types, read the description for more details.</div><div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>    </tr>
     <tr>
     <td colspan="5">
     <table border=1 cellpadding=4>
@@ -63,11 +87,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                    <tr><td>path_begins_with_any<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>A list of strings of characters that the HTTP URI should start with.</div><div>This parameter is only valid with the <code>http_uri</code> type.</div>        </td></tr>
                     <tr><td>type<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
-                <td><ul><li>http_uri</li></ul></td>
-                <td><div>The condition type. This value controls what below options are required.</div>        </td></tr>
+                <td><ul><li>http_uri</li><li>all_traffic</li></ul></td>
+                <td><div>The condition type. This value controls what below options are required.</div><div>When <code>type</code> is <code>http_uri</code>, will associate a given <code>path_begins_with_any</code> list of strings with which the HTTP URI should begin with. Any item in the list will provide a match.</div><div>When <code>type</code> is <code>all_traffic</code>, will remove all existing conditions from this rule.</div>        </td></tr>
         </table>
     </td>
     </tr>
@@ -132,18 +161,18 @@ Examples
       policy_rules:
         - name: rule1
           actions:
-        - type: forward
-          pool: pool-svrs
-      conditions:
-        - type: http_uri
-          path_starts_with: /euro
+            - type: forward
+              pool: pool-svrs
+          conditions:
+            - type: http_uri
+              path_starts_with: /euro
         - name: rule2
           actions:
-        - type: forward
-          pool: pool-svrs
-      conditions:
-        - type: http_uri
-          path_starts_with: /HomePage/
+            - type: forward
+              pool: pool-svrs
+          conditions:
+            - type: http_uri
+              path_starts_with: /HomePage/
     
     - name: Create policies
       bigip_policy:
@@ -157,7 +186,7 @@ Examples
         name: rule3
         conditions:
           - type: http_uri
-            path_starts_with: /ABC
+            path_begins_with_any: /ABC
         actions:
           - type: forward
             pool: pool-svrs
@@ -170,7 +199,56 @@ Examples
         actions: "{{ item.actions }}"
       with_items:
         - policy_rules
+    
+    - name: Remove all rules and confitions from the rule
+      bigip_policy_rule
+        policy: Policy-Foo
+        name: "rule1"
+        conditions:
+          - type: all_traffic
+        actions:
+          - type: ignore
 
+Return Values
+-------------
+
+Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> conditions </td>
+        <td> The new list of conditions applied to the rule. </td>
+        <td align=center> changed </td>
+        <td align=center> complex list </td>
+        <td align=center> [{'path_begins_with_any': ['foo', 'bar'], 'type': 'http_uri'}] </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> The new description of the rule. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> My rule </td>
+    </tr>
+            <tr>
+        <td> actions </td>
+        <td> The new list of actions applied to the rule </td>
+        <td align=center> changed </td>
+        <td align=center> complex list </td>
+        <td align=center> [{'type': 'forward', 'pool': 'foo-pool'}] </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----

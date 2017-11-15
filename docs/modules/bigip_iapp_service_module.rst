@@ -52,7 +52,7 @@ Options
     <td></td>
         <td></td>
         <td><div>A hash of all the required template variables for the iApp template. If your parameters are stored in a file (the more common scenario) it is recommended you use either the `file` or `template` lookups to supply the expected parameters.</div><div>These parameters typically consist of the <code>lists</code>, <code>tables</code>, and <code>variables</code> fields.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
@@ -77,7 +77,7 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>When <code>present</code>, ensures that the iApp service is created and running. When <code>absent</code>, ensures that the iApp service has been removed.</div>        </td></tr>
-                <tr><td>strict_updates<br/><div style="font-size: small;"></div></td>
+                <tr><td>strict_updates<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td>True</td>
         <td></td>
@@ -87,7 +87,7 @@ Options
     <td></td>
         <td></td>
         <td><div>The iApp template from which to instantiate a new service. This template must exist on your BIG-IP before you can successfully create a service. This parameter is required if the <code>state</code> parameter is <code>present</code>.</div>        </td></tr>
-                <tr><td>traffic_group<br/><div style="font-size: small;"></div></td>
+                <tr><td>traffic_group<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td>
         <td></td>

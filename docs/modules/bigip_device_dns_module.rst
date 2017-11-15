@@ -46,7 +46,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div>        </td></tr>
+        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div><div>Deprecated in 2.4. Use the GUI or edit named.conf.</div>        </td></tr>
                 <tr><td>ip_version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
