@@ -93,4 +93,4 @@ command. For example,
 
 This should initiate a download of the necessary containers.
 
-.. _visit this link:: go/ansible-docker-registry
+.. _visit this link: go/ansible-docker-registry
