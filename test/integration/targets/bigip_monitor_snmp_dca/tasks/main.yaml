@@ -2,392 +2,392 @@
 
 - name: Create SNMP DCA Monitor
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      state: "present"
+    name: "{{ monitor_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create SNMP DCA Monitor
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create SNMP DCA Monitor - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      state: "present"
+    name: "{{ monitor_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create SNMP DCA Monitor - Echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change interval, less than timeout
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      interval: 2
+    name: "{{ monitor_name }}"
+    interval: 2
   register: result
 
 - name: Assert Change interval, less than timeout
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change interval, less than timeout - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      interval: 2
+    name: "{{ monitor_name }}"
+    interval: 2
   register: result
 
 - name: Assert Change interval, less than timeout - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change interval, greater than timeout, expect failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      interval: 200
+    name: "{{ monitor_name }}"
+    interval: 200
   register: result
   ignore_errors: true
 
 - name: Assert Change interval, greater than timeout, expect failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change timeout
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      timeout: 80
+    name: "{{ monitor_name }}"
+    timeout: 80
   register: result
 
 - name: Assert Change timeout
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change timeout - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      timeout: 80
+    name: "{{ monitor_name }}"
+    timeout: 80
   register: result
 
 - name: Assert Change timeout - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change time until up
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      time_until_up: 80
+    name: "{{ monitor_name }}"
+    time_until_up: 80
   register: result
 
 - name: Assert Change time until up
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change time until up - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      time_until_up: 80
+    name: "{{ monitor_name }}"
+    time_until_up: 80
   register: result
 
 - name: Assert Change time until up - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change community
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      community: "foobar"
+    name: "{{ monitor_name }}"
+    community: "foobar"
   register: result
 
 - name: Assert Change community
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change community - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      community: "foobar"
+    name: "{{ monitor_name }}"
+    community: "foobar"
   register: result
 
 - name: Assert Change community - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change version
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      version: "v2c"
+    name: "{{ monitor_name }}"
+    version: "v2c"
   register: result
 
 - name: Assert Change version
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change version - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      version: "v2c"
+    name: "{{ monitor_name }}"
+    version: "v2c"
   register: result
 
 - name: Assert Change version - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change agent type
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      agent_type: "WIN2000"
+    name: "{{ monitor_name }}"
+    agent_type: "WIN2000"
   register: result
 
 - name: Assert Change agent type
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change agent type - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      agent_type: "WIN2000"
+    name: "{{ monitor_name }}"
+    agent_type: "WIN2000"
   register: result
 
 - name: Assert Change agent type - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change CPU coefficient
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_coefficient: "30"
+    name: "{{ monitor_name }}"
+    cpu_coefficient: "30"
   register: result
 
 - name: Assert Change CPU coefficient
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change CPU coefficient - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_coefficient: "30"
+    name: "{{ monitor_name }}"
+    cpu_coefficient: "30"
   register: result
 
 - name: Assert Change CPU coefficient - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change CPU coefficient - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_coefficient: "abc123"
+    name: "{{ monitor_name }}"
+    cpu_coefficient: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change CPU coefficient - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change CPU threshold
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_threshold: "30"
+    name: "{{ monitor_name }}"
+    cpu_threshold: "30"
   register: result
 
 - name: Assert Change CPU threshold
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change CPU threshold - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_threshold: "30"
+    name: "{{ monitor_name }}"
+    cpu_threshold: "30"
   register: result
 
 - name: Assert Change CPU threshold - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change CPU threshold - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      cpu_threshold: "abc123"
+    name: "{{ monitor_name }}"
+    cpu_threshold: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change CPU threshold - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change memory coefficient
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_coefficient: "30"
+    name: "{{ monitor_name }}"
+    memory_coefficient: "30"
   register: result
 
 - name: Assert Change memory coefficient
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change memory coefficient - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_coefficient: "30"
+    name: "{{ monitor_name }}"
+    memory_coefficient: "30"
   register: result
 
 - name: Assert Change memory coefficient - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change memory coefficient - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_coefficient: "abc123"
+    name: "{{ monitor_name }}"
+    memory_coefficient: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change memory coefficient - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change memory threshold
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_threshold: "30"
+    name: "{{ monitor_name }}"
+    memory_threshold: "30"
   register: result
 
 - name: Assert Change memory threshold
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change memory threshold - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_threshold: "30"
+    name: "{{ monitor_name }}"
+    memory_threshold: "30"
   register: result
 
 - name: Assert Change memory threshold - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change memory threshold - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      memory_threshold: "abc123"
+    name: "{{ monitor_name }}"
+    memory_threshold: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change memory threshold - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change disk coefficient
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_coefficient: "30"
+    name: "{{ monitor_name }}"
+    disk_coefficient: "30"
   register: result
 
 - name: Assert Change disk coefficient
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change disk coefficient - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_coefficient: "30"
+    name: "{{ monitor_name }}"
+    disk_coefficient: "30"
   register: result
 
 - name: Assert Change disk coefficient - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change disk coefficient - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_coefficient: "abc123"
+    name: "{{ monitor_name }}"
+    disk_coefficient: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change disk coefficient - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change disk threshold
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_threshold: "30"
+    name: "{{ monitor_name }}"
+    disk_threshold: "30"
   register: result
 
 - name: Assert Change disk threshold
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change disk threshold - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_threshold: "30"
+    name: "{{ monitor_name }}"
+    disk_threshold: "30"
   register: result
 
 - name: Assert Change disk threshold - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change disk threshold - expected failure
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      disk_threshold: "abc123"
+    name: "{{ monitor_name }}"
+    disk_threshold: "abc123"
   register: result
   ignore_errors: true
 
 - name: Assert Change disk threshold - expected failure
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove Monitor
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      state: "absent"
+    name: "{{ monitor_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove Monitor
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove Monitor - Idempotent check
   bigip_monitor_snmp_dca:
-      name: "{{ monitor_name }}"
-      state: "absent"
+    name: "{{ monitor_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Remove Monitor - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
