@@ -113,31 +113,31 @@ mirror_primary_address:
   sample: 10.1.1.2
 mirror_secondary_address:
   description: The new value of the C(mirror_secondary_address) setting.
-  return: changed
+  returned: changed
   type: string
   sample: 10.1.1.3
 unicast_failover:
   description: The new value of the C(unicast_failover) setting.
-  return: changed
+  returned: changed
   type: list
   sample: [{'address': '10.1.1.2', 'port': 1026}]
 failover_multicast:
   description: Whether a failover multicast attribute has been changed or not.
-  return: changed
+  returned: changed
   type: bool
 multicast_interface:
   description: The new value of the C(multicast_interface) setting.
-  return: changed
+  returned: changed
   type: string
   sample: eth0
 multicast_address:
   description: The new value of the C(multicast_address) setting.
-  return: changed
+  returned: changed
   type: string
   sample: 224.0.0.245
 multicast_port:
   description: The new value of the C(multicast_port) setting.
-  return: changed
+  returned: changed
   type: string
   sample: 1026
 '''
@@ -315,6 +315,8 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+
+class Changes(Parameters):
     def to_return(self):
         result = {}
         try:
@@ -326,7 +328,33 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class Changes(Parameters):
+class ReportableChanges(Changes):
+    returnables = [
+        'config_sync_ip', 'multicast_interface', 'multicast_address',
+        'multicast_port', 'mirror_primary_address', 'mirror_secondary_address',
+        'failover_multicast', 'unicast_failover'
+    ]
+
+    @property
+    def mirror_secondary_address(self):
+        if self._values['mirror_secondary_address'] in ['none', 'any6']:
+            return 'none'
+        return self._values['mirror_secondary_address']
+
+    @property
+    def mirror_primary_address(self):
+        if self._values['mirror_primary_address'] in ['none', 'any6']:
+            return 'none'
+        return self._values['mirror_primary_address']
+
+    @property
+    def multicast_address(self):
+        if self._values['multicast_address'] in ['none', 'any6']:
+            return 'none'
+        return self._values['multicast_address']
+
+
+class UsableChanges(Changes):
     @property
     def mirror_primary_address(self):
         if self._values['mirror_primary_address'] == ['any6', 'none', 'any']:
@@ -429,7 +457,7 @@ class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -445,7 +473,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -466,7 +494,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         return result
