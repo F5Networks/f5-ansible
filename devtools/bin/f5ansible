@@ -457,8 +457,8 @@ def module_upstream(module, upstream_dir):
 def stub_module(module):
     """Create module stubs
 
-    :param module:
-    :return:
+    This command can be used to create the stub files necessary to start
+    work on a new module.
     """
     if not HAS_JINJA:
         click.echo("The jinja library is required", err=True)
