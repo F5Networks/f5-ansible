@@ -407,7 +407,7 @@ class ArgumentSpec(object):
             ),
             level=dict(
                 default='nominal',
-                choices=['nominal', 'dedicated', 'minimal']
+                choices=['nominal', 'dedicated', 'minimum']
             ),
             state=dict(
                 default='present',

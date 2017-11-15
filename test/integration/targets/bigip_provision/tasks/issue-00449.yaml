@@ -1,0 +1,28 @@
+---
+
+- name: Provision minimum GTM
+  bigip_provision:
+    module: gtm
+    level: minimum
+  register: result
+
+- name: Assert Provision minimum GTM
+  assert:
+    that:
+      - result|changed
+
+- name: Provision minimum GTM - Idempotent check
+  bigip_provision:
+    module: gtm
+    level: minimum
+  register: result
+
+- name: Assert Provision minimum GTM - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: De-provision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
