@@ -1,0 +1,35 @@
+---
+
+- name: Issue 00062 - Create a traffic group
+  bigip_traffic_group:
+    name: foo
+  register: result
+
+- name: Issue 00062 - Add virtual address
+  bigip_virtual_address:
+    address: 1.1.1.1
+    traffic_group: foo
+    state: present
+  register: result
+
+- name: Issue 00062 - Assert Add virtual address
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00062 - Add virtual address - Idempotent check
+  bigip_virtual_address:
+    address: 1.1.1.1
+    traffic_group: foo
+    state: present
+  register: result
+
+- name: Issue 00062 - Assert Add virtual address - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00062 - Remove virtual address
+  bigip_virtual_address:
+    address: 1.1.1.1
+    state: absent
