@@ -682,7 +682,7 @@ class ModuleManager(object):
         result = self.client.api.tm.ltm.policys.policy.exists(**params)
         return result
 
-    def _create_existing_policy_draft(self):
+    def _create_existing_policy_draft_on_device(self):
         params = dict(
             name=self.want.policy,
             partition=self.want.partition,
@@ -691,7 +691,7 @@ class ModuleManager(object):
         resource.draft()
         return True
 
-    def publish(self):
+    def publish_on_device(self):
         resource = self.client.api.tm.ltm.policys.policy.load(
             name=self.want.policy,
             partition=self.want.partition,
@@ -710,10 +710,10 @@ class ModuleManager(object):
             redraft = True
         else:
             redraft = False
-            self._create_existing_policy_draft()
+            self._create_existing_policy_draft_on_device()
         self.update_on_device()
         if redraft is False:
-            self.publish()
+            self.publish_on_device()
         return True
 
     def remove(self):
@@ -723,12 +723,12 @@ class ModuleManager(object):
             redraft = True
         else:
             redraft = False
-            self._create_existing_policy_draft()
+            self._create_existing_policy_draft_on_device()
         self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the resource.")
         if redraft is False:
-            self.publish()
+            self.publish_on_device()
         return True
 
     def create(self):
@@ -739,10 +739,10 @@ class ModuleManager(object):
             redraft = True
         else:
             redraft = False
-            self._create_existing_policy_draft()
+            self._create_existing_policy_draft_on_device()
         self.create_on_device()
         if redraft is False:
-            self.publish()
+            self.publish_on_device()
         return True
 
     def create_on_device(self):
