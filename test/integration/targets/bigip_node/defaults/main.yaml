@@ -7,11 +7,11 @@ node_name: "foo.example"
 node_description: "foo node"
 availability_requirement: "at_least"
 node_monitors:
-    - "icmp"
-    - "gateway_icmp"
+  - "icmp"
+  - "gateway_icmp"
 node_monitors_changed:
-    - "icmp"
-    - "gateway_icmp"
-    - "http"
+  - "icmp"
+  - "gateway_icmp"
+  - "http"
 node_quorum: 1
 monitor_type: "and_list"

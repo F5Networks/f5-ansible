@@ -1,82 +1,82 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
 - name: Create partition
   bigip_partition:
-      name: "{{ partition }}"
-      route_domain: "{{ route_domain1 }}"
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain1 }}"
   register: result
 
 - name: Assert Create partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create partition - Idempotent check
   bigip_partition:
-      name: "{{ partition }}"
-      route_domain: "{{ route_domain1 }}"
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain1 }}"
   register: result
 
 - name: Assert Create partition - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change partition description
   bigip_partition:
-      description: "{{ description }}"
-      name: "{{ partition }}"
+    description: "{{ description }}"
+    name: "{{ partition }}"
   register: result
 
 - name: Assert Change partition description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change partition description - Idempotent check
   bigip_partition:
-      description: "{{ description }}"
-      name: "{{ partition }}"
+    description: "{{ description }}"
+    name: "{{ partition }}"
   register: result
 
 - name: Assert Change partition description - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Reset route domain
   bigip_partition:
-      name: "{{ partition }}"
-      route_domain: "{{ route_domain_default }}"
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain_default }}"
   register: result
 
 - name: Assert Reset route domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete partition
   bigip_partition:
-      name: "{{ partition }}"
-      state: "absent"
+    name: "{{ partition }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete partition - Idempotent check
   bigip_partition:
-      name: "{{ partition }}"
-      state: "absent"
+    name: "{{ partition }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete partition - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
-- include: teardown.yaml
+- import_tasks: teardown.yaml

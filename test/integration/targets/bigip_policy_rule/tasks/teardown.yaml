@@ -4,7 +4,7 @@
   bigip_policy:
     name: "{{ item }}"
     state: present
-  with_items:
+  loop:
     - "{{ policy_name1 }}"
     - "{{ policy_name2 }}"
 

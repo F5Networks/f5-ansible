@@ -2,81 +2,81 @@
 
 - name: Create node
   bigip_node:
-      fqdn: "{{ node_host_fqdn }}"
-      name: "{{ node_name }}"
-      state: "present"
+    fqdn: "{{ node_host_fqdn }}"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create node
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create node - Idempotent check
   bigip_node:
-      fqdn: "{{ node_host_fqdn }}"
-      name: "{{ node_name }}"
-      state: "present"
+    fqdn: "{{ node_host_fqdn }}"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - name: Change node description
   bigip_node:
-      description: "new {{ node_description }}"
-      name: "{{ node_name }}"
+    description: "new {{ node_description }}"
+    name: "{{ node_name }}"
   register: result
 
 - name: Assert change node description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change node description - Idempotent check
   bigip_node:
-      description: "new {{ node_description }}"
-      name: "{{ node_name }}"
+    description: "new {{ node_description }}"
+    name: "{{ node_name }}"
   register: result
 
 - name: Assert change node description - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete node
   bigip_node:
-      name: "{{ node_name }}"
-      state: "absent"
+    name: "{{ node_name }}"
+    state: "absent"
   register: result
 
 - name: Assert delete node
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete node - Idempotent check
   bigip_node:
-      name: "{{ node_name }}"
-      state: "absent"
+    name: "{{ node_name }}"
+    state: "absent"
   register: result
 
 - name: Assert delete node - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create node without FQDN or Address
   bigip_node:
-      name: "{{ node_name }}"
-      state: "present"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
   ignore_errors: true
 
 - name: Assert Create node without FQDN or Address
   assert:
-      that:
-          - not result|changed
-          - "'At least one of \\'address\\' or \\'fqdn\\'' in result.msg"
+    that:
+      - not result|changed
+      - "'At least one of \\'address\\' or \\'fqdn\\'' in result.msg"

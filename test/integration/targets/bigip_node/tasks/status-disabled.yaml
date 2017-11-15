@@ -4,161 +4,161 @@
 
 - name: Reset node to disabled
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "disabled"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "disabled"
   register: result
 
 - name: Change node to enabled
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "enabled"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "enabled"
   register: result
 
 - name: Assert Change node to enabled
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "disabled"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "disabled"
   register: result
 
 - name: Change node to offline
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "offline"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "offline"
   register: result
 
 - name: Assert Change node to offline
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "disabled"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "disabled"
   register: result
 
 - name: Change node to present
   bigip_node:
-      fqdn: "microsoft.com"
-      name: "microsoft.com"
-      state: "present"
+    fqdn: "microsoft.com"
+    name: "microsoft.com"
+    state: "present"
   register: result
 
 - name: Assert Change node to present
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create disabled node - address
   bigip_node:
-      address: "8.8.8.8"
-      name: "google-public-dns-a.google.com"
-      state: "disabled"
+    address: "8.8.8.8"
+    name: "google-public-dns-a.google.com"
+    state: "disabled"
   register: result
 
 - name: Change node to enabled
   bigip_node:
-      name: "google-public-dns-a.google.com"
-      state: "enabled"
+    name: "google-public-dns-a.google.com"
+    state: "enabled"
   register: result
 
 - name: Assert Change node to enabled
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      name: "google-public-dns-a.google.com"
-      state: "disabled"
+    name: "google-public-dns-a.google.com"
+    state: "disabled"
   register: result
 
 - name: Change node to offline
   bigip_node:
-      name: "google-public-dns-a.google.com"
-      state: "offline"
+    name: "google-public-dns-a.google.com"
+    state: "offline"
   register: result
 
 - name: Assert Change node to offline
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      name: "google-public-dns-a.google.com"
-      state: "disabled"
+    name: "google-public-dns-a.google.com"
+    state: "disabled"
   register: result
 
 - name: Change node to present
   bigip_node:
-      name: "google-public-dns-a.google.com"
-      state: "present"
+    name: "google-public-dns-a.google.com"
+    state: "present"
   register: result
 
 - name: Assert Change node to present
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Create disabled node - IPv6 address
   bigip_node:
-      address: "2600:1409:a:186::255e"
-      name: "mit-v6"
-      state: "disabled"
+    address: "2600:1409:a:186::255e"
+    name: "mit-v6"
+    state: "disabled"
   register: result
 
 - name: Change node to enabled
   bigip_node:
-      name: "mit-v6"
-      state: "enabled"
+    name: "mit-v6"
+    state: "enabled"
   register: result
 
 - name: Assert Change node to enabled
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      name: "mit-v6"
-      state: "disabled"
+    name: "mit-v6"
+    state: "disabled"
   register: result
 
 - name: Change node to offline
   bigip_node:
-      name: "mit-v6"
-      state: "offline"
+    name: "mit-v6"
+    state: "offline"
   register: result
 
 - name: Assert Change node to offline
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed
 
 - name: Reset node to disabled
   bigip_node:
-      name: "mit-v6"
-      state: "disabled"
+    name: "mit-v6"
+    state: "disabled"
   register: result
 
 - name: Change node to present
   bigip_node:
-      name: "mit-v6"
-      state: "present"
+    name: "mit-v6"
+    state: "present"
   register: result
 
 - name: Assert Change node to present
   assert:
-      that:
-        - result|changed
+    that:
+      - result|changed

@@ -2,46 +2,46 @@
 
 - name: Create node
   bigip_node:
-      host: "{{ node_host_ipv4 }}"
-      name: "{{ node_name }}"
-      state: "present"
+    host: "{{ node_host_ipv4 }}"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create node
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create node - Idempotent check
   bigip_node:
-      host: "{{ node_host_ipv4 }}"
-      name: "{{ node_name }}"
-      state: "present"
+    host: "{{ node_host_ipv4 }}"
+    name: "{{ node_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create node - Idempotent check
   assert:
-      that:
-        - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete node
   bigip_node:
-      name: "{{ node_name }}"
-      state: "absent"
+    name: "{{ node_name }}"
+    state: "absent"
   register: result
 
 - name: Assert delete node
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete node - Idempotent check
   bigip_node:
-      name: "{{ node_name }}"
-      state: "absent"
+    name: "{{ node_name }}"
+    state: "absent"
   register: result
 
 - name: Assert delete node - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
