@@ -2,39 +2,39 @@
 
 - name: Add the iRule - Issue 316
   bigip_irule:
-      name: "issue-316"
-      src: "{{ role_path }}/files/irule-01.tcl"
-      module: "ltm"
-      state: "present"
+    name: "issue-316"
+    src: "{{ role_path }}/files/irule-01.tcl"
+    module: "ltm"
+    state: "present"
   register: result
 
 - name: Assert Add the iRule - Issue 316
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Add the iRule - Issue 316 - Idempotent check
   bigip_irule:
-      name: "issue-316"
-      src: "{{ role_path }}/files/irule-01.tcl"
-      module: "ltm"
-      state: "present"
+    name: "issue-316"
+    src: "{{ role_path }}/files/irule-01.tcl"
+    module: "ltm"
+    state: "present"
   register: result
 
 - name: Assert Add the iRule - Issue 316 - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove the iRule - Issue 316
   bigip_irule:
-      name: "issue-316"
-      src: "{{ role_path }}/files/irule-01.tcl"
-      module: "ltm"
-      state: "absent"
+    name: "issue-316"
+    src: "{{ role_path }}/files/irule-01.tcl"
+    module: "ltm"
+    state: "absent"
   register: result
 
 - name: Assert Remove the iRule - Issue 316
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed

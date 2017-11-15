@@ -2,6 +2,6 @@
 
 - name: De-provision GTM on the device
   bigip_provision:
-      module: "gtm"
-      state: "absent"
+    module: "gtm"
+    state: "absent"
   register: result
