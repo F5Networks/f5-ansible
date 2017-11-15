@@ -134,7 +134,7 @@ vars:
     name: rule3
     conditions:
       - type: http_uri
-        path_starts_with: /ABC
+        path_begins_with_any: /ABC
     actions:
       - type: forward
         pool: pool-svrs
@@ -147,10 +147,33 @@ vars:
     actions: "{{ item.actions }}"
   with_items:
     - policy_rules
+
+- name: Remove all rules and confitions from the rule
+  bigip_policy_rule
+    policy: Policy-Foo
+    name: "rule1"
+    conditions:
+      - type: all_traffic
+    actions:
+      - type: ignore
 '''
 
 RETURN = r'''
-
+actions:
+  description: The new list of actions applied to the rule
+  returned: changed
+  type: complex list
+  sample: [{'type': 'forward', 'pool': 'foo-pool'}]
+conditions:
+  description: The new list of conditions applied to the rule.
+  returned: changed
+  type: complex list
+  sample: [{'type': 'http_uri', 'path_begins_with_any': ['foo','bar']}]
+description:
+  description: The new description of the rule.
+  returned: changed
+  type: string
+  sample: My rule
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
