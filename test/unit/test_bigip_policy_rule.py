@@ -90,7 +90,7 @@ class TestParameters(unittest.TestCase):
             conditions=[
                 dict(
                     type='http_uri',
-                    path_starts_with='/ABC'
+                    path_begins_with_any=['/ABC']
                 )
             ]
         )
@@ -104,43 +104,37 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(params=args)
         assert p.name == 'rule1'
 
-    def test_module_parameters_none_strategy(self):
-        args = dict()
-        p = ModuleParameters(params=args)
-        assert p.strategy is None
-
-    def test_module_parameters_relative_strategy(self):
-        args = dict(
-            strategy='asdf'
-        )
-        p = ModuleParameters(params=args)
-        assert p.strategy == '/Common/asdf'
-
-    def test_module_parameters_absolute_strategy(self):
-        args = dict(
-            strategy='/MyPartition/asdf'
-        )
-        p = ModuleParameters(params=args)
-        assert p.strategy == '/MyPartition/asdf'
-
     def test_api_parameters(self):
         args = load_fixture('load_ltm_policy_draft_rule_http-uri_forward.json')
         p = ApiParameters(params=args)
-        assert p.strategy == '/Common/asdf'
+        assert len(p.actions) == 1
+        assert len(p.conditions) == 1
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-class TestSimpleTrafficPolicyManager(unittest.TestCase):
+class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_policy_rule(self, *args):
+    def test_create_policy_rule_no_existence(self, *args):
         set_module_args(dict(
-            name="Policy-Foo",
+            name="rule1",
             state='present',
-            strategy='best',
+            policy='policy1',
+            actions=[
+                dict(
+                    type='forward',
+                    pool='baz'
+                )
+            ],
+            conditions=[
+                dict(
+                    type='http_uri',
+                    path_begins_with_any=['/ABC']
+                )
+            ],
             password='password',
             server='localhost',
             user='admin'
@@ -152,15 +146,55 @@ class TestSimpleTrafficPolicyManager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        # Override methods in the specific type of manager
-        tm = SimpleManager(client)
-        tm.exists = Mock(return_value=False)
-        tm.create_on_device = Mock(return_value=True)
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.exists = Mock(return_value=False)
+        mm.publish_on_device = Mock(return_value=True)
+        mm.draft_exists = Mock(return_value=False)
+        mm._create_existing_policy_draft_on_device = Mock(return_value=True)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_policy_rule_idempotent_check(self, *args):
+        set_module_args(dict(
+            name="rule1",
+            state='present',
+            policy='policy1',
+            actions=[
+                dict(
+                    type='forward',
+                    pool='baz'
+                )
+            ],
+            conditions=[
+                dict(
+                    type='http_uri',
+                    path_begins_with_any=['/ABC']
+                )
+            ],
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        current = ApiParameters(load_fixture('load_ltm_policy_draft_rule_http-uri_forward.json'))
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
-        mm.version_is_less_than_12 = Mock(return_value=True)
-        mm.get_manager = Mock(return_value=tm)
+        mm.exists = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+        mm.draft_exists = Mock(return_value=False)
+        mm.update_on_device = Mock(return_value=True)
+        mm._create_existing_policy_draft_on_device = Mock(return_value=True)
+        mm.publish_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
 
