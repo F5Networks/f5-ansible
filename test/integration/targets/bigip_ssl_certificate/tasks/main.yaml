@@ -236,7 +236,7 @@
       name: "{{ item }}"
       state: "absent"
   register: result
-  with_items:
+  loop:
       - "cert4"
       - "cert5"
 
@@ -249,8 +249,10 @@
   register: result
 
 - import_tasks: issue-00222.yaml
-  tags:
-      - issue-00222.yaml
+  tags: issue-00222
+
+- import_tasks: issue-00399.yaml
+  tags: issue-00399
 
 - import_tasks: make-cert/main.yaml
   when: result is not defined

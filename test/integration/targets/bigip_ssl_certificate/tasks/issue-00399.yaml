@@ -1,0 +1,81 @@
+---
+
+- name: Issue 00399 - Import certificate and key with dotted name
+  bigip_ssl_certificate:
+    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
+    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    name: wildcard.tatanka.local
+    state: present
+  register: result
+
+- name: Issue 00399 - Assert Import certificate and key with dotted name
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00399 - Import certificate and key with dotted name - Idempotent check
+  bigip_ssl_certificate:
+    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
+    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    name: wildcard.tatanka.local
+    state: present
+  register: result
+
+- name: Issue 00399 - Assert Import certificate and key with dotted name - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00399 - Import certificate and key with dotted name wildcard
+  bigip_ssl_certificate:
+    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
+    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    name: "*.tatanka.local"
+    state: present
+  register: result
+
+- name: Issue 00399 - Assert Import certificate and key with dotted name wildcard
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00399 - Import certificate and key with dotted name wildcard - Idempotent check
+  bigip_ssl_certificate:
+    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
+    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    name: "*.tatanka.local"
+    state: present
+  register: result
+
+- name: Issue 00399 - Assert Import certificate and key with dotted name wildcard - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00399 - Remove certs and keys
+  bigip_ssl_certificate:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "*.tatanka.local"
+    - wildcard.tatanka.local
+  register: result
+
+- name: Issue 00399 - Remove certs and keys
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00399 - Remove certs and keys - Idempotent check
+  bigip_ssl_certificate:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "*.tatanka.local"
+    - wildcard.tatanka.local
+  register: result
+
+- name: Issue 00399 - Remove certs and keys - Idempotent check
+  assert:
+    that:
+      - not result|changed
