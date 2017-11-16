@@ -96,7 +96,7 @@ Ensure all the following are complete
 
 #### QC related
 - [ ] Module code passes `pycodestyle library/MODULE_NAME.py`
-- [ ] Unit test code passes `pycodestyle test/unit/PRODUCT/test_MODULE_NAME.py`
+- [ ] Unit test code passes `pycodestyle test/unit/test_MODULE_NAME.py`
 
 #### Docs related
 - [ ] Docs exist and build correctly (`make docs`)
