@@ -9,3 +9,4 @@ mock
 pycodestyle
 netaddr
 click
+virtualenv
