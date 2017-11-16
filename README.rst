@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|docs badge|
+|travis badge|
 
 Introduction
 ------------
@@ -55,7 +55,7 @@ Please refer to the `Requirements`_ docs.
 Documentation
 -------------
 
-All documentation is hosted on `ReadTheDocs`_.
+All documentation is available on `clouddocs.f5.com`_.
 
 When `writing new modules`_, please refer to the `Guidelines`_ document.
 
@@ -94,23 +94,23 @@ Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Individuals or business entities who contribute to this project must
 have completed and submitted the `F5 Contributor License
-Agreement <http://f5-ansible.readthedocs.org/en/latest/development/cla_landing.html>`_
+Agreement <http://clouddocs.f5.com/products/orchestration/ansible/development/cla_landing.html>`_
 to Ansible_CLA@f5.com prior to their code submission being included
 in this project.
 
 
-.. |docs badge| image:: https://readthedocs.org/projects/f5-ansible/badge/?version=devel
-    :target: http://f5-ansible.readthedocs.io/en/devel/
-    :alt: Documentation
+.. |travis badge| image:: https://travis-ci.org/F5Networks/f5-ansible.svg?branch=devel
+    :target: https://travis-ci.org/F5Networks/f5-ansible
+    :alt: Build Status
 
-.. _Guidelines: https://f5-ansible.readthedocs.io/en/devel/development/guidelines.html
-.. _writing new modules: https://f5-ansible.readthedocs.io/en/devel/development/writing-a-module.html
-.. _ReadTheDocs: https://f5-ansible.readthedocs.io/en/devel/
+.. _Guidelines: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html
+.. _writing new modules: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html
+.. _clouddocs.f5.com: http://http://clouddocs.f5.com/products/orchestration/ansible/devel
 .. _bigsuds Python Client 1.0.4 or later: https://pypi.python.org/pypi/bigsuds/
 .. _f5-sdk Python Client, latest available: https://pypi.python.org/pypi/f5-sdk/
-.. _Ansible 2.2.0 or greater: https://f5-ansible.readthedocs.io/en/devel/usage/getting_started.html#installing-ansible
+.. _Ansible 2.2.0 or greater: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/usage/getting_started.html#installing-ansible
 .. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
 .. _License: https://github.com/F5Networks/f5-ansible/blob/master/LICENSE
-.. _Requirements: https://f5-ansible.readthedocs.io/en/devel/usage/requirements.html
-.. _Branching: https://f5-ansible.readthedocs.io/en/devel/development/branching.html
+.. _Requirements: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/usage/requirements.html
+.. _Branching: http://clouddocs.f5.com/products/orchestration/ansible/development/devel/development/branching.html
 .. _stable modules can be found here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5

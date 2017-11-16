@@ -100,7 +100,7 @@ Ensure all the following are complete
 
 #### Docs related
 - [ ] Docs exist and build correctly (`make docs`)
-- [ ] Docs have been merged to `f5-ansible` so they can be rebuilt by ReadTheDocs.
+- [ ] Docs have been merged to `f5-ansible` so they can be published on [clouddocs.f5.com](http://clouddocs.f5.com/products/orchestration/ansible/devel).
 
 #### Upstream vendor related, with f5-sdk
 

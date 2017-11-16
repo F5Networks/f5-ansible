@@ -50,3 +50,16 @@ jenkins:
 
 generate-certs:
 	cd test/integration && ansible-playbook -i inventory/hosts bigip_ssl_certificate.yaml --tags generate_certs
+
+# Install project requirements
+requirements:
+	pip install --user -r requirements.test.txt
+
+# Build and test docs in a Docker container
+docker-test:
+	./docs/scripts/docker-docs.sh \
+	pip install --user -r requirements.test.txt
+	./docs/scripts/test-docs.sh
+
+
+
