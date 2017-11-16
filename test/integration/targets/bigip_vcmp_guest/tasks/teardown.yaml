@@ -9,7 +9,7 @@
     - vlan2
     - vlan3
 
-- name: Upload initial image to be used
+- name: Remove initial image
   bigip_software:
       base_image: "{{ initial_image }}"
       state: absent
