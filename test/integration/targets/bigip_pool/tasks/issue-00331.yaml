@@ -2,111 +2,111 @@
 
 - name: Include issue variables
   include_vars:
-      file: issue-00331.yaml
+    file: issue-00331.yaml
 
 - name: Creating port 443 Vip with no pool that the proxies will connect to
   bigip_virtual_server:
-      description: "Vip that the proxy will connect to"
-      destination: "{{ vip_ip }}"
-      name: "{{ vip_name }}"
-      port: "443"
-      snat: "Automap"
-      all_profiles:
-          - "{{ http_profile }}"
-          - "{{ clientssl }}"
+    description: "Vip that the proxy will connect to"
+    destination: "{{ vip_ip }}"
+    name: "{{ vip_name }}"
+    port: "443"
+    snat: "Automap"
+    all_profiles:
+      - "{{ http_profile }}"
+      - "{{ clientssl }}"
   register: result
 
 - name: Assert Creating port 443 Vip with no pool that the proxies will connect to
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Creating port 443 Vip with no pool that the proxies will connect to - Idempotent check
   bigip_virtual_server:
-      description: "Vip that the proxy will connect to"
-      destination: "{{ vip_ip }}"
-      name: "{{ vip_name }}"
-      port: "443"
-      snat: "Automap"
-      all_profiles:
-          - "{{ http_profile }}"
-          - "{{ clientssl }}"
+    description: "Vip that the proxy will connect to"
+    destination: "{{ vip_ip }}"
+    name: "{{ vip_name }}"
+    port: "443"
+    snat: "Automap"
+    all_profiles:
+      - "{{ http_profile }}"
+      - "{{ clientssl }}"
   register: result
 
 - name: Assert Creating port 443 Vip with no pool that the proxies will connect to - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Creating the cloud_pool
   bigip_pool:
-      lb_method: "round_robin"
-      name: "{{ cloud_pool }}"
-      monitors: "{{ cloud_http_mon }}"
-      slow_ramp_time: "120"
+    lb_method: "round_robin"
+    name: "{{ cloud_pool }}"
+    monitors: "{{ cloud_http_mon }}"
+    slow_ramp_time: "120"
   register: result
 
 - name: Assert Creating the cloud_pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Creating the cloud_pool - Idempotent check
   bigip_pool:
-      lb_method: "round_robin"
-      name: "{{ cloud_pool }}"
-      monitors: "{{ cloud_http_mon }}"
-      slow_ramp_time: "120"
+    lb_method: "round_robin"
+    name: "{{ cloud_pool }}"
+    monitors: "{{ cloud_http_mon }}"
+    slow_ramp_time: "120"
   register: result
 
 - name: Assert Creating the cloud_pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Creating the cloud vip with pool and no members that the clients will connect to
   bigip_virtual_server:
-      description: "cloud-vip"
-      destination: "{{ cloud_vip_ip }}"
-      name: "{{ cloud_vip_name }}"
-      pool: "{{ cloud_pool }}"
-      port: "80"
-      snat: "Automap"
-      all_profiles:
-          - "http"
+    description: "cloud-vip"
+    destination: "{{ cloud_vip_ip }}"
+    name: "{{ cloud_vip_name }}"
+    pool: "{{ cloud_pool }}"
+    port: "80"
+    snat: "Automap"
+    all_profiles:
+      - "http"
   register: result
 
 - name: Assert Creating the cloud vip with pool and no members that the clients will connect to
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Creating the cloud vip with pool and no members that the clients will connect to - Idempotent check
   bigip_virtual_server:
-      description: "cloud-vip"
-      destination: "{{ cloud_vip_ip }}"
-      name: "{{ cloud_vip_name }}"
-      pool: "{{ cloud_pool }}"
-      port: "80"
-      snat: "Automap"
-      all_profiles:
-          - "http"
+    description: "cloud-vip"
+    destination: "{{ cloud_vip_ip }}"
+    name: "{{ cloud_vip_name }}"
+    pool: "{{ cloud_pool }}"
+    port: "80"
+    snat: "Automap"
+    all_profiles:
+      - "http"
   register: result
 
 - name: Assert Creating the cloud vip with pool and no members that the clients will connect to - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove virtual server
   bigip_virtual_server:
-      name: "{{ item }}"
-      state: "absent"
-  with_items:
-      - "{{ cloud_vip_name }}"
-      - "{{ vip_name }}"
+    name: "{{ item }}"
+    state: "absent"
+  loop:
+    - "{{ cloud_vip_name }}"
+    - "{{ vip_name }}"
 
 - name: Remove the cloud_pool
   bigip_pool:
-      name: "{{ cloud_pool }}"
-      state: "absent"
+    name: "{{ cloud_pool }}"
+    state: "absent"
