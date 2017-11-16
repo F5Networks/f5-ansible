@@ -21,7 +21,7 @@ description:
     has synchronization and failover connectivity information (IP addresses) that
     you define as part of HA pairing or clustering. This module allows you to configure
     that information.
-version_added: "2.4"
+version_added: "2.5"
 options:
   config_sync_ip:
     description:
@@ -42,7 +42,7 @@ options:
         specifies the port that the system uses for failover operations. If C(port)
         is not specified, the default value C(1026) will be used.  If you are
         specifying the (recommended) management IP address, use 'management-ip' in
-        the address field
+        the address field.
   failover_multicast:
     description:
       - When C(yes), ensures that the Failover Multicast configuration is enabled
@@ -74,7 +74,7 @@ notes:
     install f5-sdk.
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
-  - Requires BIG-IP >= 12.1.x.
+  - Requires BIG-IP >= 12.0.0
 requirements:
   - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5

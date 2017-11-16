@@ -109,8 +109,8 @@ class TestParameters(unittest.TestCase):
         assert 'effectivePort' in p.unicast_failover[0]
         assert 'port' in p.unicast_failover[0]
         assert 'ip' in p.unicast_failover[0]
-        assert p.unicast_failover[0]['effectiveIp'] == '10.0.2.15'
-        assert p.unicast_failover[0]['ip'] == '10.0.2.15'
+        assert p.unicast_failover[0]['effectiveIp'] == 'management-ip'
+        assert p.unicast_failover[0]['ip'] == 'management-ip'
         assert p.unicast_failover[0]['port'] == 1026
         assert p.unicast_failover[0]['effectivePort'] == 1026
 
@@ -156,7 +156,7 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['config_sync_ip'] == '10.1.30.1'
         assert results['mirror_primary_address'] == '10.1.30.1'
-        assert len(results.keys()) == 4
+        assert len(results.keys()) == 3
 
     def test_set_primary_mirror_address_none(self, *args):
         set_module_args(dict(
@@ -300,8 +300,7 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['multicast_address'] == '10.1.1.1'
-        assert results['failover_multicast'] is True
-        assert len(results.keys()) == 3
+        assert len(results.keys()) == 2
 
     def test_unset_unicast_failover(self, *args):
         set_module_args(dict(
