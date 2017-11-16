@@ -2,78 +2,78 @@
 
 - name: Create pool
   bigip_pool:
-      name: "{{ pool_name }}"
-      state: "present"
+    name: "{{ pool_name }}"
+    state: "present"
   register: result
 
 - name: Assert Create pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Add pool member
   bigip_pool_member:
-      connection_limit: "{{ connection_limit }}"
-      description: "{{ node_description }}"
-      host: "{{ node_host }}"
-      pool: "{{ pool_name }}"
-      port: "{{ node_port }}"
-      rate_limit: "{{ rate_limit }}"
-      ratio: "{{ ratio }}"
-      state: "present"
+    connection_limit: "{{ connection_limit }}"
+    description: "{{ node_description }}"
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    rate_limit: "{{ rate_limit }}"
+    ratio: "{{ ratio }}"
+    state: "present"
   register: result
 
 - name: Assert Add pool member
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool member priority
   bigip_pool_member:
-      host: "{{ node_host }}"
-      pool: "{{ pool_name }}"
-      port: "{{ node_port }}"
-      priority_group: "10"
-      state: "present"
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    priority_group: "10"
+    state: "present"
   register: result
 
 - name: Change pool member priority
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool member priority - Idempotent check
   bigip_pool_member:
-      host: "{{ node_host }}"
-      pool: "{{ pool_name }}"
-      port: "{{ node_port }}"
-      priority_group: "10"
-      state: "present"
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    priority_group: "10"
+    state: "present"
   register: result
 
 - name: Change pool member priority - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete pool
   bigip_pool:
-      name: "{{ pool_name }}"
-      state: "absent"
+    name: "{{ pool_name }}"
+    state: "absent"
   register: result
 
 - name: Assert delete pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete node
   bigip_node:
-      name: "{{ node_host }}"
-      state: "absent"
+    name: "{{ node_host }}"
+    state: "absent"
   register: result
 
 - name: Assert delete node
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed

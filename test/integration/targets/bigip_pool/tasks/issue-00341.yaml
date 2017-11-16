@@ -2,190 +2,190 @@
 
 - name: Include issue variables
   include_vars:
-      file: issue-00341.yaml
+    file: issue-00341.yaml
 
 - name: Create pool with multiple monitors
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool1['name'] }}"
-      lb_method: "{{ issue_341_pool1['lb_method'] }}"
-      monitors: "{{ issue_341_pool1['monitors'] }}"
-      monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool1['name'] }}"
+    lb_method: "{{ issue_341_pool1['lb_method'] }}"
+    monitors: "{{ issue_341_pool1['monitors'] }}"
+    monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
   register: result
 
 - name: Assert Create pool with multiple monitors
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create pool with multiple monitors - Idempotent check
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool1['name'] }}"
-      lb_method: "{{ issue_341_pool1['lb_method'] }}"
-      monitors: "{{ issue_341_pool1['monitors'] }}"
-      monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool1['name'] }}"
+    lb_method: "{{ issue_341_pool1['lb_method'] }}"
+    monitors: "{{ issue_341_pool1['monitors'] }}"
+    monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
   register: result
 
 - name: Assert Create pool with multiple monitors - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create pool with single monitor, and_list monitor type
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool2['name'] }}"
-      lb_method: "{{ issue_341_pool2['lb_method'] }}"
-      monitors: "{{ issue_341_pool2['monitors'] }}"
-      monitor_type: "{{ issue_341_pool2['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool2['name'] }}"
+    lb_method: "{{ issue_341_pool2['lb_method'] }}"
+    monitors: "{{ issue_341_pool2['monitors'] }}"
+    monitor_type: "{{ issue_341_pool2['monitor_type'] }}"
   register: result
 
 - name: Assert Create pool with single monitor, and_list monitor type
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create pool with single monitor, and_list monitor type - Idempotent check
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool2['name'] }}"
-      lb_method: "{{ issue_341_pool2['lb_method'] }}"
-      monitors: "{{ issue_341_pool2['monitors'] }}"
-      monitor_type: "{{ issue_341_pool2['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool2['name'] }}"
+    lb_method: "{{ issue_341_pool2['lb_method'] }}"
+    monitors: "{{ issue_341_pool2['monitors'] }}"
+    monitor_type: "{{ issue_341_pool2['monitor_type'] }}"
   register: result
 
 - name: Assert Create pool with single monitor, and_list monitor type - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create pool with single monitor, m_of_n monitor type, no quorum
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool3['name'] }}"
-      lb_method: "{{ issue_341_pool3['lb_method'] }}"
-      monitors: "{{ issue_341_pool3['monitors'] }}"
-      monitor_type: "{{ issue_341_pool3['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool3['name'] }}"
+    lb_method: "{{ issue_341_pool3['lb_method'] }}"
+    monitors: "{{ issue_341_pool3['monitors'] }}"
+    monitor_type: "{{ issue_341_pool3['monitor_type'] }}"
   register: result
   ignore_errors: true
 
 - name: Assert Create pool with single monitor, m_of_n monitor type, no quorum
   assert:
-      that:
-          - not result|changed
-          - "'Quorum value must be specified' in result.msg"
+    that:
+      - not result|changed
+      - "'Quorum value must be specified' in result.msg"
 
 - name: Create pool with multiple monitor, m_of_n monitor type, quorum
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
-      quorum: "{{ issue_341_pool4['quorum'] }}"
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
+    quorum: "{{ issue_341_pool4['quorum'] }}"
   register: result
 
 - name: Assert Create pool with multiple monitor, m_of_n monitor type, quorum
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create pool with multiple monitor, m_of_n monitor type, quorum - Idempotent check
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
-      quorum: "{{ issue_341_pool4['quorum'] }}"
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
+    quorum: "{{ issue_341_pool4['quorum'] }}"
   register: result
 
 - name: Assert Create pool with multiple monitor, m_of_n monitor type, quorum - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change pool to non-quorum
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
   register: result
 
 - name: Assert Change pool to non-quorum
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool to non-quorum - Idempotent check
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool1['monitor_type'] }}"
   register: result
 
 - name: Assert Change pool to non-quorum - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Change pool to quorum - Expected error due to no existing quorum
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
   register: result
   ignore_errors: true
 
 - name: Assert Change pool to non-quorum
   assert:
-      that:
-          - not result|changed
-          - "'Quorum value must be specified' in result.msg"
+    that:
+      - not result|changed
+      - "'Quorum value must be specified' in result.msg"
 
 - name: Change pool to quorum
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
-      quorum: 1
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
+    quorum: 1
   register: result
 
 - name: Assert Change pool to quorum
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Change pool to quorum - Idempotent check
   bigip_pool:
-      state: "present"
-      name: "{{ issue_341_pool4['name'] }}"
-      lb_method: "{{ issue_341_pool4['lb_method'] }}"
-      monitors: "{{ issue_341_pool4['monitors'] }}"
-      monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
-      quorum: 1
+    state: "present"
+    name: "{{ issue_341_pool4['name'] }}"
+    lb_method: "{{ issue_341_pool4['lb_method'] }}"
+    monitors: "{{ issue_341_pool4['monitors'] }}"
+    monitor_type: "{{ issue_341_pool4['monitor_type'] }}"
+    quorum: 1
   register: result
 
 - name: Assert Change pool to quorum - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove pools
   bigip_pool:
-      state: "absent"
-      name: "{{ item }}"
-  with_items:
-      - "{{ issue_341_pool1['name'] }}"
-      - "{{ issue_341_pool2['name'] }}"
-      - "{{ issue_341_pool3['name'] }}"
-      - "{{ issue_341_pool4['name'] }}"
+    state: "absent"
+    name: "{{ item }}"
+  loop:
+    - "{{ issue_341_pool1['name'] }}"
+    - "{{ issue_341_pool2['name'] }}"
+    - "{{ issue_341_pool3['name'] }}"
+    - "{{ issue_341_pool4['name'] }}"
