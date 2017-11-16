@@ -400,8 +400,8 @@ class ArgumentSpec(object):
             ),
             log_level=dict(
                 choices=[
-                    'alert','crit','debug','emerg',
-                    'error','info','notice','warn'
+                    'alert', 'crit', 'debug', 'emerg',
+                    'error', 'info', 'notice', 'warn'
                 ]
             ),
             redirect_http_to_https=dict(
