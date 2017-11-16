@@ -28,10 +28,10 @@ script:
     - ./scripts/test-docs.sh
 
 deploy:
-    - provider: script
-      skip_cleanup: true
-      on:
-        branch: devel
-        repo: F5Networks/f5-ansible
-    script:
-    - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
+- provider: script
+  skip_cleanup: true
+  on:
+    branch: devel
+    repo: F5Networks/f5-ansible
+  script:
+  - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
