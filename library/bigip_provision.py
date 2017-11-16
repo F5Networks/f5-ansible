@@ -48,7 +48,7 @@ options:
         level for one module may require modifying the level of another module.
         For example, changing one module to C(dedicated) requires setting all
         others to C(none). Setting the level of a module to C(none) means that
-        the module is not run.
+        the module is not activated.
     default: nominal
     choices:
       - dedicated
@@ -325,14 +325,14 @@ class ModuleManager(object):
         # For example,
         #   /usr/libexec/qemu-kvm -rt-usecs 880 ... -mem-path /dev/mprov/vcmp -f5-tracing ...
         #
-        output = self.client.api.tm.util.bash.exec_cmd(
-            'run',
-            utilCmdArgs='-c "ps aux | grep \'[m]prov\' | grep -v /usr/libexec/qemu-kvm"'
-        )
         try:
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs='-c "ps aux | grep \'[m]prov\' | grep -v /usr/libexec/qemu-kvm"'
+            )
             if hasattr(output, 'commandResult'):
                 return True
-        except LazyAttributesRequired:
+        except Exception:
             pass
         return False
 
@@ -357,14 +357,14 @@ class ModuleManager(object):
             time.sleep(5)
 
     def _get_last_reboot(self):
-        output = self.client.api.tm.util.bash.exec_cmd(
-            'run',
-            utilCmdArgs='-c "/usr/bin/last reboot | head -1"'
-        )
         try:
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs='-c "/usr/bin/last reboot | head -1"'
+            )
             if hasattr(output, 'commandResult'):
                 return str(output.commandResult)
-        except LazyAttributesRequired:
+        except Exception:
             pass
         return None
 
