@@ -32,6 +32,8 @@ deploy:
   skip_cleanup: true
   on:
     branch: devel
+    # only deploy to clouddocs after one build; python 3.5 chosen arbitrarily
+    python: '3.5'
     repo: F5Networks/f5-ansible
   script:
   - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
