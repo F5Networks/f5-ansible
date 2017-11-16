@@ -714,6 +714,9 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def vlans_enabled(self):
         if self._values['enabled_vlans'] is None:
             return None
+        elif self._values['vlans_enabled'] is False:
+            # This is a special case for "all" enabled VLANs
+            return False
         if self._values['disabled_vlans'] is None:
             return True
         return False
@@ -722,7 +725,10 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def vlans_disabled(self):
         if self._values['disabled_vlans'] is None:
             return None
-        if self._values['enabled_vlans'] is None:
+        elif self._values['vlans_disabled'] is True:
+            # This is a special case for "all" enabled VLANs
+            return True
+        elif self._values['enabled_vlans'] is None:
             return True
         return False
 
@@ -731,7 +737,7 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         if self._values['enabled_vlans'] is None:
             return None
         elif any(x.lower() for x in self._values['enabled_vlans'] if x == 'all'):
-            return []
+            return [self._fqdn_name('all')]
         results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
         return results
 
@@ -739,6 +745,10 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def disabled_vlans(self):
         if self._values['disabled_vlans'] is None:
             return None
+        elif any(x.lower() for x in self._values['disabled_vlans'] if x == 'all'):
+            raise F5ModuleError(
+                "You cannot disable all VLANs. You must name them individually."
+            )
         results = list(set([self._fqdn_name(x) for x in self._values['disabled_vlans']]))
         return results
 
@@ -800,7 +810,7 @@ class VirtualServerChanges(VirtualServerParameters):
             return None
         elif len(self._values['vlans']) == 0:
             return []
-        elif any(x for x in self._values['vlans'] if x.lower() == '/common/all'):
+        elif any(x for x in self._values['vlans'] if x.lower() in ['/common/all', 'all']):
             return []
         return self._values['vlans']
 
@@ -861,6 +871,14 @@ class Difference(object):
             return None
         elif self.want.vlans == self.have.vlans:
             return None
+
+        # Specifically looking for /all because the vlans return value will be
+        # an FQDN list. This means that "all" will be returned as "/partition/all",
+        # ex, /Common/all.
+        #
+        # We do not want to accidentally match values that would end with the word
+        # "all", like "vlansall". Therefore we look for the forward slash because this
+        # is a path delimiter.
         elif any(x.lower().endswith('/all') for x in self.want.vlans):
             if self.have.vlans is None:
                 return None
@@ -875,7 +893,11 @@ class Difference(object):
                 result['vlans_disabled'] = self.want.vlans_disabled
                 result['vlans_enabled'] = not self.want.vlans_disabled
         elif self.want.vlans_enabled is not None:
-            if self.want.vlans_enabled != self.have.vlans_enabled:
+            if any(x.lower().endswith('/all') for x in self.want.vlans):
+                if self.have.vlans_enabled is True:
+                    result['vlans_disabled'] = True
+                    result['vlans_enabled'] = False
+            elif self.want.vlans_enabled != self.have.vlans_enabled:
                 result['vlans_disabled'] = not self.want.vlans_enabled
                 result['vlans_enabled'] = self.want.vlans_enabled
 
@@ -1136,6 +1158,15 @@ class VirtualServerManager(BaseManager):
             raise F5ModuleError(
                 "You must specify both of " + ', '.join(required_resources)
             )
+        if self.want.enabled_vlans is not None:
+            if any(x for x in self.want.enabled_vlans if x.lower() in ['/common/all', 'all']):
+                self.want.update(
+                    dict(
+                        enabled_vlans=[],
+                        vlans_disabled=True,
+                        vlans_enabled=False
+                    )
+                )
         return super(VirtualServerManager, self).create()
 
     def update_on_device(self):

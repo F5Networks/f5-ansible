@@ -1,0 +1,67 @@
+---
+
+- name: Issue 00454 - Include issue variables
+  include_vars:
+    file: issue-00454.yaml
+
+- name: Issue 00454 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - vlan1
+    - vlan2
+
+- name: Issue 00454 - Build Virtual Servers
+  bigip_virtual_server:
+    state: present
+    name: 1.2.3.4
+    destination: '::'
+    port: 0
+    enabled_vlans:
+      - vlan1
+      - vlan2
+    snat: automap
+  register: result
+
+- name: Issue 00454 - Change VLANs to all
+  bigip_virtual_server:
+    state: present
+    name: 1.2.3.4
+    destination: '::'
+    port: 0
+    enabled_vlans: all
+    snat: automap
+  register: result
+
+- name: Issue 00454 - Assert Change VLANs to all
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00454 - Change VLANs to all - Idempotent check
+  bigip_virtual_server:
+    state: present
+    name: 1.2.3.4
+    destination: '::'
+    port: 0
+    enabled_vlans: all
+    snat: automap
+  register: result
+
+- name: Issue 00454 - Assert Change VLANs to all - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00454 - Remove virtual server
+  bigip_virtual_server:
+    state: absent
+    name: 1.2.3.4
+
+- name: Issue 00454 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - vlan1
+    - vlan2
