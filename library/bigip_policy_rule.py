@@ -46,7 +46,7 @@ options:
       asm_policy:
         description:
           - ASM policy to enable.
-          - This parameter is only valid with the C(enable) type. 
+          - This parameter is only valid with the C(enable) type.
   policy:
     description:
       - The name of the policy that you want to associate this rule with.
@@ -599,7 +599,7 @@ class ModuleManager(object):
         self.client = client
         self.want = ModuleParameters(params=self.client.module.params)
         self.have = ApiParameters()
-        self.changes = Changes()
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
