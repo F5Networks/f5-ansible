@@ -142,12 +142,17 @@ multicast_port:
   sample: 1026
 '''
 
-from netaddr import IPAddress, AddrFormatError
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
 from ansible.module_utils.six import iteritems
+
+try:
+    from netaddr import IPAddress, AddrFormatError
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -563,6 +568,9 @@ class ArgumentSpec(object):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if not HAS_NETADDR:
+        raise F5ModuleError("The python netaddr module is required")
 
     spec = ArgumentSpec()
 
