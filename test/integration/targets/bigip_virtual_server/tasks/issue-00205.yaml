@@ -34,7 +34,7 @@
     that:
       - not result|changed
 
-- name: Remove virtual server
+- name: Issue 00205 - Remove virtual server
   bigip_virtual_server:
     name: issue-00205a
     state: absent

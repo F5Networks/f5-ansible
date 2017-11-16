@@ -2,13 +2,13 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/59
 
-- name: Issue 59 - Create policy
+- name: Issue 00059 - Create policy
   bigip_policy:
     name: policy1
     rules:
       - rule1
 
-- name: Issue 59 - Create virtual server
+- name: Issue 00059 - Create virtual server
   bigip_virtual_server:
     destination: 10.10.10.10
     port: 80
@@ -20,12 +20,12 @@
       - /Common/policy1
   register: result
 
-- name: Issue 59 - Create virtual server
+- name: Issue 00059 - Create virtual server
   assert:
     that:
       - result|changed
 
-- name: Issue 59 - Create virtual server - Idempotent check
+- name: Issue 00059 - Create virtual server - Idempotent check
   bigip_virtual_server:
     destination: 10.10.10.10
     port: 80
@@ -37,12 +37,12 @@
       - /Common/policy1
   register: result
 
-- name: Issue 59 - Create virtual server - Idempotent check
+- name: Issue 00059 - Create virtual server - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Issue 59 - Delete virtual server
+- name: Issue 00059 - Delete virtual server
   bigip_virtual_server:
     name: issue59
     state: absent
@@ -50,12 +50,12 @@
       - /Common/policy1
   register: result
 
-- name: Issue 59 - Delete virtual server
+- name: Issue 00059 - Delete virtual server
   assert:
     that:
       - result|changed
 
-- name: Issue 59 - Delete virtual server - Idempotent check
+- name: Issue 00059 - Delete virtual server - Idempotent check
   bigip_virtual_server:
     name: issue59
     state: absent
@@ -63,12 +63,12 @@
       - /Common/policy1
   register: result
 
-- name: Issue 59 - Delete virtual server - Idempotent check
+- name: Issue 00059 - Delete virtual server - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Issue 59 - Remove policy
+- name: Issue 00059 - Remove policy
   bigip_policy:
     name: policy1
     state: absent

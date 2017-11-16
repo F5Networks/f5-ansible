@@ -8,7 +8,7 @@
     state: present
   register: result
 
-- name: Assert Issue 00385 - Create virtual server
+- name: Issue 00385 - Assert Create virtual server
   assert:
     that:
       - result|changed
@@ -21,7 +21,7 @@
     state: present
   register: result
 
-- name: Assert Issue 00385 - Create virtual server - Idempotent check
+- name: Issue 00385 - Assert Create virtual server - Idempotent check
   assert:
     that:
       - not result|changed

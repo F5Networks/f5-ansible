@@ -15,7 +15,7 @@
     - irule1
     - irule2
 
-- name: Create VLANs
+- name: Issue 00408 - Create VLANs
   bigip_vlan:
     name: "{{ item }}"
   loop:
@@ -105,7 +105,7 @@
     name: httpvs2
     state: absent
 
-- name: Remove VLANs
+- name: Issue 00408 - Remove VLANs
   bigip_vlan:
     name: "{{ item }}"
     state: absent

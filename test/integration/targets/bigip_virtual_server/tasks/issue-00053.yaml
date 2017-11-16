@@ -2,11 +2,11 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/53
 
-- name: Issue 53 - Include issue variables
+- name: Issue 00053 - Include issue variables
   include_vars:
     file: issue-00053.yaml
 
-- name: Issue 53 - Create virtual server
+- name: Issue 00053 - Create virtual server
   bigip_virtual_server:
     name: "issue53"
     destination: "1.1.1.1"
@@ -20,12 +20,12 @@
     state: "present"
   register: result
 
-- name: Issue 53 - Create virtual server
+- name: Issue 00053 - Create virtual server
   assert:
     that:
       - result|changed
 
-- name: Issue 53 - Create virtual server - Idempotent check
+- name: Issue 00053 - Create virtual server - Idempotent check
   bigip_virtual_server:
     name: "issue53"
     destination: "1.1.1.1"
@@ -39,12 +39,12 @@
     state: "present"
   register: result
 
-- name: Issue 53 - Create virtual server - Idempotent check
+- name: Issue 00053 - Create virtual server - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Issue 53 - Delete virtual server
+- name: Issue 00053 - Delete virtual server
   bigip_virtual_server:
     destination: "1.1.1.1"
     name: "issue53"

@@ -2,15 +2,15 @@
 
 # @see https://github.com/F5Networks/f5-ansible/issues/57
 
-- name: Issue 57 - Include issue variables
+- name: Issue 00057 - Include issue variables
   include_vars:
     file: issue-00057.yaml
 
-- name: Issue 57 - Create partition
+- name: Issue 00057 - Create partition
   bigip_partition:
     name: "{{ i57_partition }}"
 
-- name: Issue 57 - Create virtual server
+- name: Issue 00057 - Create virtual server
   bigip_virtual_server:
     destination: 10.10.10.10
     port: 443
@@ -21,7 +21,7 @@
     state: "present"
   register: result
 
-- name: Issue 57 - Add virtual server rules
+- name: Issue 00057 - Add virtual server rules
   bigip_virtual_server:
     name: testVS
     all_profiles:
@@ -32,12 +32,12 @@
       - /Common/_sys_https_redirect
   register: result
 
-- name: Issue 57 - Add virtual server rules
+- name: Issue 00057 - Add virtual server rules
   assert:
     that:
       - result|changed
 
-- name: Issue 57 - Add virtual server rules - Idempotent check
+- name: Issue 00057 - Add virtual server rules - Idempotent check
   bigip_virtual_server:
     name: testVS
     all_profiles:
@@ -48,24 +48,24 @@
       - /Common/_sys_https_redirect
   register: result
 
-- name: Issue 57 - Add virtual server rules - Idepotent check
+- name: Issue 00057 - Add virtual server rules - Idepotent check
   assert:
     that:
       - not result|changed
 
-- name: Issue 57 - Delete virtual server
+- name: Issue 00057 - Delete virtual server
   bigip_virtual_server:
     name: testVS
     partition: "{{ i57_partition }}"
     state: absent
   register: result
 
-- name: Issue 57 - Delete virtual server
+- name: Issue 00057 - Delete virtual server
   assert:
     that:
       - result|changed
 
-- name: Issue 57 - Remove partition
+- name: Issue 00057 - Remove partition
   bigip_partition:
     name: "{{ i57_partition }}"
     state: absent

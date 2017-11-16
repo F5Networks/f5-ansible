@@ -5,7 +5,7 @@
     name: mypool
     state: present
 
-- name: Issue 00408 - Create iRules
+- name: Issue 00044 - Create iRules
   bigip_irule:
     content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
     module: ltm
@@ -79,10 +79,6 @@
     that:
       - result|changed
 
-
-
-
-
 - name: Issue 00044 - Change rules - Idempotent check
   bigip_virtual_server:
     state: present
@@ -105,15 +101,11 @@
     that:
       - not result|changed
 
-
-
-
 - name: Issue 00044 - Remove virtual server
   bigip_virtual_server:
     state: absent
     name: issue-00044
   register: result
-
 
 - name: Issue 00408 - Remove iRules
   bigip_irule:
