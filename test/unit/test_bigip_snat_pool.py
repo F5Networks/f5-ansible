@@ -178,34 +178,3 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert len(results['members']) == 1
         assert '/Common/30.30.30.30' in results['members']
-
-    def test_append_member_idempotent(self, *args):
-        # TODO: Remove in 2.5
-        set_module_args(dict(
-            name='asdasd',
-            state='present',
-            members=['1.1.1.1'],
-            append=True,
-            password='passsword',
-            server='localhost',
-            user='admin'
-        ))
-
-        current = Parameters(load_fixture('load_ltm_snatpool.json'))
-
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
-        )
-        mm = ModuleManager(client)
-
-        # Override methods to force specific logic in the module to happen
-        mm.read_current_from_device = Mock(return_value=current)
-        mm.update_on_device = Mock(return_value=True)
-        mm.exists = Mock(return_value=True)
-        mm.create_on_device = Mock(return_value=True)
-
-        results = mm.exec_module()
-
-        assert results['changed'] is False

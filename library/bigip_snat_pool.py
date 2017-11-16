@@ -20,22 +20,10 @@ description:
   - Manage SNAT pools on a BIG-IP.
 version_added: "2.3"
 options:
-  append:
-    description:
-      - When C(yes), will only add members to the SNAT pool. When C(no), will
-        replace the existing member list with the provided member list.
-      - Deprecated in 2.4. Specify your member list all at once using C(members)
-        instead.
-    choices:
-      - yes
-      - no
-    default: no
   members:
     description:
       - List of members to put in the SNAT pool. When a C(state) of present is
         provided, this parameter is required. Otherwise, it is optional.
-    required: False
-    default: None
     aliases:
       - member
   name:
@@ -44,7 +32,6 @@ options:
   state:
     description:
       - Whether the SNAT pool should exist or not.
-    required: False
     default: present
     choices:
       - present
@@ -52,7 +39,6 @@ options:
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
     default: 'Common'
     version_added: 2.5
 notes:
@@ -88,18 +74,6 @@ EXAMPLES = r'''
     name: my-snat-pool
     state: present
     member: 30.30.30.30
-  delegate_to: localhost
-
-- name: Append a new list of members to the existing pool
-  bigip_snat_pool:
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    name: my-snat-pool
-    state: present
-    members:
-      - 10.10.10.10
-      - 20.20.20.20
   delegate_to: localhost
 
 - name: Remove the SNAT pool 'my-snat-pool'
@@ -197,20 +171,6 @@ class Parameters(AnsibleF5Parameters):
                 'The provided member address is not a valid IP address'
             )
 
-    @property
-    def append(self):
-        if self._values['append'] is None:
-            return None
-        if self._values['__warnings'] is None:
-            self._values['__warnings'] = []
-        self._values['__warnings'].append(
-            dict(
-                msg="Usage of the 'append' parameter is deprecated",
-                version='2.4'
-            )
-        )
-        return self._values['append']
-
 
 class Difference(object):
     def __init__(self, want, have=None):
@@ -224,23 +184,13 @@ class Difference(object):
         except AttributeError:
             return self.__default(param)
 
-    # TODO: Remove this method in v2.5
     @property
     def members(self):
         if self.want.members is None:
             return None
         if set(self.want.members) == set(self.have.members):
             return None
-        if self.want.append is False:
-            return self.want.members
-
-        # Checking to see if the supplied list is a subset of the current
-        # list is only relevant if the `append` parameter is provided.
-        new_members = set(self.want.members)
-        current_members = set(self.have.members)
-        if new_members.issubset(current_members):
-            return None
-        result = list(set(self.have.members + self.want.members))
+        result = list(set(self.want.members))
         return result
 
     def __default(self, param):
@@ -402,10 +352,6 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            append=dict(
-                default='no',
-                type='bool',
-            ),
             name=dict(required=True),
             members=dict(
                 type='list',
