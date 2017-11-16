@@ -156,3 +156,6 @@
       - not result|changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00457.yaml
+  tags: issue-00457

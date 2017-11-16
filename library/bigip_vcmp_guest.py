@@ -31,6 +31,9 @@ options:
       - VLANs that the guest uses to communicate with other guests, the host, and with
         the external network. The available VLANs in the list are those that are
         currently configured on the vCMP host.
+      - The order of these VLANs is not important; in fact, it's ignored. This module will
+        order the VLANs for you automatically. Therefore, if you deliberately re-order them
+        in subsequent tasks, you will find that this module will B(not) register a change.
   initial_image:
     description:
       - Specifies the base software release ISO image file for installing the TMOS
@@ -294,7 +297,7 @@ class Parameters(AnsibleF5Parameters):
             return None
         destination = self.mgmt_tuple
         try:
-            _ = IPAddress(destination.ip)
+            IPAddress(destination.ip)
             return self._values['mgmt_address']
         except AddrFormatError:
             raise F5ModuleError(
@@ -338,7 +341,7 @@ class Parameters(AnsibleF5Parameters):
     def vlans(self):
         if self._values['vlans'] is None:
             return None
-        result = [self._fqdn_name(x) for x in self._values['vlans']]
+        result = [self._fqdn_name(x) for x in self._values['vlans']].sort()
         return result
 
     @property
@@ -419,6 +422,7 @@ class ModuleManager(object):
                 continue
             else:
                 changed[k] = change
+        import q; q.q(changed)
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -526,7 +530,9 @@ class ModuleManager(object):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
+        import q
+        q.q(params)
         resource = self.client.api.tm.vcmp.guests.guest.load(
             name=self.want.name
         )
