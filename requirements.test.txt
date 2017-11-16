@@ -43,6 +43,7 @@ jenkins-job-builder
 junit_xml
 junitparser
 click
+virtualenv
 
 # For standing up test infrastructure
 shade
