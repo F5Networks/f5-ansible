@@ -7,3 +7,6 @@
 
 - import_tasks: main-no-draft.yaml
   when: system_info.product_information.product_version < "12.1.0"
+
+- import_tasks: issue-00453.yaml
+  tags: issue-00453

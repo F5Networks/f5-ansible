@@ -1,0 +1,39 @@
+---
+
+- name: Issue 00453 - Import issue variables
+  include_vars:
+    file: issue-00453.yaml
+
+- name: Create a published policy
+  bigip_policy:
+    name: "{{ policy_name }}"
+    state: present
+    rules:
+      - rule1
+      - rule2
+      - rule3
+  register: result
+
+- name: Remove some rules
+  bigip_policy:
+    name: "{{ policy_name }}"
+    rules:
+      - rule3
+  register: result
+
+- name: Assert Remove some rules
+  assert:
+    that:
+      - result|changed
+
+- name: Remove some rules - Idempotent check
+  bigip_policy:
+    name: "{{ policy_name }}"
+    rules:
+      - rule3
+  register: result
+
+- name: Assert Remove some rules - Idempotent check
+  assert:
+    that:
+      - not result|changed
