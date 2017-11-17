@@ -962,10 +962,12 @@ class Difference(object):
     def policies(self):
         if self.want.policies is None:
             return None
+        if not self.have.policies:
+            return self.want.policies
         want = set([(p['name'], p['partition']) for p in self.want.policies])
         have = set([(p['name'], p['partition']) for p in self.have.policies])
         if not want == have:
-            return self.want.profiles
+            return self.want.policies
 
     @property
     def snat(self):

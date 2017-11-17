@@ -1,0 +1,101 @@
+---
+
+- name: Issue 00460 - Create pool
+  bigip_pool:
+    lb_method: round-robin
+    name: web-pool
+
+- name: Issue 00460 - Create iRules
+  bigip_irule:
+    content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+
+- name: Issue 00460 - Create a published policy
+  bigip_policy:
+    name: PolicyAnsible
+    state: present
+    rules:
+      - rule1
+      - rule2
+  register: result
+
+- name: Issue 00460 - Add VS on BIG-IP
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    enabled_vlans: all
+    pool: web-pool
+    snat: automap
+    profiles: http
+
+- name: Issue 00460 - Add policy to virtual server
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    enabled_vlans: all
+    pool: web-pool
+    snat: automap
+    profiles: http
+    policies: PolicyAnsible
+  register: result
+
+- name: Issue 00460 - Assert Add policy to virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00460 - Add policy to virtual server - Idempotent check
+  bigip_virtual_server:
+    name: httpvs2
+    destination: 10.168.90.92
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    enabled_vlans: all
+    pool: web-pool
+    snat: automap
+    profiles: http
+    policies: PolicyAnsible
+  register: result
+
+- name: Issue 00460 - Assert Add policy to virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00460 - Remove virtual server
+  bigip_virtual_server:
+    name: httpvs2
+    state: absent
+
+- name: Issue 00460 - Remove published policy
+  bigip_policy:
+    name: PolicyAnsible
+    state: absent
+
+- name: Issue 00460 - Remove iRules
+  bigip_irule:
+    module: ltm
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - irule1
+    - irule2
+
+- name: Issue 00460 - Remove pool
+  bigip_pool:
+    name: web-pool
+    state: absent
