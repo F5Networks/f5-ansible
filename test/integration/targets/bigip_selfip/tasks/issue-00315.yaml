@@ -18,7 +18,7 @@
     allow_service: default
     state: present
   delegate_to: localhost
-  with_items: "{{ issue_315 }}"
+  loop: "{{ issue_315 }}"
   register: result
 
 - name: Assert Create self-IPs
@@ -36,7 +36,7 @@
     allow_service: default
     state: present
   delegate_to: localhost
-  with_items: "{{ issue_315 }}"
+  loop: "{{ issue_315 }}"
   register: result
 
 - name: Assert Create self-IPs - Idempotent check
@@ -48,7 +48,7 @@
   bigip_selfip:
     name: "{{ item.name }}"
     state: absent
-  with_items: "{{ issue_315 }}"
+  loop: "{{ issue_315 }}"
 
 - name: Remove VLANs
   bigip_vlan:

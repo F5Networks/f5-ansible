@@ -91,17 +91,17 @@
 
 - name: Assert Create self-IPs, type c - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove self-IPs
   bigip_selfip:
-      name: "{{ item }}"
-      state: absent
-  with_items:
-      - issue-00365-a
-      - issue-00365-b
-      - issue-00365-c
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - issue-00365-a
+    - issue-00365-b
+    - issue-00365-c
 
 - name: Remove VLANs
   bigip_vlan:

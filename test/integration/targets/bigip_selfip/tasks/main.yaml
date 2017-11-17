@@ -5,250 +5,250 @@
 
 - name: Create Self IP
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      vlan: "{{ selfip_vlan }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
   register: result
 
 - name: Assert Create Self IP
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create Self IP - Idempotent check
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      vlan: "{{ selfip_vlan }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
   register: result
 
 - name: Assert Create Self IP - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set Self IP VLAN
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      vlan: "{{ selfip_vlan2 }}"
+    name: "{{ selfip_name }}"
+    vlan: "{{ selfip_vlan2 }}"
   register: result
 
 - name: Assert Set Self IP VLAN
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set Self IP VLAN - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      vlan: "{{ selfip_vlan2 }}"
+    name: "{{ selfip_name }}"
+    vlan: "{{ selfip_vlan2 }}"
   register: result
 
 - name: Assert Set Self IP VLAN - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set Self IP netmask
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask2 }}"
   register: result
 
 - name: Assert Set Self IP netmask
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set Self IP netmask - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask2 }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask2 }}"
   register: result
 
 - name: Assert Set Self IP netmask - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set single protocol allow service
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service: "{{ allowed_services_single }}"
+    name: "{{ selfip_name }}"
+    allow_service: "{{ allowed_services_single }}"
   register: result
 
 - name: Assert Set single protocol allow service
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set single protocol allow service - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service: "{{ allowed_services_single }}"
+    name: "{{ selfip_name }}"
+    allow_service: "{{ allowed_services_single }}"
   register: result
 
 - name: Assert Set single protocol allow service - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set multiple protocol allow all service
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service: "{{ allowed_services_multi }}"
+    name: "{{ selfip_name }}"
+    allow_service: "{{ allowed_services_multi }}"
   register: result
 
 - name: Assert Set multiple protocol allow all service
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set multiple protocol allow all service - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service: "{{ allowed_services_multi }}"
+    name: "{{ selfip_name }}"
+    allow_service: "{{ allowed_services_multi }}"
   register: result
 
 - name: Assert Set multiple protocol allow all service - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set keyword "all" allow service
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "all"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "all"
   register: result
 
 - name: Assert Set keyword "all" allow service
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set keyword "all" allow service - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "all"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "all"
   register: result
 
 - name: Assert Set keyword "all" allow service - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set keyword "default" allow service
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "default"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "default"
   register: result
 
 - name: Assert Set keyword "default" allow service
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set keyword "default" allow service - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "default"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "default"
   register: result
 
 - name: Assert Set keyword "default" allow service - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set keyword "none" allow service
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "none"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "none"
   register: result
 
 - name: Assert Set keyword "none" allow service
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set keyword "none" allow service - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      allow_service:
-          - "none"
+    name: "{{ selfip_name }}"
+    allow_service:
+      - "none"
   register: result
 
 - name: Assert Set keyword "none" allow service - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete Self IP
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      state: "absent"
+    name: "{{ selfip_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete Self IP
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete Self IP - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      state: "absent"
+    name: "{{ selfip_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete Self IP - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create Self IP, specify a traffic group
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      traffic_group: "{{ default_traffic_group }}"
-      vlan: "{{ selfip_vlan }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    traffic_group: "{{ default_traffic_group }}"
+    vlan: "{{ selfip_vlan }}"
   register: result
 
 - name: Assert Create Self IP, specify a traffic group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create Self IP, specify a traffic group - Idempotent check
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      traffic_group: "{{ default_traffic_group }}"
-      vlan: "{{ selfip_vlan }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    traffic_group: "{{ default_traffic_group }}"
+    vlan: "{{ selfip_vlan }}"
   register: result
 
 - name: Assert Create Self IP, specify a traffic group - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete Self IP that specified traffic group
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      state: "absent"
+    name: "{{ selfip_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete Self IP that specified traffic group
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - import_tasks: route-domain.yaml
 

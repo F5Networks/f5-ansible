@@ -2,19 +2,19 @@
 
 - name: Remove VLANs
   bigip_vlan:
-      name: "{{ item }}"
-      state: "absent"
+    name: "{{ item }}"
+    state: "absent"
   register: result
-  with_items:
-      - net1
+  loop:
+    - net1
 
 - name: Remove route domain
   bigip_routedomain:
-      id: "{{ selfip_rd }}"
-      state: "absent"
+    id: "{{ selfip_rd }}"
+    state: "absent"
   register: result
 
 - name: Remove Create route domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
