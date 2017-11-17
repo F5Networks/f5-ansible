@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|travis badge|
+|slack badge| |travis badge|
 
 Introduction
 ------------
@@ -102,6 +102,10 @@ in this project.
 .. |travis badge| image:: https://travis-ci.org/F5Networks/f5-ansible.svg?branch=devel
     :target: https://travis-ci.org/F5Networks/f5-ansible
     :alt: Build Status
+
+.. |slack badge| image:: https://f5cloudsolutions.herokuapp.com/badge.svg
+    :target: https://f5cloudsolutions.herokuapp.com
+    :alt: Slack Status
 
 .. _Guidelines: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html
 .. _writing new modules: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html

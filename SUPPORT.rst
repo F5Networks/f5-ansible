@@ -7,16 +7,14 @@ you are familiar with what it means here.
 
 For code bugs or other issues, you should open a Github issue here.
 
-Additionally, You can come discuss/lurk in our Slack channel if you're interested.
-
-There is also the option of joining our Slack channel where you can ask questions
-there. The channel is by invite only. To request an invite, open an issue on
-Github here and I will invite you to the channel.
-
-If you have a question, please prefix it with "@channel" so that I can see it.
+There is also the option of joining our Slack team where you can ask questions
+there. If you have a question, please prefix it with "@here" so that we can see it.
 
 For example
 
-    @channel I had a question about Foo and how it relates to Bar
+    @here I had a question about Foo and how it relates to Bar
+
+There is a dedicated `#ansible` channel in the Slack team. It is recommended that
+you ask questions there.
 
 .. _main repository page: https://github.com/F5Networks/f5-ansible#ansible-f5
