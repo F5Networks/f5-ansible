@@ -341,7 +341,8 @@ class Parameters(AnsibleF5Parameters):
     def vlans(self):
         if self._values['vlans'] is None:
             return None
-        result = [self._fqdn_name(x) for x in self._values['vlans']].sort()
+        result = [self._fqdn_name(x) for x in self._values['vlans']]
+        result.sort()
         return result
 
     @property
