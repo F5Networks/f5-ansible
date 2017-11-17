@@ -26,6 +26,7 @@ script:
   - ./test/ansible/sanity/short-description-ends-with-period.py
   - pycodestyle library/
   - pycodestyle test/unit
+  - make docker-test
 
 deploy:
   provider: script
@@ -36,4 +37,4 @@ deploy:
     python: '3.5'
     repo: F5Networks/f5-ansible
   script:
-    - ./docs/scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
+    - make docker-deploy
