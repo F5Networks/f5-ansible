@@ -96,7 +96,7 @@
     module: vcmp
     state: absent
 
-- name: Issue 00457 - Remove uploaded image
-  bigip_software:
-    base_image: "{{ initial_image }}"
-    state: absent
+#- name: Issue 00457 - Remove uploaded image
+#  bigip_software:
+#    base_image: "{{ initial_image }}"
+#    state: absent

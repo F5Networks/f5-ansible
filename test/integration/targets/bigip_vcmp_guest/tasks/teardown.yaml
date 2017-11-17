@@ -9,10 +9,10 @@
     - vlan2
     - vlan3
 
-- name: Remove initial image
-  bigip_software:
-      base_image: "{{ initial_image }}"
-      state: absent
+#- name: Remove initial image
+#  bigip_software:
+#      base_image: "{{ initial_image }}"
+#      state: absent
 
 - name: Provision vCMP
   bigip_provision:
