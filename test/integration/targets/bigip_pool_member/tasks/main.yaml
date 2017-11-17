@@ -175,6 +175,6 @@
     that:
       - result|changed
 
-- include: pr-23128.yaml
+- import_tasks: pr-23128.yaml
   tags:
     - pr-23128
