@@ -2,32 +2,32 @@
 
 - name: Get route domain facts for existing domain
   bigip_routedomain_facts:
-      id: "{{ found_rd }}"
+    id: "{{ found_rd }}"
   register: result
 
 - name: Assert Get route domain facts for existing domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Get route domain facts for non-existing domain
   bigip_routedomain_facts:
-      id: "{{ notfound_rd }}"
+    id: "{{ notfound_rd }}"
   register: result
 
 - name: Assert Get route domain facts for non-existing domain
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Get route domain facts for invalid domains
   bigip_routedomain_facts:
-      id: "{{ item }}"
+    id: "{{ item }}"
   register: result
   ignore_errors: true
-  with_items: invalid_rd
+  loop: invalid_rd
 
 - name: Assert Get route domain facts for invalid domain
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
