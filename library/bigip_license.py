@@ -284,18 +284,6 @@ class BigIpLicenseIControl(BigIpLicenseCommon):
         else:
             return False
 
-
-
-
-
-
-
-
-
-
-
-
-
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
@@ -343,14 +331,7 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-
-
-
-
-
-
-
-
+        """
         common = BigIpLicenseCommon(module)
         lic_status = common.get_license_activation_status()
 
@@ -381,10 +362,7 @@ class ModuleManager(object):
                 module.fail_json(msg="License not removed")
 
         module.exit_json(changed=changed)
-
-
-
-
+        """
 
         try:
             if state == "present":
