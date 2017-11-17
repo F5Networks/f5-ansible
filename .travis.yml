@@ -3,32 +3,33 @@ sudo: required
 language: python
 
 python:
-    - "2.7"
-    - "3.2"
-    - "3.3"
-    - "3.4"
-    - "3.5"
-    - "nightly"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "nightly"
 
 before_install:
-    # NOTE TO TIM -- this is probably not required since you're not trying to pull or push from a GitHub repo
-    - git config --global user.email "OpenStack_TravisCI@f5.com"
-    - git config --global user.name "Travis F5 Openstack"
-    - docker pull f5devcentral/containthedocs
+  # NOTE: this is probably not required since you're not trying to pull or
+  # push from a GitHub repo
+  - git config --global user.email "OpenStack_TravisCI@f5.com"
+  - git config --global user.name "Travis F5 Openstack"
+  - docker pull f5devcentral/containthedocs
 
 install:
-    - pip install -r requirements.test.txt
+  - pip install -r requirements.test.txt
 
 script:
-    - make all-tests
-    - bash test/ansible/sanity/integration-test-idempotent-names.sh
-    - ./test/ansible/sanity/short-description-ends-with-period.py
-    - pycodestyle library/
-    - pycodestyle test/unit
-    - ./scripts/test-docs.sh
+  - make all-tests
+  - bash test/ansible/sanity/integration-test-idempotent-names.sh
+  - ./test/ansible/sanity/short-description-ends-with-period.py
+  - pycodestyle library/
+  - pycodestyle test/unit
+  - ./scripts/test-docs.sh
 
 deploy:
-- provider: script
+  provider: script
   skip_cleanup: true
   on:
     branch: devel
@@ -36,4 +37,4 @@ deploy:
     python: '3.5'
     repo: F5Networks/f5-ansible
   script:
-  - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
+    - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
