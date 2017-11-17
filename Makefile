@@ -62,5 +62,7 @@ docker-test:
 	pip install --user -r requirements.readthedocs.txt
 	./docs/scripts/test-docs.sh
 
-
+# Deploy docs to clouddocs
+docker-deploy:
+	./docs/scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
 
