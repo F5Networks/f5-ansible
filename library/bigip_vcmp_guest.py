@@ -213,7 +213,8 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-        'vlans', 'mgmt_network', 'mgmt_address', 'initial_image', 'mgmt_route'
+        'vlans', 'mgmt_network', 'mgmt_address', 'initial_image', 'mgmt_route',
+        'name'
     ]
 
     updatables = [
@@ -295,10 +296,10 @@ class Parameters(AnsibleF5Parameters):
     def mgmt_address(self):
         if self._values['mgmt_address'] is None:
             return None
-        destination = self.mgmt_tuple
         try:
-            IPAddress(destination.ip)
-            return self._values['mgmt_address']
+            addr = IPNetwork(self._values['mgmt_address'])
+            result = '{0}/{1}'.format(addr.ip, addr.prefixlen)
+            return result
         except AddrFormatError:
             raise F5ModuleError(
                 "The specified 'mgmt_address' is not a valid IP address"
@@ -321,13 +322,6 @@ class Parameters(AnsibleF5Parameters):
         except ValueError:
             result = Destination(ip=None, subnet=None)
         return result
-
-    @property
-    def mgmt_subnet(self):
-        destination = self.mgmt_tuple
-        if destination.subnet is None:
-            return None
-        return int(destination.subnet)
 
     @property
     def state(self):
