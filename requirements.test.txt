@@ -15,7 +15,7 @@ tabulate
 
 # Debugging
 q
-git+https://github.com/thedrow/pycallgraph.git@develop
+#git+https://github.com/thedrow/pycallgraph.git@develop
 pydevd
 
 # Used for code style checking
