@@ -2,19 +2,19 @@
 
 - name: Create a new partition to test route domain creation
   bigip_partition:
-      name: "{{ new_partition }}"
-      route_domain: "0"
+    name: "{{ new_partition }}"
+    route_domain: "0"
   register: result
 
 - name: Create a parent route domain
   bigip_routedomain:
-      id: "{{ new_parent }}"
-      partition: "{{ new_partition }}"
+    id: "{{ new_parent }}"
+    partition: "{{ new_partition }}"
   register: result
 
 - name: Create VLANs for Issue 51
   bigip_vlan:
-      name: "{{ item }}"
-      partition: "{{ new_partition }}"
-  with_items: "{{ i51_vlan_valid }}"
+    name: "{{ item }}"
+    partition: "{{ new_partition }}"
+  loop: "{{ i51_vlan_valid }}"
   register: result
