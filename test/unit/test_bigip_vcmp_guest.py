@@ -87,7 +87,7 @@ class TestParameters(unittest.TestCase):
 
         p = Parameters(args)
         assert p.mgmt_network == 'bridged'
-        assert p.mgmt_address == '1.2.3.4/24'
+        assert p.mgmt_address == '1.2.3.4/32'
 
     def test_module_parameters_mgmt_address_cidr(self):
         args = dict(
@@ -111,7 +111,7 @@ class TestParameters(unittest.TestCase):
 
     def test_module_parameters_mgmt_route(self):
         args = dict(
-            mgmt_address='1.2.3.4'
+            mgmt_route='1.2.3.4'
         )
 
         p = Parameters(args)
@@ -126,7 +126,7 @@ class TestParameters(unittest.TestCase):
         )
 
         p = Parameters(args)
-        assert p.initial_image == 'BIGIP-12.1.0.1.0.1447-HF1.iso'
+        assert p.initial_image == 'BIGIP-12.1.0.1.0.1447-HF1.iso/1'
 
     def test_api_parameters(self):
         args = dict(
@@ -152,6 +152,34 @@ class TestParameters(unittest.TestCase):
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
 
-    def test_create(self, *args):
-        raise Exception('You must write a creation test')
+    def test_create_vlan(self, *args):
+        set_module_args(dict(
+            name="guest1",
+            mgmt_network="bridged",
+            mgmt_address="10.10.10.10/24",
+            initial_image="BIGIP-13.1.0.0.0.931.iso",
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(client)
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+        mm.is_deployed = Mock(side_effect=[False,True,True,True,True])
+        mm.deploy_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'guest1'
