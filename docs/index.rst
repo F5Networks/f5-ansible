@@ -7,6 +7,48 @@ You can use these modules to create, edit, update, and delete configuration obje
 
 The code is open source, and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
+.. toctree::
+   :maxdepth: 1
+   :includehidden:
+   :caption: User Documentation
+
+   /usage/getting_started
+   /usage/support
+   /usage/playbook_tutorial
+   /usage/connection-local-or-delegate-to
+   /usage/installing-modules
+   /usage/filing-issues
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Module Documentation
+
+   /modules/modules_by_category
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Developer Documentation
+
+   /development/cla-landing
+   /development/getting-involved
+   /development/guidelines
+   /development/tests
+   /development/architecture
+   /development/code-conventions
+   /development/upstreaming
+   /development/writing-a-module
+   /development/deprecating-code
+   /development/design-decisions
+   /development/dealing-with-replace-all
+   /development/module-patterns
+   /development/testing-pipeline
+   /development/securing-sensitive-information
+   /development/ssh-functionality-for-modules
+   /development/issue-management
+   /development/pulling-docker-containers
+   /development/tutorials/adding-new-admin-to-encrypted-files
+   /development/parameters
+
 
 .. |f5_ansible_github| raw:: html
 
@@ -19,46 +61,3 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
 .. |ansible_extras| raw:: html
 
    <a href="https://github.com/ansible/ansible-modules-extras" target="_blank">Ansible extras</a>
-
-
-.. toctree::
-   :maxdepth: 1
-   :includehidden:
-   :caption: User Documentation
-
-   usage/getting_started.rst
-   usage/support.rst
-   usage/playbook_tutorial.rst
-   usage/connection-local-or-delegate-to.rst
-   usage/installing-modules.rst
-   usage/filing-issues.rst
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Module Documentation
-
-   modules/modules_by_category
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Documentation
-
-   development/cla-landing.rst
-   development/getting-involved.rst
-   development/guidelines.rst
-   development/tests.rst
-   development/architecture.rst
-   development/code-conventions.rst
-   development/upstreaming.rst
-   development/writing-a-module.rst
-   development/deprecating_code.rst
-   development/design-decisions.rst
-   development/dealing-with-replace-all.rst
-   development/module-patterns.rst
-   development/testing-pipeline.rst
-   development/securing-sensitive-information.rst
-   development/ssh-functionality-for-modules.rst
-   development/issue-management.rst
-   development/pulling-docker-containers.rst
-   development/tutorials/adding-new-admin-to-encrypted-files.rst
-   development/parameters.rst

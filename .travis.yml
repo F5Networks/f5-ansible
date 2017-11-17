@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 
 language: python
 
@@ -11,8 +11,10 @@ python:
     - "nightly"
 
 before_install:
+    # NOTE TO TIM -- this is probably not required since you're not trying to pull or push from a GitHub repo
     - git config --global user.email "OpenStack_TravisCI@f5.com"
     - git config --global user.name "Travis F5 Openstack"
+    - docker pull f5devcentral/containthedocs
 
 install:
     - pip install -r requirements.test.txt
@@ -23,3 +25,15 @@ script:
     - ./test/ansible/sanity/short-description-ends-with-period.py
     - pycodestyle library/
     - pycodestyle test/unit
+    - ./scripts/test-docs.sh
+
+deploy:
+- provider: script
+  skip_cleanup: true
+  on:
+    branch: devel
+    # only deploy to clouddocs after one build; python 3.5 chosen arbitrarily
+    python: '3.5'
+    repo: F5Networks/f5-ansible
+  script:
+  - ./scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
