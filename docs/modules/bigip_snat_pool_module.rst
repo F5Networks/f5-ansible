@@ -37,14 +37,9 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>append<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>When <code>yes</code>, will only add members to the SNAT pool. When <code>no</code>, will replace the existing member list with the provided member list.</div><div>Deprecated in 2.4. Specify your member list all at once using <code>members</code> instead.</div>        </td></tr>
                 <tr><td>members<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>List of members to put in the SNAT pool. When a <code>state</code> of present is provided, this parameter is required. Otherwise, it is optional.</div></br>
     <div style="font-size: small;">aliases: member<div>        </td></tr>
@@ -121,18 +116,6 @@ Examples
         member: 30.30.30.30
       delegate_to: localhost
     
-    - name: Append a new list of members to the existing pool
-      bigip_snat_pool:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my-snat-pool
-        state: present
-        members:
-          - 10.10.10.10
-          - 20.20.20.20
-      delegate_to: localhost
-    
     - name: Remove the SNAT pool 'my-snat-pool'
       bigip_snat_pool:
         server: lb.mydomain.com
@@ -145,7 +128,7 @@ Examples
 Return Values
 -------------
 
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -175,7 +158,6 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
@@ -190,7 +172,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

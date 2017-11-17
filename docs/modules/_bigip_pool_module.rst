@@ -208,7 +208,6 @@ Notes
     - Requires BIG-IP software version >= 11
     - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
     - Best run as a local_action in your playbook
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

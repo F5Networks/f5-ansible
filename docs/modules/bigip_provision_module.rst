@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td>nominal</td>
         <td><ul><li>dedicated</li><li>nominal</li><li>minimum</li></ul></td>
-        <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not run.</div>        </td></tr>
+        <td><div>Sets the provisioning level for the requested modules. Changing the level for one module may require modifying the level of another module. For example, changing one module to <code>dedicated</code> requires setting all others to <code>none</code>. Setting the level of a module to <code>none</code> means that the module is not activated.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -112,7 +112,7 @@ Examples
 Return Values
 -------------
 
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -141,7 +141,6 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
@@ -156,7 +155,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

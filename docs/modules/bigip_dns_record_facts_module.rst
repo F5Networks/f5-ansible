@@ -86,7 +86,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

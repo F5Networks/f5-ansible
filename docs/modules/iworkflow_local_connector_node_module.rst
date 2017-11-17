@@ -174,7 +174,6 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - This module does not support updating of existing nodes that were created with a ``cli_password_credential``. The onboarding process will change your device's ``cli_username_credential`` password, which will prevent you from using this module (without knowing the password) a second time.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
@@ -189,7 +188,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

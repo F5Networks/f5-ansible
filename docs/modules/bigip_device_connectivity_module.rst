@@ -4,7 +4,7 @@
 bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -91,7 +91,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.  If you are specifying the (recommended) management IP address, use 'management-ip' in the address field</div>        </td></tr>
+        <td><div>Desired addresses to use for failover operations. Options <code>address</code> and <code>port</code> are supported with dictionary structure where <code>address</code> is the local IP address that the system uses for failover operations. Port specifies the port that the system uses for failover operations. If <code>port</code> is not specified, the default value <code>1026</code> will be used.  If you are specifying the (recommended) management IP address, use 'management-ip' in the address field.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -128,7 +128,7 @@ Examples
 Return Values
 -------------
 
-Common return values are documented here :doc:`common_return_values`, the following are the fields unique to this module:
+Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -144,7 +144,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
         <tr>
         <td> multicast_interface </td>
         <td> The new value of the C(multicast_interface) setting. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> eth0 </td>
     </tr>
@@ -165,7 +165,7 @@ Common return values are documented here :doc:`common_return_values`, the follow
             <tr>
         <td> mirror_secondary_address </td>
         <td> The new value of the C(mirror_secondary_address) setting. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 10.1.1.3 </td>
     </tr>
@@ -179,28 +179,28 @@ Common return values are documented here :doc:`common_return_values`, the follow
             <tr>
         <td> multicast_address </td>
         <td> The new value of the C(multicast_address) setting. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 224.0.0.245 </td>
     </tr>
             <tr>
         <td> failover_multicast </td>
         <td> Whether a failover multicast attribute has been changed or not. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> bool </td>
         <td align=center>  </td>
     </tr>
             <tr>
         <td> unicast_failover </td>
         <td> The new value of the C(unicast_failover) setting. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> list </td>
         <td align=center> [{'port': 1026, 'address': '10.1.1.2'}] </td>
     </tr>
             <tr>
         <td> multicast_port </td>
         <td> The new value of the C(multicast_port) setting. </td>
-        <td align=center>  </td>
+        <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 1026 </td>
     </tr>
@@ -214,8 +214,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module is primarily used as a component of configuring HA pairs of BIG-IP devices.
-    - Requires BIG-IP >= 12.1.x.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - Requires BIG-IP >= 12.0.0
 
 
 
@@ -230,7 +229,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

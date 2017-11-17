@@ -120,7 +120,6 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the rpm tool be installed on the host. This can be accomplished through different ways on each platform. On Debian based systems with ``apt``; ``apt-get install rpm``. On Mac with ``brew``; ``brew install rpm``. This command is already present on RedHat based systems.
     - Requires BIG-IP < 12.1.0 because the required functionality is missing on versions  earlier than that.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
@@ -135,7 +134,7 @@ Support
 
 This module is community maintained without core committer oversight.
 
-For more information on what this means please read :doc:`modules_support`
+For more information on what this means please read :doc:`/usage/support`
 
 
-For help in developing on modules, should you be so inclined, please read :doc:`community`, :doc:`dev_guide/developing_test_pr` and :doc:`dev_guide/developing_modules`.
+For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.
