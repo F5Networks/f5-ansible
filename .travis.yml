@@ -17,6 +17,7 @@ before_install:
   - git config --global user.name "Travis F5 Openstack"
 
 install:
+  - sudo apt-get install libffi-dev libssl-dev
   - pip install -r requirements.test.txt
 
 script:
