@@ -19,7 +19,7 @@
 Ansible F5
 ==========
 
-|slack badge| |travis badge|
+|slack badge||travis badge|
 
 Introduction
 ------------
