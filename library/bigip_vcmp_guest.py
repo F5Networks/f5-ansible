@@ -422,7 +422,6 @@ class ModuleManager(object):
                 continue
             else:
                 changed[k] = change
-        import q; q.q(changed)
         if changed:
             self.changes = Parameters(changed)
             return True
@@ -531,8 +530,6 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        import q
-        q.q(params)
         resource = self.client.api.tm.vcmp.guests.guest.load(
             name=self.want.name
         )
