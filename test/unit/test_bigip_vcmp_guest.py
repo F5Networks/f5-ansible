@@ -176,7 +176,7 @@ class TestManager(unittest.TestCase):
         mm = ModuleManager(client)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
-        mm.is_deployed = Mock(side_effect=[False,True,True,True,True])
+        mm.is_deployed = Mock(side_effect=[False, True, True, True, True])
         mm.deploy_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
