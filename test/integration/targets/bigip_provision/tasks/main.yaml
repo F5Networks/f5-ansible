@@ -33,84 +33,84 @@
 
 - name: Deprovision GTM on the device - Idempotent check
   bigip_provision:
-      module: "{{ module1 }}"
-      state: "absent"
+    module: "{{ module1 }}"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision GTM on the device - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Provision two modules
   bigip_provision:
-      module: "{{ item }}"
-  with_items:
-      - gtm
-      - asm
+    module: "{{ item }}"
+  loop:
+    - gtm
+    - asm
   register: result
 
 - name: Assert Provision two modules
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Provision two modules - Idempotent check
   bigip_provision:
-      module: "{{ item }}"
-  with_items:
-      - gtm
-      - asm
+    module: "{{ item }}"
+  loop:
+    - gtm
+    - asm
   register: result
 
 - name: Assert Provision two modules
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Deprovision first module
   bigip_provision:
-      module: "gtm"
-      state: "absent"
+    module: "gtm"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision first module
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Deprovision first module - Idempotent check
   bigip_provision:
-      module: "gtm"
-      state: "absent"
+    module: "gtm"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision first module - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Deprovision second module
   bigip_provision:
-      module: "asm"
-      state: "absent"
+    module: "asm"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision second module
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Deprovision second module - Idempotent check
   bigip_provision:
-      module: "gtm"
-      state: "absent"
+    module: "gtm"
+    state: "absent"
   register: result
 
 - name: Assert Deprovision second module - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - import_tasks: issue-00449.yaml
   tags: issue-00449

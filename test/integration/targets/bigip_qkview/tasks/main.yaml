@@ -1,49 +1,49 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
 - name: Create QKView, save it locally
   bigip_qkview:
-      dest: "{{ qkview_path_local }}"
+    dest: "{{ qkview_path_local }}"
 
 - name: Check for existence
   stat:
-      path: "{{ qkview_path_local }}"
+    path: "{{ qkview_path_local }}"
   register: st
 
 - name: Assert Check for existence
   assert:
-      that:
-          - st.stat.exists|bool
+    that:
+      - st.stat.exists|bool
 
 - name: Remove qkview file
   file:
-      path: "{{ qkview_path_local }}"
-      state: "absent"
+    path: "{{ qkview_path_local }}"
+    state: "absent"
 
 - name: Create QKView with options, save it locally
   bigip_qkview:
-      asm_request_log: yes
-      exclude_core: yes
-      exclude:
-          - audit
-          - secure
-      dest: "{{ qkview_path_local }}"
+    asm_request_log: yes
+    exclude_core: yes
+    exclude:
+      - audit
+      - secure
+    dest: "{{ qkview_path_local }}"
 
 - name: Check for existence
   stat:
-      path: "{{ qkview_path_local }}"
+    path: "{{ qkview_path_local }}"
   register: st
 
 - name: Assert Check for existence
   assert:
-      that:
-          - st.stat.exists|bool
+    that:
+      - st.stat.exists|bool
 
 - name: Remove qkview file
   file:
-      path: "{{ qkview_path_local }}"
-      state: "absent"
+    path: "{{ qkview_path_local }}"
+    state: "absent"
 
 #- name: The whole enchilada
 #  bigip_qkview:
