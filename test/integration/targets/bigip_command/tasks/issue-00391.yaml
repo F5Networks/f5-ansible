@@ -3,7 +3,7 @@
 - name: Run a single immutable command, no tmsh
   bigip_command:
     commands:
-      - 'show sys provision'
+      - show sys provision
   register: result
 
 - name: Assert Run a single immutable command, no tmsh
@@ -14,7 +14,7 @@
 - name: Run a single immutable command, with tmsh
   bigip_command:
     commands:
-      - 'tmsh show sys provision'
+      - tmsh show sys provision
   register: result
 
 - name: Assert Run a single immutable command, with tmsh
@@ -25,7 +25,7 @@
 - name: Run a single mutable command, no tmsh
   bigip_command:
     commands:
-      - 'create ltm virtual foo'
+      - create ltm virtual foo
   register: result
 
 - name: Assert Run a single mutable command, no tmsh
@@ -36,7 +36,7 @@
 - name: Run a single mutable command, with tmsh
   bigip_command:
     commands:
-      - 'delete ltm virtual foo'
+      - delete ltm virtual foo
   register: result
 
 - name: Assert Run a single mutable command, with tmsh
@@ -47,8 +47,8 @@
 - name: Run a multiple mutable/immutable commands, no tmsh
   bigip_command:
     commands:
-      - 'create ltm virtual foo'
-      - 'list sys provision'
+      - create ltm virtual foo
+      - list sys provision
   register: result
 
 - name: Assert Run a multiple mutable/immutable commands, no tmsh
@@ -59,8 +59,8 @@
 - name: Run a multiple mutable/immutable commands, tmsh
   bigip_command:
     commands:
-      - 'list sys provision'
-      - 'delete ltm virtual foo'
+      - list sys provision
+      - delete ltm virtual foo
   register: result
 
 - name: Assert Run a multiple mutable/immutable commands, tmsh

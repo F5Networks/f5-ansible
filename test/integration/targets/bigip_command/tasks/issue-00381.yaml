@@ -27,7 +27,7 @@
 - name: Ensure proper community exists
   bigip_command:
     commands:
-      - 'list sys snmp communities'
+      - list sys snmp communities
   register: result
 
 - name: Assert Ensure proper community exists
