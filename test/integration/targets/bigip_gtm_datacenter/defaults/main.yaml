@@ -1,15 +1,15 @@
 ---
 
-dc_name: "foo"
-valid_location: "New York"
+dc_name: foo
+valid_location: New York
 invalid_location:
   - "@#@%U%&YWH$^E%IE"
   - 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
-valid_contact: "admin@root.local"
+valid_contact: admin@root.local
 invalid_contact:
   - "@#@%U%&YWH$^E%IE"
   - 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
-valid_description: "This is a foo description"
+valid_description: This is a foo description
 invalid_description:
   - "@#@%U%&YWH$^E%IE"
   - 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999

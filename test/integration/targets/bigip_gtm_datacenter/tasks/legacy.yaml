@@ -57,7 +57,7 @@
 - name: Legacy - Delete datacenter
   bigip_gtm_datacenter:
     name: "{{ dc_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Legacy - Delete datacenter
@@ -68,7 +68,7 @@
 - name: Legacy - Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
     name: "{{ dc_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Legacy - Delete datacenter - Idempotent check

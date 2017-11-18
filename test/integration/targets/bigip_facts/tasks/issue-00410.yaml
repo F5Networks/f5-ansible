@@ -17,7 +17,7 @@
       - pool
   register: result
 
-- name: Issue 00410 - Assert facts
+- name: Issue 00410 - Assert Collect BIG-IP facts
   assert:
     that:
       - "'pool' in result"

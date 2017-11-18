@@ -1,5 +1,5 @@
 ---
 
-config_sync_ip: "10.2.2.2"
-mirror_primary_address: "10.2.2.2"
-mirror_secondary_address: "10.2.3.2"
+config_sync_ip: 10.2.2.2
+mirror_primary_address: 10.2.2.2
+mirror_secondary_address: 10.2.3.2

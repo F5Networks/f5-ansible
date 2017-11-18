@@ -2,7 +2,7 @@
 
 - name: Enable cache
   bigip_device_dns:
-    cache: "enable"
+    cache: enable
   register: result
 
 - name: Assert Enable cache
@@ -12,7 +12,7 @@
 
 - name: Enable cache - Idempotent check
   bigip_device_dns:
-    cache: "enable"
+    cache: enable
   register: result
 
 - name: Assert Enable cache - Idempotent check
@@ -22,7 +22,7 @@
 
 - name: Disable cache
   bigip_device_dns:
-    cache: "disable"
+    cache: disable
   register: result
 
 - name: Assert Disable cache
@@ -32,7 +32,7 @@
 
 - name: Disable cache - Idempotent check
   bigip_device_dns:
-    cache: "disable"
+    cache: disable
   register: result
 
 - name: Assert Disable cache - Idempotent check
@@ -42,7 +42,7 @@
 
 - name: Enable cache - Incorrect value
   bigip_device_dns:
-    cache: "disabled"
+    cache: disabled
   register: result
   ignore_errors: true
 
@@ -53,7 +53,7 @@
 
 - name: Set IP version 6
   bigip_device_dns:
-    ip_version: "6"
+    ip_version: 6
   register: result
 
 - name: Assert Set IP version 6
@@ -63,7 +63,7 @@
 
 - name: Set IP version 6 - Idempotent check
   bigip_device_dns:
-    ip_version: "6"
+    ip_version: 6
   register: result
 
 - name: Assert Set IP version 6 - Idempotent check
@@ -73,7 +73,7 @@
 
 - name: Set IP version 4
   bigip_device_dns:
-    ip_version: "4"
+    ip_version: 4
   register: result
 
 - name: Assert Set IP version 4
@@ -83,7 +83,7 @@
 
 - name: Set IP version 4 - Idempotent check
   bigip_device_dns:
-    ip_version: "4"
+    ip_version: 4
   register: result
 
 - name: Assert Set IP version 4 - Idempotent check
@@ -93,7 +93,7 @@
 
 - name: Set Unknown IP version
   bigip_device_dns:
-    ip_version: "10"
+    ip_version: 10
   register: result
   ignore_errors: true
 
@@ -106,7 +106,7 @@
 # cast the string to a list automatically, making this method valid
 - name: Set a nameserver
   bigip_device_dns:
-    name_servers: "10.10.10.10"
+    name_servers: 10.10.10.10
   register: result
   ignore_errors: true
 
@@ -118,7 +118,7 @@
 - name: Set a nameserver
   bigip_device_dns:
     name_servers:
-      - "12.12.12.12"
+      - 12.12.12.12
   register: result
 
 - name: Assert Set a nameserver
@@ -129,7 +129,7 @@
 - name: Set a nameserver - Idempotent check
   bigip_device_dns:
     name_servers:
-      - "12.12.12.12"
+      - 12.12.12.12
   register: result
 
 - name: Assert Set a nameserver - Idempotent check
@@ -162,9 +162,9 @@
 - name: Set a list of name servers
   bigip_device_dns:
     name_servers:
-      - "10.10.10.10"
-      - "11.11.11.11"
-      - "12.12.12.12"
+      - 10.10.10.10
+      - 11.11.11.11
+      - 12.12.12.12
   register: result
 
 - name: Assert Set a list of name servers
@@ -175,9 +175,9 @@
 - name: Set a list of name servers - Idempotent check
   bigip_device_dns:
     name_servers:
-      - "10.10.10.10"
-      - "11.11.11.11"
-      - "12.12.12.12"
+      - 10.10.10.10
+      - 11.11.11.11
+      - 12.12.12.12
   register: result
 
 - name: Assert Set a list of name servers - Idempotent check
@@ -188,8 +188,8 @@
 - name: Absent a name server
   bigip_device_dns:
     name_servers:
-      - "10.10.10.10"
-    state: "absent"
+      - 10.10.10.10
+    state: absent
   register: result
 
 - name: Assert Absent a name server
@@ -200,8 +200,8 @@
 - name: Absent a name server - Idempotent check
   bigip_device_dns:
     name_servers:
-      - "10.10.10.10"
-    state: "absent"
+      - 10.10.10.10
+    state: absent
   register: result
 
 - name: Assert Absent a name server - Idempotent check
@@ -212,7 +212,7 @@
 - name: Set a search domain
   bigip_device_dns:
     search:
-      - "foo.com"
+      - foo.com
   register: result
 
 - name: Assert Set a search domain
@@ -223,7 +223,7 @@
 - name: Set a search domain - Idempotent check
   bigip_device_dns:
     search:
-      - "foo.com"
+      - foo.com
   register: result
 
 - name: Assert Set a search domain - Idempotent check
@@ -245,9 +245,9 @@
 - name: Set a list of search domains
   bigip_device_dns:
     search:
-      - "alice.com"
-      - "bob.org"
-      - "carol.edu"
+      - alice.com
+      - bob.org
+      - carol.edu
   register: result
 
 - name: Assert Set a list of search domains
@@ -258,9 +258,9 @@
 - name: Set a list of search domains - Idempotent check
   bigip_device_dns:
     search:
-      - "alice.com"
-      - "bob.org"
-      - "carol.edu"
+      - alice.com
+      - bob.org
+      - carol.edu
   register: result
 
 - name: Assert Set a list of search domains - Idempotent check
@@ -271,8 +271,8 @@
 - name: Absent a search domain
   bigip_device_dns:
     search:
-      - "alice.com"
-    state: "absent"
+      - alice.com
+    state: absent
   register: result
 
 - name: Assert Absent a search domain
@@ -283,8 +283,8 @@
 - name: Absent a search domain - Idempotent check
   bigip_device_dns:
     search:
-      - "alice.com"
-    state: "absent"
+      - alice.com
+    state: absent
   register: result
 
 - name: Assert Absent a search domain - Idempotent check

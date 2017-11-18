@@ -70,7 +70,7 @@
 
 - name: Turn on the SSHD banner
   bigip_device_sshd:
-    banner: "enabled"
+    banner: enabled
   register: result
 
 - name: Assert Turn on the SSHD banner
@@ -80,7 +80,7 @@
 
 - name: Turn on the SSHD banner - Idempotent check
   bigip_device_sshd:
-    banner: "enabled"
+    banner: enabled
   register: result
 
 - name: Assert Turn on the SSHD banner - Idempotent check
@@ -90,7 +90,7 @@
 
 - name: Turn off the SSHD banner
   bigip_device_sshd:
-    banner: "disabled"
+    banner: disabled
   register: result
 
 - name: Assert Turn off the SSHD banner
@@ -100,7 +100,7 @@
 
 - name: Turn off the SSHD banner - Idempotent check
   bigip_device_sshd:
-    banner: "disabled"
+    banner: disabled
   register: result
 
 - name: Assert Turn off the SSHD banner - Idempotent check

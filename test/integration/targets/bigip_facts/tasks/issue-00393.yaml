@@ -1,31 +1,31 @@
 ---
 
-- name: Include issue variables
+- name: Issue 00393 - Include issue variables
   include_vars:
     file: issue-00393.yaml
 
-- name: Create node
+- name: Issue 00393 - Create node
   bigip_node:
     host: "{{ node_host_ipv4 }}"
     name: "{{ node_name }}"
-    state: "present"
+    state: present
   register: result
 
-- name: Collect BIG-IP facts
+- name: Issue 00393 - Collect BIG-IP facts
   _bigip_facts:
     include:
       - node
   register: result
 
-- name: Assert facts
+- name: Issue 00393 - Assert Collect BIG-IP facts
   assert:
     that:
       - "'node' in result"
       - "'name' in result['node']['/Common/foo.example']"
       - result['node']['/Common/foo.example']['name'] == 'foo.example'
 
-- name: Remove node
+- name: Issue 00393 - Remove node
   bigip_node:
     name: "{{ node_name }}"
-    state: "absent"
+    state: absent
   register: result

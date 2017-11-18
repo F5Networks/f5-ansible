@@ -23,7 +23,7 @@
 - name: Set auto-sync on device group
   bigip_device_group:
     name: "{{ device_group_name }}"
-    auto_sync: "yes"
+    auto_sync: yes
   register: result
 
 - name: Set auto-sync on device group
@@ -34,7 +34,7 @@
 - name: Set auto-sync on device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    auto_sync: "yes"
+    auto_sync: yes
   register: result
 
 - name: Set auto-sync on device group - Idempotent check
@@ -45,7 +45,7 @@
 - name: Create sync-failover device group
   bigip_device_group:
     name: "{{ device_group_name2 }}"
-    type: "sync-failover"
+    type: sync-failover
   register: result
 
 - name: Create sync-failover device group
@@ -56,7 +56,7 @@
 - name: Create sync-failover device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name2 }}"
-    type: "sync-failover"
+    type: sync-failover
   register: result
 
 - name: Create sync-failover device group - Idempotent check
@@ -67,7 +67,7 @@
 - name: Set description on device group
   bigip_device_group:
     name: "{{ device_group_name }}"
-    description: "this is a description"
+    description: this is a description
   register: result
 
 - name: Set description on device group
@@ -78,7 +78,7 @@
 - name: Set description on device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    description: "this is a description"
+    description: this is a description
   register: result
 
 - name: Set description on device group - Idempotent check
@@ -89,7 +89,7 @@
 - name: Set save-on-auto-sync on device group
   bigip_device_group:
     name: "{{ device_group_name }}"
-    save_on_auto_sync: "yes"
+    save_on_auto_sync: yes
   register: result
 
 - name: Set save-on-auto-sync on device group
@@ -100,7 +100,7 @@
 - name: Set save-on-auto-sync on device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    save_on_auto_sync: "yes"
+    save_on_auto_sync: yes
   register: result
 
 - name: Set save-on-auto-sync on device group - Idempotent check
@@ -111,7 +111,7 @@
 - name: Set full-sync on device group
   bigip_device_group:
     name: "{{ device_group_name }}"
-    full_sync: "yes"
+    full_sync: yes
   register: result
 
 - name: Set full-sync on device group
@@ -122,7 +122,7 @@
 - name: Set full-sync on device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    full_sync: "yes"
+    full_sync: yes
   register: result
 
 - name: Set full-sync on device group - Idempotent check
@@ -133,7 +133,7 @@
 - name: Set max incremental sync size on device group
   bigip_device_group:
     name: "{{ device_group_name }}"
-    max_incremental_sync_size: "2048"
+    max_incremental_sync_size: 2048
   register: result
 
 - name: Set max incremental sync size on device group
@@ -144,7 +144,7 @@
 - name: Set max incremental sync size on device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    max_incremental_sync_size: "2048"
+    max_incremental_sync_size: 2048
   register: result
 
 - name: Set max incremental sync size on device group - Idempotent check
@@ -155,7 +155,7 @@
 - name: Remove device group
   bigip_device_group:
     name: "{{ item }}"
-    state: "absent"
+    state: absent
   register: result
   loop:
     - "{{ device_group_name }}"
@@ -169,7 +169,7 @@
 - name: Remove device group - Idempotent check
   bigip_device_group:
     name: "{{ device_group_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Remove device group - Idempotent check

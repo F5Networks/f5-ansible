@@ -13,7 +13,7 @@ valid_includes:
 #  - "rule"
 #  - "self_ip"
 #  - "software"
-  - "system_info"
+  - system_info
 #  - "traffic_group"
 #  - "trunk"
 #  - "virtual_address"

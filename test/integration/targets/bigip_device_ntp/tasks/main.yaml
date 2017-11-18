@@ -26,7 +26,7 @@
   bigip_device_ntp:
     ntp_servers:
       - "{{ ntp_server }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete NTP server
@@ -38,7 +38,7 @@
   bigip_device_ntp:
     ntp_servers:
       - "{{ ntp_server }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Delete NTP server - Idempotent check
@@ -69,7 +69,7 @@
 - name: Delete NTP server list
   bigip_device_ntp:
     ntp_servers: "{{ ntp_servers }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete NTP server list
@@ -80,7 +80,7 @@
 - name: Delete NTP server list - Idempotent check
   bigip_device_ntp:
     ntp_servers: "{{ ntp_servers }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Delete NTP server list - Idempotent check
@@ -91,7 +91,7 @@
 - name: Delete missing NTP server
   bigip_device_ntp:
     ntp_servers: "{{ missing_server }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Delete missing NTP server
@@ -102,7 +102,7 @@
 - name: Delete missing NTP server list
   bigip_device_ntp:
     ntp_servers: "{{ missing_servers }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Delete missing NTP server list
