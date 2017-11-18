@@ -4,8 +4,8 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
-    state: "present"
-    type: "naptr"
+    state: present
+    type: naptr
   register: result
 
 - name: Assert Create pool, type 'naptr'
@@ -17,8 +17,8 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
-    state: "present"
-    type: "naptr"
+    state: present
+    type: naptr
   register: result
 
 - name: Assert Create pool, 'naptr' - Idempotent check
@@ -30,8 +30,8 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
     name: "{{ pool_name }}"
-    state: "present"
-    type: "naptr"
+    state: present
+    type: naptr
   register: result
 
 - name: Assert Change pool type 'naptr' lb_method to ratio
@@ -43,8 +43,8 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
     name: "{{ pool_name }}"
-    state: "present"
-    type: "naptr"
+    state: present
+    type: naptr
   register: result
 
 - name: Assert Change pool type 'naptr' lb_method to ratio - Idempotent check
@@ -55,8 +55,8 @@
 - name: Delete pool
   bigip_gtm_pool:
     name: "{{ pool_name }}"
-    state: "absent"
-    type: "naptr"
+    state: absent
+    type: naptr
   register: result
 
 - name: Assert Delete pool
@@ -67,8 +67,8 @@
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
     name: "{{ pool_name }}"
-    state: "absent"
-    type: "naptr"
+    state: absent
+    type: naptr
   register: result
 
 - name: Assert Delete pool - Idempotent check

@@ -4,7 +4,7 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create pool
@@ -16,7 +16,7 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method }}"
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create pool - Idempotent check
@@ -28,7 +28,7 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Change pool lb_method, ratio_member
@@ -40,7 +40,7 @@
   bigip_gtm_pool:
     preferred_lb_method: "{{ pool_lb_method_alt[2] }}"
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Change pool preferred_lb_method, ratio_member - Idempotent check
@@ -51,7 +51,7 @@
 - name: Delete pool
   bigip_gtm_pool:
     name: "{{ pool_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete pool
@@ -62,7 +62,7 @@
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
     name: "{{ pool_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete pool - Idempotent check

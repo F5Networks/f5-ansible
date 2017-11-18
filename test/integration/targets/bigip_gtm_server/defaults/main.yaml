@@ -1,5 +1,5 @@
 ---
 
-dc_name1: "foo_dc"
-dc_name2: "bar_dc"
-server_name: "foo_gtm_server"
+dc_name1: foo_dc
+dc_name2: bar_dc
+server_name: foo_gtm_server
