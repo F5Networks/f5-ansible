@@ -17,7 +17,7 @@
     name: 1.2.3.4
     description: My description
     destination: '::'
-    port: "0"
+    port: 0
     all_profiles:
       - fastL4
     enabled_vlans:
@@ -37,7 +37,7 @@
     name: 1.2.3.4
     description: My description
     destination: '::'
-    port: "0"
+    port: 0
     all_profiles:
       - fastL4
     enabled_vlans:

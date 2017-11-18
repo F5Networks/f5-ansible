@@ -120,7 +120,7 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete an snmp trap
@@ -132,7 +132,7 @@
   bigip_snmp_trap:
       destination: "{{ destination2 }}"
       name: "{{ trap_name1 }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete an snmp trap - Idempotent check

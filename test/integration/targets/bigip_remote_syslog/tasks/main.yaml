@@ -3,7 +3,7 @@
 - name: Create remote syslog
   bigip_remote_syslog:
     remote_host: "{{ remote_host1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create remote syslog
@@ -14,7 +14,7 @@
 - name: Create remote syslog - Idempotent check
   bigip_remote_syslog:
     remote_host: "{{ remote_host1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create remote syslog - Idempotent check
@@ -25,7 +25,7 @@
 - name: Create another remote syslog
   bigip_remote_syslog:
     remote_host: "{{ remote_host2 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create another remote syslog
@@ -36,7 +36,7 @@
 - name: Create another remote syslog - Idempotent check
   bigip_remote_syslog:
     remote_host: "{{ remote_host2 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create another remote syslog - Idempotent check
@@ -47,7 +47,7 @@
 - name: Remove remote syslog
   bigip_remote_syslog:
     remote_host: "{{ remote_host1 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove remote syslog
@@ -58,7 +58,7 @@
 - name: Remove remote syslog - Idempotent check
   bigip_remote_syslog:
     remote_host: "{{ remote_host1 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove remote syslog - Idempotent check
@@ -69,7 +69,7 @@
 - name: Remove all remote syslog
   bigip_remote_syslog:
     remote_host: "{{ item }}"
-    state: "absent"
+    state: absent
   register: result
   loop:
     - "{{ remote_host1 }}"
@@ -83,7 +83,7 @@
 - name: Remove all remote syslog - Idempotent check
   bigip_remote_syslog:
     remote_host: "{{ item }}"
-    state: "absent"
+    state: absent
   register: result
   loop:
     - "{{ remote_host1 }}"

@@ -1,7 +1,7 @@
 ---
 
-contact1: "Alice <alice@org.com>"
-contact2: "Bob <bob@org.com>"
+contact1: Alice <alice@org.com>
+contact2: Bob <bob@org.com>
 
-location1: "The moon"
-location2: "Under the sea"
+location1: The moon
+location2: Under the sea

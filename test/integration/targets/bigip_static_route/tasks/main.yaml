@@ -49,7 +49,7 @@
 - name: Set route to blackhole
   bigip_static_route:
       name: "{{ static_route_name }}"
-      reject: "yes"
+      reject: yes
   register: result
 
 - name: Assert Set route to blackhole
@@ -60,7 +60,7 @@
 - name: Set route to blackhole - Idempotent check
   bigip_static_route:
       name: "{{ static_route_name }}"
-      reject: "yes"
+      reject: yes
   register: result
 
 - name: Assert Set route to blackhole - Idempotent check
@@ -71,7 +71,7 @@
 - name: Delete a static route
   bigip_static_route:
       name: "{{ static_route_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete a static route
@@ -82,7 +82,7 @@
 - name: Delete a static route - Idempotent check
   bigip_static_route:
       name: "{{ static_route_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete a static route - Idempotent check
@@ -90,5 +90,5 @@
       that:
           - not result|changed
 
-- include: issue-104.yaml
-  tags: issue-104
+- include: issue-00104.yaml
+  tags: issue-00104

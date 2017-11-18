@@ -4,9 +4,9 @@
 
 - name: Create a deployed vCMP guest
   bigip_vcmp_guest:
-    name: "guest1"
-    mgmt_network: "bridged"
-    mgmt_address: "10.10.10.10/24"
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
   register: result
 
@@ -17,9 +17,9 @@
 
 - name: Create a deployed vCMP guest - Idempotent check
   bigip_vcmp_guest:
-    name: "guest1"
-    mgmt_network: "bridged"
-    mgmt_address: "10.10.10.10/24"
+    name: guest1
+    mgmt_network: bridged
+    mgmt_address: 10.10.10.10/24
     initial_image: "{{ initial_image|basename }}"
   register: result
 

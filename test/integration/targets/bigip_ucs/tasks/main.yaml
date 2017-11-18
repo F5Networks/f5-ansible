@@ -25,7 +25,7 @@
 - name: Force upload UCS file
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      force: "yes"
+      force: yes
   register: result
 
 - name: Assert Force upload UCS file
@@ -36,7 +36,7 @@
 - name: Install an uploaded UCS file
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "installed"
+      state: installed
   register: result
 
 - name: Assert Install an uploaded UCS file
@@ -47,7 +47,7 @@
 - name: Install an uploaded UCS file again - expected not idempotent
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "installed"
+      state: installed
   register: result
 
 - name: Assert Install an uploaded UCS file again - expected not idempotent
@@ -58,7 +58,7 @@
 - name: Remove uploaded UCS file
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded UCS file
@@ -69,7 +69,7 @@
 - name: Remove uploaded UCS file - Idempotent check
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded UCS file - Idempotent check
@@ -80,13 +80,13 @@
 - name: Install a UCS file, no initial upload
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "installed"
+      state: installed
   register: result
 
 - name: Remove uploaded UCS file
   bigip_ucs:
       ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 #- include: teardown.yaml

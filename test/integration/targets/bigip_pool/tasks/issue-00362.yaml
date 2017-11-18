@@ -1,14 +1,14 @@
 ---
 
-- name: Include issue variables
+- name: Issue 00362 - Include issue variables
   include_vars:
     file: issue-00362.yaml
 
-- name: Create partition
+- name: Issue 00362 - Create partition
   bigip_partition:
     name: "{{ f5_partition }}"
 
-- name: Add pool
+- name: Issue 00362 - Add pool
   bigip_pool:
     state: present
     monitor_type: "{{ f5_pool_monitor_type }}"
@@ -17,12 +17,12 @@
     name: "{{ f5_pool_name }}"
   register: result
 
-- name: Assert Add Pool
+- name: Issue 00362 - Assert Add Pool
   assert:
     that:
       - result|changed
 
-- name: Add pool - Idempotent check
+- name: Issue 00362 - Add pool - Idempotent check
   bigip_pool:
     state: present
     monitor_type: "{{ f5_pool_monitor_type }}"
@@ -31,30 +31,30 @@
     name: "{{ f5_pool_name }}"
   register: result
 
-- name: Assert Add Pool - Idempotent check
+- name: Issue 00362 - Assert Add Pool - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove pool
+- name: Issue 00362 - Remove pool
   bigip_pool:
     name: "{{ f5_pool_name }}"
     partition: "{{ f5_partition }}"
     state: absent
 
-- name: Add pool without monitors
+- name: Issue 00362 - Add pool without monitors
   bigip_pool:
     state: present
     partition: "{{ f5_partition }}"
     name: "{{ f5_pool_name }}"
   register: result
 
-- name: Assert Add Pool without monitors
+- name: Issue 00362 - Assert Add Pool without monitors
   assert:
     that:
       - result|changed
 
-- name: Set monitors on pool
+- name: Issue 00362 - Set monitors on pool
   bigip_pool:
     state: present
     monitor_type: "{{ f5_pool_monitor_type }}"
@@ -63,18 +63,18 @@
     name: "{{ f5_pool_name }}"
   register: result
 
-- name: Assert Set monitors on pool
+- name: Issue 00362 - Assert Set monitors on pool
   assert:
     that:
       - result|changed
 
-- name: Remove pool
+- name: Issue 00362 - Remove pool
   bigip_pool:
     name: "{{ f5_pool_name }}"
     partition: "{{ f5_partition }}"
     state: absent
 
-- name: Remove partition
+- name: Issue 00362 - Remove partition
   bigip_partition:
     name: "{{ f5_partition }}"
     state: absent

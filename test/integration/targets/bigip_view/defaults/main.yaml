@@ -1,6 +1,6 @@
 ---
 
-view_name: "foo"
+view_name: foo
 view_order:
     - 0
     - 1

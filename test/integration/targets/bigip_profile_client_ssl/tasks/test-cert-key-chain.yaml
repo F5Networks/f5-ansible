@@ -3,20 +3,20 @@
 - name: Import a key, no passphrase on private key
   bigip_ssl_certificate:
     content: "{{ lookup('file', 'cert1.crt') }}"
-    name: "bigip_ssl_cert1"
-    state: "present"
+    name: bigip_ssl_cert1
+    state: present
   register: result
 
 - name: Import a key, no passphrase on private key
   bigip_ssl_key:
     content: "{{ lookup('file', 'cert1.key') }}"
-    name: "bigip_ssl_key1"
-    state: "present"
+    name: bigip_ssl_key1
+    state: present
   register: result
 
 - name: Set cert, key, and chain
   bigip_profile_client_ssl:
-    name: "foo"
+    name: foo
     cert_key_chain:
       - cert: /Common/bigip_ssl_cert1.crt
         key: /Common/bigip_ssl_key1.key
@@ -29,7 +29,7 @@
 
 - name: Set cert, key, and chain - Idempotent check
   bigip_profile_client_ssl:
-    name: "foo"
+    name: foo
     cert_key_chain:
       - cert: bigip_ssl_cert1
         key: bigip_ssl_key1
@@ -43,12 +43,12 @@
 
 - name: Remove key
   bigip_ssl_certificate:
-    name: "bigip_ssl_cert1"
-    state: "absent"
+    name: bigip_ssl_cert1
+    state: absent
   register: result
 
 - name: Remove key
   bigip_ssl_key:
-    name: "bigip_ssl_key1"
-    state: "absent"
+    name: bigip_ssl_key1
+    state: absent
   register: result

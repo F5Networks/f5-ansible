@@ -3,8 +3,8 @@
 - name: Import a key, no passphrase on private key
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert1.key') }}"
-      name: "key_bigip_ssl_key1"
-      state: "present"
+      name: key_bigip_ssl_key1
+      state: present
   register: result
 
 - name: Assert Import a key, no passphrase on private key
@@ -15,8 +15,8 @@
 - name: Import a key, no passphrase on private key - Idempotent check
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert1.key') }}"
-      name: "key_bigip_ssl_key1"
-      state: "present"
+      name: key_bigip_ssl_key1
+      state: present
   register: result
 
 - name: Assert Import a key, no passphrase on private key - Idempotent check
@@ -27,9 +27,9 @@
 - name: Update key, new key, password protected key
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert2.key') }}"
-      name: "key_bigip_ssl_key1"
-      passphrase: "keypass"
-      state: "present"
+      name: key_bigip_ssl_key1
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Update key, new key, password protected key
@@ -40,9 +40,9 @@
 - name: Update key, new key, password protected key - Idempotent check
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert2.key') }}"
-      name: "key_bigip_ssl_key1"
-      passphrase: "keypass"
-      state: "present"
+      name: key_bigip_ssl_key1
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Update key, new key, password protected key - Idempotent check
@@ -52,8 +52,8 @@
 
 - name: Delete a key
   bigip_ssl_key:
-      name: "key_bigip_ssl_key1"
-      state: "absent"
+      name: key_bigip_ssl_key1
+      state: absent
   register: result
 
 - name: Assert Delete a key
@@ -63,8 +63,8 @@
 
 - name: Delete a key - Idempotent check
   bigip_ssl_key:
-      name: "key_bigip_ssl_key1"
-      state: "absent"
+      name: key_bigip_ssl_key1
+      state: absent
   register: result
 
 - name: Assert Delete a key - Idempotent check
@@ -75,9 +75,9 @@
 - name: Import a key, password protected key
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert2.key') }}"
-      name: "key_bigip_ssl_key2"
-      passphrase: "keypass"
-      state: "present"
+      name: key_bigip_ssl_key2
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Import a key, password protected key
@@ -88,9 +88,9 @@
 - name: Import a key, password protected key - Idempotent check
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert2.key') }}"
-      name: "key_bigip_ssl_key2"
-      passphrase: "keypass"
-      state: "present"
+      name: key_bigip_ssl_key2
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Import a key, password protected key - Idempotent check
@@ -101,9 +101,9 @@
 - name: Import a key, password protected key, bad passphrase
   bigip_ssl_key:
       content: "{{ lookup('file' ,'cert2.key') }}"
-      name: "key_bigip_ssl_key2"
-      passphrase: "wrongpass"
-      state: "present"
+      name: key_bigip_ssl_key2
+      passphrase: wrongpass
+      state: present
   register: result
   ignore_errors: true
 
@@ -115,9 +115,9 @@
 - name: Import with missing files
   bigip_ssl_key:
       content: "{{ lookup('file', 'cert3.key') }}"
-      name: "key_bigip_ssl_key3"
-      passphrase: "wrongpass"
-      state: "present"
+      name: key_bigip_ssl_key3
+      passphrase: wrongpass
+      state: present
   register: result
   ignore_errors: true
   delegate_to: localhost
@@ -130,8 +130,8 @@
 - name: Import a key
   bigip_ssl_key:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "key_bigip_ssl_key1"
-      state: "present"
+      name: key_bigip_ssl_key1
+      state: present
   register: result
 
 - name: Assert Import a key
@@ -142,8 +142,8 @@
 - name: Import a key - Idempotent check
   bigip_ssl_key:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "key_bigip_ssl_key1"
-      state: "present"
+      name: key_bigip_ssl_key1
+      state: present
   register: result
 
 - name: Assert Import a key - Idempotent check
@@ -154,8 +154,8 @@
 - name: Delete a keys in list
   bigip_ssl_key:
       name: "{{ item }}"
-      state: "absent"
+      state: absent
   register: result
   with_items:
-      - "key_bigip_ssl_key1"
-      - "key_bigip_ssl_key2"
+      - key_bigip_ssl_key1
+      - key_bigip_ssl_key2

@@ -1,10 +1,10 @@
 ---
 
-- name: Ensure VLAN exists
+- name: Issue 00401 - Ensure VLAN exists
   bigip_vlan:
     name: issue-00401
 
-- name: Create initial non-floating self ip
+- name: Issue 00401 - Create initial non-floating self ip
   bigip_selfip:
     name: foo
     address: 1.2.3.4
@@ -13,7 +13,7 @@
     state: present
   register: result
 
-- name: Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -23,12 +23,12 @@
     state: present
   register: result
 
-- name: Assert Create initial floating address for non-floating address defined for this network
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network
   assert:
     that:
       - result|changed
 
-- name: Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Idempotent check
   bigip_selfip:
     name: foo-float
     address: 1.2.3.5
@@ -38,24 +38,24 @@
     state: present
   register: result
 
-- name: Assert Create initial floating address for non-floating address defined for this network - Idempotent check
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove floating address
+- name: Issue 00401 - Remove floating address
   bigip_selfip:
     name: foo-float
     state: absent
   register: result
 
-- name: Remove non-floating address
+- name: Issue 00401 - Remove non-floating address
   bigip_selfip:
     name: foo
     state: absent
   register: result
 
-- name: Remove vlan
+- name: Issue 00401 - Remove vlan
   bigip_vlan:
     name: issue-00401
     state: absent

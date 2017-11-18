@@ -5,8 +5,8 @@
 - name: Create user, no password
   bigip_user:
       partition_access:
-        - "Common:guest"
-      username_credential: "testusernopass"
+        - Common:guest
+      username_credential: testusernopass
   register: result
 
 - name: Assert create user, no password
@@ -17,8 +17,8 @@
 - name: Create user, no password - Idempotent check
   bigip_user:
       partition_access:
-        - "Common:guest"
-      username_credential: "testusernopass"
+        - Common:guest
+      username_credential: testusernopass
   register: result
 
 - name: Assert create user, no password - Idempotent check
@@ -29,10 +29,10 @@
 - name: Create user
   bigip_user:
       partition_access:
-        - "Common:guest"
+        - Common:guest
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
   register: result
 
 - name: Assert Create user
@@ -45,7 +45,7 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
   register: result
 
 - name: Assert Create user - Idempotent check
@@ -72,7 +72,7 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
   register: result
 
 - name: Assert Update user password password_update set to on_create
@@ -84,7 +84,7 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       partition_access:
-        - "Common:manager"
+        - Common:manager
   register: result
 
 - name: Assert Update user partition access
@@ -96,7 +96,7 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       partition_access:
-        - "Common:manager"
+        - Common:manager
   register: result
 
 - name: Assert Update user partition access - Idempotent check
@@ -129,7 +129,7 @@
 - name: Update user shell to tmsh
   bigip_user:
       username_credential: "{{ username_credential }}"
-      shell: "tmsh"
+      shell: tmsh
   register: result
 
 - name: Assert Update user shell to tmsh
@@ -140,7 +140,7 @@
 - name: Update user shell to tmsh - Idempotent check
   bigip_user:
       username_credential: "{{ username_credential }}"
-      shell: "tmsh"
+      shell: tmsh
   register: result
 
 - name: Assert Update user shell to tmsh - Idempotent check
@@ -152,7 +152,7 @@
 - name: Update user shell to bash
   bigip_user:
       username_credential: "{{ username_credential }}"
-      shell: "bash"
+      shell: bash
   ignore_errors: true
   register: result
 
@@ -164,7 +164,7 @@
 - name: Update user shell to none
   bigip_user:
       username_credential: "{{ username_credential }}"
-      shell: "none"
+      shell: none
   register: result
 
 - name: Assert Update user shell to none
@@ -175,7 +175,7 @@
 - name: Update user shell to none - Idempotent check
   bigip_user:
       username_credential: "{{ username_credential }}"
-      shell: "none"
+      shell: none
   register: result
 
 - name: Assert Update user shell to none - Idempotent check
@@ -186,7 +186,7 @@
 - name: Remove user
   bigip_user:
       username_credential: "{{ username_credential }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove user
@@ -197,7 +197,7 @@
 - name: Remove user - Idempotent check
   bigip_user:
       username_credential: "{{ username_credential }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove user - Idempotent check
@@ -207,8 +207,8 @@
 
 - name: Remove testusernopass user
   bigip_user:
-      username_credential: "testusernopass"
-      state: "absent"
+      username_credential: testusernopass
+      state: absent
   register: result
 
 - name: Assert Remove testusernopass user
@@ -218,8 +218,8 @@
 
 - name: Remove testusernopass user - Idempotent check
   bigip_user:
-      username_credential: "testusernopass"
-      state: "absent"
+      username_credential: testusernopass
+      state: absent
   register: result
 
 - name: Assert Remove testusernopass user - Idempotent check
@@ -227,17 +227,9 @@
       that:
           - not result|changed
 
-# Github issues
-- include: issue-113.yaml
-  tags: issue-113
-- include: issue-276.yaml
-  tags: issue-276
-- include: issue-310.yaml
-  tags: issue-310
-
 - name: Collect BIG-IP facts
   bigip_facts:
-      include: "system_info"
+      include: system_info
   register: result
 
 - name: Include version 13 (Daytona) checks
@@ -245,3 +237,13 @@
   when: system_info.product_information.product_version >= "13.0.0"
 
 - include: teardown.yaml
+
+# Github issues
+- include: issue-00113.yaml
+  tags: issue-00113
+
+- include: issue-00276.yaml
+  tags: issue-00276
+
+- include: issue-00310.yaml
+  tags: issue-00310

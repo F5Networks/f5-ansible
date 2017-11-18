@@ -121,7 +121,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "all"
+      - all
   register: result
 
 - name: Assert Set keyword "all" allow service
@@ -133,7 +133,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "all"
+      - all
   register: result
 
 - name: Assert Set keyword "all" allow service - Idempotent check
@@ -145,7 +145,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "default"
+      - default
   register: result
 
 - name: Assert Set keyword "default" allow service
@@ -157,7 +157,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "default"
+      - default
   register: result
 
 - name: Assert Set keyword "default" allow service - Idempotent check
@@ -169,7 +169,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "none"
+      - none
   register: result
 
 - name: Assert Set keyword "none" allow service
@@ -181,7 +181,7 @@
   bigip_selfip:
     name: "{{ selfip_name }}"
     allow_service:
-      - "none"
+      - none
   register: result
 
 - name: Assert Set keyword "none" allow service - Idempotent check
@@ -192,7 +192,7 @@
 - name: Delete Self IP
   bigip_selfip:
     name: "{{ selfip_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete Self IP
@@ -203,7 +203,7 @@
 - name: Delete Self IP - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete Self IP - Idempotent check
@@ -242,7 +242,7 @@
 - name: Delete Self IP that specified traffic group
   bigip_selfip:
     name: "{{ selfip_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete Self IP that specified traffic group

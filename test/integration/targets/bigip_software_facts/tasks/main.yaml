@@ -26,7 +26,7 @@
 
 - name: Get hotfix ISOs facts
   bigip_software_facts:
-    include: "hotfix"
+    include: hotfix
   register: result
 
 - name: Assert Get hotfix ISOs facts
@@ -39,7 +39,7 @@
 
 - name: Get volumes facts
   bigip_software_facts:
-    include: "volume"
+    include: volume
   register: result
 
 - name: Assert Get volumes facts
@@ -52,7 +52,7 @@
 
 - name: Get volumes facts with filter
   bigip_software_facts:
-    include: "volume"
+    include: volume
     filter: "{{ software_filter }}"
   register: result
 
@@ -65,7 +65,7 @@
 
 - name: Get images facts with bad filter
   bigip_software_facts:
-    include: "volume"
+    include: volume
     filter: "{{ software_filter_bad }}"
   ignore_errors: true
   register: result

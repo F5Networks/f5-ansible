@@ -52,7 +52,7 @@
 
 - name: Disable agent status traps
   bigip_snmp:
-      agent_status_traps: "disabled"
+      agent_status_traps: disabled
   register: result
 
 - name: Assert Disable agent status traps
@@ -62,7 +62,7 @@
 
 - name: Disable agent status traps - Idempotent check
   bigip_snmp:
-      agent_status_traps: "disabled"
+      agent_status_traps: disabled
   register: result
 
 - name: Assert Disable agent status traps - Idempotent check
@@ -72,7 +72,7 @@
 
 - name: Enable agent status traps
   bigip_snmp:
-      agent_status_traps: "enabled"
+      agent_status_traps: enabled
   register: result
 
 - name: Assert Enable agent status traps
@@ -82,7 +82,7 @@
 
 - name: Enable agent status traps - Idempotent check
   bigip_snmp:
-      agent_status_traps: "enabled"
+      agent_status_traps: enabled
   register: result
 
 - name: Assert Enable agent status traps - Idempotent check
@@ -92,7 +92,7 @@
 
 - name: Enable agent authentication traps
   bigip_snmp:
-      agent_authentication_traps: "enabled"
+      agent_authentication_traps: enabled
   register: result
 
 - name: Assert Enable agent authentication traps
@@ -102,7 +102,7 @@
 
 - name: Enable agent authentication traps - Idempotent check
   bigip_snmp:
-      agent_authentication_traps: "enabled"
+      agent_authentication_traps: enabled
   register: result
 
 - name: Assert Enable agent authentication traps - Idempotent check
@@ -112,7 +112,7 @@
 
 - name: Disable agent authentication traps
   bigip_snmp:
-      agent_authentication_traps: "disabled"
+      agent_authentication_traps: disabled
   register: result
 
 - name: Assert Disable agent authentication traps
@@ -122,7 +122,7 @@
 
 - name: Disable agent authentication traps - Idempotent check
   bigip_snmp:
-      agent_authentication_traps: "disabled"
+      agent_authentication_traps: disabled
   register: result
 
 - name: Assert Disable agent authentication traps - Idempotent check
@@ -132,7 +132,7 @@
 
 - name: Disable device warning traps
   bigip_snmp:
-      device_warning_traps: "disabled"
+      device_warning_traps: disabled
   register: result
 
 - name: Assert Disable device warning traps
@@ -142,7 +142,7 @@
 
 - name: Disable device warning traps - Idempotent check
   bigip_snmp:
-      device_warning_traps: "disabled"
+      device_warning_traps: disabled
   register: result
 
 - name: Assert Disable device warning traps - Idempotent check
@@ -152,7 +152,7 @@
 
 - name: Enable device warning traps
   bigip_snmp:
-      device_warning_traps: "enabled"
+      device_warning_traps: enabled
   register: result
 
 - name: Assert Enable device warning traps
@@ -162,7 +162,7 @@
 
 - name: Enable device warning traps - Idempotent check
   bigip_snmp:
-      device_warning_traps: "enabled"
+      device_warning_traps: enabled
   register: result
 
 - name: Assert Enable device warning traps - Idempotent check

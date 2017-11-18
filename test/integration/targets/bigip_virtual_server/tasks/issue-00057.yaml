@@ -18,7 +18,7 @@
     all_profiles:
       - /Common/http
     partition: "{{ i57_partition }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Issue 00057 - Add virtual server rules

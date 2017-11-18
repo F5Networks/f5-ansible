@@ -1,108 +1,108 @@
 ---
 
-- name: Include issue variables
+- name: Issue 00340 - Include issue variables
   include_vars:
     file: issue-00340.yaml
 
-- name: Create pool with single monitor
+- name: Issue 00340 - Create pool with single monitor
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool1['name'] }}"
     lb_method: "{{ issue_340_pool1['lb_method'] }}"
     monitors: "{{ issue_340_pool1['monitors'] }}"
     monitor_type: "{{ issue_340_pool1['monitor_type'] }}"
   register: result
 
-- name: Assert Create pool with single monitors
+- name: Issue 00340 - Assert Create pool with single monitors
   assert:
     that:
       - result|changed
 
-- name: Create pool with single monitor - Idempotent check
+- name: Issue 00340 - Create pool with single monitor - Idempotent check
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool1['name'] }}"
     lb_method: "{{ issue_340_pool1['lb_method'] }}"
     monitors: "{{ issue_340_pool1['monitors'] }}"
     monitor_type: "{{ issue_340_pool1['monitor_type'] }}"
   register: result
 
-- name: Assert Create pool with single monitor - Idempotent check
+- name: Issue 00340 - Assert Create pool with single monitor - Idempotent check
   assert:
     that:
       - not result|changed
 
 # Should implicitly work because 'single' is actually just 'and_list' with some
 # extra rules that are checked at module runtime.
-- name: Change pool to single monitor, and_list
+- name: Issue 00340 - Change pool to single monitor, and_list
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool2['name'] }}"
     lb_method: "{{ issue_340_pool2['lb_method'] }}"
     monitors: "{{ issue_340_pool2['monitors'] }}"
     monitor_type: "{{ issue_340_pool2['monitor_type'] }}"
   register: result
 
-- name: Assert Change pool to single monitor, and_list
+- name: Issue 00340 - Assert Change pool to single monitor, and_list
   assert:
     that:
       - result|changed
 
-- name: Change pool to single monitor, and_list - Idempotent check
+- name: Issue 00340 - Change pool to single monitor, and_list - Idempotent check
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool2['name'] }}"
     lb_method: "{{ issue_340_pool2['lb_method'] }}"
     monitors: "{{ issue_340_pool2['monitors'] }}"
     monitor_type: "{{ issue_340_pool2['monitor_type'] }}"
   register: result
 
-- name: Assert Change pool to single monitor, and_list - Idempotent check
+- name: Issue 00340 - Assert Change pool to single monitor, and_list - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Change pool back to default
+- name: Issue 00340 - Change pool back to default
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool1['name'] }}"
     lb_method: "{{ issue_340_pool1['lb_method'] }}"
     monitors: "{{ issue_340_pool1['monitors'] }}"
     monitor_type: "{{ issue_340_pool1['monitor_type'] }}"
   register: result
 
-- name: Change pool to multiple monitors, and_list
+- name: Issue 00340 - Change pool to multiple monitors, and_list
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool3['name'] }}"
     lb_method: "{{ issue_340_pool3['lb_method'] }}"
     monitors: "{{ issue_340_pool3['monitors'] }}"
     monitor_type: "{{ issue_340_pool3['monitor_type'] }}"
   register: result
 
-- name: Assert Change pool to multiple monitors, and_list
+- name: Issue 00340 - Assert Change pool to multiple monitors, and_list
   assert:
     that:
       - result|changed
 
-- name: Change pool to multiple monitors, and_list - Idempotent check
+- name: Issue 00340 - Change pool to multiple monitors, and_list - Idempotent check
   bigip_pool:
-    state: "present"
+    state: present
     name: "{{ issue_340_pool3['name'] }}"
     lb_method: "{{ issue_340_pool3['lb_method'] }}"
     monitors: "{{ issue_340_pool3['monitors'] }}"
     monitor_type: "{{ issue_340_pool3['monitor_type'] }}"
   register: result
 
-- name: Assert Change pool to multiple monitors, and_list - Idempotent check
+- name: Issue 00340 - Assert Change pool to multiple monitors, and_list - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove pools
+- name: Issue 00340 - Remove pools
   bigip_pool:
     name: "{{ item }}"
-    state: "absent"
+    state: absent
   loop:
     - "{{ issue_340_pool1['name'] }}"
     - "{{ issue_340_pool2['name'] }}"

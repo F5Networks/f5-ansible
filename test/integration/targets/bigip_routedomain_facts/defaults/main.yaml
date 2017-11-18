@@ -1,10 +1,10 @@
 ---
 
-found_rd: "1234"
-notfound_rd: "5678"
+found_rd: 1234
+notfound_rd: 5678
 invalid_rd:
-  - "abcd"
-  - "123nfds"
+  - abcd
+  - 123nfds
   - " #$%^#^@^?8/"
-  - "234.,755"
+  - 234.,755
   - "+fsd4$^>"

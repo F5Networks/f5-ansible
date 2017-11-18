@@ -19,7 +19,7 @@
 - name: Remove qkview file
   file:
     path: "{{ qkview_path_local }}"
-    state: "absent"
+    state: absent
 
 - name: Create QKView with options, save it locally
   bigip_qkview:
@@ -43,7 +43,7 @@
 - name: Remove qkview file
   file:
     path: "{{ qkview_path_local }}"
-    state: "absent"
+    state: absent
 
 #- name: The whole enchilada
 #  bigip_qkview:

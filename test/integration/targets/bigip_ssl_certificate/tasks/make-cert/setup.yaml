@@ -3,12 +3,12 @@
 - name: Remove any existing files
   file:
       path: "{{ base_ca_dir }}"
-      state: "absent"
+      state: absent
 
 - name: Create base dir
   file:
       path: "{{ base_ca_dir }}"
-      state: "directory"
+      state: directory
 
 - name: Get a temporary directory name
   tempfile:

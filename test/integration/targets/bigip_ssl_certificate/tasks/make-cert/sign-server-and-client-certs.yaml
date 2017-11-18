@@ -11,7 +11,7 @@
 - name: Ensure permissions of key are correct
   file:
       path: "{{ ca_dir }}/intermediate/private/www.example.com.key.pem"
-      mode: "0400"
+      mode: 0400
 
 - name: Create certificate request
   command: >
@@ -34,7 +34,7 @@
 - name: Ensure ownership on cert are correct
   file:
       path: "{{ ca_dir }}/intermediate/certs/www.example.com.cert.pem"
-      mode: "0444"
+      mode: 0444
 
 - name: Get contents of cert file
   command: >

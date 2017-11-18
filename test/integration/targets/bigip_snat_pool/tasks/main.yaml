@@ -47,7 +47,7 @@
 - name: Delete a SNAT pool
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete a SNAT pool
@@ -58,7 +58,7 @@
 - name: Delete a SNAT pool - Idempotent check
   bigip_snat_pool:
       name: "{{ snat_pool_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Delete a SNAT pool - Idempotent check

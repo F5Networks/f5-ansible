@@ -1,6 +1,6 @@
 ---
 
-ucs_name: "foo.ucs"
-ucs_name_1: "foo1.ucs"
-ucs_name_2: "foo3.ucs"
-ucs_missing: "foo2.ucs"
+ucs_name: foo.ucs
+ucs_name_1: foo1.ucs
+ucs_name_2: foo3.ucs
+ucs_missing: foo2.ucs

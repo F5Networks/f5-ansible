@@ -1,4 +1,4 @@
 ---
 
-i53_default_persistence_profile: "cookie"
-i53_fallback_persistence_profile: "dest_addr"
+i53_default_persistence_profile: cookie
+i53_fallback_persistence_profile: dest_addr

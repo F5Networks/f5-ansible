@@ -3,7 +3,7 @@
 - name: Create VLAN 1
   bigip_selfip:
     name: "{{ item }}"
-    state: "absent"
+    state: absent
   loop:
     - "{{ selfip_vlan }}"
     - "{{ selfip_vlan2 }}"

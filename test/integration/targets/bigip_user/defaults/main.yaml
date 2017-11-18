@@ -1,15 +1,15 @@
 ---
 
-username_credential: "johnd"
-password_credential: "password"
+username_credential: johnd
+password_credential: password
 partition_access1:
-    - "all:admin"
-    - "Common:guest"
-    - "Common:operator"
+    - all:admin
+    - Common:guest
+    - Common:operator
 partition_access2:
-    - "all:admin"
-    - "Common:operator"
+    - all:admin
+    - Common:operator
 partition_access3:
-    - "foo:operator"
-partition: "foo"
-full_name: "John Doe"
+    - foo:operator
+partition: foo
+full_name: John Doe

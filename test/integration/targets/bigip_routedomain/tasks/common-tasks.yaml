@@ -45,7 +45,7 @@
 - name: Disable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: "disabled"
+    strict: disabled
   register: result
 
 - name: Assert Disable strict isolation
@@ -56,7 +56,7 @@
 - name: Disable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: "disabled"
+    strict: disabled
   register: result
 
 - name: Assert Disable strict isolation - Idempotent check
@@ -67,7 +67,7 @@
 - name: Enable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: "enabled"
+    strict: enabled
   register: result
 
 - name: Assert Enable strict isolation
@@ -78,7 +78,7 @@
 - name: Enable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: "enabled"
+    strict: enabled
   register: result
 
 - name: Assert Enable strict isolation - Idempotent check
@@ -424,7 +424,7 @@
 - name: Delete a route domain
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete a route domain
@@ -435,7 +435,7 @@
 - name: Delete a route domain - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete a route domain - Idempotent check
@@ -446,7 +446,7 @@
 - name: Delete an unknown route domain
   bigip_routedomain:
     id: "{{ unknown_route_domain }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete an unknown route domain
@@ -457,7 +457,7 @@
 - name: Delete a route domain, invalid
   bigip_routedomain:
     id: "{{ item }}"
-    state: "absent"
+    state: absent
   register: result
   ignore_errors: true
   loop: "{{ invalid_route_domains }}"
@@ -481,7 +481,7 @@
 - name: Delete a route domain - all params
   bigip_routedomain:
     id: "{{ new_routedomain2 }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete a route domain - all params

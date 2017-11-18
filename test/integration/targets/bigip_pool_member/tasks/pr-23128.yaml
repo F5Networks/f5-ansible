@@ -1,17 +1,17 @@
 ---
 
-- name: Create pool
+- name: Pull Request 23128 - Create pool
   bigip_pool:
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
-- name: Assert Create pool
+- name: Pull Request 23128 - Assert Create pool
   assert:
     that:
       - result|changed
 
-- name: Add pool member
+- name: Pull Request 23128 - Add pool member
   bigip_pool_member:
     connection_limit: "{{ connection_limit }}"
     description: "{{ node_description }}"
@@ -20,60 +20,60 @@
     port: "{{ node_port }}"
     rate_limit: "{{ rate_limit }}"
     ratio: "{{ ratio }}"
-    state: "present"
+    state: present
   register: result
 
-- name: Assert Add pool member
+- name: Pull Request 23128 - Assert Add pool member
   assert:
     that:
       - result|changed
 
-- name: Change pool member priority
+- name: Pull Request 23128 - Change pool member priority
   bigip_pool_member:
     host: "{{ node_host }}"
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    priority_group: "10"
-    state: "present"
+    priority_group: 10
+    state: present
   register: result
 
-- name: Change pool member priority
+- name: Pull Request 23128 - Change pool member priority
   assert:
     that:
       - result|changed
 
-- name: Change pool member priority - Idempotent check
+- name: Pull Request 23128 - Change pool member priority - Idempotent check
   bigip_pool_member:
     host: "{{ node_host }}"
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    priority_group: "10"
-    state: "present"
+    priority_group: 10
+    state: present
   register: result
 
-- name: Change pool member priority - Idempotent check
+- name: Pull Request 23128 - Change pool member priority - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete pool
+- name: Pull Request 23128 - Delete pool
   bigip_pool:
     name: "{{ pool_name }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert delete pool
+- name: Pull Request 23128 - Assert delete pool
   assert:
     that:
       - result|changed
 
-- name: Delete node
+- name: Pull Request 23128 - Delete node
   bigip_node:
     name: "{{ node_host }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert delete node
+- name: Pull Request 23128 - Assert delete node
   assert:
     that:
       - result|changed

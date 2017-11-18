@@ -4,8 +4,8 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert1"
-      state: "present"
+      name: cert1
+      state: present
   register: result
 
 - name: Assert Import a certificate and key, no passphrase on private key
@@ -17,8 +17,8 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert1"
-      state: "present"
+      name: cert1
+      state: present
   register: result
 
 - name: Assert Import a certificate and key, no passphrase on private key - Idempotent check
@@ -30,9 +30,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
       key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert1"
-      passphrase: "keypass"
-      state: "present"
+      name: cert1
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Update certificate, new certificate and key, password protected key
@@ -44,9 +44,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
       key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert1"
-      passphrase: "keypass"
-      state: "present"
+      name: cert1
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Update certificate, new certificate and key, password protected key - Idempotent check
@@ -56,8 +56,8 @@
 
 - name: Delete a certificate and key
   bigip_ssl_certificate:
-      name: "cert1"
-      state: "absent"
+      name: cert1
+      state: absent
   register: result
 
 - name: Assert Delete a certificate and key
@@ -67,8 +67,8 @@
 
 - name: Delete a certificate and key - Idempotent check
   bigip_ssl_certificate:
-      name: "cert1"
-      state: "absent"
+      name: cert1
+      state: absent
   register: result
 
 - name: Assert Delete a certificate and key - Idempotent check
@@ -80,9 +80,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
       key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert2"
-      passphrase: "keypass"
-      state: "present"
+      name: cert2
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Import a certificate and key, password protected key
@@ -94,9 +94,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
       key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: "cert2"
-      passphrase: "keypass"
-      state: "present"
+      name: cert2
+      passphrase: keypass
+      state: present
   register: result
 
 - name: Assert Import a certificate and key, password protected key - Idempotent check
@@ -108,9 +108,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert2.crt') }}"
       key_content: "{{ lookup('file' ,'cert2.key') }}"
-      name: "cert2"
-      passphrase: "wrongpass"
-      state: "present"
+      name: cert2
+      passphrase: wrongpass
+      state: present
   register: result
   ignore_errors: true
 
@@ -123,9 +123,9 @@
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert3.crt') }}"
       key_content: "{{ lookup('file', 'cert3.key') }}"
-      name: "cert3"
-      passphrase: "wrongpass"
-      state: "present"
+      name: cert3
+      passphrase: wrongpass
+      state: present
   register: result
   ignore_errors: true
   delegate_to: localhost
@@ -138,8 +138,8 @@
 - name: Import a certificate
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: "cert4"
-      state: "present"
+      name: cert4
+      state: present
   register: result
 
 - name: Assert Import a certificate
@@ -150,8 +150,8 @@
 - name: Import a certificate - Idempotent check
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: "cert4"
-      state: "present"
+      name: cert4
+      state: present
   register: result
 
 - name: Assert Import a certificate - Idempotent check
@@ -162,8 +162,8 @@
 - name: Import a key
   bigip_ssl_certificate:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert5"
-      state: "present"
+      name: cert5
+      state: present
   register: result
 
 - name: Assert Import a key
@@ -174,8 +174,8 @@
 - name: Import a key - Idempotent check
   bigip_ssl_certificate:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert5"
-      state: "present"
+      name: cert5
+      state: present
   register: result
 
 - name: Assert Import a key - Idempotent check
@@ -186,8 +186,8 @@
 - name: Import a key to existing certificate
   bigip_ssl_certificate:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert4"
-      state: "present"
+      name: cert4
+      state: present
   register: result
 
 - name: Assert Import a key to existing certificate
@@ -198,8 +198,8 @@
 - name: Import a key to existing certificate - Idempotent check
   bigip_ssl_certificate:
       key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: "cert4"
-      state: "present"
+      name: cert4
+      state: present
   register: result
 
 - name: Assert Import a key to existing certificate - Idempotent check
@@ -210,8 +210,8 @@
 - name: Import a certificate to existing key
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: "cert5"
-      state: "present"
+      name: cert5
+      state: present
   register: result
 
 - name: Assert Import a certificate to existing key
@@ -222,8 +222,8 @@
 - name: Import a certificate to existing key - Idempotent check
   bigip_ssl_certificate:
       cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: "cert5"
-      state: "present"
+      name: cert5
+      state: present
   register: result
 
 - name: Assert Import a certificate to existing key - Idempotent check
@@ -234,11 +234,11 @@
 - name: Delete a certificates and keys in list
   bigip_ssl_certificate:
       name: "{{ item }}"
-      state: "absent"
+      state: absent
   register: result
   loop:
-      - "cert4"
-      - "cert5"
+      - cert4
+      - cert5
 
 - import_tasks: issue-00222.yaml
   tags: issue-00222

@@ -3,7 +3,7 @@
 - name: Create intermediate CA dir
   file:
       path: "{{ ca_dir }}/intermediate/{{ item }}"
-      state: "directory"
+      state: directory
   with_items:
       - certs
       - crl
@@ -14,13 +14,13 @@
 - name: Ensure ownership of private dir
   file:
       path: "{{ ca_dir }}/intermediate/private"
-      mode: "0700"
-      state: "directory"
+      mode: 0700
+      state: directory
 
 - name: Touch index.txt file
   file:
       path: "{{ ca_dir }}/intermediate/index.txt"
-      state: "touch"
+      state: touch
 
 - name: Seed serial file
   copy:
@@ -34,7 +34,7 @@
 
 - name: Create intermediate CA openssl.cnf file
   template:
-      src: "intermediate-ca-openssl.cnf"
+      src: intermediate-ca-openssl.cnf
       dest: "{{ ca_dir }}/intermediate/openssl.cnf"
 
 - name: Generate rsa keyfile
@@ -47,7 +47,7 @@
 - name: Ensure ownership of keyfile is correct
   file:
       path: "{{ ca_dir }}/intermediate/private/intermediate.key.pem"
-      mode: "0400"
+      mode: 0400
 
 - name: Generate cert request
   command: >
@@ -74,7 +74,7 @@
 - name: Ensure ownership of intermediate cert
   file:
       path: "{{ ca_dir }}/intermediate/certs/intermediate.cert.pem"
-      mode: "0444"
+      mode: 0444
 
 - name: Write out cert to ensure it is correct
   command: >
@@ -93,7 +93,7 @@
 - name: Create temp directory to use in aeembling ca-cert
   file:
       path: "{{ ca_dir }}/tmp"
-      state: "directory"
+      state: directory
 
 - name: Write intermediate CA to file
   copy:
@@ -109,4 +109,4 @@
   assemble:
       src: "{{ ca_dir }}/tmp/"
       dest: "{{ ca_dir }}/intermediate/certs/ca-chain.cert.pem"
-      mode: "0444"
+      mode: 0444

@@ -1,4 +1,4 @@
 ---
 
-cert: "cert1.crt"
-key: "cert1.key"
+cert: cert1.crt
+key: cert1.key

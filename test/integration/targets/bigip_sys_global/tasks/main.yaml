@@ -2,7 +2,7 @@
 
 - name: Get facts from device
   bigip_facts:
-      include: "system_info"
+      include: system_info
   register: result
   with_items: valid_includes
 

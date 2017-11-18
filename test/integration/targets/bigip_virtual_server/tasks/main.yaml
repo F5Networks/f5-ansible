@@ -8,7 +8,7 @@
       name: "{{ vs_name }}"
       port: "{{ vs_port1 }}"
       snat: "{{ vs_snat1 }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Add virtual server
@@ -24,7 +24,7 @@
       name: "{{ vs_name }}"
       port: "{{ vs_port1 }}"
       snat: "{{ vs_snat1 }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Add virtual server - Idempotent check
@@ -36,7 +36,7 @@
   bigip_virtual_server:
       name: "{{ vs_name }}"
       port: "{{ vs_port2 }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Modify port of the Virtual Server

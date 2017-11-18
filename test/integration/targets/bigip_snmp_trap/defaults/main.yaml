@@ -1,14 +1,14 @@
 ---
 
-trap_name1: "my-trap1"
-destination1: "10.10.10.10"
-destination2: "foo.bar.com"
-version1: "1"
-version2: "2c"
-network1: "management"
-network2: "default"
-network3: "other"
-community1: "foo"
-community2: "bar"
-port1: "1000"
-port2: "2000"
+trap_name1: my-trap1
+destination1: 10.10.10.10
+destination2: foo.bar.com
+version1: 1
+version2: 2c
+network1: management
+network2: default
+network3: other
+community1: foo
+community2: bar
+port1: 1000
+port2: 2000

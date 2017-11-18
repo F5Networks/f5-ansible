@@ -33,7 +33,7 @@
 - name: Delete Self IP, specify a Route Domain
   bigip_selfip:
     name: "{{ selfip_name }}"
-    state: "absent"
+    state: absent
     route_domain: "{{ selfip_rd }}"
   register: result
 
@@ -45,7 +45,7 @@
 - name: Delete Self IP, specify a Route Domain - Idempotent check
   bigip_selfip:
     name: "{{ selfip_name }}"
-    state: "absent"
+    state: absent
     route_domain: "{{ selfip_rd }}"
   register: result
 

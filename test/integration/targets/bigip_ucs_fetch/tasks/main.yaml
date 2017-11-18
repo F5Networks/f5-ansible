@@ -25,7 +25,7 @@
 - name: Create a UCS, do not force
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_name_1 }}"
-      force: "no"
+      force: no
       src: "{{ ucs_name }}"
   register: result
 
@@ -36,7 +36,7 @@
 
 - name: Create a UCS, leave a backup
   bigip_ucs_fetch:
-      backup: "yes"
+      backup: yes
       dest: "/tmp/{{ ucs_name_1 }}"
       src: "{{ ucs_name }}"
   register: result
@@ -50,11 +50,11 @@
 - name: Remove backup UCS
   file:
       path: "{{ result['backup_file'] }}"
-      state: "absent"
+      state: absent
 
 - name: Fetch a missing UCS
   bigip_ucs_fetch:
-      create_on_missing: "no"
+      create_on_missing: no
       dest: "/tmp/{{ ucs_missing }}"
       src: "{{ ucs_missing }}"
   ignore_errors: true
@@ -67,7 +67,7 @@
 
 - name: Error on fetching a missing UCS
   bigip_ucs_fetch:
-      fail_on_missing: "yes"
+      fail_on_missing: yes
       dest: "/tmp/{{ ucs_missing }}"
       src: "{{ ucs_missing }}"
   ignore_errors: true
@@ -81,7 +81,7 @@
 - name: Create a UCS with encryption password
   bigip_ucs_fetch:
       dest: "/tmp/{{ ucs_missing }}"
-      encryption_password: "admin"
+      encryption_password: admin
       src: "{{ ucs_missing }}"
   register: result
 
@@ -93,7 +93,7 @@
 - name: Remove backups
   file:
       path: "{{ item }}"
-      state: "absent"
+      state: absent
   with_items:
       - "/tmp/{{ ucs_missing }}"
       - "/tmp/{{ ucs_name_1 }}"

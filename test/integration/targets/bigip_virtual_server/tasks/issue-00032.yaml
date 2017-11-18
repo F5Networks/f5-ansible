@@ -4,21 +4,21 @@
 
 - name: Issue 00032 - Create pool
   bigip_pool:
-    name: "mypool"
-    state: "present"
+    name: mypool
+    state: present
 
 - name: Issue 00032 - Create virtual server
   bigip_virtual_server:
-    name: "myvip"
-    destination: "1.1.1.1"
+    name: myvip
+    destination: 1.1.1.1
     port: 80
-    pool: "mypool"
-    snat: "Automap"
-    description: "My VIP"
+    pool: mypool
+    snat: Automap
+    description: My VIP
     all_profiles:
       - tcp
       - http
-    state: "present"
+    state: present
   register: result
 
 - name: Issue 00032 - Create virtual server
@@ -28,16 +28,16 @@
 
 - name: Issue 00032 - Create virtual server - Idempotent check
   bigip_virtual_server:
-    name: "myvip"
-    destination: "1.1.1.1"
+    name: myvip
+    destination: 1.1.1.1
     port: 80
-    pool: "mypool"
-    snat: "Automap"
-    description: "My VIP"
+    pool: mypool
+    snat: Automap
+    description: My VIP
     all_profiles:
       - tcp
       - http
-    state: "present"
+    state: present
   register: result
 
 - name: Issue 00032 - Create virtual server - Idempotent check
@@ -47,14 +47,14 @@
 
 - name: Issue 00032 - Delete virtual server
   bigip_virtual_server:
-    destination: "1.1.1.1"
-    name: "myvip"
+    destination: 1.1.1.1
+    name: myvip
     port: 80
-    pool: "mypool"
-    state: "absent"
+    pool: mypool
+    state: absent
 
 - name: Issue 00032 - Delete pool
   bigip_pool:
-    name: "mypool"
-    state: "absent"
+    name: mypool
+    state: absent
   register: result

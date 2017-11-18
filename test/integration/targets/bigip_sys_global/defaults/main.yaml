@@ -1,10 +1,10 @@
 ---
 
-banner_text: "This is a corporate device. Do not touch."
+banner_text: This is a corporate device. Do not touch.
 console_timeout: 600
-gui_setup: "enabled"
-lcd_display: "disabled"
-mgmt_dhcp: "disabled"
-net_reboot: "enabled"
-quiet_boot: "disabled"
-security_banner: "disabled"
+gui_setup: enabled
+lcd_display: disabled
+mgmt_dhcp: disabled
+net_reboot: enabled
+quiet_boot: disabled
+security_banner: disabled

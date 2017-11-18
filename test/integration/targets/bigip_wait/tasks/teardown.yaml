@@ -2,6 +2,6 @@
 
 - name: Remove pool
   bigip_pool:
-      name: "foo-pool"
-      state: "absent"
+      name: foo-pool
+      state: absent
   register: result

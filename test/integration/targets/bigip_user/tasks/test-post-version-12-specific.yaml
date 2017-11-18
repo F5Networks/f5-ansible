@@ -2,10 +2,10 @@
 - name: Create user on a different partition
   bigip_user:
       partition_access:
-        - "foo:operator"
+        - foo:operator
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
       partition: "{{ partition }}"
   register: result
 
@@ -17,10 +17,10 @@
 - name: Create user on a different partition - Idempotent check
   bigip_user:
       partition_access:
-        - "foo:operator"
+        - foo:operator
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
       partition: "{{ partition }}"
   register: result
 
@@ -33,8 +33,8 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       partition_access:
-        - "Common:operator"
-        - "Common:manager"
+        - Common:operator
+        - Common:manager
       partition: "{{ partition }}"
   register: result
 
@@ -46,8 +46,8 @@
 - name: Modify roles for a different partitions
   bigip_user:
       partition_access:
-        - "Common:guest"
-        - "foo:manager"
+        - Common:guest
+        - foo:manager
       username_credential: "{{ username_credential }}"
       partition: "{{ partition }}"
   register: result
@@ -75,7 +75,7 @@
   bigip_user:
       username_credential: "{{ username_credential }}"
       password_credential: "{{ password_credential }}"
-      update_password: "on_create"
+      update_password: on_create
       partition: "{{ partition }}"
   register: result
 
@@ -87,7 +87,7 @@
 - name: Remove user on different partition
   bigip_user:
       username_credential: "{{ username_credential }}"
-      state: "absent"
+      state: absent
       partition: "{{ partition }}"
   register: result
 
@@ -99,7 +99,7 @@
 - name: Remove user on different partition - Idempotent check
   bigip_user:
       username_credential: "{{ username_credential }}"
-      state: "absent"
+      state: absent
       partition: "{{ partition }}"
   register: result
 

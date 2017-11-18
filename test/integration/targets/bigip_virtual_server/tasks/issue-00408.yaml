@@ -70,7 +70,7 @@
     irules:
       - irule1
       - irule2
-    enabled_vlans: "External"
+    enabled_vlans: External
     #disabled_vlans: Internal
     pool: web-pool
     snat: automap
@@ -87,8 +87,10 @@
     name: httpvs2
     destination: 10.168.90.92
     port: 80
-    irules: ["irule1","irule2"]
-    enabled_vlans: "External"
+    irules:
+      - irule1
+      - irule2
+    enabled_vlans: External
     #disabled_vlans: Internal
     pool: web-pool
     snat: automap

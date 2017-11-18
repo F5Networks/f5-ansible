@@ -3,7 +3,7 @@
 - name: Upload 12.1.1 base image
   bigip_software:
       software: "{{ iso_base }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload 12.1.1 base image
@@ -14,7 +14,7 @@
 - name: Upload 12.1.1 base image - Idempotent check
   bigip_software:
       software: "{{ iso_base }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload 12.0.0 base image - Idempotent check
@@ -25,7 +25,7 @@
 - name: Upload 12.1.1 HF1 hotfix image
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload 12.1.1 HF1 hotfix image
@@ -36,7 +36,7 @@
 - name: Upload 12.1.1 HF1 hotfix image - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload 12.1.1 HF1 hotfix image - Idempotent check
@@ -47,7 +47,7 @@
 - name: Remove uploaded 12.1.1 base image
   bigip_software:
       software: "{{ iso_base }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded 12.1.1 base image
@@ -58,7 +58,7 @@
 - name: Remove uploaded 12.1.1 base image - Idempotent check
   bigip_software:
       software: "{{ iso_base }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded 12.1.1 base image - Idempotent check
@@ -69,7 +69,7 @@
 - name: Remove uploaded 12.1.1 HF1 hotfix image
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded 12.1.1 HF1 hotfix image
@@ -80,7 +80,7 @@
 - name: Remove uploaded 12.1.1 HF1 hotfix image - Idempotent check
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded 12.1.1 HF1 hotfix image - Idempotent check
@@ -92,7 +92,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload base image and hotfix
@@ -104,7 +104,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "present"
+      state: present
   register: result
 
 - name: Assert Upload base image and hotfix - Idempotent check
@@ -116,7 +116,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded base image and hotfix
@@ -128,7 +128,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove uploaded base image and hotfix - Idempotent check
@@ -139,7 +139,7 @@
 - name: Install (upload, install) base image
   bigip_software:
       software: "{{ iso_base }}"
-      state: "installed"
+      state: installed
       volume: "{{ volume_new }}"
   register: result
 
@@ -151,7 +151,7 @@
 - name: Install (upload, install) base image - Idempotent check
   bigip_software:
       software: "{{ iso_base }}"
-      state: "installed"
+      state: installed
       volume: "{{ volume_new }}"
   register: result
 
@@ -164,7 +164,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "installed"
+      state: installed
       volume: "{{ volume_new }}"
   register: result
 
@@ -177,7 +177,7 @@
   bigip_software:
       hotfix: "{{ iso_hotfix }}"
       software: "{{ iso_base }}"
-      state: "installed"
+      state: installed
       volume: "{{ volume_new }}"
   register: result
 
@@ -189,7 +189,7 @@
 - name: Activate (upload, install, reboot) base image
   bigip_software:
       software: "{{ iso_base }}"
-      state: "activated"
+      state: activated
       volume: "{{ volume_new }}"
   register: result
 
@@ -201,7 +201,7 @@
 - name: Activate (upload, install, reboot) base image and hotfix - Idempotent check
   bigip_software:
       software: "{{ iso_base }}"
-      state: "activated"
+      state: activated
       volume: "{{ volume_new }}"
   register: result
 
@@ -215,7 +215,7 @@
       reuse_inactive_volume: True
       hotfix: "{{ iso_hostfix }}"
       software: "{{ iso_base }}"
-      state: "activated"
+      state: activated
   register: result
 
 - name: Assert Activate (upload, install, reboot, reuse_inactive_volume) base image and hotfix
@@ -228,7 +228,7 @@
       reuse_inactive_volume: True
       hotfix: "{{ iso_hostfix }}"
       software: "{{ iso_base }}"
-      state: "activated"
+      state: activated
   register: result
 
 - name: Assert Activate (upload, install, reboot, reuse_inactive_volume) base image and hotfix - Idempotent check

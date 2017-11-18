@@ -1,174 +1,191 @@
 ---
 
-- import_tasks: issue-00051-setup.yaml
+- name: Issue 00051 - Create a new partition to test route domain creation
+  bigip_partition:
+    name: "{{ new_partition }}"
+    route_domain: 0
+  register: result
 
-- name: Create route domain
+- name: Issue 00051 - Create a parent route domain
+  bigip_routedomain:
+    id: "{{ new_parent }}"
+    partition: "{{ new_partition }}"
+  register: result
+
+- name: Issue 00051 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    partition: "{{ new_partition }}"
+  loop: "{{ i51_vlan_valid }}"
+  register: result
+
+- name: Issue 00051 - Create route domain
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Create route domain
+- name: Issue 00051 - Assert Create route domain
   assert:
     that:
       - result|changed
 
-- name: Create route domain - Idempotent check
+- name: Issue 00051 - Create route domain - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Create route domain - Idempotent check
+- name: Issue 00051 - Assert Create route domain - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set a description
+- name: Issue 00051 - Set a description
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     description: "{{ valid_description }}"
   register: result
 
-- name: Assert Set a description
+- name: Issue 00051 - Assert Set a description
   assert:
     that:
       - result|changed
 
-- name: Create Set a description - Idempotent check
+- name: Issue 00051 - Create Set a description - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     description: "{{ valid_description }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Set a description - Idempotent check
+- name: Issue 00051 - Assert Set a description - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Disable strict isolation
+- name: Issue 00051 - Disable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: "disabled"
+    strict: disabled
   register: result
 
-- name: Assert Disable strict isolation
+- name: Issue 00051 - Assert Disable strict isolation
   assert:
     that:
       - result|changed
 
-- name: Disable strict isolation - Idempotent check
+- name: Issue 00051 - Disable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: "disabled"
+    strict: disabled
   register: result
 
-- name: Assert Disable strict isolation - Idempotent check
+- name: Issue 00051 - Assert Disable strict isolation - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Enable strict isolation
+- name: Issue 00051 - Enable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: "enabled"
+    strict: enabled
   register: result
 
-- name: Assert Enable strict isolation
+- name: Issue 00051 - Assert Enable strict isolation
   assert:
     that:
       - result|changed
 
-- name: Enable strict isolation - Idempotent check
+- name: Issue 00051 - Enable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: "enabled"
+    strict: enabled
   register: result
 
-- name: Assert Enable strict isolation - Idempotent check
+- name: Issue 00051 - Assert Enable strict isolation - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set parent route domain
+- name: Issue 00051 - Set parent route domain
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     parent: "{{ new_parent }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Set parent route domain
+- name: Issue 00051 - Assert Set parent route domain
   assert:
     that:
       - result|changed
 
-- name: Set parent route domain - Idempotent check
+- name: Issue 00051 - Set parent route domain - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     parent: "{{ new_parent }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Set parent route domain - Idempotent check
+- name: Issue 00051 - Assert Set parent route domain - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set vlans
+- name: Issue 00051 - Set vlans
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     vlans: "{{ i51_vlan_valid }}"
   register: result
 
-- name: Assert Set vlans
+- name: Issue 00051 - Assert Set vlans
   assert:
     that:
       - result|changed
 
-- name: Set vlans - Idempotent check
+- name: Issue 00051 - Set vlans - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     vlans: "{{ i51_vlan_valid }}"
   register: result
 
-- name: Assert Set vlans - Idempotent check
+- name: Issue 00051 - Assert Set vlans - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set a single routing protocol, valid
+- name: Issue 00051 - Set a single routing protocol, valid
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     routing_protocol: "{{ valid_routing_protocol }}"
   register: result
 
-- name: Assert Set a single routing protocol, valid
+- name: Issue 00051 - Assert Set a single routing protocol, valid
   assert:
     that:
       - result|changed
 
-- name: Set a single routing protocol, valid - Idempotent check
+- name: Issue 00051 - Set a single routing protocol, valid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     routing_protocol: "{{ valid_routing_protocol }}"
   register: result
 
-- name: Assert Set a single routing protocol, valid - Idempotent check
+- name: Issue 00051 - Assert Set a single routing protocol, valid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set a single routing protocol, invalid
+- name: Issue 00051 - Set a single routing protocol, invalid
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
@@ -176,12 +193,12 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set a single routing protocol, invalid
+- name: Issue 00051 - Assert Set a single routing protocol, invalid
   assert:
     that:
       - not result|changed
 
-- name: Set a single routing protocol, invalid - Idempotent check
+- name: Issue 00051 - Set a single routing protocol, invalid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
@@ -189,36 +206,36 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set a single routing protocol, invalid - Idempotent check
+- name: Issue 00051 - Assert Set a single routing protocol, invalid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set a list of routing protocols, valid
+- name: Issue 00051 - Set a list of routing protocols, valid
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     routing_protocol: "{{ valid_routing_protocols }}"
   register: result
 
-- name: Assert Set a list of routing protocols, valid
+- name: Issue 00051 - Assert Set a list of routing protocols, valid
   assert:
     that:
       - result|changed
 
-- name: Set a list of routing protocols, valid - Idempotent check
+- name: Issue 00051 - Set a list of routing protocols, valid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
     routing_protocol: "{{ valid_routing_protocols }}"
   register: result
 
-- name: Assert Set a list of routing protocols, valid - Idempotent check
+- name: Issue 00051 - Assert Set a list of routing protocols, valid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set a list of routing protocols, invalid
+- name: Issue 00051 - Set a list of routing protocols, invalid
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
@@ -226,12 +243,12 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set a list of routing protocols, invalid
+- name: Issue 00051 - Assert Set a list of routing protocols, invalid
   assert:
     that:
       - not result|changed
 
-- name: Set a list of routing protocols, invalid - Idempotent check
+- name: Issue 00051 - Set a list of routing protocols, invalid - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
@@ -239,36 +256,36 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set a list of routing protocols, invalid - Idempotent check
+- name: Issue 00051 - Assert Set a list of routing protocols, invalid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set connection limit, valid
+- name: Issue 00051 - Set connection limit, valid
   bigip_routedomain:
     connection_limit: "{{ valid_connection_limit }}"
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Set connection limit, valid
+- name: Issue 00051 - Assert Set connection limit, valid
   assert:
     that:
       - result|changed
 
-- name: Set connection limit, valid - Idempotent check
+- name: Issue 00051 - Set connection limit, valid - Idempotent check
   bigip_routedomain:
     connection_limit: "{{ valid_connection_limit }}"
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Set connection limit, valid - Idempotent check
+- name: Issue 00051 - Assert Set connection limit, valid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Set connection limit, invalid
+- name: Issue 00051 - Set connection limit, invalid
   bigip_routedomain:
     connection_limit: "{{ invalid_connection_limit }}"
     id: "{{ new_routedomain }}"
@@ -276,12 +293,12 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set connection limit, invalid
+- name: Issue 00051 - Assert Set connection limit, invalid
   assert:
     that:
       - not result|changed
 
-- name: Set connection limit, invalid - Idempotent check
+- name: Issue 00051 - Set connection limit, invalid - Idempotent check
   bigip_routedomain:
     connection_limit: "{{ invalid_connection_limit }}"
     id: "{{ new_routedomain }}"
@@ -289,81 +306,81 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set connection limit, invalid - Idempotent check
+- name: Issue 00051 - Assert Set connection limit, invalid - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete a route domain
+- name: Issue 00051 - Delete a route domain
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert Delete a route domain
+- name: Issue 00051 - Assert Delete a route domain
   assert:
     that:
       - result|changed
 
-- name: Delete a route domain - Idempotent check
+- name: Issue 00051 - Delete a route domain - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert Delete a route domain - Idempotent check
+- name: Issue 00051 - Assert Delete a route domain - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete an unknown route domain
+- name: Issue 00051 - Delete an unknown route domain
   bigip_routedomain:
     id: "{{ unknown_route_domain }}"
     partition: "{{ new_partition }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert Delete an unknown route domain
+- name: Issue 00051 - Assert Delete an unknown route domain
   assert:
     that:
       - not result|changed
 
-- name: Delete a route domain, invalid
+- name: Issue 00051 - Delete a route domain, invalid
   bigip_routedomain:
     id: "{{ item }}"
     partition: "{{ new_partition }}"
-    state: "absent"
+    state: absent
   register: result
   ignore_errors: true
   loop: "{{ invalid_route_domains }}"
 
-- name: Assert Delete a route domain, invalid
+- name: Issue 00051 - Assert Delete a route domain, invalid
   assert:
     that:
       - not result|changed
 
-- name: Create route domain - all params
+- name: Issue 00051 - Create route domain - all params
   bigip_routedomain:
     id: "{{ new_routedomain2 }}"
     parent: "{{ new_parent }}"
     partition: "{{ new_partition }}"
   register: result
 
-- name: Assert Create route domain - all params
+- name: Issue 00051 - Assert Create route domain - all params
   assert:
     that:
       - result|changed
 
-- name: Delete a route domain - all params
+- name: Issue 00051 - Delete a route domain - all params
   bigip_routedomain:
     id: "{{ new_routedomain2 }}"
     partition: "{{ new_partition }}"
-    state: "absent"
+    state: absent
   register: result
 
-- name: Assert Delete a route domain - all params
+- name: Issue 00051 - Assert Delete a route domain - all params
   assert:
     that:
       - result|changed

@@ -1,27 +1,27 @@
 ---
 
-pool_name: "foo.pool"
-pool_lb_method: "round_robin"
+pool_name: foo.pool
+pool_lb_method: round_robin
 pool_reselect_tries: 10
 pool_lb_method_alt:
-  - "ratio_member"
-  - "least_connection_member"
-  - "observed_member"
-  - "predictive_member"
-  - "ratio_node_address"
-  - "least_connection_node_address"
-  - "fastest_node_address"
-  - "observed_node_address"
-  - "predictive_node_address"
-  - "dynamic_ratio"
-  - "fastest_app_response"
-  - "least_sessions"
-  - "dynamic_ratio_member"
-  - "l3_addr"
-  - "weighted_least_connection_member"
-  - "weighted_least_connection_node_address"
-  - "ratio_session"
-  - "ratio_least_connection_member"
-  - "ratio_least_connection_node_address"
-pool_description_1: "my description"
-pool_description_2: "my other description"
+  - ratio_member
+  - least_connection_member
+  - observed_member
+  - predictive_member
+  - ratio_node_address
+  - least_connection_node_address
+  - fastest_node_address
+  - observed_node_address
+  - predictive_node_address
+  - dynamic_ratio
+  - fastest_app_response
+  - least_sessions
+  - dynamic_ratio_member
+  - l3_addr
+  - weighted_least_connection_member
+  - weighted_least_connection_node_address
+  - ratio_session
+  - ratio_least_connection_member
+  - ratio_least_connection_node_address
+pool_description_1: my description
+pool_description_2: my other description

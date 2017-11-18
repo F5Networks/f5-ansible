@@ -4,7 +4,7 @@
 - name: Create pool
   bigip_pool:
     name: "{{ pool_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create pool
@@ -21,7 +21,7 @@
     port: "{{ node_port }}"
     rate_limit: "{{ rate_limit }}"
     ratio: "{{ ratio }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Add pool member
@@ -38,7 +38,7 @@
     port: "{{ node_port }}"
     rate_limit: "{{ rate_limit }}"
     ratio: "{{ ratio }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Add pool member - Idempotent check
@@ -53,7 +53,7 @@
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
     ratio: "{{ new_ratio }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Modify pool member ratio and description
@@ -68,7 +68,7 @@
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
     ratio: "{{ new_ratio }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Modify pool member ratio and description - Idempotent check
@@ -79,11 +79,11 @@
 - name: Force pool member offline
   bigip_pool_member:
     host: "{{ node_host }}"
-    monitor_state: "disabled"
+    monitor_state: disabled
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    session_state: "disabled"
-    state: "present"
+    session_state: disabled
+    state: present
   register: result
 
 - name: Assert Force pool member offline
@@ -118,8 +118,8 @@
     host: "{{ node_host }}"
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    preserve_node: "yes"
-    state: "absent"
+    preserve_node: yes
+    state: absent
   register: result
 
 - name: Assert Remove pool member from pool, preserve node
@@ -132,8 +132,8 @@
     host: "{{ node_host }}"
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    preserve_node: "yes"
-    state: "absent"
+    preserve_node: yes
+    state: absent
   register: result
 
 - name: Assert Remove pool member from pool, preserve node - Idempotent check
@@ -150,13 +150,13 @@
     port: "{{ node_port }}"
     rate_limit: "{{ rate_limit }}"
     ratio: "{{ ratio }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Delete pool
   bigip_pool:
     name: "{{ pool_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete pool
@@ -167,7 +167,7 @@
 - name: Delete node
   bigip_node:
     name: "{{ node_host }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete node

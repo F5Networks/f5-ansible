@@ -136,7 +136,7 @@
 - name: Remove VLAN
   bigip_vlan:
       name: "{{ vlan_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove VLAN
@@ -147,7 +147,7 @@
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
       name: "{{ vlan_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove VLAN - Idempotent check
@@ -184,7 +184,7 @@
   bigip_vlan:
       tagged_interfaces: "{{ vlan_interfaces }}"
       name: "{{ vlan_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove VLAN, tagged interfaces
@@ -217,7 +217,7 @@
 - name: Remove VLAN, description
   bigip_vlan:
       name: "{{ vlan_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove VLAN, description
@@ -250,7 +250,7 @@
 - name: Remove VLAN, tag
   bigip_vlan:
       name: "{{ vlan_name }}"
-      state: "absent"
+      state: absent
   register: result
 
 - name: Assert Remove VLAN, tag
