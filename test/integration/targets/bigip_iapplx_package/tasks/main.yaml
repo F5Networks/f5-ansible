@@ -3,7 +3,7 @@
 - name: Create iAppLX package
   bigip_iapplx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create iAppLX package
@@ -14,7 +14,7 @@
 - name: Create iAppLX package - Idempotent check
   bigip_iapplx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create iAppLX package - Idempotent check
@@ -25,7 +25,7 @@
 - name: Delete iAppLX package
   bigip_iapplx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iAppLX package
@@ -36,7 +36,7 @@
 - name: Delete iAppLX package - Idempotent check
   bigip_iapplx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Create iAppLX package - Idempotent check
@@ -47,7 +47,7 @@
 - name: Create iAppLX package
   bigip_iapplx_package:
     package: "{{ role_path }}/files/MyApp-0.1.0-0001.noarch.rpm"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create iAppLX package
@@ -58,7 +58,7 @@
 - name: Delete iAppLX package, file does not exist
   bigip_iapplx_package:
     package: "MyApp-0.1.0-0001.noarch.rpm"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iAppLX package, file does not exist
@@ -69,7 +69,7 @@
 - name: Delete iAppLX package, file does not exist - Idempotent check
   bigip_iapplx_package:
     package: "MyApp-0.1.0-0001.noarch.rpm"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iAppLX package, file does not exist - Idempotent check

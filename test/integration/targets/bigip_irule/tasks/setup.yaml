@@ -2,5 +2,5 @@
 
 - name: Provision GTM on the device
   bigip_provision:
-    module: "gtm"
+    module: gtm
   register: result

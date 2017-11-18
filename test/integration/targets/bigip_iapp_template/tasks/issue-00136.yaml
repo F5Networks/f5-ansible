@@ -3,24 +3,24 @@
 - name: Issue 00136 - Add the iApp contained in template indicated in the content field
   bigip_iapp_template:
     content: "{{ lookup('template', 'issue-00136/original.iapp') }}"
-    force: "yes"
-    state: "present"
+    force: yes
+    state: present
   delegate_to: localhost
 
 - name: Issue 00136 - Configure a service based on an existing iApp
   bigip_iapp_service:
-    name: "demo.repro"
-    template: "demo.repro"
-    state: "present"
+    name: demo.repro
+    template: demo.repro
+    state: present
     parameters:
       variables:
-        - name: "var__forwarding_vlans"
-          value: "net2"
+        - name: var__forwarding_vlans
+          value: net2
   delegate_to: localhost
 
 - name: Issue 00136 - Update iApp
   bigip_iapp_template:
     content: "{{ lookup('template', 'issue-00136/updated.iapp') }}"
-    force: "yes"
-    state: "present"
+    force: yes
+    state: present
   delegate_to: localhost

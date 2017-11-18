@@ -1,63 +1,63 @@
 ---
 
-- name: Create app service integration iApp template
+- name: Issue 00263 - Create app service integration iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', item) }}"
   loop:
     - appsvcs_integration_v2.0.004.tmpl
   register: result
 
-- name: Assert Create app service integration iApp service from iApp template
+- name: Issue 00263 - Assert Create app service integration iApp service from iApp template
   assert:
     that:
       - result|changed
 
-- name: Create app service integration iApp service from iApp template
+- name: Issue 00263 - Create app service integration iApp service from iApp template
   bigip_iapp_service:
-    name: "f5-http-url-routing-lb"
-    template: "appsvcs_integration_v2.0.004"
+    name: f5-http-url-routing-lb
+    template: appsvcs_integration_v2.0.004
     parameters: "{{ lookup('file', item) }}"
   loop:
     - f5-http-url-routing-lb.parameters.json
   register: result
 
-- name: Assert Create app service integration iApp service from iApp template
+- name: Issue 00263 - Assert Create app service integration iApp service from iApp template
   assert:
     that:
       - result|changed
 
-- name: Create app service integration iApp service from iApp template - Idempotent check
+- name: Issue 00263 - Create app service integration iApp service from iApp template - Idempotent check
   bigip_iapp_service:
-    name: "f5-http-url-routing-lb"
-    template: "appsvcs_integration_v2.0.004"
+    name: f5-http-url-routing-lb
+    template: appsvcs_integration_v2.0.004
     parameters: "{{ lookup('file', item) }}"
   loop:
     - f5-http-url-routing-lb.parameters.json
   register: result
 
-- name: Assert Create app service integration iApp service from iApp template - Idempotent check
+- name: Issue 00263 - Assert Create app service integration iApp service from iApp template - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete app service integration iApp service
+- name: Issue 00263 - Delete app service integration iApp service
   bigip_iapp_service:
-    name: "f5-http-url-routing-lb"
-    state: "absent"
+    name: f5-http-url-routing-lb
+    state: absent
   register: result
 
-- name: Assert Delete app service integration iApp service
+- name: Issue 00263 - Assert Delete app service integration iApp service
   assert:
     that:
       - result|changed
 
-- name: Remove app service integration iApp template
+- name: Issue 00263 - Remove app service integration iApp template
   bigip_iapp_template:
-    name: "appsvcs_integration_v2.0.004"
-    state: "absent"
+    name: appsvcs_integration_v2.0.004
+    state: absent
   register: result
 
-- name: Assert Remove app service integration iApp template
+- name: Issue 00263 - Assert Remove app service integration iApp template
   assert:
     that:
       - result|changed

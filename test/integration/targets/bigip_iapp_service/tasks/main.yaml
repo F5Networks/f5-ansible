@@ -2,8 +2,8 @@
 
 - name: Ensure ASM is provisioned
   bigip_provision:
-    module: "asm"
-    state: "present"
+    module: asm
+    state: present
 
 - name: Create HTTP iApp template
   bigip_iapp_template:
@@ -15,8 +15,8 @@
 
 - name: Create HTTP iApp service from iApp template
   bigip_iapp_service:
-    name: "foo-service"
-    template: "f5.http.v1.2.0rc4"
+    name: foo-service
+    template: f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
   register: result
 
@@ -27,8 +27,8 @@
 
 - name: Create HTTP iApp service from iApp template - Idempotent check
   bigip_iapp_service:
-    name: "foo-service"
-    template: "f5.http.v1.2.0rc4"
+    name: foo-service
+    template: f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
   register: result
 
@@ -39,8 +39,8 @@
 
 - name: Delete HTTP iApp service
   bigip_iapp_service:
-    name: "foo-service"
-    state: "absent"
+    name: foo-service
+    state: absent
   register: result
 
 - name: Assert Delete HTTP iApp service
@@ -50,8 +50,8 @@
 
 - name: Delete HTTP iApp service - Idempotent check
   bigip_iapp_service:
-    name: "foo-service"
-    state: "absent"
+    name: foo-service
+    state: absent
   register: result
 
 - name: Assert Delete HTTP iApp service - Idempotent check
@@ -61,8 +61,8 @@
 
 - name: Create AppSvcs iApp service from iApp template
   bigip_iapp_service:
-    name: "foo-app-service"
-    template: "appsvcs_integration_v2.0.002"
+    name: foo-app-service
+    template: appsvcs_integration_v2.0.002
     parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
   register: result
 
@@ -73,8 +73,8 @@
 
 - name: Create AppSvcs iApp service from iApp template - Idempotent check
   bigip_iapp_service:
-    name: "foo-app-service"
-    template: "appsvcs_integration_v2.0.002"
+    name: foo-app-service
+    template: appsvcs_integration_v2.0.002
     parameters: "{{ lookup('file', 'appsvcs_myhttps_w_asm_from_url_payload.json') }}"
   register: result
 
@@ -85,8 +85,8 @@
 
 - name: Delete AppSvcs iApp service from iApp template
   bigip_iapp_service:
-    name: "foo-app-service"
-    state: "absent"
+    name: foo-app-service
+    state: absent
   register: result
 
 - name: Assert Delete AppSvcs iApp service from iApp template
@@ -96,8 +96,8 @@
 
 - name: Delete AppSvcs iApp service from iApp template - Idempotent check
   bigip_iapp_service:
-    name: "foo-app-service"
-    state: "absent"
+    name: foo-app-service
+    state: absent
   register: result
 
 - name: Assert Delete AppSvcs iApp service from iApp template - Idempotent check
@@ -105,7 +105,6 @@
     that:
       - not result|changed
 
-# Github issues
 - import_tasks: issue-00089.yaml
   tags: issue-00089
 

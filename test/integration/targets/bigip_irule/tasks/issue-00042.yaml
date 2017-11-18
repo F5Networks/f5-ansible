@@ -1,44 +1,44 @@
 ---
 
-- name: Delete iRule with space at the end - Setup - Issue 42
+- name: Issue 00042 - Delete iRule with space at the end
   bigip_irule:
-    module: "ltm"
-    name: "issue-42"
-    state: "absent"
+    module: ltm
+    name: issue-42
+    state: absent
   register: result
 
-- name: Create iRule with space at the end - Issue 42
+- name: Issue 00042 - Create iRule with space at the end
   bigip_irule:
     content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}\n"
-    module: "ltm"
-    name: "issue-42"
+    module: ltm
+    name: issue-42
   register: result
 
-- name: Assert Create iRule with space at the end - Issue 42
+- name: Issue 00042 - Assert Create iRule with space at the end
   assert:
     that:
       - result|changed
 
-- name: Create iRule with space at the end - Issue 42 - Idempotent check
+- name: Issue 00042 - Create iRule with space at the end - Idempotent check
   bigip_irule:
     content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}\n"
-    module: "ltm"
-    name: "issue-42"
+    module: ltm
+    name: issue-42
   register: result
 
-- name: Assert Create iRule with space at the end - Issue 42 - Idempotent check
+- name: Issue 00042 - Assert Create iRule with space at the end - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete iRule with space at the end - Teardown - Issue 42
+- name: Issue 00042 - Delete iRule with space at the end
   bigip_irule:
-    module: "ltm"
-    name: "issue-42"
-    state: "absent"
+    module: ltm
+    name: issue-42
+    state: absent
   register: result
 
-- name: Assert Delete iRule with space at the end - Teardown - Issue 42
+- name: Issue 00042 - Assert Delete iRule with space at the end
   assert:
     that:
       - result|changed

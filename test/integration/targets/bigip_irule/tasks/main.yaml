@@ -5,7 +5,7 @@
 - name: Create iRule in LTM
   bigip_irule:
     content: "{{ lookup('template', 'irule-01.tcl') }}"
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
   register: result
 
@@ -17,7 +17,7 @@
 - name: Create iRule in LTM - Idempotent check
   bigip_irule:
     content: "{{ lookup('template', 'irule-01.tcl') }}"
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
   register: result
 
@@ -29,7 +29,7 @@
 - name: Modify iRule in LTM
   bigip_irule:
     content: "{{ lookup('file', 'irule-01.tcl') }}"
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
   register: result
 
@@ -41,7 +41,7 @@
 - name: Modify iRule in LTM - Idempotent check
   bigip_irule:
     content: "{{ lookup('file', 'irule-01.tcl') }}"
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
   register: result
 
@@ -52,9 +52,9 @@
 
 - name: Delete iRule in LTM
   bigip_irule:
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iRule in LTM
@@ -64,9 +64,9 @@
 
 - name: Delete iRule in LTM - Idempotent check
   bigip_irule:
-    module: "ltm"
+    module: ltm
     name: "{{ irule_name_ltm }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iRule in LTM - Idempotent check
@@ -77,7 +77,7 @@
 - name: Create iRule in GTM
   bigip_irule:
     content: "{{ lookup('template', 'irule-02.tcl') }}"
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
   register: result
 
@@ -89,7 +89,7 @@
 - name: Create iRule in GTM - Idempotent check
   bigip_irule:
     content: "{{ lookup('template', 'irule-02.tcl') }}"
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
   register: result
 
@@ -101,7 +101,7 @@
 - name: Modify iRule in GTM
   bigip_irule:
     content: "{{ lookup('file', 'irule-02.tcl') }}"
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
   register: result
 
@@ -113,7 +113,7 @@
 - name: Modify iRule in GTM - Idempotent check
   bigip_irule:
     content: "{{ lookup('file', 'irule-02.tcl') }}"
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
   register: result
 
@@ -124,9 +124,9 @@
 
 - name: Delete iRule in GTM
   bigip_irule:
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iRule in GTM
@@ -136,9 +136,9 @@
 
 - name: Delete iRule in GTM - Idempotent check
   bigip_irule:
-    module: "gtm"
+    module: gtm
     name: "{{ irule_name_gtm }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iRule in GTM - Idempotent check
@@ -146,7 +146,6 @@
     that:
       - not result|changed
 
-# Tests for different issues filed on Github
 - import_tasks: issue-00042.yaml
   tags: issue-00042
 

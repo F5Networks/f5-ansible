@@ -1,12 +1,12 @@
 ---
 
-- name: Create a template for testing
+- name: Issue 00359 - Create a template for testing
   bigip_iapp_template:
     content: "{{ lookup('file', 'f5.http.v1.2.0rc4.tmpl') }}"
     state: present
   delegate_to: localhost
 
-- name: Configure a service with strict updates disabled
+- name: Issue 00359 - Configure a service with strict updates disabled
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -16,12 +16,12 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service with strict updates disabled
+- name: Issue 00359 - Assert Configure a service with strict updates disabled
   assert:
     that:
       - result|changed
 
-- name: Configure a service with strict updates disabled - Idempotent check
+- name: Issue 00359 - Configure a service with strict updates disabled - Idempotent check
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -31,42 +31,42 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service with strict updates disabled - Idempotent check
+- name: Issue 00359 - Assert Configure a service with strict updates disabled - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Change strict updates to enabled
+- name: Issue 00359 - Change strict updates to enabled
   bigip_iapp_service:
     name: issue-00359
     strict_updates: yes
   register: result
   delegate_to: localhost
 
-- name: Assert Change strict updates to enabled
+- name: Issue 00359 - Assert Change strict updates to enabled
   assert:
     that:
       - result|changed
 
-- name: Change strict updates to enabled - Idempotent check
+- name: Issue 00359 - Change strict updates to enabled - Idempotent check
   bigip_iapp_service:
     name: issue-00359
     strict_updates: yes
   register: result
   delegate_to: localhost
 
-- name: Assert Change strict updates to enabled - Idempotent check
+- name: Issue 00359 - Assert Change strict updates to enabled - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove iApp service
+- name: Issue 00359 - Remove iApp service
   bigip_iapp_service:
     name: issue-00359
     state: absent
   delegate_to: localhost
 
-- name: Configure a service, via payload, with strict updates disabled
+- name: Issue 00359 - Configure a service, via payload, with strict updates disabled
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -75,12 +75,12 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service, via payload, with strict updates disabled
+- name: Issue 00359 - Assert Configure a service, via payload, with strict updates disabled
   assert:
     that:
       - result|changed
 
-- name: Configure a service, via payload, with strict updates disabled - Idempotent check
+- name: Issue 00359 - Configure a service, via payload, with strict updates disabled - Idempotent check
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -89,12 +89,12 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service, via payload, with strict updates disabled - Idempotent check
+- name: Issue 00359 - Assert Configure a service, via payload, with strict updates disabled - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Configure a service, via payload, with strict updates enabled
+- name: Issue 00359 - Configure a service, via payload, with strict updates enabled
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -103,12 +103,12 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service, via payload, with strict updates enabled
+- name: Issue 00359 - Assert Configure a service, via payload, with strict updates enabled
   assert:
     that:
       - result|changed
 
-- name: Configure a service, via payload, with strict updates enabled - Idempotent check
+- name: Issue 00359 - Configure a service, via payload, with strict updates enabled - Idempotent check
   bigip_iapp_service:
     name: issue-00359
     template: f5.http.v1.2.0rc4
@@ -117,18 +117,18 @@
   register: result
   delegate_to: localhost
 
-- name: Assert Configure a service, via payload, with strict updates enabled - Idempotent check
+- name: Issue 00359 - Assert Configure a service, via payload, with strict updates enabled - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove iApp service
+- name: Issue 00359 - Remove iApp service
   bigip_iapp_service:
     name: issue-00359
     state: absent
   delegate_to: localhost
 
-- name: Remove template
+- name: Issue 00359 - Remove template
   bigip_iapp_template:
     name: f5.http.v1.2.0rc4
     state: absent

@@ -1,3 +1,5 @@
+---
+
 - name: Create iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', 'basic-iapp.tmpl') }}"
@@ -27,6 +29,6 @@
 
 - name: Remove iApp template
   bigip_iapp_template:
-    name: "good_templ"
-    state: "absent"
+    name: good_templ
+    state: absent
   register: result

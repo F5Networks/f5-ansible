@@ -1,15 +1,15 @@
 ---
 
-- name: Create a new traffic group
+- name: Issue 00307 - Create a new traffic group
   bigip_traffic_group:
     name: foo-group
 
-- name: Create a template for testing
+- name: Issue 00307 - Create a template for testing
   bigip_iapp_template:
     content: "{{ lookup('file', 'f5.http.v1.2.0rc4.tmpl') }}"
     state: present
 
-- name: Configure a service with custom traffic group
+- name: Issue 00307 - Configure a service with custom traffic group
   bigip_iapp_service:
     name: issue-00307
     template: f5.http.v1.2.0rc4
@@ -18,12 +18,12 @@
     traffic_group: foo-group
   register: result
 
-- name: Assert Configure a service with custom traffic group
+- name: Issue 00307 - Assert Configure a service with custom traffic group
   assert:
     that:
       - result|changed
 
-- name: Configure a service with custom traffic group - Idempotent check
+- name: Issue 00307 - Configure a service with custom traffic group - Idempotent check
   bigip_iapp_service:
     name: issue-00307
     template: f5.http.v1.2.0rc4
@@ -32,12 +32,12 @@
     traffic_group: foo-group
   register: result
 
-- name: Assert Configure a service with custom traffic group - Idempotent check
+- name: Issue 00307 - Assert Configure a service with custom traffic group - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Change traffic group
+- name: Issue 00307 - Change traffic group
   bigip_iapp_service:
     name: issue-00307
     template: f5.http.v1.2.0rc4
@@ -46,12 +46,12 @@
     traffic_group: traffic-group-local-only
   register: result
 
-- name: Assert Change traffic group
+- name: Issue 00307 - Assert Change traffic group
   assert:
     that:
       - result|changed
 
-- name: Change traffic group - Idempotent check
+- name: Issue 00307 - Change traffic group - Idempotent check
   bigip_iapp_service:
     name: issue-00307
     template: f5.http.v1.2.0rc4
@@ -60,22 +60,22 @@
     traffic_group: traffic-group-local-only
   register: result
 
-- name: Assert Change traffic group - Idempotent check
+- name: Issue 00307 - Assert Change traffic group - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Remove iApp service
+- name: Issue 00307 - Remove iApp service
   bigip_iapp_service:
     name: issue-00307
     state: absent
 
-- name: Remove template
+- name: Issue 00307 - Remove template
   bigip_iapp_template:
     name: f5.http.v1.2.0rc4
     state: absent
 
-- name: Remove traffic group
+- name: Issue 00307 - Remove traffic group
   bigip_traffic_group:
     name: foo-group
     state: absent

@@ -23,7 +23,7 @@
 - name: Delete iApp template
   bigip_iapp_template:
     name: "{{ template_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iApp template
@@ -34,7 +34,7 @@
 - name: Delete iApp template - Idempotent check
   bigip_iapp_template:
     name: "{{ template_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete iApp template - Idempotent check
@@ -51,14 +51,13 @@
 - name: Delete list of iApp template
   bigip_iapp_template:
     name: "{{ item|basename|splitext|first }}"
-    state: "absent"
+    state: absent
   register: result
   loop: "{{ template_list }}"
 
 - import_tasks: test-force.yaml
   tags: test-force
 
-# Issues on f5-ansible
 - import_tasks: issue-00126.yaml
   tags: issue-00126
 

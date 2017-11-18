@@ -1,56 +1,56 @@
 ---
 
-- name: Create a new partition - Issue 254
+- name: Issue 00254 - Create a new partition
   bigip_partition:
-    name: "issue-254"
-    state: "present"
+    name: issue-254
+    state: present
 
-- name: Create HTTP iApp template - Issue 254
+- name: Issue 00254 - Create HTTP iApp template
   bigip_iapp_template:
     content: "{{ lookup('file', item) }}"
   loop:
     - f5.http.v1.2.0rc4.tmpl
   register: result
 
-- name: Create HTTP iApp service from iApp template - Issue 254
+- name: Issue 00254 - Create HTTP iApp service from iApp template
   bigip_iapp_service:
-    name: "issue-254-service"
-    template: "/Common/f5.http.v1.2.0rc4"
+    name: issue-254-service
+    template: /Common/f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
-    partition: "issue-254"
+    partition: issue-254
   register: result
 
-- name: Assert Create HTTP iApp service from iApp template - Issue 254
+- name: Issue 00254 - Assert Create HTTP iApp service from iApp template
   assert:
     that:
       - result|changed
 
-- name: Create HTTP iApp service from iApp template - Idempotent check - Issue 254
+- name: Issue 00254 - Create HTTP iApp service from iApp template - Idempotent check
   bigip_iapp_service:
-    name: "issue-254-service"
-    template: "/Common/f5.http.v1.2.0rc4"
+    name: issue-254-service
+    template: /Common/f5.http.v1.2.0rc4
     parameters: "{{ lookup('file', 'f5.http.v1.2.0rc4.parameters.json') }}"
-    partition: "issue-254"
+    partition: issue-254
   register: result
 
-- name: Assert Create HTTP iApp service from iApp template - Idempotent check - Issue 254
+- name: Issue 00254 - Assert Create HTTP iApp service from iApp template - Idempotent check
   assert:
     that:
       - not result|changed
 
-- name: Delete HTTP iApp service - Issue 254
+- name: Issue 00254 - Delete HTTP iApp service
   bigip_iapp_service:
-    name: "issue-254-service"
-    state: "absent"
-    partition: "issue-254"
+    name: issue-254-service
+    state: absent
+    partition: issue-254
   register: result
 
-- name: Assert Delete HTTP iApp service - Issue 254
+- name: Issue 00254 - Assert Delete HTTP iApp service
   assert:
     that:
       - result|changed
 
-- name: Remove partition - Issue 254
+- name: Issue 00254 - Remove partition
   bigip_partition:
-    name: "issue-254"
-    state: "absent"
+    name: issue-254
+    state: absent

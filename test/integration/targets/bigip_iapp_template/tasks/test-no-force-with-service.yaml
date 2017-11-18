@@ -7,8 +7,8 @@
 
 - name: Create service from iApp template
   bigip_iapp_service:
-    name: "foo-service"
-    template: "good_templ"
+    name: foo-service
+    template: good_templ
   register: result
 
 - name: Update iApp template
@@ -33,12 +33,12 @@
 
 - name: Remove service
   bigip_iapp_service:
-    name: "foo-service"
-    state: "absent"
+    name: foo-service
+    state: absent
   register: result
 
 - name: Remove iApp template
   bigip_iapp_template:
-    name: "good_templ"
-    state: "absent"
+    name: good_templ
+    state: absent
   register: result

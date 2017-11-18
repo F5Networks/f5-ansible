@@ -1,7 +1,7 @@
 ---
 
-template_name: "good_templ"
-template_file: "basic-iapp.tmpl"
+template_name: good_templ
+template_file: basic-iapp.tmpl
 
 template_list:
   - appsvcs_integration_v2.0_001.tmpl
