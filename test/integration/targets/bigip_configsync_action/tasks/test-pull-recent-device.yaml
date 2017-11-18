@@ -3,9 +3,9 @@
 - name: Create another pool - First device
   bigip_pool:
     server: "{{ hostvars['bigip1']['ansible_host'] }}"
-    lb_method: "round_robin"
-    name: "cs2.pool"
-    state: "present"
+    lb_method: round_robin
+    name: cs2.pool
+    state: present
   register: result
 
 - name: Assert Create another pool - First device
@@ -37,9 +37,9 @@
 
 - name: Create another pool again - Second device - ensure it was created in previous sync
   bigip_pool:
-    lb_method: "round_robin"
-    name: "cs2.pool"
-    state: "present"
+    lb_method: round_robin
+    name: cs2.pool
+    state: present
   register: result
 
 - name: Assert Create another pool again - Second device - ensure it was deleted in previous sync

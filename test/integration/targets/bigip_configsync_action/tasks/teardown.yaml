@@ -3,10 +3,10 @@
 - name: Delete pool - First device
   bigip_pool:
     name: "{{ item }}"
-    state: "absent"
+    state: absent
   loop:
-    - "cs1.pool"
-    - "cs2.pool"
+    - cs1.pool
+    - cs2.pool
   register: result
 
 - name: Assert Delete pool
