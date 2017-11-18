@@ -4,16 +4,16 @@
 
 - name: Reset node to offline
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "offline"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: offline
   register: result
 
 - name: Change node to enabled
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "enabled"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: enabled
   register: result
 
 - name: Assert Change node to enabled
@@ -23,16 +23,16 @@
 
 - name: Reset node to offline
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "offline"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: offline
   register: result
 
 - name: Change node to disabled
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "disabled"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: disabled
   register: result
 
 - name: Assert Change node to disabled
@@ -42,16 +42,16 @@
 
 - name: Reset node to offline
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "offline"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: offline
   register: result
 
 - name: Change node to present
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "present"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: present
   register: result
 
 - name: Assert Change node to present

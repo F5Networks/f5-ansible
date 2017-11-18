@@ -3,7 +3,7 @@
 - name: Create route domains
   bigip_routedomain:
     id: "{{ item }}"
-    state: "present"
+    state: present
   loop:
     - 1
     - 2

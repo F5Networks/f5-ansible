@@ -6,7 +6,7 @@
 
 - name: Create node with multiple monitors
   bigip_node:
-    state: "present"
+    state: present
     name: "{{ node1['name'] }}"
     fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
@@ -20,7 +20,7 @@
 
 - name: Create node with multiple monitors - Idempotent check
   bigip_node:
-    state: "present"
+    state: present
     name: "{{ node1['name'] }}"
     fqdn: "{{ node1['fqdn'] }}"
     monitors: "{{ node1['monitors'] }}"
@@ -34,7 +34,7 @@
 
 - name: Change node to single monitor - Expected error due to multiple existing monitors
   bigip_node:
-    state: "present"
+    state: present
     name: "{{ node1['name'] }}"
     monitor_type: "{{ node2['monitor_type'] }}"
   register: result
@@ -48,7 +48,7 @@
 
 - name: Change node to single monitor
   bigip_node:
-    state: "present"
+    state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
     monitor_type: "{{ node2['monitor_type'] }}"
@@ -61,7 +61,7 @@
 
 - name: Change node to single monitor - Idempotent check
   bigip_node:
-    state: "present"
+    state: present
     name: "{{ node1['name'] }}"
     monitors: "{{ node2['monitors'] }}"
     monitor_type: "{{ node2['monitor_type'] }}"
@@ -75,7 +75,7 @@
 - name: Delete node
   bigip_node:
     name: "{{ node1['name'] }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete node
@@ -86,7 +86,7 @@
 - name: Delete node - Idempotent check
   bigip_node:
     name: "{{ node1['name'] }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete node - Idempotent check

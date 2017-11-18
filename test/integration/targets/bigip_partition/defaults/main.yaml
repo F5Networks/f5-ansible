@@ -1,8 +1,8 @@
 ---
 
-partition: "foo"
+partition: foo
 route_domain1: 1
 route_domain2: 2
-route_domain_default: "0"
+route_domain_default: 0
 
-description: "Description of foo partition"
+description: Description of foo partition

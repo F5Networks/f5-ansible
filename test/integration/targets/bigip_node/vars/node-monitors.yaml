@@ -2,7 +2,7 @@
 
 node1:
   state: present
-  fqdn: "foo.monitor.com"
+  fqdn: foo.monitor.com
   name: test_node
   monitors:
     - icmp

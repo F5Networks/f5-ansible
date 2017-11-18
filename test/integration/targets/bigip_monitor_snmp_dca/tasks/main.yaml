@@ -3,7 +3,7 @@
 - name: Create SNMP DCA Monitor
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create SNMP DCA Monitor
@@ -14,7 +14,7 @@
 - name: Create SNMP DCA Monitor - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create SNMP DCA Monitor - Echo - Idempotent check
@@ -103,7 +103,7 @@
 - name: Change community
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    community: "foobar"
+    community: foobar
   register: result
 
 - name: Assert Change community
@@ -114,7 +114,7 @@
 - name: Change community - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    community: "foobar"
+    community: foobar
   register: result
 
 - name: Assert Change community - Idempotent check
@@ -125,7 +125,7 @@
 - name: Change version
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    version: "v2c"
+    version: v2c
   register: result
 
 - name: Assert Change version
@@ -136,7 +136,7 @@
 - name: Change version - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    version: "v2c"
+    version: v2c
   register: result
 
 - name: Assert Change version - Idempotent check
@@ -147,7 +147,7 @@
 - name: Change agent type
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    agent_type: "WIN2000"
+    agent_type: WIN2000
   register: result
 
 - name: Assert Change agent type
@@ -158,7 +158,7 @@
 - name: Change agent type - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    agent_type: "WIN2000"
+    agent_type: WIN2000
   register: result
 
 - name: Assert Change agent type - Idempotent check
@@ -169,7 +169,7 @@
 - name: Change CPU coefficient
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_coefficient: "30"
+    cpu_coefficient: 30
   register: result
 
 - name: Assert Change CPU coefficient
@@ -180,7 +180,7 @@
 - name: Change CPU coefficient - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_coefficient: "30"
+    cpu_coefficient: 30
   register: result
 
 - name: Assert Change CPU coefficient - Idempotent check
@@ -191,7 +191,7 @@
 - name: Change CPU coefficient - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_coefficient: "abc123"
+    cpu_coefficient: abc123
   register: result
   ignore_errors: true
 
@@ -203,7 +203,7 @@
 - name: Change CPU threshold
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_threshold: "30"
+    cpu_threshold: 30
   register: result
 
 - name: Assert Change CPU threshold
@@ -214,7 +214,7 @@
 - name: Change CPU threshold - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_threshold: "30"
+    cpu_threshold: 30
   register: result
 
 - name: Assert Change CPU threshold - Idempotent check
@@ -225,7 +225,7 @@
 - name: Change CPU threshold - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    cpu_threshold: "abc123"
+    cpu_threshold: abc123
   register: result
   ignore_errors: true
 
@@ -237,7 +237,7 @@
 - name: Change memory coefficient
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_coefficient: "30"
+    memory_coefficient: 30
   register: result
 
 - name: Assert Change memory coefficient
@@ -248,7 +248,7 @@
 - name: Change memory coefficient - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_coefficient: "30"
+    memory_coefficient: 30
   register: result
 
 - name: Assert Change memory coefficient - Idempotent check
@@ -259,7 +259,7 @@
 - name: Change memory coefficient - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_coefficient: "abc123"
+    memory_coefficient: abc123
   register: result
   ignore_errors: true
 
@@ -271,7 +271,7 @@
 - name: Change memory threshold
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_threshold: "30"
+    memory_threshold: 30
   register: result
 
 - name: Assert Change memory threshold
@@ -282,7 +282,7 @@
 - name: Change memory threshold - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_threshold: "30"
+    memory_threshold: 30
   register: result
 
 - name: Assert Change memory threshold - Idempotent check
@@ -293,7 +293,7 @@
 - name: Change memory threshold - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    memory_threshold: "abc123"
+    memory_threshold: abc123
   register: result
   ignore_errors: true
 
@@ -305,7 +305,7 @@
 - name: Change disk coefficient
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_coefficient: "30"
+    disk_coefficient: 30
   register: result
 
 - name: Assert Change disk coefficient
@@ -316,7 +316,7 @@
 - name: Change disk coefficient - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_coefficient: "30"
+    disk_coefficient: 30
   register: result
 
 - name: Assert Change disk coefficient - Idempotent check
@@ -327,7 +327,7 @@
 - name: Change disk coefficient - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_coefficient: "abc123"
+    disk_coefficient: abc123
   register: result
   ignore_errors: true
 
@@ -339,7 +339,7 @@
 - name: Change disk threshold
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_threshold: "30"
+    disk_threshold: 30
   register: result
 
 - name: Assert Change disk threshold
@@ -350,7 +350,7 @@
 - name: Change disk threshold - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_threshold: "30"
+    disk_threshold: 30
   register: result
 
 - name: Assert Change disk threshold - Idempotent check
@@ -361,7 +361,7 @@
 - name: Change disk threshold - expected failure
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    disk_threshold: "abc123"
+    disk_threshold: abc123
   register: result
   ignore_errors: true
 
@@ -373,7 +373,7 @@
 - name: Remove Monitor
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove Monitor
@@ -384,7 +384,7 @@
 - name: Remove Monitor - Idempotent check
   bigip_monitor_snmp_dca:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove Monitor - Idempotent check

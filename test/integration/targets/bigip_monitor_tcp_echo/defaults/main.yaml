@@ -1,3 +1,3 @@
 ---
 
-monitor_name: "my_tcp_echo_monitor"
+monitor_name: my_tcp_echo_monitor

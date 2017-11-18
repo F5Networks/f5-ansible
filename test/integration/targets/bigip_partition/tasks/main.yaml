@@ -60,7 +60,7 @@
 - name: Delete partition
   bigip_partition:
     name: "{{ partition }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete partition
@@ -71,7 +71,7 @@
 - name: Delete partition - Idempotent check
   bigip_partition:
     name: "{{ partition }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Delete partition - Idempotent check

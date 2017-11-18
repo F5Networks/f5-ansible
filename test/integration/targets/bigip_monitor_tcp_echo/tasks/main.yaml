@@ -3,7 +3,7 @@
 - name: Create TCP Monitor - Echo
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create TCP Monitor - Echo
@@ -14,7 +14,7 @@
 - name: Create TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create TCP Monitor - Echo - Idempotent check
@@ -25,7 +25,7 @@
 - name: Change IP - Echo
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
   register: result
 
 - name: Assert Change IP - Echo
@@ -36,7 +36,7 @@
 - name: Change IP - Echo - Idempotent check
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
   register: result
 
 - name: Assert Change IP - Echo - Idempotent check
@@ -125,7 +125,7 @@
 - name: Remove TCP Monitor - Echo
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove TCP Monitor - Echo
@@ -136,7 +136,7 @@
 - name: Remove TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove TCP Monitor - Echo - Idempotent check

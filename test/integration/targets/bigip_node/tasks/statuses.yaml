@@ -13,9 +13,9 @@
 
 - name: Create present node
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "present"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: present
   register: result
 
 - name: Assert Create present node
@@ -25,9 +25,9 @@
 
 - name: Create present node - Idempotent check
   bigip_node:
-    fqdn: "microsoft.com"
-    name: "microsoft.com"
-    state: "present"
+    fqdn: microsoft.com
+    name: microsoft.com
+    state: present
   register: result
 
 - name: Assert Create present node - Idempotent check
@@ -37,9 +37,9 @@
 
 - name: Create enabled node
   bigip_node:
-    fqdn: "google.com"
-    name: "google.com"
-    state: "enabled"
+    fqdn: google.com
+    name: google.com
+    state: enabled
   register: result
 
 - name: Assert Create enabled node
@@ -49,9 +49,9 @@
 
 - name: Create enabled node - Idempotent check
   bigip_node:
-    fqdn: "google.com"
-    name: "google.com"
-    state: "enabled"
+    fqdn: google.com
+    name: google.com
+    state: enabled
   register: result
 
 - name: Assert Create enabled node - Idempotent check
@@ -61,9 +61,9 @@
 
 - name: Create disabled node
   bigip_node:
-    fqdn: "mit.edu"
-    name: "mit.edu"
-    state: "disabled"
+    fqdn: mit.edu
+    name: mit.edu
+    state: disabled
   register: result
 
 - name: Assert Create disabled node
@@ -73,9 +73,9 @@
 
 - name: Create disabled node - Idempotent check
   bigip_node:
-    fqdn: "mit.edu"
-    name: "mit.edu"
-    state: "disabled"
+    fqdn: mit.edu
+    name: mit.edu
+    state: disabled
   register: result
 
 - name: Assert Create disabled node - Idempotent check
@@ -85,9 +85,9 @@
 
 - name: Create offline node
   bigip_node:
-    fqdn: "apple.com"
-    name: "apple.com"
-    state: "offline"
+    fqdn: apple.com
+    name: apple.com
+    state: offline
   register: result
 
 - name: Assert Create offline node
@@ -97,9 +97,9 @@
 
 - name: Create offline node - Idempotent check
   bigip_node:
-    fqdn: "apple.com"
-    name: "apple.com"
-    state: "offline"
+    fqdn: apple.com
+    name: apple.com
+    state: offline
   register: result
 
 - name: Assert Create offline node - Idempotent check
@@ -115,11 +115,11 @@
 - name: Remove nodes
   bigip_node:
     name: "{{ item }}"
-    state: "absent"
+    state: absent
   loop:
-    - "google.com"
-    - "mit.edu"
-    - "apple.com"
-    - "microsoft.com"
-    - "google-public-dns-a.google.com"
-    - "mit-v6"
+    - google.com
+    - mit.edu
+    - apple.com
+    - microsoft.com
+    - google-public-dns-a.google.com
+    - mit-v6

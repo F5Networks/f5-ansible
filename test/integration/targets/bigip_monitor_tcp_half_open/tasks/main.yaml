@@ -3,7 +3,7 @@
 - name: Create TCP Monitor - Half Open
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create TCP Monitor - Half Open
@@ -14,7 +14,7 @@
 - name: Create TCP Monitor - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create TCP Monitor - Half Open - Idempotent check
@@ -25,7 +25,7 @@
 - name: Change IP - Half Open
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
     port: 80
   register: result
 
@@ -37,7 +37,7 @@
 - name: Change IP - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
     port: 80
   register: result
 
@@ -149,7 +149,7 @@
 - name: Remove TCP Monitor - Half Open
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove TCP Monitor - Half Open
@@ -160,7 +160,7 @@
 - name: Remove TCP Monitor - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove TCP Monitor - Half Open - Idempotent check

@@ -4,7 +4,7 @@
   bigip_node:
     host: "{{ node_host_ipv4 }}"
     name: "{{ node_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create node
@@ -16,7 +16,7 @@
   bigip_node:
     host: "{{ node_host_ipv4 }}"
     name: "{{ node_name }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create node - Idempotent check
@@ -27,7 +27,7 @@
 - name: Delete node
   bigip_node:
     name: "{{ node_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete node
@@ -38,7 +38,7 @@
 - name: Delete node - Idempotent check
   bigip_node:
     name: "{{ node_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert delete node - Idempotent check

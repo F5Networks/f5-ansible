@@ -57,7 +57,7 @@
 
 - name: Delete iAppLX package, file does not exist
   bigip_iapplx_package:
-    package: "MyApp-0.1.0-0001.noarch.rpm"
+    package: MyApp-0.1.0-0001.noarch.rpm
     state: absent
   register: result
 
@@ -68,7 +68,7 @@
 
 - name: Delete iAppLX package, file does not exist - Idempotent check
   bigip_iapplx_package:
-    package: "MyApp-0.1.0-0001.noarch.rpm"
+    package: MyApp-0.1.0-0001.noarch.rpm
     state: absent
   register: result
 

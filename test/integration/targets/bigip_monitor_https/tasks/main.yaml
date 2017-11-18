@@ -7,7 +7,7 @@
     name: "{{ monitor_name }}"
     receive: "{{ receive_string1 }}"
     send: "{{ send_string1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create HTTPS Monitor
@@ -22,7 +22,7 @@
     name: "{{ monitor_name }}"
     receive: "{{ receive_string1 }}"
     send: "{{ send_string1 }}"
-    state: "present"
+    state: present
   register: result
 
 - name: Assert Create HTTPS Monitor - Idempotent check
@@ -79,7 +79,7 @@
 - name: Change IP
   bigip_monitor_https:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
     port: 80
   register: result
 
@@ -93,7 +93,7 @@
 - name: Change IP - Idempotent check
   bigip_monitor_https:
     name: "{{ monitor_name }}"
-    ip: "10.10.10.10"
+    ip: 10.10.10.10
     port: 80
   register: result
 
@@ -209,7 +209,7 @@
 - name: Remove HTTPS Monitor
   bigip_monitor_https:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove HTTPS Monitor
@@ -220,7 +220,7 @@
 - name: Remove HTTPS Monitor - Idempotent check
   bigip_monitor_https:
     name: "{{ monitor_name }}"
-    state: "absent"
+    state: absent
   register: result
 
 - name: Assert Remove HTTPS Monitor - Idempotent check
