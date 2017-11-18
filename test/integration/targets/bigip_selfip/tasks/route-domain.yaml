@@ -4,54 +4,54 @@
 
 - name: Create Self IP, specify a Route Domain
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      vlan: "{{ selfip_vlan }}"
-      route_domain: "{{ selfip_rd }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+    route_domain: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Create Self IP, specify a Route Domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create Self IP, specify a Route Domain - Idempotent check
   bigip_selfip:
-      address: "{{ selfip }}"
-      name: "{{ selfip_name }}"
-      netmask: "{{ selfip_netmask }}"
-      vlan: "{{ selfip_vlan }}"
-      route_domain: "{{ selfip_rd }}"
+    address: "{{ selfip }}"
+    name: "{{ selfip_name }}"
+    netmask: "{{ selfip_netmask }}"
+    vlan: "{{ selfip_vlan }}"
+    route_domain: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Create Self IP, specify a Route Domain - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete Self IP, specify a Route Domain
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      state: "absent"
-      route_domain: "{{ selfip_rd }}"
+    name: "{{ selfip_name }}"
+    state: "absent"
+    route_domain: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete Self IP, specify a Route Domain - Idempotent check
   bigip_selfip:
-      name: "{{ selfip_name }}"
-      state: "absent"
-      route_domain: "{{ selfip_rd }}"
+    name: "{{ selfip_name }}"
+    state: "absent"
+    route_domain: "{{ selfip_rd }}"
   register: result
 
 - name: Assert Delete Self IP, specify a Route Domain - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - import_tasks: teardown-route-domain.yaml
