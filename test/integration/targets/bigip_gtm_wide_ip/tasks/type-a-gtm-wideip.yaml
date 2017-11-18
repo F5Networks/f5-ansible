@@ -3,8 +3,8 @@
 - name: Create wide IP
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -16,8 +16,8 @@
 - name: Create wide IP - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -29,8 +29,8 @@
 - name: Disable wide IP
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "disabled"
-    type: "a"
+    state: disabled
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -42,8 +42,8 @@
 - name: Disable wide IP - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "disabled"
-    type: "a"
+    state: disabled
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -55,8 +55,8 @@
 - name: Enable wide IP
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "enabled"
-    type: "a"
+    state: enabled
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -68,8 +68,8 @@
 - name: Enable wide IP - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
-    state: "enabled"
-    type: "a"
+    state: enabled
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -81,8 +81,8 @@
 - name: Set wide IP LB method, valid - ratio
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method2 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -94,8 +94,8 @@
 - name: Set wide IP LB method, valid - ratio - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method2 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -107,8 +107,8 @@
 - name: Set wide IP LB method, valid - topology
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method3 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -120,8 +120,8 @@
 - name: Set wide IP LB method, valid - topology - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method3 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -133,8 +133,8 @@
 - name: Set wide IP LB method, valid - global availability
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method4 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -146,8 +146,8 @@
 - name: Set wide IP LB method, valid - global availability - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method4 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -159,8 +159,8 @@
 - name: Set wide IP LB method, invalid 1
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method1 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
   ignore_errors: true
@@ -173,8 +173,8 @@
 - name: Set wide IP LB method, invalid 2
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method2 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
   ignore_errors: true
@@ -187,8 +187,8 @@
 - name: Set wide IP LB method, invalid 3
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method3 }}"
-    state: "present"
-    type: "a"
+    state: present
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
   ignore_errors: true
@@ -200,8 +200,8 @@
 
 - name: Delete wide IP
   bigip_gtm_wide_ip:
-    state: "absent"
-    type: "a"
+    state: absent
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
@@ -212,8 +212,8 @@
 
 - name: Delete wide IP - Idempotent check
   bigip_gtm_wide_ip:
-    state: "absent"
-    type: "a"
+    state: absent
+    type: a
     wide_ip: "{{ wide_ip1 }}"
   register: result
 

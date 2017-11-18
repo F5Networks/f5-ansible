@@ -2,12 +2,12 @@
 
 - name: Ensure GTM is provisioned
   bigip_provision:
-    module: "gtm"
-    state: "present"
+    module: gtm
+    state: present
 
 - name: Collect BIG-IP facts
   bigip_facts:
-    include: "system_info"
+    include: system_info
   register: result
 
 - name: Test BIG-IP versions greater than 12

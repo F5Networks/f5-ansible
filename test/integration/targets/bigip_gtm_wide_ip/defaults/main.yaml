@@ -1,12 +1,12 @@
 ---
 
-wide_ip1: "my-wide-ip.example.com"
+wide_ip1: my-wide-ip.example.com
 
-valid_lb_method1: "round-robin"
-valid_lb_method2: "ratio"
-valid_lb_method3: "topology"
-valid_lb_method4: "global-availability"
+valid_lb_method1: round-robin
+valid_lb_method2: ratio
+valid_lb_method3: topology
+valid_lb_method4: global-availability
 
-invalid_lb_method1: "foo"
+invalid_lb_method1: foo
 invalid_lb_method2: 1234
 invalid_lb_method3: "@#$$#$^@#"
