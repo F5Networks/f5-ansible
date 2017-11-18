@@ -25,11 +25,11 @@
 
 - name: Ensure virtual server description is same as in SCF file
   bigip_virtual_server:
-    description: "my description"
-    destination: "10.10.10.10"
-    name: "bar10"
-    port: "80"
-    state: "present"
+    description: my description
+    destination: 10.10.10.10
+    name: bar10
+    port: 80
+    state: present
   register: result
 
 - name: Assert Ensure virtual server description is same as in SCF file
