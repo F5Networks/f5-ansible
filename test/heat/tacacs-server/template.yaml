@@ -1,0 +1,174 @@
+---
+
+#
+# Copyright 2017 F5 Networks Inc.
+#
+# This file is part of Ansible
+#
+# Ansible is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+heat_template_version: 2015-04-30
+
+description: |
+  HOT template to deploy a sample TACACS server to use for testing
+  different forms of authentication in F5 Ansible modules
+
+parameters:
+  ve_image:
+    type: string
+    description: The image to be used on the compute instance.
+    constraints:
+      - custom_constraint: glance.image
+  ve_flavor:
+    type: string
+    description: Type of instance (flavor) to be used for the VE.
+    default: m1.medium
+    constraints:
+      - custom_constraint: nova.flavor
+  f5_ve_os_ssh_key:
+    type: string
+    description: Name of key-pair to be installed on the FW instances.
+    constraints:
+      - custom_constraint: nova.keypair
+  mgmt_network:
+    type: string
+    description: Management Interface Network.
+    default: test
+    constraints:
+      - custom_constraint: neutron.network
+resources:
+  mgmt_security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: security group rules for mgmt port
+      rules:
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: icmp
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 22
+          port_range_max: 22
+        - remote_ip_prefix: 0.0.0.0/0
+          protocol: tcp
+          port_range_min: 8080
+          port_range_max: 8080
+  mgmt_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: mgmt_network }
+      security_groups: [{ get_resource: mgmt_security_group }]
+  wait_handle:
+    type: OS::Heat::WaitConditionHandle
+  wait_condition:
+    type: OS::Heat::WaitCondition
+    properties:
+      handle: { get_resource: wait_handle }
+      count: 1
+      timeout: 3600
+
+  cloud_init_userdata:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: { get_resource: cloud_config }
+
+  cloud_config:
+    type: OS::Heat::CloudConfig
+    properties:
+      cloud_config:
+        runcmd:
+          - /tmp/onboard.sh &
+        write_files:
+          - path: /tmp/tac_plus.conf
+            permissions: 0755
+            owner: root:root
+            content: |
+              key = f5networks
+
+              accounting file = /var/log/tac_plus.acct
+              # authentication users not appearing elsewhere via
+              # the file /etc/passwd
+              default authentication = file /etc/passwd
+
+              group=adm {
+                default service = permit
+
+                service=ppp protocol=ip {
+                  F5-LTM-User-Info-1=adm
+                }
+              }
+              group=appEd {
+                service=ppp protocol=ip {
+                  F5-LTM-User-Info-1=appEd
+                }
+              }
+              group=userMgr {
+                service=ppp protocol=ip {
+                  F5-LTM-User-Info-1=userMgr
+                }
+              }
+
+              user=f5user1 {
+                pap = cleartext letmein
+                member = adm
+              }
+              user=f5user2 {
+                pap = cleartext letmein
+                member = appEd
+              }
+              user=f5user3 {
+                pap = cleartext letmein
+                member = userMgr
+              }
+
+          - path: /tmp/onboard.sh
+            permissions: 0755
+            owner: root:root
+            content:
+              str_replace:
+                params:
+                  wc_notify: { get_attr: [wait_handle, curl_cli] }
+                template: |
+                  #!/bin/bash
+
+                  killall apt-get
+                  apt-get update
+                  apt-get install -y python-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev tacacs+
+                  mv /tmp/tac_plus.conf /etc/tacacs+/tac_plus.conf
+                  service tacacs+ restart
+                  wc_notify --insecure --data-binary '{"status": "SUCCESS"}'
+
+  ve_instance:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: ve_image }
+      flavor: { get_param: ve_flavor }
+      key_name: { get_param: f5_ve_os_ssh_key }
+      networks:
+        - port: { get_resource: mgmt_port }
+      user_data_format: SOFTWARE_CONFIG
+      user_data:
+        get_resource: cloud_init_userdata
+
+outputs:
+  instance_name:
+    description: Name of the instance
+    value: { get_attr: [ve_instance, name] }
+  instance_id:
+    description: ID of the instance
+    value: { get_resource: ve_instance }
+  mgmt_ip:
+    description: The mgmt IP address of f5 ve instance
+    value: { get_attr: [mgmt_port, fixed_ips, 0, ip_address] }
