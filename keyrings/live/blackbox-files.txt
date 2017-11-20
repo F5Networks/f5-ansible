@@ -1,6 +1,7 @@
 devtools/secrets/jenkins_jobs.ini.secret
 test/heat/ansible-dci-agent/parameters.yaml
 test/heat/jenkins-secondary/parameters.yaml
+test/heat/tacacs-server/parameters.yaml
 test/pipeline/ci.f5.f5-ansible-public-to-private-parameters.include.yaml
 test/pipeline/ci.f5.f5-ansible-testing-parameters.yaml
 test/runner/roles/harness/vars/DualDUT-bigip-12.0.0.yaml
