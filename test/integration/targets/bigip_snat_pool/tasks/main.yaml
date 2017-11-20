@@ -2,66 +2,66 @@
 
 - name: Create SNAT pool from list of members
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      members: "{{ members_list }}"
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
   register: result
 
 - name: Assert Create SNAT pool from list of members
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create SNAT pool from list of members - Idempotent check
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      members: "{{ members_list }}"
+    name: "{{ snat_pool_name }}"
+    members: "{{ members_list }}"
   register: result
 
 - name: Assert Create SNAT pool from list of members - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set SNAT pool to single member
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      members: "{{ member_individual }}"
+    name: "{{ snat_pool_name }}"
+    members: "{{ member_individual }}"
   register: result
 
 - name: Assert Set SNAT pool to single member
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set SNAT pool to single member - Idempotent check
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      members: "{{ member_individual }}"
+    name: "{{ snat_pool_name }}"
+    members: "{{ member_individual }}"
   register: result
 
 - name: Assert Set SNAT pool to single member - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete a SNAT pool
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      state: absent
+    name: "{{ snat_pool_name }}"
+    state: absent
   register: result
 
 - name: Assert Delete a SNAT pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete a SNAT pool - Idempotent check
   bigip_snat_pool:
-      name: "{{ snat_pool_name }}"
-      state: absent
+    name: "{{ snat_pool_name }}"
+    state: absent
   register: result
 
 - name: Assert Delete a SNAT pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
