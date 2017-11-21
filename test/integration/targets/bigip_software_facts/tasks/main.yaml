@@ -5,11 +5,11 @@
 
 - name: Assert Get all software facts
   assert:
-      that:
-          - result|changed
-          - "'images' in result"
-          - "'hotfixes' in result"
-          - "'volumes' in result"
+    that:
+      - result|changed
+      - "'images' in result"
+      - "'hotfixes' in result"
+      - "'volumes' in result"
 
 - name: Get base image ISOs facts
   bigip_software_facts:
@@ -18,11 +18,11 @@
 
 - name: Assert Get base image ISOs facts
   assert:
-      that:
-          - result|changed
-          - "'images' in result"
-          - "'hotfixes' not in result"
-          - "'volumes' not in result"
+    that:
+      - result|changed
+      - "'images' in result"
+      - "'hotfixes' not in result"
+      - "'volumes' not in result"
 
 - name: Get hotfix ISOs facts
   bigip_software_facts:
@@ -31,11 +31,11 @@
 
 - name: Assert Get hotfix ISOs facts
   assert:
-      that:
-          - result|changed
-          - "'images' not in result"
-          - "'hotfixes' in result"
-          - "'volumes' not in result"
+    that:
+      - result|changed
+      - "'images' not in result"
+      - "'hotfixes' in result"
+      - "'volumes' not in result"
 
 - name: Get volumes facts
   bigip_software_facts:
@@ -44,11 +44,11 @@
 
 - name: Assert Get volumes facts
   assert:
-      that:
-          - result|changed
-          - "'images' not in result"
-          - "'hotfixes' not in result"
-          - "'volumes' in result"
+    that:
+      - result|changed
+      - "'images' not in result"
+      - "'hotfixes' not in result"
+      - "'volumes' in result"
 
 - name: Get volumes facts with filter
   bigip_software_facts:
@@ -58,10 +58,10 @@
 
 - name: Assert Get volumes facts with filter
   assert:
-      that:
-          - result|changed
-          - result.volumes|length == 1
-          - "'volumes' in result"
+    that:
+      - result|changed
+      - result.volumes|length == 1
+      - "'volumes' in result"
 
 - name: Get images facts with bad filter
   bigip_software_facts:
@@ -72,5 +72,5 @@
 
 - name: Assert Get images facts with bad filter
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
