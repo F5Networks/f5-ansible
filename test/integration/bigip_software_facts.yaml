@@ -41,11 +41,11 @@
         - ansible.module_utils.six.*
 
   environment:
-      F5_SERVER: "{{ ansible_host }}"
-      F5_USER: "{{ bigip_username }}"
-      F5_PASSWORD: "{{ bigip_password }}"
-      F5_SERVER_PORT: "{{ bigip_port }}"
-      F5_VALIDATE_CERTS: "{{ validate_certs }}"
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "{{ bigip_username }}"
+    F5_PASSWORD: "{{ bigip_password }}"
+    F5_SERVER_PORT: "{{ bigip_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-      - bigip_software_facts
+    - bigip_software_facts

@@ -1,9 +1,9 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
-- include: remote.yaml
+- import_tasks: remote.yaml
   when: "limit_to in ['*', 'remote']"
 
-- include: local.yaml
+- import_tasks: local.yaml
   when: "limit_to in ['*', 'local']"

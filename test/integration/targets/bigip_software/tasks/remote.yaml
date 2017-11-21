@@ -2,312 +2,312 @@
 
 - name: Download 12.1.2 base image
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      state: present
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    state: present
   register: result
 
 - name: Assert Download 12.1.2 base image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Download 12.1.2 base image - Idempotent check
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: present
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: present
   register: result
 
 - name: Assert Download 12.1.2 base image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Download 12.1.2 HF1 hotfix image
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: present
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: present
   register: result
 
 - name: Assert Download 12.1.2 HF1 hotfix image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Download 12.1.2 HF1 hotfix image - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: present
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: present
   register: result
 
 - name: Assert Download 12.1.2 HF1 hotfix image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove downloaded 12.1.2 base image
   bigip_software:
-      software: "{{ image_link }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    software: "{{ image_link }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded 12.1.2 base image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove downloaded 12.1.2 base image - Idempotent check
   bigip_software:
-      software: "{{ image_link }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    software: "{{ image_link }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded 12.1.2 base image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove uploaded 12.1.2 HF1 hotfix image
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    hotfix: "{{ hotfix_link }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded 12.1.2 HF1 hotfix image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove downloaded 12.1.2 HF1 hotfix image - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    hotfix: "{{ hotfix_link }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded 12.1.2 HF1 hotfix image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Download base image and hotfix
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: present
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: present
   register: result
 
 - name: Assert Download base image and hotfix
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Download base image and hotfix - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: present
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: present
   register: result
 
 - name: Assert Download base image and hotfix - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove downloaded base image and hotfix
   bigip_software:
-      hotfix: "{{ hotfix_link}}"
-      software: "{{ image_link}}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    hotfix: "{{ hotfix_link}}"
+    software: "{{ image_link}}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded base image and hotfix
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove downloaded base image and hotfix - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      software: "{{ image_link }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: absent
+    hotfix: "{{ hotfix_link }}"
+    software: "{{ image_link }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: absent
   register: result
 
 - name: Assert Remove downloaded base image and hotfix - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Install (download, install) base image
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      volume: "{{ volume_new }}"
-      state: installed
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    volume: "{{ volume_new }}"
+    state: installed
   register: result
 
 - name: Assert Install (download, install) base image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Install (download, install) base image - Idempotent check
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      volume: "{{ volume_new }}"
-      state: installed
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    volume: "{{ volume_new }}"
+    state: installed
   register: result
 - name: Assert Install (download, install) base image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Install (download, install) base image and hotfix
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: installed
-      volume: "{{ volume_new }}"
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: installed
+    volume: "{{ volume_new }}"
   register: result
 
 - name: Assert Install (download, install) base image and hotfix
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Install (download, install) base image and hotfix - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: installed
-      volume: "{{ volume_new }}"
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: installed
+    volume: "{{ volume_new }}"
   register: result
 
 - name: Assert Install (download, install) base image and hotfix - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Activate (download, install, reboot) base image
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: activated
-      volume: "{{ volume_new }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: activated
+    volume: "{{ volume_new }}"
   register: result
 
 - name: Assert Activate (download, install, reboot) base image
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Activate (download, install, reboot) base image - Idempotent check
   bigip_software:
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_img }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: activated
-      volume: "{{ volume_new }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_img }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: activated
+    volume: "{{ volume_new }}"
   register: result
 
 - name: Assert Activate (download, install, reboot) base image - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: activated
-      reuse_inactive_volume: True
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: activated
+    reuse_inactive_volume: True
   register: result
 
 - name: Assert Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix - Idempotent check
   bigip_software:
-      hotfix: "{{ hotfix_link }}"
-      hotfix_md5sum: "{{ hotfix_md5 }}"
-      software: "{{ image_link }}"
-      software_md5sum: "{{ image_md5 }}"
-      build: "{{ build_hf }}"
-      version: "{{ version }}"
-      remote_src: yes
-      state: activated
-      reuse_inactive_volume: True
+    hotfix: "{{ hotfix_link }}"
+    hotfix_md5sum: "{{ hotfix_md5 }}"
+    software: "{{ image_link }}"
+    software_md5sum: "{{ image_md5 }}"
+    build: "{{ build_hf }}"
+    version: "{{ version }}"
+    remote_src: yes
+    state: activated
+    reuse_inactive_volume: True
   register: result
 
 - name: Assert Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
