@@ -273,7 +273,7 @@
 
 - name: Assert Activate (download, install, reboot) base image - Idempotent check
   assert:
-     that:
+    that:
       - not result|changed
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
