@@ -2,75 +2,75 @@
 
 - name: Set setup.run variable "on"
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      value: "{{ bigip_sys_db_val_1 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Set setup.run variable
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set setup.run variable "on" - Idempotent check
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      value: "{{ bigip_sys_db_val_1 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Set setup.run variable "on" - Idempotent checl
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set setup.run variable "off"
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      value: "{{ bigip_sys_db_val_2 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
 - name: Assert Set setup.run variable "off"
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set setup.run variable "off" - Idempotent check
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      value: "{{ bigip_sys_db_val_2 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
 - name: Assert Set setup.run variable "off" - Idempotent checl
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Reset setup.run variable
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      state: reset
-      value: "{{ bigip_sys_db_val_1 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    state: reset
+    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Reset setup.run variable
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Reset setup.run variable - Idempotent check
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      state: reset
-      value: "{{ bigip_sys_db_val_1 }}"
+    key: "{{ bigip_sys_db_key_1 }}"
+    state: reset
+    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Reset setup.run variable - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: No value and no reset
   bigip_sys_db:
-      key: "{{ bigip_sys_db_key_1 }}"
-      state: present
+    key: "{{ bigip_sys_db_key_1 }}"
+    state: present
   register: result
   failed_when: result|success

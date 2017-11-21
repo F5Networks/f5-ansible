@@ -2,243 +2,243 @@
 
 - name: Import a certificate and key, no passphrase on private key
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert1
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert1
+    state: present
   register: result
 
 - name: Assert Import a certificate and key, no passphrase on private key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a certificate and key, no passphrase on private key - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert1
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert1
+    state: present
   register: result
 
 - name: Assert Import a certificate and key, no passphrase on private key - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Update certificate, new certificate and key, password protected key
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: cert1
-      passphrase: keypass
-      state: present
+    cert_content: "{{ lookup('file', 'cert2.crt') }}"
+    key_content: "{{ lookup('file', 'cert2.key') }}"
+    name: cert1
+    passphrase: keypass
+    state: present
   register: result
 
 - name: Assert Update certificate, new certificate and key, password protected key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Update certificate, new certificate and key, password protected key - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: cert1
-      passphrase: keypass
-      state: present
+    cert_content: "{{ lookup('file', 'cert2.crt') }}"
+    key_content: "{{ lookup('file', 'cert2.key') }}"
+    name: cert1
+    passphrase: keypass
+    state: present
   register: result
 
 - name: Assert Update certificate, new certificate and key, password protected key - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Delete a certificate and key
   bigip_ssl_certificate:
-      name: cert1
-      state: absent
+    name: cert1
+    state: absent
   register: result
 
 - name: Assert Delete a certificate and key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Delete a certificate and key - Idempotent check
   bigip_ssl_certificate:
-      name: cert1
-      state: absent
+    name: cert1
+    state: absent
   register: result
 
 - name: Assert Delete a certificate and key - Idempotent check
   assert:
     that:
-        - not result| changed
+      - not result| changed
 
 - name: Import a certificate and key, password protected key
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: cert2
-      passphrase: keypass
-      state: present
+    cert_content: "{{ lookup('file', 'cert2.crt') }}"
+    key_content: "{{ lookup('file', 'cert2.key') }}"
+    name: cert2
+    passphrase: keypass
+    state: present
   register: result
 
 - name: Assert Import a certificate and key, password protected key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a certificate and key, password protected key - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      key_content: "{{ lookup('file', 'cert2.key') }}"
-      name: cert2
-      passphrase: keypass
-      state: present
+    cert_content: "{{ lookup('file', 'cert2.crt') }}"
+    key_content: "{{ lookup('file', 'cert2.key') }}"
+    name: cert2
+    passphrase: keypass
+    state: present
   register: result
 
 - name: Assert Import a certificate and key, password protected key - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Import a certificate and key, password protected key, bad passphrase
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert2.crt') }}"
-      key_content: "{{ lookup('file' ,'cert2.key') }}"
-      name: cert2
-      passphrase: wrongpass
-      state: present
+    cert_content: "{{ lookup('file', 'cert2.crt') }}"
+    key_content: "{{ lookup('file' ,'cert2.key') }}"
+    name: cert2
+    passphrase: wrongpass
+    state: present
   register: result
   ignore_errors: true
 
 - name: Assert Import a certificate and key, password protected key, bad passphrase
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Import with missing files
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert3.crt') }}"
-      key_content: "{{ lookup('file', 'cert3.key') }}"
-      name: cert3
-      passphrase: wrongpass
-      state: present
+    cert_content: "{{ lookup('file', 'cert3.crt') }}"
+    key_content: "{{ lookup('file', 'cert3.key') }}"
+    name: cert3
+    passphrase: wrongpass
+    state: present
   register: result
   ignore_errors: true
   delegate_to: localhost
 
 - name: Assert Import with missing files
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Import a certificate
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: cert4
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert4
+    state: present
   register: result
 
 - name: Assert Import a certificate
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a certificate - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: cert4
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert4
+    state: present
   register: result
 
 - name: Assert Import a certificate - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Import a key
   bigip_ssl_certificate:
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert5
-      state: present
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert5
+    state: present
   register: result
 
 - name: Assert Import a key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a key - Idempotent check
   bigip_ssl_certificate:
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert5
-      state: present
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert5
+    state: present
   register: result
 
 - name: Assert Import a key - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Import a key to existing certificate
   bigip_ssl_certificate:
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert4
-      state: present
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert4
+    state: present
   register: result
 
 - name: Assert Import a key to existing certificate
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a key to existing certificate - Idempotent check
   bigip_ssl_certificate:
-      key_content: "{{ lookup('file', 'cert1.key') }}"
-      name: cert4
-      state: present
+    key_content: "{{ lookup('file', 'cert1.key') }}"
+    name: cert4
+    state: present
   register: result
 
 - name: Assert Import a key to existing certificate - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Import a certificate to existing key
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: cert5
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert5
+    state: present
   register: result
 
 - name: Assert Import a certificate to existing key
   assert:
     that:
-        - result|changed
+      - result|changed
 
 - name: Import a certificate to existing key - Idempotent check
   bigip_ssl_certificate:
-      cert_content: "{{ lookup('file', 'cert1.crt') }}"
-      name: cert5
-      state: present
+    cert_content: "{{ lookup('file', 'cert1.crt') }}"
+    name: cert5
+    state: present
   register: result
 
 - name: Assert Import a certificate to existing key - Idempotent check
   assert:
     that:
-        - not result|changed
+      - not result|changed
 
 - name: Delete a certificates and keys in list
   bigip_ssl_certificate:
-      name: "{{ item }}"
-      state: absent
+    name: "{{ item }}"
+    state: absent
   register: result
   loop:
-      - cert4
-      - cert5
+    - cert4
+    - cert5
 
 - import_tasks: issue-00222.yaml
   tags: issue-00222
