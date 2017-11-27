@@ -2,32 +2,32 @@
 
 - name: Issue 00276 - Turn on tmsh shell for admin user - Issue 276
   bigip_user:
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      username_credential: admin
-      shell: bash
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    username_credential: admin
+    shell: bash
   register: result
 
 - name: Issue 00276 - Assert Turn on tmsh shell for admin user - Issue 276
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Issue 00276 - Turn on tmsh shell for admin user - Issue 276 - Idempotent check
   bigip_user:
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_port }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      validate_certs: "{{ validate_certs }}"
-      username_credential: admin
-      shell: bash
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    username_credential: admin
+    shell: bash
   register: result
 
 - name: Issue 00276 - Assert Turn on tmsh shell for admin user - Issue 276 - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

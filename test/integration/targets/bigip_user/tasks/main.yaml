@@ -1,249 +1,248 @@
 ---
 
-- include: setup.yaml
+- import_tasks: setup.yaml
 
 - name: Create user, no password
   bigip_user:
-      partition_access:
-        - Common:guest
-      username_credential: testusernopass
+    partition_access:
+      - Common:guest
+    username_credential: testusernopass
   register: result
 
 - name: Assert create user, no password
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create user, no password - Idempotent check
   bigip_user:
-      partition_access:
-        - Common:guest
-      username_credential: testusernopass
+    partition_access:
+      - Common:guest
+    username_credential: testusernopass
   register: result
 
 - name: Assert create user, no password - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Create user
   bigip_user:
-      partition_access:
-        - Common:guest
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
+    partition_access:
+      - Common:guest
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
   register: result
 
 - name: Assert Create user
   assert:
-      that:
-          - result|changed
-
+    that:
+      - result|changed
 
 - name: Create user - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
   register: result
 
 - name: Assert Create user - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 # This is very specific to bigip user, here we always update password if
 # password_credential is present, as default value for password_update is
 # set to always.
 - name: Update user password
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
   register: result
 
 - name: Assert update user password
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 # We should see password not updating here
 - name: Update user password password_update set to on_create
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
   register: result
 
 - name: Assert Update user password password_update set to on_create
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update user partition access
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      partition_access:
-        - Common:manager
+    username_credential: "{{ username_credential }}"
+    partition_access:
+      - Common:manager
   register: result
 
 - name: Assert Update user partition access
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update user partition access - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      partition_access:
-        - Common:manager
+    username_credential: "{{ username_credential }}"
+    partition_access:
+      - Common:manager
   register: result
 
 - name: Assert Update user partition access - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update user full name
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      full_name: "{{ full_name }}"
+    username_credential: "{{ username_credential }}"
+    full_name: "{{ full_name }}"
   register: result
 
 - name: Assert Update user full name
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update user full name - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      full_name: "{{ full_name }}"
+    username_credential: "{{ username_credential }}"
+    full_name: "{{ full_name }}"
   register: result
 
 - name: Assert Update user full name - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update user shell to tmsh
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      shell: tmsh
+    username_credential: "{{ username_credential }}"
+    shell: tmsh
   register: result
 
 - name: Assert Update user shell to tmsh
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update user shell to tmsh - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      shell: tmsh
+    username_credential: "{{ username_credential }}"
+    shell: tmsh
   register: result
 
 - name: Assert Update user shell to tmsh - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 # This should fail because the user does not have the appropriate role
 - name: Update user shell to bash
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      shell: bash
+    username_credential: "{{ username_credential }}"
+    shell: bash
   ignore_errors: true
   register: result
 
 - name: Assert Update user shell to bash
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update user shell to none
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      shell: none
+    username_credential: "{{ username_credential }}"
+    shell: none
   register: result
 
 - name: Assert Update user shell to none
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update user shell to none - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      shell: none
+    username_credential: "{{ username_credential }}"
+    shell: none
   register: result
 
 - name: Assert Update user shell to none - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove user
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
+    username_credential: "{{ username_credential }}"
+    state: absent
   register: result
 
 - name: Assert Remove user
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove user - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
+    username_credential: "{{ username_credential }}"
+    state: absent
   register: result
 
 - name: Assert Remove user - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove testusernopass user
   bigip_user:
-      username_credential: testusernopass
-      state: absent
+    username_credential: testusernopass
+    state: absent
   register: result
 
 - name: Assert Remove testusernopass user
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove testusernopass user - Idempotent check
   bigip_user:
-      username_credential: testusernopass
-      state: absent
+    username_credential: testusernopass
+    state: absent
   register: result
 
 - name: Assert Remove testusernopass user - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Collect BIG-IP facts
   bigip_facts:
-      include: system_info
+    include: system_info
   register: result
 
 - name: Include version 13 (Daytona) checks
-  include: test-post-version-12-specific.yaml
+  import_tasks: test-post-version-12-specific.yaml
   when: system_info.product_information.product_version >= "13.0.0"
 
-- include: teardown.yaml
+- import_tasks: teardown.yaml
 
 # Github issues
-- include: issue-00113.yaml
+- import_tasks: issue-00113.yaml
   tags: issue-00113
 
-- include: issue-00276.yaml
+- import_tasks: issue-00276.yaml
   tags: issue-00276
 
-- include: issue-00310.yaml
+- import_tasks: issue-00310.yaml
   tags: issue-00310

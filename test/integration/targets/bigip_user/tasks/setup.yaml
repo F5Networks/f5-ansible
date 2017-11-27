@@ -2,5 +2,5 @@
 
 - name: Create partition
   bigip_command:
-      commands:
-          - tmsh create auth partition foo
+    commands:
+      - tmsh create auth partition foo

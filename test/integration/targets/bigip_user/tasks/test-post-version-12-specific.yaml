@@ -1,109 +1,109 @@
 ---
 - name: Create user on a different partition
   bigip_user:
-      partition_access:
-        - foo:operator
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
-      partition: "{{ partition }}"
+    partition_access:
+      - foo:operator
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Create user on a different partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create user on a different partition - Idempotent check
   bigip_user:
-      partition_access:
-        - foo:operator
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
-      partition: "{{ partition }}"
+    partition_access:
+      - foo:operator
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Create user on a different partition - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Assign multiple roles for the same partition
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      partition_access:
-        - Common:operator
-        - Common:manager
-      partition: "{{ partition }}"
+    username_credential: "{{ username_credential }}"
+    partition_access:
+      - Common:operator
+      - Common:manager
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Assign multiple roles for the same partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Modify roles for a different partitions
   bigip_user:
-      partition_access:
-        - Common:guest
-        - foo:manager
-      username_credential: "{{ username_credential }}"
-      partition: "{{ partition }}"
+    partition_access:
+      - Common:guest
+      - foo:manager
+    username_credential: "{{ username_credential }}"
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Modify roles for a different partitions
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 
 - name: Update password for user on a different partition
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      partition: "{{ partition }}"
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Update password for user on a different partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 # We should see password not updating here
 - name: Update user password for user on a different partition password_update set to on_create
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
-      partition: "{{ partition }}"
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Update user password for user on a different partition password_update set to on_create
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove user on different partition
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
-      partition: "{{ partition }}"
+    username_credential: "{{ username_credential }}"
+    state: absent
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Remove user on different partition
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove user on different partition - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
-      partition: "{{ partition }}"
+    username_credential: "{{ username_credential }}"
+    state: absent
+    partition: "{{ partition }}"
   register: result
 
 - name: Assert Remove user on different partition - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

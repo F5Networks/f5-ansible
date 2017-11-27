@@ -1,92 +1,92 @@
 ---
 
-#include: setup.yaml
+#import_tasks: setup.yaml
 
 - name: Upload UCS file
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
   register: result
 
 - name: Assert Upload UCS file
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Upload UCS file - Idempotent check
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
   register: result
 
 - name: Assert Upload UCS file - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Force upload UCS file
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      force: yes
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    force: yes
   register: result
 
 - name: Assert Force upload UCS file
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Install an uploaded UCS file
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: installed
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: installed
   register: result
 
 - name: Assert Install an uploaded UCS file
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Install an uploaded UCS file again - expected not idempotent
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: installed
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: installed
   register: result
 
 - name: Assert Install an uploaded UCS file again - expected not idempotent
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove uploaded UCS file
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: absent
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove uploaded UCS file
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove uploaded UCS file - Idempotent check
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: absent
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove uploaded UCS file - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Install a UCS file, no initial upload
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: installed
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: installed
   register: result
 
 - name: Remove uploaded UCS file
   bigip_ucs:
-      ucs: "{{ role_path }}/files/{{ ucs_name }}"
-      state: absent
+    ucs: "{{ role_path }}/files/{{ ucs_name }}"
+    state: absent
   register: result
 
-#- include: teardown.yaml
+#- import_tasks: teardown.yaml
