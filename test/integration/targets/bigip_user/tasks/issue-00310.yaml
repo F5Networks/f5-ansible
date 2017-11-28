@@ -2,23 +2,23 @@
 
 - name: Issue 00310 - Change root user password
   bigip_user:
-      username_credential: root
-      password_credential: foobar
+    username_credential: root
+    password_credential: foobar
   register: result
 
 - name: Issue 00310 - Assert Change root user password
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Issue 00310 - Change root user password - Idempotent check
   bigip_user:
-      username_credential: root
-      password_credential: foobar
+    username_credential: root
+    password_credential: foobar
   register: result
 
 # NOTE: This module is not able to support root password idempotency
 - name: Issue 00310 - Assert Change root user password - Idempotent check
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed

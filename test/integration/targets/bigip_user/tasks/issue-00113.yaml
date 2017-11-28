@@ -2,50 +2,50 @@
 
 - name: Issue 00113 - Create an admin user
   bigip_user:
-      partition_access:
-        - all:admin
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
+    partition_access:
+      - all:admin
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
   register: result
 
 - name: Issue 00113 - Assert Create an admin user
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Issue 00113 - Create an admin user - Idempotent check
   bigip_user:
-      partition_access:
-        - all:admin
-      username_credential: "{{ username_credential }}"
-      password_credential: "{{ password_credential }}"
-      update_password: on_create
+    partition_access:
+      - all:admin
+    username_credential: "{{ username_credential }}"
+    password_credential: "{{ password_credential }}"
+    update_password: on_create
   register: result
 
 - name: Issue 00113 - Assert Create an admin user - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Issue 00113 - Remove the admin user
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
+    username_credential: "{{ username_credential }}"
+    state: absent
   register: result
 
 - name: Issue 00113 - Assert Remove the admin user
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Issue 00113 - Remove the admin user - Idempotent check
   bigip_user:
-      username_credential: "{{ username_credential }}"
-      state: absent
+    username_credential: "{{ username_credential }}"
+    state: absent
   register: result
 
 - name: Issue 00113 - Assert Remove the admin user - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
