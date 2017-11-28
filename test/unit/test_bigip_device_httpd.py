@@ -8,7 +8,6 @@ __metaclass__ = type
 
 import os
 import json
-import pytest
 import sys
 
 from nose.plugins.skip import SkipTest
@@ -20,7 +19,6 @@ from ansible.compat.tests.mock import patch, Mock
 from ansible.module_utils import basic
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigip_device_httpd import Parameters
@@ -65,35 +63,64 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            auth_name='BIG-IP',
+            auth_pam_idle_timeout=1200,
+            auth_pam_validate_ip='on'
+        )
+
+        p = Parameters(args)
+        assert p.auth_name == 'BIG-IP'
+        assert p.auth_pam_idle_timeout == 1200
+        assert p.auth_pam_validate_ip == 'on'
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_sys_httpd.json')
+        p = Parameters(args)
+        assert p.auth_name == 'BIG-IP'
+        assert p.auth_pam_idle_timeout == 1200
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
-class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise Exception('You must write a creation test')
+class TestModuleManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_update(self, *args):
+        set_module_args(
+            dict(
+                auth_name='foo',
+                auth_pam_idle_timeout='1000',
+                auth_pam_validate_ip='off',
+                auth_pam_dashboard_timeout='on',
+                fast_cgi_timeout=200,
+                hostname_lookup='on',
+                log_level='error',
+                max_clients='20',
+                redirect_http_to_https='yes',
+                ssl_port=8443,
+                server='localhost',
+                user='admin',
+                password='password'
+            )
+        )
+
+        current = Parameters(
+            load_fixture('load_sys_httpd.json')
+        )
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
