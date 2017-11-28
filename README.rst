@@ -109,7 +109,7 @@ in this project.
 
 .. _Guidelines: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html
 .. _writing new modules: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html
-.. _clouddocs.f5.com: http://http://clouddocs.f5.com/products/orchestration/ansible/devel
+.. _clouddocs.f5.com: http://clouddocs.f5.com/products/orchestration/ansible/devel
 .. _bigsuds Python Client 1.0.4 or later: https://pypi.python.org/pypi/bigsuds/
 .. _f5-sdk Python Client, latest available: https://pypi.python.org/pypi/f5-sdk/
 .. _Ansible 2.2.0 or greater: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/usage/getting_started.html#installing-ansible
