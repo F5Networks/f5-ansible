@@ -2,44 +2,44 @@
 
 - name: Create view
   bigip_view:
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[1] }}"
+    view_name: "{{ view_name }}"
+    view_order: "{{ view_order[1] }}"
   register: result
 
 - name: Assert Create view
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create view - Idempotent check
   bigip_view:
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[1] }}"
+    view_name: "{{ view_name }}"
+    view_order: "{{ view_order[1] }}"
   register: result
 
 - name: Assert Create view - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Update view order, existing
   bigip_view:
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[0] }}"
+    view_name: "{{ view_name }}"
+    view_order: "{{ view_order[0] }}"
   register: result
 
 - name: Assert Update view order, existing
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Update view order, existing - Idempotent check
   bigip_view:
-      view_name: "{{ view_name }}"
-      view_order: "{{ view_order[0] }}"
+    view_name: "{{ view_name }}"
+    view_order: "{{ view_order[0] }}"
   register: result
 
 - name: Assert Update view order, existing - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

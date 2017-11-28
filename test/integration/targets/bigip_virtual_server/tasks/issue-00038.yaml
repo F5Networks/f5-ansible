@@ -21,7 +21,7 @@
     pool: "{{ item.lpool|default(omit) }}"
     snat: Automap
     state: present
-  with_items:
+  loop:
     - lname: VS_HTTP1
       lip: 1.2.3.4
       lport: 80
@@ -37,7 +37,7 @@
     port: "{{ item.lport }}"
     pool: "{{ item.lpool|default(omit) }}"
     state: absent
-  with_items:
+  loop:
     - lname: VS_HTTP1
       lip: 1.2.3.4
       lport: 80

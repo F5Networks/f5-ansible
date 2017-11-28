@@ -18,9 +18,9 @@
   bigip_vlan:
     name: "{{ item }}"
   loop:
-     - UM_Tenant1B_External_VLAN
-     - UM_Tenant1B_Internal_VLAN
-     - OOB_HA
+    - UM_Tenant1B_External_VLAN
+    - UM_Tenant1B_Internal_VLAN
+    - OOB_HA
 
 - name: Issue 00457 - Create vCMP guest
   bigip_vcmp_guest:
@@ -30,9 +30,9 @@
     mgmt_address: 10.20.30.41/24
     mgmt_route: 10.20.30.1
     vlans:
-     - UM_Tenant1B_External_VLAN
-     - UM_Tenant1B_Internal_VLAN
-     - OOB_HA
+      - UM_Tenant1B_External_VLAN
+      - UM_Tenant1B_Internal_VLAN
+      - OOB_HA
   register: result
 
 - name: Issue 00457 - Assert Create vCMP guest
@@ -48,9 +48,9 @@
     mgmt_address: 10.20.30.41/24
     mgmt_route: 10.20.30.1
     vlans:
-     - UM_Tenant1B_External_VLAN
-     - UM_Tenant1B_Internal_VLAN
-     - OOB_HA
+      - UM_Tenant1B_External_VLAN
+      - UM_Tenant1B_Internal_VLAN
+      - OOB_HA
   register: result
 
 - name: Issue 00457 - Assert Create vCMP guest - Idempotent check
@@ -66,9 +66,9 @@
     mgmt_address: 10.20.30.41/24
     mgmt_route: 10.20.30.1
     vlans:
-     - UM_Tenant1B_External_VLAN
-     - OOB_HA
-     - UM_Tenant1B_Internal_VLAN
+      - UM_Tenant1B_External_VLAN
+      - OOB_HA
+      - UM_Tenant1B_Internal_VLAN
   register: result
 
 - name: Issue 00457 - Reorder guest VLANs, no change
@@ -87,9 +87,9 @@
     name: "{{ item }}"
     state: absent
   loop:
-     - UM_Tenant1B_External_VLAN
-     - UM_Tenant1B_Internal_VLAN
-     - OOB_HA
+    - UM_Tenant1B_External_VLAN
+    - UM_Tenant1B_Internal_VLAN
+    - OOB_HA
 
 - name: Issue 00457 - Deprovision vCMP
   bigip_provision:
