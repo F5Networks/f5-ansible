@@ -2,47 +2,47 @@
 
 - name: Add virtual server
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: present
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
   register: result
 
 - name: Assert Add virtual server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Add virtual server - Idempotent check
   bigip_virtual_server:
-      all_profiles: "{{ vs_profiles1 }}"
-      description: "{{ vs_description }}"
-      destination: "{{ node_host }}"
-      name: "{{ vs_name }}"
-      port: "{{ vs_port1 }}"
-      snat: "{{ vs_snat1 }}"
-      state: present
+    all_profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    snat: "{{ vs_snat1 }}"
+    state: present
   register: result
 
 - name: Assert Add virtual server - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Modify port of the Virtual Server
   bigip_virtual_server:
-      name: "{{ vs_name }}"
-      port: "{{ vs_port2 }}"
-      state: present
+    name: "{{ vs_name }}"
+    port: "{{ vs_port2 }}"
+    state: present
   register: result
 
 - name: Assert Modify port of the Virtual Server
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Modify port of the Virtual Server - Idempotent check
   bigip_virtual_server:

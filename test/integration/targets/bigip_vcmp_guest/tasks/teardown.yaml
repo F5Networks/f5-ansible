@@ -11,10 +11,10 @@
 
 #- name: Remove initial image
 #  bigip_software:
-#      base_image: "{{ initial_image }}"
-#      state: absent
+#    base_image: "{{ initial_image }}"
+#    state: absent
 
 - name: Provision vCMP
   bigip_provision:
-      module: vcmp
-      state: absent
+    module: vcmp
+    state: absent

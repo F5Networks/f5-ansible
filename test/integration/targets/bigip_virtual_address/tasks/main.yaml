@@ -2,431 +2,431 @@
 
 - name: Add virtual address
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: present
+    address: "{{ va_address }}"
+    state: present
   register: result
 
 - name: Assert Add virtual address
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Add virtual address - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: present
+    address: "{{ va_address }}"
+    state: present
   register: result
 
 - name: Assert Add virtual address - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set connection_limit
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      connection_limit: 100
-      state: present
+    address: "{{ va_address }}"
+    connection_limit: 100
+    state: present
   register: result
 
 - name: Assert Set connection limit
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set connection limit - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      connection_limit: 100
-      state: present
+    address: "{{ va_address }}"
+    connection_limit: 100
+    state: present
   register: result
 
 - name: Assert Set connection limit - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable ARP state
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      arp_state: disabled
-      state: present
+    address: "{{ va_address }}"
+    arp_state: disabled
+    state: present
   register: result
 
 - name: Assert Disable ARP state
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable ARP state - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      arp_state: disabled
-      state: present
+    address: "{{ va_address }}"
+    arp_state: disabled
+    state: present
   register: result
 
 - name: Assert Disable ARP state - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable ARP state
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      arp_state: enabled
-      state: present
+    address: "{{ va_address }}"
+    arp_state: enabled
+    state: present
   register: result
 
 - name: Assert Enable ARP state
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable ARP state - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      arp_state: enabled
-      state: present
+    address: "{{ va_address }}"
+    arp_state: enabled
+    state: present
   register: result
 
 - name: Assert Enable ARP state - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable auto-delete
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      auto_delete: disabled
-      state: present
+    address: "{{ va_address }}"
+    auto_delete: disabled
+    state: present
   register: result
 
 - name: Assert Disable auto-delete
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable auto-delete - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      auto_delete: disabled
-      state: present
+    address: "{{ va_address }}"
+    auto_delete: disabled
+    state: present
   register: result
 
 - name: Assert Disable auto-delete - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable auto-delete
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      auto_delete: enabled
-      state: present
+    address: "{{ va_address }}"
+    auto_delete: enabled
+    state: present
   register: result
 
 - name: Assert Enable auto-delete
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable auto-delete - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      auto_delete: enabled
-      state: present
+    address: "{{ va_address }}"
+    auto_delete: enabled
+    state: present
   register: result
 
 - name: Assert Enable auto-delete - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable icmp echo
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: disabled
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: disabled
+    state: present
   register: result
 
 - name: Assert Disable icmp echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable icmp echo - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: disabled
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: disabled
+    state: present
   register: result
 
 - name: Assert Disable icmp echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable icmp echo
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: enabled
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: enabled
+    state: present
   register: result
 
 - name: Assert Enable icmp echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable icmp echo - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: enabled
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: enabled
+    state: present
   register: result
 
 - name: Assert Enable icmp echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Selective icmp echo
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: selective
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: selective
+    state: present
   register: result
 
 - name: Assert Selective icmp echo
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Selective icmp echo - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      icmp_echo: selective
-      state: present
+    address: "{{ va_address }}"
+    icmp_echo: selective
+    state: present
   register: result
 
 - name: Assert Selective icmp echo - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable virtual address
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: disabled
+    address: "{{ va_address }}"
+    state: disabled
   register: result
 
 - name: Assert Disable virtual address
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable virtual address - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: disabled
+    address: "{{ va_address }}"
+    state: disabled
   register: result
 
 - name: Assert Disable virtual address - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable virtual address
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: enabled
+    address: "{{ va_address }}"
+    state: enabled
   register: result
 
 - name: Assert Enable virtual address
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable virtual address - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: enabled
+    address: "{{ va_address }}"
+    state: enabled
   register: result
 
 - name: Assert Enable virtual address - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable virtual address again
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: disabled
+    address: "{{ va_address }}"
+    state: disabled
   register: result
 
 - name: Enable virtual address with present state
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: present
+    address: "{{ va_address }}"
+    state: present
   register: result
 
 - name: Assert Enable virtual address with present state
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable virtual address with present state - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: present
+    address: "{{ va_address }}"
+    state: present
   register: result
 
 - name: Assert Enable virtual address with present state - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set advertise route - always
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: always
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: always
+    state: present
   register: result
 
 - name: Assert Set advertise route - always
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set advertise route - always - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: always
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: always
+    state: present
   register: result
 
 - name: Assert Set advertise route - always - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set advertise route - all
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: when_all_available
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: when_all_available
+    state: present
   register: result
 
 - name: Assert Set advertise route - all
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set advertise route - all - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: when_all_available
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: when_all_available
+    state: present
   register: result
 
 - name: Assert Set advertise route - all - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set advertise route - any
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: when_any_available
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: when_any_available
+    state: present
   register: result
 
 - name: Assert Set advertise route - any
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set advertise route - any - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      advertise_route: when_any_available
-      state: present
+    address: "{{ va_address }}"
+    advertise_route: when_any_available
+    state: present
   register: result
 
 - name: Assert Set advertise route - any - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Enable use route advertisement
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      use_route_advertisement: yes
-      state: present
+    address: "{{ va_address }}"
+    use_route_advertisement: yes
+    state: present
   register: result
 
 - name: Assert Enable use route advertisement
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Enable use route advertisement - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      use_route_advertisement: yes
-      state: present
+    address: "{{ va_address }}"
+    use_route_advertisement: yes
+    state: present
   register: result
 
 - name: Assert Enable use route advertisement - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Disable use route advertisement
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      use_route_advertisement: no
-      state: present
+    address: "{{ va_address }}"
+    use_route_advertisement: no
+    state: present
   register: result
 
 - name: Assert Disable use route advertisement
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Disable use route advertisement - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      use_route_advertisement: no
-      state: present
+    address: "{{ va_address }}"
+    use_route_advertisement: no
+    state: present
   register: result
 
 - name: Assert Disable use route advertisement - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete virtual address
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: absent
+    address: "{{ va_address }}"
+    state: absent
   register: result
 
 - name: Assert Delete virtual address
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete virtual address - Idempotent check
   bigip_virtual_address:
-      address: "{{ va_address }}"
-      state: absent
+    address: "{{ va_address }}"
+    state: absent
   register: result
 
 - name: Assert Delete virtual address - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - import_tasks: issue-00062.yaml
   tags: issue-00062

@@ -5,10 +5,10 @@ vs_name: my-virtual-server
 vs_port1: 443
 vs_port2: 8080
 vs_profiles1:
-    - http
-    - clientssl
+  - http
+  - clientssl
 vs_profiles_fasthttp:
-    - fastL4
+  - fastL4
 vs_snat1: Automap
 node_host: 10.10.10.10
 enabled_vlans: net1
