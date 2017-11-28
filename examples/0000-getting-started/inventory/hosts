@@ -1,1 +1,1 @@
-172.16.100.111 172.16.100.35 ansible_host=localhost
+big-ip01.internal=172.16.100.35 ansible_host=localhost
