@@ -1,0 +1,67 @@
+---
+
+- name: Create regkey pool
+  bigiq_regkey_pool:
+    name: foo-pool
+    description: baz
+  register: result
+
+- name: Assert Create regkey pool
+  assert:
+    that:
+      - result is changed
+
+- name: Create regkey pool - Idempotent check
+  bigiq_regkey_pool:
+    name: foo-pool
+    description: baz
+  register: result
+
+- name: Assert Create regkey pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change description
+  bigiq_regkey_pool:
+    name: foo-pool
+    description: honey badger
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+
+- name: Change description - Idempotent check
+  bigiq_regkey_pool:
+    name: foo-pool
+    description: honey badger
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove regkey pool
+  bigiq_regkey_pool:
+    name: foo-pool
+    state: absent
+  register: result
+
+- name: Assert Remove regkey pool
+  assert:
+    that:
+      - result is changed
+
+- name: Remove regkey pool - Idempotent check
+  bigiq_regkey_pool:
+    name: foo-pool
+    state: absent
+  register: result
+
+- name: Assert Remove regkey pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
