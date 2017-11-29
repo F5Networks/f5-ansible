@@ -5,255 +5,255 @@
 
 - name: Create VLAN
   bigip_vlan:
-      name: "{{ vlan_name }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Create VLAN
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Create VLAN - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set VLAN tag, int
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag1 }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag1 }}"
   register: result
 
 - name: Assert Set VLAN tag, int
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN tag, int - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag1 }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag1 }}"
   register: result
 
 - name: Assert Set VLAN tag, int - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set VLAN tag, string
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag2 }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag2 }}"
   register: result
 
 - name: Assert Set VLAN tag, string
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN tag, string - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag2 }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag2 }}"
   register: result
 
 - name: Assert Set VLAN tag, string - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set VLAN description
   bigip_vlan:
-      description: "{{ vlan_description1 }}"
-      name: "{{ vlan_name }}"
+    description: "{{ vlan_description1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN description - Idempotent check
   bigip_vlan:
-      description: "{{ vlan_description1 }}"
-      name: "{{ vlan_name }}"
+    description: "{{ vlan_description1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN description - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set VLAN tagged interfaces
   bigip_vlan:
-      tagged_interfaces: "{{ vlan_interfaces1 }}"
-      name: "{{ vlan_name }}"
+    tagged_interfaces: "{{ vlan_interfaces1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN tagged interfaces
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN tagged interfaces - Idempotent check
   bigip_vlan:
-      tagged_interfaces: "{{ vlan_interfaces1 }}"
-      name: "{{ vlan_name }}"
+    tagged_interfaces: "{{ vlan_interfaces1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN tagged interfaces - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Set VLAN untagged interfaces
   bigip_vlan:
-      untagged_interfaces: "{{ vlan_interfaces1 }}"
-      name: "{{ vlan_name }}"
+    untagged_interfaces: "{{ vlan_interfaces1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN untagged interfaces
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Set VLAN untagged interfaces - Idempotent check
   bigip_vlan:
-      untagged_interfaces: "{{ vlan_interfaces1 }}"
-      name: "{{ vlan_name }}"
+    untagged_interfaces: "{{ vlan_interfaces1 }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Set VLAN untagged interfaces - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove VLAN
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      state: absent
+    name: "{{ vlan_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove VLAN
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      state: absent
+    name: "{{ vlan_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove VLAN - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 # VE has a limitation that you can only have one interface per VLAN
 # To test with more than one interface, you need to use a hardware
 # device
 - name: Create VLAN, tagged interfaces
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tagged_interfaces: "{{ vlan_interfaces }}"
+    name: "{{ vlan_name }}"
+    tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
 - name: Assert Create VLAN, tagged interfaces
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN, tagged interfaces - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tagged_interfaces: "{{ vlan_interfaces }}"
+    name: "{{ vlan_name }}"
+    tagged_interfaces: "{{ vlan_interfaces }}"
   register: result
 
 - name: Assert Create VLAN, tagged interfaces - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove VLAN, tagged interfaces
   bigip_vlan:
-      tagged_interfaces: "{{ vlan_interfaces }}"
-      name: "{{ vlan_name }}"
-      state: absent
+    tagged_interfaces: "{{ vlan_interfaces }}"
+    name: "{{ vlan_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove VLAN, tagged interfaces
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN, description
   bigip_vlan:
-      description: "{{ vlan_description }}"
-      name: "{{ vlan_name }}"
+    description: "{{ vlan_description }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Create VLAN, description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN, description - Idempotent check
   bigip_vlan:
-      description: "{{ vlan_description }}"
-      name: "{{ vlan_name }}"
+    description: "{{ vlan_description }}"
+    name: "{{ vlan_name }}"
   register: result
 
 - name: Assert Create VLAN, description - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove VLAN, description
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      state: absent
+    name: "{{ vlan_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove VLAN, description
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN, tag
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag }}"
   register: result
 
 - name: Assert Create VLAN, tag
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create VLAN, tag - Idempotent check
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      tag: "{{ vlan_tag }}"
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag }}"
   register: result
 
 - name: Assert Create VLAN, tag - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Remove VLAN, tag
   bigip_vlan:
-      name: "{{ vlan_name }}"
-      state: absent
+    name: "{{ vlan_name }}"
+    state: absent
   register: result
 
 - name: Assert Remove VLAN, tag
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed

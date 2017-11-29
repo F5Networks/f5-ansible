@@ -9,9 +9,9 @@
 
 - name: Attempt to make a change, expected failure
   bigip_pool:
-      lb_method: round-robin
-      name: foo-pool
-      state: present
+    lb_method: round-robin
+    name: foo-pool
+    state: present
   register: result
   ignore_errors: true
 
@@ -32,9 +32,9 @@
 
 - name: Attempt to make a change, no failure
   bigip_pool:
-      lb_method: round-robin
-      name: foo-pool
-      state: present
+    lb_method: round-robin
+    name: foo-pool
+    state: present
   register: result
   ignore_errors: true
 
