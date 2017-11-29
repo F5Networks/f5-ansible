@@ -151,6 +151,35 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ModuleParameters(Parameters):
+    @property
+    def uuid(self):
+        """Returns UUID of a given name
+
+        Will search for a given name and return the first one returned to us. If no name,
+        and therefore no ID, is found, will return the string "none". The string "none"
+        is returned because if we were to return the None value, it would cause the
+        license loading code to append a None string to the URI; essentially asking the
+        remote device for its collection (which we dont want and which would cause the SDK
+        to return an False error.
+
+        :return:
+        """
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s.get_collection()
+        resource = next((x for x in collection if x.name == self._values['name']), None)
+        import q; q.q(resource)
+        if resource:
+            return resource.id
+        else:
+            return "none"
+
+
+class ApiParameters(Parameters):
+    @property
+    def uuid(self):
+        return self._values['id']
+
+
 class Changes(Parameters):
     pass
 
@@ -188,7 +217,9 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
+        self.want = ModuleParameters(self.client.module.params)
+        self.want.update({'client': client})
+        self.have = ApiParameters()
         self.changes = UsableChanges()
 
     def _set_changed_options(self):
@@ -258,10 +289,10 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        result = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.exists(
+            id=self.want.uuid
         )
+        import q; q.q(result)
         return result
 
     def update(self):
@@ -290,17 +321,15 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
+        self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.create(
             name=self.want.name,
-            partition=self.want.partition,
             **params
         )
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.load(
+            id=self.want.uuid
         )
         resource.modify(**params)
 
@@ -310,39 +339,32 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.load(
+            id=self.want.uuid
         )
         if resource:
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resource = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.load(
+            id=self.want.uuid
         )
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True),
+            description=dict(),
+            state=dict(
+                default='present',
+                choices=['absent', 'present']
+            )
         )
-        self.f5_product_name = 'bigip'
-
-
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
+        self.f5_product_name = 'bigiq'
 
 
 def main():
@@ -360,10 +382,8 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
-        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
-        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 if __name__ == '__main__':
