@@ -2,48 +2,48 @@
 
 - name: Create license pool
   iworkflow_license_pool:
-      accept_eula: "yes"
-      name: "{{ license_pool }}"
-      base_key: "{{ iworkflow_pool_license }}"
-      state: "present"
+    accept_eula: "yes"
+    name: "{{ license_pool }}"
+    base_key: "{{ iworkflow_pool_license }}"
+    state: "present"
   register: result
 
 - name: Assert Create license pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Create license pool - Idempotent check
   iworkflow_license_pool:
-      accept_eula: "yes"
-      name: "{{ license_pool }}"
-      base_key: "{{ iworkflow_pool_license }}"
-      state: "present"
+    accept_eula: "yes"
+    name: "{{ license_pool }}"
+    base_key: "{{ iworkflow_pool_license }}"
+    state: "present"
   register: result
 
 - name: Create license pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete license pool
   iworkflow_license_pool:
-      name: "{{ license_pool }}"
-      state: "absent"
+    name: "{{ license_pool }}"
+    state: "absent"
   register: result
 
 - name: Assert Delete license pool
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Delete license pool - Idempotent check
   iworkflow_license_pool:
-      name: "{{ license_pool }}"
-      state: "absent"
+    name: "{{ license_pool }}"
+    state: "absent"
   register: result
 
 - name: Delete license pool - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed

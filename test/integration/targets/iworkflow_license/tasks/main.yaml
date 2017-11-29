@@ -2,24 +2,24 @@
 
 - name: License device
   iworkflow_license:
-      accept_eula: "yes"
-      base_key: "{{ iworkflow_license }}"
-      state: "present"
+    accept_eula: "yes"
+    base_key: "{{ iworkflow_license }}"
+    state: "present"
   register: result
 
 - name: Assert License device
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: License device - Idempotent check
   iworkflow_license:
-      accept_eula: "yes"
-      base_key: "{{ iworkflow_license }}"
-      state: "present"
+    accept_eula: "yes"
+    base_key: "{{ iworkflow_license }}"
+    state: "present"
   register: result
 
 - name: License device - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
