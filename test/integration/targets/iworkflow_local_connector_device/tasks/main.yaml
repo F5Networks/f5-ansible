@@ -2,133 +2,133 @@
 
 - name: Discover BIG-IP
   iworkflow_device:
-      device: "{{ device_ip1 }}"
-      username_credential: "{{ bigip_username }}"
-      password_credential: "{{ bigip_password }}"
-      state: "present"
+    device: "{{ device_ip1 }}"
+    username_credential: "{{ bigip_username }}"
+    password_credential: "{{ bigip_password }}"
+    state: "present"
 
 - name: Create connector
   iworkflow_local_connector:
-      name: "{{ connector_name }}"
-      state: "present"
+    name: "{{ connector_name }}"
+    state: "present"
   register: result
 
 - name: Register device to connector
   iworkflow_local_connector_device:
-      device: "{{ device_name1 }}"
-      connector: "{{ connector_name }}"
-      state: "present"
+    device: "{{ device_name1 }}"
+    connector: "{{ connector_name }}"
+    state: "present"
   register: result
 
 - name: Assert Register device to connector
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Register device to connector - Idempotent check
   iworkflow_local_connector_device:
-      device: "{{ device_name1 }}"
-      connector: "{{ connector_name }}"
-      state: "present"
+    device: "{{ device_name1 }}"
+    connector: "{{ connector_name }}"
+    state: "present"
   register: result
 
 - name: Assert Register device to connector - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Unregister device from connector
   iworkflow_local_connector_device:
-      device: "{{ device_name1 }}"
-      connector: "{{ connector_name }}"
-      state: "absent"
+    device: "{{ device_name1 }}"
+    connector: "{{ connector_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Unregister device from connector
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Unregister device from connector - Idempotent check
   iworkflow_local_connector_device:
-      device: "{{ device_name1 }}"
-      connector: "{{ connector_name }}"
-      state: "absent"
+    device: "{{ device_name1 }}"
+    connector: "{{ connector_name }}"
+    state: "absent"
   register: result
 
 - name: Assert Unregister device from connector - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Register multiple devices to connector
   iworkflow_local_connector_device:
-      device: "{{ item }}"
-      connector: "{{ connector_name }}"
-      state: "present"
+    device: "{{ item }}"
+    connector: "{{ connector_name }}"
+    state: "present"
   register: result
-  with_items:
-      - "{{ device_name1 }}"
+  loop:
+    - "{{ device_name1 }}"
 
 - name: Assert Register multiple devices to connector
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Register multiple devices to connector - Idempotent check
   iworkflow_local_connector_device:
-      device: "{{ item }}"
-      connector: "{{ connector_name }}"
-      state: "present"
+    device: "{{ item }}"
+    connector: "{{ connector_name }}"
+    state: "present"
   register: result
-  with_items:
-      - "{{ device_name1 }}"
+  loop:
+    - "{{ device_name1 }}"
 
 - name: Assert Register multiple devices to connector - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Unregister multiple devices from connector
   iworkflow_local_connector_device:
-      device: "{{ item }}"
-      connector: "{{ connector_name }}"
-      state: "absent"
+    device: "{{ item }}"
+    connector: "{{ connector_name }}"
+    state: "absent"
   register: result
-  with_items:
-      - "{{ device_name1 }}"
+  loop:
+    - "{{ device_name1 }}"
 
 - name: Assert Unregister multiple devices from connector
   assert:
-      that:
-          - result|changed
+    that:
+      - result|changed
 
 - name: Unregister multiple devices from connector - Idempotent check
   iworkflow_local_connector_device:
-      device: "{{ item }}"
-      connector: "{{ connector_name }}"
-      state: "absent"
+    device: "{{ item }}"
+    connector: "{{ connector_name }}"
+    state: "absent"
   register: result
-  with_items:
-      - "{{ device_name1 }}"
+  loop:
+    - "{{ device_name1 }}"
 
 - name: Assert Unregister multiple devices from connector - Idempotent check
   assert:
-      that:
-          - not result|changed
+    that:
+      - not result|changed
 
 - name: Delete connector
   iworkflow_local_connector:
-      name: "{{ item }}"
-      state: "absent"
+    name: "{{ item }}"
+    state: "absent"
   register: result
-  with_items:
-      - "{{ connector_name }}"
+  loop:
+    - "{{ connector_name }}"
 
 - name: Undiscover BIG-IP
   iworkflow_device:
-      device: "{{ device_ip1 }}"
-      username_credential: "{{ bigip_username }}"
-      password_credential: "{{ bigip_password }}"
-      state: "absent"
+    device: "{{ device_ip1 }}"
+    username_credential: "{{ bigip_username }}"
+    password_credential: "{{ bigip_password }}"
+    state: "absent"
   delegate_to: localhost
