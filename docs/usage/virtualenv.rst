@@ -1,3 +1,5 @@
+:orphan: true
+
 Install Ansible by using virtualenv
 ===================================
 
@@ -85,7 +87,7 @@ You should be able to verify that you are running Ansible by using the `--versio
 
 The output should resemble the following:
 
-.. code-block:: terminal
+.. code-block:: bash
 
    (myansible) $ ansible --version
    ansible 2.4.0

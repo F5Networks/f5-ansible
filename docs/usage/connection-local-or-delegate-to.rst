@@ -77,7 +77,7 @@ The second task is **not what you want** because it attempts to run the `apt` mo
 Delegation
 ----------
 
-You can remedy this situation with `delegate_to`. For the most part, you will use this feature when the `connection` line is set to `ssh` (the default).
+You can remedy this situation with `delegate_to`. For the most part, you will use this feature when the `connection` line is `ssh` (the default).
 
 Delegation allows you to mix and match remote hosts. You continue to use an SSH connection for legitimate purposes, such as connecting to remove servers, but for the devices that don't support this option, you delegate their tasks.
 

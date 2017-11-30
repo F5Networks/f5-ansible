@@ -1,3 +1,5 @@
+.. _installunstable:
+
 Install unstable F5 Modules
 ===========================
 
