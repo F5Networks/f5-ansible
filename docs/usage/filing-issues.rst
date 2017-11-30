@@ -1,73 +1,64 @@
 Filing Issues
 =============
 
-Issues, you'll inevitably run into them. The F5 Module developers are only human (though lauded as superhuman at times)
-and therefore we are bound to make mistakes. When we do, it is incumbent upon you, the reader, to call us to task to
-fix these issues. Let's look more at what it takes to file a good, high quality issue, that will allow us to triage
-the problem as quickly as possible and get to a solution.
+If you run into any issues while working with the F5 modules for Ansible, you should submit them.
+
+For F5 to triage as quickly as possible, please follow these guidelines.
 
 Be verbose
 ----------
 
-When you file an issue with the F5 Ansible modules, we will present you with an Issue template. In it we will ask you
-questions about your environment, what F5 product and version you are using, etc.
+When you file an issue with the F5 Ansible modules, an Issue template appears. For example:
 
-What we're really interested in here is gathering information so that we can reproduce your environment. We refer to
-this reproduction as a "repro". For us to be successful in repro'ing your issue, we need...no, fanatically demand!...
-information about your environment. The more the merrier...to a degree.
+.. figure:: ./../images/issues_template.png
 
-Some things we want to know are
+|
 
-* What F5 product?
-* What version of that product?
-* What Ansible version?
-* What python version?
-* Whether or not you are using a module in Ansible upstream or one directly from this repo (we have hashes for this)
-* Ansible plays that reproduce the problem
-* If this is a feature request, `tmsh` commands that can be used to meet your needs
-* If this is a feature request for a module, an example (in your own YAML) what you think the parameters to the
-  module would look like.
-* Whether you have uploaded a qkview to F5 (we will ask you to contact us offline if you have so we can find your
-  account)
+F5 will try to reproduce your environment, so please provide as much information as possible.
 
-and the list goes on and on. Don't worry, you don't need to remember all of the above after reading this, we'll
-ask you again in the Issue template. It all helps, us get a better idea of how your device is configured and how your Ansible
-environment is configured.
+Some things F5 wants to know are:
 
-Some of the things that we **do not** want, and will **never** ask for are
+- Which F5 product
+- Which version of that product
+- Which Ansible version
+- Which Python version
+- Are you using a module in Ansible upstream or one directly from this repo (there are hashes for this)
+- Which Ansible plays reproduce the problem
+- If this is a feature request, which `tmsh` commands meet your needs
+- If this is a feature request for a module, provide an example (in your own YAML) and what you think the parameters to the would look like
+- If you have uploaded a qkview to F5
 
-* passwords
-* license keys
-* for you to **publicly** disclose your company or company contact info. We may as you to contact us "offline"
-  though.
+The Issue template asks these questions.
+
+Some of the things that F5 **does not** want, and will **never** ask for are:
+
+- passwords
+- license keys
+- **public** disclose of your company or company contact info
+
 
 Do not comment on closed issues
 -------------------------------
 
-I need to harp on this because this is something that some people do...and it's not something you should do.
+**Important** Please do not comment on closed issues.
 
-Two things happen when you comment on closed issues
+Two things happen when you comment on closed issues:
 
-- We can't repro is properly in our code-base
-- We don't usually see the notification for it
+- F5 cannot reproduce the issue properly in the code base
+- F5 doesn't usually receive the notification for it
 
-Let's take a moment to illustrate why commenting on old issues is a problem for our code base.
+Why is commenting on old issues a problem for the code base?
 
-You see, when you open an Issue with us, we will create new files in the integration test directory that
-are named after your issue.
+When you open an issue, F5 creates new files in the integration test directory. These files use your issue name.
 
-For example, if you open an issue and it is given the number 1234, then we will create an `issue-01234.yaml`
-in our source tree. This file is related to your issue and no other issues. It is where we, the developers,
-will work to ensure that your problem is solved and that we have a historical record of your problem so that
-all future work we do on the F5 Ansible modules will continue to work for whatever problem it is that we
-solved.
+For example, if you open an issue and give it the number 1234, then F5 creates `issue-01234.yaml` in the source tree. This file is specific to your issue and no other issues.
 
-This is our means by which we repro your issue, or (in technical mumbo-jumbo) "create a repro" of your
-issue.
+When the F5 developers solve the problem, they ensure that future F5 Ansible modules continue to work.
 
-If you do not create a **new** issue, then this who process is thrown into chaos. We would need to re-visit
-old stuff and make changes to previously working code. We would now have a conflict where-by we wouldnt know
-which issue this code was meant to fix. We wouldn't have a clean repro that we could archive as time went on,
-etc etc etc.
+If you do not create a **new** issue:
 
-Plain and simple, **do not** comment on closed issues.
+- F5 might accidentally change code that was already working without issue.
+- It is harder to track which issue any new code relates to.
+- It is harder to repro other issues over time.
+
+Because of this, F5 asks that you not comment on closed issues.

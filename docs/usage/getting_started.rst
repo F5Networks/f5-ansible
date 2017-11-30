@@ -10,28 +10,28 @@ Install Python
 
 Install the latest version of Python (2.7 minimum) if you do not already have it.
 
-* |install_python|
+- |install_python|
 
 Install Ansible
 ---------------
 
 Then, install Ansible (2.2.0 minimum):
 
-* |install_ansible|
+- |install_ansible|
 
 F5 recommends that you install Ansible by using virtualenv/pip. For an example, see :doc:`virtualenv`.
 
-*  |install_ansible_pip|
+- |install_ansible_pip|
 
 Install Ansible Dependencies
 ----------------------------
 
 In addition to Ansible, you should install a few additional Python modules.
 
-* f5-sdk
-* bigsuds
-* netaddr
-* deepdiff
+- f5-sdk
+- bigsuds
+- netaddr
+- deepdiff
 
 At minimum, you should add `f5-sdk`.
 
