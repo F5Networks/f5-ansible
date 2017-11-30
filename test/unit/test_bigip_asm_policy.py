@@ -153,7 +153,7 @@ class TestManager(unittest.TestCase):
         v1.read_current_from_device = Mock(return_value=current)
         v1.apply_on_device = Mock(return_value=True)
         v1.create_from_template_on_device = Mock(return_value=True)
-        v1._check_if_file_exists = Mock(return_value=True)
+        v1._file_is_missing = Mock(return_value=False)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
@@ -192,7 +192,7 @@ class TestManager(unittest.TestCase):
         v1.create_blank = Mock(return_value=True)
         v1.read_current_from_device = Mock(return_value=current)
         v1.apply_on_device = Mock(return_value=True)
-        v1._check_if_file_exists = Mock(return_value=True)
+        v1._file_is_missing = Mock(return_value=False)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
@@ -393,7 +393,7 @@ class TestManager(unittest.TestCase):
         v1.create_from_template_on_device = Mock(return_value=True)
         v1.wait_for_task = Mock(side_effect=[True, True])
         v1.read_current_from_device = Mock(return_value=current)
-        v1._check_if_file_exists = Mock(return_value=True)
+        v1._file_is_missing = Mock(return_value=False)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
@@ -431,7 +431,7 @@ class TestManager(unittest.TestCase):
         v1.create_blank = Mock(return_value=True)
         v1.read_current_from_device = Mock(return_value=current)
         v1.apply_on_device = Mock(return_value=True)
-        v1._check_if_file_exists = Mock(return_value=True)
+        v1._file_is_missing = Mock(return_value=False)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
@@ -560,7 +560,7 @@ class TestManager(unittest.TestCase):
         v1 = V1Manager(client)
         v1.exists = Mock(return_value=False)
         v1.create_on_device = Mock(return_value=False)
-        v1._check_if_file_exists = Mock(return_value=True)
+        v1._file_is_missing = Mock(return_value=False)
 
         # Override methods to force specific logic in the module to happen
         mm = ModuleManager(client)
