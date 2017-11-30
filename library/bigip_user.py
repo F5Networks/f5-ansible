@@ -189,8 +189,7 @@ shell:
   sample: tmsh
 '''
 
-import os
-import tempfile
+import re
 
 from distutils.version import LooseVersion
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -621,40 +620,27 @@ class RootUserManager(BaseManager):
         return True
 
     def update(self):
-        file = tempfile.NamedTemporaryFile()
-        self.want.update({'tempfile': os.path.basename(file.name)})
-        self.upload_password_file_to_device()
-        self.update_on_device()
-        self.remove_password_file_from_device()
-        return True
+        result = self.update_on_device()
+        return result
 
     def update_on_device(self):
-        errors = [
-            'not confirmed',
-            'change canceled'
-        ]
-        cmd = '-c "cat /var/config/rest/downloads/{0} | tmsh modify auth password root"'.format(self.want.tempfile)
-        output = self.client.api.tm.util.bash.exec_cmd(
-            'run',
-            utilCmdArgs=cmd
-        )
-        if hasattr(output, 'commandResult'):
-            result = str(output.commandResult)
-            if any(x for x in errors if x in result):
-                raise F5ModuleError(result)
-
-    def upload_password_file_to_device(self):
+        escape_patterns = r'([$' + "'])"
+        errors = ['Bad password', 'password change canceled', 'based on a dictionary word']
         content = "{0}\n{0}\n".format(self.want.password_credential)
-        template = StringIO(content)
-        upload = self.client.api.shared.file_transfer.uploads
-        upload.upload_stringio(template, self.want.tempfile)
-        return True
-
-    def remove_password_file_from_device(self):
-        self.client.api.tm.util.unix_rm.exec_cmd(
-            'run',
-            utilCmdArgs='/var/config/rest/downloads/{0}'.format(self.want.tempfile)
-        )
+        command = re.sub(escape_patterns, r'\\\1', content)
+        cmd = '-c "printf \\\"{0}\\\" | tmsh modify auth password root" 2>&1'.format(command)
+        try:
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs=cmd
+            )
+            if hasattr(output, 'commandResult'):
+                result = str(output.commandResult)
+                if any(x for x in errors if x in result):
+                    raise F5ModuleError(result)
+            return True
+        except iControlUnexpectedHTTPError:
+            return False
 
 
 class ArgumentSpec(object):
