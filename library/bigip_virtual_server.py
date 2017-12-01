@@ -569,7 +569,7 @@ class VirtualServerApiParameters(VirtualServerParameters):
             context = item['context']
             name = item['name']
             if context in ['all', 'serverside', 'clientside']:
-                result.append(dict(name=name, context=context))
+                result.append(dict(name=name, context=context, fullPath=item['fullPath']))
             else:
                 raise F5ModuleError(
                     "Unknown profile context found: '{0}'".format(context)
@@ -652,10 +652,12 @@ class VirtualServerModuleParameters(VirtualServerParameters):
                 self._handle_profile_context(tmp)
                 if 'name' not in profile:
                     tmp['name'] = profile
+                tmp['fullPath'] = self._fqdn_name(tmp['name'])
                 self._handle_clientssl_profile_nuances(tmp)
             else:
                 tmp['name'] = profile
                 tmp['context'] = 'all'
+                tmp['fullPath'] = self._fqdn_name(tmp['name'])
                 self._handle_clientssl_profile_nuances(tmp)
             result.append(tmp)
         mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
@@ -930,13 +932,8 @@ class Difference(object):
     def profiles(self):
         if self.want.profiles is None:
             return None
-        auto_assigned = [
-            {('tcp', 'all')},
-            {('udp', 'all')},
-            {('sctp', 'all')}
-        ]
-        want = set([(p['name'], p['context']) for p in self.want.profiles])
-        have = set([(p['name'], p['context']) for p in self.have.profiles])
+        want = set([(p['name'], p['context'], p['fullPath']) for p in self.want.profiles])
+        have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])
         if len(have) == 0:
             return self.want.profiles
         elif len(have) == 1:
@@ -949,6 +946,8 @@ class Difference(object):
                 have = set([x for x in have if x[0] != 'udp'])
             if not any(x[0] == 'sctp' for x in want):
                 have = set([x for x in have if x[0] != 'sctp'])
+            want = set([(p[2], p[1]) for p in want])
+            have = set([(p[2], p[1]) for p in have])
             if want != have:
                 return self.want.profiles
 
