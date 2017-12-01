@@ -218,6 +218,50 @@
     that:
       - not result|changed
 
+- name: Set some profiles on virtual server
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles2 }}"
+    name: "{{ vs_name }}"
+  register: result
+
+- name: Assert Set some profiles on virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Set less profiles on virtual server
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles1 }}"
+    name: "{{ vs_name }}"
+  register: result
+
+- name: Assert Set less profiles on virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Set less profiles on virtual server - Idempotent check
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles1 }}"
+    name: "{{ vs_name }}"
+  register: result
+
+- name: Assert Set less profiles on virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+
+
+
+
+
+
+
+
+
+
+
 - name: Delete VLAN virtual server
   bigip_virtual_server:
     name: "{{ vs_name }}"
