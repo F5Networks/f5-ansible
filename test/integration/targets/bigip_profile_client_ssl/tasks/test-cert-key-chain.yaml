@@ -54,7 +54,7 @@
 
 - name: Remove profile - Idempotent check
   bigip_profile_client_ssl:
-    name: foor
+    name: foo
     state: absent
   register: result
 
