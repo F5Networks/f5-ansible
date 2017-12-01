@@ -937,15 +937,20 @@ class Difference(object):
         ]
         want = set([(p['name'], p['context']) for p in self.want.profiles])
         have = set([(p['name'], p['context']) for p in self.have.profiles])
-        if want != have:
-            diff = have.difference(want)
-            if any(x.issubset(diff) for x in auto_assigned):
-                # This handles cases when tcp, udp, or sctp are auto-assigned because you
-                # provided a profile (such as http or clientssl) that requires them.
-                #
-                # I think these are the only profiles that are auto-assigned.
-                return None
+        if len(have) == 0:
             return self.want.profiles
+        elif len(have) == 1:
+            if want != have:
+                return self.want.profiles
+        else:
+            if not any(x[0] == 'tcp' for x in want):
+                have = set([x for x in have if x[0] != 'tcp'])
+            if not any(x[0] == 'udp' for x in want):
+                have = set([x for x in have if x[0] != 'udp'])
+            if not any(x[0] == 'sctp' for x in want):
+                have = set([x for x in have if x[0] != 'sctp'])
+            if want != have:
+                return self.want.profiles
 
     @property
     def default_persistence_profile(self):
