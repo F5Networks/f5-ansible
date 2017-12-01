@@ -41,7 +41,29 @@
     that:
       - not result|changed
 
-- name: Remove key
+- name: Remove profile
+  bigip_profile_client_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert remove profile
+  assert:
+    that:
+      - result|changed
+
+- name: Remove profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove profile - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Remove cert 
   bigip_ssl_certificate:
     name: bigip_ssl_cert1
     state: absent
