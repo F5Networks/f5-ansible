@@ -24,7 +24,7 @@
     that:
       - not result|changed
 
-- import_tasks: test-cert-key-chain.yaml
+# - import_tasks: test-cert-key-chain.yaml
 
 - name: Remove client SSL profile
   bigip_profile_client_ssl:
@@ -47,6 +47,8 @@
   assert:
     that:
       - not result|changed
+
+- import_tasks: test-cert-key-chain.yaml
 
 - import_tasks: issue-00398.yaml
   tags: issue-00398

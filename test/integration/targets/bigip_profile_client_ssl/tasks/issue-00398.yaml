@@ -52,3 +52,14 @@
   bigip_profile_client_ssl:
     name: my_profile
     state: absent
+
+- name: Issue 00398 - Remove certificate
+  bigip_ssl_certificate:
+    name: "{{ cert }}"
+    state: absent
+
+- name: Isue 00398 - Remove key
+  bigip_ssl_key:
+    name: "{{ key }}"
+    state: absent
+ 
