@@ -35,14 +35,14 @@ There are three major differences between `connection: local` and `delegate_to: 
 
 * `connection: local` applies to all hosts
 * `delegate_to` applies to specific hosts
-* `delegate_to` runs your task on *one* host in the context of *another* host
+* `delegate_to` runs your task on *one* host, in the context of *another* host
 
 Connection: local
 -----------------
 
 First, `connection: local` applies to **all** hosts in the playbook. If you find yourself mixing and matching BIG-IP hosts with things like web servers, it would cause your legitimate ssh connections to fail.
 
-This is because when you specify `connection: local`, every host is now considered to have 12.0.0.1 as their IP address.
+This is because when you specify `connection: local`, every host is now considered to have 127.0.0.1 as their IP address.
 
 This is likely not what you want.
 
