@@ -556,17 +556,19 @@ class BaseManager(object):
             return True
         return False
 
-    def _check_if_file_exists(self):
+    def _file_is_missing(self):
         if not os.path.exists(self.want.file):
-            raise F5ModuleError(
-                "The specified ASM policy file does not exist"
-            )
+            return True
+        return False
 
     def create(self):
         task = None
         if self.want.active is None:
             self.want.update(dict(active=False))
-        self._check_if_file_exists()
+        if self._file_is_missing():
+            raise F5ModuleError(
+                "The specified ASM policy file does not exist"
+            )
         self._set_changed_options()
         if self.client.check_mode:
             return True
