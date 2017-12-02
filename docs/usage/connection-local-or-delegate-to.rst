@@ -132,4 +132,4 @@ remote webserver), what is the value of the ``{{ inventory_hostname }}`` variabl
 
 If you answered ``my-web-server`` then you are correct.
 
-This is **context**. The task executed on ``localhost`` using ``my-web-server``'s context, and therefore, it is ``facts``.
+This is **context**. The task executed on ``localhost`` using ``my-web-server``'s context, and therefore, its ``facts``.
