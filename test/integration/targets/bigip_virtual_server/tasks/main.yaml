@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Add virtual server
   bigip_virtual_server:
     all_profiles: "{{ vs_profiles1 }}"
@@ -218,16 +220,31 @@
     that:
       - not result|changed
 
+- name: Set some profiles on virtual server pre-12.1
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles3 }}"
+    name: "{{ vs_name }}"
+  register: result
+  when: system_info.product_information.product_version < "12.1.0"
+
+- name: Assert Set some profiles on virtual server pre-12.1
+  assert:
+    that:
+      - result|changed
+  when: system_info.product_information.product_version < "12.1.0"
+
 - name: Set some profiles on virtual server
   bigip_virtual_server:
     profiles: "{{ vs_profiles2 }}"
     name: "{{ vs_name }}"
   register: result
+  when: system_info.product_information.product_version >= "12.1.0"
 
 - name: Assert Set some profiles on virtual server
   assert:
     that:
       - result|changed
+  when: system_info.product_information.product_version >= "12.1.0"
 
 - name: Set less profiles on virtual server
   bigip_virtual_server:
@@ -250,17 +267,6 @@
   assert:
     that:
       - not result|changed
-
-
-
-
-
-
-
-
-
-
-
 
 - name: Delete VLAN virtual server
   bigip_virtual_server:

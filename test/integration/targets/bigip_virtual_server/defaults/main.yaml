@@ -17,3 +17,7 @@ vs_profiles2:
   - qoe
   - ssh
   - tcp
+vs_profiles3:
+  - http
+  - qoe
+  - tcp
