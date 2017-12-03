@@ -419,7 +419,7 @@ class TestManager(unittest.TestCase):
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_tagged_ifc_raises(self, *args):
         set_module_args(dict(
@@ -449,7 +449,7 @@ class TestManager(unittest.TestCase):
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
 
     def test_parse_return_ifcs_raises(self, *args):
         set_module_args(dict(
@@ -478,4 +478,4 @@ class TestManager(unittest.TestCase):
             with pytest.raises(F5ModuleError) as err:
                 mm.exec_module()
 
-        assert err.value.message == msg
+        assert str(err.value) == msg
