@@ -55,7 +55,7 @@ DOWNSTREAM_MODULE = '{0}/library/{1}.py'
 class Root(object):
     def __init__(self, verbose=False):
         self.verbose = verbose
-        if verbose == 3:
+        if verbose >= 3:
             logger.setLevel(logging.DEBUG)
         elif verbose == 2:
             logger.setLevel(logging.INFO)
@@ -87,12 +87,12 @@ def platform_type():
 
 
 def delete_lo_interface_alias(alias_host):
-    if platform_type() == 'Darwin':
+    if platform_type() in ['Darwin', 'Mac']:
         cmd = ['sudo', 'ifconfig', 'lo0', '-alias', alias_host]
     elif platform_type() == 'Linux':
         cmd = ['sudo', 'ip', 'addr', 'del', '1.2.3.4/8', 'dev', 'lo', 'label', 'lo']
     else:
-        logger.error('Platform not currently supported')
+        logger.info('Platform not currently supported to remove lo alias')
         return
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.debug('Run command "{0}"'.format(' '.join(cmd)))
@@ -106,12 +106,13 @@ def delete_lo_interface_alias(alias_host):
 
 
 def create_lo_interface_alias(alias_host):
-    if platform_type() == 'Darwin':
+    print(platform_type())
+    if platform_type() in ['Darwin', 'Mac']:
         cmd = ['sudo', 'ifconfig', 'lo0', 'alias', alias_host]
     elif platform_type() == 'Linux':
         cmd = ['sudo', 'ip', 'addr', 'add', '1.2.3.4/8', 'dev', 'lo', 'label', 'lo']
     else:
-        logger.error('Platform not currently supported')
+        logger.info('Platform not currently supported to create lo alias')
         return
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     logger.debug('Run command "{0}"'.format(' '.join(cmd)))
@@ -152,9 +153,10 @@ def _start_container(service, site_override):
     logger.debug('Run command "{0}"'.format(' '.join(cmd)))
     proc = subprocess.Popen(cmd)
     stdout, stderr = proc.communicate()
-    if proc.returncode != 0:
-        click.echo(stderr.decode('utf-8'), err=True)
-        sys.exit(1)
+    if int(proc.returncode) != 0:
+        if stderr:
+            click.echo(stderr.decode('utf-8'), err=True)
+            sys.exit(1)
 
 
 def _build_container(service, site_override):
@@ -205,12 +207,13 @@ def get_fixtures(module):
 
     pattern1 = r"load_fixture\(\'(?P<fixture>[^']+)"
     pattern2 = r"fixtures\/(?P<fixture>[^']+)"
+    pattern3 = r"fixture_path\,\s+\'(?P<fixture>[^']+)"
     p1 = subprocess.Popen(
-        ['egrep', '(load_fixture|fixtures)', 'test/unit/test_{0}.py'.format(module)],
+        ['egrep', '(load_fixture|fixtures|fixture_path)', '{0}/test/unit/test_{1}.py'.format(TOP_LEVEL_DIR, module)],
         stdout=subprocess.PIPE
     )
     p2 = subprocess.Popen(
-        ['egrep', '-v', '(def load_fixture|fixture_path)'],
+        ['egrep', '-v', '(def load_fixture|fixture_path\,\s+name)'],
         stdin=p1.stdout, stdout=subprocess.PIPE
     )
     p1.stdout.close()
@@ -224,6 +227,10 @@ def get_fixtures(module):
             result.append(matches.group('fixture'))
             continue
         matches = re.search(pattern2, x)
+        if matches:
+            result.append(matches.group('fixture'))
+            continue
+        matches = re.search(pattern3, x)
         if matches:
             result.append(matches.group('fixture'))
             continue
@@ -431,11 +438,14 @@ def build():
     pass
 
 
+@cli.group()
+def test():
+    pass
+
+
 @cli.command(name='module-upstream')
 @click.argument('module', required=True)
-@click.option('--upstream-dir',
-              default='local/ansible', show_default=True)
-def module_upstream(module, upstream_dir):
+def module_upstream(module):
     module = module_name(module)
     root_dest = '{0}/local/ansible/'.format(TOP_LEVEL_DIR)
     if not os.path.exists(root_dest):
@@ -443,9 +453,9 @@ def module_upstream(module, upstream_dir):
         sys.exit(1)
 
     try:
-        copy_module(module, upstream_dir)
-        copy_unit_tests(module, upstream_dir)
-        copy_unit_test_fixtures(module, upstream_dir)
+        copy_module(module, root_dest)
+        copy_unit_tests(module, root_dest)
+        copy_unit_test_fixtures(module, root_dest)
         click.echo("Copy complete")
     except Exception as ex:
         click.echo(str(ex), err=True)
@@ -609,6 +619,168 @@ def fetch_ansible():
 """
 docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7
 """
+
+
+@test.command(name='sanity')
+@click.option('--test', default=None)
+@click.option('--module', default=None)
+@click.option('--python', default=None,
+              help='The python version that you want to test against. This parameter is ignored if you are in a container.')
+@click.option('--ansible', default=False, is_flag=True,
+              help='Runs Ansible form of the unit tests. Requires an installation of ansible at "local/ansible".')
+@click.option('--site-override',
+              default=None,
+              help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
+def test_sanity(test, module, python, ansible, site_override):
+    """Run sanity tests
+
+    """
+    compose_file = None
+    extend_file = None
+
+    if in_container():
+        if python:
+            click.echo("Python parameter is ignored while in a container")
+        python = '{0}.{1}'.format(sys.version_info.major, sys.version_info.minor)
+    elif not in_container():
+        if not python:
+            python = '2.7'
+        compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+        if site_override:
+            extend_file = site_override
+            if not os.path.exists(extend_file):
+                click.echo("The specified override '{0}' was found found".format(extend_file), err=True)
+                sys.exit(1)
+        else:
+            extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+
+    if ansible:
+        if in_container():
+            cmd = ['./local/ansible/test/runner/ansible-test', 'sanity', '--python', python, module]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+        else:
+            cmd = ['docker-compose', '-f', compose_file]
+            if extend_file:
+                cmd += ['-f', extend_file]
+            cmd += [
+                'run', '--rm', 'py{0}'.format(python),
+                './local/ansible/test/runner/ansible-test',
+                'sanity', '--python', python, module]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+    else:
+        if in_container():
+            cmd = ['pytest', '-s', '/here/test/unit/test_{0}.py'.format(module)]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+        else:
+            cmd = ['docker-compose', '-f', compose_file]
+            if extend_file:
+                cmd += ['-f', extend_file]
+            cmd += [
+                'run', '--rm', 'py{0}'.format(python),
+                'pytest', '-s', '/here/test/unit/test_{0}.py'.format(module)]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+
+
+@test.command(name='units')
+@click.argument('module', required=True, default=None)
+@click.option('--python', default=None,
+              help='The python version that you want to test against. This parameter is ignored if you are in a container.')
+@click.option('--ansible', default=False, is_flag=True,
+              help='Runs Ansible form of the unit tests. Requires an installation of ansible at "local/ansible".')
+@click.option('--site-override',
+              default=None,
+              help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
+def test_unit(module, python, ansible, site_override):
+    """Run unit tests of a given module
+
+    The module parameter is used to select which unit tests you want to run.
+    """
+    compose_file = None
+    extend_file = None
+
+    if in_container():
+        if python:
+            click.echo("Python parameter is ignored while in a container")
+        python = '{0}.{1}'.format(sys.version_info.major, sys.version_info.minor)
+    elif not in_container():
+        if not python:
+            python = '2.7'
+        compose_file = '{0}/devtools/docker-compose.yaml'.format(TOP_LEVEL_DIR)
+        if site_override:
+            extend_file = site_override
+            if not os.path.exists(extend_file):
+                click.echo("The specified override '{0}' was found found".format(extend_file), err=True)
+                sys.exit(1)
+        else:
+            extend_file = '{0}/devtools/docker-compose.site.yaml'.format(TOP_LEVEL_DIR)
+
+    if ansible:
+        if in_container():
+            cmd = ['./local/ansible/test/runner/ansible-test', 'units', '--python', python, module]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+        else:
+            cmd = ['docker-compose', '-f', compose_file]
+            if extend_file:
+                cmd += ['-f', extend_file]
+            cmd += [
+                'run', '--rm', 'py{0}'.format(python),
+                './local/ansible/test/runner/ansible-test',
+                'units', '--python', python, module]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+    else:
+        if in_container():
+            cmd = ['pytest', '-s', '/here/test/unit/test_{0}.py'.format(module)]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+        else:
+            cmd = ['docker-compose', '-f', compose_file]
+            if extend_file:
+                cmd += ['-f', extend_file]
+            cmd += [
+                'run', '--rm', 'py{0}'.format(python),
+                'pytest', '-s', '/here/test/unit/test_{0}.py'.format(module)]
+            logger.debug('Run command "{0}"'.format(' '.join(cmd)))
+            proc = subprocess.Popen(cmd)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0:
+                click.echo(stderr.decode('utf-8'), err=True)
+                sys.exit(1)
+
+
 if __name__ == '__main__':
     # list harness
     # show harness-command --harness-name

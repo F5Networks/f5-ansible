@@ -7,13 +7,8 @@
 # First parameter is the module
 #
 
-#set -x
 MODULE=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
-
-# Put the module to be merged in the upstream code
-docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7 \
-    ./devtools/bin/copy-upstream.py ${MODULE}
 
 docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7-bare ./devtools/bin/uv-check.sh ${MODULE} 2.7
 if [ $? -ne 0 ]; then

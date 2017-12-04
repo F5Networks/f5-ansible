@@ -7,7 +7,6 @@
 # to boot, and created Snapshots of them.
 #
 
-#set -x
 MODULE=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && cd .. && pwd )"
 HARNESS=(

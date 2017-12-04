@@ -116,7 +116,7 @@ def write_data(text, options, outputname, module):
     if options.output_dir is not None:
         fname = os.path.join(options.output_dir, outputname % module)
         fname = fname.replace(".py","")
-        f = open(fname, 'w')
+        f = open(fname, 'wb')
         f.write(text.encode('utf-8'))
         f.close()
     else:
@@ -409,7 +409,7 @@ def process_category(category, categories, options, env, template, outputname):
         category_file.write("\n%s\n%s\n\n" % (section.replace("_"," ").title(),'-' * len(section)))
         category_file.write(".. toctree:: :maxdepth: 1\n\n")
 
-        section_modules = module_map[section].keys()
+        section_modules = list(module_map[section].keys())
         section_modules.sort(key=lambda k: k[1:] if k.startswith('_') else k)
         #for module in module_map[section]:
         for module in (m for m in section_modules if m in module_info):
