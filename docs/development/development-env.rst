@@ -66,6 +66,49 @@ usually in the form of what Postman refers to as "Collections".
 
 We do not use `newman`.
 
+Virtualization tools
+--------------------
+
+For the primary needs of development and test we use VE (Virtual Edition) instances
+of F5 product to do our work.
+
+To run these VE products, you have two options
+
+- OpenStack
+- Virtualbox/VMWare/some local solution
+
+You options are limited to the platform that you choose to do development on. Mac
+and hardware-based Linux installations, have the largest breadth of options. We'll
+explain why this is, shortly.
+
+As mentioned, all development platforms can support OpenStack. This is because our
+usage of OpenStack's client libraries is constrained to the Docker dev/test
+containers. Once you are in the container, you should have all the tools necessary
+to perform your work.
+
+The usage of the OpenStack tools can either be done using the "plumbing" commands;
+`openstack stack create`, `openstack server create`, etc. Or, they can be done
+using the porcelain commands; `f5ansible harness-create`, `f5ansible harness-delete`,
+etc. It is recommended that you use the porcelain commands.
+
+I also mentioned that, for certain platforms, you have access to local dev tools.
+I specifically mentioned Mac and hardware Linux because there is a limitation in
+Windows in which you can only run one hypervisor.
+
+Docker for Windows requires that HyperV be turned on in Windows. However, doing this
+prevents you from using Virtualbox. You can, alternatively, use HyperV itself in
+Vagrant, but at this time this is not a method that has been determined to work
+by the development team. YMMV.
+
+If you are using the aforementioned Mac or hardware Linux, we provide both public
+and private (internal) copies of Vagrantfiles for you to use.
+
+For public Vagrantfiles, refer to the following URL
+
+* https://github.com/f5devcentral/f5-vagrant-files
+
+For private Vagrantfiles, refer to your F5 colleague.
+
 Docker
 ------
 
@@ -265,6 +308,44 @@ easier to just do the following.
 
 * You are now fully ready to test anything that the CONTRIBUTOR wants you to
   test.
+
+f5ansible command
+-----------------
+
+This repository provides a convenience command for you to use both inside and outside
+the dev/test containers that are used in this repo.
+
+The command is called `f5ansible` and it is located in the `devtools/bin` directory
+of this repository.
+
+It is recommended that you add the `bash` completions as well as the path to this
+command to you local `$PATH` variable. This can be done by adding the following
+to your `~/.bashrc` file,
+
+.. code-block:: bash
+
+   eval "$(_F5ANSIBLE_COMPLETE=source /PATH/TO/f5-ansible/devtools/bin/f5ansible)"
+   export PATH=$PATH:/PATH/TO/f5-ansible/devtools/bin/
+
+Be sure to change the `/PATH/TO` value above to reflect the settings that you have
+on **your** system.
+
+With this configuration in place, you can restart your terminal. Once you have, you
+will find that you now have an `f5ansible` command available in your $PATH (which
+means that you can use the TAB key to auto-complete it).
+
+Additionally, you can tab complete the `f5ansbile` command, and then continue to
+press TAB twice or more to get the list of sub-commands that the `f5ansible` command
+provides.
+
+For example,
+
+.. code-block:: bash
+
+   SEA-ML-00028116:f5-ansible trupp$ f5ansible
+   container-run    module-stub      module-upstream
+   SEA-ML-00028116:f5-ansible trupp$ f5ansible
+
 
 Questions
 =========
