@@ -1,7 +1,7 @@
 ---
 
 - name: Create a VIP, pool, pool members and nodes
-  hosts: f5-test
+  hosts: big-ip01.internal
   connection: local
 
   tasks:
