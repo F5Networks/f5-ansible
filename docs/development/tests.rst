@@ -1,69 +1,51 @@
 Tests
 =====
 
-Module testing is performed automatically by several different CI/CD tools.
-There are general tests which check syntax as well as specific tests that
-exercise the functionality of the module.
+Several different CI/CD tools automatically test the modules.
+
+General tests check syntax, and specific tests exercise the functionality of the module.
 
 General tests
 -------------
 
-All modules are run through a set of general tests. These general tests are
-run by Travis CI and can be found in the ``.travis.yml`` in the root directory
-of the ``f5-ansible`` repository.
+All modules go through a set of general tests. Travis CI runs these tests. You can view the tests in the ``.travis.yml`` in the root directory of the ``f5-ansible`` repository.
 
-  * flake8
-  * ansible-lint
+- flake8
+- ansible-lint
 
 Functional tests
 ----------------
 
-Each ansible module should have a role associated with it that contains all
-of the functional tests that you want run to validate your module.
+Each Ansible module should have a role associated with it. This role contains all of the functional tests you want run to validate your module.
 
-These tests are run against several different test harnesses of BIG-IP VE
-that we have available. This provides you with the ability to test your
-module against several supported versions of BIG-IP to ensure that it works
-correctly.
+These tests run against several different test harnesses of BIG-IP VE.
 
-We provide this service to you because we understand that it may not be the
-case that you have instances of BIG-IP availble to you. These instances have
-all of the necessary modules enabled for you to test against.
+You may not have instances of BIG-IP available to you; these instances have all of the necessary modules enabled for you to test against.
 
 Code coverage
 -------------
 
-Upstream, Ansible provides code-coverage metrics for the F5 modules. These
-metrics are specific to the **UNIT** tests; not the integration/functional tests.
+Upstream, Ansible provides code-coverage metrics for the F5 modules. These metrics are specific to the **UNIT** tests, not the integration/functional tests.
 
-The URL for viewing this information can be found here
+The URL is here:
 
-* https://codecov.io/gh/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
+- https://codecov.io/gh/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
 
-These metrics are updated every 24 hours. Therefore, if you submit new code to
-Ansible which includes unit tests, you will not immediately see the results.
+Ansible updates these metrics every 24 hours. Therefore, if you submit new code that includes unit tests, you will not immediately see the results.
 
 Pycodestyle checks
 ------------------
 
-We include `pycodestyle` checks as part of our linting process. This process is
-included because Ansible itself does it and, therefore, we too must include the
-steps.
+F5 includes `pycodestyle` checks as part of the linting process. Ansible itself does this and, therefore, F5 must also include the steps.
 
-The tests that we run are takes from
+The tests that F5 runs are from:
 
-* https://github.com/ansible/ansible/blob/devel/test/sanity/pep8/current-ignore.txt
+- https://github.com/ansible/ansible/blob/devel/test/sanity/pep8/current-ignore.txt
 
-They are updated for each Ansible release
-
-Questions
----------
-
-There are several questions regarding the way in that the tests are designed. I've
-listed those questions and their answers below.
+F5 updates these tests for each Ansible release.
 
 Why do I make any error fatal?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``````````````````````````````
 
 The integration tests specify the following in their YAML.
 
@@ -76,28 +58,22 @@ The integration tests specify the following in their YAML.
 
 Why is `any_errors_fatal` specified and set to `true`?
 
-The reason is due to the way the tests are laid out. Integration tests build on
-top of each other. If one of those tests fails, then a cascade of failures will
-occur. Therefore it's a waste of time to continue with tests; the remainder will
-never pass.
+The reason is because of the test layout.
 
-Take for example a type integration test for bigip_pool. It looks like this.
+Integration tests build on top of each other. If one of those tests fails, then a cascade of failures will occur. Therefore it's a waste of time to continue with tests; the remainder will never pass.
 
-* Create pool
-* Assert creation
-* Create pool - idempotent check
-* Assert no creation
+Take, for example, a type of integration test for bigip_pool. It looks like this.
 
-Note that if any of those tests fail, that it is equivalent to all of them
-failing.
+- Create pool
+- Assert creation
+- Create pool - idempotent check
+- Assert no creation
 
-* If the first fails, then all the latter will fail.
-* If the second fails, that means the first one is incorrect, and therefore we
-  have failure.
-* If the third fails, then the updating code is wrong and future tests which
-  change params will fail
-* If the fourth fails, then the assertion is that the third test is wrong, and
-  we've already mentioned what that means to future tests.
+If any of those tests fail, it is equivalent to all of them failing.
 
-For those reasons, we make the integration tests fail fast by using the
-aforementioned setting in Ansible.
+- If the first fails, then all the latter will fail.
+- If the second fails, that means the first one is incorrect, and failure occurs.
+- If the third fails, then the updating code is wrong and future tests that change parameters will fail.
+- If the fourth fails, then the assertion is that the third test is wrong, and future tests that change parameters will fail.
+
+For these reasons, F5 makes the integration tests fail fast.

@@ -1,37 +1,31 @@
-Deprecating Code
-================
+Deprecating Modules
+===================
 
-Our Ansible modules follow a strategy of deprecation which is intended to give
-the user of the modules ample time to upgrade to a new version of Ansible.
+F5 sometimes deprecates modules. However, before the modules go away, you should have enough time to upgrade to a new version of Ansible.
 
-New releases of Ansible happen, at the time of this writing, about once a quarter.
+New releases of Ansible happen approximately once a quarter.
 
-With this in mind, the following process should allow a user 3 to 6 months to
-upgrade their Ansible installation to the new code. If the user misses this
-3 to 6 month period, then they can upgrade incrementally (2.1 -> 2.2 -> 2.3)
-instead of upgrading directly to the latest version and, in the process, test
-that the incremental versions work with their playbooks.
+With this in mind, the following process should allow you between three and six months to upgrade your Ansible installation to the new code.
+
+If you miss this timeframe, you can upgrade incrementally (2.1 -> 2.2 -> 2.3) instead of upgrading directly to the latest version and, in the process, test that the incremental versions work with your playbooks.
 
 Deprecation process
 -------------------
 
-Let's look at an example deprecation process
+Here is a sample deprecation process:
 
-* 2.0 - version to deprecate
-* 2.1 - deprecated version
-* 2.2 - version with deprecated feature removed
+- 2.0 - version to deprecate
+- 2.1 - deprecated version
+- 2.2 - version with deprecated feature removed
 
-During the second release noted above, the module developer *MUST* insert
-adequate warnings for the user to see. Ansible will color warning messages
-so that they stick out from regular messages.
+During the second release, you *MUST* insert adequate warnings for the user to see. Ansible highlights warning messages so that they're more visible than regular messages.
 
-Raising deprecated warnings
----------------------------
+Raise deprecated warnings
+-------------------------
 
-To raise warnings about deprecated functionality, the module developer should
-add the following method to their `ModuleManager` class.
+To raise warnings about deprecated functionality, add the following method to your `ModuleManager` class.
 
-.. raw::python
+.. code-block:: python
 
    def _announce_deprecations(self, result):
        warnings = result.pop('__warnings', [])
@@ -41,8 +35,7 @@ add the following method to their `ModuleManager` class.
                version=warning['version']
            )
 
-Additionally, the module developer should add the calling of that method
-when they collect the `changes` to report to the user. For example,
+Additionally, you should call that method when you collect the `changes` to report to the user. For example:
 
 .. raw::python
 
@@ -52,10 +45,11 @@ when they collect the `changes` to report to the user. For example,
    self._announce_deprecations(result)
    return result
 
-And finally, the module developer should populate the `__warnings` key of their
-`changes` attribute as needed. For example, in the `bigip_gtm_wide_ip` module,
-the following is used in the `lb_method` property when it sees you are using
-an option name that is deprecated. For example,
+And finally, you should populate the `__warnings` key of your `changes` attribute as needed.
+
+For example, in the `bigip_gtm_wide_ip` module, the `lb_method` property uses this code when it sees you are using a deprecated option.
+
+For example:
 
 .. raw::python
 
@@ -71,43 +65,28 @@ an option name that is deprecated. For example,
    )
 
 
-The `changes` attribute is typically updated during the call to
-`_update_changed_options` during `update`, or `_set_changed_options`
-during `create`.
+The `changes` attribute is typically updated during the call to `_update_changed_options`, during `update`, or `_set_changed_options` during `create`.
 
-If your module needs to detect changes outside of those two general methods,
-you should be doing so inside of the `should_update` method.
+If your module needs to detect changes outside of those two general methods, you should do so inside of the `should_update` method.
 
 .. note::
 
-   To do your own ad-hoc detection inside of `should_update`, you will need to
-   overload the base classes' method. If you do this, you should decide whether
-   or not it is still necessary to call the base classes' method during the
-   call to your overloaded method.
+   To do your own ad-hoc detection inside of `should_update`, you must overload the base classes' method. If you do this, you should decide whether or not it is still necessary to call the base classes' method during the call to your overloaded method.
 
-With that in place, you will find yourself with `warning` messages being raised
-by Ansible when you use the deprecated functionality.
+With that in place, you will find yourself with `warning` messages raised by Ansible when you use the deprecated functionality.
 
 Deprecating parameters
 ----------------------
 
-Below is an excerpt from how one might deprecate an option that we no longer
-want to use. You may do this for a number of reasons, but in most cases it
-is due to the original name not making sense in the context it is used.
+Below is an excerpt that shows how you might deprecate an option you no longer want to use. You may do this for a number of reasons, but in most cases it is because the original name does not make sense in the context you're using it in.
 
-For example, you might have named the original option `rules` when the more
-appropriate name for the option would have been `irules`.
+For example, you might have named the original option `rules`, when the more appropriate name for the option would have been `irules`.
 
 .. note::
 
-   Ansible allows for aliasing of options so that specifying one is equivalent
-   to specifying another. This is *not* the situation that we are referring to
-   here. It is still perfectly acceptable to use option aliases if you want
-   to. These guidelines are for when you specifically want to *remove* options
-   that are presumably already in use.
+   Ansible allows for aliasing of options so that specifying one is equivalent to specifying another. This is *not* the situation that we are referring to here. It is still perfectly acceptable to use option aliases if you want to. These guidelines are for when you specifically want to *remove* options that are presumably already in use.
 
-Here is a sample `ArgumentSpec` from the version where we made the mistake.
-Let's assume that this mistake was made in version 2.0.
+Here is a sample `ArgumentSpec` from the version where we made the mistake. Let's assume we made this mistake in version 2.0.
 
 .. raw::python
 
@@ -126,8 +105,7 @@ Let's assume that this mistake was made in version 2.0.
            )
            self.f5_product_name = 'bigip'
 
-Now, we wish to deprecate that option name. So, in version 2.1 of Ansible, we
-would do something like this.
+Now, we wish to deprecate that option name. In version 2.1 of Ansible, we would do something like this:
 
 .. raw::python
 
@@ -150,11 +128,9 @@ would do something like this.
            )
            self.f5_product_name = 'bigip'
 
-Additionally, we would include the warnings necessary to make the user of the
-module aware that they are using deprecated functionality (the `rules` option).
+Additionally, we would include the warnings necessary to make the user aware that they are using deprecated functionality (the `rules` option).
 
-Finally, during the release cycle of Ansible 2.2, we would want to change our
-spec to look like so.
+Finally, during the release cycle of Ansible 2.2, we would want to change our spec to look like this:
 
 .. raw::python
 
@@ -173,8 +149,6 @@ spec to look like so.
            )
            self.f5_product_name = 'bigip'
 
-Thus, removing the deprecated functionality.
+This removes the deprecated functionality.
 
-Also, do not forget to remove any mention of the deprecation inside the actual
-module code. We don't want the legacy code to stick around. This helps keep
-technical debt at bay.
+Also, do not forget to remove any mention of the deprecation inside the actual module code. We don't want the legacy code to stick around. This helps keep technical debt at bay.

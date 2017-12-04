@@ -1,65 +1,40 @@
-Code Conventions
+.. _designdecisions:
+
+Design Decisions
 ================
 
-The following is a document that describes some of the design decisions that
-went into the F5 Ansible modules and why they were made. This document is
-intended to address any contributor, or customer, questions on why I did
-what I did and the known limitations for this design.
+This document describes some of the design decisions for the F5 Ansible modules.
 
-SSH is not used. REST is
+SSH is not used; REST is
 ------------------------
 
-This is a question that comes up rather frequently.
-
-  Why don't the modules use ssh?
-
-After all, the "other" networking modules use SSH for their communication
-with their remote devices.
-
-This is a complicated question to answer because there are __many__ reasons
-why this was decided upon. I will try to explain all of those reasons below.
+You may wonder why the modules don't use SSH for communication.
 
 TMSH is not an API
 ^^^^^^^^^^^^^^^^^^
 
-At F5, regardless of what you might here or read online, `tmsh` is not considered
-to be a formal API.
+`tmsh` is not considered to be a formal API.
 
-Now, there are some people who will try to argue about this and justify their
-argument by saying that, "well, tmsh is a publicly available way to interact
-with the BIG-IP, therefore it is implicitly an API".
+While `tmsh` is a publicly available way to interact with BIG-IP, compared to other formal APIs, it has none of the features of "real" APIs.
 
-While `tmsh` is indeed a publicly available way to interact with the BIG-IP,
-it is not considered by anyone at F5 to be an API. You will notice, compared
-to other APIs that are formal, that it has none of the features of "real"
-APIs.
+In addition to missing many features of "normal" APIs, it also is not guaranteed to be consistent across versions of BIG-IP.
 
-In addition to missing many features of "normal" APIs, it also is not guaranteed
-to be consistent across versions of BIG-IP.
+You should not rely on `tmsh` for anything except in cases when you have no other choice. And in those cases, you must handle the versioning of it.
 
-You should not rely on `tmsh` for anything except in cases where you have no other
-choice. And in those cases, you must handle the versioning of it yourself.
+The company decided to put all of their effort into REST
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The company had decided to put all their effort into REST
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+When the REST pattern of API development became popular, F5 put some work into making a REST wrapper around `tmsh`. That is what you have today; a wrapper around calls to `tmsh`.
 
-When the REST pattern of API development became popular, F5 put some work into
-making a REST wrapper around `tmsh`. That is what you have today; a wrapper around
-calls to `tmsh`.
+To understand why the REST API is where the company has put more effort, you need to understand the history of the SOAP API at F5.
 
-To understand why the REST API is where the company has put more effort, you need
-to understand the history of the SOAP API at F5.
+It is surprisingly difficult for a team to develop for the SOAP API. The REST API is easier to code for. Additionally, the REST APIs curiously map almost directly to the `tmsh` command you would use. Coincidence? Hardly. Remember, it's `tmsh`.
 
-It is surprisingly difficult for a team to develop for the SOAP API. The REST API
-is easier to code for. Additionally, the REST APIs curiously map almost directly
-to the `tmsh` command you would use. Coincidence? Hardly. Remember, it's `tmsh`.
+There is still new functionality being added to SOAP, but most of the engineers at F5 are focused on providing REST functionality.
 
-There is still new functionality being added to SOAP, but most of the engineers at
-F5 are focused on providing REST functionality.
-
-* It's natively built into most all programming languages
-* It's more easily supported in our future javascript-based iAppLX effort
-* It's pretty close to native `tmsh`
+- It's natively built into most all programming languages.
+- It's more easily supported in our future javascript-based iApp LX effort.
+- It's pretty close to native `tmsh`.
 
 SSH on BIG-IP can cause auth errors when under heavy load
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
