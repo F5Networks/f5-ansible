@@ -27,7 +27,8 @@ devtools/docker-compose.site.yaml
 test/integration/inventory/hosts
 test/integration/inventory/group_vars/all.yaml
 ./ansible/
-tmp/ansible.junit/*.xml
+tmp/
+!tmp/.gitkeep
 
 examples/hosts.ini
 **/.DS_Store
