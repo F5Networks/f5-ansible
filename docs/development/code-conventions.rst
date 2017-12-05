@@ -12,7 +12,7 @@ When you write modules and their accompanying tests and docs, follow these codin
 Use the complex/structure map format
 ------------------------------------
 
-In reference to Jeff Geerling's page, this format looks like this.
+In reference to Jeff Geerling's page |geerling|, this format looks like this:
 
 .. code-block:: yaml
 
@@ -26,7 +26,7 @@ In reference to Jeff Geerling's page, this format looks like this.
         validate_certs: "{{ validate_certs }}"
      register: result
 
-F5 uses this format for several reasons, Geerling's.
+F5 uses this format for several reasons, including Geerling's.
 
 - The structure is all valid YAML that uses the structured list/map syntax.
 - Strings, booleans, integers, octals, etc. are all preserved (instead of converted to strings).
@@ -36,6 +36,13 @@ F5 uses this format for several reasons, Geerling's.
 In addition, some situations will raise syntax errors if you use the simple ``key=value`` format.
 
 Finally, it saves on space and is easier to read and know (by looking) what the arguments to the module are.
+
+.. |geerling| raw:: html
+
+   <a href="http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks" target="_blank">here</a>
+
+
+
 
 Alphabetize the module's parameters
 -----------------------------------
@@ -461,7 +468,11 @@ Check mode allows Ansible to run your Playbooks in a dry-run sort of operation. 
 
 Because BIG-IPs are usually considered a sensitive device to handle, you should always implement a check mode.
 
-http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks
+|playbook|
+
+.. |playbook| raw:: html
+
+   <a href="http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks" target="_blank">http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks</a>
 
 Do not use local_action in your EXAMPLES
 ----------------------------------------
@@ -496,8 +507,8 @@ Therefore, do not use `local_action` when defining examples. Instead, use `deleg
          key: "setup.run"
          state: "reset"
 
-Format common parameters consistently
--------------------------------------
+Set default EXAMPLE parameters
+------------------------------
 
 For consistency, always use the following values for the given parameters:
 
