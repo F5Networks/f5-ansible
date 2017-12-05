@@ -40,8 +40,8 @@ options:
       - vs
   destination:
     description:
-      - Destination IP of the virtual server (only host is currently
-        supported). Required when state=present and vs does not exist.
+      - Destination IP of the virtual server.
+      - Required when C(state) is C(present) and virtual server does not exist.
     required: True
     aliases:
       - address
