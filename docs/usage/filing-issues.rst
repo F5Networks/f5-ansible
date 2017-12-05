@@ -8,13 +8,9 @@ For F5 to triage as quickly as possible, please follow these guidelines.
 Be verbose
 ----------
 
-When you file an issue with the F5 Ansible modules, an Issue template appears. For example:
+When you file an issue with the F5 Ansible modules, an Issue template appears.
 
-.. figure:: ./../images/issues_template.png
-
-|
-
-F5 will try to reproduce your environment, so please provide as much information as possible.
+F5 will try to reproduce your environment, so in the template, please provide as much information as possible.
 
 Some things F5 wants to know are:
 
@@ -30,11 +26,13 @@ Some things F5 wants to know are:
 
 The Issue template asks these questions.
 
+If the issue seems to be a bug, add the label `bug-report` to it.
+
 Some of the things that F5 **does not** want, and will **never** ask for are:
 
 - passwords
 - license keys
-- **public** disclose of your company or company contact info
+- **public** disclosure of your company or company contact info
 
 
 Do not comment on closed issues

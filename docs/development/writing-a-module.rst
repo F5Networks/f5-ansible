@@ -1,46 +1,36 @@
 Writing a Module
 ================
 
-Let's explore what it takes to write a module using the provided guidelines
-and standards.
+The following tutorial explains how to create a module.
 
-Getting Started
----------------
+Give the module a name
+----------------------
 
-The first step is to decide what you will call your module. For this tutorial
-we will recreate the functionality of the ``bigip_device_sshd`` module as it
-provides good examples of the common idioms you will encounter when developing
-or maintaining modules.
+The first step is to decide what to call your module. This tutorial recreates the ``bigip_device_sshd`` module, because it provides good examples of the common idioms you will encounter when developing or maintaining modules.
 
-Because this module already exists, let's just slightly change the name of
-our module to the following
+Because this module already exists, change the name of the module to the following:
 
-  ``bigip_device_ssh``
+``bigip_device_ssh``
 
-This name will additionally prevent you from tab'ing to the existing sshd
-module.
+This name will prevent you from tabbing to the existing sshd module.
 
 Create the directory layout
 ---------------------------
 
-There are a number of files and directories that need to be created to hold
-the various tests and validation code in addition to just your module.
+In addition to your module, there are a number of files and directories you must create to hold the various test and validation code.
 
-To create the necessary directories and files, an executable file is
-available for you to use to set these directories up automatically.
+To create the necessary directories and files automatically, use this executable file:
 
 .. code-block:: shell
 
     $> ./devtools/bin/stubber.py --module MODULE_NAME stub
 
-When it finishes running, you will have the necessary files available to
-begin working on your module.
+When it finishes running, you will have the necessary files available to begin working on your module.
 
-Stubbed files
--------------
+Stub files
+----------
 
-The stubber creates a number of files that you need to then go through and
-do some form of development on. These files are
+The stubber creates a number of files that you need to do some form of development on. These files are:
 
 * ``docs/modules/MODULE_NAME.rst``
 * ``library/MODULE_NAME.py``
@@ -48,14 +38,12 @@ do some form of development on. These files are
 * ``test/integration/targets/MODULE_NAME/``
 * ``test/unit/bigip/test_MODULE_NAME.py``
 
-The DOCUMENTATION variable
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+DOCUMENTATION variable
+``````````````````````
 
-The next chunk of code that you will insert describes the module, what
-parameters is accepts, who the authors/maintainers are, its dependencies,
-etc.
+The next chunk of code that you will insert describes the module, which parameter it accepts, who the authors/maintainers are, its dependencies, etc.
 
-Let's look at the code that we will add to our module.
+Here is an example of the code you will add to your module.
 
 .. code-block:: python
 
@@ -111,10 +99,9 @@ Let's look at the code that we will add to our module.
      - Tim Rupp (@caphrim007)
    '''
 
-Most documentation variables have a common set of keys and only differ in the
-values of those keys.
+Most documentation variables have a common set of keys and only differ in the values of those keys.
 
-The keys that one commonly finds are
+The keys that you commonly find are:
 
 * ``module``
 * ``short_description``
@@ -128,29 +115,22 @@ The keys that one commonly finds are
 
 .. note::
 
-    The `extends_documentation_fragment` key is special as it is what will
-    automatically inject the variables `user`, `password`, `server`,
-    `server_port` and `validate_certs` into your documentation. It should
-    be used for all modules.
+   The `extends_documentation_fragment` key is special as it automatically injects the variables `user`, `password`, `server`, `server_port`, and `validate_certs` into your documentation. You should use it for all modules.
 
-Additionally, you should take note that Ansible upstream has several rules for
-their documentation blocks. At the time of this writing, the rules include
+Additionally, note that Ansible upstream has several rules for their documentation blocks. At the time of this writing, the rules include:
 
-* If a parameter is *not* required, **do not** include a `required: false` field
-  in the parameter's `DOCUMENTATION` section.
+- If a parameter is *not* required, **do not** include a `required: false` field in the parameter's `DOCUMENTATION` section.
 
-The EXAMPLES variable
-~~~~~~~~~~~~~~~~~~~~~
+EXAMPLES variable
+`````````````````
 
-The examples variable contains the most common use cases for this module.
+The EXAMPLES variable contains the most common use cases for this module.
 
-I personally think that setting of the banner will be the most common case,
-but future authors are free to add to my examples.
+Setting the banner is the most common case, but you are free to add to these examples.
 
-These examples will also serve as a basis for the functional tests that we
-will write shortly.
+These examples also serve as a basis for the functional tests.
 
-For this module, our ``EXAMPLES`` variable looks like this.
+For this module, the ``EXAMPLES`` variable looks like this:
 
 .. code-block:: python
 
@@ -182,59 +162,49 @@ For this module, our ``EXAMPLES`` variable looks like this.
      delegate_to: localhost
    '''
 
-This variable should be placed __after__ the ``DOCUMENTATION`` variable.
+This variable should go __after__ the ``DOCUMENTATION`` variable.
 
-The examples that you provide should always have the following
+The examples that you provide should always have the following:
 
 **delegate_to: localhost**
 
-The BIG-IP modules are intended to run on the Ansible controller only. The
-best practice is to use this `delegate_to:` here so that users get in the
-habit of using it
+You should run the BIG-IP modules on the Ansible controller only. The best practice is to use `delegate_to:` here so that you get in the habit of using it.
 
 **common args**
 
-The common args as as follow
+The common args as as follows:
 
-  * `password` should always be set to `secret`
-  * `server` should always be set to `lb.mydomain.com`
-  * `user` should always be set to `admin`
+- `password` should always be `secret`
+- `server` should always be `lb.mydomain.com`
+- `user` should always be `admin`
 
-The RETURN variable
-~~~~~~~~~~~~~~~~~~~
+RETURN variable
+```````````````
 
-The pattern which we follow is that we always return what changed in the
-module's parameters when the module has finished running.
+When a module finishes running, F5 always returns the changes by using the module's parameters.
 
-The parameters that I am referring to here are the ones that are not considered
-to be the "standard" parameters to the F5 modules. Some exceptions to this rule
-apply. For example, where the `state` variable contains more states than just
-`absent` and `present`, such as in the `bigip_virtual_server` module.
+Some exceptions to this rule apply. For example, where the `state` variable contains more states than just `absent` and `present`, such as in the `bigip_virtual_server` module.
 
-For our module these include,
+For the sample module, these values include:
 
-  * ``banner``
-  * ``banner_text``
-  * ``inactivity_timeout``
-  * ``log_level``
-  * ``login``
+- ``banner``
+- ``banner_text``
+- ``inactivity_timeout``
+- ``log_level``
+- ``login``
 
-The ``RETURN`` variable describes these values, specifies when they are
-returned and provides examples of what the values returned might look like.
+The ``RETURN`` variable describes these values, specifies when they're returned, and provides examples of what the values returned might look like.
 
-When the Ansible module documentation is generated, these values are presented
-in the form of a table. Here is the RETURN variable that we would place in
-our module file.
+When the Ansible module documentation generates, these values are output in a table.
 
 The import block
-~~~~~~~~~~~~~~~~
+````````````````
 
-The next section in our code is the block of code where our `import`s happen.
+The next section is the block of code where the imports happen.
 
-This code usually just involves importing the `module_util` helper libraries, but
-may also include imports of other libraries if you are working with legacy code.
+This code usually just involves importing the ``module_util`` helper libraries, but may also include imports of other libraries if you are working with legacy code.
 
-For this module our import block is the following
+For this module, the import block is:
 
 .. code-block:: python
 
@@ -250,23 +220,16 @@ For this module our import block is the following
    except ImportError:
        HAS_F5SDK = False
 
-In 90% of cases, this code is boilerplate and can be ignored by the developer
-when writing a module. `stubber.py` takes care of this for you.
+In 90% of cases, this code is boilerplate and you can ignore it when writing a module. `stubber.py` takes care of this for you.
 
 ModuleManager class
-~~~~~~~~~~~~~~~~~~~
+```````````````````
 
-The next block of code is the skeleton for our module's `Manager` class. We
-encapsulate most of our module's steering code inside this class. It acts as
-the traffic cop, determining which path the module should take to reach the
-desired outcome.
+The next block of code is the skeleton for the module's `Manager` class. Most of our module's steering code is inside this class. It acts as the traffic cop, determining which path the module should take to reach the desired outcome.
 
-The `Manager` class is where the specifics of your code will be. The `stubber`
-will create a generic version of this for you. It is your responsibility to
-change the API calls as needed.
+The `Manager` class is where the specifics of your code will be. The `stubber` will create a generic version of this for you. It is your responsibility to change the API calls as needed.
 
-Below are examples of the different versions of the design standards that
-have existed at one point or another
+Below are examples of the different versions of the design standards that have existed at one point or another:
 
 * `version 3.3 (proposed)`_
 * `version 3.2 (current)`_
@@ -277,47 +240,38 @@ have existed at one point or another
 
 .. note::
 
-   The ModuleManager class will change over time as our design standards
-   change. The above examples are used for historical reference and training.
+   The ``ModuleManager`` class will change over time as design standards change. The above examples are for historical reference and training.
 
 For the implementation specifics, refer to the existing module.
 
-A deep dive into the major differences between the different versions of
-design standards `can be found here`_.
+A deep dive into the major differences between the different versions of design standards are here: :ref:`designdecisions`.
 
-Connecting to Ansible
----------------------
+Connect to Ansible
+------------------
 
-With the implementation details of the module complete, we move on to
-the code that hooks the module up to Ansible itself.
+After you complete the implementation details of the module, you can work on the code that hooks the module up to Ansible itself.
 
 The main function
-~~~~~~~~~~~~~~~~~
+`````````````````
 
-This code begins with the definition of the ``main`` function.
-
-This code should be placed __after__ the definition of your class which
-you wrote earlier. Here is how we begin.
+This code begins with the definition of the ``main`` function. This code should come after the definition of your class that you wrote earlier.
 
 .. code-block:: python
 
    def main():
 
 Argument spec and instantiation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```````````````````````````````
 
-Next, we generate the common argument spec using a utility method of Ansible.
+Next, generate the common argument spec using a utility method of Ansible.
 
 .. code-block:: python
 
    argument_spec = f5_argument_spec()
 
-With the ``argument_spec`` generated, we update the values in it to match
-the ``options`` we declared in our ``DOCUMENTATION`` variable earlier.
+With the ``argument_spec`` generated, update the values in it to match the ``options`` you declared in your ``DOCUMENTATION`` variable earlier.
 
-The values that you must specify here are, again, the ones that are **not**
-common to all F5 modules. Below is the code we need to update our
-``argument_spec``
+The values that you must specify here are, again, the ones that are **not** common to all F5 modules. Below is the code you need to update your ``argument_spec``.
 
 .. code-block:: python
 
@@ -332,9 +286,7 @@ common to all F5 modules. Below is the code we need to update our
    )
    argument_spec.update(meta_args)
 
-After the ``argument_spec`` has been updated, we instantiate an instance
-of our class, providing the ``argument_spec`` and the value that indicates
-we support Check mode.
+After you update the ``argument_spec``, instantiate an instance of the class, providing the ``argument_spec`` and the value that indicates it supports Check mode.
 
 .. code-block:: python
 
@@ -343,21 +295,16 @@ we support Check mode.
        supports_check_mode=True
    )
 
-All F5 modules **must** support Check Mode as it allows an administrator to
-determine whether a change will be made or not when the module is run
-against their devices.
+All F5 modules **must** support Check Mode, because you can use it to determine if the module makes changes when it's run against your devices.
 
 Try and module execution
-~~~~~~~~~~~~~~~~~~~~~~~~
+````````````````````````
 
-The next block of code that is added is a general execution of your class.
+The next block of code is a general execution of your class.
 
-We wrap this execution inside of a try...except statement to ensure that
-we handle know errors and bubble up known errors.
+Wrap this execution inside of a ``try...except`` statement to ensure that you handle known errors.
 
-Never include a general Exception handler here because it will hide the
-details of an unknown exception that we require when debugging an unhandled
-exception.
+Never include a general Exception handler here because it hides the details of an unknown exception.
 
 .. code-block:: python
 
@@ -370,40 +317,32 @@ exception.
        module.fail_json(msg=str(e))
 
 Common running
-~~~~~~~~~~~~~~
+``````````````
 
-The final two lines in your module inform Python to execute the module's
-code if the script being run is itself executable.
+The final two lines in your module inform Python to execute the module's code if the script itself is executable.
 
 .. code-block:: python
 
    if __name__ == '__main__':
        main()
 
-Due to the way that Ansible works, this means that the ``main`` function
-will be called when the module is sent to the remote device (or run locally)
-but will not be called if the module is imported.
+Because of how Ansible works, this means that when the ``main`` function contacts the remote device (or runs locally), it is not called if you import the module.
 
-You would import the module if you were using it outside of Ansible, or
-in some sort of test environment where you do not want the module to
-actually run.
+You would import the module if you were using it outside of Ansible, or in some sort of test environment where you do not want the module to actually run.
 
-Testing
--------
+Test your module
+----------------
 
-Providing tests with your module is a crucial step for having it merged and
-subsequently pushed upstream. We rely heavily on testing.
+Providing tests with your module is a crucial step for having it merged and subsequently pushed upstream.
 
-In this section I will go in to detail on how our tests are organized and
-how you can write your own to ensure that your modules works as designed.
+This section provides detail on the organization of tests and how you can write your own to ensure that your modules work as designed.
 
 Connection variables
-~~~~~~~~~~~~~~~~~~~~
+````````````````````
 
-It is not required that you specify connection-related variables for each
-task. These values are provided for you automatically at the playbook level.
+You do not have to specify connection-related variables for each task. The playbook provides these values automatically.
 
-These values include,
+These values include:
 
 * `server`
 * `server_port`
@@ -412,78 +351,63 @@ These values include,
 * `validate_certs`
 
 Style checks
-~~~~~~~~~~~~
+````````````
 
-We make use of the ``pycodestyle`` command to ensure that our modules meet
-certain coding standards and compatibility across Python releases.
+F5 uses the ``pycodestyle`` command to ensure that all modules meet certain coding standards and compatibility across Python releases.
 
-You can run the style tests via the ``make`` command
+You can run the style tests via the ``make`` command:
 
 .. code-block:: bash
 
    make style
 
-Before submitting your own module, it is recommended that your module pass
-the style tests we ship with the repository. We will ask you to update
-your code to meet these requirements if it does not.
+Before submitting your own module, your module must pass the style tests that F5 ships with the repository.
 
 Integration/Functional tests
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+````````````````````````````
 
-This is probably the most important part of testing, so let's go in to
-detail on this part.
+This is probably the most important part of testing.
 
-Functional tests are required during module submission so that we (F5)
-and you, the developer, can agree that a module works on a particular
-platform.
+When you submit your module, you must submit functional tests, so that you and F5 can agree that a module works on a particular platform.
 
-We will test your module on a variety of versions automatically when
-a new PR is submitted, and from there provide feedback if something does
-not fly.
+When you submit a new PR, F5 will test your module on a variety of versions automatically, and will provide feedback if issues exist.
 
 Structure of tests
-^^^^^^^^^^^^^^^^^^
+``````````````````
 
-Test file stubs are created for you automatically when you stub a new
-module.
+When you stub a new module, test file stubs are automatically created.
 
-First, let's look at the layout of a set of tests. A test is composed of
-a role whose name matches the name of the module that is being tested.
+First, let's look at the layout of a set of tests. A test includes a role whose name matches the name of the module you are testing.
 
-This role is placed in the `tests/integration/targets/` directory.
+This role goes in the `tests/integration/targets/` directory.
 
-So, for our example, our test role looks like this.
+For example, a test role might look like this:
 
-   * `test/integration/targets/MODULE_NAME/`
+- `test/integration/targets/MODULE_NAME/`
 
-Inside of this role is everything that you would associate with a normal
-role in ansible.
+This role has everything you would associate with a normal role in ansible.
 
-Consider the following examples.
+Consider the following examples:
 
-  * if your test requires static files be used, then a `files/` directory
-    should be in your role.
-  * if your test requires template data (for example iRules) for its
-    input, then a `templates/` directory should be in your role.
-  * all roles will perform some work to test the module, so a `tasks/`
-    directory should be in your role.
+- If your test requires static files, then a `files/` directory should be in your role.
+- If your test requires template data (for example, iRules) for its input, then a `templates/` directory should be in your role.
+- All roles will perform some work to test the module, so a `tasks/` directory should be in your role.
 
 Now let's dig in to what a test should look like.
 
 Test content
-------------
+````````````
 
 The test itself will follow the pattern below.
 
-  - Perform some operation with the module
-  - Assert a change (and optionally other values)
-  - Perform the same operation again (identical)
-  - Assert no change
+- Perform some operation with the module
+- Assert a change (and optionally other values)
+- Perform the same operation again (identical)
+- Assert no change
 
-All of the tests work like this, and it is a decent smoke test for all modules
-until such time as we take the testing further.
+All of the tests work like this, and it is a decent smoke test for all modules.
 
-Here is an example of a test from the `bigip_device_sshd` module.
+Here is an example of a test from the `bigip_device_sshd` module:
 
 .. code-block:: yaml
 
@@ -500,31 +424,24 @@ Here is an example of a test from the `bigip_device_sshd` module.
          that:
              - result|changed
 
-As you can see, pretty straightforward.
 
-We use the module and then we check that the result we `register` was
-changed. Tests for idempotence (the last two bullets above) are shown in
-the section below.
+You use the module and then check that the result you `register` changed. Tests for idempotence (the last two bullets above) are in the following section.
 
 Test variables
---------------
+``````````````
 
-Information specific to the tests that you need to run should be
-put in the `defaults/main.yaml` file of your test role.
+Information specific to the tests that you need to run should be in the `defaults/main.yaml` file of your test role.
 
-By putting them there, you allow individuals to override values in your test
-by providing arguments to the CLI at runtime.
+By putting them there, you allow individuals to override values in your test by providing arguments to the CLI at runtime.
 
 The idempotent test
--------------------
+```````````````````
 
-All tests that change data should also include a test right after it that
-tries to perform the same test, but whose result is expected to *not* change.
+All tests that change data should include a subsequent test that tries to perform the same test, but whose result you do *not* expect to change.
 
-These are called idempotent tests because they ensure that the module only
-changes settings if the setting needs to be changed.
+These are idempotent tests because they ensure that the module only changes settings if needed.
 
-Here is an example of the previous test as an idempotent test
+Here is an example of the previous test as an idempotent test:
 
 .. code-block:: yaml
 
@@ -539,49 +456,40 @@ Here is an example of the previous test as an idempotent test
          that:
              - not result|changed
 
-There are two things to note here.
+**Notes:**
 
-First, the test code itself is identical to the previous test.
+- The test code itself is identical to the previous test.
 
-Second, note that we changed the name of the test to include the string
-``"- Idempotent check"`. This gives reviewers the ability to visually note
-that this is an idempotent test.
+- The test name includes the string ``"- Idempotent check"``. This gives reviewers the ability to visually note that this is an idempotent test.
 
-Third, note that in our assertion, we are check that the result has *not*
-changed. This is the important part because it is what ensures that the
-test itself was idempotent.
+- The assertion checks that the result has *not* changed. This is the important part, because it ensures that the test itself was idempotent.
 
-Now lets look at how you call the test.
+Now let's look at how you call the test.
 
 Calling the test
-----------------
+````````````````
 
-To call the test and run it, this repo includes a `make` command that is
-available for all modules. The name of the make target is the name of your
-module.
+To call the test and run it, this repo includes a `make` command that is available for all modules. The name of the `make` target is the name of your module.
 
-So, for our example, that `make` command would be.
+For this example, the `make` command would be:
 
-  * make bigip_device_ssh
+- make bigip_device_ssh
 
-This command will run the module functional tests for you in debug mode.
+This command will run the module functional tests in debug mode.
 
-You may optionally call the tests with the literal `ansible-playbook` command
-if you need to do things like,
+You may optionally call the tests with the literal `ansible-playbook` command if you need to do things like:
 
-* stepping (`--step`)
-* starting at a particular task (`--start-at-task`)
-* running tasks by tag name (`--tags issue-00239`)
+- stepping (`--step`)
+- starting at a particular task (`--start-at-task`)
+- running tasks by tag name (`--tags issue-00239`)
 
-To run the tests without `make`, first, change to the following directory.
+To run the tests without `make`, first, change to the following directory:
 
-* `test/integration`
+- `test/integration`
 
-Next, find the playbook that matches the module you wish to test. Using this
-playbook, run `ansible-playbook` as you normally would. A hosts file is
-included for you in the working directory you are in.
+Next, find the playbook that matches the module you wish to test. Using this playbook, run `ansible-playbook` as you normally would. A hosts file is in your working directory.
 
-An example command might be,
+An example command might be:
 
 .. code-block:: bash
 
@@ -590,39 +498,26 @@ An example command might be,
 This is the most flexible option during debugging.
 
 Including supplementary information
------------------------------------
+```````````````````````````````````
 
-If you include files inside of the `files/`, `templates`, or other directories
-in which the content of that file was auto-generated or pulled from a third
-party source, you should include a `README.md` file in your role's directory.
+If you include files inside of the `files/`, `templates`, or other directories in which the content of that file was auto-generated or pulled from a third party source, you should include a `README.md` file in your role's directory.
 
-Inside of this file, you can include steps to reproduce any of the input
-items that you include in the role subdirectories.
+In this file, you can include steps to reproduce any of the input items that you include in the role subdirectories.
 
-In addition, this place is also a good location to include references to third
-party file locations if you have included them in the tests. For example, if
-you were to include iRules or other things that you downloaded and included
-from DevCentral or similar.
+In addition, this is a good location to include references to third party file locations if you have included them in the tests. For example, if you were to include iRules or other things that you downloaded and included from DevCentral or similar.
 
-The `README.md` is there for future developers to reference the information
-needed to re-create any of the inputs to your tests in case they need to.
+The `README.md` is there for future developers to reference the information needed to re-create any of the inputs to your tests.
 
 Other testing notes
--------------------
+```````````````````
 
-When writing your tests, you should concern yourself with "undoing" what you
-previously have done to the test environment.
+When writing your tests, you should concern yourself with "undoing" what you have done previously to the test environment.
 
-Test testing environment (at the time of this writing) boots harnesses for
-each suite of tests. That means that all tests are run on the same harness.
+The test environment (at the time of this writing) boots harnesses for each suite of tests. That means that all tests run on the same harness.
 
-Therefore, any changes you may make in one of the integration tests might
-accidentally be used as a basis in subsequent tests. You do not want this
-because it makes using additional the `ansible-playbook` arguments specified
-above exceedingly difficult.
+Therefore, someone might accidentally use changes you made in one of the integration tests as a basis for subsequent tests. This makes using the `ansible-playbook` arguments specified previously exceedingly difficult.
 
-Therefore, please cleanup after yourself. Since you need to test the `absent`
-case in most cases, this is a good opportunity to do that.
+Therefore, please cleanup after yourself. Since you need to test the `absent` case in most cases, this is a good opportunity to do that.
 
 .. _version 1: https://github.com/F5Networks/f5-ansible/blob/b0d2afa1ad0b5bef29526477bb1ca0cdfd74ff74/library/_bigip_node.py
 .. _version 2: https://github.com/F5Networks/f5-ansible/blob/b6a502034e21d1d7039ec0cbb642e22259d646fc/library/bigip_routedomain.py

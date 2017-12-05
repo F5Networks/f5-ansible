@@ -33,7 +33,6 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/getting-involved
    /development/guidelines
    /development/tests
-   /development/architecture
    /development/code-conventions
    /development/upstreaming
    /development/writing-a-module
@@ -44,7 +43,6 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/testing-pipeline
    /development/securing-sensitive-information
    /development/ssh-functionality-for-modules
-   /development/issue-management
    /development/pulling-docker-containers
    /development/tutorials/adding-new-admin-to-encrypted-files
    /development/parameters

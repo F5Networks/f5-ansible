@@ -1,178 +1,105 @@
 Getting involved
 ================
 
-So you want to get involved with this project. Great!
+Thank you for getting involved with this project.
 
-Becoming involved in this project can take a variety of angles. The
-maintainers spend their time camping this repository as well as contributing
-upstream to the Ansible core product. We can be reached on either forum.
+Becoming involved can take a variety of angles. The people who maintain this project spend their time camping this repository as well as contributing upstream to the Ansible core product, and you can reach them on either forum.
 
-Before you jump feet first in to coding, let me give you some idea of the
-workload involved in module development. This is not intended to scare
-you away, but only to set your expectations.
+Before you jump feet first in to coding, here is some information that can help set your expectations.
 
-What is expected from you
--------------------------
+Developing and supporting your module
+-------------------------------------
 
-First and foremost, we expect you to *bring a good attitude*. These modules
-are developed out of our own personal interests in Ansible; there is
-no official team here.
+When you develop a modules, it will go through review before F5 accepts it. This process may be difficult at times, but it ensures the published modules are good quality.
 
-With that said, we want to keep the environment from getting bogged down
-in a bad mood.
+You should *stay up to date* with this site's documentation about module development. As time goes on, things change and F5 and the industry adopt new practices. As this happens, F5 tries to keep the documentation up to date.
 
-The development of a module will require some effort on your part. Often
-times the countless reviews might seem frustrating, but believe us, we do
-it for good reason.
+If you develop a module that uses an out-of-date convention, F5 will let you know, and you should take the initiative to fix it.
 
-By becoming involved with developing a module, you're accepting that your
-contribution will probably not be accepted right off the bat. If you're
-willing to work with us though, and understand the direction we're headed
-in, you will more than likely find your module landing here.
+Ansible requires that the people listed in the author field (usually those who wrote the module) take responsibility for the ongoing maintenance and support of the module.
 
-We expect that you *stay up to date* with the documentation of this site
-concerning module development. As time goes on, things change and new
-practices are adopted. As this happens, we try to keep the documentation
-up to date with these changes.
+Understandably, this might be a big issue for you, so when your module merges to the F5 repo, F5 becomes one of the authors of the code.
 
-If you develop a module use an out-of-date convention, we will tell you
-so upon review. It is then expected that you take the initiative to fix
-it.
-
-Part of Ansible's requirements for this is that the people listed in
-the author field (usually those who wrote the module) take responsibility
-for the ongoing maintenance and support of the module.
-
-Understandably this might be a big issue for you, so we are offering to
-assist. When your module is merged to our repo here, we lists ourselves
-as one of the authors of the code.
-
-With this in place, and with the addition of us opening the PR with Ansible
-upstream, we think this will be sufficient to meet their needs for ongoing
-maintenance. This is a joint effort though, so lets work together to ensure
-that the module stays in Core. Modules that can no longer be supported
-by their authors are removed from Ansible.
+With this in place, and with the addition of F5 opening the PR with Ansible upstream, this should be sufficient to meet Ansible's needs for ongoing maintenance. This is a joint effort though, so let's work together to ensure that the module stays in Core. Ansible removes modules that the authors can no longer be support.
 
 What to work on
 ---------------
 
-While module development is the primary focus of most contributors, it's
-understandable that you may not know how to write Python, or may not have
-any interest in writing code to begin with.
+While module development is the primary focus of most contributors, it's understandable that you may not know how to write Python, or may not have any interest in writing code to begin with.
 
-That's ok. Here are some existing things you can do to assist.
+That's OK. Here are some things you can do to assist.
 
 Documentation
-~~~~~~~~~~~~~
+`````````````
 
-This is always needed. I write documentation that focuses on many of the
-moving parts here, but I can't cover it all and will inevitably miss things.
-
-Submitting documentation improvements is encouraged.
+Documentation help is always needed. F5 encourages you to submit documentation improvements.
 
 Unit tests
-~~~~~~~~~~
+``````````
 
-The unit tests in the `test/` directory can always use more love. Unit
-tests run fast and so more of them is not a burden on the test runner.
+The unit tests in the `test/` directory can always use work. Unit tests run fast and are not a burden on the test runner.
 
-Add more test cases for your particular usage scenarios or any scenarios
-that may have been missed.
+Add more test cases for your particular usage scenarios or any other scenarios that are missing tests.
 
-I personally only add enough unit tests to be reasonably comfortable that
-the code will execute right. This, unfortunately, does not cover many of
-the functional test cases. So writing unit test versions of functional
-tests is of huge benefit.
+F5 adds enough unit tests to be reasonably comfortable that the code will execute correctly. This, unfortunately, does not cover many of the functional test cases. Writing unit test versions of functional tests is of huge benefit.
 
-New module ideas
-~~~~~~~~~~~~~~~~
+New modules
+```````````
 
-We don't have modules to cover all of the ways our products are used.
-If you find that a module is missing from the repo and you think needs
-to be added, I will entertain those ideas on the Github Issues page
+Modules do not cover all of the ways you might use F5 products. If you find that a module is missing from the repo and you think F5 should add it, put those ideas on the Github Issues page.
 
 New functionality for an existing module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+````````````````````````````````````````
 
-Even the existing modules do not cover all the bells and whistles that
-customers use.
-
-If a module is missing a parameter that you think it should have, raise
-and issue and we will consider it.
+If a module is missing a parameter that you think it should have, raise the issue and F5 will consider it.
 
 Postman collections
-~~~~~~~~~~~~~~~~~~~
+```````````````````
 
-The Ansible modules make use of the F5 Python SDK for all of their work.
-In the SDK, all work is accomplished via the product REST APIs and this
-just happens to fit in perfectly with the tool Postman.
+The Ansible modules make use of the F5 Python SDK. In the SDK, all work is via the product REST APIs and this just happens to fit in perfectly with the Postman tool.
 
-If you want to help us work on new modules without involving yourself
-in Python code, a great way to start is to write Postman collections
-for the APIs that configure on the BIG-IP what you want to configure.
+If you want to work on new modules without involving yourself in Python code, a great way to start is to write Postman collections for the APIs that configure BIG-IP.
 
-If you provide us with the Postman collections, this makes it really
-easy for us to write the Ansible module itself.
+If you provide F5 with the Postman collections, this F5 can easily write the Ansible module itself.
 
-This is the approach that many of the F5 teams who do not work in
-software land all day long take because it is super effective. Bonus
-points for collections that address differences in APIs between
-versions of BIG-IP
+This is the approach many of the non-dev F5 teams take because it is super-effective. Bonus points for collections that address differences in APIs between versions of BIG-IP.
 
-Finding bugs (via usage)
-~~~~~~~~~~~~~~~~~~~~~~~~
-Using the modules is the best way to iron out bugs. By using the modules
-in the way that **you** expect them to work is a great way to find bugs.
+Bugs
+````
 
-During the development process, we write tests with specific user personas
-in mind. Your usage patterns may not reflect those personas though and
-that might break the module.
+Using the modules is the best way to iron out bugs. Using the modules in the way that **you** expect them to work is a great way to find bugs.
 
-Using the modules is the best way to get both code and documentation
-correct. If it's not obvious to you via the documentation about how a
-module works, then I guarantee it is unclear to many more people.
+During the development process, F5 writes tests with specific user personas in mind. Your usage patterns may not reflect those personas.
+
+Using the modules is the best way to get good code and documentation. If the documentation isn't clear to you, it's probably not clear to others.
 
 Righting those wrongs helps you and future users.
 
-More example playbooks
-~~~~~~~~~~~~~~~~~~~~~~
+Example playbooks
+`````````````````
 
-Playbooks show people how to make use of the module when paired with
-other modules. Playbooks also are the way that people inevitably use
-all these modules, so if you write playbooks that make use of them,
-this allows people to copy/paste the actual usage for their own benefit.
+Playbooks show you how to make use of a module when paired with other modules. Playbooks also are the way that people inevitably use all of these modules, so if you write playbooks that make use of them, people can copy/paste the actual usage for their own benefit.
 
-More roles for f5devcentral
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Roles for F5 DevCentral
+```````````````````````
 
-Ansible's role features provide the opportunity for us to build new
-sets of configuration for an F5 product.
+Ansible roles provide the opportunity to build new sets of configuration for an F5 product.
 
-There has been some effort to begin writing role that would be useful
-for different scenarios (such as the `bigip-hardening` role) but this
-effort has not been fully tackle yet.
+There has been some effort to begin writing roles that would be useful for different scenarios (such as the `bigip-hardening` role) but F5 has not yet fully tackled this effort.
 
-Anyone can write roles as they are just collections of files, templates,
-modules, and tasks that you are already writing for some purpose.
+Anyone can write roles. They are just collections of files, templates, modules, and tasks that you are already writing for some purpose.
 
 Writing more roles helps spread the usage of the modules.
 
-More ways if you're at F5
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you're an F5 employee, there are even more ways to help. Refer to
-the *go/ansible* link for more details.
 
 Keeping F5 out of "legacy" files
 --------------------------------
 
-When Ansible introduces some new check that causes a whole lot of errors
-(such as when they added pep8 checking) they put all of the findings in
-a legacy file and fix the code that they're interested.
+When Ansible introduces a new check that causes a lot of errors (such as when they added pep8 checking), they put the findings in a legacy file and fixed the specific code.
 
-On one hand, this allows them to fix what they need to fix.
+On one hand, this allows Ansible to fix what they need to fix.
 
-On the other hand, it results in problems like this
+On the other hand, it results in problems like this:
 
 .. code-block:: bash
 
@@ -185,35 +112,14 @@ On the other hand, it results in problems like this
    ERROR: build/lib/ansible/playbook/base.py:452:28: E225 missing whitespace around operator
    ERROR: The 1 sanity test(s) listed below (out of 1) failed. See error output above for details.
 
-It turns out that there is some post-processing that happens to whittle
-down this huge list. What is post-processed is enumerated here
+It turns out that there is some post-processing that whittles down this huge list. Here is what is post-processed:
 
-* local/ansible/test/sanity/pep8/legacy-ignore.txt
+- local/ansible/test/sanity/pep8/legacy-ignore.txt
 
-While this ends up limiting the amount of errors that are raised by automated
-testing, it also puts a bandage over the problem without fixing the actual
-problems.
+While this limits the number of errors that automated testing raises, it does not fix the core problem.
 
-I consider this a poor excuse for a "fix". So it's your, or *our*, job to make
-sure that F5 *anything* never makes it in this list. But it doesn't stop there.
+It is everyone's job to make sure that anything from F5 never makes it on this list. But it doesn't stop there.
 
-As a good netizen, it is also your job to assist in eliminating these legacy
-files (the text files, not the modules) by **FIXING** all the errors that are
-raised.
+It is also your job to assist in eliminating these legacy files (the text files, not the modules) by **FIXING** all the errors that running the code raises.
 
-Ultimately, this makes F5's job easier because when we run the commands to check
-for this stuff, we're no longer seeing a hundred-bajillion errors being raised
-by their tools.
-
-Conclusion
-----------
-
-One final thing that will require effort on your part that, frankly, we
-cannot help with, is that of endorsement.
-
-The Ansible work here is by no means supported by F5. If you want that to
-change, then you will need to initiate that change. Speaking with your SEs,
-AMs, SAs, etc etc, is the best way to drive that change.
-
-When we run our mouths about orchestration tools, it falls on deaf ears.
-If this is valuable to your organization, then say so.
+Ultimately, this makes F5's job easier because when F5 runs the commands to check for this stuff, F5 no longer sees a large number of errors raised by their tools.

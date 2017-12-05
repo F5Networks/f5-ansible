@@ -8,7 +8,7 @@ because they make certain tasks significantly easier.
 Getting Started
 ===============
 
-We assume that you are working on a *nix, or *nix-like environment. The workstation
+We assume that you are working on a \*nix, or \*nix-like environment. The workstation
 we'll be using in the examples is a Mac running Sierra (10.12.6). Some of the steps
 will not be relevant to other environments. When that happens, it will be noted.
 
@@ -203,7 +203,7 @@ Also, it should be noted that you can continue to use external development tools
 in your container environment. This is made possible by a bound volume in your
 container that references the `f5-ansible` source tree.
 
-.. node::
+.. note::
 
    Local development usually happens with local F5 product running in Virtualbox
    VMs. The tools for doing this are not packaged in this container, nor are the
