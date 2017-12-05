@@ -210,7 +210,7 @@ class Parameters(AnsibleF5Parameters):
         if 'chain' not in item:
             result = 'none'
         else:
-            result = self._fqdn_name(item['chain'])
+            result = self._cert_filename(self._fqdn_name(item['chain']))
         return result
 
     @property
@@ -236,10 +236,7 @@ class Parameters(AnsibleF5Parameters):
                 )
             key = self._key_filename(item['key'])
             cert = self._cert_filename(item['cert'])
-            if 'chain' in item:
-                chain = self._get_chain_value(item['chain'])
-            else:
-                chain = "none"
+            chain = self._get_chain_value(item)
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
             result.append({

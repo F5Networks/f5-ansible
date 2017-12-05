@@ -1,0 +1,73 @@
+---
+
+- name: Issue 00418 - Include issue variables
+  include_vars:
+    file: issue-00418.yaml
+
+- name: Issue 00418 - Import a cert
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'cert1.crt') }}"
+    name: issue-00418-cert1
+    state: present
+
+- name: Issue 00418 - Import a key, no passphrase on private key
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'cert1.key') }}"
+    name: issue-00418-key1
+    state: present
+
+- name: Issue 00418 - Import a chain
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'chain1.crt') }}"
+    name: issue-00418-chain1
+    state: present
+
+- name: Issue 00418 - Create client ssl profile
+  bigip_profile_client_ssl:
+    state: present
+    name: issue-00418
+    cert_key_chain:
+      - cert: issue-00418-cert1
+        key: issue-00418-key1
+        chain: issue-00418-chain1
+  register: result
+
+- name: Issue 00418 - Assert Create client ssl profile
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00418 - Create client ssl profile - Idempotent check
+  bigip_profile_client_ssl:
+    state: present
+    name: issue-00418
+    cert_key_chain:
+      - cert: issue-00418-cert1
+        key: issue-00418-key1
+        chain: issue-00418-chain1
+  register: result
+
+- name: Issue 00418 - Assert Create client ssl profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00418 - Remove client ssl profile
+  bigip_profile_client_ssl:
+    state: absent
+    name: issue-00418
+
+- name: Issue 00418 - Remove a cert
+  bigip_ssl_certificate:
+    name: issue-00418-cert1
+    state: absent
+
+- name: Issue 00418 - Remove a key
+  bigip_ssl_key:
+    name: issue-00418-key1
+    state: absent
+
+- name: Issue 00418 - Remove a chain
+  bigip_ssl_certificate:
+    name: issue-00418-chain1
+    state: absent
