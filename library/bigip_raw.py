@@ -150,12 +150,13 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.netcli import FailedConditionsError
 from ansible.module_utils.six import string_types
-from ansible.module_utils.netcli import Conditional
-from ansible.module_utils.network_common import ComplexList
-from ansible.module_utils.network_common import to_list
 from collections import deque
+
+from ansible.module_utils.network.common.parsing import FailedConditionsError
+from ansible.module_utils.network.common.parsing import Conditional
+from ansible.module_utils.network.common.utils import ComplexList
+from ansible.module_utils.network.common.utils import to_list
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
