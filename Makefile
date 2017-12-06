@@ -22,7 +22,7 @@ docs:
 	cd docs && make html
 
 style:
-	pycodestyle
+	pycodestyle .
 
 export ANSIBLE_KEEP_REMOTE_FILES=1
 export ANSIBLE_CONFIG=./test/integration/ansible.cfg
