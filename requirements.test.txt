@@ -43,6 +43,7 @@ junit_xml
 junitparser
 click
 virtualenv
+tox
 
 # For standing up test infrastructure
 shade
