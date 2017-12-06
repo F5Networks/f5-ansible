@@ -52,7 +52,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Destination IP of the virtual server (only host is currently supported). Required when state=present and vs does not exist.</div></br>
+        <td><div>Destination IP of the virtual server.</div><div>Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div></br>
     <div style="font-size: small;">aliases: address, ip<div>        </td></tr>
                 <tr><td>disabled_vlans<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
@@ -86,11 +86,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>policies<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -142,16 +137,6 @@ Options
     <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Enable route advertisement for destination.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -162,16 +147,6 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>The virtual server state. If <code>absent</code>, delete the virtual server if it exists. <code>present</code> creates the virtual server and enable it. If <code>enabled</code>, enable the virtual server if it exists. If <code>disabled</code>, create the virtual server if needed, and set state to <code>disabled</code>.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -193,7 +168,7 @@ Examples
         name: my-virtual-server
         port: 8080
       delegate_to: localhost
-    
+
     - name: Delete virtual server
       bigip_virtual_server:
         server: lb.mydomain.net
@@ -203,7 +178,7 @@ Examples
         partition: Common
         name: my-virtual-server
       delegate_to: localhost
-    
+
     - name: Add virtual server
       bigip_virtual_server:
         server: lb.mydomain.net
@@ -232,7 +207,7 @@ Examples
         enabled_vlans:
           - /Common/vlan2
       delegate_to: localhost
-    
+
     - name: Add FastL4 virtual server
       bigip_virtual_server:
         destination: 1.1.1.1
@@ -241,6 +216,7 @@ Examples
         profiles:
           - fastL4
         state: present
+
 
 Return Values
 -------------
@@ -276,6 +252,7 @@ Notes
     - Requires BIG-IP software version >= 11
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

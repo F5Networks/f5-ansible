@@ -57,36 +57,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Path to file containing the license to use. In most cases you will want to use a <code>lookup</code> for this.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>absent</li><li>latest</li><li>present</li></ul></td>
         <td><div>The state of the license on the system. When <code>present</code>, only guarantees that a license is there. When <code>latest</code> ensures that the license is always valid. When <code>absent</code> removes the license on the system. <code>latest</code> is most useful internally. When using <code>absent</code>, the account accessing the device must be configured to use the advanced shell instead of Appliance Mode.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -105,7 +80,7 @@ Examples
           password: "secret"
           key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
       delegate_to: localhost
-    
+
     - name: License BIG-IP using a development key
       bigip_license:
           server: "lb.mydomain.com"
@@ -114,7 +89,7 @@ Examples
           key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
           license_server: "xxx.f5net.com"
       delegate_to: localhost
-    
+
     - name: License BIG-IP using a pre-acquired license
       bigip_license:
           server: "lb.mydomain.com"
@@ -123,7 +98,7 @@ Examples
           license_content: "{{ lookup('file', 'license.lic') }}"
           dossier_content: "{{ lookup('file', 'dossier.txt') }}"
       delegate_to: localhost
-    
+
     - name: Remove the license from the system
       bigip_license:
           server: "lb.mydomain.com"
@@ -131,7 +106,7 @@ Examples
           password: "secret"
           state: "absent"
       delegate_to: localhost
-    
+
     - name: Update the current license of the BIG-IP
       bigip_license:
           server: "lb.mydomain.com"
@@ -142,12 +117,14 @@ Examples
       delegate_to: localhost
 
 
+
 Notes
 -----
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP software version >= 12
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

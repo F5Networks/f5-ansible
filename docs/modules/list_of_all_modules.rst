@@ -39,6 +39,7 @@ All Modules
   bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors <bigip_monitor_tcp_module>
   bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors <bigip_monitor_tcp_echo_module>
   bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp half-open monitors <bigip_monitor_tcp_half_open_module>
+  bigip_monitor_udp - Manages F5 BIG-IP LTM udp monitors <bigip_monitor_udp_module>
   _bigip_node (D) - Manages F5 BIG-IP LTM nodes <_bigip_node_module>
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
@@ -81,8 +82,11 @@ All Modules
   bigip_virtual_server - Manage LTM virtual servers on a BIG-IP <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
   bigip_wait - Wait for a BIG-IP condition before continuing <bigip_wait_module>
-  bigiq_license_pool - Manages license pools of different types <bigiq_license_pool_module>
-  bigiq_license_pool_member - __SHORT_DESCRIPTION__ <bigiq_license_pool_member_module>
+  bigiq_regkey_license - __SHORT_DESCRIPTION__ <bigiq_regkey_license_module>
+  bigiq_regkey_license_assignment - __SHORT_DESCRIPTION__ <bigiq_regkey_license_assignment_module>
+  bigiq_regkey_pool - Manages registration key pools on BIG-IQ <bigiq_regkey_pool_module>
+  bigiq_utility_license - __SHORT_DESCRIPTION__ <bigiq_utility_license_module>
+  bigiq_utility_license_assignment - __SHORT_DESCRIPTION__ <bigiq_utility_license_assignment_module>
   f5_support_upload - Manage BIG-IP partitions <f5_support_upload_module>
   iworkflow_device - Manipulate cloud managed devices in iWorkflow <iworkflow_device_module>
   iworkflow_iapp_template - Manages iApp templates <iworkflow_iapp_template_module>

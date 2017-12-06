@@ -15,47 +15,135 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_security_port_list
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage port lists on BIG-IP AFM.
 description:
-  - __LONG DESCRIPTION__.
+  - Manages the AFM port lists on a BIG-IP. This module can be used to add
+    and remove port list entries.
 version_added: "2.5"
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - Specifies the name of the port list.
     required: True
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
+  description:
+    description:
+      - Description of the port list
+  ports:
+    description:
+      - Simple list of port values to add to the list
+  port_ranges:
+    description:
+      - A list of port ranges where the range starts with a port number, is followed
+        by a dash (-) and then a second number.
+      - If the first number is greater than the second number, the numbers will be
+        reversed so-as to be properly formatted. ie, 90-78 would become 78-90.
+  port_lists:
+    description:
+      - Simple list of existing port lists to add to this list. Port lists can be
+        specified in either their fully qualified name (/Common/foo) or their short
+        name (foo). If a short name is used, the C(partition) argument will automatically
+        be prepended to the short name.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 requirements:
-  - f5-sdk >= 2.2.3
+  - f5-sdk >= 3.0.4
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Create a simple port list
   bigip_security_port_list:
     name: foo
+    ports:
+      - 80
+      - 443
     password: secret
     server: lb.mydomain.com
     state: present
     user: admin
   delegate_to: localhost
+
+- name: Override the above list of ports with a new list
+  bigip_security_port_list:
+    name: foo
+    ports:
+      - 3389
+      - 8080
+      - 25
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
+
+- name: Create port list with series of ranges
+  bigip_security_port_list:
+    name: foo
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
+
+- name: Use multiple types of port arguments
+  bigip_security_port_list:
+    name: foo
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+    ports:
+      - 8080
+      - 443
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
+
+- name: Remove port list
+  bigip_security_port_list:
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: absent
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
+ports:
+  description: The new list of ports applied to the port list
   returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+  type: list
+  sample: [80, 443]
+port_ranges:
+  description: The new list of port ranges applied to the port list
   returned: changed
-  type: string
-  sample: Foo is bar
+  type: list
+  sample: [80-100, 200-8080]
+ports:
+  description: The new list of ports applied to the port list
+  returned: changed
+  type: list
+  sample: [80, 443]
+port_lists:
+  description: The new list of port list names applied to the port list
+  returned: changed
+  type: list
+  sample: [/Common/list1, /Common/list2]
 '''
 
 
@@ -74,19 +162,19 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'portLists': 'port_lists'
     }
 
     api_attributes = [
-
+        'portLists', 'ports'
     ]
 
     returnables = [
-
+        'ports', 'port_ranges', 'port_lists'
     ]
 
     updatables = [
-
+        'description', 'ports', 'port_ranges', 'port_lists'
     ]
 
     def __init__(self, params=None):
@@ -119,15 +207,10 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
-        return result
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
 
     def api_params(self):
         result = {}
@@ -140,8 +223,79 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    @property
+    def port_ranges(self):
+        if self._values['ports'] is None:
+            return None
+        result = []
+        for port_range in self._values['ports']:
+            if '-' not in port_range['name']:
+                continue
+            start, stop = port_range['name'].split('-')
+            start = int(start.strip())
+            stop = int(stop.strip())
+            if start > stop:
+                stop, start = start, stop
+            item = '{0}-{1}'.format(start, stop)
+            result.append(item)
+        return result
+
+    @property
+    def port_lists(self):
+        if self._values['port_lists'] is None:
+            return None
+        result = []
+        for x in self._values['port_lists']:
+            item = '/{0}/{1}'.format(x['partition'], x['name'])
+            result.append(item)
+        return result
+
+    @property
+    def ports(self):
+        if self._values['ports'] is None:
+            return None
+        result = [int(x['name']) for x in self._values['ports'] if '-' not in x['name']]
+        return result
+
+
+class ModuleParameters(Parameters):
+    def ports(self):
+        if self._values['ports'] is None:
+            return None
+        if any(x for x in self._values['ports'] if '-' in x):
+            raise F5ModuleError(
+                ""
+            )
+        result = [int(x) for x in self._values['ports'] if '-' not in x['name']]
+        return result
+
+
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class ReportableChanges(Changes):
     pass
+
+
+class UsableChanges(Changes):
+    @property
+    def ports(self):
+        if self._values['ports'] is None:
+            return None
+
+    @property
+    def port_lists(self):
+        pass
 
 
 class Difference(object):
@@ -165,12 +319,21 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    @property
+    def ports(self):
+        if sorted(self.want.ports) != sorted(self.have.ports):
+
+        'description', 'ports', 'port_ranges', 'port_lists'
+    ]
+
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -181,35 +344,6 @@ class ModuleManager(object):
             self.changes = Changes(changed)
 
     def _update_changed_options(self):
-        """Sets the changed updatables when updating a resource
-
-        A module needs to know what changed to determine whether to update
-        a resource (or set of resources). This method accomplishes this by
-        invoking the Difference engine code.
-
-        Each parameter in the `Parameter` class' `updatables` array will be
-        given to the Difference engine's `compare` method. This is done in the
-        order the updatables are listed in the array.
-
-        The `compare` method updates the `changes` dictionary if the following
-        way,
-
-        * If `None` is returned, a change will not be registered.
-        * If a dictionary is returned, the `changes` dictionary will be updated
-          with the values in what was returned.
-        * Otherwise, the `changes` dictionary's key (the parameter being
-          compared) will be set to the value that is returned by `compare`
-
-        The dictionary behavior is in place to allow you to change the key
-        that is set in the `changes` dictionary. There are frequently cases
-        where there is not a clean API map that can be set, nor a way to
-        otherwise allow you to change the attribute name of the resource being
-        updated before it is sent off to the remote device. Using a dictionary
-        return value of `compare` allows you to do this.
-
-        Returns:
-            bool: True when changes are present. False otherwise.
-        """
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -223,7 +357,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -246,7 +380,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -267,7 +402,7 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
+        result = self.client.api.tm.security.firewall.port_lists.port_list.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -299,7 +434,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
+        self.client.api.tm.security.firewall.port_lists.port_list.create(
             name=self.want.name,
             partition=self.want.partition,
             **params
@@ -307,7 +442,7 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.security.firewall.port_lists.port_list.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -319,7 +454,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.security.firewall.port_lists.port_list.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -327,7 +462,7 @@ class ModuleManager(object):
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.security.firewall.port_lists.port_list.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -339,7 +474,11 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True),
+            description=dict(),
+            ports=dict(type='list'),
+            port_ranges=dict(type='list'),
+            port_lists=dict(type='list')
         )
         self.f5_product_name = 'bigip'
 

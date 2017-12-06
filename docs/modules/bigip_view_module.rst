@@ -99,7 +99,7 @@ Examples
           user: "admin"
           password: "admin"
           name: "foo.local"
-    
+
     - name: Assign zone "bar" to view "foo.local"
       local_action:
           module: "bigip_view"
@@ -108,6 +108,7 @@ Examples
           name: "foo.local"
           zones:
               - "bar"
+
 
 
 Notes

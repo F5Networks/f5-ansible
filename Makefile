@@ -30,6 +30,9 @@ export ANSIBLE_CONFIG=./test/integration/ansible.cfg
 bigip_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
 
+bigiq_%:
+	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
+
 iworkflow_%:
 	cd test/integration && ansible-playbook -i inventory/hosts ${MODULE_TARGET}.yaml -vvvv && cd -
 

@@ -77,26 +77,11 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Partition.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>Monitor quorum value when monitor_type is m_of_n.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>session_state<br/><div style="font-size: small;"> (added in 1.9)</div></td>
     <td>no</td>
     <td></td>
@@ -107,16 +92,6 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>Pool member state.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -138,14 +113,14 @@ Examples
         host: 10.20.30.40
         name: 10.20.30.40
       delegate_to: localhost
-    
+
     # Note that the BIG-IP automatically names the node using the
     # IP address specified in previous play's host parameter.
     # Future plays referencing this node no longer use the host
     # parameter but instead use the name parameter.
     # Alternatively, you could have specified a name with the
     # name parameter when state=present.
-    
+
     - name: Add node with a single 'ping' monitor
       bigip_node:
         server: lb.mydomain.com
@@ -158,7 +133,7 @@ Examples
         monitors:
           - /Common/icmp
       delegate_to: localhost
-    
+
     - name: Modify node description
       bigip_node:
         server: lb.mydomain.com
@@ -169,7 +144,7 @@ Examples
         name: 10.20.30.40
         description: Our best server yet
       delegate_to: localhost
-    
+
     - name: Delete node
       bigip_node:
         server: lb.mydomain.com
@@ -179,7 +154,7 @@ Examples
         partition: Common
         name: 10.20.30.40
       delegate_to: localhost
-    
+
     # The BIG-IP GUI doesn't map directly to the API calls for "Node ->
     # General Properties -> State". The following states map to API monitor
     # and session states.
@@ -192,7 +167,7 @@ Examples
     # monitor_state=disabled, session_state=disabled
     #
     # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
-    
+
     - name: Force node offline
       bigip_node:
         server: lb.mydomain.com
@@ -206,6 +181,7 @@ Examples
       delegate_to: localhost
 
 
+
 Notes
 -----
 
@@ -213,6 +189,7 @@ Notes
     - Requires BIG-IP software version >= 11
     - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
     - Best run as a local_action in your playbook
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

@@ -63,3 +63,26 @@
 
   roles:
     - bigip_command
+
+
+- name: Test the bigip_command module - CLI
+  hosts: "f5-cli[0]"
+  connection: local
+
+  any_errors_fatal: true
+
+  environment:
+    F5_SERVER: "{{ ansible_host }}"
+    F5_USER: "{{ bigip_username }}"
+    F5_PASSWORD: "{{ bigip_password }}"
+    F5_SERVER_PORT: "{{ bigip_ssh_port }}"
+    F5_VALIDATE_CERTS: "{{ validate_certs }}"
+
+  tasks:
+    - name: Include CLI tasks
+      include_role:
+        name: bigip_command
+        tasks_from: cli
+
+  tags:
+    - cli

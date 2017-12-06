@@ -47,26 +47,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>shell<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -82,22 +67,12 @@ Options
     <td>on_create</td>
         <td><ul><li>always</li><li>on_create</li></ul></td>
         <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users. When <code>username_credential</code> is <code>root</code>, this value will be forced to <code>always</code>.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>username_credential<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>Name of the user to create, remove or modify. There is a special case that exists for the user <code>root</code>.</div></br>
     <div style="font-size: small;">aliases: name<div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -121,7 +96,7 @@ Examples
         update_password: on_create
         state: present
       delegate_to: localhost
-    
+
     - name: Change the user "johnd's" role and shell
       bigip_user:
         server: lb.mydomain.com
@@ -132,7 +107,7 @@ Examples
         shell: tmsh
         state: present
       delegate_to: localhost
-    
+
     - name: Make the user 'johnd' an admin and set to advanced shell
       bigip_user:
         server: lb.mydomain.com
@@ -143,7 +118,7 @@ Examples
         shell: bash
         state: present
       delegate_to: localhost
-    
+
     - name: Remove the user 'johnd'
       bigip_user:
         server: lb.mydomain.com
@@ -152,7 +127,7 @@ Examples
         name: johnd
         state: absent
       delegate_to: localhost
-    
+
     - name: Update password
       bigip_user:
         server: lb.mydomain.com
@@ -162,7 +137,7 @@ Examples
         username_credential: johnd
         password_credential: newsupersecretpassword
       delegate_to: localhost
-    
+
     # Note that the second time this task runs, it would fail because
     # The password has been changed. Therefore, it is recommended that
     # you either,
@@ -179,7 +154,7 @@ Examples
         username_credential: admin
         password_credential: NewSecretPassword
       delegate_to: localhost
-    
+
     - name: Change the root user's password
       bigip_user:
         server: lb.mydomain.com
@@ -189,6 +164,7 @@ Examples
         password_credential: secret
         state: present
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -237,6 +213,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -57,21 +57,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -82,16 +67,6 @@ Options
     <td></td>
         <td><ul><li>ActiveSync v1.0 v2.0 (http)</li><li>ActiveSync v1.0 v2.0 (https)</li><li>Comprehensive</li><li>Drupal</li><li>Fundamental</li><li>Joomla</li><li>LotusDomino 6.5 (http)</li><li>LotusDomino 6.5 (https)</li><li>OWA Exchange 2003 (http)</li><li>OWA Exchange 2003 (https)</li><li>OWA Exchange 2003 with ActiveSync (http)</li><li>OWA Exchange 2003 with ActiveSync (https)</li><li>OWA Exchange 2007 (http)</li><li>OWA Exchange 2007 (https)</li><li>OWA Exchange 2007 with ActiveSync (http)</li><li>OWA Exchange 2007 with ActiveSync (https)</li><li>OWA Exchange 2010 (http)</li><li>OWA Exchange 2010 (https)</li><li>Oracle 10g Portal (http)</li><li>Oracle 10g Portal (https)</li><li>Oracle Applications 11i (http)</li><li>Oracle Applications 11i (https)</li><li>PeopleSoft Portal 9 (http)</li><li>PeopleSoft Portal 9 (https)</li><li>Rapid Deployment Policy</li><li>SAP NetWeaver 7 (http)</li><li>SAP NetWeaver 7 (https)</li><li>SharePoint 2003 (http)</li><li>SharePoint 2003 (https)</li><li>SharePoint 2007 (http)</li><li>SharePoint 2007 (https)</li><li>SharePoint 2010 (http)</li><li>SharePoint 2010 (https)</li><li>Vulnerability Assessment Baseline</li><li>Wordpress</li></ul></td>
         <td><div>An ASM policy built-in template. If the template does not exist we will raise an error.</div><div>Once the policy has been created, this value cannot change.</div><div>The <code>Comprehensive</code>, <code>Drupal</code>, <code>Fundamental</code>, <code>Joomla</code>, <code>Vulnerability Assessment Baseline</code>, and <code>Wordpress</code> templates are only available on BIG-IP versions &gt;= 13.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -113,7 +88,7 @@ Examples
         active: yes
         state: present
       delegate_to: localhost
-    
+
     - name: Import ASM policy from template
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -123,7 +98,7 @@ Examples
         template: SharePoint 2007 (http)
         state: present
       delegate_to: localhost
-    
+
     - name: Create blank ASM policy
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -132,7 +107,7 @@ Examples
         name: new_blank_policy
         state: present
       delegate_to: localhost
-    
+
     - name: Create blank ASM policy and activate
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -142,7 +117,7 @@ Examples
         active: yes
         state: present
       delegate_to: localhost
-    
+
     - name: Activate ASM policy
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -152,7 +127,7 @@ Examples
         active: yes
         state: present
       delegate_to: localhost
-    
+
     - name: Deactivate ASM policy
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -161,7 +136,7 @@ Examples
         name: active_policy
         state: present
       delegate_to: localhost
-    
+
     - name: Import and activate ASM policy in Role
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -172,7 +147,7 @@ Examples
         active: yes
         state: present
       delegate_to: localhost
-    
+
     - name: Import ASM binary policy
       bigip_asm_policy:
         server: lb.mydomain.com
@@ -183,6 +158,7 @@ Examples
         active: yes
         state: present
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -239,6 +215,11 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
     </table>
     </br></br>
 
+Notes
+-----
+
+.. note::
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

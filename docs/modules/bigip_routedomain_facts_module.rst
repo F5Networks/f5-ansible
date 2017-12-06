@@ -86,6 +86,7 @@ Examples
         user: admin
       delegate_to: localhost
 
+
 Return Values
 -------------
 

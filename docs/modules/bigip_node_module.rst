@@ -48,7 +48,7 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies descriptive text that identifies the node.</div>        </td></tr>
-                <tr><td>fqdn<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+                <tr><td>fqdn<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
@@ -74,41 +74,16 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>Monitor quorum value when <code>monitor_type</code> is <code>m_of_n</code>.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li><li>offline</li></ul></td>
         <td><div>Specifies the current state of the node. <code>enabled</code> (All traffic allowed), specifies that system sends traffic to this node regardless of the node's state. <code>disabled</code> (Only persistent or active connections allowed), Specifies that the node can handle only persistent or active connections. <code>offline</code> (Only active connections allowed), Specifies that the node can handle only active connections. In all cases except <code>absent</code>, the node will be created if it does not yet exist.</div><div>Be particularly careful about changing the status of a node whose FQDN cannot be resolved. These situations disable your ability to change their <code>state</code> to <code>disabled</code> or <code>offline</code>. They will remain in an *Unavailable - Enabled* state.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -130,7 +105,7 @@ Examples
         host: 10.20.30.40
         name: 10.20.30.40
       delegate_to: localhost
-    
+
     - name: Add node with a single 'ping' monitor
       bigip_node:
         server: lb.mydomain.com
@@ -143,7 +118,7 @@ Examples
         monitors:
           - /Common/icmp
       delegate_to: localhost
-    
+
     - name: Modify node description
       bigip_node:
         server: lb.mydomain.com
@@ -154,7 +129,7 @@ Examples
         name: 10.20.30.40
         description: Our best server yet
       delegate_to: localhost
-    
+
     - name: Delete node
       bigip_node:
         server: lb.mydomain.com
@@ -164,7 +139,7 @@ Examples
         partition: Common
         name: 10.20.30.40
       delegate_to: localhost
-    
+
     - name: Force node offline
       bigip_node:
         server: lb.mydomain.com
@@ -174,7 +149,7 @@ Examples
         partition: Common
         name: 10.20.30.40
       delegate_to: localhost
-    
+
     - name: Add node by their FQDN
       bigip_node:
         server: lb.mydomain.com
@@ -185,6 +160,7 @@ Examples
         fqdn: foo.bar.com
         name: 10.20.30.40
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -254,6 +230,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -93,11 +93,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Partition.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -113,16 +108,6 @@ Options
     <td>disabled</td>
         <td></td>
         <td><div>Enable route advertisement for destination.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -133,16 +118,6 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Virtual Server state.</div><div>Absent, delete the VS if present</div><div><code>present</code> (and its synonym enabled), create if needed the VS and set state to enabled.</div><div><code>disabled</code>, create if needed the VS and set state to disabled.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -173,7 +148,7 @@ Examples
         enabled_vlans:
           - /Common/vlan2
       delegate_to: localhost
-    
+
     - name: Modify Port of the Virtual Server
       bigip_virtual_server:
         server: lb.mydomain.net
@@ -184,7 +159,7 @@ Examples
         name: myvirtualserver
         port: 8080
       delegate_to: localhost
-    
+
     - name: Delete virtual server
       bigip_virtual_server:
         server: lb.mydomain.net
@@ -194,6 +169,7 @@ Examples
         partition: MyPartition
         name: myvirtualserver
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -229,6 +205,7 @@ Notes
     - Requires BIG-IP software version >= 11
     - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
     - Best run as a local_action in your playbook
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

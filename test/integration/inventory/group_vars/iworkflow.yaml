@@ -1,7 +1,0 @@
----
-
-iworkflow_username: "admin"
-iworkflow_password: "admin"
-iworkflow_port: "10444"
-iworkflow_license: "{{ secret_iworkflow_license|default('XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX') }}"
-iworkflow_pool_license: "{{ secret_iworkflow_pool_license|default('XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX') }}"

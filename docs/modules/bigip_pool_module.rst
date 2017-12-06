@@ -74,11 +74,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -94,16 +89,6 @@ Options
     <td></td>
         <td></td>
         <td><div>Sets the number of times the system tries to contact a pool member after a passive failure.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -114,16 +99,6 @@ Options
     <td></td>
         <td></td>
         <td><div>Sets the ramp-up time (in seconds) to gradually ramp up the load on newly added or freshly detected up pool members.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -146,7 +121,7 @@ Examples
         lb_method: least_connection_member
         slow_ramp_time: 120
       delegate_to: localhost
-    
+
     - name: Modify load balancer method
       bigip_pool:
         server: lb.mydomain.com
@@ -157,7 +132,7 @@ Examples
         partition: Common
         lb_method: round_robin
       delegate_to: localhost
-    
+
     - name: Add pool member
       bigip_pool:
         server: lb.mydomain.com
@@ -169,7 +144,7 @@ Examples
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
       delegate_to: localhost
-    
+
     - name: Set a single monitor (with enforcement)
       bigip_pool:
         server: lb.mydomain.com
@@ -182,7 +157,7 @@ Examples
         monitors:
           - http
       delegate_to: localhost
-    
+
     - name: Set a single monitor (without enforcement)
       bigip_pool:
         server: lb.mydomain.com
@@ -194,7 +169,7 @@ Examples
         monitors:
           - http
       delegate_to: localhost
-    
+
     - name: Set multiple monitors (all must succeed)
       bigip_pool:
         server: lb.mydomain.com
@@ -208,7 +183,7 @@ Examples
           - http
           - tcp
       delegate_to: localhost
-    
+
     - name: Set multiple monitors (at least 1 must succeed)
       bigip_pool:
         server: lb.mydomain.com
@@ -223,7 +198,7 @@ Examples
           - http
           - tcp
       delegate_to: localhost
-    
+
     - name: Remove pool member from pool
       bigip_pool:
         server: lb.mydomain.com
@@ -235,7 +210,7 @@ Examples
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
       delegate_to: localhost
-    
+
     - name: Delete pool
       bigip_pool:
         server: lb.mydomain.com
@@ -245,6 +220,7 @@ Examples
         name: my-pool
         partition: Common
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -343,6 +319,7 @@ Notes
     - Requires BIG-IP software version >= 12.
     - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
     - Best run as a local_action in your playbook.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

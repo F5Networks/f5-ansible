@@ -22,7 +22,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_security_port_list import Parameters
+    from library.bigip_security_port_list import ApiParameters
+    from library.bigip_security_port_list import ModuleParameters
     from library.bigip_security_port_list import ModuleManager
     from library.bigip_security_port_list import ArgumentSpec
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -30,6 +31,8 @@ try:
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_security_port_list import Parameters
+        from ansible.modules.network.f5.bigip_security_port_list import ApiParameters
+        from ansible.modules.network.f5.bigip_security_port_list import ModuleParameters
         from ansible.modules.network.f5.bigip_security_port_list import ModuleManager
         from ansible.modules.network.f5.bigip_security_port_list import ArgumentSpec
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -61,31 +64,31 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            description='this is a description',
+            ports=[1,2,3,4],
+            port_ranges='10-20',
+            port_lists=['/Common/foo', 'foo']
+        )
+
+        p = ModuleParameters(args)
+        assert p.name == 'foo'
+        assert p.description == 'this is a description'
+        assert len(p.ports) == 4
+        assert len(p.port_ranges) == 3
+        assert len(p.port_lists) == 2
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_security_port_list_1.json')
+
+        p = ApiParameters(args)
+        assert len(p.ports) == 4
+        assert len(p.port_ranges) == 3
+        assert len(p.port_lists) == 1
+        assert sorted(p.ports) == [1, 2, 3, 4]
+        assert sorted(p.port_ranges) == ['10-20','30-40','50-60']
+        assert p.port_lists[0] == '/Common/_sys_self_allow_tcp_defaults'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',

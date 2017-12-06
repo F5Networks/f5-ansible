@@ -1,9 +1,13 @@
 ---
 
-- name: Run single command
+- name: Run single command - cli
   bigip_command:
     commands:
       - tmsh show sys version
+    transport: cli
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_ssh_port }}"
+    user: "{{ bigip_username }}"
   register: result
 
 - name: Assert Run single command
@@ -16,6 +20,8 @@
     commands:
       - tmsh show sys clock
       - tmsh list auth
+    transport: cli
+    server_port: 2222
   register: result
 
 - name: Assert Run multiple commands
@@ -27,6 +33,8 @@
   bigip_command:
     commands:
       - show sys clock
+    transport: cli
+    server_port: 2222
   register: result
 
 - name: Assert Run command missing tmsh
@@ -39,6 +47,8 @@
     commands:
       - tmsh show sys clock
       - list auth
+    transport: cli
+    server_port: 2222
   register: result
 
 - name: Assert Run multiple commands, one missing tmsh
@@ -52,24 +62,23 @@
       - tmsh show sys clock
     wait_for:
       - result[0] contains Sys::Clock
+    transport: cli
+    server_port: 2222
   register: result
 
 - name: Assert Wait for something
   assert:
     that:
       - result.stdout_lines|length == 1
-
-- name: Assert Run modify commands with a show command
-  assert:
-    that:
       - "'Sys::Clock' in result.stdout_lines[0][1]"
-      - result.stdout_lines|length == 1
 
 - name: Run modify commands
   bigip_command:
     commands:
       - tmsh modify sys db setup.run value true
       - tmsh modify sys db setup.run value false
+    transport: cli
+    server_port: 2222
   register: result
 
 - name: Assert Run modify commands
@@ -83,13 +92,6 @@
       - tmsh modify sys db setup.run value true
       - tmsh modify sys db setup.run value false
       - tmsh show sys clock
+    transport: cli
+    server_port: 2222
   register: result
-
-- import_tasks: cli.yaml
-  tags: cli
-
-- import_tasks: issue-00381.yaml
-  tags: issue-00381
-
-- import_tasks: issue-00391.yaml
-  tags: issue-00391

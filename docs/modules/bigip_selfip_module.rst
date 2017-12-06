@@ -63,26 +63,11 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on. You can set different partitions for Self IPs, but the address used may not match any other address used by a Self IP. In that sense, Self IPs are not isolated by partitions as other resources on a BIG-IP are.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>route_domain<br/><div style="font-size: small;"> (added in 2.3)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>The route domain id of the system. When creating a new Self IP, if this value is not specified, a default value of <code>0</code> will be used.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -93,16 +78,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The traffic group for the Self IP addresses in an active-active, redundant load balancer configuration. When creating a new Self IP, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlan<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -130,7 +105,7 @@ Examples
         validate_certs: no
         vlan: vlan1
       delegate_to: localhost
-    
+
     - name: Create Self IP with a Route Domain
       bigip_selfip:
         server: lb.mydomain.com
@@ -144,7 +119,7 @@ Examples
         route_domain: 10
         allow_service: default
       delegate_to: localhost
-    
+
     - name: Delete Self IP
       bigip_selfip:
         name: self1
@@ -154,7 +129,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
-    
+
     - name: Allow management web UI to be accessed on this Self IP
       bigip_selfip:
         name: self1
@@ -166,7 +141,7 @@ Examples
         allow_service:
           - tcp:443
       delegate_to: localhost
-    
+
     - name: Allow HTTPS and SSH access to this Self IP
       bigip_selfip:
         name: self1
@@ -179,7 +154,7 @@ Examples
           - tcp:443
           - tcp:22
       delegate_to: localhost
-    
+
     - name: Allow all services access to this Self IP
       bigip_selfip:
         name: self1
@@ -191,7 +166,7 @@ Examples
         allow_service:
           - all
       delegate_to: localhost
-    
+
     - name: Allow only GRE and IGMP protocols access to this Self IP
       bigip_selfip:
         name: self1
@@ -204,7 +179,7 @@ Examples
           - gre:0
           - igmp:0
       delegate_to: localhost
-    
+
     - name: Allow all TCP, but no other protocols access to this Self IP
       bigip_selfip:
         name: self1
@@ -216,6 +191,7 @@ Examples
         allow_service:
           - tcp:0
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -285,6 +261,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

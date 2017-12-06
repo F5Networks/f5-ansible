@@ -73,36 +73,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the vCMP guest to manage.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>configured</li><li>disabled</li><li>provisioned</li><li>present</li><li>absent</li></ul></td>
         <td><div>The state of the vCMP guest on the system. Each state implies the actions of all states before it.</div><div>When <code>configured</code>, guarantees that the vCMP guest exists with the provided attributes. Additionally, ensures that the vCMP guest is turned off.</div><div>When <code>disabled</code>, behaves the same as <code>configured</code> the name of this state is just a convenience for the user that is more understandable.</div><div>When <code>provisioned</code>, will ensure that the guest is created and installed. This state will not start the guest; use <code>deployed</code> for that. This state is one step beyond <code>present</code> as <code>present</code> will not install the guest; only setup the configuration for it to be installed.</div><div>When <code>present</code>, ensures the guest is properly provisioned and starts the guest so that it is in a running state.</div><div>When <code>absent</code>, removes the vCMP from the system.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlans<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -129,7 +104,7 @@ Examples
         mgmt_network: bridge
         mgmt_address: 10.20.30.40/24
       delegate_to: localhost
-    
+
     - name: Create a vCMP guest with specific VLANs
       bigip_vcmp_guest:
         name: foo
@@ -143,13 +118,14 @@ Examples
           - vlan1
           - vlan2
       delegate_to: localhost
-    
+
     - name: Remove vCMP guest and disk
       bigip_vcmp_guest:
         name: guest1
         state: absent
         delete_virtual_disk: yes
       register: result
+
 
 Return Values
 -------------
@@ -185,6 +161,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module can take a lot of time to deploy vCMP guests. This is an intrinsic limitation of the vCMP system because it is booting real VMs on the BIG-IP device. This boot time is very similar in length to the time it takes to boot VMs on any other virtualization platform; public or private.
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

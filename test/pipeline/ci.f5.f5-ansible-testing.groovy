@@ -45,7 +45,7 @@ timestamps {
                 for (module in modules['modules']) {
 
                   def yamlData = readYaml file: './test/integration/'
-                  if !yamlData['vars']['__metadata__'].containsKey('tested_harnesses') {
+                  if !yamlData['vars']['__metadata__'].containsKey('supported_harnesses') {
                     currentBuild.result = 'SUCCESS'
                     return
                   }

@@ -121,7 +121,7 @@ extends_documentation_fragment: f5
 requirements:
   - f5-sdk
   - isoparser
-authors:
+author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)
 '''
@@ -685,8 +685,7 @@ class Parameters(AnsibleF5Parameters):
         return volumes
 
     def _load_volume_from_device(self, volume):
-        vol = self.client.api.tm.sys.software.volumes.volume.load(
-            name=volume)
+        vol = self.client.api.tm.sys.software.volumes.volume.load(name=volume)
         return vol
 
     def _volume_exists_on_device(self, volume):

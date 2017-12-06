@@ -111,41 +111,16 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>policy<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The name of the policy that you want to associate this rule with.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>When <code>present</code>, ensures that the key is uploaded to the device. When <code>absent</code>, ensures that the key is removed from the device. If the key is currently in use, the module will not be able to remove the key.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -157,8 +132,30 @@ Examples
  ::
 
     
-    vars:
-      policy_rules:
+    - name: Create policies
+      bigip_policy:
+        name: Policy-Foo
+        state: present
+      delegate_to: localhost
+
+    - name: Add a rule to the new policy
+      bigip_policy_rule:
+        policy: Policy-Foo
+        name: rule3
+        conditions:
+          - type: http_uri
+            path_begins_with_any: /ABC
+        actions:
+          - type: forward
+            pool: pool-svrs
+
+    - name: Add multiple rules to the new policy
+      bigip_policy_rule:
+        policy: Policy-Foo
+        name: "{{ item.name }}"
+        conditions: "{{ item.conditions }}"
+        actions: "{{ item.actions }}"
+      loop:
         - name: rule1
           actions:
             - type: forward
@@ -173,41 +170,16 @@ Examples
           conditions:
             - type: http_uri
               path_starts_with: /HomePage/
-    
-    - name: Create policies
-      bigip_policy:
-        name: Policy-Foo
-        state: present
-      delegate_to: localhost
-    
-    - name: Add a rule to the new policy
-      bigip_policy_rule:
-        policy: Policy-Foo
-        name: rule3
-        conditions:
-          - type: http_uri
-            path_begins_with_any: /ABC
-        actions:
-          - type: forward
-            pool: pool-svrs
-    
-    - name: Add multiple rules to the new policy
-      bigip_policy_rule:
-        policy: Policy-Foo
-        name: "{{ item.name }}"
-        conditions: "{{ item.conditions }}"
-        actions: "{{ item.actions }}"
-      with_items:
-        - policy_rules
-    
+
     - name: Remove all rules and confitions from the rule
-      bigip_policy_rule
+      bigip_policy_rule:
         policy: Policy-Foo
-        name: "rule1"
+        name: rule1
         conditions:
           - type: all_traffic
         actions:
           - type: ignore
+
 
 Return Values
 -------------
@@ -229,8 +201,8 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
         <td> conditions </td>
         <td> The new list of conditions applied to the rule. </td>
         <td align=center> changed </td>
-        <td align=center> complex list </td>
-        <td align=center> [{'path_begins_with_any': ['foo', 'bar'], 'type': 'http_uri'}] </td>
+        <td align=center> complex </td>
+        <td align=center> hash/dictionary of values </td>
     </tr>
             <tr>
         <td> description </td>
@@ -243,8 +215,8 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
         <td> actions </td>
         <td> The new list of actions applied to the rule </td>
         <td align=center> changed </td>
-        <td align=center> complex list </td>
-        <td align=center> [{'type': 'forward', 'pool': 'foo-pool'}] </td>
+        <td align=center> complex </td>
+        <td align=center> hash/dictionary of values </td>
     </tr>
         
     </table>
@@ -255,6 +227,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

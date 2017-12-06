@@ -103,21 +103,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>time_until_up<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -128,16 +113,6 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the number of seconds the target has in which to respond to the monitor request. When creating a new monitor, the default is <code>30</code> seconds. If the target responds within the set time period, it is considered 'up'. If the target does not respond within the set time period, it is considered 'down'. When this value is set to 0 (zero), the system uses the interval from the parent monitor. Note that <code>timeout</code> and <code>time_until_up</code> combine to control when a resource is set to up.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -162,7 +137,7 @@ Examples
         password: secret
         name: my_monitor
       delegate_to: localhost
-    
+
     - name: Remove TCP Echo Monitor
       bigip_monitor_snmp_dca:
         state: absent
@@ -171,6 +146,7 @@ Examples
         password: secret
         name: my_monitor
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -290,6 +266,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP software version >= 12
     - This module does not support the ``variables`` option because this option is broken in the REST API and does not function correctly in ``tmsh``; for example you cannot remove user-defined params. Therefore, there is no way to automatically configure it.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -167,6 +167,7 @@ failed_conditions:
 import re
 import time
 
+from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
@@ -376,6 +377,11 @@ class ArgumentSpec(object):
                 type='str',
                 default='rest',
                 choices=['cli', 'rest']
+            ),
+            password=dict(
+                required=False,
+                fallback=(env_fallback, ['F5_PASSWORD']),
+                no_log=True
             )
         )
         self.f5_product_name = 'bigip'

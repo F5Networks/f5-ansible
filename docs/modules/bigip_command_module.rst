@@ -52,41 +52,16 @@ Options
     <td>all</td>
         <td></td>
         <td><div>The <em>match</em> argument is used in conjunction with the <em>wait_for</em> argument to specify the match policy. Valid values are <code>all</code> or <code>any</code>. If the value is set to <code>all</code> then all conditionals in the <em>wait_for</em> must be satisfied. If the value is set to <code>any</code> then only one of the values must be satisfied.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>retries<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>10</td>
         <td></td>
         <td><div>Specifies the number of retries a command should by tried before it is considered failed. The command is run on the target device every retry and evaluated against the <em>wait_for</em> conditionals.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>transport<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>yes</td>
     <td>rest</td>
         <td><ul><li>rest</li><li>cli</li></ul></td>
         <td><div>Configures the transport connection to use when connecting to the remote device. The transport argument supports connectivity to the device over cli (ssh) or rest.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>wait_for<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -112,7 +87,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
-    
+
     - name: run show version and check to see if output contains BIG-IP
       bigip_command:
         commands: show sys version
@@ -122,7 +97,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
-    
+
     - name: run multiple commands on remote nodes
       bigip_command:
         commands:
@@ -133,7 +108,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
-    
+
     - name: run multiple commands and evaluate the output
       bigip_command:
         commands:
@@ -147,7 +122,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
-    
+
     - name: tmsh prefixes will automatically be handled
       bigip_command:
         commands:
@@ -158,6 +133,7 @@ Examples
         user: admin
         validate_certs: no
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -205,6 +181,7 @@ Notes
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

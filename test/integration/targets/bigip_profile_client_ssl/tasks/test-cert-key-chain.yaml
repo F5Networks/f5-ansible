@@ -1,6 +1,6 @@
 ---
 
-- name: Import a key, no passphrase on private key
+- name: Import a cert
   bigip_ssl_certificate:
     content: "{{ lookup('file', 'cert1.crt') }}"
     name: bigip_ssl_cert1

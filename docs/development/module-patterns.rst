@@ -226,6 +226,8 @@ Common classes
 Nearly every module (see exceptions) should have the following classes. These classes support the stated design patterns.
 
 - Parameters
+- Changes
+- Difference
 - ModuleManager
 - ArgumentSpec
 

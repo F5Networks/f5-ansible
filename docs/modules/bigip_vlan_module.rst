@@ -47,21 +47,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The VLAN to manage. If the special VLAN <code>ALL</code> is specified with the <code>state</code> value of <code>absent</code> then all VLANs will be removed.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -84,16 +69,6 @@ Options
         <td></td>
         <td><div>Specifies a list of untagged interfaces and trunks that you want to configure for the VLAN.</div></br>
     <div style="font-size: small;">aliases: untagged_interface<div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -113,7 +88,7 @@ Examples
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost
-    
+
     - name: Set VLAN tag
       bigip_vlan:
           name: "net1"
@@ -123,7 +98,7 @@ Examples
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost
-    
+
     - name: Add VLAN 2345 as tagged to interface 1.1
       bigip_vlan:
           tagged_interface: 1.1
@@ -134,7 +109,7 @@ Examples
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost
-    
+
     - name: Add VLAN 1234 as tagged to interfaces 1.1 and 1.2
       bigip_vlan:
           tagged_interfaces:
@@ -147,6 +122,7 @@ Examples
           user: "admin"
           validate_certs: "no"
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -209,6 +185,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

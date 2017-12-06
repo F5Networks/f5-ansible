@@ -4,4 +4,5 @@ bigip_username: "admin"
 bigip_password: "admin"
 bigip_port: "10443"
 bigip_partition: "Common"
+bigip_ssh_port: 2222
 ansible_python_interpreter: "/usr/local/bin/python"

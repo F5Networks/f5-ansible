@@ -81,7 +81,7 @@ Examples
           hostname: elliot.organization.com
           ip_address: 10.1.1.1
       delegate_to: localhost
-    
+
     - name: Add an A record to organization.com zone
       local_action:
         module: bigip_dns_record
@@ -95,6 +95,7 @@ Examples
         options:
           domain_name: elliot.organization.com
           ip_address: 10.1.1.1
+
 
 
 Notes

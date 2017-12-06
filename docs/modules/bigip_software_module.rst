@@ -54,11 +54,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The link to an MD5 sum file of the remote hotfix ISO image, it is required when <code>hotfix</code> parameter is used and that parameter is a remote URL.</div><div>Parameter only used when and <code>state</code> is <code>installed</code>, <code>activated</code>, or <code>present</code>.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>remote_src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>no</td>
@@ -69,16 +64,6 @@ Options
     <td></td>
         <td></td>
         <td><div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created. For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software. If volume name does not end with numeric character, then add <code>.1</code> to the current active volume name. When <code>volume</code> is specified, this option will be ignored.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>software<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -95,16 +80,6 @@ Options
     <td>activated</td>
         <td><ul><li>absent</li><li>activated</li><li>installed</li><li>present</li></ul></td>
         <td><div>When <code>present</code>, ensures that the software is uploaded/downloaded.</div><div>When <code>installed</code>, ensures that the software is uploaded/downloaded and installed on the system. The device is <b>not</b> rebooted into the new software.</div><div>When <code>activated</code>, ensures that the software is uploaded/downloaded, installed, and the system is rebooted to the new software.</div><div>When <code>absent</code>, only the uploaded/downloaded image will be removed from the system.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -129,7 +104,7 @@ Examples
         hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
         state: absent
       delegate_to: localhost
-    
+
     - name: Upload hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -138,7 +113,7 @@ Examples
         hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
         state: present
       delegate_to: localhost
-    
+
     - name: Remove uploaded base image
       bigip_software:
         server: lb.mydomain.com
@@ -147,7 +122,7 @@ Examples
         software: /root/BIGIP-11.6.0.0.0.401.iso
         state: absent
       delegate_to: localhost
-    
+
     - name: Upload base image
       bigip_software:
         server: lb.mydomain.com
@@ -156,7 +131,7 @@ Examples
         software: /root/BIGIP-11.6.0.0.0.401.iso
         state: present
       delegate_to: localhost
-    
+
     - name: Upload base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -166,7 +141,7 @@ Examples
         hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
         state: present
       delegate_to: localhost
-    
+
     - name: Remove uploaded base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -176,7 +151,7 @@ Examples
         hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
         state: absent
       delegate_to: localhost
-    
+
     - name: Install (upload, install) base image. Create volume if not exists
       bigip_software:
         server: lb.mydomain.com
@@ -186,7 +161,7 @@ Examples
         volume: HD1.1
         state: installed
       delegate_to: localhost
-    
+
     - name: Install (upload, install) base image and hotfix. Create volume if not exists
       bigip_software:
         server: lb.mydomain.com
@@ -197,7 +172,7 @@ Examples
         volume: HD1.1
         state: installed
       delegate_to: localhost
-    
+
     - name: Activate (upload, install, reboot) base image. Create volume if not exists
       bigip_software:
         server: lb.mydomain.com
@@ -207,7 +182,7 @@ Examples
         volume: HD1.1
         state: activated
       delegate_to: localhost
-    
+
     - name: Activate (upload, install, reboot) base image and hotfix. Create volume if not exists
       bigip_software:
         server: lb.mydomain.com
@@ -218,7 +193,7 @@ Examples
         volume: HD1.1
         state: activated
       delegate_to: localhost
-    
+
     - name: Activate (upload, install, reboot) base image and hotfix. Reuse inactive volume in volumes with prefix.
       bigip_software:
         server: lb.mydomain.com
@@ -229,7 +204,7 @@ Examples
         reuse_inactive_volume: yes
         state: activated
       delegate_to: localhost
-    
+
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -242,7 +217,7 @@ Examples
         state: activated
         reuse_inactive_volume: True
       delegate_to: localhost
-    
+
     - name: Download hotfix image
       bigip_software:
         server: lb.mydomain.com
@@ -252,7 +227,7 @@ Examples
         hotfix_md5sum: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso.md5"
         state: present
       delegate_to: localhost
-    
+
     - name: Remove uploaded hotfix image
       bigip_software:
         server: lb.mydomain.com
@@ -260,7 +235,7 @@ Examples
         password: secret
         hotfix: "http://fake.com/Hotfix-12.1.2.1.0.271-HF1.iso"
       delegate_to: localhost
-    
+
     - name: Install (download, install) base image
       bigip_software:
         server: lb.mydomain.com
@@ -271,7 +246,7 @@ Examples
         volume: HD1.1
         state: installed
       delegate_to: localhost
-    
+
     - name: Install (download, install) base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -284,7 +259,7 @@ Examples
         state: installed
         volume: HD1.2
        delegate_to: localhost
-    
+
     - name: Download hotfix image (name mismatch)
       bigip_software:
         server: lb.mydomain.com
@@ -294,7 +269,7 @@ Examples
         hotfix_md5sum: "http://fake.com/Hotfix-12.1.2HF1.md5"
         state: present
       delegate_to: localhost
-    
+
     - name: Download software image (name mismatch)
       bigip_software:
         server: lb.mydomain.com
@@ -304,7 +279,7 @@ Examples
         software_md5sum: "http://fake.com/12.1.2.md5"
         state: present
       delegate_to: localhost
-    
+
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -316,7 +291,7 @@ Examples
         state: activated
         reuse_inactive_volume: True
       delegate_to: localhost
-    
+
     - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
       bigip_software:
         server: lb.mydomain.com
@@ -328,6 +303,7 @@ Examples
         state: activated
         reuse_inactive_volume: True
       delegate_to: localhost
+
 
 Return Values
 -------------
@@ -426,6 +402,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk
     - Requires the isoparser Python package on the host. This can be installed with pip install isoparser
     - Requires the lxml Python package on the host. This can be installed with pip install lxml
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

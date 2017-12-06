@@ -57,21 +57,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -92,16 +77,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The traffic group for the iApp service. When creating a new service, if this value is not specified, the default of <code>/Common/traffic-group-1</code> will be used.</div><div>If this option is specified in the Ansible task, it will take precedence over any similar setting in the iApp Server payload that you provide in the <code>parameters</code> field.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -123,7 +98,7 @@ Examples
         state: present
         user: admin
       delegate_to: localhost
-    
+
     - name: Upgrade foo-service to v1.2.0rc4 of the f5.http template
       bigip_iapp_service:
         name: foo-service
@@ -133,7 +108,7 @@ Examples
         state: present
         user: admin
       delegate_to: localhost
-    
+
     - name: Configure a service using parameters in YAML
       bigip_iapp_service:
         name: tests
@@ -153,7 +128,7 @@ Examples
             - name: pm__apache_servers_for_https
               value: 2.2.2.2:80
       delegate_to: localhost
-    
+
     - name: Re-configure a service whose underlying iApp was updated in place
       bigip_iapp_service:
         name: tests
@@ -174,16 +149,16 @@ Examples
             - name: pm__apache_servers_for_https
               value: 2.2.2.2:80
       delegate_to: localhost
-    
+
     - name: Try to remove the iApp template before the associated Service is removed
       bigip_iapp_template:
         name: web_frontends
         state: absent
       register: result
       failed_when:
-        - not result|success
+        - result is not success
         - "'referenced by one or more applications' not in result.msg"
-    
+
     - name: Configure a service using more complicated parameters
       bigip_iapp_service:
         name: tests
@@ -231,11 +206,13 @@ Examples
       delegate_to: localhost
 
 
+
 Notes
 -----
 
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 

@@ -418,7 +418,7 @@ class V1Manager(BaseManager):
         return result
 
     def _read_ucs_files_from_output(self, output):
-        search = re.compile('filename\s+(.*)').search
+        search = re.compile(r'filename\s+(.*)').search
         lines = output.split("\n")
         result = [m.group(1) for m in map(search, lines) if m]
         return result
@@ -503,6 +503,16 @@ class ArgumentSpec(object):
         self.add_file_common_args = True
 
 
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
@@ -519,10 +529,11 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
-
 
 if __name__ == '__main__':
     main()

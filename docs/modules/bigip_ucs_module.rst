@@ -62,26 +62,11 @@ Options
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>Specifies the passphrase that is necessary to load the specified UCS file.</div>        </td></tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. This option can be omitted if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>reset_trust<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>When specified, the device and trust domain certs and keys are not loaded from the UCS. Instead, a new set is regenerated.</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The BIG-IP host. This option can be omitted if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
-    <td>no</td>
-    <td>443</td>
-        <td></td>
-        <td><div>The BIG-IP server port. This option can be omitted if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -92,16 +77,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The path to the UCS file to install. The parameter must be provided if the <code>state</code> is either <code>installed</code> or <code>activated</code>. When <code>state</code> is <code>absent</code>, the full path for this parameter will be ignored and only the filename will be used to select a UCS for removal. Therefore you could specify <code>/mickey/mouse/test.ucs</code> and this module would only look for <code>test.ucs</code>.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. This option can be omitted if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>If <code>no</code>, SSL certificates will not be validated. This should only be used on personally controlled sites using self-signed certificates. This option can be omitted if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -121,7 +96,7 @@ Examples
         ucs: /root/bigip.localhost.localdomain.ucs
         state: present
       delegate_to: localhost
-    
+
     - name: Install (upload, install) UCS.
       bigip_ucs:
         server: lb.mydomain.com
@@ -130,7 +105,7 @@ Examples
         ucs: /root/bigip.localhost.localdomain.ucs
         state: installed
       delegate_to: localhost
-    
+
     - name: Install (upload, install) UCS without installing the license portion
       bigip_ucs:
         server: lb.mydomain.com
@@ -140,7 +115,7 @@ Examples
         state: installed
         no_license: yes
       delegate_to: localhost
-    
+
     - name: Install (upload, install) UCS except the license, and bypassing the platform check
       bigip_ucs:
         server: lb.mydomain.com
@@ -151,7 +126,7 @@ Examples
         no_license: yes
         no_platform_check: yes
       delegate_to: localhost
-    
+
     - name: Install (upload, install) UCS using a passphrase necessary to load the UCS
       bigip_ucs:
         server: lb.mydomain.com
@@ -161,7 +136,7 @@ Examples
         state: installed
         passphrase: MyPassphrase1234
       delegate_to: localhost
-    
+
     - name: Remove uploaded UCS file
       bigip_ucs:
         server: lb.mydomain.com
@@ -170,6 +145,7 @@ Examples
         ucs: bigip.localhost.localdomain.ucs
         state: absent
       delegate_to: localhost
+
 
 
 Notes
@@ -186,6 +162,7 @@ Notes
     - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the ``bigip_hostname`` Ansible module in a task before using this module.
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
 
 
 
