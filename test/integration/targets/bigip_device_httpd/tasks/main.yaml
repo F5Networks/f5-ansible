@@ -2,6 +2,184 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Change auth name
+  bigip_device_httpd:
+    auth_name: foo
+  register: result
 
-- import_tasks: teardown.yaml
+- name: Assert Change auth name
+  assert:
+    that:
+      - result is changed
+
+- name: Change auth name - Idempotent check
+  bigip_device_httpd:
+    auth_name: foo
+  register: result
+
+- name: Assert Change auth name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change PAM idle timeout
+  bigip_device_httpd:
+    auth_pam_idle_timeout: 1000
+  register: result
+
+- name: Assert Change PAM idle timeout
+  assert:
+    that:
+      - result is changed
+
+- name: Change PAM idle timeout - Idempotent check
+  bigip_device_httpd:
+    auth_pam_idle_timeout: 1000
+  register: result
+
+- name: Assert Change PAM idle timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change PAM validate IP
+  bigip_device_httpd:
+    auth_pam_validate_ip: off
+  register: result
+
+- name: Assert Change PAM validate IP
+  assert:
+    that:
+      - result is changed
+
+- name: Change PAM validate IP - Idempotent check
+  bigip_device_httpd:
+    auth_pam_validate_ip: off
+  register: result
+
+- name: Assert Change PAM validate IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change PAM dashboard timeout
+  bigip_device_httpd:
+    auth_pam_dashboard_timeout: on
+  register: result
+
+- name: Assert Change PAM dashboard timeout
+  assert:
+    that:
+      - result is changed
+
+- name: Change PAM dashboard timeout - Idempotent check
+  bigip_device_httpd:
+    auth_pam_dashboard_timeout: on
+  register: result
+
+- name: Assert Change PAM dashboard timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change FastCGI timeout
+  bigip_device_httpd:
+    fast_cgi_timeout: 100
+  register: result
+
+- name: Assert Change FastCGI timeout
+  assert:
+    that:
+      - result is changed
+
+- name: Change FastCGI timeout - Idempotent check
+  bigip_device_httpd:
+    fast_cgi_timeout: 100
+  register: result
+
+- name: Assert Change FastCGI timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change hostname lookup
+  bigip_device_httpd:
+    hostname_lookup: on
+  register: result
+
+- name: Assert Change hostname lookup
+  assert:
+    that:
+      - result is changed
+
+- name: Change hostname lookup - Idempotent check
+  bigip_device_httpd:
+    hostname_lookup: on
+  register: result
+
+- name: Assert Change hostname lookup - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change log level
+  bigip_device_httpd:
+    log_level: info
+  register: result
+
+- name: Assert Change log level
+  assert:
+    that:
+      - result is changed
+
+- name: Change log level - Idempotent check
+  bigip_device_httpd:
+    log_level: info
+  register: result
+
+- name: Assert Change log level - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change max clients
+  bigip_device_httpd:
+    max_clients: 100
+  register: result
+
+- name: Assert Change max clients
+  assert:
+    that:
+      - result is changed
+
+- name: Change max clients - Idempotent check
+  bigip_device_httpd:
+    max_clients: 100
+  register: result
+
+- name: Assert Change max clients - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change redirect to https
+  bigip_device_httpd:
+    redirect_http_to_https: yes
+  register: result
+
+- name: Assert Change redirect to https
+  assert:
+    that:
+      - result is changed
+
+- name: Change redirect to https - Idempotent check
+  bigip_device_httpd:
+    redirect_http_to_https: yes
+  register: result
+
+- name: Assert Change redirect to https - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+ - import_tasks: teardown.yaml

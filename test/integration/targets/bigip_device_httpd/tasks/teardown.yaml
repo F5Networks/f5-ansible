@@ -1,0 +1,14 @@
+---
+
+- name: Reset to defaults
+  bigip_device_httpd:
+    auth_name: BIG-IP
+    auth_pam_idle_timeout: 1200
+    auth_pam_validate_ip: on
+    auth_pam_dashboard_timeout: off
+    fast_cgi_timeout: 300
+    hostname_lookup: off
+    log_level: warn
+    max_clients: 10
+    redirect_http_to_https: no
+    ssl_port: 443

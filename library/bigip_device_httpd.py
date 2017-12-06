@@ -101,6 +101,8 @@ auth_pam_idle_timeout:
   sample: 1200
 '''
 
+import requests
+import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
@@ -131,7 +133,7 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'authPamIdleTimeout', 'authPamValidateIp', 'authName', 'authPamDashboardTimeout',
-        'fastcgiTimeout', 'hostnameLookup', 'logLevel', 'maxClients', 'sslPort'
+        'fastcgiTimeout', 'hostnameLookup', 'logLevel', 'maxClients', 'sslPort',
         'redirectHttpToHttps'
     ]
 
@@ -177,16 +179,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
-        return result
-
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
@@ -221,17 +213,62 @@ class Parameters(AnsibleF5Parameters):
             return None
         return int(self._values['ssl_port'])
 
+
+class ModuleParameters(Parameters):
+    @property
+    def auth_pam_validate_ip(self):
+        if self._values['auth_pam_validate_ip'] is None:
+            return None
+        if self._values['auth_pam_validate_ip']:
+            return "on"
+        return "off"
+
+    @property
+    def auth_pam_dashboard_timeout(self):
+        if self._values['auth_pam_dashboard_timeout'] is None:
+            return None
+        if self._values['auth_pam_dashboard_timeout']:
+            return "on"
+        return "off"
+
+    @property
+    def hostname_lookup(self):
+        if self._values['hostname_lookup'] is None:
+            return None
+        if self._values['hostname_lookup']:
+            return "on"
+        return "off"
+
     @property
     def redirect_http_to_https(self):
         if self._values['redirect_http_to_https'] is None:
             return None
-        elif self._values['redirect_http_to_https'] in [True, 'enabled']:
-            return 'enabled'
-        else:
-            return 'disabled'
+        if self._values['redirect_http_to_https']:
+            return "enabled"
+        return "disabled"
+
+
+class ApiParameters(Parameters):
+    pass
 
 
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -260,8 +297,9 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -272,35 +310,6 @@ class ModuleManager(object):
             self.changes = Changes(changed)
 
     def _update_changed_options(self):
-        """Sets the changed updatables when updating a resource
-
-        A module needs to know what changed to determine whether to update
-        a resource (or set of resources). This method accomplishes this by
-        invoking the Difference engine code.
-
-        Each parameter in the `Parameter` class' `updatables` array will be
-        given to the Difference engine's `compare` method. This is done in the
-        order the updatables are listed in the array.
-
-        The `compare` method updates the `changes` dictionary if the following
-        way,
-
-        * If `None` is returned, a change will not be registered.
-        * If a dictionary is returned, the `changes` dictionary will be updated
-          with the values in what was returned.
-        * Otherwise, the `changes` dictionary's key (the parameter being
-          compared) will be set to the value that is returned by `compare`
-
-        The dictionary behavior is in place to allow you to change the key
-        that is set in the `changes` dictionary. There are frequently cases
-        where there is not a clean API map that can be set, nor a way to
-        otherwise allow you to change the attribute name of the resource being
-        updated before it is sent off to the remote device. Using a dictionary
-        return value of `compare` allows you to do this.
-
-        Returns:
-            bool: True when changes are present. False otherwise.
-        """
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -314,7 +323,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -332,7 +341,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -359,17 +369,23 @@ class ModuleManager(object):
         return True
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
+        params = self.changes.api_params()
+        resource = self.client.api.tm.sys.httpd.load()
+
+        try:
+            resource.modify(**params)
+        except requests.exceptions.ConnectionError as ex:
+            # BIG-IP will kill your management connection when you change the HTTP
+            # redirect setting. So this catches that and handles it gracefully.
+            if 'Connection aborted' in str(ex) and 'redirectHttpToHttps' in params:
+                # Wait for BIG-IP web server to settle after changing this
+                time.sleep(2)
+                return True
+            raise F5ModuleError(str(ex))
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.httpd.load()
-        result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(params=resource.attrs)
 
 
 class ArgumentSpec(object):
