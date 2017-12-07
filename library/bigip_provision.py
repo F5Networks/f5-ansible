@@ -360,7 +360,7 @@ class ModuleManager(object):
         try:
             output = self.client.api.tm.util.bash.exec_cmd(
                 'run',
-                utilCmdArgs='-c "bigstart restart asm'
+                utilCmdArgs='-c "bigstart restart asm"'
             )
             if hasattr(output, 'commandResult'):
                 return str(output.commandResult)
