@@ -352,8 +352,21 @@ class ModuleManager(object):
                 else:
                     nops = 0
             except Exception as ex:
-                pass
+                if 'java.net.ConnectException: Connection refused' in str(ex):
+                    self._restart_asm()
             time.sleep(5)
+
+    def _restart_asm(self):
+        try:
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs='-c "bigstart restart asm'
+            )
+            if hasattr(output, 'commandResult'):
+                return str(output.commandResult)
+        except Exception:
+            pass
+        return None
 
     def _get_last_reboot(self):
         try:
