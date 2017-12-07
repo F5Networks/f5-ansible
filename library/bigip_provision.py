@@ -354,20 +354,18 @@ class ModuleManager(object):
                     nops = 0
             except Exception as ex:
                 if not restarted_asm:
-                    result = self._restart_asm()
-                    if result:
-                        restarted_asm = True
+                    self._restart_asm()
+                    restarted_asm = True
             time.sleep(5)
 
     def _restart_asm(self):
         try:
-            output = self.client.api.tm.util.bash.exec_cmd(
+            self.client.api.tm.util.bash.exec_cmd(
                 'run',
                 utilCmdArgs='-c "bigstart restart asm"'
             )
-            if hasattr(output, 'commandResult'):
-                time.sleep(60)
-                return True
+            time.sleep(60)
+            return True
         except Exception:
             pass
         return None
