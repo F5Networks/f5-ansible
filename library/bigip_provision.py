@@ -352,8 +352,7 @@ class ModuleManager(object):
                 else:
                     nops = 0
             except Exception as ex:
-                if 'java.net.ConnectException: Connection refused' in str(ex):
-                    self._restart_asm()
+                self._restart_asm()
             time.sleep(5)
 
     def _restart_asm(self):
