@@ -4,7 +4,7 @@
   include_vars:
     file: issue-00124.yaml
 
-- name: Issue 00124 - Ensure GTM is provisioned
+- name: Issue 00124 - Provision GTM
   bigip_provision:
     module: gtm
     state: present
@@ -66,3 +66,8 @@
     wide_ip: "{{ wide_ip1 }}"
   when: system_info.product_information.product_version >= "12.0.0"
   register: result
+
+- name: Issue 00124 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent

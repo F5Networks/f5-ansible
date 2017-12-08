@@ -1,6 +1,6 @@
 ---
 
-- name: Create wide IP
+- name: Create wide IP - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
     state: present
@@ -8,12 +8,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Create wide IP
+- name: Assert Create wide IP - Type MX
   assert:
     that:
       - result is changed
 
-- name: Create wide IP - Idempotent check
+- name: Create wide IP - Type MX - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method1 }}"
     state: present
@@ -21,12 +21,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Create wide IP - Idempotent check
+- name: Assert Create wide IP - Type MX - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set wide IP LB method, valid - ratio
+- name: Set wide IP LB method, valid - ratio - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method2 }}"
     state: present
@@ -34,12 +34,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - ratio
+- name: Assert Set wide IP LB method, valid - ratio - Type MX
   assert:
     that:
       - result is changed
 
-- name: Set wide IP LB method, valid - ratio - Idempotent check
+- name: Set wide IP LB method, valid - ratio - Type MX - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method2 }}"
     state: present
@@ -47,12 +47,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - ratio - Idempotent check
+- name: Assert Set wide IP LB method, valid - ratio - Type MX - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set wide IP LB method, valid - topology
+- name: Set wide IP LB method, valid - topology - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method3 }}"
     state: present
@@ -60,12 +60,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - topology
+- name: Assert Set wide IP LB method, valid - topology - Type MX
   assert:
     that:
       - result is changed
 
-- name: Set wide IP LB method, valid - topology - Idempotent check
+- name: Set wide IP LB method, valid - topology - Type MX - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method3 }}"
     state: present
@@ -73,12 +73,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - topology - Idempotent check
+- name: Assert Set wide IP LB method, valid - topology - Type MX - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set wide IP LB method, valid - global availability
+- name: Set wide IP LB method, valid - global availability - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method4 }}"
     state: present
@@ -86,12 +86,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - global availability
+- name: Assert Set wide IP LB method, valid - global availability - Type MX
   assert:
     that:
       - result is changed
 
-- name: Set wide IP LB method, valid - global availability - Idempotent check
+- name: Set wide IP LB method, valid - global availability - Type MX - Idempotent check
   bigip_gtm_wide_ip:
     lb_method: "{{ valid_lb_method4 }}"
     state: present
@@ -99,12 +99,12 @@
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Set wide IP LB method, valid - global availability - Idempotent check
+- name: Assert Set wide IP LB method, valid - global availability - Type MX - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set wide IP LB method, invalid 1
+- name: Set wide IP LB method, invalid 1 - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method1 }}"
     state: present
@@ -113,12 +113,12 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set wide IP LB method, invalid 1
+- name: Assert Set wide IP LB method, invalid 1 - Type MX
   assert:
     that:
-      - result is changed
+      - result is not changed
 
-- name: Set wide IP LB method, invalid 2
+- name: Set wide IP LB method, invalid 2 - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method2 }}"
     state: present
@@ -127,12 +127,12 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set wide IP LB method, invalid 2
+- name: Assert Set wide IP LB method, invalid 2 - Type MX
   assert:
     that:
       - result is not changed
 
-- name: Set wide IP LB method, invalid 3
+- name: Set wide IP LB method, invalid 3 - Type MX
   bigip_gtm_wide_ip:
     lb_method: "{{ invalid_lb_method3 }}"
     state: present
@@ -141,31 +141,31 @@
   register: result
   ignore_errors: true
 
-- name: Assert Set wide IP LB method, invalid 3
+- name: Assert Set wide IP LB method, invalid 3 - Type MX
   assert:
     that:
       - result is not changed
 
-- name: Delete wide IP
+- name: Delete wide IP - Type MX
   bigip_gtm_wide_ip:
     state: absent
     type: mx
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Delete wide IP
+- name: Assert Delete wide IP - Type MX
   assert:
     that:
       - result is changed
 
-- name: Delete wide IP - Idempotent check
+- name: Delete wide IP - Type MX - Idempotent check
   bigip_gtm_wide_ip:
     state: absent
     type: mx
     wide_ip: "{{ wide_ip1 }}"
   register: result
 
-- name: Assert Delete wide IP - Idempotent check
+- name: Assert Delete wide IP - Type MX - Idempotent check
   assert:
     that:
       - result is not changed
