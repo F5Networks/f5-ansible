@@ -11,7 +11,7 @@
 - name: Assert Create wide IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create wide IP - Idempotent check
   bigip_gtm_wide_ip:
@@ -24,7 +24,7 @@
 - name: Assert Create wide IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set wide IP LB method, valid - ratio
   bigip_gtm_wide_ip:
@@ -37,7 +37,7 @@
 - name: Assert Set wide IP LB method, valid - ratio
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set wide IP LB method, valid - ratio - Idempotent check
   bigip_gtm_wide_ip:
@@ -50,7 +50,7 @@
 - name: Assert Set wide IP LB method, valid - ratio - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set wide IP LB method, valid - topology
   bigip_gtm_wide_ip:
@@ -63,7 +63,7 @@
 - name: Assert Set wide IP LB method, valid - topology
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set wide IP LB method, valid - topology - Idempotent check
   bigip_gtm_wide_ip:
@@ -76,7 +76,7 @@
 - name: Assert Set wide IP LB method, valid - topology - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set wide IP LB method, valid - global availability
   bigip_gtm_wide_ip:
@@ -89,7 +89,7 @@
 - name: Assert Set wide IP LB method, valid - global availability
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set wide IP LB method, valid - global availability - Idempotent check
   bigip_gtm_wide_ip:
@@ -102,7 +102,7 @@
 - name: Assert Set wide IP LB method, valid - global availability - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set wide IP LB method, invalid 1
   bigip_gtm_wide_ip:
@@ -116,7 +116,7 @@
 - name: Assert Set wide IP LB method, invalid 1
   assert:
     that:
-      - not result|changed
+      - result is changed
 
 - name: Set wide IP LB method, invalid 2
   bigip_gtm_wide_ip:
@@ -130,7 +130,7 @@
 - name: Assert Set wide IP LB method, invalid 2
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set wide IP LB method, invalid 3
   bigip_gtm_wide_ip:
@@ -144,7 +144,7 @@
 - name: Assert Set wide IP LB method, invalid 3
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete wide IP
   bigip_gtm_wide_ip:
@@ -156,7 +156,7 @@
 - name: Assert Delete wide IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete wide IP - Idempotent check
   bigip_gtm_wide_ip:
@@ -168,4 +168,4 @@
 - name: Assert Delete wide IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
