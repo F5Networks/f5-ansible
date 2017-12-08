@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_security_port_list
-short_description: Manage port lists on BIG-IP AFM.
+short_description: Manage port lists on BIG-IP AFM
 description:
   - Manages the AFM port lists on a BIG-IP. This module can be used to add
     and remove port list entries.
