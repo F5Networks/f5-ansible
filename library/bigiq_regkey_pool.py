@@ -167,7 +167,6 @@ class ModuleParameters(Parameters):
         """
         collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s.get_collection()
         resource = next((x for x in collection if x.name == self._values['name']), None)
-        import q; q.q(resource)
         if resource:
             return resource.id
         else:
@@ -292,7 +291,6 @@ class ModuleManager(object):
         result = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.exists(
             id=self.want.uuid
         )
-        import q; q.q(result)
         return result
 
     def update(self):
