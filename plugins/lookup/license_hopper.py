@@ -19,7 +19,7 @@ EXAMPLES = """
   bigiq_regkey_license:
     key: "{{ lookup('license_hopper', 'filename=/path/to/licenses.txt') }}"
     state: present
-    pool: regkey1 
+    pool: regkey1
 """
 
 RETURN = """
