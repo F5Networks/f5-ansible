@@ -67,8 +67,8 @@ class TestParameters(unittest.TestCase):
         args = dict(
             name='foo',
             description='this is a description',
-            ports=[1,2,3,4],
-            port_ranges=['10-20','30-40','50-60'],
+            ports=[1, 2, 3, 4],
+            port_ranges=['10-20', '30-40', '50-60'],
             port_lists=['/Common/foo', 'foo']
         )
 
@@ -87,7 +87,7 @@ class TestParameters(unittest.TestCase):
         assert len(p.port_ranges) == 3
         assert len(p.port_lists) == 1
         assert sorted(p.ports) == [1, 2, 3, 4]
-        assert sorted(p.port_ranges) == ['10-20','30-40','50-60']
+        assert sorted(p.port_ranges) == ['10-20', '30-40', '50-60']
         assert p.port_lists[0] == '/Common/_sys_self_allow_tcp_defaults'
 
 
@@ -102,8 +102,8 @@ class TestManager(unittest.TestCase):
         set_module_args(dict(
             name='foo',
             description='this is a description',
-            ports=[1,2,3,4],
-            port_ranges=['10-20','30-40','50-60'],
+            ports=[1, 2, 3, 4],
+            port_ranges=['10-20', '30-40', '50-60'],
             port_lists=['/Common/foo', 'foo'],
             password='passsword',
             server='localhost',
