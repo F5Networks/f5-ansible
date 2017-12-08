@@ -217,7 +217,7 @@ class Parameters(AnsibleF5Parameters):
     def parent(self):
         if self._values['parent'] is None:
             return None
-        result = self.fqdn_name(self._values['parent'])
+        result = self._fqdn_name(self._values['parent'])
         return result
 
     @property
