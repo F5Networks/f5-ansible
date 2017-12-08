@@ -1,4 +1,4 @@
-Deprecating Modules
+Deprecating modules
 ===================
 
 F5 sometimes deprecates modules. However, before the modules go away, you should have enough time to upgrade to a new version of Ansible.

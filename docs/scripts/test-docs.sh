@@ -18,7 +18,7 @@ make -C clean || true
 make docs || true
 
 echo "Checking grammar and style"
-write-good \$(find ./docs -name '*.rst') --passive --so --no-illusion --thereIs --cliches || true
+write-good `find ./docs -not \( -ipath ./docs/modules -prune \) -iname '*.rst'` --passive --so --no-illusion --thereIs --cliches 
 
 echo "Checking links"
 make -C docs linkcheck || true

@@ -1,4 +1,4 @@
-Getting Started
+Getting started
 ===============
 
 This document explains how to begin using the F5 Ansible modules.
