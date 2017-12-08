@@ -1,0 +1,5 @@
+---
+
+pool_lb_method: round-robin
+pool_name: issue-00124
+wide_ip1: issue.00124.wide
