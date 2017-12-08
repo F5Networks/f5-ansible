@@ -119,16 +119,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
-        return result
-
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
@@ -140,7 +130,31 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
+
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -169,8 +183,9 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -178,38 +193,9 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
-        """Sets the changed updatables when updating a resource
-
-        A module needs to know what changed to determine whether to update
-        a resource (or set of resources). This method accomplishes this by
-        invoking the Difference engine code.
-
-        Each parameter in the `Parameter` class' `updatables` array will be
-        given to the Difference engine's `compare` method. This is done in the
-        order the updatables are listed in the array.
-
-        The `compare` method updates the `changes` dictionary if the following
-        way,
-
-        * If `None` is returned, a change will not be registered.
-        * If a dictionary is returned, the `changes` dictionary will be updated
-          with the values in what was returned.
-        * Otherwise, the `changes` dictionary's key (the parameter being
-          compared) will be set to the value that is returned by `compare`
-
-        The dictionary behavior is in place to allow you to change the key
-        that is set in the `changes` dictionary. There are frequently cases
-        where there is not a clean API map that can be set, nor a way to
-        otherwise allow you to change the attribute name of the resource being
-        updated before it is sent off to the remote device. Using a dictionary
-        return value of `compare` allows you to do this.
-
-        Returns:
-            bool: True when changes are present. False otherwise.
-        """
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -223,7 +209,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -246,7 +232,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -332,7 +319,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
