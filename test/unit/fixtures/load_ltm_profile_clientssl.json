@@ -1,110 +1,9 @@
-[
-  {
-    "kind": "tm:ltm:profile:client-ssl:client-sslstate",
-    "name": "clientssl",
-    "partition": "Common",
-    "fullPath": "/Common/clientssl",
-    "generation": 1,
-    "selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=13.0.0",
-    "alertTimeout": "indefinite",
-    "allowDynamicRecordSizing": "disabled",
-    "allowExpiredCrl": "disabled",
-    "allowNonSsl": "disabled",
-    "appService": "none",
-    "authenticate": "once",
-    "authenticateDepth": 9,
-    "bypassOnClientCertFail": "disabled",
-    "bypassOnHandshakeAlert": "disabled",
-    "caFile": "none",
-    "cacheSize": 262144,
-    "cacheTimeout": 3600,
-    "cert": "/Common/default.crt",
-    "certReference": {
-      "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
-    },
-    "certExtensionIncludes": [
-      "basic-constraints",
-      "subject-alternative-name"
-    ],
-    "certLifespan": 30,
-    "certLookupByIpaddrPort": "disabled",
-    "chain": "none",
-    "cipherGroup": "none",
-    "ciphers": "DEFAULT",
-    "clientCertCa": "none",
-    "crlFile": "none",
-    "defaultsFrom": "none",
-    "description": "none",
-    "destinationIpBlacklist": "none",
-    "destinationIpWhitelist": "none",
-    "forwardProxyBypassDefaultAction": "intercept",
-    "genericAlert": "enabled",
-    "handshakeTimeout": "10",
-    "hostnameBlacklist": "none",
-    "hostnameWhitelist": "none",
-    "inheritCertkeychain": "false",
-    "key": "/Common/default.key",
-    "keyReference": {
-      "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
-    },
-    "maxActiveHandshakes": "indefinite",
-    "maxAggregateRenegotiationPerMinute": "indefinite",
-    "maxRenegotiationsPerMinute": 5,
-    "maximumRecordSize": 16384,
-    "modSslMethods": "disabled",
-    "mode": "enabled",
-    "notifyCertStatusToVirtualServer": "disabled",
-    "ocspStapling": "disabled",
-    "tmOptions": [
-      "dont-insert-empty-fragments"
-    ],
-    "peerCertMode": "ignore",
-    "peerNoRenegotiateTimeout": "10",
-    "proxyCaCert": "none",
-    "proxyCaKey": "none",
-    "proxySsl": "disabled",
-    "proxySslPassthrough": "disabled",
-    "renegotiateMaxRecordDelay": "indefinite",
-    "renegotiatePeriod": "indefinite",
-    "renegotiateSize": "indefinite",
-    "renegotiation": "enabled",
-    "retainCertificate": "true",
-    "secureRenegotiation": "require",
-    "serverName": "none",
-    "sessionMirroring": "disabled",
-    "sessionTicket": "disabled",
-    "sessionTicketTimeout": 0,
-    "sniDefault": "false",
-    "sniRequire": "false",
-    "sourceIpBlacklist": "none",
-    "sourceIpWhitelist": "none",
-    "sslForwardProxy": "disabled",
-    "sslForwardProxyBypass": "disabled",
-    "sslSignHash": "any",
-    "strictResume": "disabled",
-    "uncleanShutdown": "enabled",
-    "certKeyChain": [
-      {
-        "name": "default",
-        "appService": "none",
-        "cert": "/Common/default.crt",
-        "certReference": {
-          "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
-        },
-        "chain": "none",
-        "key": "/Common/default.key",
-        "keyReference": {
-          "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
-        }
-      }
-    ]
-  },
-  {
+{
     "kind": "tm:ltm:profile:client-ssl:client-sslstate",
     "name": "foo",
     "partition": "Common",
     "fullPath": "/Common/foo",
-    "generation": 295,
+    "generation": 351,
     "selfLink": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~foo?ver=13.0.0",
     "alertTimeout": "indefinite",
     "allowDynamicRecordSizing": "disabled",
@@ -120,22 +19,22 @@
     "cacheTimeout": 3600,
     "cert": "/Common/default.crt",
     "certReference": {
-      "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
+        "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
     },
     "certExtensionIncludes": [
-      "basic-constraints",
-      "subject-alternative-name"
+        "basic-constraints",
+        "subject-alternative-name"
     ],
     "certLifespan": 30,
     "certLookupByIpaddrPort": "disabled",
     "chain": "none",
     "cipherGroup": "none",
-    "ciphers": "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES",
+    "ciphers": "DEFAULT",
     "clientCertCa": "none",
     "crlFile": "none",
     "defaultsFrom": "/Common/clientssl",
     "defaultsFromReference": {
-      "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=13.0.0"
+        "link": "https://localhost/mgmt/tm/ltm/profile/client-ssl/~Common~clientssl?ver=13.0.0"
     },
     "description": "none",
     "destinationIpBlacklist": "none",
@@ -148,7 +47,7 @@
     "inheritCertkeychain": "true",
     "key": "/Common/default.key",
     "keyReference": {
-      "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
+        "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
     },
     "maxActiveHandshakes": "indefinite",
     "maxAggregateRenegotiationPerMinute": "indefinite",
@@ -159,7 +58,7 @@
     "notifyCertStatusToVirtualServer": "disabled",
     "ocspStapling": "disabled",
     "tmOptions": [
-      "dont-insert-empty-fragments"
+        "dont-insert-empty-fragments"
     ],
     "peerCertMode": "ignore",
     "peerNoRenegotiateTimeout": "10",
@@ -187,19 +86,18 @@
     "strictResume": "disabled",
     "uncleanShutdown": "enabled",
     "certKeyChain": [
-      {
-        "name": "default",
-        "appService": "none",
-        "cert": "/Common/default.crt",
-        "certReference": {
-          "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
-        },
-        "chain": "none",
-        "key": "/Common/default.key",
-        "keyReference": {
-          "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
+        {
+            "name": "default",
+            "appService": "none",
+            "cert": "/Common/default.crt",
+            "certReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-cert/~Common~default.crt?ver=13.0.0"
+            },
+            "chain": "none",
+            "key": "/Common/default.key",
+            "keyReference": {
+                "link": "https://localhost/mgmt/tm/sys/file/ssl-key/~Common~default.key?ver=13.0.0"
+            }
         }
-      }
     ]
-  }sp
-]
+}
