@@ -14,12 +14,39 @@
     state: present
   register: result
 
-- name: Set cert, key, and chain
+- name: Set cert and key but not chain
   bigip_profile_client_ssl:
     name: foo
     cert_key_chain:
       - cert: /Common/bigip_ssl_cert1.crt
         key: /Common/bigip_ssl_key1.key
+  register: result
+
+- name: Assert Set cert and key but not chain
+  assert:
+    that:
+      - result|changed
+
+- name: Set cert and key but not chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: /Common/bigip_ssl_cert1.crt
+        key: /Common/bigip_ssl_key1.key
+  register: result
+
+- name: Assert Set cert and key but not chain - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Set cert, key, and chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: bigip_ssl_cert1
+        key: bigip_ssl_key1
+        chain: bigip_ssl_cert1
   register: result
 
 - name: Assert Set cert, key, and chain
