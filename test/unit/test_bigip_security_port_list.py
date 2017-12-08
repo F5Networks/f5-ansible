@@ -68,7 +68,7 @@ class TestParameters(unittest.TestCase):
             name='foo',
             description='this is a description',
             ports=[1,2,3,4],
-            port_ranges='10-20',
+            port_ranges=['10-20','30-40','50-60'],
             port_lists=['/Common/foo', 'foo']
         )
 
@@ -94,5 +94,40 @@ class TestParameters(unittest.TestCase):
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise Exception('You must write a creation test')
+        set_module_args(dict(
+            name='foo',
+            description='this is a description',
+            ports=[1,2,3,4],
+            port_ranges=['10-20','30-40','50-60'],
+            port_lists=['/Common/foo', 'foo'],
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert 'ports' in results
+        assert 'port_lists' in results
+        assert 'port_ranges' in results
+        assert len(results['ports']) == 4
+        assert len(results['port_ranges']) == 3
+        assert len(results['port_lists']) == 2
+        assert results['description'] == 'this is a description'

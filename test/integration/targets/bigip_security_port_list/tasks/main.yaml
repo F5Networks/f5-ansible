@@ -2,6 +2,175 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a simple port list
+  bigip_security_port_list:
+    name: foo1
+    ports:
+      - 80
+      - 443
+  register: result
+
+- name: Assert Create a simple port list
+  assert:
+    that:
+      - result is changed
+
+- name: Create a simple port list - Idempotent check
+  bigip_security_port_list:
+    name: foo1
+    ports:
+      - 80
+      - 443
+  register: result
+
+- name: Assert Create a simple port list - Idepotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Override the above list of ports with a new list
+  bigip_security_port_list:
+    name: foo1
+    ports:
+      - 3389
+      - 8080
+      - 25
+  register: result
+
+- name: Assert Override the above list of ports with a new list
+  assert:
+    that:
+      - result is changed
+
+- name: Override the above list of ports with a new list - Idempotent check
+  bigip_security_port_list:
+    name: foo1
+    ports:
+      - 3389
+      - 8080
+      - 25
+  register: result
+
+- name: Assert Override the above list of ports with a new list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create port list with series of ranges
+  bigip_security_port_list:
+    name: foo2
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+  register: result
+
+- name: Assert Create port list with series of ranges
+  assert:
+    that:
+      - result is changed
+
+- name: Create port list with series of ranges - Idempotent check
+  bigip_security_port_list:
+    name: foo2
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+  register: result
+
+- name: Assert Create port list with series of ranges - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Use multiple types of port arguments
+  bigip_security_port_list:
+    name: foo3
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+    ports:
+      - 8080
+      - 443
+  register: result
+
+- name: Assert Use multiple types of port arguments
+  assert:
+    that:
+      - result is changed
+
+- name: Use multiple types of port arguments - Idempotent check
+  bigip_security_port_list:
+    name: foo3
+    port_ranges:
+      - 25-30
+      - 80-500
+      - 50-78
+    ports:
+      - 8080
+      - 443
+  register: result
+
+- name: Assert Use multiple types of port arguments - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Order port ranges incorrectly
+  bigip_security_port_list:
+    name: foo3
+    port_ranges:
+      - 500-80
+  register: result
+
+- name: Assert Order port ranges incorrectly
+  assert:
+    that:
+      - result is changed
+      - "'80-500' in result['port_ranges']"
+
+- name: Order port ranges incorrectly - Idempotent check
+  bigip_security_port_list:
+    name: foo3
+    port_ranges:
+      - 500-80
+  register: result
+
+- name: Assert Order port ranges incorrectly - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove port lists
+  bigip_security_port_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo1
+    - foo2
+    - foo3
+  register: result
+
+- name: Assert Remove port lists
+  assert:
+    that:
+      - result is changed
+
+- name: Remove port list - Idempotent check
+  bigip_security_port_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo1
+    - foo2
+    - foo3
+  register: result
+
+- name: Assert Remove port lists - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - import_tasks: teardown.yaml

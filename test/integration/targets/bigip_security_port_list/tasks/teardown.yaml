@@ -1,0 +1,6 @@
+---
+
+- name: Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent

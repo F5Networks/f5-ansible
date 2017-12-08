@@ -146,7 +146,6 @@ port_lists:
   sample: [/Common/list1, /Common/list2]
 '''
 
-
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
@@ -170,7 +169,7 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-        'ports', 'port_ranges', 'port_lists'
+        'ports', 'port_ranges', 'port_lists', 'description'
     ]
 
     updatables = [
@@ -260,14 +259,40 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    @property
     def ports(self):
         if self._values['ports'] is None:
             return None
-        if any(x for x in self._values['ports'] if '-' in x):
+        if any(x for x in self._values['ports'] if '-' in str(x)):
             raise F5ModuleError(
-                ""
+                "Ports must be whole numbers between 0 and 65,535"
             )
-        result = [int(x) for x in self._values['ports'] if '-' not in x['name']]
+        if any(x for x in self._values['ports'] if 0 < x > 65535):
+            raise F5ModuleError(
+                "Ports must be whole numbers between 0 and 65,535"
+            )
+        result = [int(x) for x in self._values['ports']]
+        return result
+
+    @property
+    def port_ranges(self):
+        if self._values['port_ranges'] is None:
+            return None
+        result = []
+        for port_range in self._values['port_ranges']:
+            if '-' not in port_range:
+                continue
+            start, stop = port_range.split('-')
+            start = int(start.strip())
+            stop = int(stop.strip())
+            if start > stop:
+                stop, start = start, stop
+            if 0 < start > 65535 or 0 < stop > 65535:
+                raise F5ModuleError(
+                    "Ports must be whole numbers between 0 and 65,535"
+                )
+            item = '{0}-{1}'.format(start, stop)
+            result.append(item)
         return result
 
 
@@ -290,12 +315,36 @@ class ReportableChanges(Changes):
 class UsableChanges(Changes):
     @property
     def ports(self):
-        if self._values['ports'] is None:
+        if self._values['ports'] is None and self._values['port_ranges'] is None:
             return None
+        result = []
+        if self._values['ports']:
+            # The values of the 'key' index literally need to be string values.
+            # If they are not, on BIG-IP 12.1.0 they will raise this REST exception.
+            #
+            # {
+            #   "code": 400,
+            #   "message": "one or more configuration identifiers must be provided",
+            #   "errorStack": [],
+            #   "apiError": 26214401
+            # }
+            result += [dict(name=str(x)) for x in self._values['ports']]
+        if self._values['port_ranges']:
+            result += [dict(name=str(x)) for x in self._values['port_ranges']]
+        return result
 
     @property
     def port_lists(self):
-        pass
+        if self._values['port_lists'] is None:
+            return None
+        result = []
+        for x in self._values['port_lists']:
+            name, partition = x.split('/')
+            result.append(dict(
+                name=name,
+                partition=partition
+            ))
+        return result
 
 
 class Difference(object):
@@ -321,11 +370,30 @@ class Difference(object):
 
     @property
     def ports(self):
+        if self.want.ports is None:
+            return None
+        elif self.have.ports is None:
+            return self.want.ports
         if sorted(self.want.ports) != sorted(self.have.ports):
+            return self.want.ports
 
-        'description', 'ports', 'port_ranges', 'port_lists'
-    ]
+    @property
+    def port_lists(self):
+        if self.want.port_lists is None:
+            return None
+        elif self.have.port_lists is None:
+            return self.want.port_lists
+        if sorted(self.want.port_lists) != sorted(self.have.port_lists):
+            return self.want.port_lists
 
+    @property
+    def port_ranges(self):
+        if self.want.port_ranges is None:
+            return None
+        elif self.have.port_ranges is None:
+            return self.want.port_ranges
+        if sorted(self.want.port_ranges) != sorted(self.have.port_ranges):
+            return self.want.port_ranges
 
 
 class ModuleManager(object):
@@ -341,7 +409,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -433,7 +501,7 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.security.firewall.port_lists.port_list.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -441,7 +509,7 @@ class ModuleManager(object):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.security.firewall.port_lists.port_list.load(
             name=self.want.name,
             partition=self.want.partition
@@ -467,7 +535,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
