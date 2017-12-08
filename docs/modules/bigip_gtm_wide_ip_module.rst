@@ -37,11 +37,6 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>lb_method<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td><ul><li>round-robin</li><li>ratio</li><li>topology</li><li>global-availability</li></ul></td>
-        <td><div>Specifies the load balancing method used to select a pool in this wide IP. This setting is relevant only when multiple pools are configured for a wide IP.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -53,11 +48,46 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
+                <tr><td>pool_lb_method<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>yes</td>
+    <td></td>
+        <td><ul><li>round-robin</li><li>ratio</li><li>topology</li><li>global-availability</li></ul></td>
+        <td><div>Specifies the load balancing method used to select a pool in this wide IP. This setting is relevant only when multiple pools are configured for a wide IP.</div></br>
+    <div style="font-size: small;">aliases: lb_method<div>        </td></tr>
+                <tr><td rowspan="2">pools<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td><td></td>
+    <td> <div>The pools that you want associated with the Wide IP.</div><div>If <code>ratio</code> is not provided when creating a new Wide IP, it will default to 1.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object pools</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>ratio<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Ratio for the pool.</div><div>The system uses this number with the Ratio load balancing method.</div>        </td></tr>
+                    <tr><td>name<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The name of the pool to include</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"> (added in 2.4)</div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>disabled</li><li>enabled</li></ul></td>
-        <td><div>When <code>present</code> or <code>enabled</code>, ensures that the Wide IP exists and is enabled. When <code>absent</code>, ensures that the Wide IP has been removed. When <code>disabled</code>, ensures that the Wide IP exists and is disabled.</div>        </td></tr>
+        <td><div>When <code>present</code> or <code>enabled</code>, ensures that the Wide IP exists and is enabled.</div><div>When <code>absent</code>, ensures that the Wide IP has been removed.</div><div>When <code>disabled</code>, ensures that the Wide IP exists and is disabled.</div>        </td></tr>
                 <tr><td>type<br/><div style="font-size: small;"> (added in 2.4)</div></td>
     <td>no</td>
     <td></td>

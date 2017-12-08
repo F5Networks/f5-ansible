@@ -37,6 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>datacenter<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Data center the server belongs to. When creating a new GTM server, this value is required.</div>        </td></tr>
+                <tr><td>devices<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Lists the self IP addresses and translations for each device. When creating a new GTM server, this value is required. This list is a complex list that specifies a number of keys. There are several supported keys.</div><div>The <code>name</code> key specifies a name for the device. The device name must be unique per server. This key is required.</div><div>The <code>address</code> key contains an IP address, or list of IP addresses, for the destination server. This key is required.</div><div>The <code>translation</code> key contains an IP address to translate the <code>address</code> value above to. This key is optional.</div><div>Specifying duplicate <code>name</code> fields is a supported means of providing device addresses. In this scenario, the addresses will be assigned to the <code>name</code>'s list of addresses.</div>        </td></tr>
                 <tr><td>link_discovery<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

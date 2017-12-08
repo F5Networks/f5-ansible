@@ -61,6 +61,10 @@ F5
   bigip_remote_syslog - Manipulate remote syslog settings on a BIG-IP <bigip_remote_syslog_module>
   bigip_routedomain - Manage route domains on a BIG-IP <bigip_routedomain_module>
   bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
+  bigip_security_address_list - __SHORT_DESCRIPTION__ <bigip_security_address_list_module>
+  bigip_security_policy - __SHORT_DESCRIPTION__ <bigip_security_policy_module>
+  bigip_security_port_list - Manage port lists on BIG-IP AFM. <bigip_security_port_list_module>
+  bigip_security_rule_list - __SHORT_DESCRIPTION__ <bigip_security_rule_list_module>
   bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
   bigip_service - Manage BIG-IP service states <bigip_service_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP <bigip_snat_pool_module>
