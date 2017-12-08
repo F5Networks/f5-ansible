@@ -1,65 +1,57 @@
 Allow new admin access of private data
 ======================================
 
-In this tutorial I will outline the steps you need to take to add a new person to the
-list of allowed admins for handling the encrypted data in this repository.
+You may need to add an admin who can handle the encrypted data in this repository.
 
 When should I do this?
 ----------------------
 
-You should do this whenever you have deemed it necessary that a new person should be
-assigned to handle secure information.
+Do this procedure whenever a new person needs to handle secure information.
 
-Our policy is that the developers responsible for this software will be granted
-access to this repository.
+Only the developers responsible for this software will be granted access to this repository.
 
-Additionally, there may be an unspecified number of robot services that have subkeys
-registered in the list of admins. These keys have no business editing the content
-of the admin file. They must still be able to decrypt the content of the entire
-repository as needed to do their job; run CI/CD testing and deployment.
+Additionally, some robot services that have subkeys registered may be admins. These keys won't edit the content of the admin file, but they must be able to decrypt the content of the entire repository to do their job--run CI/CD testing and deployment.
 
 Who should do this?
 -------------------
 
-This is a two step process that involves the following people
+This is a two step process that involves the following people:
 
-1. The person who wants to be added
-2. The person who needs to do the adding
+1. The person who wants to be added.
+2. The person who does the adding.
 
-The process goes something like this
+The process goes something like this:
 
-1. Admin chooses a new primary or secondary
-2. Chosen person agrees and adds their public key in a PR
-3. Admin merges this PR
-4. Admin rebases their code to get the upstream changes
-5. Admin imports the public keyring into their local keyring
-6. Admin re-encrypts all the files and pushes those changes
+1. Admin chooses a new primary or secondary.
+2. Chosen person agrees and adds their public key in a PR.
+3. Admin merges this PR.
+4. Admin rebases their code to get the upstream changes.
+5. Admin imports the public keyring into their local keyring.
+6. Admin re-encrypts all the files and pushes those changes.
 
-As you can see, the admin will be doing most of the work, but that work largely needs
-to be initiated by the user in the form of them adding their public key in a PR.
-
-Let's look now at how to do that.
+The admin does most of the work, but the user must initiate that work by adding their public key in a PR.
 
 How do I do this?
 -----------------
 
-All of the work can be done inside of the development containers that are available
-in the `./devtools/bin` directory. In this example I will use the `run-py2.7`
-script to launch the relevant container.
+You can do all of the work by using the development containers in the `./devtools/bin` directory.
 
-We are going to begin with the person who wants to be added.
+This example uses the `run-py2.7` script to launch the relevant container.
+
+Let's begin with the person who wants to be added.
+
+.. _creatingkeypair:
 
 Creating a keypair
 ------------------
 
-To perform these steps, start by firing up the py2.7 (or equivalent) container.
+Start the py2.7 (or equivalent) container.
 
 .. code-block:: bash
 
    SEA-ML-RUPP1:f5-ansible trupp$ ./devtools/bin/run-py2.7
 
-Within this container, use the `gpg2 --gen-key` command to create the keypair you
-will use. An example is shown below.
+Within this container, use the `gpg2 --gen-key` command to create a keypair. For example:
 
 .. code-block:: bash
 
@@ -92,25 +84,20 @@ will use. An example is shown below.
 
    root@d7f809815281:/here#
 
-With this complete, you should see your email address when using the `gpg2 --list-keys`
-command.
+When done, you should see your email address when using the `gpg2 --list-keys` command.
 
 For the person who wants to be added
 ------------------------------------
 
-We assume that you have created an initial keypair to use for
-encryption. If you have not yet done that, follow the instructions below in the
-(Creating a keypair)[] section.
+You must have an initial keypair to use for encryption. If you do not, follow the instructions in the :ref:`Creating a keypair <creatingkeypair>` section.
 
-Begin by starting that container with the necessary script
+Now, start the container:
 
 .. code-block:: bash
 
    SEA-ML-RUPP1:f5-ansible trupp$ ./devtools/bin/run-py2.7
 
-This command will leave you at a new shell prompt. Within this new prompt, the next
-step is to create a new branch which will contain the pull request with your admin
-addition in it. This can be done with git
+This command leaves you at a new shell prompt. Now create a new branch that contains the pull request with your admin addition in it. You can do this with git:
 
 .. code-block:: bash
 
@@ -118,17 +105,13 @@ addition in it. This can be done with git
 
 `git` should notify you that you have changed branches.
 
-Next you will run the `blackbox_addadmin` command to change the necessary files for
-adding you as an admin. The single argument to this command is the email address that
-you specified when you created your initial key pair.
+Next, run the `blackbox_addadmin` command to change the necessary files for adding you as an admin. The single argument to this command is the email address that you specified when you created your initial key pair.
 
 .. code-block:: bash
 
    blackbox_addadmin foo.bar@f5.com
 
-When this command finishes, there will be several new files which are shown as
-modified. Additionally, the `blackbox_addadmin` command will instruct you on the
-command you need to use to commit these changes.
+When this command finishes, several new files show as modified. Additionally, the `blackbox_addadmin` command tells you which command to use to commit these changes.
 
 .. code-block:: bash
 
@@ -142,7 +125,7 @@ command you need to use to commit these changes.
          git commit -m'NEW ADMIN: foo.bar@f5.com' keyrings/live/pubring.kbx keyrings/live/trustdb.gpg keyrings/live/blackbox-admins.txt
    root@d7f809815281:/here#
 
-A `git status` command will also illustrate this.
+A `git status` command also illustrates this.
 
 .. code-block:: bash
 
@@ -151,40 +134,30 @@ A `git status` command will also illustrate this.
            modified:   keyrings/live/pubring.kbx
    root@d7f809815281:/here#
 
-Do as the instructions say above and commit those files
+Follow the instructions and commit those files.
 
 .. code-block:: bash
 
    git commit -m'NEW ADMIN: foo.bar@f5.com' keyrings/live/pubring.kbx keyrings/live/trustdb.gpg keyrings/live/blackbox-admins.txt
 
-You may now push the PR to the Github repository and follow the normal PR process.
+You may now push the PR to the GitHub repository and follow the normal PR process.
 
-For the existing admin doing the adding
----------------------------------------
+For the existing admin
+----------------------
 
-First, verify and merge the PR sent by the user wishing to be added.
+First, verify and merge the PR the user sent.
 
 .. note::
 
-   Adding a new user to the public key chain in the steps above is not, immediately,
-   a security risk. This is because you have not yet re-encrypted the files. If you
-   mistakenly merge a PR from a bad actor, you should immediately reverse this merge
-   by using the `blackbox_removeadmin` command.
+   - Adding a new user to the public key chain in the steps above is not, immediately, a security risk. This is because you have not yet re-encrypted the files. If you mistakenly merge a PR from a bad actor, you should immediately reverse this merge by using the `blackbox_removeadmin` command.
 
-   If you have already re-encrypted all of the files with this new key, then you
-   still have the ability to undo your mistake by re-checking out the modified `*.gpg`
-   files.
+   - If you have already re-encrypted all of the files with this new key, then you still have the ability to undo your mistake by re-checking out the modified `*.gpg` files.
 
-   If you have committed those files, you have one last chance to save yourself by
-   undoing the merge in question **before** you push your changes to the upstream
-   repository.
+   - If you have committed those files, you have one last chance to undo the merge in question **before** you push your changes to the upstream repository.
 
-   If you have failed to catch yourself at the numerous places above, your only
-   remaining option is to either re-write history (bad idea) or legitimately remove
-   the bad key, change all secrets, and re-encrypt as normal.
+   - If you failed to catch yourself at the numerous places above, your only remaining option is to either re-write history (bad idea) or legitimately remove the bad key, change all secrets, and re-encrypt as normal.
 
-Next, merge the aforementioned PR into the repository. After that, you will want to
-rebase your own fork of the code to include this new merge commit
+Next, merge the PR into the repository. After that, rebase your own fork of the code to include this new merge commit.
 
 .. code-block:: bash
 
@@ -193,20 +166,16 @@ rebase your own fork of the code to include this new merge commit
    git rebase upstream/devel
    git stash apply
 
-The above follows a simple set of steps where-by we
+These steps:
 
-- Get any changes from the upstream source code (which would include the PR that the
-  user who wanted to be added just made)
-- Stash any changes that we may have been working on. This prevents the next step from
-  failing.
-- Rebase the upstream code-base onto your current code-base. This will allow the new
-  user's PR to land in your local source tree.
-- Re-apply the code that you previously stashed away. This will put you back to where
-  you left off.
+- Get any changes from the upstream source code (which would include the PR that the user just made)
+- Stash any changes that you may have been working on. This prevents the next step from failing.
+- Rebase the upstream code-base onto your current code-base. This allows the new user's PR to land in your local source tree.
+- Re-apply the code that you previously stashed away. This will put you back to where you left off.
 
-With the new changes in your source tree, it's time that you re-encrypted all of the
-private files with the new users public key. To do that, you can use the
-`blackbox_update_all_files` command from inside of any of the development containers.
+With the new changes in your source tree, it's time to re-encrypt all of the private files with the new user's public key.
+
+To do that, you can use the `blackbox_update_all_files` command from inside any of the development containers.
 
 .. code-block:: bash
 
@@ -235,8 +204,7 @@ private files with the new users public key. To do that, you can use the
    WARNING: This will overwrite any unencrypted files laying about.
    Press CTRL-C now to stop. ENTER to continue:
 
-Press **ENTER** to proceed and re-encrypt all of the secrets. You will be asked for
-your own encryption password in the process.
+Press **ENTER** to proceed and re-encrypt all of the secrets. You will be asked for your own encryption password in the process.
 
 .. code-block:: bash
 
@@ -261,9 +229,7 @@ your own encryption password in the process.
    Likely next step:
        git push
 
-`blackbox` will end with telling you what the likely next step is; `git push`. Indeed,
-if you view the `git` log, you can see there is a new commit there for the re-encryption
-process.
+`blackbox` will tell you what the likely next step is: `git push`. If you view the `git` log, you can see there is a new commit there for the re-encryption process.
 
 .. code-block:: bash
 
@@ -273,5 +239,4 @@ process.
 
        Re-encrypted keys
 
-Therefore, do the push as requested. Once this is done, the new maintainer will have the
-ability to decrypt the secrets.
+Therefore, do the push as requested. When done, the new maintainer will have the ability to decrypt the secrets.

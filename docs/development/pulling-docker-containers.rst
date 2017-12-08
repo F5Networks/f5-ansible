@@ -1,4 +1,4 @@
-Pulling Docker Containers
+Pulling Docker containers
 =========================
 
 If you are an F5'er, then you have access to an internal docker registry.

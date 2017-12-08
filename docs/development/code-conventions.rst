@@ -1,4 +1,4 @@
-Code Conventions
+Code conventions
 ================
 
 The F5 modules attempt to follow a set of coding conventions that apply to all new and existing modules. These conventions help new contributors quickly develop new modules, and they help existing contributors maintain the current modules.

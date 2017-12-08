@@ -1,4 +1,4 @@
-Filing Issues
+Filing issues
 =============
 
 If you run into any issues while working with the F5 modules for Ansible, you should submit them.

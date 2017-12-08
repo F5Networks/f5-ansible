@@ -1,6 +1,6 @@
 .. _designdecisions:
 
-Design Decisions
+Design decisions
 ================
 
 This document describes some of the design decisions for the F5 Ansible modules.

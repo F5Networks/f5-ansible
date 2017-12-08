@@ -1,4 +1,4 @@
-Writing a Module
+Writing a module
 ================
 
 The following tutorial explains how to create a module.

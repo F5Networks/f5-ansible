@@ -1,4 +1,4 @@
-About Upstreaming
+About upstreaming
 =================
 
 Upstreaming refers to opening a PR with the Ansible core product.
@@ -30,7 +30,7 @@ A module is in a mature state after it has met all of the established standards.
 
 When the module meets these requirements, F5 will request Ansible to include the module.
 
-Ansible Releases
+Ansible releases
 ----------------
 
 After F5 upstreams a module, a period of time will pass before it becomes part of the core Ansible product.

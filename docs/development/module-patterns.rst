@@ -94,7 +94,7 @@ flake8
 
 Your modules should conform to Ansible's validate-modules code.
 
-Design Patterns
+Design patterns
 ===============
 
 These patterns should:

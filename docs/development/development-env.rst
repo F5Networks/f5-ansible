@@ -1,85 +1,70 @@
-Development Environment
+Development environment
 =======================
 
-To make developing F5 Ansible modules easier, this document covers the development
-tools that are used. While these tools are not a requirement, they have been chosen
-because they make certain tasks significantly easier.
+This document covers development tools that make developing F5 Ansible modules significantly easier.
 
 Getting Started
-===============
+---------------
 
-We assume that you are working on a \*nix, or \*nix-like environment. The workstation
-we'll be using in the examples is a Mac running Sierra (10.12.6). Some of the steps
-will not be relevant to other environments. When that happens, it will be noted.
+This document assumes that you are working on a \*nix, or \*nix-like environment.
 
-Amongst the topics of this document are the following
+The workstation in the examples is a Mac running Sierra (10.12.6). Some of the steps will not be relevant to other environments. When that happens, it will be noted.
 
-* Choosing an IDE
-* REST communication
-* Virtualization tools
-* Docker
-* Getting the source
-* sudo ifconfig lo0 -alias 1.2.3.4
+Amongst the topics of this document are the following:
 
-This document ultimately serves as a gateway to all the other development related
-documents on this site. You will be unable to follow the other development documents
-without having the setup outlined here in place.
+- Choosing an IDE
+- REST communication
+- Virtualization tools
+- Docker
+- Getting the source
+- sudo ifconfig lo0 -alias 1.2.3.4
+
+This document ultimately serves as a gateway to all the other development-related documents on this site. You will be unable to follow the other development documents without having the setup outlined here.
 
 Choosing an IDE
 ---------------
 
-The IDE that the Ansible modules are written in is PyCharm.
+The Ansible modules are written in the PyCharm IDE.
 
-  * https://www.jetbrains.com/pycharm/download/
+- https://www.jetbrains.com/pycharm/download/
 
-The developers use the Professional edition, but there is also a Community edition
-available to you as well.
+The developers use the Professional edition, but there is also a Community edition available to you as well.
 
-Other editors can be used as you see fit, but the above editor is used in this
-document.
+Other editors can be used as you see fit, but the above editor is used in this document.
 
 A vanilla installation of PyCharm is sufficient.
 
-With an editor in place, it is time for you to get a tool that will facilitate your
-ability to speak with the F5 device's REST API. For this, let's proceed to the
-next section.
+With an editor in place, it is time for you to get a tool that will facilitate your ability to speak with the F5 device's REST API.
 
 REST communication
 ------------------
 
-There are a variety of tools that can be used to introspect a REST API, but Postman
-is the one that we used for the F5 Ansible modules.
+You can use a variety of tools to introspect a REST API, but Postman is the one that we used for the F5 Ansible modules.
 
-This tool is used in two ways
+This tool is used in two ways:
 
-* As a way to communicate with F5 devices during development
-* As a way for contributors to provide API workflows to the Ansible module developers
+- As a way to communicate with F5 devices during development
+- As a way for contributors to provide API workflows to the Ansible module developers
 
 Postman can be downloaded from the following URL.
 
-* https://www.getpostman.com/
+- https://www.getpostman.com/
 
-It comes in two parts. First, there is the `postman` tool itself which is a GUI tool
-that you can use to interact with remote REST APIs. Second, there is a CLI tool
-called `newman` which can be used to run batches of API calls. These batches are
-usually in the form of what Postman refers to as "Collections".
+It comes in two parts. First, there is the `postman` tool itself which is a GUI tool that you can use to interact with remote REST APIs. Second, there is a CLI tool called `newman` which can be used to run batches of API calls. These batches are usually in the form of what Postman refers to as "Collections".
 
 We do not use `newman`.
 
 Virtualization tools
 --------------------
 
-For the primary needs of development and test we use VE (Virtual Edition) instances
-of F5 product to do our work.
+For the primary needs of development and test we use VE (Virtual Edition) instances of F5 product to do our work.
 
-To run these VE products, you have two options
+To run these VE products, you have two options:
 
 - OpenStack
 - Virtualbox/VMWare/some local solution
 
-You options are limited to the platform that you choose to do development on. Mac
-and hardware-based Linux installations, have the largest breadth of options. We'll
-explain why this is, shortly.
+You options are limited to the platform that you choose to do development on. Mac and hardware-based Linux installations have the largest breadth of options. We'll explain why this is, shortly.
 
 As mentioned, all development platforms can support OpenStack. This is because our
 usage of OpenStack's client libraries is constrained to the Docker dev/test
@@ -119,7 +104,7 @@ a `docker-compose.yaml` file that has all the necessary Python environments.
 `docker-compose` *should* come with docker by default. If not, you can install it
 by following the instructions here.
 
-* https://docs.docker.com/compose/install/
+- https://docs.docker.com/compose/install/
 
 To make use of this requires the following two steps.
 
@@ -131,9 +116,9 @@ environments that we support are.
 
 You can get this information with the following command
 
-* `docker-compose -f devtools/docker-compose.yaml config --services`
+- `docker-compose -f devtools/docker-compose.yaml config --services`
 
-For example,
+For example:
 
 .. code-block:: bash
 
@@ -148,9 +133,9 @@ Once you have chosen the environment that you want, you can proceed to build.
 Suppose you were interested in Python 3.6.2. You could build that development
 environment with the following command.
 
-* `docker-compose -f devtools/docker-compose.yaml build py3.6.2`
+- `docker-compose -f devtools/docker-compose.yaml build py3.6.2`
 
-For example,
+For example:
 
 .. code-block:: bash
 
@@ -186,7 +171,7 @@ Finally, to make use of the new container, you can use the `run` argument to
 
 * `docker-compose -f devtools/docker-compose.yaml run py3.6.2`
 
-For example,
+For example:
 
 .. code-block:: bash
 
@@ -338,7 +323,7 @@ Additionally, you can tab complete the `f5ansbile` command, and then continue to
 press TAB twice or more to get the list of sub-commands that the `f5ansible` command
 provides.
 
-For example,
+For example:
 
 .. code-block:: bash
 
