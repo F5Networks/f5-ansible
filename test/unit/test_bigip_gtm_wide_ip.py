@@ -22,7 +22,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_gtm_wide_ip import Parameters
+    from library.bigip_gtm_wide_ip import ApiParameters
+    from library.bigip_gtm_wide_ip import ModuleParameters
     from library.bigip_gtm_wide_ip import ModuleManager
     from library.bigip_gtm_wide_ip import ArgumentSpec
     from library.bigip_gtm_wide_ip import UntypedManager
@@ -31,7 +32,8 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_gtm_wide_ip import Parameters
+        from ansible.modules.network.f5.bigip_gtm_wide_ip import ApiParameters
+        from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleParameters
         from ansible.modules.network.f5.bigip_gtm_wide_ip import ModuleManager
         from ansible.modules.network.f5.bigip_gtm_wide_ip import ArgumentSpec
         from ansible.modules.network.f5.bigip_gtm_wide_ip import UntypedManager
@@ -69,26 +71,26 @@ class TestParameters(unittest.TestCase):
             name='foo.baz.bar',
             lb_method='round-robin'
         )
-        p = Parameters(args)
+        p = ModuleParameters(args)
         assert p.name == 'foo.baz.bar'
-        assert p.lb_method == 'round-robin'
+        assert p.pool_lb_method == 'round-robin'
 
     def test_api_parameters(self):
         args = dict(
             name='foo.baz.bar',
             poolLbMode='round-robin'
         )
-        p = Parameters(args)
+        p = ApiParameters(args)
         assert p.name == 'foo.baz.bar'
-        assert p.lb_method == 'round-robin'
+        assert p.pool_lb_method == 'round-robin'
 
-    def test_api_not_fqdn_name(self):
+    def test_module_not_fqdn_name(self):
         args = dict(
             name='foo.baz',
-            poolLbMode='round-robin'
+            lb_method='round-robin'
         )
         with pytest.raises(F5ModuleError) as excinfo:
-            p = Parameters(args)
+            p = ModuleParameters(args)
             assert p.name == 'foo.baz'
         assert 'The provided name must be a valid FQDN' in str(excinfo)
 
