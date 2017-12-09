@@ -31,7 +31,7 @@
 - name: Issue 00398 - Assert Create a client SSL profile with a cert/key/specific ciphers
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00398 - Create a client SSL profile with a cert/key/specific ciphers - Idempotent check
   bigip_profile_client_ssl:
@@ -46,7 +46,7 @@
 - name: Issue 00398 - Assert Create a client SSL profile with a cert/key/specific ciphers - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00398 - Remove client SSL profile
   bigip_profile_client_ssl:
