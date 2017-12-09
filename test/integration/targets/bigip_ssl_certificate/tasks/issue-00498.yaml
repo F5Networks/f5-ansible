@@ -1,0 +1,30 @@
+---
+
+- name: Issue 00498 - Import issuer cert
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'issue.00498.issuer.crt') }}"
+    name: issue.00498.issuer
+
+- name: Issue 00498 - Import cert with issuer
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'issue.00498.local.crt') }}"
+    issuer_cert: issue.00498.issuer
+    name: issue.00498.local
+  register: result
+
+- name: Issue 00498 - Assert Import cert with issuer
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00498 - Import cert with issuer - Idempotent check
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'issue.00498.local.crt') }}"
+    issuer_cert: issue.00498.issuer
+    name: issue.00498.local
+  register: result
+
+- name: Issue 00498 - Assert Import cert with issuer - Idempotent check
+  assert:
+    that:
+      - result is not changed

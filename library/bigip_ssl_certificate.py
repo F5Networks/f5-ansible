@@ -234,6 +234,11 @@ class Parameters(AnsibleF5Parameters):
         else:
             return None
 
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
+
 
 class KeyParameters(Parameters):
     api_map = {
@@ -290,14 +295,25 @@ class KeyParameters(Parameters):
 
 class CertParameters(Parameters):
     api_map = {
-        'sourcePath': 'cert_source_path'
+        'sourcePath': 'cert_source_path',
+        'issuerCert': 'issuer_cert'
     }
 
-    updatables = ['cert_source_path']
+    updatables = ['cert_source_path', 'issuer_cert']
 
-    returnables = ['cert_filename', 'cert_checksum', 'cert_source_path']
+    returnables = ['cert_filename', 'cert_checksum', 'cert_source_path', 'issuer_cert']
 
-    api_attributes = ['sourcePath']
+    api_attributes = ['issuerCert']
+
+    @property
+    def issuer_cert(self):
+        if self._values['issuer_cert'] is None:
+            return None
+        name = self._fqdn_name(self._values['issuer_cert'])
+        if name.endswith('.crt'):
+            return name
+        else:
+            return name + '.crt'
 
     @property
     def cert_checksum(self):
@@ -502,6 +518,7 @@ class CertificateManager(BaseManager):
         return False
 
     def update_on_device(self):
+        params = self.changes.api_params()
         content = StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.cert_filename
@@ -510,18 +527,27 @@ class CertificateManager(BaseManager):
             name=self.want.cert_filename,
             partition=self.want.partition
         )
-        resource.update()
+        resource.update(**params)
 
     def create_on_device(self):
         content = StringIO(self.want.cert_content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
             content, self.want.cert_filename
         )
-        self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
+        resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
             sourcePath=self.want.cert_source_path,
             name=self.want.cert_filename,
             partition=self.want.partition
         )
+
+        # This needs to be done because of the way that BIG-IP creates certificates.
+        #
+        # The extra params (such as OCSP and issuer stuff) are not available in the
+        # payload. In a nutshell, the available resource attributes *change* after
+        # a create so that *more* are available.
+        params = self.want.api_params()
+        if params:
+            resource.update(**params)
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
@@ -665,7 +691,8 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['absent', 'present']
-            )
+            ),
+            issuer_cert=dict()
         )
         self.mutually_exclusive = [
             ['key_content', 'key_src'],
