@@ -46,6 +46,17 @@ options:
     aliases:
       - address
       - ip
+  source:
+    description:
+      - Specifies an IP address or network from which the virtual server accepts traffic.
+      - The virtual server accepts clients only from one of these IP addresses.
+      - For this setting to function effectively, specify a value other than 0.0.0.0/0 or ::/0
+        (that is, any/0, any6/0).
+      - In order to maximize utility of this setting, specify the most specific address
+        prefixes covering all customer addresses and no others.
+      - Specify the IP address in Classless Inter-Domain Routing (CIDR) format: address/prefix,
+        where the prefix length is in bits: for example, for IPv4: 10.0.0.1/32 or 10.0.0.0/24,
+        and for IPv6: ffe1::0020/64 or 2001:ed8:77b5:2:10:10:100:42/64.
   port:
     description:
       - Port of the virtual server. Required when C(state) is C(present)
@@ -346,10 +357,11 @@ class VirtualServerParameters(Parameters):
         'pool',
         'profiles',
         'rules',
+        'source',
         'sourceAddressTranslation',
         'vlans',
         'vlansEnabled',
-        'vlansDisabled'
+        'vlansDisabled',
     ]
 
     updatables = [
@@ -367,6 +379,7 @@ class VirtualServerParameters(Parameters):
         'port',
         'profiles',
         'snat',
+        'source'
     ]
 
     returnables = [
@@ -383,7 +396,8 @@ class VirtualServerParameters(Parameters):
         'policies',
         'port',
         'profiles',
-        'snat'
+        'snat',
+        'source'
     ]
 
     def __init__(self, params=None):
@@ -446,6 +460,19 @@ class VirtualServerApiParameters(VirtualServerParameters):
         destination = self.destination_tuple
         result = self._format_destination(destination.ip, destination.port, destination.route_domain)
         return result
+
+    @property
+    def source(self):
+        if self._values['source'] is None:
+            return None
+        try:
+            addr = netaddr.IPNetwork(self._values['source'])
+            result = '{0}/{1}'.format(str(addr.ip), addr.prefixlen)
+            return result
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The source IP address must be specified in CIDR format: address/prefix"
+            )
 
     @property
     def destination_tuple(self):
@@ -607,6 +634,26 @@ class VirtualServerModuleParameters(VirtualServerParameters):
             )
         result = self._format_destination(addr, self.port, self.route_domain)
         return result
+
+    @property
+    def destination_tuple(self):
+        Destination = namedtuple('Destination', ['ip', 'port', 'route_domain'])
+        addr = self._values['destination'].split("%")[0]
+        result = Destination(ip=addr, port=self.port, route_domain=self.route_domain)
+        return result
+
+    @property
+    def source(self):
+        if self._values['source'] is None:
+            return None
+        try:
+            addr = netaddr.IPNetwork(self._values['source'])
+            result = '{0}/{1}'.format(str(addr.ip), addr.prefixlen)
+            return result
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The source IP address must be specified in CIDR format: address/prefix"
+            )
 
     @property
     def port(self):
@@ -864,6 +911,19 @@ class Difference(object):
         )
         if want != self.have.destination:
             return self.want._fqdn_name(want)
+
+    @property
+    def source(self):
+        if self.want.source is None:
+            return None
+        want = netaddr.IPNetwork(self.want.source)
+        have = netaddr.IPNetwork(self.have.destination_tuple.ip)
+        if want.version != have.version:
+            raise F5ModuleError(
+                "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
+            )
+        if self.want.source != self.have.source:
+            return self.want.source
 
     @property
     def vlans(self):
@@ -1173,6 +1233,13 @@ class VirtualServerManager(BaseManager):
                         vlans_enabled=False
                     )
                 )
+        if self.want.source and self.want.destination:
+            want = netaddr.IPNetwork(self.want.source)
+            have = netaddr.IPNetwork(self.want.destination_tuple.ip)
+            if want.version != have.version:
+                raise F5ModuleError(
+                    "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
+                )
         return super(VirtualServerManager, self).create()
 
     def update_on_device(self):
@@ -1319,7 +1386,8 @@ class ArgumentSpec(object):
                 choices=['enabled', 'disabled']
             ),
             default_persistence_profile=dict(),
-            fallback_persistence_profile=dict()
+            fallback_persistence_profile=dict(),
+            source=dict()
         )
         self.f5_product_name = 'bigip'
         self.mutually_exclusive = [
