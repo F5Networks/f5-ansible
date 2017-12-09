@@ -85,7 +85,7 @@
         - name: "xml_broker_pool__monitor_username"
           value: "VAR-CITRIXTESTACC"
         - name: "xml_broker_virtual__client_bundle_url"
-          value: ""
+          value: "receiver.citrix.com"
         - name: "config_mode"
           value: "advanced"
         - name: "scenario"
