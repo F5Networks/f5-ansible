@@ -57,4 +57,5 @@
       - "{{ ca_dir }}/intermediate/certs/ca-chain.cert.pem"
       - "{{ ca_dir }}/intermediate/certs/www.example.com.cert.pem"
       - "{{ ca_dir }}/intermediate/certs/ocsp.example.com.cert.pem"
+      - "{{ ca_dir }}/intermediate/private/ocsp.example.com.key.pem"
       - "{{ ca_dir }}/intermediate/private/www.example.com.key.pem"
