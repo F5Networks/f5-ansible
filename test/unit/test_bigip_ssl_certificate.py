@@ -117,7 +117,7 @@ class TestParameters(unittest.TestCase):
             partition="Common",
         )
         p = CertParameters(args)
-        assert p.issuer_cert == '/Common/foo'
+        assert p.issuer_cert == '/Common/foo.crt'
 
     def test_api_issuer_cert_key(self):
         args = load_fixture('load_sys_file_ssl_cert_with_issuer_cert.json')
