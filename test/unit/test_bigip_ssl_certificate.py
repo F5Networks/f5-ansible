@@ -111,6 +111,19 @@ class TestParameters(unittest.TestCase):
         assert p.password == 'password'
         assert p.partition == 'Common'
 
+    def test_module_issuer_cert_key(self):
+        args = dict(
+            issuer_cert='foo',
+            partition="Common",
+        )
+        p = CertParameters(args)
+        assert p.issuer_cert == '/Common/foo'
+
+    def test_api_issuer_cert_key(self):
+        args = load_fixture('load_sys_file_ssl_cert_with_issuer_cert.json')
+        p = CertParameters(args)
+        assert p.issuer_cert == '/Common/intermediate.crt'
+
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
