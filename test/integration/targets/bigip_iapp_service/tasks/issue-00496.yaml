@@ -1,0 +1,166 @@
+---
+
+- name: Issue 00496 - Create a template for testing
+  bigip_iapp_template:
+    content: "{{ lookup('file', 'f5.citrix_vdi.v2.4.2.tmpl') }}"
+    state: present
+  delegate_to: localhost
+
+- name: Issue 00496 - Import a certificate
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', 'issue.00496.local.crt') }}"
+    name: issue.00496.local
+
+- name: Issue 00496 - Import a key
+  bigip_ssl_key:
+    content: "{{ lookup('file', 'issue.00496.local.key') }}"
+    name: issue.00496.local
+
+- name: Issue 00496 - Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: claranet-wildcard
+    parent: clientssl
+    cert_key_chain:
+      - cert: issue.00496.local
+        key: issue.00496.local
+
+- name: Issue 00496 - Create a pool
+  bigip_pool:
+    name: web
+    lb_method: round-robin
+
+- name: Issue 00496 - Create iApp f5.citrix_vdi service from iApp template
+  bigip_iapp_service:
+    name: "ans-iapp"
+    template: "/Common/f5.citrix_vdi.v2.4.2"
+    parameters:
+      tables:
+        - name: "apm__active_directory_server"
+          rows:
+            - host: "ad1.claranet.nl"
+              addr: "1.1.1.1"
+        - name: "xml_broker_pool__servers"
+          rows:
+            - addr: "12.12.12.12"
+              connection_limit: "0"
+        - name: "xml_broker_virtual__ica_parameters"
+          rows:
+            - name: ""
+              parameter: ""
+              value: ""
+      variables:
+        - name: "webui_virtual__sta"
+          value: "12.12.12.12"
+        - name: "webui_virtual__custom_uri"
+          value: "FQDN.WEBTOP"
+        - name: "xml_broker_virtual__addr"
+          value: "12.12.12.12"
+        - name: "apm__active_directory_password"
+          encrypted: "yes"
+          value: "M$Ut$Ii0ovqHLkflZzGsSGCnhngaYJK0QKvOnsFtSc2ha6zw="
+        - name: "apm__active_directory_username"
+          value: "VAR-ADSERVICEACCOUNT"
+        - name: "apm__ad_password"
+          encrypted: "yes"
+          value: "M$a4$h9um+bc1n/KXcDwhMyIIzgaYJK0QKvOnsFtSc2ha6zw="
+        - name: "apm__ad_tree"
+          value: "ou=Citrix Users, dc=Citrix, dc=example"
+        - name: "apm__ad_user"
+          value: "VAR-ADSERVICEACCOUNT"
+        - name: "general__domain_name"
+          value: "ADNETBIOS"
+        - name: "apm__login_domain"
+          value: "VAR-ADFQDN"
+        - name: "webui_pool__webui_dns_name"
+          value: "VAR-FQDNPORTAL"
+        - name: "webui_virtual__addr"
+          value: "11.11.11.11"
+        - name: "webui_virtual__clientssl_profile"
+          value: "/Common/claranet-wildcard"
+        - name: "xml_broker_pool__monitor_app"
+          value: "VAR-TESTAPP"
+        - name: "xml_broker_pool__monitor_password"
+          encrypted: "yes"
+          value: "M$BI$TmhQFUUC1hhTAGBf8Q8ipiKD3NAbzeYXpaH24FmVFqA="
+        - name: "xml_broker_pool__monitor_username"
+          value: "VAR-CITRIXTESTACC"
+        - name: "xml_broker_virtual__client_bundle_url"
+          value: ""
+        - name: "config_mode"
+          value: "advanced"
+        - name: "scenario"
+          value: "apm_scenario"
+        - name: "xml_broker_virtual__http_port"
+          value: "80"
+        - name: "xml_broker_virtual__https_port"
+          value: "443"
+        - name: "xml_broker_virtual__rules"
+          value: ""
+        - name: "xml_broker_virtual__cert"
+          value: "/Common/default.crt"
+        - name: "xml_broker_virtual__key"
+          value: "/Common/default.key"
+        - name: "webui_virtual__https_port"
+          value: "443"
+        - name: "webui_pool__pool"
+          value: "web"
+        - name: "afm__policy"
+          value: "/#do_not_use#"
+        - name: "apm__aaa_profile"
+          value: "/#create_new#"
+        - name: "apm__ad_interval"
+          value: "10"
+        - name: "apm__ad_monitor"
+          value: "ad_create"
+        - name: "apm__ad_port_not_ssl"
+          value: "389"
+        - name: "apm__ad_secure"
+          value: "none"
+        - name: "apm__allow_anonymous_binding"
+          value: "credentials_required"
+        - name: "apm__logging"
+          value: "/Common/default-log-setting"
+        - name: "apm__replace_webui_question"
+          value: "replace"
+        - name: "apm__rsa"
+          value: "No"
+        - name: "apm__smartcard"
+          value: "No"
+        - name: "general__assistance_options"
+          value: "full"
+        - name: "general__config_mode"
+          value: "advanced"
+        - name: "general__scenario"
+          value: "apm_scenario"
+        - name: "webui_virtual__create_redir_vs"
+          value: "create_redir_vs"
+        - name: "webui_virtual__lan_or_wan"
+          value: "WAN"
+        - name: "webui_virtual__location"
+          value: "same_subnet"
+        - name: "webui_virtual__redir_port"
+          value: "80"
+        - name: "webui_virtual__rules"
+          value: ""
+        - name: "xml_broker_pool__caption"
+          value: "Farm Unavailable"
+        - name: "xml_broker_pool__enable_pga"
+          value: "no_pga"
+        - name: "xml_broker_pool__lb_method_choice"
+          value: "least-connections-member"
+        - name: "xml_broker_pool__monitor"
+          value: "/#create_new#"
+        - name: "xml_broker_pool__monitor_interval"
+          value: "30"
+        - name: "xml_broker_pool__pool_alt"
+          value: "/#create_new#"
+        - name: "xml_broker_pool__slow_ramp_enable"
+          value: "enable"
+        - name: "xml_broker_pool__slow_ramp_setvalue"
+          value: "300"
+        - name: "xml_broker_virtual__client_bundle"
+          value: "/#create_new#"
+        - name: "xml_broker_virtual__encrypted"
+          value: "encrypted"
+        - name: "xml_broker_virtual__xml_farms"
+          value: "1"
