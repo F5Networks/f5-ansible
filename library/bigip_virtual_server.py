@@ -57,6 +57,7 @@ options:
       - Specify the IP address in Classless Inter-Domain Routing (CIDR) format: address/prefix,
         where the prefix length is in bits: for example, for IPv4: 10.0.0.1/32 or 10.0.0.0/24,
         and for IPv6: ffe1::0020/64 or 2001:ed8:77b5:2:10:10:100:42/64.
+    version_added: 2.5
   port:
     description:
       - Port of the virtual server. Required when C(state) is C(present)
