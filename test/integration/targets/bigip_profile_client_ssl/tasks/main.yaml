@@ -1,5 +1,39 @@
 ---
 
+- name: Import certs
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', item.file) }}"
+    name: "{{ item.name }}"
+  loop:
+    - name: cert1
+      file: cert1.crt
+    - name: cert2
+      file: cert2.crt
+    - name: 2048b-dsa-example-cert
+      file: 2048b-dsa-example-cert.pem
+
+- name: Import keys
+  bigip_ssl_key:
+    content: "{{ lookup('file', item.file) }}"
+    name: "{{ item.name }}"
+  loop:
+    - name: key1
+      file: cert1.key
+    - name: key2
+      file: cert2.key
+    - name: 2048b-dsa-example-keypair
+      file: 2048b-dsa-example-keypair.pem
+
+- name: Import chains
+  bigip_ssl_certificate:
+    content: "{{ lookup('file', item.file) }}"
+    name: "{{ item.name }}"
+  loop:
+    - name: chain1
+      file: chain1.crt
+    - name: chain2
+      file: chain2.crt
+
 - name: Create a client SSL profile
   bigip_profile_client_ssl:
     name: foo
@@ -10,7 +44,7 @@
 - name: Assert Create a client SSL profile
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a client SSL profile - Idempotent check
   bigip_profile_client_ssl:
@@ -22,7 +56,63 @@
 - name: Assert Create a client SSL profile - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
+
+- name: Assign cert/key/chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1
+        key: key1
+  register: result
+
+- name: Assert Assign cert/key/chain
+  assert:
+    that:
+      - result is changed
+
+- name: Assign cert/key/chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1
+        key: key1
+  register: result
+
+- name: Assert Assign cert/key/chain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add a cert cert/key/chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1
+        key: key1
+      - cert: 2048b-dsa-example-cert
+        key: 2048b-dsa-example-keypair
+  register: result
+
+- name: Assert Add a cert/key/chain
+  assert:
+    that:
+      - result is changed
+
+- name: Add a cert/key/chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert1
+        key: key1
+      - cert: 2048b-dsa-example-cert
+        key: 2048b-dsa-example-keypair
+  register: result
+
+- name: Assert Add a cert/key/chain - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - name: Remove client SSL profile
   bigip_profile_client_ssl:
@@ -33,7 +123,7 @@
 - name: Assert Remove client SSL profile
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove client SSL profile - Idempotent check
   bigip_profile_client_ssl:
@@ -44,7 +134,33 @@
 - name: Assert Remove client SSL profile - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
+
+- name: Remove certs
+  bigip_ssl_certificate:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - cert1
+    - cert2
+    - 2048b-dsa-example-cert
+
+- name: Remove keys
+  bigip_ssl_key:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - key1
+    - key2
+    - 2048b-dsa-example-keypair
+
+- name: Remove chains
+  bigip_ssl_certificate:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - chain1
+    - chain2
 
 - import_tasks: test-cert-key-chain.yaml
 
