@@ -207,7 +207,7 @@ class Parameters(AnsibleF5Parameters):
             return name
 
     def _get_chain_value(self, item):
-        if 'chain' not in item:
+        if 'chain' not in item or item['chain'] == 'none':
             result = 'none'
         else:
             result = self._cert_filename(self._fqdn_name(item['chain']))
@@ -239,12 +239,15 @@ class Parameters(AnsibleF5Parameters):
             chain = self._get_chain_value(item)
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
-            result.append({
+            item = {
                 'name': filename,
                 'cert': self._fqdn_name(cert),
-                'key': self._fqdn_name(key),
-                'chain': chain
-            })
+                'key': self._fqdn_name(key)
+            }
+            if chain != 'none':
+                item['chain'] = chain
+            result.append(item)
+        result = sorted(result, key=lambda x: x['name'])
         return result
 
 
@@ -267,6 +270,11 @@ class Difference(object):
             raise F5ModuleError(
                 "The parent profile cannot be changed"
             )
+
+    @property
+    def cert_key_chain(self):
+        if self.want.cert_key_chain != self.have.cert_key_chain:
+            return self.want.cert_key_chain
 
     def __default(self, param):
         attr1 = getattr(self.want, param)
