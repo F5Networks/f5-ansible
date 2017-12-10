@@ -28,3 +28,14 @@
   assert:
     that:
       - result is not changed
+
+- name: Issue 00498 - Remove cert with issuer
+  bigip_ssl_certificate:
+    name: issue.00498.local
+    state: absent
+  register: result
+
+- name: Issue 00498 - Remove issuer cert
+  bigip_ssl_certificate:
+    name: issue.00498.issuer
+    state: absent
