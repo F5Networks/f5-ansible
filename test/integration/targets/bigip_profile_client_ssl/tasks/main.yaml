@@ -11,6 +11,10 @@
       file: cert2.crt
     - name: 2048b-dsa-example-cert
       file: 2048b-dsa-example-cert.pem
+    - name: ocsp.example.com
+      file: ocsp.example.com.cert.pem
+    - name: ocsp.intermediate
+      file: ocsp.intermediate.crt
 
 - name: Import keys
   bigip_ssl_key:
@@ -23,6 +27,8 @@
       file: cert2.key
     - name: 2048b-dsa-example-keypair
       file: 2048b-dsa-example-keypair.pem
+    - name: ocsp.example.com
+      file: ocsp.example.com.key.pem
 
 - name: Import chains
   bigip_ssl_certificate:
@@ -113,6 +119,37 @@
   assert:
     that:
       - result is not changed
+
+- name: Set password protected cert/key/chain
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert2
+        key: key2
+        passphrase: keypass
+  register: result
+
+- name: Assert Set password protected cert/key/chain
+  assert:
+    that:
+      - result is changed
+
+- name: Set password protected cert/key/chain - Idempotent check
+  bigip_profile_client_ssl:
+    name: foo
+    cert_key_chain:
+      - cert: cert2
+        key: key2
+        passphrase: keypass
+  register: result
+
+# cert/key/chain passwords will make the task non-idempotent. The password
+# is encrypted on BIG-IP. Therefore, we are unable to compare it. We just
+# force update it.
+- name: Assert Set password protected cert/key/chain - Idempotent check
+  assert:
+    that:
+      - result is changed
 
 - name: Remove client SSL profile
   bigip_profile_client_ssl:
