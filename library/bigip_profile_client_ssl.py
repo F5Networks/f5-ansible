@@ -184,16 +184,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-            return result
-        except Exception:
-            return result
-
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
@@ -204,6 +194,8 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+
+class ModuleParameters(Parameters):
     def _fqdn_name(self, value):
         if value is not None and not value.startswith('/'):
             return '/{0}/{1}'.format(self.partition, value)
@@ -254,16 +246,55 @@ class Parameters(AnsibleF5Parameters):
             chain = self._get_chain_value(item)
             name = os.path.basename(cert)
             filename, ex = os.path.splitext(name)
-            item = {
+            tmp = {
                 'name': filename,
                 'cert': self._fqdn_name(cert),
-                'key': self._fqdn_name(key)
+                'key': self._fqdn_name(key),
+                'chain': chain
             }
-            if chain != 'none':
-                item['chain'] = chain
-            result.append(item)
+            if 'passphrase' in item:
+                tmp['passphrase'] = item['passphrase']
+            result.append(tmp)
         result = sorted(result, key=lambda x: x['name'])
         return result
+
+
+class ApiParameters(Parameters):
+    @property
+    def cert_key_chain(self):
+        if self._values['cert_key_chain'] is None:
+            return None
+        result = []
+        for item in self._values['cert_key_chain']:
+            tmp = dict(
+                name=item['name'],
+            )
+            for x in ['cert', 'key', 'chain', 'passphrase']:
+                if x in item:
+                    tmp[x] = item[x]
+            result.append(tmp)
+        result = sorted(result, key=lambda x: x['name'])
+        return result
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    pass
 
 
 class Difference(object):
@@ -288,6 +319,25 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def to_tuple(self, items):
+        result = []
+        for x in items:
+            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            result += tmp
+        return result
+
+    def _diff_complex_items(self, want, have):
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = self.to_tuple(want)
+        h = self.to_tuple(have)
+        if set(w).issubset(set(h)):
+            return None
+        else:
+            return want
+
     @property
     def parent(self):
         if self.want.parent != self.want.parent:
@@ -297,16 +347,16 @@ class Difference(object):
 
     @property
     def cert_key_chain(self):
-        if self.want.cert_key_chain != self.have.cert_key_chain:
-            return self.want.cert_key_chain
+        result = self._diff_complex_items(self.want.cert_key_chain, self.have.cert_key_chain)
+        return result
 
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -314,7 +364,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -325,23 +375,14 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
-
-    def _announce_deprecations(self):
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
-        for warning in warnings:
-            self.client.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
 
     def exec_module(self):
         changed = False
@@ -356,11 +397,20 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations()
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def present(self):
         if self.exists():
@@ -411,7 +461,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
     def exists(self):
         result = self.client.api.tm.ltm.profile.client_ssls.client_ssl.exists(
