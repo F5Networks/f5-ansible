@@ -21,23 +21,15 @@ description:
     disk, in PEM format.
 version_added: 2.2
 options:
-  cert_content:
+  content:
     description:
-      - When used instead of 'cert_src', sets the contents of a certificate directly
-        to the specified value. This is used with lookup plugins or for anything
-        with formatting or templating. Either one of C(key_src),
-        C(key_content), C(cert_src) or C(cert_content) must be provided when
-        C(state) is C(present).
-  key_content:
-    description:
-      - When used instead of 'key_src', sets the contents of a certificate key
-        directly to the specified value. This is used with lookup plugins or for
-        anything with formatting or templating. Either one of C(key_src),
-        C(key_content), C(cert_src) or C(cert_content) must be provided when
-        C(state) is C(present).
+      - Sets the contents of a certificate directly to the specified value.
+        This is used with lookup plugins or for anything with formatting or
+      - C(content) must be provided when C(state) is C(present).
+    aliases: ['cert_content']
   state:
     description:
-      - Certificate and key state. This determines if the provided certificate
+      - Certificate state. This determines if the provided certificate
         and key is to be made C(present) on the device or C(absent).
     default: present
     choices:
@@ -45,24 +37,14 @@ options:
       - absent
   name:
     description:
-      - SSL Certificate Name. This is the cert/key pair name used
-        when importing a certificate/key into the F5. It also
-        determines the filenames of the objects on the LTM
+      - SSL Certificate Name. This is the cert name used when importing a certificate
+        into the F5. It also determines the filenames of the objects on the LTM
         (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).
     required: True
-  cert_src:
+  issuer_cert:
     description:
-      - This is the local filename of the certificate. Either one of C(key_src),
-        C(key_content), C(cert_src) or C(cert_content) must be provided when
-        C(state) is C(present).
-  key_src:
-    description:
-      - This is the local filename of the private key. Either one of C(key_src),
-        C(key_content), C(cert_src) or C(cert_content) must be provided when
-        C(state) is C(present).
-  passphrase:
-    description:
-      - Passphrase on certificate private key
+      - Issuer certificate used for OCSP monitoring.
+      - This parameter is only valid on versions of BIG-IP 13.0.0 or above
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -79,18 +61,8 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = r'''
-- name: Import PEM Certificate from local disk
-  bigip_ssl_certificate:
-    name: certificate-name
-    server: lb.mydomain.com
-    user: admin
-    password: secret
-    state: present
-    cert_src: /path/to/cert.crt
-    key_src: /path/to/key.key
-  delegate_to: localhost
 
+EXAMPLES = r'''
 - name: Use a file lookup to import PEM Certificate
   bigip_ssl_certificate:
     name: certificate-name
@@ -98,8 +70,7 @@ EXAMPLES = r'''
     user: admin
     password: secret
     state: present
-    cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
-    key_content: "{{ lookup('file', '/path/to/key.key') }}"
+    content: "{{ lookup('file', '/path/to/cert.crt') }}"
   delegate_to: localhost
 
 - name: Use a file lookup to import CA certificate chain
@@ -109,10 +80,10 @@ EXAMPLES = r'''
     user: admin
     password: secret
     state: present
-    cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
+    content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
   delegate_to: localhost
 
-- name: "Delete Certificate"
+- name: Delete Certificate
   bigip_ssl_certificate:
     name: certificate-name
     server: lb.mydomain.com
@@ -128,38 +99,18 @@ cert_name:
   returned: created
   type: string
   sample: cert1
-key_filename:
+filename:
   description:
-    - The name of the SSL certificate key. The C(key_filename) and
-      C(cert_filename) will be similar to each other, however the
-      C(key_filename) will have a C(.key) extension.
-  returned: created
-  type: string
-  sample: cert1.key
-key_checksum:
-  description: SHA1 checksum of the key that was provided.
-  returned: changed and created
-  type: string
-  sample: cf23df2207d99a74fbe169e3eba035e633b65d94
-key_source_path:
-  description: Path on BIG-IP where the source of the key is stored
-  returned: created
-  type: string
-  sample: /var/config/rest/downloads/cert1.key
-cert_filename:
-  description:
-    - The name of the SSL certificate. The C(cert_filename) and
-      C(key_filename) will be similar to each other, however the
-      C(cert_filename) will have a C(.crt) extension.
+    - The name of the SSL certificate.
   returned: created
   type: string
   sample: cert1.crt
-cert_checksum:
+checksum:
   description: SHA1 checksum of the cert that was provided.
   returned: changed and created
   type: string
   sample: f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0
-cert_source_path:
+source_path:
   description: Path on BIG-IP where the source of the certificate is stored.
   returned: created
   type: string
@@ -180,7 +131,6 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iteritems
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -189,19 +139,23 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {
+        'sourcePath': 'source_path',
+        'issuerCert': 'issuer_cert',
+        'certValidationOptions': 'ocsp_monitoring'
+    }
+
+    updatables = ['content', 'issuer_cert', 'ocsp_monitoring']
+
+    returnables = [
+        'filename', 'checksum', 'source_path', 'issuer_cert', 'ocsp_monitoring',
+    ]
+
+    api_attributes = ['issuerCert']
+
     def __init__(self, params=None):
         super(Parameters, self).__init__(params)
         self._values['__warnings'] = []
-
-    def to_return(self):
-        result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
-        return result
 
     def api_params(self):
         result = {}
@@ -223,6 +177,13 @@ class Parameters(AnsibleF5Parameters):
             k.update(data.encode('utf-8'))
         return k.hexdigest()
 
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
+
+
+class ApiParameters(Parameters):
     @property
     def checksum(self):
         if self._values['checksum'] is None:
@@ -234,77 +195,20 @@ class Parameters(AnsibleF5Parameters):
         else:
             return None
 
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
-
-
-class KeyParameters(Parameters):
-    api_map = {
-        'sourcePath': 'key_source_path'
-    }
-
-    updatables = ['key_source_path']
-
-    returnables = ['key_filename', 'key_checksum', 'key_source_path']
-
-    api_attributes = ['passphrase', 'sourcePath']
+    @property
+    def filename(self):
+        return self._values['name']
 
     @property
-    def key_filename(self):
-        if self.name.endswith('.key'):
-            return self.name
-        else:
-            return self.name + '.key'
-
-    @property
-    def key_checksum(self):
-        if self.key_content is None:
+    def ocsp_monitoring(self):
+        if self._values['ocsp_monitoring'] is None:
             return None
-        return self._get_hash(self.key_content)
-
-    @property
-    def key_src(self):
-        if self._values['key_src'] is None:
-            return None
-
-        self._values['__warnings'].append(
-            dict(
-                msg="The key_src param is deprecated",
-                version='2.4'
-            )
-        )
-
-        try:
-            with open(self._values['key_src']) as fh:
-                self.key_content = fh.read()
-        except IOError:
-            raise F5ModuleError(
-                "The specified 'key_src' does not exist"
-            )
-
-    @property
-    def key_source_path(self):
-        result = 'file://' + os.path.join(
-            BaseManager.download_path,
-            self.key_filename
-        )
-        return result
+        if 'ocsp' in self._values['ocsp_monitoring']:
+            return True
+        return False
 
 
-class CertParameters(Parameters):
-    api_map = {
-        'sourcePath': 'cert_source_path',
-        'issuerCert': 'issuer_cert'
-    }
-
-    updatables = ['cert_source_path', 'issuer_cert']
-
-    returnables = ['cert_filename', 'cert_checksum', 'cert_source_path', 'issuer_cert']
-
-    api_attributes = ['issuerCert']
-
+class ModuleParameters(Parameters):
     @property
     def issuer_cert(self):
         if self._values['issuer_cert'] is None:
@@ -316,82 +220,87 @@ class CertParameters(Parameters):
             return name + '.crt'
 
     @property
-    def cert_checksum(self):
-        if self.cert_content is None:
+    def checksum(self):
+        if self.content is None:
             return None
-        return self._get_hash(self.cert_content)
+        return self._get_hash(self.content)
 
     @property
-    def cert_filename(self):
+    def filename(self):
         if self.name.endswith('.crt'):
             return self.name
         else:
             return self.name + '.crt'
 
     @property
-    def cert_src(self):
-        if self._values['cert_src'] is None:
-            return None
-
-        self._values['__warnings'].append(
-            dict(
-                msg="The cert_src param is deprecated",
-                version='2.4'
-            )
-        )
-
-        try:
-            with open(self._value['cert_src']) as fh:
-                self.cert_content = fh.read()
-        except IOError:
-            raise F5ModuleError(
-                "The specified 'cert_src' does not exist"
-            )
-
-    @property
-    def cert_source_path(self):
+    def source_path(self):
         result = 'file://' + os.path.join(
-            BaseManager.download_path,
-            self.cert_filename
+            ModuleManager.download_path,
+            self.filename
         )
         return result
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class ReportableChanges(Changes):
+    pass
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            result = self.__default(param)
+            return result
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def content(self):
+        if self.want.checksum != self.have.checksum:
+            result = dict(
+                checksum=self.want.checksum,
+                content=self.want.content
+            )
+            return result
 
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
-
-    def exec_module(self):
-        manager1 = self.get_manager('certificate')
-        manager2 = self.get_manager('key')
-        result = self.execute_managers([manager1, manager2])
-        return result
-
-    def execute_managers(self, managers):
-        results = dict(changed=False)
-        for manager in managers:
-            result = manager.exec_module()
-            for k, v in iteritems(result):
-                if k == 'changed':
-                    if v is True:
-                        results['changed'] = True
-                else:
-                    results[k] = v
-        return results
-
-    def get_manager(self, type):
-        if type == 'certificate':
-            return CertificateManager(self.client)
-        elif type == 'key':
-            return KeyManager(self.client)
-
-
-class BaseManager(object):
     download_path = '/var/config/rest/downloads'
 
     def __init__(self, client):
         self.client = client
-        self.have = None
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def exec_module(self):
         changed = False
@@ -406,18 +315,15 @@ class BaseManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations()
+        self._announce_deprecations(result)
         return result
 
-    def _announce_deprecations(self):
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
                 msg=warning['msg'],
@@ -463,80 +369,60 @@ class BaseManager(object):
         self.remove_from_device()
         return True
 
-
-class CertificateManager(BaseManager):
-    def __init__(self, client):
-        super(CertificateManager, self).__init__(client)
-        self.want = CertParameters(self.client.module.params)
-        self.changes = CertParameters()
-
     def _set_changed_options(self):
         changed = {}
-        try:
-            for key in CertParameters.returnables:
-                if getattr(self.want, key) is not None:
-                    changed[key] = getattr(self.want, key)
-            if changed:
-                self.changes = CertParameters(changed)
-        except Exception:
-            pass
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
-        changed = {}
-        try:
-            for key in CertParameters.updatables:
-                if getattr(self.want, key) is not None:
-                    attr1 = getattr(self.want, key)
-                    attr2 = getattr(self.have, key)
-                    if attr1 != attr2:
-                        changed[key] = attr1
-                if self.want.cert_checksum != self.have.checksum:
-                    changed['cert_checksum'] = self.want.cert_checksum
-            if changed:
-                self.changes = CertParameters(changed)
-                return True
-        except Exception:
-            pass
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
+        if changed:
+            self.changes = UsableChanges(changed)
+            return True
         return False
 
     def exists(self):
         result = self.client.api.tm.sys.file.ssl_certs.ssl_cert.exists(
-            name=self.want.cert_filename,
+            name=self.want.filename,
             partition=self.want.partition
         )
         return result
 
-    def present(self):
-        if self.want.cert_content is None:
-            return False
-        return super(CertificateManager, self).present()
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
     def update_on_device(self):
         params = self.changes.api_params()
-        content = StringIO(self.want.cert_content)
+        content = StringIO(self.want.content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            content, self.want.cert_filename
+            content, self.want.filename
         )
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.want.cert_filename,
+            name=self.want.filename,
             partition=self.want.partition
         )
         resource.update(**params)
 
     def create_on_device(self):
-        content = StringIO(self.want.cert_content)
+        content = StringIO(self.want.content)
         self.client.api.shared.file_transfer.uploads.upload_stringio(
-            content, self.want.cert_filename
+            content, self.want.filename
         )
+
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.create(
-            sourcePath=self.want.cert_source_path,
-            name=self.want.cert_filename,
+            sourcePath=self.want.source_path,
+            name=self.want.filename,
             partition=self.want.partition
         )
 
@@ -551,121 +437,21 @@ class CertificateManager(BaseManager):
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.want.cert_filename,
-            partition=self.want.partition
+            name=self.want.filename,
+            partition=self.want.partition,
+            requests_params=dict(
+                params='expandSubcollections=true'
+            )
         )
         result = resource.attrs
-        return CertParameters(result)
+        return ApiParameters(result)
 
     def remove_from_device(self):
         resource = self.client.api.tm.sys.file.ssl_certs.ssl_cert.load(
-            name=self.want.cert_filename,
+            name=self.want.filename,
             partition=self.want.partition
         )
         resource.delete()
-
-    def remove(self):
-        result = super(CertificateManager, self).remove()
-        if self.exists() and not self.client.check_mode:
-            raise F5ModuleError("Failed to delete the certificate")
-        return result
-
-
-class KeyManager(BaseManager):
-    def __init__(self, client):
-        super(KeyManager, self).__init__(client)
-        self.want = KeyParameters(self.client.module.params)
-        self.changes = KeyParameters()
-
-    def _set_changed_options(self):
-        changed = {}
-        try:
-            for key in KeyParameters.returnables:
-                if getattr(self.want, key) is not None:
-                    changed[key] = getattr(self.want, key)
-            if changed:
-                self.changes = KeyParameters(changed)
-        except Exception:
-            pass
-
-    def _update_changed_options(self):
-        changed = {}
-        try:
-            for key in KeyParameters.updatables:
-                if getattr(self.want, key) is not None:
-                    attr1 = getattr(self.want, key)
-                    attr2 = getattr(self.have, key)
-                    if attr1 != attr2:
-                        changed[key] = attr1
-                if self.want.key_checksum != self.have.checksum:
-                    changed['key_checksum'] = self.want.key_checksum
-            if changed:
-                self.changes = KeyParameters(changed)
-                return True
-        except Exception:
-            pass
-        return False
-
-    def should_update(self):
-        result = self._update_changed_options()
-        if result:
-            return True
-        return False
-
-    def update_on_device(self):
-        content = StringIO(self.want.key_content)
-        self.client.api.shared.file_transfer.uploads.upload_stringio(
-            content, self.want.key_filename
-        )
-        resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.want.key_filename,
-            partition=self.want.partition
-        )
-        resource.update()
-
-    def exists(self):
-        result = self.client.api.tm.sys.file.ssl_keys.ssl_key.exists(
-            name=self.want.key_filename,
-            partition=self.want.partition
-        )
-        return result
-
-    def present(self):
-        if self.want.key_content is None:
-            return False
-        return super(KeyManager, self).present()
-
-    def read_current_from_device(self):
-        resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.want.key_filename,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return KeyParameters(result)
-
-    def create_on_device(self):
-        content = StringIO(self.want.key_content)
-        self.client.api.shared.file_transfer.uploads.upload_stringio(
-            content, self.want.key_filename
-        )
-        self.client.api.tm.sys.file.ssl_keys.ssl_key.create(
-            sourcePath=self.want.key_source_path,
-            name=self.want.key_filename,
-            partition=self.want.partition
-        )
-
-    def remove_from_device(self):
-        resource = self.client.api.tm.sys.file.ssl_keys.ssl_key.load(
-            name=self.want.key_filename,
-            partition=self.want.partition
-        )
-        resource.delete()
-
-    def remove(self):
-        result = super(KeyManager, self).remove()
-        if self.exists() and not self.client.check_mode:
-            raise F5ModuleError("Failed to delete the key")
-        return result
 
 
 class ArgumentSpec(object):
@@ -675,29 +461,15 @@ class ArgumentSpec(object):
             name=dict(
                 required=True
             ),
-            cert_content=dict(aliases=['content']),
-            cert_src=dict(
-                type='path',
-                removed_in_version='2.4'
-            ),
-            key_content=dict(),
-            key_src=dict(
-                type='path',
-                removed_in_version='2.4'
-            ),
-            passphrase=dict(
-                no_log=True
-            ),
+            content=dict(aliases=['cert_content']),
             state=dict(
                 default='present',
                 choices=['absent', 'present']
             ),
-            issuer_cert=dict()
+            issuer_cert=dict(),
+            # ocsp_responder=dict(),
+            # ocsp_monitoring=dict(type='bool')
         )
-        self.mutually_exclusive = [
-            ['key_content', 'key_src'],
-            ['cert_content', 'cert_src']
-        ]
         self.f5_product_name = 'bigip'
 
 
@@ -717,8 +489,7 @@ def main():
     client = AnsibleF5Client(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name,
-        mutually_exclusive=spec.mutually_exclusive,
+        f5_product_name=spec.f5_product_name
     )
 
     try:
