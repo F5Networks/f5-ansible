@@ -42,10 +42,26 @@ options:
         RSA, one DSA, and one ECDSA per profile. If you attempt to assign two
         RSA, DSA, or ECDSA certificate/key combo, the device will reject this.
       - This list is a complex list that specifies a number of keys. There are several supported keys.
-      - The C(cert) key specifies a cert name for use. This key is required.
-      - The C(key) key contains a key name. This key is required.
-      - The C(chain) key contains a certificate chain that is relevant to the certificate
-        and key mentioned earlier. This key is optional.
+    suboptions:
+      cert:
+        description:
+          - Specifies a cert name for use.
+        required: True
+      key:
+        description:
+          - Contains a key name.
+        required: True 
+      chain:
+        description:
+          - Contains a certificate chain that is relevant to the certificate and key
+            mentioned earlier.
+          - This key is optional.
+      passphrase:
+        description:
+          - Contains the passphrase of the key file, should it require one.
+          - Passphrases are encrypted on the remote BIG-IP device. Therefore, there is no way
+            to compare them when updating a client SSL profile. Due to this, if you specify a
+            passphrase, this module will always register a C(changed) event.
   partition:
     description:
       - Device partition to manage resources on.
@@ -122,19 +138,20 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'certKeyChain': 'cert_key_chain'
+        'certKeyChain': 'cert_key_chain',
+        'ocspStapling': 'ocsp_stapling'
     }
 
     api_attributes = [
-        'ciphers', 'certKeyChain'
+        'ciphers', 'certKeyChain', 'ocspStapling'
     ]
 
     returnables = [
-        'ciphers'
+        'ciphers', 'ocsp_stapling'
     ]
 
     updatables = [
-        'ciphers', 'cert_key_chain'
+        'ciphers', 'cert_key_chain', 'ocsp_stapling'
     ]
 
     def __init__(self, params=None):
@@ -193,18 +210,16 @@ class Parameters(AnsibleF5Parameters):
         return value
 
     def _key_filename(self, name):
-        fname, fext = os.path.splitext(name)
-        if fext == '':
-            return fname + '.key'
-        else:
+        if name.endswith('.key'):
             return name
+        else:
+            return name + '.key'
 
     def _cert_filename(self, name):
-        fname, fext = os.path.splitext(name)
-        if fext == '':
-            return fname + '.crt'
-        else:
+        if name.endswith('.crt'):
             return name
+        else:
+            return name + '.crt'
 
     def _get_chain_value(self, item):
         if 'chain' not in item or item['chain'] == 'none':
@@ -264,6 +279,15 @@ class Difference(object):
             result = self.__default(param)
             return result
 
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
     @property
     def parent(self):
         if self.want.parent != self.want.parent:
@@ -275,15 +299,6 @@ class Difference(object):
     def cert_key_chain(self):
         if self.want.cert_key_chain != self.have.cert_key_chain:
             return self.want.cert_key_chain
-
-    def __default(self, param):
-        attr1 = getattr(self.want, param)
-        try:
-            attr2 = getattr(self.have, param)
-            if attr1 != attr2:
-                return attr1
-        except AttributeError:
-            return attr1
 
 
 class ModuleManager(object):
@@ -437,7 +452,15 @@ class ArgumentSpec(object):
             name=dict(required=True),
             parent=dict(),
             ciphers=dict(),
-            cert_key_chain=dict(type='list')
+            cert_key_chain=dict(
+                type='list',
+                options=dict(
+                    cert=dict(required=True),
+                    key=dict(required=True),
+                    chain=dict(),
+                    passphrase=dict()
+                )
+            )
         )
         self.f5_product_name = 'bigip'
 
