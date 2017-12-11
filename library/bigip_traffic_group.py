@@ -22,13 +22,13 @@ version_added: "2.5"
 options:
   name:
     description:
-      - The name of the traffic group
+      - The name of the traffic group.
     required: True
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 requirements:
-  - f5-sdk >= 2.2.3
+  - f5-sdk >= 3.0.5
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -346,6 +346,16 @@ class ArgumentSpec(object):
         self.f5_product_name = 'bigip'
 
 
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
+
+
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
@@ -361,8 +371,10 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 
