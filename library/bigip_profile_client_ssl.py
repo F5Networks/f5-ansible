@@ -21,7 +21,7 @@ version_added: "2.5"
 options:
   name:
     description:
-      -Specifies the name of the profile.
+      - Specifies the name of the profile.
     required: True
   parent:
     description:
@@ -50,7 +50,7 @@ options:
       key:
         description:
           - Contains a key name.
-        required: True 
+        required: True
       chain:
         description:
           - Contains a certificate chain that is relevant to the certificate and key
