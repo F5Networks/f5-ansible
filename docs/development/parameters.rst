@@ -118,9 +118,7 @@ the above was for the following:
 
 .. note::
 
-   My assumptions here are based on the work that others have done in this area. When I
-   wrote this, I did not have first-hand experience with BIG-IQ; only the iWorkflow
-   codebase (which was originally a fork of BIG-IQ).
+   My assumptions here are based on the work that others have done in this area.
 
 You see, the BIG-IQ code-base will require situations where the concrete `Parameters`
 classes themselves will be responsible for reading data from the remote device.
@@ -129,19 +127,6 @@ This is because, in many circumstances, we cannot know all of the resources and 
 attributes that we need to deal without, without querying for data using a resource
 attribute itself as input.
 
-Surprisingly, we know this is going to be a problem, because we've already experienced it.
-Where? In iWorkflow.
+Surprisingly, we know this is going to be a problem, because we've already experienced it
+when making modules for F5 products.
 
-You see, iWorkflow's REST API was created from a fork (long ago in a galaxy far far away)
-of an older BIG-IQ code base. Many of the similarities have disappeared over time, but the
-one thing that has remained constant is that BIG-IQ's API is one where you have to do a
-**HUGE** amount of "extra" work to just do what you need to do.
-
-That means that concrete Parameters will need to do this work so that the user does not
-need to. For example, you're setting yourself up for failure if you plan on using `Postman`
-to work with your BIG-IQ. Good luck with that. The Ansible modules deliberately provide a
-layer of "niceness" that you simply do not get with direct API communication.
-
-But that's A-OK, because all that direct API stuff and what concrete class needs to have a
-client really all boils down to "implementation details". The developers (you because you're
-reading this) need to worry about it; the users do not.
