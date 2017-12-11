@@ -387,6 +387,16 @@ class ArgumentSpec(object):
         self.f5_product_name = 'bigip'
 
 
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
+
+
 def main():
     spec = ArgumentSpec()
 
@@ -402,8 +412,10 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         client.module.exit_json(**results)
-    except (FailedConditionsError, AttributeError) as e:
+    except F5ModuleError as e:
+        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 
