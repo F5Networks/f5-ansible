@@ -1,0 +1,6 @@
+---
+
+f5_username: "admin"
+f5_password: "admin"
+f5_port: "443"
+ansible_python_interpreter: "/usr/local/bin/python"
