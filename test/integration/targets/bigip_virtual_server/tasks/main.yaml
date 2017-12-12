@@ -34,6 +34,50 @@
     that:
       - not result|changed
 
+- name: Disable virtual server
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: disabled
+  register: result
+
+- name: Assert Disable virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Disable virtual server - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: disabled
+  register: result
+
+- name: Assert Disable virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Enable virtual server
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: enabled
+  register: result
+
+- name: Assert Enable virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Enable virtual server - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: enabled
+  register: result
+
+- name: Assert Enable virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
 - name: Modify port of the Virtual Server
   bigip_virtual_server:
     name: "{{ vs_name }}"
