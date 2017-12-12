@@ -29,6 +29,7 @@ test/integration/inventory/group_vars/all.yaml
 ./ansible/
 tmp/
 !tmp/.gitkeep
+!tmp/licenses/.gitkeep
 
 examples/hosts.ini
 **/.DS_Store
