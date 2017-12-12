@@ -1,0 +1,57 @@
+---
+
+- name: Issue 00511 - Create virtual server
+  bigip_virtual_server:
+    destination: 1.2.3.4
+    name: issue-00511
+    port: 0
+    state: present
+
+- name: Issue 00511 - Disable virtual server
+  bigip_virtual_server:
+    name: issue-00511
+    state: disabled
+  register: result
+
+- name: Issue 00511 - Assert Disable virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00511 - Disable virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00511
+    state: disabled
+  register: result
+
+- name: Issue 00511 - Assert Disable virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00511 - Enable virtual server
+  bigip_virtual_server:
+    name: issue-00511
+    state: enabled
+  register: result
+
+- name: Issue 00511 - Assert Enable virtual server
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00511 - Enable virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00511
+    state: enabled
+  register: result
+
+- name: Issue 00511 - Assert Enable virtual server - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00511 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00511
+    state: absent

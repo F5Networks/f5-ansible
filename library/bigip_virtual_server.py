@@ -369,7 +369,6 @@ class VirtualServerParameters(Parameters):
         'description',
         'default_persistence_profile',
         'destination',
-        'disabled',
         'disabled_vlans',
         'enabled',
         'enabled_vlans',
@@ -624,6 +623,19 @@ class VirtualServerApiParameters(VirtualServerParameters):
         # make it a list again when we get to the Difference engine.
         return self._values['default_persistence_profile'][0]
 
+    @property
+    def enabled(self):
+        if 'enabled' in self._values:
+            return True
+        else:
+            return False
+
+    @property
+    def disabled(self):
+        if 'disabled' in self._values:
+            return True
+        return False
+
 
 class VirtualServerModuleParameters(VirtualServerParameters):
     @property
@@ -848,6 +860,24 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         result = self._fqdn_name(self._values['fallback_persistence_profile'])
         return result
 
+    @property
+    def enabled(self):
+        if self._values['state'] == 'enabled':
+            return True
+        elif self._values['state'] == 'disabled':
+            return False
+        else:
+            return None
+
+    @property
+    def disabled(self):
+        if self._values['state'] == 'enabled':
+            return False
+        elif self._values['state'] == 'disabled':
+            return True
+        else:
+            return None
+
 
 class VirtualServerChanges(VirtualServerParameters):
     @property
@@ -1047,6 +1077,21 @@ class Difference(object):
 
         if self.want.snat['pool'] != self.have.snat['pool']:
             result = dict(snat=self.want.snat)
+            return result
+
+    @property
+    def enabled(self):
+        if self.want.state == 'enabled' and self.have.disabled:
+            result = dict(
+                enabled=True,
+                disabled=False
+            )
+            return result
+        elif self.want.state == 'disabled' and self.have.enabled:
+            result = dict(
+                enabled=False,
+                disabled=True
+            )
             return result
 
 
