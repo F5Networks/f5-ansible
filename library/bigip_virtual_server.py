@@ -95,6 +95,8 @@ options:
     version_added: "2.2"
     description:
       - List of rules to be applied in priority order.
+      - If you want to remove existing iRules, specify a single rule of C(none).
+        See the documentation for an example.
     aliases:
       - all_rules
   enabled_vlans:
@@ -225,6 +227,36 @@ EXAMPLES = r'''
     profiles:
       - fastL4
     state: present
+
+- name: Add iRules to the Virtual Server
+  bigip_virtual_server:
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    name: my-virtual-server
+    irules:
+      - irule1
+      - irule2
+  delegate_to: localhost
+
+- name: Remove one iRule from the Virtual Server
+  bigip_virtual_server:
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    name: my-virtual-server
+    irules:
+      - irule2
+  delegate_to: localhost
+
+- name: Remove all iRules from the Virtual Server
+  bigip_virtual_server:
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    name: my-virtual-server
+    irules: none
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -651,6 +683,9 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     @property
     def destination_tuple(self):
         Destination = namedtuple('Destination', ['ip', 'port', 'route_domain'])
+        if self._values['destination'] is None:
+            result = Destination(ip=None, port=None, route_domain=None)
+            return result
         addr = self._values['destination'].split("%")[0]
         result = Destination(ip=addr, port=self.port, route_domain=self.route_domain)
         return result
@@ -695,6 +730,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         results = []
         if self._values['irules'] is None:
             return None
+        if len(self._values['irules']) == 1 and self._values['irules'][0] == 'none':
+            return 'none'
         for irule in self._values['irules']:
             result = self._fqdn_name(irule)
             results.append(result)
@@ -934,10 +971,12 @@ class Difference(object):
             self.want.update({'port': have.port})
         if self.want.route_domain is None:
             self.want.update({'route_domain': have.route_domain})
-        if self.want.destination_tuple.address is None:
-            self.want.destination_tuple.address = have.ip
+        if self.want.destination_tuple.ip is None:
+            address = have.ip
+        else:
+            address = self.want.destination_tuple.ip
 
-        want = self.want._format_destination(self.want.destination_address, self.want.port, self.want.route_domain)
+        want = self.want._format_destination(address, self.want.port, self.want.route_domain)
         if want != self.have.destination:
             return self.want._fqdn_name(want)
 
@@ -1091,6 +1130,17 @@ class Difference(object):
                 disabled=True
             )
             return result
+
+    @property
+    def irules(self):
+        if self.want.irules is None:
+            return None
+        if self.want.irules == 'none' and len(self.have.irules) > 0:
+            return []
+        if self.want.irules == 'none' and len(self.have.irules) == 0:
+            return None
+        if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
+            return self.want.irules
 
 
 class ModuleManager(object):

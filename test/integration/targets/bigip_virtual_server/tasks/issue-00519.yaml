@@ -1,0 +1,139 @@
+---
+
+- name: Issue 00519 - Create iRules
+  bigip_irule:
+    content: "when HTTP_REQUEST {HTTP::respond 200 content 'Good Request'}"
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+
+- name: Issue 00519 - Add virtual server
+  bigip_virtual_server:
+    name: issue-00519
+    destination: 1.1.1.1
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    profiles:
+      - http
+  register: result
+
+- name: Issue 00519 - Assert Add virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00519 - Add virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00519
+    destination: 1.1.1.1
+    port: 80
+    irules:
+      - irule1
+      - irule2
+    profiles:
+      - http
+  register: result
+
+- name: Issue 00519 - Assert Add virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00519 - Add an iRule
+  bigip_virtual_server:
+    name: issue-00519
+    irules:
+      - irule1
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00519 - Assert Add and iRule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00519 - Add an iRule - Idempotent check
+  bigip_virtual_server:
+    name: issue-00519
+    irules:
+      - irule1
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00519 - Assert Add an iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00519 - Remove an iRule
+  bigip_virtual_server:
+    name: issue-00519
+    irules:
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00519 - Assert Remove and iRule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00519 - Remove an iRule - Idempotent check
+  bigip_virtual_server:
+    name: issue-00519
+    irules:
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00519 - Assert Remove an iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00519 - Remove all iRules
+  bigip_virtual_server:
+    name: issue-00519
+    irules: none
+  register: result
+
+- name: Issue 00519 - Assert Remove all iRules
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00519 - Remove all iRules - Idempotent check
+  bigip_virtual_server:
+    name: issue-00519
+    irules: none
+  register: result
+
+- name: Issue 00519 - Assert Remove all iRules - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00519 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00519
+    state: absent
+  register: result
+
+- name: Issue 00519 - Remove iRules
+  bigip_irule:
+    state: absent
+    module: ltm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
