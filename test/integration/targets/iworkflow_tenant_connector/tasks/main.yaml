@@ -40,7 +40,7 @@
 - name: Assert Register connector to tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Register connector to tenant - Idempotent check
   iworkflow_tenant_connector:
@@ -57,7 +57,7 @@
 - name: Assert Register connector to tenant - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Unregister connector from tenant
   iworkflow_tenant_connector:
@@ -74,7 +74,7 @@
 - name: Assert Unregister connector from tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Unregister connector from tenant - Idempotent check
   iworkflow_tenant_connector:
@@ -91,7 +91,7 @@
 - name: Assert Unregister connector from tenant - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Register multiple connectors to tenant
   iworkflow_tenant_connector:
@@ -111,7 +111,7 @@
 - name: Assert Register multiple connectors to tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Register multiple connectors to tenant - Idempotent check
   iworkflow_tenant_connector:
@@ -131,7 +131,7 @@
 - name: Assert Register multiple connectors to tenant - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Unregister multiple connectors from tenant
   iworkflow_tenant_connector:
@@ -151,7 +151,7 @@
 - name: Assert Unregister multiple connectors from tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Unregister multiple connectors from tenant - Idempotent check
   iworkflow_tenant_connector:
@@ -171,7 +171,7 @@
 - name: Assert Unregister multiple connectors from tenant - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete connector
   iworkflow_local_connector:

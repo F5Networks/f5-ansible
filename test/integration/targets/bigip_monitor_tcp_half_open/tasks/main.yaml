@@ -9,7 +9,7 @@
 - name: Assert Create TCP Monitor - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create TCP Monitor - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -20,7 +20,7 @@
 - name: Assert Create TCP Monitor - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change IP - Half Open
   bigip_monitor_tcp_half_open:
@@ -32,7 +32,7 @@
 - name: Assert Change IP - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change IP - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -44,7 +44,7 @@
 - name: Assert Change IP - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change port - Half Open
   bigip_monitor_tcp_half_open:
@@ -55,7 +55,7 @@
 - name: Assert Change port - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change port - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -66,7 +66,7 @@
 - name: Assert Change port - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, less than timeout - Half Open
   bigip_monitor_tcp_half_open:
@@ -77,7 +77,7 @@
 - name: Assert Change interval, less than timeout - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change interval, less than timeout - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -88,7 +88,7 @@
 - name: Assert Change interval, less than timeout - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, greater than timeout, expect failure - Half Open
   bigip_monitor_tcp_half_open:
@@ -100,7 +100,7 @@
 - name: Assert Change interval, greater than timeout, expect failure - Half Open
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change timeout - Half Open
   bigip_monitor_tcp_half_open:
@@ -111,7 +111,7 @@
 - name: Assert Change timeout - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change timeout - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -122,7 +122,7 @@
 - name: Assert Change timeout - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change time until up - Half Open
   bigip_monitor_tcp_half_open:
@@ -133,7 +133,7 @@
 - name: Assert Change time until up - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change time until up - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -144,7 +144,7 @@
 - name: Assert Change time until up - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove TCP Monitor - Half Open
   bigip_monitor_tcp_half_open:
@@ -155,7 +155,7 @@
 - name: Assert Remove TCP Monitor - Half Open
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove TCP Monitor - Half Open - Idempotent check
   bigip_monitor_tcp_half_open:
@@ -166,4 +166,4 @@
 - name: Assert Remove TCP Monitor - Half Open - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

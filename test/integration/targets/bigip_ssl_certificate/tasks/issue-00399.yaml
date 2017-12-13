@@ -1,58 +1,54 @@
 ---
 
-- name: Issue 00399 - Import certificate and key with dotted name
+- name: Issue 00399 - Import certificate with dotted name
   bigip_ssl_certificate:
-    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
-    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    content: "{{ lookup('file', 'issue.00399.local.crt') }}"
     name: wildcard.tatanka.local
     state: present
   register: result
 
-- name: Issue 00399 - Assert Import certificate and key with dotted name
+- name: Issue 00399 - Assert Import certificate with dotted name
   assert:
     that:
-      - result|changed
+      - result is changed
 
-- name: Issue 00399 - Import certificate and key with dotted name - Idempotent check
+- name: Issue 00399 - Import certificate with dotted name - Idempotent check
   bigip_ssl_certificate:
-    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
-    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    content: "{{ lookup('file', 'issue.00399.local.crt') }}"
     name: wildcard.tatanka.local
     state: present
   register: result
 
-- name: Issue 00399 - Assert Import certificate and key with dotted name - Idempotent check
+- name: Issue 00399 - Assert Import certificate with dotted name - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
-- name: Issue 00399 - Import certificate and key with dotted name wildcard
+- name: Issue 00399 - Import certificate with dotted name wildcard
   bigip_ssl_certificate:
-    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
-    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    content: "{{ lookup('file', 'issue.00399.local.crt') }}"
     name: "*.tatanka.local"
     state: present
   register: result
 
-- name: Issue 00399 - Assert Import certificate and key with dotted name wildcard
+- name: Issue 00399 - Assert Import certificate with dotted name wildcard
   assert:
     that:
-      - result|changed
+      - result is changed
 
-- name: Issue 00399 - Import certificate and key with dotted name wildcard - Idempotent check
+- name: Issue 00399 - Import certificate with dotted name wildcard - Idempotent check
   bigip_ssl_certificate:
-    cert_content: "{{ lookup('file', 'issue.00399.local.crt') }}"
-    key_content: "{{ lookup('file', 'issue.00399.local.key') }}"
+    content: "{{ lookup('file', 'issue.00399.local.crt') }}"
     name: "*.tatanka.local"
     state: present
   register: result
 
-- name: Issue 00399 - Assert Import certificate and key with dotted name wildcard - Idempotent check
+- name: Issue 00399 - Assert Import certificate with dotted name wildcard - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
-- name: Issue 00399 - Remove certs and keys
+- name: Issue 00399 - Remove certs
   bigip_ssl_certificate:
     name: "{{ item }}"
     state: absent
@@ -61,12 +57,12 @@
     - wildcard.tatanka.local
   register: result
 
-- name: Issue 00399 - Remove certs and keys
+- name: Issue 00399 - Remove certs
   assert:
     that:
-      - result|changed
+      - result is changed
 
-- name: Issue 00399 - Remove certs and keys - Idempotent check
+- name: Issue 00399 - Remove certs - Idempotent check
   bigip_ssl_certificate:
     name: "{{ item }}"
     state: absent
@@ -75,7 +71,7 @@
     - wildcard.tatanka.local
   register: result
 
-- name: Issue 00399 - Remove certs and keys - Idempotent check
+- name: Issue 00399 - Remove certs - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

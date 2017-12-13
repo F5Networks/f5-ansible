@@ -9,7 +9,7 @@
 - name: Assert Set setup.run variable
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set setup.run variable "on" - Idempotent check
   bigip_sys_db:
@@ -20,7 +20,7 @@
 - name: Assert Set setup.run variable "on" - Idempotent checl
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set setup.run variable "off"
   bigip_sys_db:
@@ -31,7 +31,7 @@
 - name: Assert Set setup.run variable "off"
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set setup.run variable "off" - Idempotent check
   bigip_sys_db:
@@ -42,7 +42,7 @@
 - name: Assert Set setup.run variable "off" - Idempotent checl
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Reset setup.run variable
   bigip_sys_db:
@@ -54,7 +54,7 @@
 - name: Assert Reset setup.run variable
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset setup.run variable - Idempotent check
   bigip_sys_db:
@@ -66,7 +66,7 @@
 - name: Assert Reset setup.run variable - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: No value and no reset
   bigip_sys_db:

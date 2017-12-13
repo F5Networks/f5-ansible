@@ -3,29 +3,27 @@
 - name: Issue 00222 - Import a CA chain certificate
   bigip_ssl_certificate:
     cert_content: "{{ lookup('file', 'chain2.crt') }}"
-    name: cert2
-    state: absent
+    name: chain2
   register: result
 
 - name: Issue 00222 - Assert Import a CA chain certificate
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00222 - Import a CA chain certificate - Idempotent check
   bigip_ssl_certificate:
     cert_content: "{{ lookup('file', 'chain2.crt') }}"
-    name: cert2
-    state: absent
+    name: chain2
   register: result
 
 - name: Issue 00222 - Assert Import a CA chain certificate - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00222 - Remove CA chain certificate
   bigip_ssl_certificate:
-    name: cert2
+    name: chain2
     state: absent
   register: result

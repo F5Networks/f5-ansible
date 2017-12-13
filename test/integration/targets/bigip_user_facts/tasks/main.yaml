@@ -8,7 +8,7 @@
 - name: Assert Fetch username credential
   assert:
       that:
-          - result|changed
+          - result is changed
 
 - name: Print the name
   debug:

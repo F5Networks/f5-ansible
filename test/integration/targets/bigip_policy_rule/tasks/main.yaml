@@ -11,7 +11,7 @@
 - name: Assert Create rule for published policy, no actions, no conditions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create rule for published policy, no actions, no conditions - Idempotent check
   bigip_policy_rule:
@@ -22,7 +22,7 @@
 - name: Assert Create rule for published policy, no actions, no conditions - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove rule from published policy
   bigip_policy_rule:
@@ -34,7 +34,7 @@
 - name: Assert Remove rule from published policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove rule from published policy - Idempotent check
   bigip_policy_rule:
@@ -46,7 +46,7 @@
 - name: Assert Remove rule from published policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create rule for draft policy, no actions, no conditions
   bigip_policy_rule:
@@ -57,7 +57,7 @@
 - name: Assert Create rule for draft policy, no actions, no conditions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create rule for draft policy, no actions, no conditions - Idempotent check
   bigip_policy_rule:
@@ -68,7 +68,7 @@
 - name: Assert Create rule for draft policy, no actions, no conditions - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove rule from draft policy
   bigip_policy_rule:
@@ -80,7 +80,7 @@
 - name: Assert Remove rule from draft policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove rule from draft policy - Idempotent check
   bigip_policy_rule:
@@ -92,7 +92,7 @@
 - name: Assert Remove rule from draft policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create published rule, actions mutex check - EXPECTED FAILURE
   bigip_policy_rule:
@@ -108,7 +108,7 @@
 - name: Assert Create published rule, actions mutex check - EXPECTED FAILURE
   assert:
     that:
-      - not result|changed
+      - result is not changed
       - result|failed
       - "'parameters are mutually exclusive' in result.msg"
 
@@ -124,7 +124,7 @@
 - name: Assert Create published rule with actions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create published rule with actions - Idempotent check
   bigip_policy_rule:
@@ -138,7 +138,7 @@
 - name: Assert Create published rule with actions - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Add actions to a rule
   bigip_policy_rule:
@@ -154,7 +154,7 @@
 - name: Assert Add actions to a rule
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add actions to a rule - Idempotent check
   bigip_policy_rule:
@@ -170,7 +170,7 @@
 - name: Assert Add actions to a rule - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Replace a forward action with an ASM action
   bigip_policy_rule:
@@ -186,7 +186,7 @@
 - name: Assert Replace a forward action with an ASM action
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Replace a forward action with an ASM action - Idempotent check
   bigip_policy_rule:
@@ -202,7 +202,7 @@
 - name: Assert Replace a forward action with an ASM action - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Add a http_uri condition to a rule with an existing ASM enablement - EXPECTED FAILURE
   bigip_policy_rule:
@@ -219,7 +219,7 @@
 - name: Assert Add a http_uri condition
   assert:
     that:
-      - not result|changed
+      - result is not changed
       - result|failed
       - "'condition is required when using' in result.msg"
 
@@ -236,7 +236,7 @@
 - name: Assert Blank all conditions and actions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Blank all conditions and actions - Idempotent check
   bigip_policy_rule:
@@ -251,7 +251,7 @@
 - name: Assert Blank all conditions and actions - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Add a http_uri condition
   bigip_policy_rule:
@@ -267,7 +267,7 @@
 - name: Assert Add a http_uri condition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add a http_uri condition - Idempotent check
   bigip_policy_rule:
@@ -283,7 +283,7 @@
 - name: Assert Add a http_uri condition - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set forward action to test setting an ignore action
   bigip_policy_rule:
@@ -304,7 +304,7 @@
 - name: Assert Set ignore action
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ignore action - Idempotent check
   bigip_policy_rule:
@@ -317,7 +317,7 @@
 - name: Assert Set ignore action - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set all traffic condition
   bigip_policy_rule:
@@ -330,7 +330,7 @@
 - name: Assert Set all traffic condition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set all traffic condition - Idempotent check
   bigip_policy_rule:
@@ -343,7 +343,7 @@
 - name: Assert Set all traffic condition - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove rule
   bigip_policy_rule:
@@ -355,7 +355,7 @@
 - name: Assert Remove rule
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove rule - Idempotent check
   bigip_policy_rule:
@@ -367,6 +367,6 @@
 - name: Assert Remove rule - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: teardown.yaml

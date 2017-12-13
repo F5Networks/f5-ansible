@@ -11,7 +11,7 @@
 - name: Assert Set the SSHD allow string to a specific IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD allow string to a specific IP - Idempotent check
   bigip_device_sshd:
@@ -22,7 +22,7 @@
 - name: Assert Set the SSHD allow string to a specific IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD allow string to deny all
   bigip_device_sshd:
@@ -33,7 +33,7 @@
 - name: Assert Set the SSHD allow string to deny all
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD allow string to deny all - Idempotent check
   bigip_device_sshd:
@@ -44,7 +44,7 @@
 - name: Assert Set the SSHD allow string to deny all - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD allow string to allow all
   bigip_device_sshd:
@@ -55,7 +55,7 @@
 - name: Assert Set the SSHD allow string to allow all
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD allow string to allow all - Idempotent check
   bigip_device_sshd:
@@ -66,7 +66,7 @@
 - name: Assert Set the SSHD allow string to allow all - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Turn on the SSHD banner
   bigip_device_sshd:
@@ -76,7 +76,7 @@
 - name: Assert Turn on the SSHD banner
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Turn on the SSHD banner - Idempotent check
   bigip_device_sshd:
@@ -86,7 +86,7 @@
 - name: Assert Turn on the SSHD banner - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Turn off the SSHD banner
   bigip_device_sshd:
@@ -96,7 +96,7 @@
 - name: Assert Turn off the SSHD banner
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Turn off the SSHD banner - Idempotent check
   bigip_device_sshd:
@@ -106,7 +106,7 @@
 - name: Assert Turn off the SSHD banner - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD banner from a template
   bigip_device_sshd:
@@ -116,7 +116,7 @@
 - name: Assert Set the SSHD banner from a template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD banner from a template - Idempotent check
   bigip_device_sshd:
@@ -126,7 +126,7 @@
 - name: Assert Set the SSHD banner from a template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD banner from a file
   bigip_device_sshd:
@@ -136,7 +136,7 @@
 - name: Assert Set the SSHD banner from a file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD banner from a file - Idempotent check
   bigip_device_sshd:
@@ -146,7 +146,7 @@
 - name: Assert Set the SSHD banner from a file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD inactivity timeout (Good)
   bigip_device_sshd:
@@ -157,7 +157,7 @@
 - name: Assert Set the SSHD inactivity timeout (Good)
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD inactivity timeout (Bad)
   bigip_device_sshd:
@@ -169,7 +169,7 @@
 - name: Assert Set the SSHD inactivity timeout (Bad)
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD log level (Good)
   bigip_device_sshd:
@@ -180,7 +180,7 @@
 - name: Assert Set the SSHD log level (Good)
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the SSHD log level (Bad)
   bigip_device_sshd:
@@ -192,7 +192,7 @@
 - name: Assert Set the SSHD log level (Bad)
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the SSHD login
   bigip_device_sshd:
@@ -203,7 +203,7 @@
 - name: Assert Set the SSHD login
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - import_tasks: v12-tests.yaml
   when: system_info.product_information.product_version >= "12.0.0"

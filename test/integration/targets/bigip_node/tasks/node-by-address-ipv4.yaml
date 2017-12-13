@@ -10,7 +10,7 @@
 - name: Assert Create node
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create node - Idempotent check
   bigip_node:
@@ -22,7 +22,7 @@
 - name: Assert Create node - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete node
   bigip_node:
@@ -33,7 +33,7 @@
 - name: Assert delete node
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete node - Idempotent check
   bigip_node:
@@ -44,4 +44,4 @@
 - name: Assert delete node - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

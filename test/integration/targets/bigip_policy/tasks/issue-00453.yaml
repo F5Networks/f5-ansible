@@ -24,7 +24,7 @@
 - name: Assert Remove some rules
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove some rules - Idempotent check
   bigip_policy:
@@ -36,4 +36,4 @@
 - name: Assert Remove some rules - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

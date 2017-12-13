@@ -6,7 +6,7 @@
 - name: Assert Get all software facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'images' in result"
       - "'hotfixes' in result"
       - "'volumes' in result"
@@ -19,7 +19,7 @@
 - name: Assert Get base image ISOs facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'images' in result"
       - "'hotfixes' not in result"
       - "'volumes' not in result"
@@ -32,7 +32,7 @@
 - name: Assert Get hotfix ISOs facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'images' not in result"
       - "'hotfixes' in result"
       - "'volumes' not in result"
@@ -45,7 +45,7 @@
 - name: Assert Get volumes facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'images' not in result"
       - "'hotfixes' not in result"
       - "'volumes' in result"
@@ -59,7 +59,7 @@
 - name: Assert Get volumes facts with filter
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.volumes|length == 1
       - "'volumes' in result"
 
@@ -73,4 +73,4 @@
 - name: Assert Get images facts with bad filter
   assert:
     that:
-      - not result|changed
+      - result is not changed

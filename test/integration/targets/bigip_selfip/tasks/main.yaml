@@ -14,7 +14,7 @@
 - name: Assert Create Self IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create Self IP - Idempotent check
   bigip_selfip:
@@ -27,7 +27,7 @@
 - name: Assert Create Self IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set Self IP VLAN
   bigip_selfip:
@@ -38,7 +38,7 @@
 - name: Assert Set Self IP VLAN
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set Self IP VLAN - Idempotent check
   bigip_selfip:
@@ -49,7 +49,7 @@
 - name: Assert Set Self IP VLAN - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set Self IP netmask
   bigip_selfip:
@@ -60,7 +60,7 @@
 - name: Assert Set Self IP netmask
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set Self IP netmask - Idempotent check
   bigip_selfip:
@@ -71,7 +71,7 @@
 - name: Assert Set Self IP netmask - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set single protocol allow service
   bigip_selfip:
@@ -82,7 +82,7 @@
 - name: Assert Set single protocol allow service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set single protocol allow service - Idempotent check
   bigip_selfip:
@@ -93,7 +93,7 @@
 - name: Assert Set single protocol allow service - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set multiple protocol allow all service
   bigip_selfip:
@@ -104,7 +104,7 @@
 - name: Assert Set multiple protocol allow all service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set multiple protocol allow all service - Idempotent check
   bigip_selfip:
@@ -115,7 +115,7 @@
 - name: Assert Set multiple protocol allow all service - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set keyword "all" allow service
   bigip_selfip:
@@ -127,7 +127,7 @@
 - name: Assert Set keyword "all" allow service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set keyword "all" allow service - Idempotent check
   bigip_selfip:
@@ -139,7 +139,7 @@
 - name: Assert Set keyword "all" allow service - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set keyword "default" allow service
   bigip_selfip:
@@ -151,7 +151,7 @@
 - name: Assert Set keyword "default" allow service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set keyword "default" allow service - Idempotent check
   bigip_selfip:
@@ -163,7 +163,7 @@
 - name: Assert Set keyword "default" allow service - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set keyword "none" allow service
   bigip_selfip:
@@ -175,7 +175,7 @@
 - name: Assert Set keyword "none" allow service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set keyword "none" allow service - Idempotent check
   bigip_selfip:
@@ -187,7 +187,7 @@
 - name: Assert Set keyword "none" allow service - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete Self IP
   bigip_selfip:
@@ -198,7 +198,7 @@
 - name: Assert Delete Self IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete Self IP - Idempotent check
   bigip_selfip:
@@ -209,7 +209,7 @@
 - name: Assert Delete Self IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create Self IP, specify a traffic group
   bigip_selfip:
@@ -223,7 +223,7 @@
 - name: Assert Create Self IP, specify a traffic group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create Self IP, specify a traffic group - Idempotent check
   bigip_selfip:
@@ -237,7 +237,7 @@
 - name: Assert Create Self IP, specify a traffic group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete Self IP that specified traffic group
   bigip_selfip:
@@ -248,7 +248,7 @@
 - name: Assert Delete Self IP that specified traffic group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - import_tasks: route-domain.yaml
 

@@ -8,7 +8,7 @@
 - name: Assert Enable cache
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable cache - Idempotent check
   bigip_device_dns:
@@ -18,7 +18,7 @@
 - name: Assert Enable cache - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable cache
   bigip_device_dns:
@@ -28,7 +28,7 @@
 - name: Assert Disable cache
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable cache - Idempotent check
   bigip_device_dns:
@@ -38,7 +38,7 @@
 - name: Assert Disable cache - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable cache - Incorrect value
   bigip_device_dns:
@@ -49,7 +49,7 @@
 - name: Assert Enable cache - Incorrect value
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set IP version 6
   bigip_device_dns:
@@ -59,7 +59,7 @@
 - name: Assert Set IP version 6
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set IP version 6 - Idempotent check
   bigip_device_dns:
@@ -69,7 +69,7 @@
 - name: Assert Set IP version 6 - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set IP version 4
   bigip_device_dns:
@@ -79,7 +79,7 @@
 - name: Assert Set IP version 4
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set IP version 4 - Idempotent check
   bigip_device_dns:
@@ -89,7 +89,7 @@
 - name: Assert Set IP version 4 - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set Unknown IP version
   bigip_device_dns:
@@ -100,7 +100,7 @@
 - name: Assert Set Unknown IP version
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 # Sending a string to a parameter that is expected to be a list will
 # cast the string to a list automatically, making this method valid
@@ -113,7 +113,7 @@
 - name: Assert Set a nameserver
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a nameserver
   bigip_device_dns:
@@ -124,7 +124,7 @@
 - name: Assert Set a nameserver
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a nameserver - Idempotent check
   bigip_device_dns:
@@ -135,7 +135,7 @@
 - name: Assert Set a nameserver - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set an empty nameserver
   bigip_device_dns:
@@ -146,7 +146,7 @@
 - name: Assert Set an empty nameserver
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set an empty nameserver - Idempotent check
   bigip_device_dns:
@@ -157,7 +157,7 @@
 - name: Assert Set an empty nameserver - Idempotent check
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a list of name servers
   bigip_device_dns:
@@ -170,7 +170,7 @@
 - name: Assert Set a list of name servers
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a list of name servers - Idempotent check
   bigip_device_dns:
@@ -183,7 +183,7 @@
 - name: Assert Set a list of name servers - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Absent a name server
   bigip_device_dns:
@@ -195,7 +195,7 @@
 - name: Assert Absent a name server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Absent a name server - Idempotent check
   bigip_device_dns:
@@ -207,7 +207,7 @@
 - name: Assert Absent a name server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a search domain
   bigip_device_dns:
@@ -218,7 +218,7 @@
 - name: Assert Set a search domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a search domain - Idempotent check
   bigip_device_dns:
@@ -229,7 +229,7 @@
 - name: Assert Set a search domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set an empty search domain
   bigip_device_dns:
@@ -240,7 +240,7 @@
 - name: Assert Set an empty search domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a list of search domains
   bigip_device_dns:
@@ -253,7 +253,7 @@
 - name: Assert Set a list of search domains
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a list of search domains - Idempotent check
   bigip_device_dns:
@@ -266,7 +266,7 @@
 - name: Assert Set a list of search domains - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Absent a search domain
   bigip_device_dns:
@@ -278,7 +278,7 @@
 - name: Assert Absent a search domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Absent a search domain - Idempotent check
   bigip_device_dns:
@@ -290,4 +290,4 @@
 - name: Assert Absent a search domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

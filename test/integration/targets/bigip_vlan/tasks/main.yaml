@@ -11,7 +11,7 @@
 - name: Assert Create VLAN
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN - Idempotent check
   bigip_vlan:
@@ -21,7 +21,7 @@
 - name: Assert Create VLAN - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set VLAN tag, int
   bigip_vlan:
@@ -32,7 +32,7 @@
 - name: Assert Set VLAN tag, int
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN tag, int - Idempotent check
   bigip_vlan:
@@ -43,7 +43,7 @@
 - name: Assert Set VLAN tag, int - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set VLAN tag, string
   bigip_vlan:
@@ -54,7 +54,7 @@
 - name: Assert Set VLAN tag, string
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN tag, string - Idempotent check
   bigip_vlan:
@@ -65,7 +65,7 @@
 - name: Assert Set VLAN tag, string - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set VLAN description
   bigip_vlan:
@@ -76,7 +76,7 @@
 - name: Assert Set VLAN description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN description - Idempotent check
   bigip_vlan:
@@ -87,7 +87,7 @@
 - name: Assert Set VLAN description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set VLAN tagged interfaces
   bigip_vlan:
@@ -98,7 +98,7 @@
 - name: Assert Set VLAN tagged interfaces
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN tagged interfaces - Idempotent check
   bigip_vlan:
@@ -109,7 +109,7 @@
 - name: Assert Set VLAN tagged interfaces - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set VLAN untagged interfaces
   bigip_vlan:
@@ -120,7 +120,7 @@
 - name: Assert Set VLAN untagged interfaces
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN untagged interfaces - Idempotent check
   bigip_vlan:
@@ -131,7 +131,7 @@
 - name: Assert Set VLAN untagged interfaces - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove VLAN
   bigip_vlan:
@@ -142,7 +142,7 @@
 - name: Assert Remove VLAN
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove VLAN - Idempotent check
   bigip_vlan:
@@ -153,7 +153,7 @@
 - name: Assert Remove VLAN - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 # VE has a limitation that you can only have one interface per VLAN
 # To test with more than one interface, you need to use a hardware
@@ -167,7 +167,7 @@
 - name: Assert Create VLAN, tagged interfaces
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN, tagged interfaces - Idempotent check
   bigip_vlan:
@@ -178,7 +178,7 @@
 - name: Assert Create VLAN, tagged interfaces - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove VLAN, tagged interfaces
   bigip_vlan:
@@ -190,7 +190,7 @@
 - name: Assert Remove VLAN, tagged interfaces
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN, description
   bigip_vlan:
@@ -201,7 +201,7 @@
 - name: Assert Create VLAN, description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN, description - Idempotent check
   bigip_vlan:
@@ -212,7 +212,7 @@
 - name: Assert Create VLAN, description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove VLAN, description
   bigip_vlan:
@@ -223,7 +223,7 @@
 - name: Assert Remove VLAN, description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN, tag
   bigip_vlan:
@@ -234,7 +234,7 @@
 - name: Assert Create VLAN, tag
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create VLAN, tag - Idempotent check
   bigip_vlan:
@@ -245,7 +245,7 @@
 - name: Assert Create VLAN, tag - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove VLAN, tag
   bigip_vlan:
@@ -256,4 +256,4 @@
 - name: Assert Remove VLAN, tag
   assert:
     that:
-      - result|changed
+      - result is changed

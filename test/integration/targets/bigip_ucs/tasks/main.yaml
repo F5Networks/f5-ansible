@@ -10,7 +10,7 @@
 - name: Assert Upload UCS file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Upload UCS file - Idempotent check
   bigip_ucs:
@@ -20,7 +20,7 @@
 - name: Assert Upload UCS file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Force upload UCS file
   bigip_ucs:
@@ -31,7 +31,7 @@
 - name: Assert Force upload UCS file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Install an uploaded UCS file
   bigip_ucs:
@@ -42,7 +42,7 @@
 - name: Assert Install an uploaded UCS file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Install an uploaded UCS file again - expected not idempotent
   bigip_ucs:
@@ -53,7 +53,7 @@
 - name: Assert Install an uploaded UCS file again - expected not idempotent
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove uploaded UCS file
   bigip_ucs:
@@ -64,7 +64,7 @@
 - name: Assert Remove uploaded UCS file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove uploaded UCS file - Idempotent check
   bigip_ucs:
@@ -75,7 +75,7 @@
 - name: Assert Remove uploaded UCS file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Install a UCS file, no initial upload
   bigip_ucs:

@@ -10,7 +10,7 @@
 - name: Issue 00263 - Assert Create app service integration iApp service from iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00263 - Create app service integration iApp service from iApp template
   bigip_iapp_service:
@@ -24,7 +24,7 @@
 - name: Issue 00263 - Assert Create app service integration iApp service from iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00263 - Create app service integration iApp service from iApp template - Idempotent check
   bigip_iapp_service:
@@ -38,7 +38,7 @@
 - name: Issue 00263 - Assert Create app service integration iApp service from iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00263 - Delete app service integration iApp service
   bigip_iapp_service:
@@ -49,7 +49,7 @@
 - name: Issue 00263 - Assert Delete app service integration iApp service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00263 - Remove app service integration iApp template
   bigip_iapp_template:
@@ -60,4 +60,4 @@
 - name: Issue 00263 - Assert Remove app service integration iApp template
   assert:
     that:
-      - result|changed
+      - result is changed

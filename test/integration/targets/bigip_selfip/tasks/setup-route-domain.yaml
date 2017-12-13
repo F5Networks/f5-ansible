@@ -37,4 +37,4 @@
 - name: Assert Create route domain
   assert:
     that:
-      - result|changed
+      - result is changed

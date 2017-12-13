@@ -15,7 +15,7 @@
 - name: Issue 00062 - Assert Add virtual address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00062 - Add virtual address - Idempotent check
   bigip_virtual_address:
@@ -27,7 +27,7 @@
 - name: Issue 00062 - Assert Add virtual address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00062 - Remove virtual address
   bigip_virtual_address:

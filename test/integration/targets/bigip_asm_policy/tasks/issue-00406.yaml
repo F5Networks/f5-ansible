@@ -27,7 +27,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Create ASM policy, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -39,7 +39,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as active, compact XML file
   bigip_asm_policy:
@@ -51,7 +51,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as active, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -63,7 +63,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as inactive, compact XML file
   bigip_asm_policy:
@@ -75,7 +75,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as inactive, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -87,7 +87,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Remove ASM policy
   bigip_asm_policy:
@@ -99,7 +99,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -111,7 +111,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Create ASM policy, non-compact XML file
   bigip_asm_policy:
@@ -123,7 +123,7 @@
 - name: Issue 00406 - Assert Create ASM policy, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Create ASM policy, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -135,7 +135,7 @@
 - name: Issue 00406 - Assert Create ASM policy, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as active, non-compact XML file
   bigip_asm_policy:
@@ -147,7 +147,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as active, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -159,7 +159,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as inactive, non-compact XML file
   bigip_asm_policy:
@@ -171,7 +171,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as inactive, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -183,7 +183,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Remove ASM policy
   bigip_asm_policy:
@@ -195,7 +195,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -207,7 +207,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Create ASM policy, binary
   bigip_asm_policy:
@@ -219,7 +219,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Create ASM policy, binary - Idempotent check
   bigip_asm_policy:
@@ -231,7 +231,7 @@
 - name: Issue 00406 - Assert Create ASM policy, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as active, binary
   bigip_asm_policy:
@@ -243,7 +243,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, binary
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as active, binary - Idempotent check
   bigip_asm_policy:
@@ -255,7 +255,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Set ASM policy as inactive, binary
   bigip_asm_policy:
@@ -267,7 +267,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, binary
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Set ASM policy as inactive, binary - Idempotent check
   bigip_asm_policy:
@@ -279,7 +279,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Remove ASM policy
   bigip_asm_policy:
@@ -291,7 +291,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -303,7 +303,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Create ASM policy, compact XML file
   bigip_asm_policy:
@@ -316,7 +316,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Create ASM policy, compact XML file - Idempotent check
@@ -330,7 +330,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, compact XML file
@@ -344,7 +344,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, compact XML file - Idempotent check
@@ -358,7 +358,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, compact XML file
@@ -372,7 +372,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, compact XML file - Idempotent check
@@ -386,7 +386,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy
@@ -400,7 +400,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
@@ -414,7 +414,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Create ASM policy, non-compact XML file
@@ -428,7 +428,7 @@
 - name: Issue 00406 - Assert Create ASM policy, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Create ASM policy, non-compact XML file - Idempotent check
@@ -442,7 +442,7 @@
 - name: Issue 00406 - Assert Create ASM policy, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, non-compact XML file
@@ -456,7 +456,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, non-compact XML file - Idempotent check
@@ -470,7 +470,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, non-compact XML file
@@ -484,7 +484,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, non-compact XML file - Idempotent check
@@ -498,7 +498,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy
@@ -512,7 +512,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
@@ -526,7 +526,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Create ASM policy, binary
@@ -540,7 +540,7 @@
 - name: Issue 00406 - Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Create ASM policy, binary - Idempotent check
@@ -554,7 +554,7 @@
 - name: Issue 00406 - Assert Create ASM policy, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, binary
@@ -568,7 +568,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, binary
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as active, binary - Idempotent check
@@ -582,7 +582,7 @@
 - name: Issue 00406 - Assert Set ASM policy as active, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, binary
@@ -596,7 +596,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, binary
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Set ASM policy as inactive, binary - Idempotent check
@@ -610,7 +610,7 @@
 - name: Issue 00406 - Assert Set ASM policy as inactive, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy
@@ -624,7 +624,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
@@ -638,7 +638,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00406 - Import ASM policy from template
@@ -651,7 +651,7 @@
 - name: Issue 00406 - Assert Import ASM policy from template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Import ASM policy from template - Idempotent check
   bigip_asm_policy:
@@ -663,7 +663,7 @@
 - name: Issue 00406 - Assert Import ASM policy from template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Remove ASM policy
   bigip_asm_policy:
@@ -675,7 +675,7 @@
 - name: Issue 00406 - Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00406 - Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -687,7 +687,7 @@
 - name: Issue 00406 - Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00406 - Remove partition
   bigip_partition:

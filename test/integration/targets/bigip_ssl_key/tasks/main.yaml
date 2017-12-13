@@ -10,7 +10,7 @@
 - name: Assert Import a key, no passphrase on private key
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Import a key, no passphrase on private key - Idempotent check
   bigip_ssl_key:
@@ -22,7 +22,7 @@
 - name: Assert Import a key, no passphrase on private key - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Update key, new key, password protected key
   bigip_ssl_key:
@@ -35,7 +35,7 @@
 - name: Assert Update key, new key, password protected key
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Update key, new key, password protected key - Idempotent check
   bigip_ssl_key:
@@ -48,7 +48,7 @@
 - name: Assert Update key, new key, password protected key - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete a key
   bigip_ssl_key:
@@ -59,7 +59,7 @@
 - name: Assert Delete a key
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete a key - Idempotent check
   bigip_ssl_key:
@@ -83,7 +83,7 @@
 - name: Assert Import a key, password protected key
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Import a key, password protected key - Idempotent check
   bigip_ssl_key:
@@ -96,7 +96,7 @@
 - name: Assert Import a key, password protected key - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Import a key, password protected key, bad passphrase
   bigip_ssl_key:
@@ -110,7 +110,7 @@
 - name: Assert Import a key, password protected key, bad passphrase
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Import with missing files
   bigip_ssl_key:
@@ -125,7 +125,7 @@
 - name: Assert Import with missing files
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Import a key
   bigip_ssl_key:
@@ -137,7 +137,7 @@
 - name: Assert Import a key
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Import a key - Idempotent check
   bigip_ssl_key:
@@ -149,7 +149,7 @@
 - name: Assert Import a key - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete a keys in list
   bigip_ssl_key:

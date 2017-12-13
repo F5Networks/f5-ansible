@@ -38,7 +38,7 @@
 - name: Issue 00457 - Assert Create vCMP guest
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00457 - Create vCMP guest - Idempotent check
   bigip_vcmp_guest:
@@ -56,7 +56,7 @@
 - name: Issue 00457 - Assert Create vCMP guest - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00457 - Reorder guest VLANs, no change
   bigip_vcmp_guest:
@@ -74,7 +74,7 @@
 - name: Issue 00457 - Reorder guest VLANs, no change
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00457 - Remove vCMP guest
   bigip_vcmp_guest:

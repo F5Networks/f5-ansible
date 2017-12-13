@@ -17,4 +17,4 @@
 - name: Remove Create route domain
   assert:
     that:
-      - result|changed
+      - result is changed

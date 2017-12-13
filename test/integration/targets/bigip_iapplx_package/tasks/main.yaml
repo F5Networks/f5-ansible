@@ -9,7 +9,7 @@
 - name: Assert Create iAppLX package
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iAppLX package - Idempotent check
   bigip_iapplx_package:
@@ -20,7 +20,7 @@
 - name: Assert Create iAppLX package - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete iAppLX package
   bigip_iapplx_package:
@@ -31,7 +31,7 @@
 - name: Assert Delete iAppLX package
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iAppLX package - Idempotent check
   bigip_iapplx_package:
@@ -42,7 +42,7 @@
 - name: Assert Create iAppLX package - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create iAppLX package
   bigip_iapplx_package:
@@ -53,7 +53,7 @@
 - name: Assert Create iAppLX package
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iAppLX package, file does not exist
   bigip_iapplx_package:
@@ -64,7 +64,7 @@
 - name: Assert Delete iAppLX package, file does not exist
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iAppLX package, file does not exist - Idempotent check
   bigip_iapplx_package:
@@ -75,4 +75,4 @@
 - name: Assert Delete iAppLX package, file does not exist - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

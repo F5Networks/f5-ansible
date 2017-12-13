@@ -12,7 +12,7 @@
 - name: Assert Create pool with member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create pool with member - Idempotent check
   bigip_pool:
@@ -26,7 +26,7 @@
 - name: Assert Create pool with member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Ensure pool is not deleted
   bigip_pool:
@@ -38,7 +38,7 @@
 - name: Assert Ensure pool is not deleted
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete pool with member
   bigip_pool:
@@ -49,4 +49,4 @@
 - name: Assert Delete pool with member
   assert:
     that:
-      - result|changed
+      - result is changed

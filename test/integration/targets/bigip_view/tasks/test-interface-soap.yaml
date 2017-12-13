@@ -9,7 +9,7 @@
 - name: Assert Create view
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create view - Idempotent check
   bigip_view:
@@ -20,7 +20,7 @@
 - name: Assert Create view - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Update view order, existing
   bigip_view:
@@ -31,7 +31,7 @@
 - name: Assert Update view order, existing
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Update view order, existing - Idempotent check
   bigip_view:
@@ -42,4 +42,4 @@
 - name: Assert Update view order, existing - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

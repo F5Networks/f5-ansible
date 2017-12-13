@@ -28,7 +28,7 @@
 - name: Assert Create license pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iApp template - Idempotent check
   iworkflow_iapp_template:
@@ -45,7 +45,7 @@
 - name: Create iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete iApp template
   iworkflow_iapp_template:
@@ -61,7 +61,7 @@
 - name: Assert Delete iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iApp template - Idempotent check
   iworkflow_iapp_template:
@@ -77,4 +77,4 @@
 - name: Delete iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

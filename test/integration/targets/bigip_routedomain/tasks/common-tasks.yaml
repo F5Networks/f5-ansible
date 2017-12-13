@@ -8,7 +8,7 @@
 - name: Assert Create route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create route domain - Idempotent check
   bigip_routedomain:
@@ -18,7 +18,7 @@
 - name: Assert Create route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a description
   bigip_routedomain:
@@ -29,7 +29,7 @@
 - name: Assert Set a description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create Set a description - Idempotent check
   bigip_routedomain:
@@ -40,7 +40,7 @@
 - name: Assert Set a description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable strict isolation
   bigip_routedomain:
@@ -51,7 +51,7 @@
 - name: Assert Disable strict isolation
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable strict isolation - Idempotent check
   bigip_routedomain:
@@ -62,7 +62,7 @@
 - name: Assert Disable strict isolation - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable strict isolation
   bigip_routedomain:
@@ -73,7 +73,7 @@
 - name: Assert Enable strict isolation
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable strict isolation - Idempotent check
   bigip_routedomain:
@@ -84,7 +84,7 @@
 - name: Assert Enable strict isolation - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set parent route domain
   bigip_routedomain:
@@ -95,7 +95,7 @@
 - name: Assert Set parent route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set parent route domain - Idempotent check
   bigip_routedomain:
@@ -106,7 +106,7 @@
 - name: Assert Set parent route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set vlans
   bigip_routedomain:
@@ -117,7 +117,7 @@
 - name: Assert Set vlans
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set vlans - Idempotent check
   bigip_routedomain:
@@ -128,7 +128,7 @@
 - name: Assert Set vlans - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a single routing protocol, valid
   bigip_routedomain:
@@ -139,7 +139,7 @@
 - name: Assert Set a single routing protocol, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a single routing protocol, valid - Idempotent check
   bigip_routedomain:
@@ -150,7 +150,7 @@
 - name: Assert Set a single routing protocol, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a single routing protocol, invalid
   bigip_routedomain:
@@ -162,7 +162,7 @@
 - name: Assert Set a single routing protocol, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a single routing protocol, invalid - Idempotent check
   bigip_routedomain:
@@ -174,7 +174,7 @@
 - name: Assert Set a single routing protocol, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a list of routing protocols, valid
   bigip_routedomain:
@@ -185,7 +185,7 @@
 - name: Assert Set a list of routing protocols, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set a list of routing protocols, valid - Idempotent check
   bigip_routedomain:
@@ -196,7 +196,7 @@
 - name: Assert Set a list of routing protocols, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a list of routing protocols, invalid
   bigip_routedomain:
@@ -208,7 +208,7 @@
 - name: Assert Set a list of routing protocols, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set a list of routing protocols, invalid - Idempotent check
   bigip_routedomain:
@@ -220,7 +220,7 @@
 - name: Assert Set a list of routing protocols, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set connection limit, valid
   bigip_routedomain:
@@ -231,7 +231,7 @@
 - name: Assert Set connection limit, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set connection limit, valid - Idempotent check
   bigip_routedomain:
@@ -242,7 +242,7 @@
 - name: Assert Set connection limit, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set connection limit, invalid
   bigip_routedomain:
@@ -254,7 +254,7 @@
 - name: Assert Set connection limit, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set connection limit, invalid - Idempotent check
   bigip_routedomain:
@@ -266,7 +266,7 @@
 - name: Assert Set connection limit, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set flow eviction policy, valid
   bigip_routedomain:
@@ -277,7 +277,7 @@
 - name: Assert Set flow eviction policy, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set flow eviction policy, valid - Idempotent check
   bigip_routedomain:
@@ -289,7 +289,7 @@
 - name: Assert Set flow eviction policy, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set flow eviction policy, invalid
   bigip_routedomain:
@@ -302,7 +302,7 @@
 - name: Assert Set flow eviction policy, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set flow eviction policy, invalid - Idempotent check
   bigip_routedomain:
@@ -315,7 +315,7 @@
 - name: Assert Set flow eviction policy, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set bandwidth control policy, valid
   bigip_routedomain:
@@ -326,7 +326,7 @@
 - name: Assert Set bandwidth control policy, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set bandwidth control policy, valid - Idempotent check
   bigip_routedomain:
@@ -337,7 +337,7 @@
 - name: Assert Set bandwidth control policy, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set bandwidth control policy, invalid
   bigip_routedomain:
@@ -350,7 +350,7 @@
 - name: Assert Set bandwith control policy, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set bandwidth control policy, invalid - Idempotent check
   bigip_routedomain:
@@ -363,7 +363,7 @@
 - name: Assert Set bandwidth control policy, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set service policy, valid
   bigip_routedomain:
@@ -375,7 +375,7 @@
 - name: Assert Set service policy, valid
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, valid - Idempotent check
@@ -388,7 +388,7 @@
 - name: Assert Set service policy, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, invalid
@@ -403,7 +403,7 @@
 - name: Assert Set service policy, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Set service policy, invalid - Idempotent check
@@ -418,7 +418,7 @@
 - name: Assert Set service policy, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: system_info.product_information.product_version >= "12.0.0"
 
 - name: Delete a route domain
@@ -430,7 +430,7 @@
 - name: Assert Delete a route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete a route domain - Idempotent check
   bigip_routedomain:
@@ -441,7 +441,7 @@
 - name: Assert Delete a route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete an unknown route domain
   bigip_routedomain:
@@ -452,7 +452,7 @@
 - name: Assert Delete an unknown route domain
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete a route domain, invalid
   bigip_routedomain:
@@ -465,7 +465,7 @@
 - name: Assert Delete a route domain, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create route domain - all params
   bigip_routedomain:
@@ -476,7 +476,7 @@
 - name: Assert Create route domain - all params
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete a route domain - all params
   bigip_routedomain:
@@ -487,4 +487,4 @@
 - name: Assert Delete a route domain - all params
   assert:
     that:
-      - result|changed
+      - result is changed

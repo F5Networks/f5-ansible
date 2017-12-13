@@ -12,7 +12,7 @@
 - name: Issue 00113 - Assert Create an admin user
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00113 - Create an admin user - Idempotent check
   bigip_user:
@@ -26,7 +26,7 @@
 - name: Issue 00113 - Assert Create an admin user - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00113 - Remove the admin user
   bigip_user:
@@ -37,7 +37,7 @@
 - name: Issue 00113 - Assert Remove the admin user
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00113 - Remove the admin user - Idempotent check
   bigip_user:
@@ -48,4 +48,4 @@
 - name: Issue 00113 - Assert Remove the admin user - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

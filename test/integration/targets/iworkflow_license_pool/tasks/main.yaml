@@ -11,7 +11,7 @@
 - name: Assert Create license pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create license pool - Idempotent check
   iworkflow_license_pool:
@@ -24,7 +24,7 @@
 - name: Create license pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete license pool
   iworkflow_license_pool:
@@ -35,7 +35,7 @@
 - name: Assert Delete license pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete license pool - Idempotent check
   iworkflow_license_pool:
@@ -46,4 +46,4 @@
 - name: Delete license pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

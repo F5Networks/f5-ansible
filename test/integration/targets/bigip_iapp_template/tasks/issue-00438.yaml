@@ -10,7 +10,7 @@
 - name: Issue 00438 - Assert Add to the BIG-IP library the iApp file base-network-config.tmpl
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00438 - Add to the BIG-IP library the iApp file base-network-config.tmpl - Idempotent check
   bigip_iapp_template:
@@ -22,7 +22,7 @@
 - name: Issue 00438 - Assert Add to the BIG-IP library the iApp file base-network-config.tmpl - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00438 - Remove iApp template
   bigip_iapp_template:

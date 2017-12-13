@@ -10,7 +10,7 @@
 - name: Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create pool - Idempotent check
   bigip_pool:
@@ -22,7 +22,7 @@
 - name: Assert Create pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, ratio_member
   bigip_pool:
@@ -34,7 +34,7 @@
 - name: Assert Change pool lb_method, ratio_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, ratio_member - Idempotent check
   bigip_pool:
@@ -46,7 +46,7 @@
 - name: Assert Change pool lb_method, ratio_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, least_connection_member
   bigip_pool:
@@ -58,7 +58,7 @@
 - name: Assert Change pool lb_method, least_connection_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, least_connection_member - Idempotent check
   bigip_pool:
@@ -70,7 +70,7 @@
 - name: Assert Change pool lb_method, least_connection_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, observed_member
   bigip_pool:
@@ -82,7 +82,7 @@
 - name: Assert Change pool lb_method, observed_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, observed_member - Idempotent check
   bigip_pool:
@@ -94,7 +94,7 @@
 - name: Assert Change pool lb_method, observed_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, predictive_member
   bigip_pool:
@@ -106,7 +106,7 @@
 - name: Assert Change pool lb_method, predictive_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, predictive_member - Idempotent check
   bigip_pool:
@@ -118,7 +118,7 @@
 - name: Assert Change pool lb_method, predictive_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, ratio_node_address
   bigip_pool:
@@ -130,7 +130,7 @@
 - name: Assert Change pool lb_method, ratio_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, ratio_node_address - Idempotent check
   bigip_pool:
@@ -142,7 +142,7 @@
 - name: Assert Change pool lb_method, ratio_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, least_connection_node_address
   bigip_pool:
@@ -154,7 +154,7 @@
 - name: Assert Change pool lb_method, least_connection_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, least_connection_node_address - Idempotent check
   bigip_pool:
@@ -166,7 +166,7 @@
 - name: Assert Change pool lb_method, least_connection_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, fastest_node_address
   bigip_pool:
@@ -178,7 +178,7 @@
 - name: Assert Change pool lb_method, fastest_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, fastest_node_address - Idempotent check
   bigip_pool:
@@ -190,7 +190,7 @@
 - name: Assert Change pool lb_method, fastest_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, observed_node_address
   bigip_pool:
@@ -202,7 +202,7 @@
 - name: Assert Change pool lb_method, observed_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, observed_node_address - Idempotent check
   bigip_pool:
@@ -214,7 +214,7 @@
 - name: Assert Change pool lb_method, observed_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, predictive_node_address
   bigip_pool:
@@ -226,7 +226,7 @@
 - name: Assert Change pool lb_method, predictive_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, predictive_node_address - Idempotent check
   bigip_pool:
@@ -238,7 +238,7 @@
 - name: Assert Change pool lb_method, predictive_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, dynamic_ratio
   bigip_pool:
@@ -250,7 +250,7 @@
 - name: Assert Change pool lb_method, dynamic_ratio
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, dynamic_ratio - Idempotent check
   bigip_pool:
@@ -262,7 +262,7 @@
 - name: Assert Change pool lb_method, dynamic_ratio - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, fastest_app_response
   bigip_pool:
@@ -274,7 +274,7 @@
 - name: Assert Change pool lb_method, fastest_app_response
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, fastest_app_response - Idempotent check
   bigip_pool:
@@ -286,7 +286,7 @@
 - name: Assert Change pool lb_method, fastest_app_response - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, least_sessions
   bigip_pool:
@@ -298,7 +298,7 @@
 - name: Assert Change pool lb_method, least_sessions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, least_sessions - Idempotent check
   bigip_pool:
@@ -310,7 +310,7 @@
 - name: Assert Change pool lb_method, least_sessions - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, dynamic_ratio_member
   bigip_pool:
@@ -322,7 +322,7 @@
 - name: Assert Change pool lb_method, dynamic_ratio_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, dynamic_ratio_member - Idempotent check
   bigip_pool:
@@ -334,7 +334,7 @@
 - name: Assert Change pool lb_method, dynamic_ratio_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, l3_addr
   bigip_pool:
@@ -347,7 +347,7 @@
 - name: Assert Change pool lb_method, l3_addr
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, weighted_least_connection_member
   bigip_pool:
@@ -359,7 +359,7 @@
 - name: Assert Change pool lb_method, weighted_least_connection_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, weighted_least_connection_member - Idempotent check
   bigip_pool:
@@ -371,7 +371,7 @@
 - name: Assert Change pool lb_method, weighted_least_connection_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, weighted_least_connection_node_address
   bigip_pool:
@@ -383,7 +383,7 @@
 - name: Assert Change pool lb_method, weighted_least_connection_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, weighted_least_connection_node_address - Idempotent check
   bigip_pool:
@@ -395,7 +395,7 @@
 - name: Assert Change pool lb_method, weighted_least_connection_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, ratio_session
   bigip_pool:
@@ -407,7 +407,7 @@
 - name: Assert Change pool lb_method, ratio_session
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, ratio_session - Idempotent check
   bigip_pool:
@@ -419,7 +419,7 @@
 - name: Assert Change pool lb_method, ratio_session - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, ratio_least_connection_member
   bigip_pool:
@@ -431,7 +431,7 @@
 - name: Assert Change pool lb_method, ratio_least_connection_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, ratio_least_connection_member - Idempotent check
   bigip_pool:
@@ -443,7 +443,7 @@
 - name: Assert Change pool lb_method, ratio_least_connection_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool lb_method, ratio_least_connection_node_address
   bigip_pool:
@@ -455,7 +455,7 @@
 - name: Assert Change pool lb_method, ratio_least_connection_node_address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool lb_method, ratio_least_connection_node_address - Idempotent check
   bigip_pool:
@@ -467,7 +467,7 @@
 - name: Assert Change pool lb_method, ratio_least_connection_node_address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool reselect_tries
   bigip_pool:
@@ -479,7 +479,7 @@
 - name: Assert Change pool reselect_tries
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete pool
   bigip_pool:
@@ -490,7 +490,7 @@
 - name: Assert Delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete pool - Idempotent check
   bigip_pool:
@@ -501,7 +501,7 @@
 - name: Assert Delete pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create pool with description
   bigip_pool:
@@ -514,7 +514,7 @@
 - name: Assert Create pool with description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create pool with description - Idempotent check
   bigip_pool:
@@ -527,7 +527,7 @@
 - name: Assert Create pool with description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool description
   bigip_pool:
@@ -540,7 +540,7 @@
 - name: Assert Change pool description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool description - Idempotent check
   bigip_pool:
@@ -553,7 +553,7 @@
 - name: Assert Change pool description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete pool with description
   bigip_pool:
@@ -565,7 +565,7 @@
 - name: Assert Delete pool with description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete pool with description - Idempotent check
   bigip_pool:
@@ -577,7 +577,7 @@
 - name: Assert Delete pool with description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: pool_with_member.yaml
 

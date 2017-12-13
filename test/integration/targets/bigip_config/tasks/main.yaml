@@ -35,4 +35,4 @@
 - name: Assert Ensure virtual server description is same as in SCF file
   assert:
     that:
-      - not result|changed
+      - result is not changed

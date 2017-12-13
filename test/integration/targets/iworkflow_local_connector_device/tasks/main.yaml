@@ -23,7 +23,7 @@
 - name: Assert Register device to connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Register device to connector - Idempotent check
   iworkflow_local_connector_device:
@@ -35,7 +35,7 @@
 - name: Assert Register device to connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Unregister device from connector
   iworkflow_local_connector_device:
@@ -47,7 +47,7 @@
 - name: Assert Unregister device from connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Unregister device from connector - Idempotent check
   iworkflow_local_connector_device:
@@ -59,7 +59,7 @@
 - name: Assert Unregister device from connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Register multiple devices to connector
   iworkflow_local_connector_device:
@@ -73,7 +73,7 @@
 - name: Assert Register multiple devices to connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Register multiple devices to connector - Idempotent check
   iworkflow_local_connector_device:
@@ -87,7 +87,7 @@
 - name: Assert Register multiple devices to connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Unregister multiple devices from connector
   iworkflow_local_connector_device:
@@ -101,7 +101,7 @@
 - name: Assert Unregister multiple devices from connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Unregister multiple devices from connector - Idempotent check
   iworkflow_local_connector_device:
@@ -115,7 +115,7 @@
 - name: Assert Unregister multiple devices from connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete connector
   iworkflow_local_connector:

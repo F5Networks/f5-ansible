@@ -14,7 +14,7 @@
 - name: Assert Set the banner text
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the banner text - Idempotent check
   bigip_sys_global:
@@ -24,7 +24,7 @@
 - name: Assert the banner text - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the console timeout
   bigip_sys_global:
@@ -34,7 +34,7 @@
 - name: Assert Set the console timeout
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the console timeout - Idempotent check
   bigip_sys_global:
@@ -44,7 +44,7 @@
 - name: Assert the console timeout - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the gui setup
   bigip_sys_global:
@@ -54,7 +54,7 @@
 - name: Assert Set the gui setup
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the gui setup - Idempotent check
   bigip_sys_global:
@@ -64,7 +64,7 @@
 - name: Assert the gui setup - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the lcd display
   bigip_sys_global:
@@ -74,7 +74,7 @@
 - name: Assert Set the lcd display
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the lcd display - Idempotent check
   bigip_sys_global:
@@ -84,7 +84,7 @@
 - name: Assert the lcd display - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the mgmt dhcp
   bigip_sys_global:
@@ -94,7 +94,7 @@
 - name: Assert Set the mgmt dhcp
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the mgmt dhcp - Idempotent check
   bigip_sys_global:
@@ -104,7 +104,7 @@
 - name: Assert the mgmt dhcp - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the net reboot
   bigip_sys_global:
@@ -115,7 +115,7 @@
 - name: Assert Set the net reboot
   assert:
     that:
-      - result|changed
+      - result is changed
   when: "'Virtual Edition' not in system_info['marketing_name']"
 
 - name: Set the net reboot - Idempotent check
@@ -127,7 +127,7 @@
 - name: Assert the net reboot - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
   when: "'Virtual Edition' not in system_info['marketing_name']"
 
 - name: Set the quiet boot
@@ -138,7 +138,7 @@
 - name: Assert Set the quiet boot
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the quiet boot - Idempotent check
   bigip_sys_global:
@@ -148,7 +148,7 @@
 - name: Assert the quiet boot - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set the security banner
   bigip_sys_global:
@@ -158,7 +158,7 @@
 - name: Assert Set the security banner
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set the security banner - Idempotent check
   bigip_sys_global:
@@ -168,4 +168,4 @@
 - name: Assert the security banner - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

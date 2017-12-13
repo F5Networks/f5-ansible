@@ -18,7 +18,7 @@
 - name: Assert Attempt to make a change, expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Wait for BIG-IP to actually be ready
   bigip_wait:
@@ -27,7 +27,7 @@
 - name: Assert Wait for BIG-IP to actually be ready
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'elapsed' in result"
 
 - name: Attempt to make a change, no failure
@@ -41,6 +41,6 @@
 - name: Assert Attempt to make a change, no failure
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - import_tasks: teardown.yaml

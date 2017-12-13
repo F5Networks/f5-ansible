@@ -8,7 +8,7 @@
 - name: Assert Create datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -18,7 +18,7 @@
 - name: Assert Create datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set datacenter location
   bigip_gtm_datacenter:
@@ -29,7 +29,7 @@
 - name: Assert Set datacenter location
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set datacenter location - Idepotent check
   bigip_gtm_datacenter:
@@ -40,7 +40,7 @@
 - name: Assert Set datacenter location - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set datacenter contact
   bigip_gtm_datacenter:
@@ -51,7 +51,7 @@
 - name: Assert Set datacenter contact
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set datacenter contact - Idepotent check
   bigip_gtm_datacenter:
@@ -62,7 +62,7 @@
 - name: Assert Set datacenter contact - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set datacenter description
   bigip_gtm_datacenter:
@@ -73,7 +73,7 @@
 - name: Assert Set datacenter description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set datacenter description - Idepotent check
   bigip_gtm_datacenter:
@@ -84,7 +84,7 @@
 - name: Assert Set datacenter description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable datacenter
   bigip_gtm_datacenter:
@@ -95,7 +95,7 @@
 - name: Assert Disable datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -106,7 +106,7 @@
 - name: Assert Disable datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable datacenter
   bigip_gtm_datacenter:
@@ -117,7 +117,7 @@
 - name: Assert Enable datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -128,7 +128,7 @@
 - name: Assert Enable datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete datacenter
   bigip_gtm_datacenter:
@@ -139,7 +139,7 @@
 - name: Assert Delete datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -150,6 +150,6 @@
 - name: Assert Delete datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: legacy.yaml

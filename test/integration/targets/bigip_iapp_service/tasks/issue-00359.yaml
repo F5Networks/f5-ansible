@@ -19,7 +19,7 @@
 - name: Issue 00359 - Assert Configure a service with strict updates disabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00359 - Configure a service with strict updates disabled - Idempotent check
   bigip_iapp_service:
@@ -34,7 +34,7 @@
 - name: Issue 00359 - Assert Configure a service with strict updates disabled - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00359 - Change strict updates to enabled
   bigip_iapp_service:
@@ -46,7 +46,7 @@
 - name: Issue 00359 - Assert Change strict updates to enabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00359 - Change strict updates to enabled - Idempotent check
   bigip_iapp_service:
@@ -58,7 +58,7 @@
 - name: Issue 00359 - Assert Change strict updates to enabled - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00359 - Remove iApp service
   bigip_iapp_service:
@@ -78,7 +78,7 @@
 - name: Issue 00359 - Assert Configure a service, via payload, with strict updates disabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00359 - Configure a service, via payload, with strict updates disabled - Idempotent check
   bigip_iapp_service:
@@ -92,7 +92,7 @@
 - name: Issue 00359 - Assert Configure a service, via payload, with strict updates disabled - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00359 - Configure a service, via payload, with strict updates enabled
   bigip_iapp_service:
@@ -106,7 +106,7 @@
 - name: Issue 00359 - Assert Configure a service, via payload, with strict updates enabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00359 - Configure a service, via payload, with strict updates enabled - Idempotent check
   bigip_iapp_service:
@@ -120,7 +120,7 @@
 - name: Issue 00359 - Assert Configure a service, via payload, with strict updates enabled - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00359 - Remove iApp service
   bigip_iapp_service:

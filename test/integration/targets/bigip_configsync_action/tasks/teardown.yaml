@@ -12,7 +12,7 @@
 - name: Assert Delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Sync configuration from device to group
   bigip_configsync_actions:

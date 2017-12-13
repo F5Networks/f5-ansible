@@ -19,7 +19,7 @@
 - name: Assert Change node to enabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -38,7 +38,7 @@
 - name: Assert Change node to offline
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -57,7 +57,7 @@
 - name: Assert Change node to present
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create disabled node - address
   bigip_node:
@@ -75,7 +75,7 @@
 - name: Assert Change node to enabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -92,7 +92,7 @@
 - name: Assert Change node to offline
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -109,7 +109,7 @@
 - name: Assert Change node to present
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create disabled node - IPv6 address
   bigip_node:
@@ -127,7 +127,7 @@
 - name: Assert Change node to enabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -144,7 +144,7 @@
 - name: Assert Change node to offline
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node to disabled
   bigip_node:
@@ -161,4 +161,4 @@
 - name: Assert Change node to present
   assert:
     that:
-      - result|changed
+      - result is changed

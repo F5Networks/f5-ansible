@@ -21,7 +21,7 @@
 - name: Issue 0040 - Assert Create Self IPV4 Trusted Address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00420 - Create Self IPV4 Trusted Address - Idempotent check
   bigip_selfip:
@@ -36,7 +36,7 @@
 - name: Issue 00420 - Create Self IPV4 Trusted Address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00420 - Remove Self-IP
   bigip_selfip:

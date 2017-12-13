@@ -14,7 +14,7 @@
 - name: Assert Create a published policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a published policy - Idempotent check
   bigip_policy:
@@ -25,7 +25,7 @@
 - name: Assert Create a published policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create a draft policy
   bigip_policy:
@@ -36,7 +36,7 @@
 - name: Assert Create a draft policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a draft policy - Idempotent check
   bigip_policy:
@@ -47,7 +47,7 @@
 - name: Assert Create a draft policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Draft a published policy
   bigip_policy:
@@ -58,7 +58,7 @@
 - name: Assert Draft a published policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Draft a published policy - Idempotent check
   bigip_policy:
@@ -69,7 +69,7 @@
 - name: Assert Draft a published policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove a published policy
   bigip_policy:
@@ -80,7 +80,7 @@
 - name: Assert Remove a published policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove a published policy - Idempotent check
   bigip_policy:
@@ -91,7 +91,7 @@
 - name: Assert Remove a published policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create a draft policy
   bigip_policy:
@@ -108,7 +108,7 @@
 - name: Assert Remove a draft policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove a draft policy - Idempotent check
   bigip_policy:
@@ -119,7 +119,7 @@
 - name: Assert Remove a draft policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create draft policy w/base rules
   bigip_policy:
@@ -134,7 +134,7 @@
 - name: Assert Create draft policy w/base rules
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create draft policy w/base rules - Idempotent check
   bigip_policy:
@@ -149,7 +149,7 @@
 - name: Assert Create draft policy w/base rules - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set strategy of policy
   bigip_policy:
@@ -160,7 +160,7 @@
 - name: Assert Set strategy of policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set strategy of policy - Idempotent check
   bigip_policy:
@@ -171,7 +171,7 @@
 - name: Assert Set strategy of policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set description of policy
   bigip_policy:
@@ -182,7 +182,7 @@
 - name: Assert Set description of policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set description of policy - Idempotent check
   bigip_policy:
@@ -193,7 +193,7 @@
 - name: Assert Set description of policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change rule order of policy
   bigip_policy:
@@ -207,7 +207,7 @@
 - name: Assert Change rule order of policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change rule order of policy - Idempotent check
   bigip_policy:
@@ -221,7 +221,7 @@
 - name: Assert Change rule order of policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove a policy
   bigip_policy:

@@ -28,7 +28,7 @@
 - name: Issue 00051 - Assert Create route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Create route domain - Idempotent check
   bigip_routedomain:
@@ -39,7 +39,7 @@
 - name: Issue 00051 - Assert Create route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a description
   bigip_routedomain:
@@ -51,7 +51,7 @@
 - name: Issue 00051 - Assert Set a description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Create Set a description - Idempotent check
   bigip_routedomain:
@@ -63,7 +63,7 @@
 - name: Issue 00051 - Assert Set a description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Disable strict isolation
   bigip_routedomain:
@@ -75,7 +75,7 @@
 - name: Issue 00051 - Assert Disable strict isolation
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Disable strict isolation - Idempotent check
   bigip_routedomain:
@@ -87,7 +87,7 @@
 - name: Issue 00051 - Assert Disable strict isolation - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Enable strict isolation
   bigip_routedomain:
@@ -99,7 +99,7 @@
 - name: Issue 00051 - Assert Enable strict isolation
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Enable strict isolation - Idempotent check
   bigip_routedomain:
@@ -111,7 +111,7 @@
 - name: Issue 00051 - Assert Enable strict isolation - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set parent route domain
   bigip_routedomain:
@@ -123,7 +123,7 @@
 - name: Issue 00051 - Assert Set parent route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Set parent route domain - Idempotent check
   bigip_routedomain:
@@ -135,7 +135,7 @@
 - name: Issue 00051 - Assert Set parent route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set vlans
   bigip_routedomain:
@@ -147,7 +147,7 @@
 - name: Issue 00051 - Assert Set vlans
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Set vlans - Idempotent check
   bigip_routedomain:
@@ -159,7 +159,7 @@
 - name: Issue 00051 - Assert Set vlans - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a single routing protocol, valid
   bigip_routedomain:
@@ -171,7 +171,7 @@
 - name: Issue 00051 - Assert Set a single routing protocol, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Set a single routing protocol, valid - Idempotent check
   bigip_routedomain:
@@ -183,7 +183,7 @@
 - name: Issue 00051 - Assert Set a single routing protocol, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a single routing protocol, invalid
   bigip_routedomain:
@@ -196,7 +196,7 @@
 - name: Issue 00051 - Assert Set a single routing protocol, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a single routing protocol, invalid - Idempotent check
   bigip_routedomain:
@@ -209,7 +209,7 @@
 - name: Issue 00051 - Assert Set a single routing protocol, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a list of routing protocols, valid
   bigip_routedomain:
@@ -221,7 +221,7 @@
 - name: Issue 00051 - Assert Set a list of routing protocols, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Set a list of routing protocols, valid - Idempotent check
   bigip_routedomain:
@@ -233,7 +233,7 @@
 - name: Issue 00051 - Assert Set a list of routing protocols, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a list of routing protocols, invalid
   bigip_routedomain:
@@ -246,7 +246,7 @@
 - name: Issue 00051 - Assert Set a list of routing protocols, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set a list of routing protocols, invalid - Idempotent check
   bigip_routedomain:
@@ -259,7 +259,7 @@
 - name: Issue 00051 - Assert Set a list of routing protocols, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set connection limit, valid
   bigip_routedomain:
@@ -271,7 +271,7 @@
 - name: Issue 00051 - Assert Set connection limit, valid
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Set connection limit, valid - Idempotent check
   bigip_routedomain:
@@ -283,7 +283,7 @@
 - name: Issue 00051 - Assert Set connection limit, valid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set connection limit, invalid
   bigip_routedomain:
@@ -296,7 +296,7 @@
 - name: Issue 00051 - Assert Set connection limit, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Set connection limit, invalid - Idempotent check
   bigip_routedomain:
@@ -309,7 +309,7 @@
 - name: Issue 00051 - Assert Set connection limit, invalid - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Delete a route domain
   bigip_routedomain:
@@ -321,7 +321,7 @@
 - name: Issue 00051 - Assert Delete a route domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Delete a route domain - Idempotent check
   bigip_routedomain:
@@ -333,7 +333,7 @@
 - name: Issue 00051 - Assert Delete a route domain - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Delete an unknown route domain
   bigip_routedomain:
@@ -345,7 +345,7 @@
 - name: Issue 00051 - Assert Delete an unknown route domain
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Delete a route domain, invalid
   bigip_routedomain:
@@ -359,7 +359,7 @@
 - name: Issue 00051 - Assert Delete a route domain, invalid
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00051 - Create route domain - all params
   bigip_routedomain:
@@ -371,7 +371,7 @@
 - name: Issue 00051 - Assert Create route domain - all params
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00051 - Delete a route domain - all params
   bigip_routedomain:
@@ -383,4 +383,4 @@
 - name: Issue 00051 - Assert Delete a route domain - all params
   assert:
     that:
-      - result|changed
+      - result is changed

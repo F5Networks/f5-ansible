@@ -10,4 +10,4 @@
 - name: Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed

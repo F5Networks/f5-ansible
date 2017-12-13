@@ -10,7 +10,7 @@
 - name: Issue 00104 - Assert Create static route with gateway address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00104 - Create static route with gateway address - Idempotent check
   bigip_static_route:
@@ -22,7 +22,7 @@
 - name: Issue 00104 - Assert Create static route with gateway address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00104 - Remove static route with gateway address
   bigip_static_route:
@@ -34,7 +34,7 @@
 - name: Issue 00104 - Assert Remove static route with gateway address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00104 - Remove static route with gateway address - Idempotent check
   bigip_static_route:
@@ -46,4 +46,4 @@
 - name: Issue 00104 - Assert Remove static route with gateway address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

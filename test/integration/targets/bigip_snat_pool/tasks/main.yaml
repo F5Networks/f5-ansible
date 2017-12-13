@@ -9,7 +9,7 @@
 - name: Assert Create SNAT pool from list of members
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create SNAT pool from list of members - Idempotent check
   bigip_snat_pool:
@@ -20,7 +20,7 @@
 - name: Assert Create SNAT pool from list of members - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set SNAT pool to single member
   bigip_snat_pool:
@@ -31,7 +31,7 @@
 - name: Assert Set SNAT pool to single member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set SNAT pool to single member - Idempotent check
   bigip_snat_pool:
@@ -42,7 +42,7 @@
 - name: Assert Set SNAT pool to single member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete a SNAT pool
   bigip_snat_pool:
@@ -53,7 +53,7 @@
 - name: Assert Delete a SNAT pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete a SNAT pool - Idempotent check
   bigip_snat_pool:
@@ -64,4 +64,4 @@
 - name: Assert Delete a SNAT pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

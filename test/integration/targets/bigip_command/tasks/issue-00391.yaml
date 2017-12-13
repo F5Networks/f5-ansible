@@ -9,7 +9,7 @@
 - name: Issue 00391 - Assert Run a single immutable command, no tmsh
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00391 - Run a single immutable command, with tmsh
   bigip_command:
@@ -20,7 +20,7 @@
 - name: Issue 00391 - Assert Run a single immutable command, with tmsh
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00391 - Run a single mutable command, no tmsh
   bigip_command:
@@ -31,7 +31,7 @@
 - name: Issue 00391 - Assert Run a single mutable command, no tmsh
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00391 - Run a single mutable command, with tmsh
   bigip_command:
@@ -42,7 +42,7 @@
 - name: Issue 00391 - Assert Run a single mutable command, with tmsh
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00391 - Run a multiple mutable/immutable commands, no tmsh
   bigip_command:
@@ -54,7 +54,7 @@
 - name: Issue 00391 - Assert Run a multiple mutable/immutable commands, no tmsh
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00391 - Run a multiple mutable/immutable commands, tmsh
   bigip_command:
@@ -66,4 +66,4 @@
 - name: Issue 00391 - Assert Run a multiple mutable/immutable commands, tmsh
   assert:
     that:
-      - result|changed
+      - result is changed

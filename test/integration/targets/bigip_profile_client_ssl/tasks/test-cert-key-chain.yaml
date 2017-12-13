@@ -25,7 +25,7 @@
 - name: Assert Set cert and key but not chain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set cert and key but not chain - Idempotent check
   bigip_profile_client_ssl:

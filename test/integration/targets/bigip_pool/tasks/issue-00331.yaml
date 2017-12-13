@@ -19,7 +19,7 @@
 - name: Issue 00331 - Assert Creating port 443 Vip with no pool that the proxies will connect to
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00331 - Creating port 443 Vip with no pool that the proxies will connect to - Idempotent check
   bigip_virtual_server:
@@ -36,7 +36,7 @@
 - name: Issue 00331 - Assert Creating port 443 Vip with no pool that the proxies will connect to - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00331 - Creating the cloud_pool
   bigip_pool:
@@ -49,7 +49,7 @@
 - name: Issue 00331 - Assert Creating the cloud_pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00331 - Creating the cloud_pool - Idempotent check
   bigip_pool:
@@ -62,7 +62,7 @@
 - name: Issue 00331 - Assert Creating the cloud_pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00331 - Creating the cloud vip with pool and no members that the clients will connect to
   bigip_virtual_server:
@@ -79,7 +79,7 @@
 - name: Issue 00331 - Assert Creating the cloud vip with pool and no members that the clients will connect to
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00331 - Creating the cloud vip with pool and no members that the clients will connect to - Idempotent check
   bigip_virtual_server:
@@ -96,7 +96,7 @@
 - name: Issue 00331 - Assert Creating the cloud vip with pool and no members that the clients will connect to - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00331 - Remove virtual server
   bigip_virtual_server:

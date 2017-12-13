@@ -11,7 +11,7 @@
 - name: Assert Trust remote peer device
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Trust remote peer device - Idempotent check
   bigip_device_trust:
@@ -24,4 +24,4 @@
 - name: Assert Trust remote peer device - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

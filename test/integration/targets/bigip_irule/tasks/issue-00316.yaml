@@ -11,7 +11,7 @@
 - name: Issue 00316 - Assert Add the iRule
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00316 - Add the iRule - Idempotent check
   bigip_irule:
@@ -24,7 +24,7 @@
 - name: Issue 00316 - Assert Add the iRule - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00316 - Remove the iRule
   bigip_irule:
@@ -37,4 +37,4 @@
 - name: Issue 00316 - Assert Remove the iRule
   assert:
     that:
-      - result|changed
+      - result is changed

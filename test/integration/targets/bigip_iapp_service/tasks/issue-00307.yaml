@@ -21,7 +21,7 @@
 - name: Issue 00307 - Assert Configure a service with custom traffic group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00307 - Configure a service with custom traffic group - Idempotent check
   bigip_iapp_service:
@@ -35,7 +35,7 @@
 - name: Issue 00307 - Assert Configure a service with custom traffic group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00307 - Change traffic group
   bigip_iapp_service:
@@ -49,7 +49,7 @@
 - name: Issue 00307 - Assert Change traffic group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00307 - Change traffic group - Idempotent check
   bigip_iapp_service:
@@ -63,7 +63,7 @@
 - name: Issue 00307 - Assert Change traffic group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00307 - Remove iApp service
   bigip_iapp_service:

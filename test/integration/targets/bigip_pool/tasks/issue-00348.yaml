@@ -16,7 +16,7 @@
 - name: Issue 00348 - Assert Create pool with multiple monitors
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00348 - Create pool with multiple monitors - Idempotent check
   bigip_pool:
@@ -30,7 +30,7 @@
 - name: Issue 00348 - Assert Create pool with multiple monitors - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00348 - Change pool to single monitor - Expected error due to multiple existing monitors
   bigip_pool:
@@ -44,7 +44,7 @@
 - name: Issue 00348 - Assert Change pool to single monitor - Expected error due to multiple existing monitors
   assert:
     that:
-      - not result|changed
+      - result is not changed
       - "'A single monitor must be specified' in result.msg"
 
 - name: Issue 00348 - Change pool to single monitor
@@ -59,7 +59,7 @@
 - name: Issue 00348 - Assert Change pool to single monitor
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00348 - Change pool to single monitor - Idempotent check
   bigip_pool:
@@ -73,7 +73,7 @@
 - name: Issue 00348 - Assert Change pool to single monitor - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00348 - Remove pools
   bigip_pool:

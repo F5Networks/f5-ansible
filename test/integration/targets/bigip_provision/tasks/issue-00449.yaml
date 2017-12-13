@@ -9,7 +9,7 @@
 - name: Issue 00449 - Assert Provision minimum GTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00449 - Provision minimum GTM - Idempotent check
   bigip_provision:
@@ -20,7 +20,7 @@
 - name: Issue 00449 - Assert Provision minimum GTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00449 - De-provision GTM
   bigip_provision:

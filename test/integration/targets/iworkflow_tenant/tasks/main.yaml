@@ -14,7 +14,7 @@
 - name: Assert Create tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create tenant - Idempotent check
   iworkflow_tenant:
@@ -30,7 +30,7 @@
 - name: Create tenant - Idempotent checl
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete tenant
   iworkflow_tenant:
@@ -46,7 +46,7 @@
 - name: Assert Delete tenant
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete tenant - Idempotent check
   iworkflow_tenant:
@@ -62,4 +62,4 @@
 - name: Delete tenant - Idempotent checl
   assert:
     that:
-      - not result|changed
+      - result is not changed

@@ -9,7 +9,7 @@
 - name: Assert Create TCP Monitor - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -20,7 +20,7 @@
 - name: Assert Create TCP Monitor - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change IP - Echo
   bigip_monitor_tcp_echo:
@@ -31,7 +31,7 @@
 - name: Assert Change IP - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change IP - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -42,7 +42,7 @@
 - name: Assert Change IP - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, less than timeout - Echo
   bigip_monitor_tcp_echo:
@@ -53,7 +53,7 @@
 - name: Assert Change interval, less than timeout - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change interval, less than timeout - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -64,7 +64,7 @@
 - name: Assert Change interval, less than timeout - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, greater than timeout, expect failure - Echo
   bigip_monitor_tcp_echo:
@@ -76,7 +76,7 @@
 - name: Assert Change interval, greater than timeout, expect failure - Echo
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change timeout - Echo
   bigip_monitor_tcp_echo:
@@ -87,7 +87,7 @@
 - name: Assert Change timeout - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change timeout - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -98,7 +98,7 @@
 - name: Assert Change timeout - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change time until up - Echo
   bigip_monitor_tcp_echo:
@@ -109,7 +109,7 @@
 - name: Assert Change time until up - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change time until up - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -120,7 +120,7 @@
 - name: Assert Change time until up - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove TCP Monitor - Echo
   bigip_monitor_tcp_echo:
@@ -131,7 +131,7 @@
 - name: Assert Remove TCP Monitor - Echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove TCP Monitor - Echo - Idempotent check
   bigip_monitor_tcp_echo:
@@ -142,4 +142,4 @@
 - name: Assert Remove TCP Monitor - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

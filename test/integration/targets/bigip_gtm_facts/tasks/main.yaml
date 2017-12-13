@@ -10,7 +10,7 @@
 - name: Assert Get GTM pool facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'pool' in result"
       - "'{{ result|json_query('pool[*].name')|first }}' == 'foo.pool'"
 
@@ -22,7 +22,7 @@
 - name: Assert Get GTM wide_ip facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'wide_ip' in result"
 
 - name: Get GTM server facts
@@ -33,7 +33,7 @@
 - name: Assert Get GTM server facts
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'server' in result"
 
 - name: Get GTM virtual_server facts (deprecated)
@@ -44,7 +44,7 @@
 - name: Assert Get GTM virtual_server facts (deprecated)
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'virtual_server' in result"
 
 - name: Get GTM pool facts, many
@@ -57,7 +57,7 @@
 - name: Assert Get GTM pool facts, many
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'pool' in result"
       - "'wide_ip' in result"
 
@@ -69,7 +69,7 @@
 - name: Assert Get GTM pool facts, many
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'pool' in result"
       - "'wide_ip' in result"
       - "'server' in result"
@@ -85,7 +85,7 @@
 - name: Assert Get GTM pool facts, many
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'pool' in result"
       - "'wide_ip' in result"
       - "'server' in result"
@@ -99,7 +99,7 @@
 - name: Assert Get GTM pool facts with filter
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.pool|length == 1
 
 - name: Get GTM pool facts with bad filter
@@ -111,7 +111,7 @@
 - name: Assert Get GTM pool facts with bad filter
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.pool|length == 0
 
 - import_tasks: teardown.yaml

@@ -20,7 +20,7 @@
 - name: Assert Update iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Update iApp template - Idempotent check
   bigip_iapp_template:
@@ -31,7 +31,7 @@
 - name: Assert Update iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove service
   bigip_iapp_service:

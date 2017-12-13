@@ -9,7 +9,7 @@
 - name: Assert Add virtual address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add virtual address - Idempotent check
   bigip_virtual_address:
@@ -20,7 +20,7 @@
 - name: Assert Add virtual address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set connection_limit
   bigip_virtual_address:
@@ -32,7 +32,7 @@
 - name: Assert Set connection limit
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set connection limit - Idempotent check
   bigip_virtual_address:
@@ -44,7 +44,7 @@
 - name: Assert Set connection limit - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable ARP state
   bigip_virtual_address:
@@ -56,7 +56,7 @@
 - name: Assert Disable ARP state
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable ARP state - Idempotent check
   bigip_virtual_address:
@@ -68,7 +68,7 @@
 - name: Assert Disable ARP state - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable ARP state
   bigip_virtual_address:
@@ -80,7 +80,7 @@
 - name: Assert Enable ARP state
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable ARP state - Idempotent check
   bigip_virtual_address:
@@ -92,7 +92,7 @@
 - name: Assert Enable ARP state - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable auto-delete
   bigip_virtual_address:
@@ -104,7 +104,7 @@
 - name: Assert Disable auto-delete
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable auto-delete - Idempotent check
   bigip_virtual_address:
@@ -116,7 +116,7 @@
 - name: Assert Disable auto-delete - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable auto-delete
   bigip_virtual_address:
@@ -128,7 +128,7 @@
 - name: Assert Enable auto-delete
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable auto-delete - Idempotent check
   bigip_virtual_address:
@@ -140,7 +140,7 @@
 - name: Assert Enable auto-delete - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable icmp echo
   bigip_virtual_address:
@@ -152,7 +152,7 @@
 - name: Assert Disable icmp echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable icmp echo - Idempotent check
   bigip_virtual_address:
@@ -164,7 +164,7 @@
 - name: Assert Disable icmp echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable icmp echo
   bigip_virtual_address:
@@ -176,7 +176,7 @@
 - name: Assert Enable icmp echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable icmp echo - Idempotent check
   bigip_virtual_address:
@@ -188,7 +188,7 @@
 - name: Assert Enable icmp echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Selective icmp echo
   bigip_virtual_address:
@@ -200,7 +200,7 @@
 - name: Assert Selective icmp echo
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Selective icmp echo - Idempotent check
   bigip_virtual_address:
@@ -212,7 +212,7 @@
 - name: Assert Selective icmp echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable virtual address
   bigip_virtual_address:
@@ -223,7 +223,7 @@
 - name: Assert Disable virtual address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable virtual address - Idempotent check
   bigip_virtual_address:
@@ -234,7 +234,7 @@
 - name: Assert Disable virtual address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable virtual address
   bigip_virtual_address:
@@ -245,7 +245,7 @@
 - name: Assert Enable virtual address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable virtual address - Idempotent check
   bigip_virtual_address:
@@ -256,7 +256,7 @@
 - name: Assert Enable virtual address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable virtual address again
   bigip_virtual_address:
@@ -273,7 +273,7 @@
 - name: Assert Enable virtual address with present state
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable virtual address with present state - Idempotent check
   bigip_virtual_address:
@@ -284,7 +284,7 @@
 - name: Assert Enable virtual address with present state - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set advertise route - always
   bigip_virtual_address:
@@ -296,7 +296,7 @@
 - name: Assert Set advertise route - always
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set advertise route - always - Idempotent check
   bigip_virtual_address:
@@ -308,7 +308,7 @@
 - name: Assert Set advertise route - always - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set advertise route - all
   bigip_virtual_address:
@@ -320,7 +320,7 @@
 - name: Assert Set advertise route - all
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set advertise route - all - Idempotent check
   bigip_virtual_address:
@@ -332,7 +332,7 @@
 - name: Assert Set advertise route - all - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set advertise route - any
   bigip_virtual_address:
@@ -344,7 +344,7 @@
 - name: Assert Set advertise route - any
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set advertise route - any - Idempotent check
   bigip_virtual_address:
@@ -356,7 +356,7 @@
 - name: Assert Set advertise route - any - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable use route advertisement
   bigip_virtual_address:
@@ -368,7 +368,7 @@
 - name: Assert Enable use route advertisement
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable use route advertisement - Idempotent check
   bigip_virtual_address:
@@ -380,7 +380,7 @@
 - name: Assert Enable use route advertisement - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable use route advertisement
   bigip_virtual_address:
@@ -392,7 +392,7 @@
 - name: Assert Disable use route advertisement
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable use route advertisement - Idempotent check
   bigip_virtual_address:
@@ -404,7 +404,7 @@
 - name: Assert Disable use route advertisement - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete virtual address
   bigip_virtual_address:
@@ -415,7 +415,7 @@
 - name: Assert Delete virtual address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete virtual address - Idempotent check
   bigip_virtual_address:
@@ -426,7 +426,7 @@
 - name: Assert Delete virtual address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: issue-00062.yaml
   tags: issue-00062

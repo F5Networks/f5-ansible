@@ -11,7 +11,7 @@
 - name: Assert Create HTTP Monitor
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.send == send_string1
       - result.receive == receive_string1
 
@@ -26,7 +26,7 @@
 - name: Assert Create HTTP Monitor - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change send string
   bigip_monitor_http:
@@ -37,7 +37,7 @@
 - name: Assert Change send string
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.send == send_string2
 
 - name: Change send string - Idempotent check
@@ -49,7 +49,7 @@
 - name: Assert Change send string - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change receive string
   bigip_monitor_http:
@@ -60,7 +60,7 @@
 - name: Assert Change receive string
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.receive == receive_string2
 
 - name: Change receive string - Idempotent check
@@ -72,7 +72,7 @@
 - name: Assert Change receive string - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change IP
   bigip_monitor_http:
@@ -84,7 +84,7 @@
 - name: Assert Change IP
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.ip == '10.10.10.10'
       - result.port == 80
 
@@ -98,7 +98,7 @@
 - name: Assert Change IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change port
   bigip_monitor_http:
@@ -109,7 +109,7 @@
 - name: Assert Change port
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.port == 8000
 
 - name: Change port - Idempotent check
@@ -121,7 +121,7 @@
 - name: Assert Change port - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, less than timeout
   bigip_monitor_http:
@@ -132,7 +132,7 @@
 - name: Assert Change interval, less than timeout
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.interval == 2
 
 - name: Change interval, less than timeout - Idempotent check
@@ -144,7 +144,7 @@
 - name: Assert Change interval, less than timeout - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, greater than timeout, expect failure
   bigip_monitor_http:
@@ -156,7 +156,7 @@
 - name: Assert Change interval, greater than timeout, expect failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change timeout
   bigip_monitor_http:
@@ -167,7 +167,7 @@
 - name: Assert Change timeout
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.timeout == 80
 
 - name: Change timeout - Idempotent check
@@ -179,7 +179,7 @@
 - name: Assert Change timeout - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change time until up
   bigip_monitor_http:
@@ -190,7 +190,7 @@
 - name: Assert Change time until up
   assert:
     that:
-      - result|changed
+      - result is changed
       - result.time_until_up == 80
 
 - name: Change time until up - Idempotent check
@@ -202,7 +202,7 @@
 - name: Assert Change time until up - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove HTTP Monitor
   bigip_monitor_http:
@@ -213,7 +213,7 @@
 - name: Assert Remove HTTP Monitor
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove HTTP Monitor - Idempotent check
   bigip_monitor_http:
@@ -224,4 +224,4 @@
 - name: Assert Remove HTTP Monitor - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

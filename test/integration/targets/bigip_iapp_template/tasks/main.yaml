@@ -8,7 +8,7 @@
 - name: Assert Create iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iApp template - Idempotent check
   bigip_iapp_template:
@@ -18,7 +18,7 @@
 - name: Assert Create iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete iApp template
   bigip_iapp_template:
@@ -29,7 +29,7 @@
 - name: Assert Delete iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iApp template - Idempotent check
   bigip_iapp_template:
@@ -40,7 +40,7 @@
 - name: Assert Delete iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create list of iApp template
   bigip_iapp_template:

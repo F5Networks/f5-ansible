@@ -8,7 +8,7 @@
 - name: Create device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create device group - Idempotent check
   bigip_device_group:
@@ -18,7 +18,7 @@
 - name: Create device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set auto-sync on device group
   bigip_device_group:
@@ -29,7 +29,7 @@
 - name: Set auto-sync on device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set auto-sync on device group - Idempotent check
   bigip_device_group:
@@ -40,7 +40,7 @@
 - name: Set auto-sync on device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create sync-failover device group
   bigip_device_group:
@@ -51,7 +51,7 @@
 - name: Create sync-failover device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create sync-failover device group - Idempotent check
   bigip_device_group:
@@ -62,7 +62,7 @@
 - name: Create sync-failover device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set description on device group
   bigip_device_group:
@@ -73,7 +73,7 @@
 - name: Set description on device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set description on device group - Idempotent check
   bigip_device_group:
@@ -84,7 +84,7 @@
 - name: Set description on device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set save-on-auto-sync on device group
   bigip_device_group:
@@ -95,7 +95,7 @@
 - name: Set save-on-auto-sync on device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set save-on-auto-sync on device group - Idempotent check
   bigip_device_group:
@@ -106,7 +106,7 @@
 - name: Set save-on-auto-sync on device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set full-sync on device group
   bigip_device_group:
@@ -117,7 +117,7 @@
 - name: Set full-sync on device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set full-sync on device group - Idempotent check
   bigip_device_group:
@@ -128,7 +128,7 @@
 - name: Set full-sync on device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set max incremental sync size on device group
   bigip_device_group:
@@ -139,7 +139,7 @@
 - name: Set max incremental sync size on device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set max incremental sync size on device group - Idempotent check
   bigip_device_group:
@@ -150,7 +150,7 @@
 - name: Set max incremental sync size on device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove device group
   bigip_device_group:
@@ -164,7 +164,7 @@
 - name: Remove device group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove device group - Idempotent check
   bigip_device_group:
@@ -175,4 +175,4 @@
 - name: Remove device group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

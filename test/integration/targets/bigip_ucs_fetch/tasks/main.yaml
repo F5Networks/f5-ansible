@@ -18,7 +18,7 @@
 - name: Assert Create a UCS
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create the same UCS, default force
   bigip_ucs_fetch:
@@ -29,7 +29,7 @@
 - name: Assert Create the same UCS, default force
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a UCS, do not force
   bigip_ucs_fetch:
@@ -41,7 +41,7 @@
 - name: Assert Create a UCS, do not force
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a UCS, leave a backup
   bigip_ucs_fetch:
@@ -53,7 +53,7 @@
 - name: Assert Create a UCS, leave a backup
   assert:
     that:
-      - result|changed
+      - result is changed
       - "'backup_file' in result"
 
 - name: Remove backup UCS
@@ -72,7 +72,7 @@
 - name: Assert Fetch a missing UCS
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Error on fetching a missing UCS
   bigip_ucs_fetch:
@@ -85,7 +85,7 @@
 - name: Assert Error on fetching a missing UCS
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create a UCS with encryption password
   bigip_ucs_fetch:
@@ -97,7 +97,7 @@
 - name: Assert Create a UCS with encryption password
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove backups
   file:

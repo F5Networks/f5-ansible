@@ -9,7 +9,7 @@
 - name: Assert Import ASM policy from template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Import ASM policy from template - Idempotent check
   bigip_asm_policy:
@@ -20,7 +20,7 @@
 - name: Assert Import ASM policy from template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove ASM policy
   bigip_asm_policy:
@@ -31,7 +31,7 @@
 - name: Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -42,4 +42,4 @@
 - name: Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

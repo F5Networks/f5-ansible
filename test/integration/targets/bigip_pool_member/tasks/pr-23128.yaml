@@ -9,7 +9,7 @@
 - name: Pull Request 23128 - Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 23128 - Add pool member
   bigip_pool_member:
@@ -26,7 +26,7 @@
 - name: Pull Request 23128 - Assert Add pool member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 23128 - Change pool member priority
   bigip_pool_member:
@@ -40,7 +40,7 @@
 - name: Pull Request 23128 - Change pool member priority
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 23128 - Change pool member priority - Idempotent check
   bigip_pool_member:
@@ -54,7 +54,7 @@
 - name: Pull Request 23128 - Change pool member priority - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Pull Request 23128 - Delete pool
   bigip_pool:
@@ -65,7 +65,7 @@
 - name: Pull Request 23128 - Assert delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 23128 - Delete node
   bigip_node:
@@ -76,4 +76,4 @@
 - name: Pull Request 23128 - Assert delete node
   assert:
     that:
-      - result|changed
+      - result is changed

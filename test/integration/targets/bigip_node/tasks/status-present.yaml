@@ -20,7 +20,7 @@
 - name: Assert Change node to enabled
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Reset node to present
   bigip_node:
@@ -39,7 +39,7 @@
 - name: Assert Change node to disabled
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Reset node present
   bigip_node:
@@ -58,4 +58,4 @@
 - name: Assert Change node to offline
   assert:
     that:
-      - result|changed
+      - result is changed

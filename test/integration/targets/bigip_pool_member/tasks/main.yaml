@@ -10,7 +10,7 @@
 - name: Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add pool member
   bigip_pool_member:
@@ -27,7 +27,7 @@
 - name: Assert Add pool member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add pool member - Idempotent check
   bigip_pool_member:
@@ -44,7 +44,7 @@
 - name: Assert Add pool member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Modify pool member ratio and description
   bigip_pool_member:
@@ -59,7 +59,7 @@
 - name: Assert Modify pool member ratio and description
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Modify pool member ratio and description - Idempotent check
   bigip_pool_member:
@@ -74,7 +74,7 @@
 - name: Assert Modify pool member ratio and description - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Force pool member offline
   bigip_pool_member:
@@ -89,7 +89,7 @@
 - name: Assert Force pool member offline
   assert:
     that:
-      - result|changed
+      - result is changed
 
 # TODO (Make this work. Currently this behavior is not idempotent)
 #- name: Force pool member offline - Idempotent check
@@ -111,7 +111,7 @@
 #- name: Assert Force pool member offline - Idempotent check
 #  assert:
 #      that:
-#          - not result|changed
+#          - result is not changed
 
 - name: Remove pool member from pool, preserve node
   bigip_pool_member:
@@ -125,7 +125,7 @@
 - name: Assert Remove pool member from pool, preserve node
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove pool member from pool, preserve node - Idempotent check
   bigip_pool_member:
@@ -139,7 +139,7 @@
 - name: Assert Remove pool member from pool, preserve node - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Add pool member
   bigip_pool_member:
@@ -162,7 +162,7 @@
 - name: Assert delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete node
   bigip_node:
@@ -173,7 +173,7 @@
 - name: Assert delete node
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - import_tasks: pr-23128.yaml
   tags:

@@ -16,7 +16,7 @@
 - name: Issue 00341 - Assert Create pool with multiple monitors
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00341 - Create pool with multiple monitors - Idempotent check
   bigip_pool:
@@ -30,7 +30,7 @@
 - name: Issue 00341 - Assert Create pool with multiple monitors - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00341 - Create pool with single monitor, and_list monitor type
   bigip_pool:
@@ -44,7 +44,7 @@
 - name: Issue 00341 - Assert Create pool with single monitor, and_list monitor type
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00341 - Create pool with single monitor, and_list monitor type - Idempotent check
   bigip_pool:
@@ -58,7 +58,7 @@
 - name: Issue 00341 - Assert Create pool with single monitor, and_list monitor type - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00341 - Create pool with single monitor, m_of_n monitor type, no quorum
   bigip_pool:
@@ -73,7 +73,7 @@
 - name: Issue 00341 - Assert Create pool with single monitor, m_of_n monitor type, no quorum
   assert:
     that:
-      - not result|changed
+      - result is not changed
       - "'Quorum value must be specified' in result.msg"
 
 - name: Issue 00341 - Create pool with multiple monitor, m_of_n monitor type, quorum
@@ -89,7 +89,7 @@
 - name: Issue 00341 - Assert Create pool with multiple monitor, m_of_n monitor type, quorum
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00341 - Create pool with multiple monitor, m_of_n monitor type, quorum - Idempotent check
   bigip_pool:
@@ -104,7 +104,7 @@
 - name: Issue 00341 - Assert Create pool with multiple monitor, m_of_n monitor type, quorum - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00341 - Change pool to non-quorum
   bigip_pool:
@@ -118,7 +118,7 @@
 - name: Issue 00341 - Assert Change pool to non-quorum
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00341 - Change pool to non-quorum - Idempotent check
   bigip_pool:
@@ -132,7 +132,7 @@
 - name: Issue 00341 - Assert Change pool to non-quorum - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00341 - Change pool to quorum - Expected error due to no existing quorum
   bigip_pool:
@@ -147,7 +147,7 @@
 - name: Issue 00341 - Assert Change pool to non-quorum
   assert:
     that:
-      - not result|changed
+      - result is not changed
       - "'Quorum value must be specified' in result.msg"
 
 - name: Issue 00341 - Change pool to quorum
@@ -163,7 +163,7 @@
 - name: Issue 00341 - Assert Change pool to quorum
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00341 - Change pool to quorum - Idempotent check
   bigip_pool:
@@ -178,7 +178,7 @@
 - name: Issue 00341 - Assert Change pool to quorum - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00341 - Remove pools
   bigip_pool:

@@ -9,7 +9,7 @@
 - name: Assert Create SNMP DCA Monitor
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create SNMP DCA Monitor - Idempotent check
   bigip_monitor_snmp_dca:
@@ -20,7 +20,7 @@
 - name: Assert Create SNMP DCA Monitor - Echo - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, less than timeout
   bigip_monitor_snmp_dca:
@@ -31,7 +31,7 @@
 - name: Assert Change interval, less than timeout
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change interval, less than timeout - Idempotent check
   bigip_monitor_snmp_dca:
@@ -42,7 +42,7 @@
 - name: Assert Change interval, less than timeout - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change interval, greater than timeout, expect failure
   bigip_monitor_snmp_dca:
@@ -54,7 +54,7 @@
 - name: Assert Change interval, greater than timeout, expect failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change timeout
   bigip_monitor_snmp_dca:
@@ -65,7 +65,7 @@
 - name: Assert Change timeout
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change timeout - Idempotent check
   bigip_monitor_snmp_dca:
@@ -76,7 +76,7 @@
 - name: Assert Change timeout - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change time until up
   bigip_monitor_snmp_dca:
@@ -87,7 +87,7 @@
 - name: Assert Change time until up
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change time until up - Idempotent check
   bigip_monitor_snmp_dca:
@@ -98,7 +98,7 @@
 - name: Assert Change time until up - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change community
   bigip_monitor_snmp_dca:
@@ -109,7 +109,7 @@
 - name: Assert Change community
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change community - Idempotent check
   bigip_monitor_snmp_dca:
@@ -120,7 +120,7 @@
 - name: Assert Change community - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change version
   bigip_monitor_snmp_dca:
@@ -131,7 +131,7 @@
 - name: Assert Change version
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change version - Idempotent check
   bigip_monitor_snmp_dca:
@@ -142,7 +142,7 @@
 - name: Assert Change version - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change agent type
   bigip_monitor_snmp_dca:
@@ -153,7 +153,7 @@
 - name: Assert Change agent type
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change agent type - Idempotent check
   bigip_monitor_snmp_dca:
@@ -164,7 +164,7 @@
 - name: Assert Change agent type - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change CPU coefficient
   bigip_monitor_snmp_dca:
@@ -175,7 +175,7 @@
 - name: Assert Change CPU coefficient
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change CPU coefficient - Idempotent check
   bigip_monitor_snmp_dca:
@@ -186,7 +186,7 @@
 - name: Assert Change CPU coefficient - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change CPU coefficient - expected failure
   bigip_monitor_snmp_dca:
@@ -198,7 +198,7 @@
 - name: Assert Change CPU coefficient - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change CPU threshold
   bigip_monitor_snmp_dca:
@@ -209,7 +209,7 @@
 - name: Assert Change CPU threshold
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change CPU threshold - Idempotent check
   bigip_monitor_snmp_dca:
@@ -220,7 +220,7 @@
 - name: Assert Change CPU threshold - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change CPU threshold - expected failure
   bigip_monitor_snmp_dca:
@@ -232,7 +232,7 @@
 - name: Assert Change CPU threshold - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change memory coefficient
   bigip_monitor_snmp_dca:
@@ -243,7 +243,7 @@
 - name: Assert Change memory coefficient
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change memory coefficient - Idempotent check
   bigip_monitor_snmp_dca:
@@ -254,7 +254,7 @@
 - name: Assert Change memory coefficient - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change memory coefficient - expected failure
   bigip_monitor_snmp_dca:
@@ -266,7 +266,7 @@
 - name: Assert Change memory coefficient - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change memory threshold
   bigip_monitor_snmp_dca:
@@ -277,7 +277,7 @@
 - name: Assert Change memory threshold
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change memory threshold - Idempotent check
   bigip_monitor_snmp_dca:
@@ -288,7 +288,7 @@
 - name: Assert Change memory threshold - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change memory threshold - expected failure
   bigip_monitor_snmp_dca:
@@ -300,7 +300,7 @@
 - name: Assert Change memory threshold - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change disk coefficient
   bigip_monitor_snmp_dca:
@@ -311,7 +311,7 @@
 - name: Assert Change disk coefficient
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change disk coefficient - Idempotent check
   bigip_monitor_snmp_dca:
@@ -322,7 +322,7 @@
 - name: Assert Change disk coefficient - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change disk coefficient - expected failure
   bigip_monitor_snmp_dca:
@@ -334,7 +334,7 @@
 - name: Assert Change disk coefficient - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change disk threshold
   bigip_monitor_snmp_dca:
@@ -345,7 +345,7 @@
 - name: Assert Change disk threshold
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change disk threshold - Idempotent check
   bigip_monitor_snmp_dca:
@@ -356,7 +356,7 @@
 - name: Assert Change disk threshold - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change disk threshold - expected failure
   bigip_monitor_snmp_dca:
@@ -368,7 +368,7 @@
 - name: Assert Change disk threshold - expected failure
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove Monitor
   bigip_monitor_snmp_dca:
@@ -379,7 +379,7 @@
 - name: Assert Remove Monitor
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove Monitor - Idempotent check
   bigip_monitor_snmp_dca:
@@ -390,4 +390,4 @@
 - name: Assert Remove Monitor - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

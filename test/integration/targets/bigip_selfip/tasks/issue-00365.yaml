@@ -17,7 +17,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type a
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00365 - Create self-IPs, type a - Idempotent check
   bigip_selfip:
@@ -32,7 +32,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type a - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00365 - Create self-IPs, type b
   bigip_selfip:
@@ -47,7 +47,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type b
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00365 - Create self-IPs, type b - Idempotent check
   bigip_selfip:
@@ -62,7 +62,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type b - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00365 - Create self-IPs, type c
   bigip_selfip:
@@ -77,7 +77,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type c
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00365 - Create self-IPs, type c - Idempotent check
   bigip_selfip:
@@ -92,7 +92,7 @@
 - name: Issue 00365 - Assert Create self-IPs, type c - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00365 - Remove self-IPs
   bigip_selfip:

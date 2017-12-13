@@ -8,4 +8,4 @@
 - name: Assert License BIG-IP
   assert:
     that:
-      - result|changed
+      - result is changed

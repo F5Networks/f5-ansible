@@ -10,7 +10,7 @@
 - name: Assert Download 12.1.2 base image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Download 12.1.2 base image - Idempotent check
   bigip_software:
@@ -25,7 +25,7 @@
 - name: Assert Download 12.1.2 base image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Download 12.1.2 HF1 hotfix image
   bigip_software:
@@ -40,7 +40,7 @@
 - name: Assert Download 12.1.2 HF1 hotfix image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Download 12.1.2 HF1 hotfix image - Idempotent check
   bigip_software:
@@ -55,7 +55,7 @@
 - name: Assert Download 12.1.2 HF1 hotfix image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove downloaded 12.1.2 base image
   bigip_software:
@@ -69,7 +69,7 @@
 - name: Assert Remove downloaded 12.1.2 base image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove downloaded 12.1.2 base image - Idempotent check
   bigip_software:
@@ -83,7 +83,7 @@
 - name: Assert Remove downloaded 12.1.2 base image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove uploaded 12.1.2 HF1 hotfix image
   bigip_software:
@@ -97,7 +97,7 @@
 - name: Assert Remove downloaded 12.1.2 HF1 hotfix image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove downloaded 12.1.2 HF1 hotfix image - Idempotent check
   bigip_software:
@@ -111,7 +111,7 @@
 - name: Assert Remove downloaded 12.1.2 HF1 hotfix image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Download base image and hotfix
   bigip_software:
@@ -128,7 +128,7 @@
 - name: Assert Download base image and hotfix
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Download base image and hotfix - Idempotent check
   bigip_software:
@@ -145,7 +145,7 @@
 - name: Assert Download base image and hotfix - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove downloaded base image and hotfix
   bigip_software:
@@ -160,7 +160,7 @@
 - name: Assert Remove downloaded base image and hotfix
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove downloaded base image and hotfix - Idempotent check
   bigip_software:
@@ -175,7 +175,7 @@
 - name: Assert Remove downloaded base image and hotfix - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Install (download, install) base image
   bigip_software:
@@ -191,7 +191,7 @@
 - name: Assert Install (download, install) base image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Install (download, install) base image - Idempotent check
   bigip_software:
@@ -206,7 +206,7 @@
 - name: Assert Install (download, install) base image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Install (download, install) base image and hotfix
   bigip_software:
@@ -224,7 +224,7 @@
 - name: Assert Install (download, install) base image and hotfix
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Install (download, install) base image and hotfix - Idempotent check
   bigip_software:
@@ -242,7 +242,7 @@
 - name: Assert Install (download, install) base image and hotfix - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Activate (download, install, reboot) base image
   bigip_software:
@@ -258,7 +258,7 @@
 - name: Assert Activate (download, install, reboot) base image
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Activate (download, install, reboot) base image - Idempotent check
   bigip_software:
@@ -274,7 +274,7 @@
 - name: Assert Activate (download, install, reboot) base image - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   bigip_software:
@@ -292,7 +292,7 @@
 - name: Assert Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix - Idempotent check
   bigip_software:
@@ -310,4 +310,4 @@
 - name: Assert Activate (download, install, reboot, reuse_inactive_volume) base image and hotfix - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

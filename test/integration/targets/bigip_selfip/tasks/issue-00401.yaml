@@ -26,7 +26,7 @@
 - name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Idempotent check
   bigip_selfip:
@@ -41,7 +41,7 @@
 - name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00401 - Remove floating address
   bigip_selfip:

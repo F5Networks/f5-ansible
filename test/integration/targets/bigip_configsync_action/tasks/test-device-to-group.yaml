@@ -9,7 +9,7 @@
 - name: Sync configuration from device to group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Sync configuration from device to group - Idempotent check
   bigip_configsync_actions:
@@ -20,4 +20,4 @@
 - name: Sync configuration from device to group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

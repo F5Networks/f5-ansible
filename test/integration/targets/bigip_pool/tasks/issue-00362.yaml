@@ -20,7 +20,7 @@
 - name: Issue 00362 - Assert Add Pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00362 - Add pool - Idempotent check
   bigip_pool:
@@ -34,7 +34,7 @@
 - name: Issue 00362 - Assert Add Pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00362 - Remove pool
   bigip_pool:
@@ -52,7 +52,7 @@
 - name: Issue 00362 - Assert Add Pool without monitors
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00362 - Set monitors on pool
   bigip_pool:
@@ -66,7 +66,7 @@
 - name: Issue 00362 - Assert Set monitors on pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00362 - Remove pool
   bigip_pool:

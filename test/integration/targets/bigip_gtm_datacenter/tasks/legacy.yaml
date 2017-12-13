@@ -8,7 +8,7 @@
 - name: Assert Legacy - Create datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Legacy - Disable datacenter
   bigip_gtm_datacenter:
@@ -19,7 +19,7 @@
 - name: Assert Legacy - Disable datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Legacy - Disable datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -30,7 +30,7 @@
 - name: Assert Legacy - Disable datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Legacy - Enable datacenter
   bigip_gtm_datacenter:
@@ -41,7 +41,7 @@
 - name: Assert Legacy - Enable datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Legacy - Enable datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -52,7 +52,7 @@
 - name: Assert Legacy - Enable datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Legacy - Delete datacenter
   bigip_gtm_datacenter:
@@ -63,7 +63,7 @@
 - name: Assert Legacy - Delete datacenter
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Legacy - Delete datacenter - Idepotent check
   bigip_gtm_datacenter:
@@ -74,4 +74,4 @@
 - name: Assert Legacy - Delete datacenter - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

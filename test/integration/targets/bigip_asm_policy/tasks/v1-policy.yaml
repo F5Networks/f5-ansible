@@ -9,7 +9,7 @@
 - name: Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create ASM policy, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -20,7 +20,7 @@
 - name: Assert Create ASM policy, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as active, compact XML file
   bigip_asm_policy:
@@ -31,7 +31,7 @@
 - name: Assert Set ASM policy as active, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as active, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -42,7 +42,7 @@
 - name: Assert Set ASM policy as active, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as inactive, compact XML file
   bigip_asm_policy:
@@ -53,7 +53,7 @@
 - name: Assert Set ASM policy as inactive, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as inactive, compact XML file - Idempotent check
   bigip_asm_policy:
@@ -64,7 +64,7 @@
 - name: Assert Set ASM policy as inactive, compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove ASM policy
   bigip_asm_policy:
@@ -75,7 +75,7 @@
 - name: Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -86,7 +86,7 @@
 - name: Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create ASM policy, non-compact XML file
   bigip_asm_policy:
@@ -97,7 +97,7 @@
 - name: Assert Create ASM policy, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create ASM policy, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -108,7 +108,7 @@
 - name: Assert Create ASM policy, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as active, non-compact XML file
   bigip_asm_policy:
@@ -119,7 +119,7 @@
 - name: Assert Set ASM policy as active, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as active, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -130,7 +130,7 @@
 - name: Assert Set ASM policy as active, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as inactive, non-compact XML file
   bigip_asm_policy:
@@ -141,7 +141,7 @@
 - name: Assert Set ASM policy as inactive, non-compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as inactive, non-compact XML file - Idempotent check
   bigip_asm_policy:
@@ -152,7 +152,7 @@
 - name: Assert Set ASM policy as inactive, non-compact XML file - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove ASM policy
   bigip_asm_policy:
@@ -163,7 +163,7 @@
 - name: Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -174,7 +174,7 @@
 - name: Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create ASM policy, binary
   bigip_asm_policy:
@@ -185,7 +185,7 @@
 - name: Assert Create ASM policy, compact XML file
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create ASM policy, binary - Idempotent check
   bigip_asm_policy:
@@ -196,7 +196,7 @@
 - name: Assert Create ASM policy, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as active, binary
   bigip_asm_policy:
@@ -207,7 +207,7 @@
 - name: Assert Set ASM policy as active, binary
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as active, binary - Idempotent check
   bigip_asm_policy:
@@ -218,7 +218,7 @@
 - name: Assert Set ASM policy as active, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ASM policy as inactive, binary
   bigip_asm_policy:
@@ -229,7 +229,7 @@
 - name: Assert Set ASM policy as inactive, binary
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ASM policy as inactive, binary - Idempotent check
   bigip_asm_policy:
@@ -240,7 +240,7 @@
 - name: Assert Set ASM policy as inactive, binary - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove ASM policy
   bigip_asm_policy:
@@ -251,7 +251,7 @@
 - name: Assert Remove ASM policy
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove ASM policy - Idempotent check
   bigip_asm_policy:
@@ -262,4 +262,4 @@
 - name: Assert Remove ASM policy - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

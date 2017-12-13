@@ -12,7 +12,7 @@
 - name: Assert Create user on a different partition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create user on a different partition - Idempotent check
   bigip_user:
@@ -27,7 +27,7 @@
 - name: Assert Create user on a different partition - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Assign multiple roles for the same partition
   bigip_user:
@@ -41,7 +41,7 @@
 - name: Assert Assign multiple roles for the same partition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Modify roles for a different partitions
   bigip_user:
@@ -55,7 +55,7 @@
 - name: Assert Modify roles for a different partitions
   assert:
     that:
-      - result|changed
+      - result is changed
 
 
 - name: Update password for user on a different partition
@@ -68,7 +68,7 @@
 - name: Assert Update password for user on a different partition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 # We should see password not updating here
 - name: Update user password for user on a different partition password_update set to on_create
@@ -82,7 +82,7 @@
 - name: Assert Update user password for user on a different partition password_update set to on_create
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove user on different partition
   bigip_user:
@@ -94,7 +94,7 @@
 - name: Assert Remove user on different partition
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove user on different partition - Idempotent check
   bigip_user:
@@ -106,4 +106,4 @@
 - name: Assert Remove user on different partition - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

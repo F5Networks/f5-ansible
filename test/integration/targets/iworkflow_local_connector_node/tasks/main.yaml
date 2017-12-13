@@ -58,7 +58,7 @@
 - name: Create node from managed device
   assert:
       that:
-          - result|changed
+          - result is changed
 
 - name: Create node from managed device - Idempotent check
   iworkflow_local_connector_node:
@@ -79,7 +79,7 @@
 - name: Create node from managed device - Idempotent check
   assert:
       that:
-          - not result|changed
+          - result is not changed
 
 - name: Un-register device from connector
   iworkflow_local_connector_device:

@@ -8,7 +8,7 @@
 - name: Assert Set snmp contact
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp contact - Idempotent check
   bigip_snmp:
@@ -18,7 +18,7 @@
 - name: Assert Set snmp contact - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Reset snmp contact
   bigip_snmp:
@@ -33,7 +33,7 @@
 - name: Assert Set snmp location
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp location - Idempotent check
   bigip_snmp:
@@ -43,7 +43,7 @@
 - name: Assert Set snmp location - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Reset snmp location
   bigip_snmp:
@@ -58,7 +58,7 @@
 - name: Assert Disable agent status traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable agent status traps - Idempotent check
   bigip_snmp:
@@ -68,7 +68,7 @@
 - name: Assert Disable agent status traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable agent status traps
   bigip_snmp:
@@ -78,7 +78,7 @@
 - name: Assert Enable agent status traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable agent status traps - Idempotent check
   bigip_snmp:
@@ -88,7 +88,7 @@
 - name: Assert Enable agent status traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable agent authentication traps
   bigip_snmp:
@@ -98,7 +98,7 @@
 - name: Assert Enable agent authentication traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable agent authentication traps - Idempotent check
   bigip_snmp:
@@ -108,7 +108,7 @@
 - name: Assert Enable agent authentication traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable agent authentication traps
   bigip_snmp:
@@ -118,7 +118,7 @@
 - name: Assert Disable agent authentication traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable agent authentication traps - Idempotent check
   bigip_snmp:
@@ -128,7 +128,7 @@
 - name: Assert Disable agent authentication traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable device warning traps
   bigip_snmp:
@@ -138,7 +138,7 @@
 - name: Assert Disable device warning traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable device warning traps - Idempotent check
   bigip_snmp:
@@ -148,7 +148,7 @@
 - name: Assert Disable device warning traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable device warning traps
   bigip_snmp:
@@ -158,7 +158,7 @@
 - name: Assert Enable device warning traps
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable device warning traps - Idempotent check
   bigip_snmp:
@@ -168,4 +168,4 @@
 - name: Assert Enable device warning traps - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

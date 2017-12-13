@@ -9,7 +9,7 @@
 - name: Issue 00310 - Assert Change root user password
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00310 - Change root user password - Idempotent check
   bigip_user:
@@ -21,4 +21,4 @@
 - name: Issue 00310 - Assert Change root user password - Idempotent check
   assert:
     that:
-      - result|changed
+      - result is changed

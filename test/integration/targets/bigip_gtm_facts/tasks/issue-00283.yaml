@@ -34,7 +34,7 @@
 - name: Issue 00283 - Assert Get GTM pool facts
   assert:
       that:
-        - result|changed
+        - result is changed
         - "'pool' in result"
         - "'availability_status' in result['pool'][0]"
 

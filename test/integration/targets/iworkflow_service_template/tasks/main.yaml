@@ -14,7 +14,7 @@
 - name: Assert Create iApp Service Template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iApp Service Template - Idempotent check
   iworkflow_service_template:
@@ -28,7 +28,7 @@
 - name: Assert Create iApp Service Template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 # All the change does is changes the description of the first
 # var. See the _changed file to observe the differene
@@ -44,7 +44,7 @@
 - name: Assert Change iApp Service Template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change iApp Service Template - Idempotent check
   iworkflow_service_template:
@@ -58,7 +58,7 @@
 - name: Assert Change iApp Service Template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove iApp Service Template
   iworkflow_service_template:
@@ -69,7 +69,7 @@
 - name: Assert Remove iApp Service Template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove iApp Service Template - Idempotent check
   iworkflow_service_template:
@@ -80,6 +80,6 @@
 - name: Assert Remove iApp Service Template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: teardown.yaml

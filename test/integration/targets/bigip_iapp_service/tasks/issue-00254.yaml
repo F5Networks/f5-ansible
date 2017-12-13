@@ -23,7 +23,7 @@
 - name: Issue 00254 - Assert Create HTTP iApp service from iApp template
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00254 - Create HTTP iApp service from iApp template - Idempotent check
   bigip_iapp_service:
@@ -36,7 +36,7 @@
 - name: Issue 00254 - Assert Create HTTP iApp service from iApp template - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00254 - Delete HTTP iApp service
   bigip_iapp_service:
@@ -48,7 +48,7 @@
 - name: Issue 00254 - Assert Delete HTTP iApp service
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00254 - Remove partition
   bigip_partition:

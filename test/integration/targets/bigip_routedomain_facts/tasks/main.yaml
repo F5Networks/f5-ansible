@@ -8,7 +8,7 @@
 - name: Assert Get route domain facts for existing domain
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Get route domain facts for non-existing domain
   bigip_routedomain_facts:
@@ -18,7 +18,7 @@
 - name: Assert Get route domain facts for non-existing domain
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Get route domain facts for invalid domains
   bigip_routedomain_facts:
@@ -30,4 +30,4 @@
 - name: Assert Get route domain facts for invalid domain
   assert:
     that:
-      - not result|changed
+      - result is not changed

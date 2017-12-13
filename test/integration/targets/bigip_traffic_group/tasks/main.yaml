@@ -10,7 +10,7 @@
 - name: Assert Create a traffic group
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create a traffic group - Idempotent check
   bigip_traffic_group:
@@ -20,6 +20,6 @@
 - name: Assert Create a traffic group - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: teardown.yaml

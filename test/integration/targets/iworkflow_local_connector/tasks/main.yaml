@@ -14,7 +14,7 @@
 - name: Assert Create connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create connector - Idempotent check
   iworkflow_local_connector:
@@ -30,7 +30,7 @@
 - name: Create connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete connector
   iworkflow_local_connector:
@@ -46,7 +46,7 @@
 - name: Assert Delete connector
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete connector - Idempotent check
   iworkflow_local_connector:
@@ -62,4 +62,4 @@
 - name: Delete connector - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

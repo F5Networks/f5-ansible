@@ -13,7 +13,7 @@
 - name: Assert Create snmp v1 trap
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create snmp v1 trap - Idempotent check
   bigip_snmp_trap:
@@ -28,7 +28,7 @@
 - name: Assert Create snmp v1 trap - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp community
   bigip_snmp_trap:
@@ -39,7 +39,7 @@
 - name: Assert Set snmp community
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp community - Idempotent check
   bigip_snmp_trap:
@@ -50,7 +50,7 @@
 - name: Assert Set snmp community - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp destination to a hostname
   bigip_snmp_trap:
@@ -61,7 +61,7 @@
 - name: Assert Set snmp destination to a hostname
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp destination to a hostname - Idempotent check
   bigip_snmp_trap:
@@ -72,7 +72,7 @@
 - name: Assert Set snmp destination to a hostname - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp port
   bigip_snmp_trap:
@@ -83,7 +83,7 @@
 - name: Assert Set snmp port
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp port - Idempotent check
   bigip_snmp_trap:
@@ -94,7 +94,7 @@
 - name: Assert Set snmp port - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp network to default
   bigip_snmp_trap:
@@ -105,7 +105,7 @@
 - name: Assert Set snmp network to default
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp network to default - Idempotent check
   bigip_snmp_trap:
@@ -116,7 +116,7 @@
 - name: Assert Set snmp network to default - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp network to other
   bigip_snmp_trap:
@@ -127,7 +127,7 @@
 - name: Assert Set snmp network to other
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp network to other - Idempotent check
   bigip_snmp_trap:
@@ -138,7 +138,7 @@
 - name: Assert Set snmp network to other - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set snmp version to 2c
   bigip_snmp_trap:
@@ -149,7 +149,7 @@
 - name: Assert Set snmp version to 2c
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set snmp version to 2c - Idempotent check
   bigip_snmp_trap:
@@ -160,7 +160,7 @@
 - name: Assert Set snmp version to 2c - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete an snmp trap
   bigip_snmp_trap:
@@ -172,7 +172,7 @@
 - name: Assert Delete an snmp trap
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete an snmp trap - Idempotent check
   bigip_snmp_trap:
@@ -184,4 +184,4 @@
 - name: Assert Delete an snmp trap - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

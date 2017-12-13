@@ -12,7 +12,7 @@
 - name: Assert Create iRule in LTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iRule in LTM - Idempotent check
   bigip_irule:
@@ -24,7 +24,7 @@
 - name: Assert Create iRule in LTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Modify iRule in LTM
   bigip_irule:
@@ -36,7 +36,7 @@
 - name: Assert Modify iRule in LTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Modify iRule in LTM - Idempotent check
   bigip_irule:
@@ -48,7 +48,7 @@
 - name: Assert Modify iRule in LTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete iRule in LTM
   bigip_irule:
@@ -60,7 +60,7 @@
 - name: Assert Delete iRule in LTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iRule in LTM - Idempotent check
   bigip_irule:
@@ -72,7 +72,7 @@
 - name: Assert Delete iRule in LTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Create iRule in GTM
   bigip_irule:
@@ -84,7 +84,7 @@
 - name: Assert Create iRule in GTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create iRule in GTM - Idempotent check
   bigip_irule:
@@ -96,7 +96,7 @@
 - name: Assert Create iRule in GTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Modify iRule in GTM
   bigip_irule:
@@ -108,7 +108,7 @@
 - name: Assert Modify iRule in GTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Modify iRule in GTM - Idempotent check
   bigip_irule:
@@ -120,7 +120,7 @@
 - name: Assert Modify iRule in GTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete iRule in GTM
   bigip_irule:
@@ -132,7 +132,7 @@
 - name: Assert Delete iRule in GTM
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete iRule in GTM - Idempotent check
   bigip_irule:
@@ -144,7 +144,7 @@
 - name: Assert Delete iRule in GTM - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - import_tasks: issue-00042.yaml
   tags: issue-00042
