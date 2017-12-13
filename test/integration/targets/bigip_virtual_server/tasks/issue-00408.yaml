@@ -30,7 +30,6 @@
     irules:
       - irule1
       - irule2
-    #enabled_vlans: "External"
     disabled_vlans: Internal
     pool: web-pool
     snat: automap
@@ -50,7 +49,6 @@
     irules:
       - irule1
       - irule2
-    #enabled_vlans: "External"
     disabled_vlans: Internal
     pool: web-pool
     snat: automap
