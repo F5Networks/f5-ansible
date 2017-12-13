@@ -25,6 +25,10 @@ options:
   name:
     description:
       - Specifies the name of the registration key pool.
+      - You must be mindful to name your registration pools unique names. While
+        BIG-IQ does not require this, this module does. If you do not do this,
+        the behavior of the module is undefined and you may end up putting
+        licenses in the wrong registration key pool.
     required: True
   description:
     description:
@@ -45,6 +49,7 @@ notes:
     install f5-sdk.
 requirements:
   - f5-sdk >= 3.0.5
+  - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
