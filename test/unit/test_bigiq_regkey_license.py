@@ -73,7 +73,7 @@ class TestParameters(unittest.TestCase):
         p = ModuleParameters(args)
         assert p.regkey_pool == 'foo'
         assert p.license_key == 'XXXX-XXXX-XXXX-XXXX-XXXX'
-        assert p.accept_eula == True
+        assert p.accept_eula is True
         assert p.description == 'this is a description'
 
     def test_api_parameters(self):
@@ -116,4 +116,3 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['description'] == 'this is a description'
-
