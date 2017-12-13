@@ -1,0 +1,119 @@
+---
+
+- name: Issue 00513 - Include issue variables
+  include_vars:
+    file: issue-00513.yaml
+
+- name: Issue 00513 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name }}"
+
+- name: Issue 00513 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name }}"
+    link_discovery: disabled
+    virtual_server_discovery: enabled
+    state: present
+
+- name: Issue 00513 - Enable link discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: enabled
+  register: result
+
+- name: Issue 00513 - Assert Enable link discovery
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00513 - Enable link discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: enabled
+  register: result
+
+- name: Issue 00513 - Assert Enable link discovery - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00513 - Disable link discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: disabled
+  register: result
+
+- name: Issue 00513 - Assert Disable link discovery
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00513 - Disable link discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: disabled
+  register: result
+
+- name: Issue 00513 - Assert Disable link discovery - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00513 - Disable virtual server discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: disabled
+  register: result
+
+- name: Issue 00513 - Assert Disable virtual server discovery
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00513 - Disable virtual server discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: disabled
+  register: result
+
+- name: Issue 00513 - Assert Disable virtual server discovery - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00513 - Enable virtual server discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: enabled
+  register: result
+
+- name: Issue 00513 - Assert Enable virtual server discovery
+  assert:
+    that:
+      - result|changed
+
+- name: Issue 00513 - Enable virtual server discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: enabled
+  register: result
+
+- name: Issue 00513 - Assert Enable virtaul server discovery - Idempotent check
+  assert:
+    that:
+      - not result|changed
+
+- name: Issue 00513 - Remove GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    state: absent
+
+- name: Issue 00513 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: "{{ dc_name }}"
+    state: absent

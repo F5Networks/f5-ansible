@@ -139,3 +139,5 @@
   loop:
     - "{{ dc_name1 }}"
     - "{{ dc_name2 }}"
+
+- import_tasks: issue-00513.yaml
