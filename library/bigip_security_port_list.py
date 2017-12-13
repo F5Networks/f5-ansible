@@ -375,7 +375,7 @@ class UsableChanges(Changes):
             return None
         result = []
         for x in self._values['port_lists']:
-            _, name, partition = x.split('/')
+            partition, name = x.split('/')[1:]
             result.append(dict(
                 name=name,
                 partition=partition
