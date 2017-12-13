@@ -3,3 +3,7 @@
 - name: Create regkey pool
   bigiq_regkey_pool:
     name: regkey-pool-1
+
+- name: Get a license
+  set_fact:
+    license_key: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-regkey-licenses.txt', remove=True) }}"

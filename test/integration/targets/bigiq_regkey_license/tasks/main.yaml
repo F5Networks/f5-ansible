@@ -2,10 +2,6 @@
 
 - import_tasks: setup.yaml
 
-- name: Get a license
-  set_fact:
-    license_key: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-regkey-licenses.txt', remove=True) }}"
-
 - name: Add a license to the license pool
   bigiq_regkey_license:
     regkey_pool: regkey-pool-1
