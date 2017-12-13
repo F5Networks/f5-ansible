@@ -121,6 +121,16 @@ EXAMPLES = r'''
     state: absent
     user: admin
   delegate_to: localhost
+
+- name: Create port list from a file with one port per line
+  bigip_security_port_list:
+    name: lot-of-ports
+    ports: "{{ lookup('file', 'my-large-port-list.txt').split('\n') }}"
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
