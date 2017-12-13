@@ -15,9 +15,15 @@ DOCUMENTATION = """
 """
 
 EXAMPLES = """
-- name: Get a regkey license from a stash
+- name: Get a regkey license from a stash without deleting it
   bigiq_regkey_license:
     key: "{{ lookup('license_hopper', 'filename=/path/to/licenses.txt') }}"
+    state: present
+    pool: regkey1
+
+- name: Get a regkey license from a stash and delete the key from the file
+  bigiq_regkey_license:
+    key: "{{ lookup('license_hopper', 'filename=/path/to/licenses.txt', remove=True) }}"
     state: present
     pool: regkey1
 """
@@ -33,7 +39,8 @@ import random
 from ansible.errors import AnsibleError
 from ansible.module_utils._text import to_native
 from ansible.plugins.lookup import LookupBase
-from ansible.parsing.splitter import parse_kv
+
+BOOLEANS_TRUE = frozenset(('y', 'yes', 'on', '1', 'true', 'True', 't', 1, 1.0, True))
 
 
 class LookupModule(LookupBase):
@@ -44,45 +51,23 @@ class LookupModule(LookupBase):
         self.filename = None
         self.remove = False
 
-    def parse_kv_args(self, args):
-        """
-        parse key-value style arguments
-        """
-
-        for arg in ["filename"]:
-            arg_raw = args.pop(arg, None)
-            try:
-                if arg_raw is None:
-                    continue
-                parsed = str(arg_raw)
-                setattr(self, arg, parsed)
-            except ValueError:
-                raise AnsibleError(
-                    "can't parse arg {}={} as string".format(arg, arg_raw)
-                )
-        if args:
-            raise AnsibleError(
-                "unrecognized arguments to with_sequence: %r" % args.keys()
-            )
-
     def run(self, terms, variables=None, **kwargs):
-        ret = []
-
-        for term in terms:
-            self.parse_kv_args(parse_kv(term))
-
-            lookupfile = self.find_file_in_search_path(variables, 'files', self.filename)
-            fh = open(lookupfile, 'r')
-            lines = fh.readlines()
-            fh.close()
-            print("ASASD")
-            try:
-                ret = [random.choice(lines)]
-            except Exception as e:
-                raise AnsibleError("Unable to choose random license: %s" % to_native(e))
-
-            if self.remove:
-                to_write = [x for x in lines if x != ret[0]]
-                fh = open(lookupfile, 'w')
-                fh.writelines(to_write)
+        self.filename = kwargs.pop('filename', None)
+        self.remove = kwargs.pop('remove', False)
+        if self.filename is None:
+            raise AnsibleError("No 'filename' was specified")
+        lookupfile = self.find_file_in_search_path(variables, 'files', self.filename)
+        if lookupfile is None:
+            raise AnsibleError("Could not find the specified 'filename'")
+        fh = open(lookupfile, 'r')
+        lines = [x.strip() for x in fh.readlines()]
+        fh.close()
+        try:
+            ret = [random.choice(lines)]
+        except Exception as e:
+            raise AnsibleError("Unable to choose random license: %s" % to_native(e))
+        if self.remove:
+            to_write = [x + "\n" for x in lines if x != ret[0]]
+            fh = open(lookupfile, 'w')
+            fh.writelines(to_write)
         return ret
