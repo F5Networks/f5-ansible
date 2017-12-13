@@ -21,21 +21,19 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
     from library.bigip_ssl_certificate import ArgumentSpec
-    from library.bigip_ssl_certificate import KeyParameters
-    from library.bigip_ssl_certificate import CertParameters
-    from library.bigip_ssl_certificate import CertificateManager
+    from library.bigip_ssl_certificate import ApiParameters
+    from library.bigip_ssl_certificate import ModuleParameters
+    from library.bigip_ssl_certificate import ModuleManager
     from library.bigip_ssl_certificate import HAS_F5SDK
-    from library.bigip_ssl_certificate import KeyManager
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_ssl_certificate import ArgumentSpec
-        from ansible.modules.network.f5.bigip_ssl_certificate import KeyParameters
-        from ansible.modules.network.f5.bigip_ssl_certificate import CertParameters
-        from ansible.modules.network.f5.bigip_ssl_certificate import CertificateManager
+        from ansible.modules.network.f5.bigip_ssl_certificate import ApiParameters
+        from ansible.modules.network.f5.bigip_ssl_certificate import ModuleParameters
+        from ansible.modules.network.f5.bigip_ssl_certificate import ModuleManager
         from ansible.modules.network.f5.bigip_ssl_certificate import HAS_F5SDK
-        from ansible.modules.network.f5.bigip_ssl_certificate import KeyManager
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
@@ -64,33 +62,10 @@ def load_fixture(name):
 
 
 class TestParameters(unittest.TestCase):
-    def test_module_parameters_key(self):
-        key_content = load_fixture('create_insecure_key1.key')
-        args = dict(
-            key_content=key_content,
-            name="cert1",
-            partition="Common",
-            state="present",
-            password='password',
-            server='localhost',
-            user='admin'
-        )
-        p = KeyParameters(args)
-        assert p.name == 'cert1'
-        assert p.key_filename == 'cert1.key'
-        assert '-----BEGIN RSA PRIVATE KEY-----' in p.key_content
-        assert '-----END RSA PRIVATE KEY-----' in p.key_content
-        assert p.key_checksum == '91bdddcf0077e2bb2a0258aae2ae3117be392e83'
-        assert p.state == 'present'
-        assert p.user == 'admin'
-        assert p.server == 'localhost'
-        assert p.password == 'password'
-        assert p.partition == 'Common'
-
     def test_module_parameters_cert(self):
         cert_content = load_fixture('create_insecure_cert1.crt')
         args = dict(
-            cert_content=cert_content,
+            content=cert_content,
             name="cert1",
             partition="Common",
             state="present",
@@ -98,13 +73,13 @@ class TestParameters(unittest.TestCase):
             server='localhost',
             user='admin'
         )
-        p = CertParameters(args)
+        p = ModuleParameters(args)
         assert p.name == 'cert1'
-        assert p.cert_filename == 'cert1.crt'
-        assert 'Signature Algorithm' in p.cert_content
-        assert '-----BEGIN CERTIFICATE-----' in p.cert_content
-        assert '-----END CERTIFICATE-----' in p.cert_content
-        assert p.cert_checksum == '1e55aa57ee166a380e756b5aa4a835c5849490fe'
+        assert p.filename == 'cert1.crt'
+        assert 'Signature Algorithm' in p.content
+        assert '-----BEGIN CERTIFICATE-----' in p.content
+        assert '-----END CERTIFICATE-----' in p.content
+        assert p.checksum == '1e55aa57ee166a380e756b5aa4a835c5849490fe'
         assert p.state == 'present'
         assert p.user == 'admin'
         assert p.server == 'localhost'
@@ -116,12 +91,12 @@ class TestParameters(unittest.TestCase):
             issuer_cert='foo',
             partition="Common",
         )
-        p = CertParameters(args)
+        p = ModuleParameters(args)
         assert p.issuer_cert == '/Common/foo.crt'
 
     def test_api_issuer_cert_key(self):
         args = load_fixture('load_sys_file_ssl_cert_with_issuer_cert.json')
-        p = CertParameters(args)
+        p = ApiParameters(args)
         assert p.issuer_cert == '/Common/intermediate.crt'
 
 
@@ -135,8 +110,7 @@ class TestCertificateManager(unittest.TestCase):
     def test_import_certificate_and_key_no_key_passphrase(self, *args):
         set_module_args(dict(
             name='foo',
-            cert_content=load_fixture('cert1.crt'),
-            key_content=load_fixture('cert1.key'),
+            content=load_fixture('cert1.crt'),
             state='present',
             password='password',
             server='localhost',
@@ -150,18 +124,18 @@ class TestCertificateManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        cm = CertificateManager(client)
-        cm.exists = Mock(side_effect=[False, True])
-        cm.create_on_device = Mock(return_value=True)
+        mm = ModuleManager(client)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
 
-        results = cm.exec_module()
+        results = mm.exec_module()
 
         assert results['changed'] is True
 
     def test_import_certificate_chain(self, *args):
         set_module_args(dict(
             name='foo',
-            cert_content=load_fixture('chain1.crt'),
+            content=load_fixture('chain1.crt'),
             state='present',
             password='password',
             server='localhost',
@@ -175,71 +149,10 @@ class TestCertificateManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        cm = CertificateManager(client)
-        cm.exists = Mock(side_effect=[False, True])
-        cm.create_on_device = Mock(return_value=True)
+        mm = ModuleManager(client)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
 
-        results = cm.exec_module()
-
-        assert results['changed'] is True
-
-
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
-class TestKeyManager(unittest.TestCase):
-
-    def setUp(self):
-        self.spec = ArgumentSpec()
-
-    def test_import_certificate_and_key_no_key_passphrase(self, *args):
-        set_module_args(dict(
-            name='foo',
-            cert_content=load_fixture('cert1.crt'),
-            key_content=load_fixture('cert1.key'),
-            state='present',
-            password='password',
-            server='localhost',
-            user='admin'
-        ))
-
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
-        )
-
-        # Override methods in the specific type of manager
-        cm = KeyManager(client)
-        cm.exists = Mock(side_effect=[False, True])
-        cm.create_on_device = Mock(return_value=True)
-
-        results = cm.exec_module()
-
-        assert results['changed'] is True
-
-    def test_update_certificate_new_certificate_and_key_password_protected_key(self, *args):
-        set_module_args(dict(
-            name='foo',
-            cert_content=load_fixture('cert2.crt'),
-            key_content=load_fixture('cert2.key'),
-            state='present',
-            passphrase='keypass',
-            password='password',
-            server='localhost',
-            user='admin'
-        ))
-
-        client = AnsibleF5Client(
-            argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
-        )
-
-        # Override methods in the specific type of manager
-        cm = KeyManager(client)
-        cm.exists = Mock(side_effect=[False, True])
-        cm.create_on_device = Mock(return_value=True)
-
-        results = cm.exec_module()
+        results = mm.exec_module()
 
         assert results['changed'] is True
