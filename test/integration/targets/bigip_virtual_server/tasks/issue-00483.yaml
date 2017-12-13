@@ -30,6 +30,50 @@
     that:
       - result is not changed
 
+- name: Issue 00483 - Change source address
+  bigip_virtual_server:
+    name: issue-00483
+    source: 5.6.7.8/32
+  register: result
+
+- name: Issue 00483 - Assert Change source address
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00483 - Change source address - Idempotent check
+  bigip_virtual_server:
+    name: issue-00483
+    source: 5.6.7.8/32
+  register: result
+
+- name: Issue 00483 - Assert Change source address
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00483 - Change source address back to default
+  bigip_virtual_server:
+    name: issue-00483
+    source: 0.0.0.0/0
+  register: result
+
+- name: Issue 00483 - Assert Change source address back to default
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00483 - Change source address back to default - Idempotent check
+  bigip_virtual_server:
+    name: issue-00483
+    source: 0.0.0.0/0
+  register: result
+
+- name: Issue 00483 - Assert Change source address back to default
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00483 - Remove virtual
   bigip_virtual_server:
     name: issue-00483
