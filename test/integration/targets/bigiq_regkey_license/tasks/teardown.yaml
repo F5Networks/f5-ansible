@@ -1,0 +1,6 @@
+---
+
+- name: Create regkey pool
+  bigiq_regkey_pool:
+    name: foo-pool-1
+    state: absent

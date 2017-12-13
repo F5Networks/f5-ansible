@@ -1,0 +1,5 @@
+---
+
+- name: Create regkey pool
+  bigiq_regkey_pool:
+    name: regkey-pool-1
