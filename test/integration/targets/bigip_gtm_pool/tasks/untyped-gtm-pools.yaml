@@ -10,7 +10,7 @@
 - name: Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create pool - Idempotent check
   bigip_gtm_pool:
@@ -22,7 +22,7 @@
 - name: Assert Create pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool preferred_lb_method, ratio_member
   bigip_gtm_pool:
@@ -34,7 +34,7 @@
 - name: Assert Change pool lb_method, ratio_member
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool preferred_lb_method, ratio_member - Idempotent check
   bigip_gtm_pool:
@@ -46,7 +46,7 @@
 - name: Assert Change pool preferred_lb_method, ratio_member - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete pool
   bigip_gtm_pool:
@@ -57,7 +57,7 @@
 - name: Assert Delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
@@ -68,4 +68,4 @@
 - name: Assert Delete pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed

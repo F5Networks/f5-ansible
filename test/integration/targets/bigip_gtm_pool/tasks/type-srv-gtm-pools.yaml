@@ -11,7 +11,7 @@
 - name: Assert Create pool, type 'srv'
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create pool, type 'srv' - Idempotent check
   bigip_gtm_pool:
@@ -24,7 +24,7 @@
 - name: Assert Create pool, 'srv' - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Change pool type 'srv' lb_method to ratio
   bigip_gtm_pool:
@@ -37,7 +37,7 @@
 - name: Assert Change pool type 'srv' lb_method to ratio
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Change pool type 'srv' lb_method to ratio - Idempotent check
   bigip_gtm_pool:
@@ -50,7 +50,7 @@
 - name: Assert Change pool type 'srv' lb_method to ratio - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete pool
   bigip_gtm_pool:
@@ -62,7 +62,7 @@
 - name: Assert Delete pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete pool - Idempotent check
   bigip_gtm_pool:
@@ -74,4 +74,4 @@
 - name: Assert Delete pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
