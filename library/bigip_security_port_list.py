@@ -295,6 +295,16 @@ class ModuleParameters(Parameters):
             result.append(item)
         return result
 
+    @property
+    def port_lists(self):
+        if self._values['port_lists'] is None:
+            return None
+        result = []
+        for x in self._values['port_lists']:
+            item = self._fqdn_name(x)
+            result.append(item)
+        return result
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -309,7 +319,23 @@ class Changes(Parameters):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def ports(self):
+        result = []
+        for item in self._values['ports']:
+            if '-' in item['name']:
+                continue
+            result.append(item)
+        return result
+
+    @property
+    def port_ranges(self):
+        result = []
+        for item in self._values['ports']:
+            if '-' not in item['name']:
+                continue
+            result.append(item)
+        return result
 
 
 class UsableChanges(Changes):
@@ -339,7 +365,7 @@ class UsableChanges(Changes):
             return None
         result = []
         for x in self._values['port_lists']:
-            name, partition = x.split('/')
+            _, name, partition = x.split('/')
             result.append(dict(
                 name=name,
                 partition=partition
