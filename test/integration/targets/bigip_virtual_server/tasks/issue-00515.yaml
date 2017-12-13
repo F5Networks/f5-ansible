@@ -1,0 +1,38 @@
+---
+
+- name: Issue 00515 - Include issue variables
+  include_vars:
+    file: issue-00515.yaml
+
+- name: Issue 00515 - Add virtual server
+  bigip_virtual_server:
+    destination: "{{ destination1 }}"
+    name: "{{ name1 }}"
+    port: "{{ port1 }}"
+
+- name: Issue 00515 - Modify destination of the Virtual Server
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    destination: "{{ destination2 }}"
+  register: result
+
+- name: Issue 00515 - Assert destination port of the Virtual Server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00515 - Modify destination of the Virtual Server - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    destination: "{{ destination2 }}"
+  register: result
+
+- name: Issue 00515 - Assert Modify destination of the Virtual Server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00515 - Remove virtual server
+  bigip_virtual_server:
+    name: "{{ name1 }}"
+    state: absent
