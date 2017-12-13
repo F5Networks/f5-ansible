@@ -1,0 +1,13 @@
+---
+
+- name: Provision GTM
+  bigip_provision:
+    name: gtm
+
+- name: Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Create second datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name2 }}"

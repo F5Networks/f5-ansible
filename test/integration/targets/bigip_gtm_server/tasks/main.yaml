@@ -1,12 +1,6 @@
 ---
 
-- name: Create datacenter
-  bigip_gtm_datacenter:
-    name: "{{ dc_name1 }}"
-
-- name: Create second datacenter
-  bigip_gtm_datacenter:
-    name: "{{ dc_name2 }}"
+- import_tasks: setup.yaml
 
 - name: Create GTM server
   bigip_gtm_server:
@@ -22,7 +16,7 @@
 - name: Assert Create GTM server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Create GTM server - Idempotent check
   bigip_gtm_server:
@@ -38,7 +32,7 @@
 - name: Assert Create GTM server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Update device using single address
   bigip_gtm_server:
@@ -54,7 +48,7 @@
 - name: Assert Update device using single address
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Update device using single address - Idempotent check
   bigip_gtm_server:
@@ -70,7 +64,7 @@
 - name: Assert Update device using single address - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Update device using multiple addresses
   bigip_gtm_server:
@@ -89,7 +83,7 @@
 - name: Assert Update device using multiple addresses
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Update device using multiple addresses - Idempotent check
   bigip_gtm_server:
@@ -108,7 +102,7 @@
 - name: Assert Update device using multiple addresses - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Remove GTM server
   bigip_gtm_server:
@@ -119,7 +113,7 @@
 - name: Assert Remove GTM server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Remove GTM server - Idempotent check
   bigip_gtm_server:
@@ -130,8 +124,9 @@
 - name: Assert Remove GTM server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
+<<<<<<< Updated upstream
 - name: Remove datacenters
   bigip_gtm_datacenter:
     name: "{{ item }}"
@@ -142,3 +137,6 @@
 
 - import_tasks: issue-00513.yaml
   tags: issue-00513
+=======
+- import_tasks: teardown.yaml
+>>>>>>> Stashed changes

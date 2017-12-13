@@ -29,7 +29,7 @@
 - name: Issue 00513 - Assert Enable link discovery
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00513 - Enable link discovery - Idempotent check
   bigip_gtm_server:
@@ -40,7 +40,7 @@
 - name: Issue 00513 - Assert Enable link discovery - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00513 - Disable link discovery
   bigip_gtm_server:
@@ -51,7 +51,7 @@
 - name: Issue 00513 - Assert Disable link discovery
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00513 - Disable link discovery - Idempotent check
   bigip_gtm_server:
@@ -62,7 +62,7 @@
 - name: Issue 00513 - Assert Disable link discovery - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00513 - Disable virtual server discovery
   bigip_gtm_server:
@@ -73,7 +73,7 @@
 - name: Issue 00513 - Assert Disable virtual server discovery
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00513 - Disable virtual server discovery - Idempotent check
   bigip_gtm_server:
@@ -84,7 +84,7 @@
 - name: Issue 00513 - Assert Disable virtual server discovery - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00513 - Enable virtual server discovery
   bigip_gtm_server:
@@ -95,7 +95,7 @@
 - name: Issue 00513 - Assert Enable virtual server discovery
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00513 - Enable virtual server discovery - Idempotent check
   bigip_gtm_server:
@@ -106,7 +106,7 @@
 - name: Issue 00513 - Assert Enable virtaul server discovery - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00513 - Remove GTM server
   bigip_gtm_server:

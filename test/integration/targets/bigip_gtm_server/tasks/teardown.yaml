@@ -1,0 +1,14 @@
+---
+
+- name: Remove datacenters
+  bigip_gtm_datacenter:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ dc_name1 }}"
+    - "{{ dc_name2 }}"
+
+- name: Deprovision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
