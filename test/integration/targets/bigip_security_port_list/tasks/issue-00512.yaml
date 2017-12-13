@@ -67,3 +67,8 @@
   bigip_security_port_list:
     name: lot-of-ports
     state: absent
+
+- name: Issue 00512 - Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent
