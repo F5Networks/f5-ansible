@@ -76,12 +76,12 @@
             {
                 "featureName": "gtm_rate_limit",
                 "featureValue": "12345"
-            },
+            }
         ],
         "generation": 0,
         "lastUpdateMicros": 0
     },
-    "licenseText": "#\Auth vers : BIG-IQ Product License File#",
+    "licenseText": "#Auth vers : BIG-IQ Product License File#",
     "message": "License XXXX-XXXX-XXXX-XXXX-XXXX ready",
     "name": "License for XXXX-XXXX-XXXX-XXXX-XXXX",
     "publicKey": [
