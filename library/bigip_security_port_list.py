@@ -165,7 +165,7 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'portLists', 'ports'
+        'portLists', 'ports', 'description'
     ]
 
     returnables = [
@@ -267,7 +267,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "Ports must be whole numbers between 0 and 65,535"
             )
-        if any(x for x in self._values['ports'] if 0 < x > 65535):
+        if any(x for x in self._values['ports'] if 0 < int(x) > 65535):
             raise F5ModuleError(
                 "Ports must be whole numbers between 0 and 65,535"
             )

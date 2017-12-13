@@ -1,0 +1,19 @@
+---
+
+port_list:
+  - index: 0
+    name: DIAMETER
+    description: 'DIAMETER port'
+    port: 3869
+  - index: 1
+    name: GTP-C
+    description: 'GTP_Control port'
+    port: 2123
+  - index: 2
+    name: GTP-U
+    description: 'GTP_User port'
+    port: 2152
+  - index: 3
+    name: DNS
+    description: 'DNS port'
+    port: 53

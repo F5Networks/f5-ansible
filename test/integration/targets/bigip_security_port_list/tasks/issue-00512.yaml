@@ -1,0 +1,69 @@
+---
+
+- name: Issue 00512 - Provision AFM
+  bigip_provision:
+    name: afm
+
+- name: Issue 00512 - Include issue variables
+  include_vars:
+    file: issue-00512.yaml
+
+- name: Issue 00512 - Create Port-List
+  bigip_security_port_list:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    ports: "{{ item.port }}"
+  with_items: "{{ port_list }}"
+  register: result
+
+- name: Issue 00512 - Assert Create Port-List
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00512 - Create Port-List - Idempotent check
+  bigip_security_port_list:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    ports: "{{ item.port }}"
+  with_items: "{{ port_list }}"
+  register: result
+
+- name: Issue 00512 - Assert Create Port-List - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00512 - Remove Port-List
+  bigip_security_port_list:
+    name: "{{ item.name }}"
+    state: absent
+  with_items: "{{ port_list }}"
+  register: result
+
+- name: Issue 00512 - Create Port-List from list
+  bigip_security_port_list:
+    name: lot-of-ports
+    ports: "{{ lookup('file', 'issue-00512.txt').split('\n') }}"
+  register: result
+
+- name: Issue 00512 - Assert Create Port-List from list
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00512 - Create Port-List from list - Idempotent check
+  bigip_security_port_list:
+    name: lot-of-ports
+    ports: "{{ lookup('file', 'issue-00512.txt').split('\n') }}"
+  register: result
+
+- name: Issue 00512 - Assert Create Port-List from list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00512 - Remove Port-List from list
+  bigip_security_port_list:
+    name: lot-of-ports
+    state: absent
