@@ -2,5 +2,5 @@
 
 name1: issue-00515
 port1: 80
-destination2: 1.1.1.1
+destination1: 1.1.1.1
 destination2: 2.2.2.2

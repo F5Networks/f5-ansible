@@ -12,7 +12,7 @@
 
 - name: Issue 00515 - Modify destination of the Virtual Server
   bigip_virtual_server:
-    name: "{{ vs_name }}"
+    name: "{{ name1 }}"
     destination: "{{ destination2 }}"
   register: result
 
@@ -23,7 +23,7 @@
 
 - name: Issue 00515 - Modify destination of the Virtual Server - Idempotent check
   bigip_virtual_server:
-    name: "{{ vs_name }}"
+    name: "{{ name1 }}"
     destination: "{{ destination2 }}"
   register: result
 

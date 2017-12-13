@@ -934,12 +934,10 @@ class Difference(object):
             self.want.update({'port': have.port})
         if self.want.route_domain is None:
             self.want.update({'route_domain': have.route_domain})
-        if self.want.destination_address is None:
-            self.want.destination_address = have.ip
+        if self.want.destination_tuple.address is None:
+            self.want.destination_tuple.address = have.ip
 
-        want = self.want._format_destination(
-            self.want.destination_address, self.want.port, self.want.route_domain
-        )
+        want = self.want._format_destination(self.want.destination_address, self.want.port, self.want.route_domain)
         if want != self.have.destination:
             return self.want._fqdn_name(want)
 
