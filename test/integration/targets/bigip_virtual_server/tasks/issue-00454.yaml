@@ -36,7 +36,7 @@
 - name: Issue 00454 - Assert Change VLANs to all
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00454 - Change VLANs to all - Idempotent check
   bigip_virtual_server:
@@ -51,7 +51,7 @@
 - name: Issue 00454 - Assert Change VLANs to all - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00454 - Remove virtual server
   bigip_virtual_server:

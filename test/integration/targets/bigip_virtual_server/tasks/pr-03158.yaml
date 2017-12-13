@@ -34,7 +34,7 @@
 - name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 3158 - Add virtual server with custom SNAT pool - Idempotent check
   bigip_virtual_server:
@@ -52,7 +52,7 @@
 - name: Pull Request 3158 - Assert Add virtual server with custom SNAT pool - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Pull Request 3158 - Set SNAT back to Automap
   bigip_virtual_server:
@@ -70,7 +70,7 @@
 - name: Pull Request 3158 - Set SNAT back to Automap
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Pull Request 3158 - Delete VLAN virtual server
   bigip_virtual_server:

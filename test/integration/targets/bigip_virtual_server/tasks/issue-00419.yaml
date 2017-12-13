@@ -29,7 +29,7 @@
 - name: Issue 00419 - Assert Build Virtual Servers
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00419 - Build Virtual Servers - Idempotent check
   bigip_virtual_server:
@@ -49,7 +49,7 @@
 - name: Issue 00419 - Assert Build Virtual Servers - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00419 - Remove virtual server
   bigip_virtual_server:

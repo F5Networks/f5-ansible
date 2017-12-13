@@ -16,7 +16,7 @@
 - name: Issue 00511 - Assert Disable virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00511 - Disable virtual server - Idempotent check
   bigip_virtual_server:
@@ -27,7 +27,7 @@
 - name: Issue 00511 - Assert Disable virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00511 - Enable virtual server
   bigip_virtual_server:
@@ -38,7 +38,7 @@
 - name: Issue 00511 - Assert Enable virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00511 - Enable virtual server - Idempotent check
   bigip_virtual_server:
@@ -49,7 +49,7 @@
 - name: Issue 00511 - Assert Enable virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00511 - Remove virtual server
   bigip_virtual_server:

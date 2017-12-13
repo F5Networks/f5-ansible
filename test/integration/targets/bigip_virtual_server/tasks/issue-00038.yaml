@@ -11,7 +11,7 @@
 - name: Issue 00038 - Assert Create pool
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00038 - Add virtual server
   bigip_virtual_server:
@@ -55,4 +55,4 @@
 - name: Issue 00038 - Assert Delete pool
   assert:
     that:
-      - result|changed
+      - result is changed

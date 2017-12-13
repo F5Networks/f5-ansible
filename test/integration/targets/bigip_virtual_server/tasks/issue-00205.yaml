@@ -17,7 +17,7 @@
 - name: Issue 00205 - Assert Add FastL4 virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00205 - Add FastL4 virtual server - Idempotent check
   bigip_virtual_server:
@@ -32,7 +32,7 @@
 - name: Issue 00205 - Assert Add FastL4 virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00205 - Remove virtual server
   bigip_virtual_server:

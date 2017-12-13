@@ -12,7 +12,7 @@
 - name: Issue 00402 - Assert Add virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00402 - Add virtual server - Idempotent check
   bigip_virtual_server:
@@ -26,7 +26,7 @@
 - name: Issue 00402 - Assert Add virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00402 - Remove virtual server
   bigip_virtual_server:

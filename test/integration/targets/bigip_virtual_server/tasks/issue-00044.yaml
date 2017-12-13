@@ -34,7 +34,7 @@
 - name: Issue 00044 - Assert Add virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00044 - Add virtual server - Idempotent check
   bigip_virtual_server:
@@ -55,7 +55,7 @@
 - name: Issue 00044 - Assert Add virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00044 - Change rules
   bigip_virtual_server:
@@ -77,7 +77,7 @@
 - name: Issue 00044 - Assert Change rules
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00044 - Change rules - Idempotent check
   bigip_virtual_server:
@@ -99,7 +99,7 @@
 - name: Issue 00044 - Assert Change rules - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00044 - Remove virtual server
   bigip_virtual_server:

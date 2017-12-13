@@ -40,7 +40,7 @@
 - name: Issue 00408 - Assert Add VS on BIG-IP
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00408 - Add VS on BIG-IP - Idempotent check
   bigip_virtual_server:
@@ -60,7 +60,7 @@
 - name: Issue 00408 - Assert Add VS on BIG-IP - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00408 - Switch VLANs on VS
   bigip_virtual_server:
@@ -80,7 +80,7 @@
 - name: Issue 00408 - Assert Switch VLANs on VS
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00408 - Switch VLANs on VS - Idempotent check
   bigip_virtual_server:
@@ -100,7 +100,7 @@
 - name: Issue 00408 - Assert Switch VLANs on VS - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00408 - Remove VS
   bigip_virtual_server:

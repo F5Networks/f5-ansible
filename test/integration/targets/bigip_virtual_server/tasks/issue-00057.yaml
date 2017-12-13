@@ -35,7 +35,7 @@
 - name: Issue 00057 - Add virtual server rules
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00057 - Add virtual server rules - Idempotent check
   bigip_virtual_server:
@@ -51,7 +51,7 @@
 - name: Issue 00057 - Add virtual server rules - Idepotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00057 - Delete virtual server
   bigip_virtual_server:
@@ -63,7 +63,7 @@
 - name: Issue 00057 - Delete virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00057 - Remove partition
   bigip_partition:

@@ -16,7 +16,7 @@
 - name: Assert Add virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add virtual server - Idempotent check
   bigip_virtual_server:
@@ -32,7 +32,7 @@
 - name: Assert Add virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Modify port of the Virtual Server
   bigip_virtual_server:
@@ -44,7 +44,7 @@
 - name: Assert Modify port of the Virtual Server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Modify port of the Virtual Server - Idempotent check
   bigip_virtual_server:
@@ -56,7 +56,7 @@
 - name: Assert Modify port of the Virtual Server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Enable route advertisement
   bigip_virtual_server:
@@ -70,7 +70,7 @@
 - name: Assert Enable route advertisement
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Enable route advertisement - Idempotent check
   bigip_virtual_server:
@@ -84,7 +84,7 @@
 - name: Assert Enable route advertisement - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Disable route advertisement
   bigip_virtual_server:
@@ -98,7 +98,7 @@
 - name: Assert Disable route advertisement
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Disable route advertisement - Idempotent check
   bigip_virtual_server:
@@ -112,7 +112,7 @@
 - name: Assert Disable route advertisement - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete virtual server
   bigip_virtual_server:
@@ -123,7 +123,7 @@
 - name: Assert Delete virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Delete virtual server - Idempotent check
   bigip_virtual_server:
@@ -134,7 +134,7 @@
 - name: Assert Delete virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Add virtual server for VLAN test
   bigip_virtual_server:
@@ -150,7 +150,7 @@
 - name: Assert Add virtual server for VLAN test
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN on virtual server
   bigip_virtual_server:
@@ -167,7 +167,7 @@
 - name: Assert Set VLAN on virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set VLAN on virtual server - Idempotent check
   bigip_virtual_server:
@@ -184,7 +184,7 @@
 - name: Assert Set VLAN on virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set ALL VLAN on virtual server
   bigip_virtual_server:
@@ -201,7 +201,7 @@
 - name: Assert Set ALL VLAN on virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set ALL VLAN on virtual server - Idempotent check
   bigip_virtual_server:
@@ -218,7 +218,7 @@
 - name: Assert Set ALL VLAN on virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Set some profiles on virtual server pre-12.1
   bigip_virtual_server:
@@ -230,7 +230,7 @@
 - name: Assert Set some profiles on virtual server pre-12.1
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version < "12.1.0"
 
 - name: Set some profiles on virtual server
@@ -243,7 +243,7 @@
 - name: Assert Set some profiles on virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
   when: system_info.product_information.product_version >= "12.1.0"
 
 - name: Set less profiles on virtual server
@@ -255,7 +255,7 @@
 - name: Assert Set less profiles on virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Set less profiles on virtual server - Idempotent check
   bigip_virtual_server:
@@ -266,7 +266,7 @@
 - name: Assert Set less profiles on virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Delete VLAN virtual server
   bigip_virtual_server:
@@ -277,7 +277,7 @@
 - name: Assert Delete VLAN virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Add virtual server (FastHTTP)
   bigip_virtual_server:

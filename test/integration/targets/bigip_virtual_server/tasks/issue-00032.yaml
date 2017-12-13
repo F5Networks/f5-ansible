@@ -24,7 +24,7 @@
 - name: Issue 00032 - Create virtual server
   assert:
     that:
-      - result|changed
+      - result is changed
 
 - name: Issue 00032 - Create virtual server - Idempotent check
   bigip_virtual_server:
@@ -43,7 +43,7 @@
 - name: Issue 00032 - Create virtual server - Idempotent check
   assert:
     that:
-      - not result|changed
+      - result is not changed
 
 - name: Issue 00032 - Delete virtual server
   bigip_virtual_server:
@@ -57,4 +57,3 @@
   bigip_pool:
     name: mypool
     state: absent
-  register: result
