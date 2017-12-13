@@ -141,3 +141,4 @@
     - "{{ dc_name2 }}"
 
 - import_tasks: issue-00513.yaml
+  tags: issue-00513
