@@ -804,6 +804,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def policies(self):
         if self._values['policies'] is None:
             return None
+        if len(self._values['policies']) == 1 and self._values['policies'][0] == '':
+            return ''
         result = []
         policies = [self._fqdn_name(p) for p in self._values['policies']]
         policies = set(policies)
@@ -1157,6 +1159,10 @@ class Difference(object):
     def policies(self):
         if self.want.policies is None:
             return None
+        if self.want.policies == '' and self.have.policies is None:
+            return None
+        if self.want.policies == '' and len(self.have.policies) > 0:
+            return []
         if not self.have.policies:
             return self.want.policies
         want = set([(p['name'], p['partition']) for p in self.want.policies])
