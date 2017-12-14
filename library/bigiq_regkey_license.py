@@ -92,7 +92,6 @@ description:
   sample: My license for BIG-IP 1
 '''
 
-import q
 import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -190,7 +189,6 @@ class ModuleParameters(Parameters):
         if resource is None:
             raise F5ModuleError("Could not find the specified regkey pool.")
         self._values['regkey_pool_uuid'] = resource.id
-        q.q("tim",resource.id)
         return resource.id
 
 
@@ -265,7 +263,6 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
-        q.q(changed)
         if changed:
             self.changes = UsableChanges(changed)
             return True
@@ -384,9 +381,7 @@ class ModuleManager(object):
         resource = next((x for x in collection if x.regKey == self.want.license_key), None)
         if resource is None:
             return False
-        q.q("tim")
         resource.modify(**params)
-        q.q("rupp")
 
     def absent(self):
         if self.exists():
