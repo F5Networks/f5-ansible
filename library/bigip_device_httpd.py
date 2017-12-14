@@ -119,7 +119,7 @@ except ImportError:
     HAS_F5SDK = False
 
 try:
-    import requests
+    from requests.exceptions import ConnectionError
     HAS_REQUESTS = True
 except ImportError:
     HAS_REQUESTS = False
@@ -383,7 +383,7 @@ class ModuleManager(object):
         try:
             resource.modify(**params)
             return True
-        except requests.exceptions.ConnectionError as ex:
+        except ConnectionError as ex:
             pass
 
         # BIG-IP will kill your management connection when you change the HTTP
