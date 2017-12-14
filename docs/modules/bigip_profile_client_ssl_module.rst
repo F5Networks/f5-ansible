@@ -76,11 +76,45 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>cert_key_chain<br/><div style="font-size: small;"></div></td>
+                <tr><td rowspan="2">cert_key_chain<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
+    <td></td><td></td>
+    <td> <div>One or more certificates and keys to associate with the SSL profile. This option is always a list. The keys in the list dictate the details of the client/key/chain combination. Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile. If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div><div>This list is a complex list that specifies a number of keys. There are several supported keys.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object cert_key_chain</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>key<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
         <td></td>
-        <td><div>One or more certificates and keys to associate with the SSL profile. This option is always a list. The keys in the list dictate the details of the client/key/chain combination. Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile. If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div><div>This list is a complex list that specifies a number of keys. There are several supported keys.</div><div>The <code>cert</code> key specifies a cert name for use. This key is required.</div><div>The <code>key</code> key contains a key name. This key is required.</div><div>The <code>chain</code> key contains a certificate chain that is relevant to the certificate and key mentioned earlier. This key is optional.</div>        </td></tr>
+                <td></td>
+                <td><div>Contains a key name.</div>        </td></tr>
+                    <tr><td>cert<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies a cert name for use.</div>        </td></tr>
+                    <tr><td>chain<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Contains a certificate chain that is relevant to the certificate and key mentioned earlier.</div><div>This key is optional.</div>        </td></tr>
+                    <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Contains the passphrase of the key file, should it require one.</div><div>Passphrases are encrypted on the remote BIG-IP device. Therefore, there is no way to compare them when updating a client SSL profile. Due to this, if you specify a passphrase, this module will always register a <code>changed</code> event.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>ciphers<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -90,7 +124,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>-Specifies the name of the profile.</div>        </td></tr>
+        <td><div>Specifies the name of the profile.</div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>/Common/clientssl</td>
@@ -148,7 +182,7 @@ Examples
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

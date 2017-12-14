@@ -15,7 +15,7 @@ bigip_license - Manage license installation and activation on BIG-IP devices
 Synopsis
 --------
 
-* Manage license installation and activation on BIG-IP devices. This module provides two different ways to license a device. Either via a activation key (which requires a connection back to f5.com) or, with the content of a license and dossier that you have acquired manually.
+* Manage license installation and activation on BIG-IP devices. This module provides two different ways to license a device. Either via a activation key (which requires a connection back to the f5.com licensing server from the Ansible control machine) or, with the content of a license and dossier that you have acquired manually.
 
 
 Requirements (on host that executes module)

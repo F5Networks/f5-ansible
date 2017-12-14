@@ -57,7 +57,7 @@ All Modules
   bigip_routedomain_facts - Retrieve route domain attributes from a BIG-IP <bigip_routedomain_facts_module>
   bigip_security_address_list - __SHORT_DESCRIPTION__ <bigip_security_address_list_module>
   bigip_security_policy - __SHORT_DESCRIPTION__ <bigip_security_policy_module>
-  bigip_security_port_list - Manage port lists on BIG-IP AFM. <bigip_security_port_list_module>
+  bigip_security_port_list - Manage port lists on BIG-IP AFM <bigip_security_port_list_module>
   bigip_security_rule_list - __SHORT_DESCRIPTION__ <bigip_security_rule_list_module>
   bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
   bigip_service - Manage BIG-IP service states <bigip_service_module>
@@ -86,7 +86,7 @@ All Modules
   bigip_virtual_server - Manage LTM virtual servers on a BIG-IP <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
   bigip_wait - Wait for a BIG-IP condition before continuing <bigip_wait_module>
-  bigiq_regkey_license - __SHORT_DESCRIPTION__ <bigiq_regkey_license_module>
+  bigiq_regkey_license - Manages licenses in a BIG-IQ registration key pool <bigiq_regkey_license_module>
   bigiq_regkey_license_assignment - __SHORT_DESCRIPTION__ <bigiq_regkey_license_assignment_module>
   bigiq_regkey_pool - Manages registration key pools on BIG-IQ <bigiq_regkey_pool_module>
   bigiq_utility_license - __SHORT_DESCRIPTION__ <bigiq_utility_license_module>

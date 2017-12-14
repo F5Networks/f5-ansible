@@ -1,8 +1,8 @@
 .. _bigiq_regkey_license:
 
 
-bigiq_regkey_license - __SHORT_DESCRIPTION__
-++++++++++++++++++++++++++++++++++++++++++++
+bigiq_regkey_license - Manages licenses in a BIG-IQ registration key pool
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -15,13 +15,14 @@ bigiq_regkey_license - __SHORT_DESCRIPTION__
 Synopsis
 --------
 
-* __LONG DESCRIPTION__.
+* Manages licenses in a BIG-IQ registration key pool.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.5
+  * BIG-IQ >= 5.3.0
 
 
 Options
@@ -37,11 +38,31 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>name<br/><div style="font-size: small;"></div></td>
+                <tr><td>accept_eula<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>A key that signifies that you accept the F5 EULA for this license.</div><div>A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902</div><div>This is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
+                <tr><td>description<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Description of the license.</div>        </td></tr>
+                <tr><td>license_key<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the name of the ... .</div>        </td></tr>
+        <td><div>The license key to put in the pool.</div>        </td></tr>
+                <tr><td>regkey_pool<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The registration key pool that you want to place the license in.</div><div>You must be mindful to name your registration pools unique names. While BIG-IQ does not require this, this module does. If you do not do this, the behavior of the module is undefined and you may end up putting licenses in the wrong registration key pool.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>absent</li><li>present</li></ul></td>
+        <td><div>The state of the regkey license in the pool on the system.</div><div>When <code>present</code>, guarantees that the license exists in the pool.</div><div>When <code>absent</code>, removes the license from the pool.</div>        </td></tr>
         </table>
     </br>
 
@@ -53,12 +74,24 @@ Examples
  ::
 
     
-    - name: Create a ...
+    - name: Add a registration key license to a pool
       bigiq_regkey_license:
-        name: foo
+        regkey_pool: foo-pool
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        accept_eula: yes
         password: secret
         server: lb.mydomain.com
         state: present
+        user: admin
+      delegate_to: localhost
+
+    - name: Remove a registration key license from a pool
+      bigiq_regkey_license:
+        regkey_pool: foo-pool
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        password: secret
+        server: lb.mydomain.com
+        state: absent
         user: admin
       delegate_to: localhost
 
@@ -66,7 +99,7 @@ Examples
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -80,18 +113,11 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
     </tr>
 
         <tr>
-        <td> param2 </td>
-        <td> The new param2 value of the resource. </td>
+        <td> description </td>
+        <td> The new description of the license key. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> Foo is bar </td>
-    </tr>
-            <tr>
-        <td> param1 </td>
-        <td> The new param1 value of the resource. </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> My license for BIG-IP 1 </td>
     </tr>
         
     </table>

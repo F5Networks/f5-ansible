@@ -42,7 +42,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Default Profile which manages the session persistence.</div>        </td></tr>
+        <td><div>Default Profile which manages the session persistence.</div><div>If you want to remove the existing default persistence profile, specify an empty value; <code>""</code>. See the documentation for an example.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -68,12 +68,12 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div>        </td></tr>
+        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div><div>If you want to remove the existing fallback persistence profile, specify an empty value; <code>""</code>. See the documentation for an example.</div>        </td></tr>
                 <tr><td>irules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>List of rules to be applied in priority order.</div></br>
+        <td><div>List of rules to be applied in priority order.</div><div>If you want to remove existing iRules, specify a single empty value; <code>""</code>. See the documentation for an example.</div></br>
     <div style="font-size: small;">aliases: all_rules<div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -96,7 +96,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Default pool for the virtual server.</div>        </td></tr>
+        <td><div>Default pool for the virtual server.</div><div>If you want to remove the existing pool, specify an empty value; <code>""</code>. See the documentation for an example.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -142,6 +142,11 @@ Options
     <td></td>
         <td><ul><li>None</li><li>Automap</li><li>Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT with the specific pool</li></ul></td>
         <td><div>Source network address policy.</div>        </td></tr>
+                <tr><td>source<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies an IP address or network from which the virtual server accepts traffic.</div><div>The virtual server accepts clients only from one of these IP addresses.</div><div>For this setting to function effectively, specify a value other than 0.0.0.0/0 or ::/0 (that is, any/0, any6/0).</div><div>In order to maximize utility of this setting, specify the most specific address prefixes covering all customer addresses and no others.</div><div>Specify the IP address in Classless Inter-Domain Routing (CIDR) format; address/prefix, where the prefix length is in bits. For example, for IPv4, 10.0.0.1/32 or 10.0.0.0/24, and for IPv6, ffe1::0020/64 or 2001:ed8:77b5:2:10:10:100:42/64.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -217,11 +222,50 @@ Examples
           - fastL4
         state: present
 
+    - name: Add iRules to the Virtual Server
+      bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        name: my-virtual-server
+        irules:
+          - irule1
+          - irule2
+      delegate_to: localhost
+
+    - name: Remove one iRule from the Virtual Server
+      bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        name: my-virtual-server
+        irules:
+          - irule2
+      delegate_to: localhost
+
+    - name: Remove all iRules from the Virtual Server
+      bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        name: my-virtual-server
+        irules: ""
+      delegate_to: localhost
+
+    - name: Remove pool from the Virtual Server
+      bigip_virtual_server:
+        server: lb.mydomain.net
+        user: admin
+        password: secret
+        name: my-virtual-server
+        pool: ""
+      delegate_to: localhost
+
 
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 
