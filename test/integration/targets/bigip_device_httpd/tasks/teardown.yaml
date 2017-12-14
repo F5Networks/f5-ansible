@@ -12,3 +12,4 @@
     max_clients: 10
     redirect_http_to_https: no
     ssl_port: 443
+    server_port: 8444

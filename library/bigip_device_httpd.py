@@ -374,14 +374,17 @@ class ModuleManager(object):
 
         try:
             resource.modify(**params)
+            return True
         except requests.exceptions.ConnectionError as ex:
-            # BIG-IP will kill your management connection when you change the HTTP
-            # redirect setting. So this catches that and handles it gracefully.
-            if 'Connection aborted' in str(ex) and 'redirectHttpToHttps' in params:
-                # Wait for BIG-IP web server to settle after changing this
-                time.sleep(2)
-                return True
-            raise F5ModuleError(str(ex))
+            pass
+
+        # BIG-IP will kill your management connection when you change the HTTP
+        # redirect setting. So this catches that and handles it gracefully.
+        if 'Connection aborted' in str(ex) and 'redirectHttpToHttps' in params:
+            # Wait for BIG-IP web server to settle after changing this
+            time.sleep(2)
+            return True
+        raise F5ModuleError(str(ex))
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.httpd.load()
