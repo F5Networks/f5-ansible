@@ -756,6 +756,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def profiles(self):
         if self._values['profiles'] is None:
             return None
+        if len(self._values['profiles']) == 1 and self._values['profiles'][0] == '':
+            return ''
         result = []
         for profile in self._values['profiles']:
             tmp = dict()
@@ -1092,6 +1094,17 @@ class Difference(object):
     @property
     def profiles(self):
         if self.want.profiles is None:
+            return None
+        if self.want.profiles == '' and len(self.have.profiles) > 0:
+            have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])
+            if len(self.have.profiles) == 1:
+                if not any(x[0] in ['tcp', 'udp', 'sctp'] for x in have):
+                    return []
+                else:
+                    return None
+            else:
+                return []
+        if self.want.profiles == '' and len(self.have.profiles) == 0:
             return None
         want = set([(p['name'], p['context'], p['fullPath']) for p in self.want.profiles])
         have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])

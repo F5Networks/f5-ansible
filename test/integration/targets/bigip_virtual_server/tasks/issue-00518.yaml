@@ -1,0 +1,108 @@
+---
+
+- name: Issue 00518 - Add virtual server
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - http
+
+- name: Issue 00518 - Remove profiles
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles: ""
+  register: result
+
+- name: Issue 00518 - Assert Remove profiles
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00518 - Remove profiles - Idempotent check
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles: ""
+  register: result
+
+- name: Issue 00518 - Assert Remove profiles - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00518 - Add profile with client context
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - name: tcp
+        context: client-side
+      - name: tcp-legacy
+        context: server-side
+  register: result
+
+- name: Issue 00518 - Assert Add profile with client context
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00518 - Add profile with client context - Idempotent check
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - name: tcp
+        context: client-side
+      - name: tcp-legacy
+        context: server-side
+  register: result
+
+- name: Issue 00518 - Assert Add profile with client context - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00518 - Change profile context
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - name: tcp-legacy
+        context: client-side
+      - name: tcp
+        context: server-side
+  register: result
+
+- name: Issue 00518 - Assert Change profile context
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00518 - Change profile context - Idempotent check
+  bigip_virtual_server:
+    name: issue-00518
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - name: tcp-legacy
+        context: client-side
+      - name: tcp
+        context: server-side
+  register: result
+
+- name: Issue 00518 - Assert Change profile context - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00518 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00518
+    state: absent
