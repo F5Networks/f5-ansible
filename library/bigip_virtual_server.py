@@ -116,6 +116,8 @@ options:
   pool:
     description:
       - Default pool for the virtual server.
+      - If you want to remove the existing pool, specify a pool of C(none).
+        See the documentation for an example.
   policies:
     description:
       - Specifies the policies for the virtual server
@@ -807,6 +809,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def pool(self):
         if self._values['pool'] is None:
             return None
+        if self._values['pool'] == 'none':
+            return 'none'
         return self._fqdn_name(self._values['pool'])
 
     @property
@@ -1141,6 +1145,17 @@ class Difference(object):
             return None
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
+
+    @property
+    def pool(self):
+        if self.want.pool is None:
+            return None
+        if self.want.pool == 'none' and self.have.pool is not None:
+            return ""
+        if self.want.pool == 'none' and self.have.pool is None:
+            return None
+        if self.want.pool != self.have.pool:
+            return self.want.pool
 
 
 class ModuleManager(object):
