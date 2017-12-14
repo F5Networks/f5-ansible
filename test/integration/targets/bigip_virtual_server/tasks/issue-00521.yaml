@@ -40,7 +40,7 @@
 - name: Issue 00521 - Remove pool
   bigip_virtual_server:
     name: issue-00521
-    pool: none
+    pool: ""
   register: result
 
 - name: Issue 00521 - Assert Remove pool
@@ -51,7 +51,7 @@
 - name: Issue 00521 - Remove pool - Idempotent check
   bigip_virtual_server:
     name: issue-00521
-    pool: none
+    pool: ""
   register: result
 
 - name: Issue 00521 - Assert Remove pool - Idempotent check

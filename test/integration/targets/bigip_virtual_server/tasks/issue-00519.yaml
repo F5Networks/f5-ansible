@@ -102,7 +102,7 @@
 - name: Issue 00519 - Remove all iRules
   bigip_virtual_server:
     name: issue-00519
-    irules: none
+    irules: ""
   register: result
 
 - name: Issue 00519 - Assert Remove all iRules
@@ -113,7 +113,7 @@
 - name: Issue 00519 - Remove all iRules - Idempotent check
   bigip_virtual_server:
     name: issue-00519
-    irules: none
+    irules: ""
   register: result
 
 - name: Issue 00519 - Assert Remove all iRules - Idempotent check

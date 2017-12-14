@@ -95,7 +95,7 @@ options:
     version_added: "2.2"
     description:
       - List of rules to be applied in priority order.
-      - If you want to remove existing iRules, specify a single rule of C(none).
+      - If you want to remove existing iRules, specify a single empty rule; C("").
         See the documentation for an example.
     aliases:
       - all_rules
@@ -116,7 +116,7 @@ options:
   pool:
     description:
       - Default pool for the virtual server.
-      - If you want to remove the existing pool, specify a pool of C(none).
+      - If you want to remove the existing pool, specify an empty pool; C("").
         See the documentation for an example.
   policies:
     description:
@@ -257,7 +257,7 @@ EXAMPLES = r'''
     user: admin
     password: secret
     name: my-virtual-server
-    irules: none
+    irules: ""
   delegate_to: localhost
 
 - name: Remove pool from the Virtual Server
@@ -266,7 +266,7 @@ EXAMPLES = r'''
     user: admin
     password: secret
     name: my-virtual-server
-    pool: none
+    pool: ""
   delegate_to: localhost
 '''
 
@@ -741,8 +741,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         results = []
         if self._values['irules'] is None:
             return None
-        if len(self._values['irules']) == 1 and self._values['irules'][0] == 'none':
-            return 'none'
+        if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
+            return ''
         for irule in self._values['irules']:
             result = self._fqdn_name(irule)
             results.append(result)
@@ -818,8 +818,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def pool(self):
         if self._values['pool'] is None:
             return None
-        if self._values['pool'] == 'none':
-            return 'none'
+        if self._values['pool'] == '':
+            return ''
         return self._fqdn_name(self._values['pool'])
 
     @property
@@ -1150,9 +1150,9 @@ class Difference(object):
     def irules(self):
         if self.want.irules is None:
             return None
-        if self.want.irules == 'none' and len(self.have.irules) > 0:
+        if self.want.irules == '' and len(self.have.irules) > 0:
             return []
-        if self.want.irules == 'none' and len(self.have.irules) == 0:
+        if self.want.irules == '' and len(self.have.irules) == 0:
             return None
         if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
             return self.want.irules
@@ -1161,9 +1161,9 @@ class Difference(object):
     def pool(self):
         if self.want.pool is None:
             return None
-        if self.want.pool == 'none' and self.have.pool is not None:
+        if self.want.pool == '' and self.have.pool is not None:
             return ""
-        if self.want.pool == 'none' and self.have.pool is None:
+        if self.want.pool == '' and self.have.pool is None:
             return None
         if self.want.pool != self.have.pool:
             return self.want.pool
