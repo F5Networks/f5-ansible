@@ -40,10 +40,8 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/design-decisions
    /development/dealing-with-replace-all
    /development/module-patterns
-   /development/testing-pipeline
    /development/securing-sensitive-information
    /development/ssh-functionality-for-modules
-   /development/pulling-docker-containers
    /development/tutorials/adding-new-admin-to-encrypted-files
    /development/parameters
 
