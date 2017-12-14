@@ -1,0 +1,107 @@
+---
+
+- name: Issue 00523 - Add virtual server
+  bigip_virtual_server:
+    name: issue-00523
+    destination: 1.1.1.1
+    port: 80
+
+- name: Issue 00523 - Change default persistence
+  bigip_virtual_server:
+    name: issue-00523
+    default_persistence_profile: dest_addr
+  register: result
+
+- name: Issue 00523 - Assert Change default persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00523 - Change default persistence - Idempotent check
+  bigip_virtual_server:
+    name: issue-00523
+    default_persistence_profile: dest_addr
+  register: result
+
+- name: Issue 00523 - Assert Change default persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00523 - Remove default persistence
+  bigip_virtual_server:
+    name: issue-00523
+    default_persistence_profile: ""
+  register: result
+
+- name: Issue 00523 - Assert Remove default persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00521 - Remove default persistence - Idempotent check
+  bigip_virtual_server:
+    name: issue-00523
+    default_persistence_profile: ""
+  register: result
+
+- name: Issue 00523 - Assert Remove default persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00523 - Change default persistence again
+  bigip_virtual_server:
+    name: issue-00523
+    default_persistence_profile: dest_addr
+  register: result
+
+- name: Issue 00523 - Change fallback persistence
+  bigip_virtual_server:
+    name: issue-00523
+    fallback_persistence_profile: source_addr
+  register: result
+
+- name: Issue 00523 - Assert Change fallback persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00523 - Change fallback persistence - Idempotent check
+  bigip_virtual_server:
+    name: issue-00523
+    fallback_persistence_profile: source_addr
+  register: result
+
+- name: Issue 00523 - Assert Change fallback persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00523 - Remove fallback persistence
+  bigip_virtual_server:
+    name: issue-00523
+    fallback_persistence_profile: ""
+  register: result
+
+- name: Issue 00523 - Assert Remove fallback persistence
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00521 - Remove fallback persistence - Idempotent check
+  bigip_virtual_server:
+    name: issue-00523
+    fallback_persistence_profile: ""
+  register: result
+
+- name: Issue 00523 - Assert Remove fallback persistence - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00523 - Remove virtual
+  bigip_virtual_server:
+    name: issue-00523
+    state: absent
+  register: result

@@ -357,6 +357,9 @@
 - import_tasks: issue-00521.yaml
   tags: issue-00521
 
+- import_tasks: issue-00523.yaml
+  tags: issue-00523
+
 # Tests for different pull requests filed on Github
 - import_tasks: pr-03158.yaml
   tags: pr-03158

@@ -95,7 +95,7 @@ options:
     version_added: "2.2"
     description:
       - List of rules to be applied in priority order.
-      - If you want to remove existing iRules, specify a single empty rule; C("").
+      - If you want to remove existing iRules, specify a single empty value; C("").
         See the documentation for an example.
     aliases:
       - all_rules
@@ -116,7 +116,7 @@ options:
   pool:
     description:
       - Default pool for the virtual server.
-      - If you want to remove the existing pool, specify an empty pool; C("").
+      - If you want to remove the existing pool, specify an empty value; C("").
         See the documentation for an example.
   policies:
     description:
@@ -135,6 +135,8 @@ options:
   default_persistence_profile:
     description:
       - Default Profile which manages the session persistence.
+      - If you want to remove the existing default persistence profile, specify an
+        empty value; C(""). See the documentation for an example.
   route_advertisement_state:
     description:
       - Enable route advertisement for destination.
@@ -150,6 +152,8 @@ options:
     description:
       - Specifies the persistence profile you want the system to use if it
         cannot use the specified default persistence profile.
+      - If you want to remove the existing fallback persistence profile, specify an
+        empty value; C(""). See the documentation for an example.
     version_added: 2.3
   partition:
     description:
@@ -903,6 +907,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def default_persistence_profile(self):
         if self._values['default_persistence_profile'] is None:
             return None
+        if self._values['default_persistence_profile'] == '':
+            return ''
         profile = self._fqdn_name(self._values['default_persistence_profile'])
         parts = profile.split('/')
         if len(parts) != 3:
@@ -919,6 +925,8 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def fallback_persistence_profile(self):
         if self._values['fallback_persistence_profile'] is None:
             return None
+        if self._values['fallback_persistence_profile'] == '':
+            return ''
         result = self._fqdn_name(self._values['fallback_persistence_profile'])
         return result
 
@@ -1105,13 +1113,30 @@ class Difference(object):
                 return self.want.profiles
 
     @property
+    def fallback_persistence_profile(self):
+        if self.want.fallback_persistence_profile is None:
+            return None
+        if self.want.fallback_persistence_profile == '' and self.have.fallback_persistence_profile is not None:
+            return ""
+        if self.want.fallback_persistence_profile == '' and self.have.fallback_persistence_profile is None:
+            return None
+        if self.want.fallback_persistence_profile != self.have.fallback_persistence_profile:
+            return self.want.fallback_persistence_profile
+
+    @property
     def default_persistence_profile(self):
         if self.want.default_persistence_profile is None:
             return None
+        if self.want.default_persistence_profile == '' and self.have.default_persistence_profile is not None:
+            return []
+        if self.want.default_persistence_profile == '' and self.have.default_persistence_profile is None:
+            return None
+        if self.have.default_persistence_profile is None:
+            return [self.want.default_persistence_profile]
         w_name = self.want.default_persistence_profile.get('name', None)
         w_partition = self.want.default_persistence_profile.get('partition', None)
-        h_name = self.want.default_persistence_profile.get('name', None)
-        h_partition = self.want.default_persistence_profile.get('partition', None)
+        h_name = self.have.default_persistence_profile.get('name', None)
+        h_partition = self.have.default_persistence_profile.get('partition', None)
         if w_name != h_name or w_partition != h_partition:
             return [self.want.default_persistence_profile]
 
