@@ -58,7 +58,14 @@ Examples
  ::
 
     
-
+    - name: Enable automatic update checking
+      bigip_software_update:
+        auto_check: yes
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
 
 
 
