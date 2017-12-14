@@ -1,0 +1,104 @@
+---
+
+- name: Issue 00524 - Include issue variables
+  include_vars:
+    file: issue-00524.yaml
+
+- name: Issue 00524 - Create a client SSL profile
+  bigip_profile_client_ssl:
+    name: issue-00524
+    parent: clientssl
+  register: result
+
+- name: Issue 00524 - Assert Create a client SSL profile
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00524 - Create a client SSL profile - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00524
+    parent: clientssl
+  register: result
+
+- name: Issue 00524 - Assert Create a client SSL profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00524 - Set ciphers
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "{{ ciphers1 }}"
+  register: result
+
+- name: Issue 00524 - Assert Set ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00524 - Set ciphers - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "{{ ciphers1 }}"
+  register: result
+
+- name: Issue 00524 - Assert Set ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00524 - Change ciphers
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "{{ ciphers2 }}"
+  register: result
+
+- name: Issue 00524 - Assert Change ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00524 - Change ciphers - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "{{ ciphers2 }}"
+  register: result
+
+- name: Issue 00524 - Assert Change ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00524 - Default ciphers
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "DEFAULT"
+  register: result
+
+- name: Issue 00524 - Assert Default ciphers
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00524 - Default ciphers - Idempotent check
+  bigip_profile_client_ssl:
+    name: issue-00524
+    ciphers: "DEFAULT"
+  register: result
+
+- name: Issue 00524 - Assert Default ciphers - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00524 - Remove client SSL profile
+  bigip_profile_client_ssl:
+    name: issue-00524
+    state: absent
+  register: result
+
+- name: Issue 00524 - Assert Remove client SSL profile
+  assert:
+    that:
+      - result is changed
