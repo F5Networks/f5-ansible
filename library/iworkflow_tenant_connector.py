@@ -83,8 +83,8 @@ EXAMPLES = '''
       state: "absent"
 '''
 
-RETURN = '''
-
+RETURN = r'''
+# only common fields returned
 '''
 
 import re

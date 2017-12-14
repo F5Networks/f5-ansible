@@ -53,8 +53,8 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
-
+RETURN = r'''
+# only common fields returned
 '''
 
 from ansible.module_utils.f5_utils import (

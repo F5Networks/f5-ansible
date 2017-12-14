@@ -43,11 +43,27 @@ author:
 '''
 
 EXAMPLES = r'''
-
+- name: Create a ...
+  bigip_dns_record_facts:
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
-
+param1:
+  description: The new param1 value of the resource.
+  returned: changed
+  type: bool
+  sample: true
+param2:
+  description: The new param2 value of the resource.
+  returned: changed
+  type: string
+  sample: Foo is bar
 '''
 
 from ansible.module_utils.basic import *

@@ -78,8 +78,8 @@ EXAMPLES = '''
   delegate_to: localhost
 '''
 
-RETURN = '''
-
+RETURN = r'''
+# only common fields returned
 '''
 
 import re

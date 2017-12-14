@@ -46,12 +46,19 @@ author:
     - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
-
+EXAMPLES = r'''
+- name: Create a ...
+  iworkflow_license_pool_member:
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
 '''
 
-RETURN = '''
-
+RETURN = r'''
+# only common fields returned
 '''
 
 import time
