@@ -27,8 +27,10 @@ devtools/docker-compose.site.yaml
 test/integration/inventory/hosts
 test/integration/inventory/group_vars/all.yaml
 ./ansible/
-tmp/
+tmp/*
 !tmp/.gitkeep
+!tmp/licenses
+tmp/licenses/*
 !tmp/licenses/.gitkeep
 
 examples/hosts.ini
