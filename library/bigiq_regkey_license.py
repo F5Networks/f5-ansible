@@ -15,49 +15,85 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_regkey_license
-short_description: __SHORT_DESCRIPTION__
+short_description: Manages licenses in a BIG-IQ registration key pool
 description:
-  - __LONG DESCRIPTION__.
+  - Manages licenses in a BIG-IQ registration key pool.
 version_added: "2.5"
 options:
-  name:
+  regkey_pool:
     description:
-      - Specifies the name of the ... .
+      - The registration key pool that you want to place the license in.
+      - You must be mindful to name your registration pools unique names. While
+        BIG-IQ does not require this, this module does. If you do not do this,
+        the behavior of the module is undefined and you may end up putting
+        licenses in the wrong registration key pool.
     required: True
+  license_key:
+    description:
+      - The license key to put in the pool.
+    required: True
+  description:
+    description:
+      - Description of the license.
+  accept_eula:
+    description:
+      - A key that signifies that you accept the F5 EULA for this license.
+      - A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902
+      - This is required when C(state) is C(present).
+  state:
+    description:
+      - The state of the regkey license in the pool on the system.
+      - When C(present), guarantees that the license exists in the pool.
+      - When C(absent), removes the license from the pool.
+    required: False
+    default: present
+    choices:
+      - absent
+      - present
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
 requirements:
-  - f5-sdk >= 2.2.3
+  - f5-sdk >= 3.0.5
+  - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Add a registration key license to a pool
   bigiq_regkey_license:
-    name: foo
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    accept_eula: yes
     password: secret
     server: lb.mydomain.com
     state: present
     user: admin
   delegate_to: localhost
+
+- name: Remove a registration key license from a pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    password: secret
+    server: lb.mydomain.com
+    state: absent
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+description:
+  description: The new description of the license key.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: My license for BIG-IP 1
 '''
 
+import q
+import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
@@ -74,19 +110,19 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'regKey': 'license_key'
     }
 
     api_attributes = [
-
+        'regKey', 'description'
     ]
 
     returnables = [
-
+        'description'
     ]
 
     updatables = [
-
+        'description'
     ]
 
     def __init__(self, params=None):
@@ -140,7 +176,41 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    @property
+    def regkey_pool_uuid(self):
+        if self._values['regkey_pool_uuid']:
+            return self._values['regkey_pool_uuid']
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s.get_collection()
+        resource = next((x for x in collection if x.name == self.regkey_pool), None)
+        if resource is None:
+            raise F5ModuleError("Could not find the specified regkey pool.")
+        self._values['regkey_pool_uuid'] = resource.id
+        q.q("tim",resource.id)
+        return resource.id
+
+
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -169,8 +239,10 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.want.update(dict(client=client))
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -178,38 +250,9 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
-        """Sets the changed updatables when updating a resource
-
-        A module needs to know what changed to determine whether to update
-        a resource (or set of resources). This method accomplishes this by
-        invoking the Difference engine code.
-
-        Each parameter in the `Parameter` class' `updatables` array will be
-        given to the Difference engine's `compare` method. This is done in the
-        order the updatables are listed in the array.
-
-        The `compare` method updates the `changes` dictionary if the following
-        way,
-
-        * If `None` is returned, a change will not be registered.
-        * If a dictionary is returned, the `changes` dictionary will be updated
-          with the values in what was returned.
-        * Otherwise, the `changes` dictionary's key (the parameter being
-          compared) will be set to the value that is returned by `compare`
-
-        The dictionary behavior is in place to allow you to change the key
-        that is set in the `changes` dictionary. There are frequently cases
-        where there is not a clean API map that can be set, nor a way to
-        otherwise allow you to change the attribute name of the resource being
-        updated before it is sent off to the remote device. Using a dictionary
-        return value of `compare` allows you to do this.
-
-        Returns:
-            bool: True when changes are present. False otherwise.
-        """
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
         changed = dict()
@@ -222,8 +265,9 @@ class ModuleManager(object):
                     changed.update(change)
                 else:
                     changed[k] = change
+        q.q(changed)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -246,7 +290,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -267,11 +312,13 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        return result
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s
+        pool = collection.licenses.load(id=self.want.regkey_pool_uuid)
+        collection = pool.offerings_s.get_collection()
+        resource = next((x for x in collection if x.regKey == self.want.license_key), None)
+        if resource is None:
+            return False
+        return True
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -294,24 +341,52 @@ class ModuleManager(object):
         self._set_changed_options()
         if self.client.check_mode:
             return True
+        if self.want.accept_eula is False:
+            raise F5ModuleError(
+                "To add a license, you must accept its EULA. Please see the module documentation for a link to this."
+            )
         self.create_on_device()
         return True
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s
+        pool = collection.licenses.load(id=self.want.regkey_pool_uuid)
+        resource = pool.offerings_s.offerings.create(
+            status='ACTIVATING_AUTOMATIC',
             **params
         )
+        for x in range(60):
+            resource.refresh()
+            if resource.status == 'READY':
+                break
+            elif resource.status == 'ACTIVATING_AUTOMATIC_NEED_EULA_ACCEPT':
+                resource.modify(
+                    status='ACTIVATING_AUTOMATIC_EULA_ACCEPTED',
+                    eulaText=resource.eulaText
+                )
+            elif resource.status == 'ACTIVATION_FAILED':
+                raise F5ModuleError(str(resource.message))
+            time.sleep(1)
+
+    def wait_for_status(self, resource, status):
+        for x in range(60):
+            resource.refresh()
+            if resource.status == status:
+                return
+            time.sleep(1)
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
+        params = self.changes.api_params()
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s
+        pool = collection.licenses.load(id=self.want.regkey_pool_uuid)
+        collection = pool.offerings_s.get_collection()
+        resource = next((x for x in collection if x.regKey == self.want.license_key), None)
+        if resource is None:
+            return False
+        q.q("tim")
         resource.modify(**params)
+        q.q("rupp")
 
     def absent(self):
         if self.exists():
@@ -319,39 +394,39 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s
+        pool = collection.licenses.load(id=self.want.regkey_pool_uuid)
+        collection = pool.offerings_s.get_collection()
+        resource = next((x for x in collection if x.regKey == self.want.license_key), None)
+        if resource is None:
+            return False
         if resource:
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
+        collection = self.client.api.cm.device.licensing.pool.regkey.licenses_s
+        pool = collection.licenses.load(id=self.want.regkey_pool_uuid)
+        collection = pool.offerings_s.get_collection()
+        resource = next((x for x in collection if x.regKey == self.want.license_key), None)
+        if resource is None:
+            return False
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         self.argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            regkey_pool=dict(required=True),
+            license_key=dict(required=True, no_log=True),
+            description=dict(),
+            accept_eula=dict(type='bool')
         )
-        self.f5_product_name = 'bigip'
-
-
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
+        self.f5_product_name = 'bigiq'
+        self.required_if = [
+            ['state', 'present', ['accept_eula']]
+        ]
 
 
 def main():
@@ -369,10 +444,8 @@ def main():
     try:
         mm = ModuleManager(client)
         results = mm.exec_module()
-        cleanup_tokens(client)
         client.module.exit_json(**results)
     except F5ModuleError as e:
-        cleanup_tokens(client)
         client.module.fail_json(msg=str(e))
 
 
