@@ -848,8 +848,18 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def enabled_vlans(self):
         if self._values['enabled_vlans'] is None:
             return None
-        elif any(x.lower() for x in self._values['enabled_vlans'] if x == 'all'):
-            return [self._fqdn_name('all')]
+        elif any(x.lower() for x in self._values['enabled_vlans'] if x.lower() in ['all', '*']):
+            result = [self._fqdn_name('all')]
+            if result[0].endswith('/all'):
+                if self._values['__warnings'] is None:
+                    self._values['__warnings'] = []
+                self._values['__warnings'].append(
+                    dict(
+                        msg="Usage of the 'ALL' value for 'enabled_vlans' parameter is deprecated. Use '*' instead",
+                        version='2.5'
+                    )
+                )
+            return result
         results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
         results.sort()
         return results
@@ -858,7 +868,7 @@ class VirtualServerModuleParameters(VirtualServerParameters):
     def disabled_vlans(self):
         if self._values['disabled_vlans'] is None:
             return None
-        elif any(x.lower() for x in self._values['disabled_vlans'] if x == 'all'):
+        elif any(x.lower() for x in self._values['disabled_vlans'] if x.lower() in ['all', '*']):
             raise F5ModuleError(
                 "You cannot disable all VLANs. You must name them individually."
             )
