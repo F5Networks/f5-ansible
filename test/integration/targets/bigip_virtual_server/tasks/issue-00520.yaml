@@ -1,0 +1,111 @@
+---
+
+- name: Issue 00520 - Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - vlan1
+    - vlan2
+    - vlan3
+    - vlan4
+
+- name: Issue 00520 - Add virtual server
+  bigip_virtual_server:
+    name: issue-00520
+    destination: 1.1.1.1
+    port: 80
+
+- name: Issue 00520 - Set disabled vlans on virtual server
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan2
+  register: result
+
+- name: Issue 00520 - Assert Set disabled vlans on virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00520 - Set disabled vlans on virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan2
+  register: result
+
+- name: Issue 00520 - Assert Set disabled vlans on virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00520 - Add disabled vlan on virtual server
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan2
+      - vlan3
+  register: result
+
+- name: Issue 00520 - Assert Add disabled vlan on virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00520 - Add disabled vlan on virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan2
+      - vlan3
+  register: result
+
+- name: Issue 00520 - Assert Add disabled vlan on virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00520 - Remove disabled vlan on virtual server
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan3
+  register: result
+
+- name: Issue 00520 - Assert Remove disabled vlan on virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00520 - Remove disabled vlan on virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00520
+    disabled_vlans:
+      - vlan1
+      - vlan3
+  register: result
+
+- name: Issue 00520 - Assert Remove disabled vlan on virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00520 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00520
+    state: absent
+
+- name: Issue 00520 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - vlan1
+    - vlan2
+    - vlan3
+    - vlan4

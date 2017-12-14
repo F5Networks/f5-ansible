@@ -842,6 +842,7 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         elif any(x.lower() for x in self._values['enabled_vlans'] if x == 'all'):
             return [self._fqdn_name('all')]
         results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
+        results.sort()
         return results
 
     @property
@@ -853,6 +854,7 @@ class VirtualServerModuleParameters(VirtualServerParameters):
                 "You cannot disable all VLANs. You must name them individually."
             )
         results = list(set([self._fqdn_name(x) for x in self._values['disabled_vlans']]))
+        results.sort()
         return results
 
     @property
