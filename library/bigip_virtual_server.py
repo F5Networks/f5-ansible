@@ -259,6 +259,15 @@ EXAMPLES = r'''
     name: my-virtual-server
     irules: none
   delegate_to: localhost
+
+- name: Remove pool from the Virtual Server
+  bigip_virtual_server:
+    server: lb.mydomain.net
+    user: admin
+    password: secret
+    name: my-virtual-server
+    pool: none
+  delegate_to: localhost
 '''
 
 RETURN = r'''
