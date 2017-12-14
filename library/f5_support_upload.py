@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: bigip_partition
+module: f5_support_upload
 short_description: Manage BIG-IP partitions
 description:
   - Manage BIG-IP partitions

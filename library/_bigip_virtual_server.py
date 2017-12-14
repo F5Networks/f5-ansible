@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_virtual_server
+module: _bigip_virtual_server
 short_description: Manages F5 BIG-IP LTM virtual servers
 deprecated: Deprecated in 2.4. Use the C(bigip_virtual_server) module instead.
 description:

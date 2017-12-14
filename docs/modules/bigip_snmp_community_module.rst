@@ -1,8 +1,8 @@
-.. _bigip_dns_record_facts:
+.. _bigip_snmp_community:
 
 
-bigip_dns_record_facts - foo
-++++++++++++++++++++++++++++
+bigip_snmp_community - foo
+++++++++++++++++++++++++++
 
 .. versionadded:: 2.2
 

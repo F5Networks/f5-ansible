@@ -1,8 +1,8 @@
-.. _bigip_virtual_server:
+.. __bigip_virtual_server:
 
 
-bigip_virtual_server - Manages F5 BIG-IP LTM virtual servers
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+_bigip_virtual_server - Manages F5 BIG-IP LTM virtual servers
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.1
 

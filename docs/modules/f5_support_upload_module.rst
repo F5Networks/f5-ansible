@@ -1,8 +1,8 @@
-.. _bigip_partition:
+.. _f5_support_upload:
 
 
-bigip_partition - Manage BIG-IP partitions
-++++++++++++++++++++++++++++++++++++++++++
+f5_support_upload - Manage BIG-IP partitions
+++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.3
 
