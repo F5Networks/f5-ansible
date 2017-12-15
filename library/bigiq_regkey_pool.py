@@ -68,10 +68,10 @@ EXAMPLES = r'''
 
 RETURN = r'''
 description:
-    description: New description of the regkey pool
-    returned: changed
-    type: string
-    sample: My description
+  description: New description of the regkey pool.
+  returned: changed
+  type: string
+  sample: My description
 '''
 
 
