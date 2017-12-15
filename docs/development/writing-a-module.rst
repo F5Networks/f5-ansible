@@ -422,7 +422,7 @@ Here is an example of a test from the `bigip_device_sshd` module:
    - name: Assert Set the SSHD allow string to a specific IP
      assert:
          that:
-             - result|changed
+             - result is changed
 
 
 You use the module and then check that the result you `register` changed. Tests for idempotence (the last two bullets above) are in the following section.
@@ -454,7 +454,7 @@ Here is an example of the previous test as an idempotent test:
    - name: Assert Set the SSHD allow string to a specific IP - Idempotent check
      assert:
          that:
-             - not result|changed
+             - result is not changed
 
 **Notes:**
 
