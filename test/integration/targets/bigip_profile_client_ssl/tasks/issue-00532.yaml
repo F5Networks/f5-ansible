@@ -1,25 +1,43 @@
 ---
 
-- name: Import certs
+- name: Issue 00532 - Include issue variables
+  include_vars:
+    file: issue-00532.yaml
+
+- name: Issue 00532 - Create route domain
+  bigip_routedomain:
+    id: "{{ route_domain }}"
+    state: present
+
+- name: Issue 00532 - Create partition
+  bigip_partition:
+    name: "{{ partition }}"
+    route_domain: "{{ route_domain }}"
+  register: result
+
+- name: Issue 00532 - Assert Create partition
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00532 - Import certs
   bigip_ssl_certificate:
     content: "{{ lookup('file', item.file) }}"
     name: "{{ item.name }}"
+    partition: "{{ partition }}"
   loop:
-    - name: cert1
+    - name: "cert1"
       file: cert1.crt
-    - name: cert2
+    - name: "cert2"
       file: cert2.crt
-    - name: 2048b-dsa-example-cert
+    - name: "2048b-dsa-example-cert"
       file: 2048b-dsa-example-cert.pem
-    - name: ocsp.example.com
-      file: ocsp.example.com.cert.pem
-    - name: ocsp.intermediate
-      file: ocsp.intermediate.crt
 
-- name: Import keys
+- name: Issue 00532 - Import keys
   bigip_ssl_key:
     content: "{{ lookup('file', item.file) }}"
     name: "{{ item.name }}"
+    partition: "{{ partition }}"
   loop:
     - name: key1
       file: cert1.key
@@ -27,39 +45,40 @@
       file: cert2.key
     - name: 2048b-dsa-example-keypair
       file: 2048b-dsa-example-keypair.pem
-    - name: ocsp.example.com
-      file: ocsp.example.com.key.pem
 
-- name: Import chains
+- name: Issue 00532 - Import chains
   bigip_ssl_certificate:
     content: "{{ lookup('file', item.file) }}"
     name: "{{ item.name }}"
+    partition: "{{ partition }}"
   loop:
     - name: chain1
       file: chain1.crt
     - name: chain2
       file: chain2.crt
 
-- name: Create a client SSL profile
+- name: Issue 00532 - Create a client SSL profile
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
     parent: clientssl
   register: result
 
-- name: Assert Create a client SSL profile
+- name: Issue 00532 - Assert Create a client SSL profile
   assert:
     that:
       - result is changed
 
-- name: Create a client SSL profile - Idempotent check
+- name: Issue 00532 - Create a client SSL profile - Idempotent check
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     ciphers: "!SSLv3:!SSLv2:ECDHE+AES-GCM+SHA256:ECDHE+AES-GCM+SHA384:ECDHE+AES+SHA256:ECDHE-RSA-AES128-CBC-SHA:ECDHE+AES:TLSv1+ECDHE+3DES:RSA+AES-GCM+SHA256:RSA+AES-GCM+SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:TLSv1+RSA+3DES"
     parent: clientssl
   register: result
 
-- name: Assert Create a client SSL profile - Idempotent check
+- name: Issue 00532 - Assert Create a client SSL profile - Idempotent check
   assert:
     that:
       - result is not changed
@@ -67,32 +86,35 @@
 - name: Assign cert/key/chain
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert1
         key: key1
   register: result
 
-- name: Assert Assign cert/key/chain
+- name: Issue 00532 - Assert Assign cert/key/chain
   assert:
     that:
       - result is changed
 
-- name: Assign cert/key/chain - Idempotent check
+- name: Issue 00532 - Assign cert/key/chain - Idempotent check
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert1
         key: key1
   register: result
 
-- name: Assert Assign cert/key/chain - Idempotent check
+- name: Issue 00532 - Assert Assign cert/key/chain - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Add a cert cert/key/chain
+- name: Issue 00532 - Add a cert cert/key/chain
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert1
         key: key1
@@ -100,14 +122,15 @@
         key: 2048b-dsa-example-keypair
   register: result
 
-- name: Assert Add a cert/key/chain
+- name: Issue 00532 - Assert Add a cert/key/chain
   assert:
     that:
       - result is changed
 
-- name: Add a cert/key/chain - Idempotent check
+- name: Issue 00532 - Add a cert/key/chain - Idempotent check
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert1
         key: key1
@@ -115,28 +138,30 @@
         key: 2048b-dsa-example-keypair
   register: result
 
-- name: Assert Add a cert/key/chain - Idempotent check
+- name: Issue 00532 - Assert Add a cert/key/chain - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Set password protected cert/key/chain
+- name: Issue 00532 - Set password protected cert/key/chain
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert2
         key: key2
         passphrase: keypass
   register: result
 
-- name: Assert Set password protected cert/key/chain
+- name: Issue 00532 - Assert Set password protected cert/key/chain
   assert:
     that:
       - result is changed
 
-- name: Set password protected cert/key/chain - Idempotent check
+- name: Issue 00532 - Set password protected cert/key/chain - Idempotent check
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     cert_key_chain:
       - cert: cert2
         key: key2
@@ -146,69 +171,76 @@
 # cert/key/chain passwords will make the task non-idempotent. The password
 # is encrypted on BIG-IP. Therefore, we are unable to compare it. We just
 # force update it.
-- name: Assert Set password protected cert/key/chain - Idempotent check
+- name: Issue 00532 - Assert Set password protected cert/key/chain - Idempotent check
   assert:
     that:
       - result is changed
 
-- name: Remove client SSL profile
+- name: Issue 00532 - Remove client SSL profile
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     state: absent
   register: result
 
-- name: Assert Remove client SSL profile
+- name: Issue 00532 - Assert Remove client SSL profile
   assert:
     that:
       - result is changed
 
-- name: Remove client SSL profile - Idempotent check
+- name: Issue 00532 - Remove client SSL profile - Idempotent check
   bigip_profile_client_ssl:
     name: foo
+    partition: "{{ partition }}"
     state: absent
   register: result
 
-- name: Assert Remove client SSL profile - Idempotent check
+- name: Issue 00532 - Assert Remove client SSL profile - Idempotent check
   assert:
     that:
       - result is not changed
 
-- name: Remove certs
+- name: Issue 00532 - Remove certs
   bigip_ssl_certificate:
     name: "{{ item }}"
+    partition: "{{ partition }}"
     state: absent
   loop:
     - cert1
     - cert2
     - 2048b-dsa-example-cert
 
-- name: Remove keys
+- name: Issue 00532 - Remove keys
   bigip_ssl_key:
     name: "{{ item }}"
+    partition: "{{ partition }}"
     state: absent
   loop:
     - key1
     - key2
     - 2048b-dsa-example-keypair
 
-- name: Remove chains
+- name: Issue 00532 - Remove chains
   bigip_ssl_certificate:
     name: "{{ item }}"
+    partition: "{{ partition }}"
     state: absent
   loop:
     - chain1
     - chain2
 
-- import_tasks: test-cert-key-chain.yaml
+- name: Issue 00532 - Delete partition
+  bigip_partition:
+    name: "{{ partition }}"
+    state: absent
+  register: result
 
-- import_tasks: issue-00398.yaml
-  tags: issue-00398
+- name: Issue 00532 - Assert Delete partition
+  assert:
+    that:
+      - result is changed
 
-- import_tasks: issue-00418.yaml
-  tags: issue-00418
-
-- import_tasks: issue-00524.yaml
-  tags: issue-00524
-
-- import_tasks: issue-00532.yaml
-  tags: issue-00532
+- name: Issue 00532 - Remove route domain
+  bigip_routedomain:
+    id: "{{ route_domain }}"
+    state: absent
