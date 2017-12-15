@@ -91,6 +91,15 @@
     name: Floating_SNAT
     state: absent
 
+- name: Issue 00101 - Remove iRules
+  bigip_irule:
+    module: ltm
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - web_logging
+    - session_logging
+
 - name: Issue 00101 - Remove pool
   bigip_pool:
     lb_method: round_robin
