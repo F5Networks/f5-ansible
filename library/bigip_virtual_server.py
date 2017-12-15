@@ -396,17 +396,20 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
+    def to_return(self):
+        result = {}
+        for returnable in self.returnables:
+            try:
+                result[returnable] = getattr(self, returnable)
+            except Exception as ex:
+                pass
+        result = self._filter_params(result)
+        return result
+
     def _fqdn_name(self, value):
         if value is not None and not value.startswith('/'):
             return '/{0}/{1}'.format(self.partition, value)
         return value
-
-    def to_return(self):
-        result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
-        return result
 
     def api_params(self):
         result = {}
@@ -435,6 +438,8 @@ class VirtualAddressParameters(Parameters):
         'routeAdvertisement'
     ]
 
+
+class VirtualAddressModuleParameters(VirtualAddressParameters):
     @property
     def route_advertisement_state(self):
         # TODO: Remove in 2.5
@@ -449,6 +454,10 @@ class VirtualAddressParameters(Parameters):
             )
         )
         return str(self._values['route_advertisement_state'])
+
+
+class VirtualAddressApiParameters(VirtualAddressParameters):
+    pass
 
 
 class VirtualServerParameters(Parameters):
@@ -513,7 +522,10 @@ class VirtualServerParameters(Parameters):
         'port',
         'profiles',
         'snat',
-        'source'
+        'source',
+        'vlans',
+        'vlans_enabled',
+        'vlans_disabled'
     ]
 
     def __init__(self, params=None):
@@ -1022,11 +1034,7 @@ class VirtualServerModuleParameters(VirtualServerParameters):
             return None
 
 
-class VirtualServerChanges(VirtualServerParameters):
-    @property
-    def destination(self):
-        return self._values['destination']
-
+class VirtualServerUsableChanges(VirtualServerParameters):
     @property
     def vlans(self):
         if self._values['vlans'] is None:
@@ -1038,7 +1046,64 @@ class VirtualServerChanges(VirtualServerParameters):
         return self._values['vlans']
 
 
-class VirtualAddressChanges(VirtualAddressParameters):
+class VirtualAddressUsableChanges(VirtualAddressParameters):
+    pass
+
+
+class VirtualServerReportableChanges(VirtualServerParameters):
+    @property
+    def snat(self):
+        if self._values['snat'] is None:
+            return None
+        result = self._values['snat'].get('type', None)
+        if result == 'automap':
+            return 'Automap'
+        elif result == 'none':
+            return 'none'
+        result = self._values['snat'].get('pool', None)
+        return result
+
+    @property
+    def destination(self):
+        params = VirtualServerApiParameters(dict(destination=self._values['destination']))
+        result = params.destination_tuple.ip
+        return result
+
+    @property
+    def port(self):
+        params = VirtualServerApiParameters(dict(destination=self._values['destination']))
+        result = params.destination_tuple.port
+        return result
+
+    @property
+    def default_persistence_profile(self):
+        if len(self._values['default_persistence_profile']) == 0:
+            return []
+        profile = self._values['default_persistence_profile'][0]
+        result = '/{0}/{1}'.format(profile['partition'], profile['name'])
+        return result
+
+    @property
+    def policies(self):
+        if len(self._values['policies']) == 0:
+            return []
+        result = ['/{0}/{1}'.format(x['partition'], x['name']) for x in self._values['policies']]
+        return result
+
+    @property
+    def enabled_vlans(self):
+        if len(self._values['vlans']) == 0 and self._values['vlans_disabled'] is True:
+            return 'all'
+        elif len(self._values['vlans']) > 0 and self._values['vlans_enabled'] is True:
+            return self._values['vlans']
+
+    @property
+    def disabled_vlans(self):
+        if len(self._values['vlans']) > 0 and self._values['vlans_disabled'] is True:
+            return self._values['vlans']
+
+
+class VirtualAddressReportableChanges(VirtualAddressParameters):
     pass
 
 
@@ -1349,18 +1414,15 @@ class BaseManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = self.get_reportable_changes()
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations()
+        self._announce_deprecations(result)
         return result
 
-    def _announce_deprecations(self):
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
                 msg=warning['msg'],
@@ -1419,7 +1481,11 @@ class VirtualServerManager(BaseManager):
         super(VirtualServerManager, self).__init__(client)
         self.have = None
         self.want = VirtualServerModuleParameters(self.client.module.params)
-        self.changes = VirtualServerChanges()
+        self.changes = VirtualServerUsableChanges()
+
+    def get_reportable_changes(self):
+        result = VirtualServerReportableChanges(self.changes.to_return())
+        return result
 
     def _set_changed_options(self):
         changed = {}
@@ -1427,7 +1493,7 @@ class VirtualServerManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = VirtualServerChanges(changed)
+            self.changes = VirtualServerUsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -1443,7 +1509,7 @@ class VirtualServerManager(BaseManager):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = VirtualServerChanges(changed)
+            self.changes = VirtualServerUsableChanges(changed)
             return True
         return False
 
@@ -1527,9 +1593,13 @@ class VirtualServerManager(BaseManager):
 class VirtualAddressManager(BaseManager):
     def __init__(self, client):
         super(VirtualAddressManager, self).__init__(client)
-        self.want = VirtualAddressParameters(self.client.module.params)
-        self.have = None
-        self.changes = VirtualAddressChanges()
+        self.want = VirtualAddressModuleParameters(self.client.module.params)
+        self.have = VirtualAddressApiParameters()
+        self.changes = VirtualAddressUsableChanges()
+
+    def get_reportable_changes(self):
+        result = VirtualAddressReportableChanges(self.changes.to_return())
+        return result
 
     def _set_changed_options(self):
         changed = {}
@@ -1537,7 +1607,7 @@ class VirtualAddressManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = VirtualAddressChanges(changed)
+            self.changes = VirtualAddressUsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -1553,7 +1623,7 @@ class VirtualAddressManager(BaseManager):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = VirtualAddressChanges(changed)
+            self.changes = VirtualAddressUsableChanges(changed)
             return True
         return False
 
