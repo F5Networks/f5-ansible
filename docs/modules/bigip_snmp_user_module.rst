@@ -1,8 +1,8 @@
-.. _bigip_dns_record_facts:
+.. _bigip_snmp_user:
 
 
-bigip_dns_record_facts - foo
-++++++++++++++++++++++++++++
+bigip_snmp_user - foo
++++++++++++++++++++++
 
 .. versionadded:: 2.2
 
