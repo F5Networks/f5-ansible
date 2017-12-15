@@ -275,12 +275,81 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
----
-deleted:
-  description: Name of a virtual server that was deleted
+description:
+  description: New description of the virtual server.
   returned: changed
   type: string
-  sample: my-virtual-server
+  sample: This is my description
+default_persistence_profile:
+  description: Default persistence profile set on the virtual server.
+  returned: changed
+  type: string
+  sample: /Common/dest_addr
+destination:
+  description: Destination of the virtual server.
+  returned: changed
+  type: string
+  sample: 1.1.1.1
+disabled:
+  description: Whether the virtual server is disabled, or not.
+  returned: changed
+  type: bool
+  sample: True
+disabled_vlans:
+  description: List of VLANs that the virtual is disabled for.
+  returned: changed
+  type: list
+  sample: ['/Common/vlan1', '/Common/vlan2']
+enabled:
+  description: Whether the virtual server is enabled, or not.
+  returned: changed
+  type: bool
+  sample: False
+enabled_vlans:
+  description: List of VLANs that the virtual is enabled for.
+  returned: changed
+  type: list
+  sample: ['/Common/vlan5', '/Common/vlan6']
+fallback_persistence_profile:
+  description: Fallback persistence profile set on the virtual server.
+  returned: changed
+  type: string
+  sample: /Common/source_addr
+irules:
+  description: iRules set on the virtual server.
+  returned: changed
+  type: list
+  sample: ['/Common/irule1', '/Common/irule2']
+pool:
+  description: Pool that the virtual server is attached to.
+  returned: changed
+  type: string
+  sample: /Common/my-pool
+policies:
+  description: List of policies attached to the virtual.
+  returned: changed
+  type: list
+  sample: ['/Common/policy1', '/Common/policy2']
+port:
+  description: Port that the virtual server is configured to listen on.
+  returned: changed
+  type: int
+  sample: 80
+profiles:
+  description: List of profiles set on the virtual server.
+  returned: changed
+  type: list
+  sample: [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}]
+snat:
+  description: SNAT setting of the virtual server.
+  returned: changed
+  type: string
+  sample: Automap
+source:
+  description: Source address, in CIDR form, set on the virtual server.
+  returned: changed
+  type: string
+  sample: 1.2.3.4/32
 '''
 
 
@@ -990,7 +1059,6 @@ class Difference(object):
         attr1 = getattr(self.want, param)
         try:
             attr2 = getattr(self.have, param)
-
             if attr1 != attr2:
                 return attr1
         except AttributeError:
