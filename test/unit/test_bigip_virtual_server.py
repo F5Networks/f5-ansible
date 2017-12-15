@@ -634,6 +634,105 @@ class TestManager(unittest.TestCase):
         assert results['profiles'][1]['context'] == 'clientside'
 
 
+
+
+
+    def test_update_virtual_server(self, *args):
+        set_module_args(dict(
+            profiles=[
+                dict(
+                    name='http'
+                ),
+                dict(
+                    name='clientssl'
+                )
+            ],
+            description="foo virtual",
+            destination="1.1.1.1",
+            name="my-virtual-server",
+            partition="Common",
+            password="secret",
+            port="8443",
+            server="localhost",
+            snat="snat-pool1",
+            state="disabled",
+            source='1.2.3.4/32',
+            user="admin",
+            validate_certs="no",
+            irules=[
+                'irule1',
+                'irule2'
+            ],
+            policies=[
+                'policy1',
+                'policy2'
+            ],
+            enabled_vlans=[
+                'vlan1',
+                'vlan2'
+            ],
+            pool='my-pool',
+            default_persistence_profile='source_addr',
+            fallback_persistence_profile='dest_addr'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_3.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        # Override methods to force specific logic in the module to happen
+        vsm = VirtualServerManager(client)
+        vsm.exists = Mock(return_value=True)
+        vsm.read_current_from_device = Mock(return_value=current)
+        vsm.update_on_device = Mock(return_value=True)
+
+        mm = ModuleManager(client)
+        mm.get_manager = Mock(return_value=vsm)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['source'] == '1.2.3.4/32'
+        assert results['description'] == 'foo virtual'
+        assert results['snat'] == '/Common/snat-pool1'
+        assert results['destination'] == '1.1.1.1'
+        assert results['port'] == 8443
+        assert results['default_persistence_profile'] == '/Common/source_addr'
+        assert results['fallback_persistence_profile'] == '/Common/dest_addr'
+
+        # policies
+        assert len(results['policies']) == 2
+        assert '/Common/policy1' in results['policies']
+        assert '/Common/policy2' in results['policies']
+
+        # irules
+        assert len(results['irules']) == 2
+        assert '/Common/irule1' in results['irules']
+        assert '/Common/irule2' in results['irules']
+
+        # vlans
+        assert len(results['enabled_vlans']) == 2
+        assert '/Common/vlan1' in results['enabled_vlans']
+        assert '/Common/vlan2' in results['enabled_vlans']
+
+        # profiles
+        assert len(results['profiles']) == 2
+        assert 'name' in results['profiles'][0]
+        assert 'context' in results['profiles'][0]
+        assert results['profiles'][0]['name'] == 'http'
+        assert results['profiles'][0]['context'] == 'all'
+        assert 'name' in results['profiles'][1]
+        assert 'context' in results['profiles'][1]
+        assert results['profiles'][1]['name'] == 'clientssl'
+        assert results['profiles'][1]['context'] == 'clientside'
+
+
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestDeprecatedAnsible24Manager(unittest.TestCase):
