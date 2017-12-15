@@ -59,8 +59,11 @@ options:
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
+  - Requires the requests Python package on the host. This is as easy as
+    pip install requests.
 requirements:
   - f5-sdk >= 3.0.4
+  - requests
 extends_documentation_fragment: f5
 author:
   - Joe Reifel (@JoeReifel)
@@ -101,7 +104,6 @@ auth_pam_idle_timeout:
   sample: 1200
 '''
 
-import requests
 import time
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -115,6 +117,12 @@ try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
+
+try:
+    from requests.exceptions import ConnectionError
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -375,7 +383,7 @@ class ModuleManager(object):
         try:
             resource.modify(**params)
             return True
-        except requests.exceptions.ConnectionError as ex:
+        except ConnectionError as ex:
             pass
 
         # BIG-IP will kill your management connection when you change the HTTP
@@ -443,6 +451,9 @@ def cleanup_tokens(client):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if not HAS_REQUESTS:
+        raise F5ModuleError("The python requests module is required")
 
     spec = ArgumentSpec()
 

@@ -38,41 +38,27 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>cert_content<br/><div style="font-size: small;"></div></td>
+                <tr><td>content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>When used instead of 'cert_src', sets the contents of a certificate directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>cert_src<br/><div style="font-size: small;"></div></td>
+        <td><div>Sets the contents of a certificate directly to the specified value. This is used with lookup plugins or for anything with formatting or</div><div><code>content</code> must be provided when <code>state</code> is <code>present</code>.</div></br>
+    <div style="font-size: small;">aliases: cert_content<div>        </td></tr>
+                <tr><td>issuer_cert<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>This is the local filename of the certificate. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>key_content<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>When used instead of 'key_src', sets the contents of a certificate key directly to the specified value. This is used with lookup plugins or for anything with formatting or templating. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
-                <tr><td>key_src<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>This is the local filename of the private key. Either one of <code>key_src</code>, <code>key_content</code>, <code>cert_src</code> or <code>cert_content</code> must be provided when <code>state</code> is <code>present</code>.</div>        </td></tr>
+        <td><div>Issuer certificate used for OCSP monitoring.</div><div>This parameter is only valid on versions of BIG-IP 13.0.0 or above</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>SSL Certificate Name. This is the cert/key pair name used when importing a certificate/key into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
-                <tr><td>passphrase<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Passphrase on certificate private key</div>        </td></tr>
+        <td><div>SSL Certificate Name. This is the cert name used when importing a certificate into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Certificate and key state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div>        </td></tr>
+        <td><div>Certificate state. This determines if the provided certificate and key is to be made <code>present</code> on the device or <code>absent</code>.</div>        </td></tr>
         </table>
     </br>
 
@@ -84,17 +70,6 @@ Examples
  ::
 
     
-    - name: Import PEM Certificate from local disk
-      bigip_ssl_certificate:
-        name: certificate-name
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        state: present
-        cert_src: /path/to/cert.crt
-        key_src: /path/to/key.key
-      delegate_to: localhost
-
     - name: Use a file lookup to import PEM Certificate
       bigip_ssl_certificate:
         name: certificate-name
@@ -102,8 +77,7 @@ Examples
         user: admin
         password: secret
         state: present
-        cert_content: "{{ lookup('file', '/path/to/cert.crt') }}"
-        key_content: "{{ lookup('file', '/path/to/key.key') }}"
+        content: "{{ lookup('file', '/path/to/cert.crt') }}"
       delegate_to: localhost
 
     - name: Use a file lookup to import CA certificate chain
@@ -113,10 +87,10 @@ Examples
         user: admin
         password: secret
         state: present
-        cert_content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
+        content: "{{ lookup('file', '/path/to/ca-chain.crt') }}"
       delegate_to: localhost
 
-    - name: "Delete Certificate"
+    - name: Delete Certificate
       bigip_ssl_certificate:
         name: certificate-name
         server: lb.mydomain.com
@@ -129,7 +103,7 @@ Examples
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 
@@ -143,25 +117,18 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
     </tr>
 
         <tr>
-        <td> cert_source_path </td>
-        <td> Path on BIG-IP where the source of the certificate is stored. </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> /var/config/rest/downloads/cert1.crt </td>
-    </tr>
-            <tr>
-        <td> cert_checksum </td>
+        <td> checksum </td>
         <td> SHA1 checksum of the cert that was provided. </td>
         <td align=center> changed and created </td>
         <td align=center> string </td>
         <td align=center> f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0 </td>
     </tr>
             <tr>
-        <td> cert_filename </td>
-        <td> ['The name of the SSL certificate. The C(cert_filename) and C(key_filename) will be similar to each other, however the C(cert_filename) will have a C(.crt) extension.'] </td>
+        <td> source_path </td>
+        <td> Path on BIG-IP where the source of the certificate is stored. </td>
         <td align=center> created </td>
         <td align=center> string </td>
-        <td align=center> cert1.crt </td>
+        <td align=center> /var/config/rest/downloads/cert1.crt </td>
     </tr>
             <tr>
         <td> cert_name </td>
@@ -171,25 +138,11 @@ Common return values are :doc:`documented here <http://docs.ansible.com/ansible/
         <td align=center> cert1 </td>
     </tr>
             <tr>
-        <td> key_source_path </td>
-        <td> Path on BIG-IP where the source of the key is stored </td>
+        <td> filename </td>
+        <td> ['The name of the SSL certificate.'] </td>
         <td align=center> created </td>
         <td align=center> string </td>
-        <td align=center> /var/config/rest/downloads/cert1.key </td>
-    </tr>
-            <tr>
-        <td> key_filename </td>
-        <td> ['The name of the SSL certificate key. The C(key_filename) and C(cert_filename) will be similar to each other, however the C(key_filename) will have a C(.key) extension.'] </td>
-        <td align=center> created </td>
-        <td align=center> string </td>
-        <td align=center> cert1.key </td>
-    </tr>
-            <tr>
-        <td> key_checksum </td>
-        <td> SHA1 checksum of the key that was provided. </td>
-        <td align=center> changed and created </td>
-        <td align=center> string </td>
-        <td align=center> cf23df2207d99a74fbe169e3eba035e633b65d94 </td>
+        <td align=center> cert1.crt </td>
     </tr>
         
     </table>

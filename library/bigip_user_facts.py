@@ -12,7 +12,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
 
-DOCUMENTATION = '''
+DOCUMENTATION = r'''
 ---
 module: bigip_user_facts
 short_description: Retrieve user account attributes from a BIG-IP
@@ -35,14 +35,14 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
 - name: Gather facts about user 'johnd'
   bigip_user_facts:
-      name: "johnd"
-      password: "secret"
-      server: "lb.mydomain.com"
-      user: "admin"
-      validate_certs: "no"
+    name: johnd
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    validate_certs: no
   delegate_to: localhost
 
 - name: Display the user facts
@@ -50,29 +50,29 @@ EXAMPLES = '''
     var: bigip
 '''
 
-RETURN = '''
+RETURN = r'''
 description:
-    description: The description of the user
-    returned: changed
-    type: string
-    sample: "John Doe"
+  description: The description of the user
+  returned: changed
+  type: string
+  sample: John Doe
 username_credential:
-    description: The username beign searched for
-    returned: changed
-    type: string
-    sample: "jdoe"
+  description: The username beign searched for
+  returned: changed
+  type: string
+  sample: jdoe
 encrypted_password:
-    description: The encrypted value of the password
-    returned: changed
-    type: string
-    sample: "$6$/cgtFz0....yzv465uAJ/"
+  description: The encrypted value of the password
+  returned: changed
+  type: string
+  sample: $6$/cgtFz0....yzv465uAJ/
 partition_access:
-    description: Access permissions for the account
-    returned: changed
-    type: list
-    sample:
-        - name: "all-partitions"
-          role: "admin"
+  description: Access permissions for the account
+  returned: changed
+  type: list
+  sample:
+    - name: all-partitions
+      role: admin
 '''
 
 try:
@@ -135,6 +135,16 @@ class BigIpUserFacts(object):
             result['partition_access'] = user.partitionAccess
 
         return result
+
+
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
 
 
 def main():

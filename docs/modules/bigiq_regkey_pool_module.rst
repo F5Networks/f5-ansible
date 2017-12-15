@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 3.0.5
+  * BIG-IQ >= 5.3.0
 
 
 Options
@@ -46,7 +47,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the name of the registration key pool.</div>        </td></tr>
+        <td><div>Specifies the name of the registration key pool.</div><div>You must be mindful to name your registration pools unique names. While BIG-IQ does not require this, this module does. If you do not do this, the behavior of the module is undefined and you may end up putting licenses in the wrong registration key pool.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
@@ -76,7 +77,7 @@ Examples
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

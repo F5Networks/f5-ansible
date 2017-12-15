@@ -1,14 +1,9 @@
 ---
 
-- name: Collect BIG-IP facts
-  bigip_facts:
-    include: system_info
-  register: result
-
-- name: Create published policies
+- name: Removed published policies
   bigip_policy:
     name: "{{ item }}"
-    state: present
+    state: absent
     rules:
       - rule1
       - rule2

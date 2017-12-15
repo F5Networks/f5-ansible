@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.5
 
 
 Options
@@ -41,7 +41,7 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The name of the traffic group</div>        </td></tr>
+        <td><div>The name of the traffic group.</div>        </td></tr>
         </table>
     </br>
 

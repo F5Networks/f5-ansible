@@ -290,6 +290,89 @@
     state: present
   register: result
 
+- name: Remove virtual server (FastHTTP)
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Add virtual server for policies tests
+  bigip_virtual_server:
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    profiles:
+      - http
+
+- name: Add policies to virtual
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    policies:
+      - policy1
+      - policy2
+  register: result
+
+- name: Assert Add policies to virtual
+  assert:
+    that:
+      - result is changed
+
+- name: Add policies to virtual - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    policies:
+      - policy1
+      - policy2
+  register: result
+
+- name: Assert Add policies to virtual - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove policies from virtual
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    policies: ""
+  register: result
+
+- name: Assert Remove policies from virtual
+  assert:
+    that:
+      - result is changed
+
+- name: Remove policies from virtual - Idempotent check
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    policies: ""
+  register: result
+
+- name: Assert Remove policies from virtual - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove virtual server for policies tests
+  bigip_virtual_server:
+    name: "{{ vs_name }}"
+    state: absent
+
+
+
+
+- import_tasks: teardown.yaml
+
 # Tests for different issues filed on Github
 - import_tasks: issue-00032.yaml
   tags: issue-00032
@@ -347,6 +430,9 @@
 
 - import_tasks: issue-00515.yaml
   tags: issue-00515
+
+- import_tasks: issue-00518.yaml
+  tags: issue-00518
 
 - import_tasks: issue-00519.yaml
   tags: issue-00519

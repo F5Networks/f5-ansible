@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: bigip_partition
+module: f5_support_upload
 short_description: Manage BIG-IP partitions
 description:
   - Manage BIG-IP partitions
@@ -44,6 +44,26 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-EXAMPLES = '''
+EXAMPLES = r'''
+- name: Create a ...
+  {{ module }}:
+    name: foo
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
+'''
 
+RETURN = r'''
+param1:
+  description: The new param1 value of the resource.
+  returned: changed
+  type: bool
+  sample: true
+param2:
+  description: The new param2 value of the resource.
+  returned: changed
+  type: string
+  sample: Foo is bar
 '''

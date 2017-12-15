@@ -14,7 +14,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigip_dns_record_facts
+module: bigip_snmp_user
 short_description: foo
 description:
   - foo

@@ -1,8 +1,8 @@
 .. _bigip_security_port_list:
 
 
-bigip_security_port_list - Manage port lists on BIG-IP AFM.
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_security_port_list - Manage port lists on BIG-IP AFM
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.5
 
@@ -141,11 +141,21 @@ Examples
         user: admin
       delegate_to: localhost
 
+    - name: Create port list from a file with one port per line
+      bigip_security_port_list:
+        name: lot-of-ports
+        ports: "{{ lookup('file', 'my-large-port-list.txt').split('\n') }}"
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
+
 
 Return Values
 -------------
 
-Common return values are :doc:`documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`, the following are the fields unique to this module:
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
 
 .. raw:: html
 

@@ -64,9 +64,49 @@ Examples
  ::
 
     
+    - name: Create a ...
+      bigip_dns_record_facts:
+        name: foo
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
 
 
+Return Values
+-------------
 
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> param2 </td>
+        <td> The new param2 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Foo is bar </td>
+    </tr>
+            <tr>
+        <td> param1 </td>
+        <td> The new param1 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
