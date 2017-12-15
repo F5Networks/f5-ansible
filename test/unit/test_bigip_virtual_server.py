@@ -21,7 +21,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
     from library.bigip_virtual_server import VirtualAddressParameters
-    from library.bigip_virtual_server import VirtualServerParameters
+    from library.bigip_virtual_server import VirtualServerModuleParameters
+    from library.bigip_virtual_server import VirtualServerApiParameters
     from library.bigip_virtual_server import ModuleManager
     from library.bigip_virtual_server import VirtualServerManager
     from library.bigip_virtual_server import VirtualAddressManager
@@ -31,7 +32,8 @@ try:
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressParameters
-        from ansible.modules.network.f5.bigip_virtual_server import VirtualServerParameters
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualServerApiParameters
+        from ansible.modules.network.f5.bigip_virtual_server import VirtualServerModuleParameters
         from ansible.modules.network.f5.bigip_virtual_server import ModuleManager
         from ansible.modules.network.f5.bigip_virtual_server import VirtualServerManager
         from ansible.modules.network.f5.bigip_virtual_server import VirtualAddressManager
@@ -68,14 +70,14 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='1.1.1.1'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
 
     def test_destination_mutex_2(self):
         args = dict(
             destination='1.1.1.1%2'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.route_domain == 2
 
@@ -83,7 +85,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='1.1.1.1:80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.port == 80
 
@@ -91,39 +93,39 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='1.1.1.1%2:80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.port == 80
         assert p.destination_tuple.route_domain == 2
 
-    def test_destination_mutex_5(self):
+    def test_api_destination_mutex_5(self):
         args = dict(
             destination='/Common/1.1.1.1'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
 
-    def test_destination_mutex_6(self):
+    def test_api_destination_mutex_6(self):
         args = dict(
             destination='/Common/1.1.1.1%2'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.route_domain == 2
 
-    def test_destination_mutex_7(self):
+    def test_api_destination_mutex_7(self):
         args = dict(
             destination='/Common/1.1.1.1:80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.port == 80
 
-    def test_destination_mutex_8(self):
+    def test_api_destination_mutex_8(self):
         args = dict(
             destination='/Common/1.1.1.1%2:80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '1.1.1.1'
         assert p.destination_tuple.port == 80
         assert p.destination_tuple.route_domain == 2
@@ -132,14 +134,14 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='2700:bc00:1f10:101::6'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
 
     def test_destination_mutex_10(self):
         args = dict(
             destination='2700:bc00:1f10:101::6%2'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
         assert p.destination_tuple.route_domain == 2
 
@@ -147,7 +149,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='2700:bc00:1f10:101::6.80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
         assert p.destination_tuple.port == 80
 
@@ -155,7 +157,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             destination='2700:bc00:1f10:101::6%2.80'
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.destination_tuple.ip == '2700:bc00:1f10:101::6'
         assert p.destination_tuple.port == 80
         assert p.destination_tuple.route_domain == 2
@@ -196,7 +198,7 @@ class TestParameters(unittest.TestCase):
             ],
             enabled_vlans=['vlan2']
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerModuleParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
@@ -233,7 +235,7 @@ class TestParameters(unittest.TestCase):
             ],
             enabled_vlans=['/Common/vlan2']
         )
-        p = VirtualServerParameters(args)
+        p = VirtualServerModuleParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
@@ -340,15 +342,20 @@ class TestParameters(unittest.TestCase):
                 ]
             }
         }
-        p = VirtualServerParameters(args)
+        p = VirtualServerApiParameters(args)
         assert p.name == 'my-virtual-server'
         assert p.partition == 'Common'
         assert p.port == 443
         assert p.destination == '/Common/10.10.10.10:443'
         assert p.snat == {'type': 'automap'}
         assert p.description == 'Test Virtual Server'
-        assert {'context': 'all', 'name': 'http'} in p.profiles
-        assert '/Common/net1' in p.enabled_vlans
+        assert 'context' in p.profiles[0]
+        assert 'name' in p.profiles[0]
+        assert 'fullPath' in p.profiles[0]
+        assert p.profiles[0]['context'] == 'all'
+        assert p.profiles[0]['name'] == 'http'
+        assert p.profiles[0]['fullPath'] == '/Common/http'
+        assert '/Common/net1' in p.vlans
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
@@ -453,7 +460,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = VirtualServerParameters(
+        current = VirtualServerApiParameters(
             dict(
                 agent_status_traps='disabled'
             )
@@ -491,7 +498,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+        current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_1.json'))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -525,7 +532,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+        current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_1.json'))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -549,7 +556,7 @@ class TestManager(unittest.TestCase):
             name="my-virtual-server",
             partition="Common",
             password="secret",
-            enabled_vlans=[
+            disabled_vlans=[
                 "net1"
             ],
             server="localhost",
@@ -560,7 +567,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = VirtualServerParameters(load_fixture('load_ltm_virtual_2.json'))
+        current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_2.json'))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -596,7 +603,7 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = VirtualServerParameters(load_fixture('load_ltm_virtual_2.json'))
+        current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_2.json'))
 
         client = AnsibleF5Client(
             argument_spec=self.spec.argument_spec,
@@ -653,7 +660,7 @@ class TestDeprecatedAnsible24Manager(unittest.TestCase):
             f5_product_name=self.spec.f5_product_name
         )
 
-        vsm_current = VirtualServerParameters(load_fixture('load_ltm_virtual_1.json'))
+        vsm_current = VirtualServerApiParameters(load_fixture('load_ltm_virtual_1.json'))
         vam_current = VirtualAddressParameters(load_fixture('load_ltm_virtual_1_address.json'))
 
         vsm = VirtualServerManager(client)
