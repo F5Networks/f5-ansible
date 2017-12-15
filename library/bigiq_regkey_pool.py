@@ -330,7 +330,7 @@ class ModuleManager(object):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.cm.device.licensing.pool.regkey.licenses_s.licenses.load(
             id=self.want.uuid
         )
