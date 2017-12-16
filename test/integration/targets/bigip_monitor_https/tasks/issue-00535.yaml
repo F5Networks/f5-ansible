@@ -1,0 +1,42 @@
+---
+
+- name: Issue 00535 - Create partition
+  bigip_partition:
+    name: si
+
+- name: Issue 00535 - Create monitor
+  bigip_monitor_https:
+    name: "monitor_pcimw_recurring_FTTH_payment_https"
+    send: "GET /fiber-recurring-payment-services HTTP/1.1\r\nHost:www.sample.com.com  \r\nConnection: Close\r\n\r\n"
+    receive: "Fiber Recurring Payment Services"
+    partition: si
+  register: result
+
+- name: Issue 00535 - Assert Create monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00535 - Create monitor - Idempotent check
+  bigip_monitor_https:
+    name: "monitor_pcimw_recurring_FTTH_payment_https"
+    send: "GET /fiber-recurring-payment-services HTTP/1.1\r\nHost:www.sample.com.com  \r\nConnection: Close\r\n\r\n"
+    receive: "Fiber Recurring Payment Services"
+    partition: si
+  register: result
+
+- name: Issue 00535 - Assert Create monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00535 - Remove monitor
+  bigip_monitor_https:
+    name: "monitor_pcimw_recurring_FTTH_payment_https"
+    partition: si
+    state: absent
+
+- name: Issue 00535 - Remove partition
+  bigip_partition:
+    name: si
+    state: absent
