@@ -225,7 +225,3 @@
   assert:
     that:
       - result is not changed
-
-# TODO: These tests should be in their own modules. Move in 2.5
-- import_tasks: legacy_tcp_echo.yaml
-- import_tasks: legacy_tcp_half_open.yaml
