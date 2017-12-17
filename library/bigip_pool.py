@@ -94,16 +94,6 @@ options:
       - reset
       - drop
       - reselect
-  host:
-    description:
-      - Pool member IP.
-      - Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
-    aliases:
-      - address
-  port:
-    description:
-      - Pool member port.
-      - Deprecated in 2.4. Use the C(bigip_pool_member) module instead.
   partition:
     description:
       - Device partition to manage resources on.
@@ -147,12 +137,12 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Add pool member
-  bigip_pool:
+  bigip_pool_member:
     server: lb.mydomain.com
     user: admin
     password: secret
     state: present
-    name: my-pool
+    pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
@@ -213,12 +203,12 @@ EXAMPLES = r'''
   delegate_to: localhost
 
 - name: Remove pool member from pool
-  bigip_pool:
+  bigip_pool_member:
     server: lb.mydomain.com
     user: admin
     password: secret
     state: absent
-    name: my-pool
+    pool: my-pool
     partition: Common
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
@@ -266,16 +256,6 @@ lb_method:
   returned: changed
   type: string
   sample: round-robin
-host:
-  description: IP of pool member included in pool.
-  returned: changed
-  type: string
-  sample: 10.10.10.10
-port:
-  description: Port of pool member included in pool.
-  returned: changed
-  type: int
-  sample: 80
 slow_ramp_time:
   description: The new value that is set for the slow ramp-up time.
   returned: changed
@@ -325,14 +305,13 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'host', 'port', 'slow_ramp_time',
-        'reselect_tries', 'monitor', 'member_name', 'name', 'partition'
+        'description', 'lb_method', 'slow_ramp_time',
+        'reselect_tries', 'monitor', 'name', 'partition'
     ]
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
-        'host', 'port'
+        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries'
     ]
 
     def __init__(self, params=None):
@@ -459,13 +438,6 @@ class ModuleParameters(Parameters):
         return self._values['monitors']
 
     @property
-    def member_name(self):
-        if self.host is None or self.port is None:
-            return None
-        mname = str(self.host) + ':' + str(self.port)
-        return mname
-
-    @property
     def quorum(self):
         if self._values['quorum'] is None:
             return None
@@ -477,28 +449,6 @@ class ModuleParameters(Parameters):
         if self._values['monitor_type'] is None:
             return None
         return self._values['monitor_type']
-
-    @property
-    def host(self):
-        value = self._values['host']
-        if value is None:
-            return None
-        msg = "'%s' is not a valid IP address" % value
-        try:
-            IPAddress(value)
-        except AddrFormatError:
-            raise F5ModuleError(msg)
-        return value
-
-    @property
-    def port(self):
-        value = self._values['port']
-        if value is None:
-            return None
-        msg = "The provided port '%s' must be between 0 and 65535" % value
-        if value < 0 or value > 65535:
-            raise F5ModuleError(msg)
-        return value
 
 
 class Changes(Parameters):
@@ -649,19 +599,6 @@ class ModuleManager(object):
             return True
         return False
 
-    def _member_does_not_exist(self, members):
-        name = self.want.member_name
-        # Return False if name is None, so that we don't attempt to create it
-        if name is None:
-            return False
-        for member in members:
-            if member.name == name:
-                host, port = name.split(':')
-                self.have.host = host
-                self.have.port = int(port)
-                return False
-        return True
-
     def present(self):
         if self.exists():
             return self.update()
@@ -680,10 +617,7 @@ class ModuleManager(object):
         return False
 
     def update(self):
-        self.have, members, poolres = self.read_current_from_device()
-        if not self.client.check_mode:
-            if self._member_does_not_exist(members):
-                self.create_member_on_device(poolres)
+        self.have = self.read_current_from_device()
         if not self.should_update():
             return False
         if self.client.check_mode:
@@ -722,22 +656,12 @@ class ModuleManager(object):
         if self.client.check_mode:
             return True
         self.create_on_device()
-        if self.want.member_name:
-            self.have, members, poolres = self.read_current_from_device()
-            if self._member_does_not_exist(members):
-                self.create_member_on_device(poolres)
         return True
 
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.ltm.pools.pool.create(
             partition=self.want.partition, **params
-        )
-
-    def create_member_on_device(self, poolres):
-        poolres.members_s.members.create(
-            name=self.want.member_name,
-            partition=self.want.partition
         )
 
     def update_on_device(self):
@@ -759,44 +683,17 @@ class ModuleManager(object):
             name=self.want.name,
             partition=self.want.partition
         )
-        if self.want.member_name and self.want.port and self.want.pool:
-            member = result.members_s.members.load(
-                name=self.want.member_name,
-                partition=self.want.partition
-            )
-            if member:
-                member.delete()
-                self.delete_node_on_device()
-        else:
-            result.delete()
+        result.delete()
 
     def read_current_from_device(self):
-        tmp_res = self.client.api.tm.ltm.pools.pool.load(
+        resource = self.client.api.tm.ltm.pools.pool.load(
             name=self.want.name,
             partition=self.want.partition,
             requests_params=dict(
                 params='expandSubcollections=true'
             )
         )
-        members = tmp_res.members_s.get_collection()
-
-        result = tmp_res.attrs
-        return ApiParameters(result), members, tmp_res
-
-    def delete_node_on_device(self):
-        resource = self.client.api.tm.ltm.nodes.node.load(
-            name=self.want.host,
-            partition=self.want.partition
-        )
-        try:
-            resource.delete()
-        except iControlUnexpectedHTTPError as e:
-            # If we cannot remove it, it is in use, it is up to user to delete
-            # it later.
-            if "is referenced by a member of pool" in str(e):
-                return
-            else:
-                raise
+        return ApiParameters(resource.attrs)
 
 
 class ArgumentSpec(object):
@@ -854,15 +751,7 @@ class ArgumentSpec(object):
                     'drop', 'reselect'
                 ]
             ),
-            description=dict(),
-            host=dict(
-                aliases=['address'],
-                removed_in_version='2.4'
-            ),
-            port=dict(
-                type='int',
-                removed_in_version='2.4'
-            )
+            description=dict()
         )
         self.f5_product_name = 'bigip'
 
