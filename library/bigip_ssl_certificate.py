@@ -38,13 +38,17 @@ options:
   name:
     description:
       - SSL Certificate Name. This is the cert name used when importing a certificate
-        into the F5. It also determines the filenames of the objects on the LTM
-        (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).
+        into the F5. It also determines the filenames of the objects on the LTM.
     required: True
   issuer_cert:
     description:
       - Issuer certificate used for OCSP monitoring.
-      - This parameter is only valid on versions of BIG-IP 13.0.0 or above
+      - This parameter is only valid on versions of BIG-IP 13.0.0 or above.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.

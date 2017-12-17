@@ -43,6 +43,11 @@ options:
   passphrase:
     description:
       - Passphrase on key.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
