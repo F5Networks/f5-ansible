@@ -1,0 +1,25 @@
+---
+
+- name: Change pool lb_method, {{ item }}
+  bigip_pool:
+    lb_method: "{{ item }}"
+    name: "{{ pool_name }}"
+    state: present
+  register: result
+
+- name: Assert Change pool lb_method, {{ item }}
+  assert:
+    that:
+      - result is changed
+
+- name: Change pool lb_method, {{ item }} - Idempotent check
+  bigip_pool:
+    lb_method: "{{ item }}"
+    name: "{{ pool_name }}"
+    state: present
+  register: result
+
+- name: Assert Change pool lb_method, {{ item }} - Idempotent check
+  assert:
+    that:
+      - result is not changed

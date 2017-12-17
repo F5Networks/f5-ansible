@@ -40,7 +40,7 @@
 
 - name: Issue 00331 - Creating the cloud_pool
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: "{{ cloud_pool }}"
     monitors: "{{ cloud_http_mon }}"
     slow_ramp_time: 120
@@ -53,7 +53,7 @@
 
 - name: Issue 00331 - Creating the cloud_pool - Idempotent check
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: "{{ cloud_pool }}"
     monitors: "{{ cloud_http_mon }}"
     slow_ramp_time: 120
