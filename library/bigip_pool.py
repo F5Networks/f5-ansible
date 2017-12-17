@@ -131,7 +131,7 @@ EXAMPLES = r'''
     state: present
     name: my-pool
     partition: Common
-    lb_method: least_connection_member
+    lb_method: least-connection-member
     slow_ramp_time: 120
   delegate_to: localhost
 
@@ -143,7 +143,7 @@ EXAMPLES = r'''
     state: present
     name: my-pool
     partition: Common
-    lb_method: round_robin
+    lb_method: round-robin
   delegate_to: localhost
 
 - name: Add pool member
@@ -366,36 +366,11 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def lb_method(self):
-        lb_map = {
-            'ratio_node_address': 'ratio-node',
-            'dynamic_ratio': 'dynamic-ratio-node',
-            'least_connection_member': 'least-connections-member',
-            'least_connection_node_address': 'least-connections-node',
-            'fastest_node_address': 'fastest-node',
-            'observed_node_address': 'observed-node',
-            'predictive_node_address': 'predictive-node',
-            'weighted_least_connection_member': 'weighted-least-connections-member',
-            'weighted_least_connection_node_address': 'weighted-least-connections-node',
-            'ratio_least_connection_member': 'ratio-least-connections-member',
-            'ratio_least_connection_node_address': 'ratio-least-connections-node'
-        }
         lb_method = self._values['lb_method']
         if lb_method is None:
             return None
 
         spec = ArgumentSpec()
-        if lb_method in spec.lb_choice_removed:
-            raise F5ModuleError(
-                "The provided lb_method is not supported"
-            )
-        if lb_method in spec.lb_choice_deprecated:
-            self._values['__warnings'].append(
-                dict(
-                    msg="The provided lb_method '{0}' is deprecated".format(lb_method),
-                    version='2.4'
-                )
-            )
-            lb_method = lb_map.get(lb_method, lb_method.replace('_', '-'))
         if lb_method not in spec.lb_choice:
             raise F5ModuleError('Provided lb_method is unknown')
         return lb_method
@@ -404,16 +379,6 @@ class Parameters(AnsibleF5Parameters):
         if value is not None and not value.startswith('/'):
             return '/{0}/{1}'.format(self.partition, value)
         return value
-
-    @property
-    def monitors_list(self):
-        if self._values['monitors'] is None:
-            return []
-        try:
-            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
-            return result
-        except Exception:
-            return self._values['monitors']
 
     @property
     def monitors(self):
@@ -425,89 +390,6 @@ class Parameters(AnsibleF5Parameters):
             result = 'min %s of { %s }' % (self.quorum, monitors)
         else:
             result = ' and '.join(monitors).strip()
-
-        return result
-
-    @property
-    def quorum(self):
-        if self.kind == 'tm:ltm:pool:poolstate':
-            if self._values['monitors'] is None:
-                return None
-            pattern = r'min\s+(?P<quorum>\d+)\s+of'
-            matches = re.search(pattern, self._values['monitors'])
-            if matches:
-                quorum = matches.group('quorum')
-            else:
-                quorum = None
-        else:
-            quorum = self._values['quorum']
-        try:
-            if quorum is None:
-                return None
-            return int(quorum)
-        except ValueError:
-            raise F5ModuleError(
-                "The specified 'quorum' must be an integer."
-            )
-
-    @property
-    def monitor_type(self):
-        if self.kind == 'tm:ltm:pool:poolstate':
-            if self._values['monitors'] is None:
-                return None
-            pattern = r'min\s+\d+\s+of'
-            matches = re.search(pattern, self._values['monitors'])
-            if matches:
-                return 'm_of_n'
-            else:
-                return 'and_list'
-        else:
-            if self._values['monitor_type'] is None:
-                return None
-            return self._values['monitor_type']
-
-    @property
-    def host(self):
-        value = self._values['host']
-        if value is None:
-            return None
-        msg = "'%s' is not a valid IP address" % value
-        try:
-            IPAddress(value)
-        except AddrFormatError:
-            raise F5ModuleError(msg)
-        return value
-
-    @host.setter
-    def host(self, value):
-        self._values['host'] = value
-
-    @property
-    def port(self):
-        value = self._values['port']
-        if value is None:
-            return None
-        msg = "The provided port '%s' must be between 0 and 65535" % value
-        if value < 0 or value > 65535:
-            raise F5ModuleError(msg)
-        return value
-
-    @port.setter
-    def port(self, value):
-        self._values['port'] = value
-
-    @property
-    def member_name(self):
-        if self.host is None or self.port is None:
-            return None
-        mname = str(self.host) + ':' + str(self.port)
-        return mname
-
-    def to_return(self):
-        result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
         return result
 
     def api_params(self):
@@ -522,8 +404,120 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    def _verify_quorum_type(self, quorum):
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
+            raise F5ModuleError(
+                "The specified 'quorum' must be an integer."
+            )
+
+
+class ApiParameters(Parameters):
+    @property
+    def quorum(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<quorum>\d+)\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            quorum = matches.group('quorum')
+        else:
+            quorum = None
+        result = self._verify_quorum_type(quorum)
+        return result
+
+    @property
+    def monitor_type(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+\d+\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            return 'm_of_n'
+        else:
+            return 'and_list'
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            return result
+        except Exception:
+            return self._values['monitors']
+
+
+class ModuleParameters(Parameters):
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        return self._values['monitors']
+
+    @property
+    def member_name(self):
+        if self.host is None or self.port is None:
+            return None
+        mname = str(self.host) + ':' + str(self.port)
+        return mname
+
+    @property
+    def quorum(self):
+        if self._values['quorum'] is None:
+            return None
+        result = self._verify_quorum_type(self._values['quorum'])
+        return result
+
+    @property
+    def monitor_type(self):
+        if self._values['monitor_type'] is None:
+            return None
+        return self._values['monitor_type']
+
+    @property
+    def host(self):
+        value = self._values['host']
+        if value is None:
+            return None
+        msg = "'%s' is not a valid IP address" % value
+        try:
+            IPAddress(value)
+        except AddrFormatError:
+            raise F5ModuleError(msg)
+        return value
+
+    @property
+    def port(self):
+        value = self._values['port']
+        if value is None:
+            return None
+        msg = "The provided port '%s' must be between 0 and 65535" % value
+        if value < 0 or value > 65535:
+            raise F5ModuleError(msg)
+        return value
+
 
 class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -597,9 +591,9 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def exec_module(self):
         changed = False
@@ -614,18 +608,15 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations()
+        self._announce_deprecations(result)
         return result
 
-    def _announce_deprecations(self):
-        warnings = []
-        if self.want:
-            warnings += self.want._values.get('__warnings', [])
-        if self.have:
-            warnings += self.have._values.get('__warnings', [])
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
         for warning in warnings:
             self.client.module.deprecate(
                 msg=warning['msg'],
@@ -638,7 +629,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -649,9 +640,12 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -779,12 +773,15 @@ class ModuleManager(object):
     def read_current_from_device(self):
         tmp_res = self.client.api.tm.ltm.pools.pool.load(
             name=self.want.name,
-            partition=self.want.partition
+            partition=self.want.partition,
+            requests_params=dict(
+                params='expandSubcollections=true'
+            )
         )
         members = tmp_res.members_s.get_collection()
 
         result = tmp_res.attrs
-        return Parameters(result), members, tmp_res
+        return ApiParameters(result), members, tmp_res
 
     def delete_node_on_device(self):
         resource = self.client.api.tm.ltm.nodes.node.load(
@@ -804,30 +801,6 @@ class ModuleManager(object):
 
 class ArgumentSpec(object):
     def __init__(self):
-        self.lb_choice_deprecated = [
-            'round_robin',
-            'ratio_member',
-            'least_connection_member',
-            'observed_member',
-            'predictive_member',
-            'ratio_node_address',
-            'least_connection_node_address',
-            'fastest_node_address',
-            'observed_node_address',
-            'predictive_node_address',
-            'dynamic_ratio',
-            'fastest_app_response',
-            'least_sessions',
-            'dynamic_ratio_member',
-            'ratio_session',
-            'weighted_least_connection_member',
-            'ratio_least_connection_member',
-            'weighted_least_connection_node_address',
-            'ratio_least_connection_node_address'
-        ]
-        self.lb_choice_removed = [
-            'l3_addr'
-        ]
         self.lb_choice = [
             'dynamic-ratio-member',
             'dynamic-ratio-node',
@@ -849,7 +822,6 @@ class ArgumentSpec(object):
             'weighted-least-connections-member',
             'weighted-least-connections-node'
         ]
-        lb_choices = self.lb_choice_removed + self.lb_choice + self.lb_choice_deprecated
         self.supports_check_mode = True
         self.argument_spec = dict(
             name=dict(
@@ -857,7 +829,7 @@ class ArgumentSpec(object):
                 aliases=['pool']
             ),
             lb_method=dict(
-                choices=lb_choices
+                choices=self.lb_choice
             ),
             monitor_type=dict(
                 choices=[
