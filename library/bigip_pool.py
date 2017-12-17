@@ -454,13 +454,18 @@ class ModuleParameters(Parameters):
 class Changes(Parameters):
     def to_return(self):
         result = {}
-        try:
-            for returnable in self.returnables:
+        for returnable in self.returnables:
+            try:
                 result[returnable] = getattr(self, returnable)
+            except Exception as ex:
             result = self._filter_params(result)
-        except Exception:
-            pass
         return result
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        return self._values['monitors']
 
 
 class UsableChanges(Changes):
@@ -468,7 +473,10 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def monitors(self):
+        result = sorted(re.findall(r'/\w+/[^\s}]+', self._values['monitors']))
+        return result
 
 
 class Difference(object):
