@@ -424,7 +424,8 @@ class Parameters(AnsibleF5Parameters):
                     )
                 else:
                     result.append(svc)
-        return set(result)
+        result = sorted(list(set(result)))
+        return result
 
     def _fqdn_name(self, value):
         if value is not None and not value.startswith('/'):
@@ -468,7 +469,9 @@ class ApiParameters(Parameters):
 
     @property
     def allow_service(self):
-        return self._values['allow_service']
+        if self._values['allow_service'] is None:
+            return None
+        return sorted(self._values['allow_service'])
 
     @property
     def trafficGroup(self):
@@ -485,9 +488,9 @@ class ApiParameters(Parameters):
     @allowService.setter
     def allowService(self, value):
         if value == 'all':
-            self._values['allow_service'] = set(['all'])
+            self._values['allow_service'] = ['all']
         else:
-            self._values['allow_service'] = set([str(x) for x in value])
+            self._values['allow_service'] = sorted([str(x) for x in value])
 
 
 class ModuleManager(object):
@@ -599,6 +602,13 @@ class ModuleManager(object):
             self.want.update({'traffic_group': '/Common/traffic-group-local-only'})
         if self.want.route_domain is None:
             self.want.update({'route_domain': 0})
+        if self.want.allow_service:
+            if 'all' in self.want.allow_service:
+                self.want.update(dict(allow_service='all'))
+            elif 'none' in self.want.allow_service:
+                self.want.update(dict(allow_service=[]))
+            elif 'default' in self.want.allow_service:
+                self.want.update(dict(allow_service=['default']))
         if self.want.check_mode:
             return True
         self.create_on_device()
@@ -674,23 +684,20 @@ class Difference(object):
         This is a convenience function to massage the values the user has
         supplied so that they are formatted in such a way that BIG-IP will
         accept them and apply the specified policy.
-
-        :param services: The services to format. This is always a Python set
-        :return:
         """
         if self.want.allow_service is None:
             return None
-        result = list(self.want.allow_service)
-        if self.want.allow_service == self.have.allow_service:
+        result = self.want.allow_service
+        if result[0] == 'none' and self.have.allow_service is None:
             return None
-        elif result[0] == 'none' and self.have.allow_service is None:
-            return None
-        elif result[0] == 'all':
+        elif result[0] == 'all' and self.have.allow_service[0] != 'all':
             return 'all'
         elif result[0] == 'none':
             return []
-        else:
-            return list(result)
+        elif self.have.allow_service is None:
+            return result
+        elif set(self.want.allow_service) != set(self.have.allow_service):
+            return result
 
     @property
     def netmask(self):

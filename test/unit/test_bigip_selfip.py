@@ -80,7 +80,7 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         assert p.address == '10.10.10.10%1/24'
-        assert p.allow_service == set(['tcp:80', 'udp:53', 'gre:0'])
+        assert p.allow_service == ['gre:0', 'tcp:80', 'udp:53']
         assert p.name == 'net1'
         assert p.netmask == 24
         assert p.route_domain == 1
@@ -97,7 +97,7 @@ class TestParameters(unittest.TestCase):
         )
         p = Parameters(args)
         with pytest.raises(F5ModuleError) as ex:
-            assert p.allow_service == set(['tcp:80', 'udp:53', 'grp'])
+            assert p.allow_service == ['grp', 'tcp:80', 'udp:53']
         assert 'The provided protocol' in str(ex)
 
     def test_api_parameters(self):
@@ -115,7 +115,7 @@ class TestParameters(unittest.TestCase):
         )
         p = ApiParameters(args)
         assert p.address == '10.10.10.10%1/24'
-        assert p.allow_service == set(['tcp:80', 'udp:53', 'gre'])
+        assert p.allow_service == ['gre', 'tcp:80', 'udp:53']
         assert p.name == 'net1'
         assert p.netmask == 24
         assert p.route_domain == 1

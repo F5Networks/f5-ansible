@@ -42,7 +42,7 @@
 - name: Issue 00315 - Assert Create self-IPs - Idempotent check
   assert:
     that:
-      - result is changed
+      - result is not changed
 
 - name: Issue 00315 - Remove self-IPs
   bigip_selfip:
