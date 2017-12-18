@@ -1,0 +1,94 @@
+---
+
+- name: Issue 00456 - Create pool
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata:
+      ansible: 2.4
+  register: result
+
+- name: Issue 00456 - Assert Create pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Create pool - Idempotent check
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata:
+      ansible: 2.4
+  register: result
+
+- name: Issue 00456 - Assert Create pool
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Add metadata - include other datatypes
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata:
+      ansible: 2.4
+      foo: bar
+      baz:
+        - this
+      bar:
+        this: is
+        a: dictionary
+  register: result
+
+- name: Issue 00456 - Assert Add metadata - include other datatypes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Add metadata - include other datatypes - Idempotent check
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata:
+      ansible: 2.4
+      foo: bar
+      baz:
+        - this
+      bar:
+        this: is
+        a: dictionary
+  register: result
+
+- name: Issue 00456 - Assert Add metadata - include other datatypes
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Remove metadata
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata: ""
+  register: result
+
+- name: Issue 00456 - Assert Remove metadata
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Remove metadata - Idempotent check
+  bigip_pool:
+    name: issue-00456
+    lb_method: round-robin
+    metadata: ""
+  register: result
+
+- name: Issue 00456 - Assert Remove metadata
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Remove pool
+  bigip_pool:
+    name: issue-00456
+    state: absent

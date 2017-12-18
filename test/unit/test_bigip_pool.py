@@ -434,3 +434,30 @@ class TestManager(unittest.TestCase):
         assert results['name'] == 'fake_pool'
         assert results['monitors'] == ['/Testing/http', '/Testing/tcp']
         assert results['monitor_type'] == 'm_of_n'
+
+    def test_create_pool_with_metadata(self, *args):
+        set_module_args(dict(
+            pool='fake_pool',
+            metadata=dict(ansible='2.4'),
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+
+        mm = ModuleManager(client)
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['name'] == 'fake_pool'
+        assert 'metadata' in results
+        assert 'ansible' in results['metadata']
+        assert results['metadata']['ansible'] == '2.4'

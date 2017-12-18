@@ -99,6 +99,15 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
+  metdata:
+    description:
+      - Arbitrary key/value pairs that you can attach to a pool. This is useful in
+        situations where you might want to annotate a pool to me managed by Ansible.
+      - Key names will be stored as strings; this includes names that are numbers.
+      - Values for all of the keys will be stored as strings; this includes values
+        that are numbers.
+      - Data will be persisted, not ephemeral.
+    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 12.
   - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
@@ -300,18 +309,19 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
-        'reselectTries', 'serviceDownAction'
+        'reselectTries', 'serviceDownAction', 'metadata'
     ]
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'slow_ramp_time',
-        'reselect_tries', 'monitor', 'name', 'partition'
+        'reselect_tries', 'monitor', 'name', 'partition', 'metadata'
     ]
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
-        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries'
+        'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
+        'metadata'
     ]
 
     def __init__(self, params=None):
@@ -429,6 +439,20 @@ class ApiParameters(Parameters):
         except Exception:
             return self._values['monitors']
 
+    @property
+    def metadata(self):
+        if self._values['metadata'] is None:
+            return None
+        result = []
+        for md in self._values['metadata']:
+            tmp = dict(name=str(md['name']))
+            if 'value' in md:
+                tmp['value'] = str(md['value'])
+            else:
+                tmp['value'] = ''
+            result.append(tmp)
+        return result
+
 
 class ModuleParameters(Parameters):
     @property
@@ -449,6 +473,27 @@ class ModuleParameters(Parameters):
         if self._values['monitor_type'] is None:
             return None
         return self._values['monitor_type']
+
+    @property
+    def metadata(self):
+        if self._values['metadata'] is None:
+            return None
+        if self._values['metadata'] == '':
+            return []
+        result = []
+        try:
+            for k, v in iteritems(self._values['metadata']):
+                tmp = dict(name=str(k))
+                if v:
+                    tmp['value'] = str(v)
+                else:
+                    tmp['value'] = ''
+                result.append(tmp)
+        except AttributeError:
+            raise F5ModuleError(
+                "The 'metadata' parameter must be a dictionary of key/value pairs."
+            )
+        return result
 
 
 class Changes(Parameters):
@@ -501,6 +546,25 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def to_tuple(self, items):
+        result = []
+        for x in items:
+            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            result += tmp
+        return result
+
+    def _diff_complex_items(self, want, have):
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = self.to_tuple(want)
+        h = self.to_tuple(have)
+        if set(w).issubset(set(h)):
+            return None
+        else:
+            return want
+
     @property
     def monitor_type(self):
         if self.want.monitor_type is None:
@@ -545,6 +609,19 @@ class Difference(object):
             )
         if self.want.monitors != self.have.monitors:
             return self.want.monitors
+
+    @property
+    def metadata(self):
+        if self.want.metadata is None:
+            return None
+        elif len(self.want.metadata) == 0 and self.have.metadata is None:
+            return None
+        elif len(self.want.metadata) == 0:
+            return []
+        elif self.have.metadata is None:
+            return self.want.metadata
+        result = self._diff_complex_items(self.want.metadata, self.have.metadata)
+        return result
 
 
 class ModuleManager(object):
@@ -760,7 +837,8 @@ class ArgumentSpec(object):
                     'drop', 'reselect'
                 ]
             ),
-            description=dict()
+            description=dict(),
+            metadata=dict(type='raw')
         )
         self.f5_product_name = 'bigip'
 
