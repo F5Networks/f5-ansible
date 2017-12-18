@@ -137,8 +137,6 @@
     that:
       - result is not changed
 
-- import_tasks: pool_with_member.yaml
-
 - import_tasks: issue-00331.yaml
   tags: issue-00331
 
