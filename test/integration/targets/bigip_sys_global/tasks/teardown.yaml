@@ -1,0 +1,13 @@
+---
+
+- name: Reset global settings
+  bigip_sys_global:
+    banner_text: "Welcome to the BIG-IP Configuration Utility.\n\nLog in with your username and password using the fields on the left."
+    console_timeout: 0
+    gui_setup: no
+    lcd_display: yes
+    mgmt_dhcp: yes
+    net_reboot: no
+    quiet_boot: yes
+    security_banner: yes
+  register: result
