@@ -55,6 +55,11 @@ options:
       - Tag number for the VLAN. The tag number can be any integer between 1
         and 4094. The system automatically assigns a tag number if you do not
         specify a value.
+  mtu:
+    description:
+      - Specifies the maximum transmission unit (MTU) for traffic on this VLAN.
+        When creating a new VLAN, if this parameter is not specified, the default
+        value used will be C(1500).
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -123,11 +128,6 @@ interfaces:
     returned: changed
     type: list
     sample: ['1.1','1.2']
-name:
-    description: The name of the VLAN
-    returned: changed
-    type: string
-    sample: net1
 partition:
     description: The partition that the VLAN was created on
     returned: changed
@@ -154,6 +154,21 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
+    api_map = {}
+    updatables = [
+        'tagged_interfaces', 'untagged_interfaces', 'tag',
+        'description'
+    ]
+
+    returnables = [
+        'description', 'partition', 'tag', 'interfaces',
+        'tagged_interfaces', 'untagged_interfaces'
+    ]
+
+    api_attributes = [
+        'description', 'interfaces', 'tag'
+    ]
+
     def __init__(self, params=None):
         self._values = defaultdict(lambda: None)
         if params:
@@ -183,66 +198,6 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
-    updatables = [
-        'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description'
-    ]
-
-    returnables = [
-        'description', 'partition', 'name', 'tag', 'interfaces',
-        'tagged_interfaces', 'untagged_interfaces'
-    ]
-
-    api_attributes = [
-        'description', 'interfaces', 'partition', 'name', 'tag'
-    ]
-    api_map = {}
-
-    @property
-    def interfaces(self):
-        tagged = self._values['tagged_interfaces']
-        untagged = self._values['untagged_interfaces']
-        if tagged:
-            return [dict(name=x, tagged=True) for x in tagged]
-        if untagged:
-            return [dict(name=x, untagged=True) for x in untagged]
-
-    @property
-    def tagged_interfaces(self):
-        value = self._values['tagged_interfaces']
-        if value is None:
-            return None
-        ifcs = self._parse_return_ifcs()
-        for ifc in value:
-            if ifc not in ifcs:
-                err = 'The specified interface "%s" was not found' % ifc
-                raise F5ModuleError(err)
-        return value
-
-    @property
-    def untagged_interfaces(self):
-        value = self._values['untagged_interfaces']
-        if value is None:
-            return None
-        ifcs = self._parse_return_ifcs()
-        for ifc in value:
-            if ifc not in ifcs:
-                err = 'The specified interface "%s" was not found' % ifc
-                raise F5ModuleError(err)
-        return value
-
-    def _get_interfaces_from_device(self):
-        lst = self.client.api.tm.net.interfaces.get_collection()
-        return lst
-
-    def _parse_return_ifcs(self):
-        ifclst = self._get_interfaces_from_device()
-        ifcs = [str(x.name) for x in ifclst]
-        if not ifcs:
-            err = 'No interfaces were found'
-            raise F5ModuleError(err)
-        return ifcs
-
     def to_return(self):
         result = {}
         for returnable in self.returnables:
@@ -262,14 +217,178 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    @property
+    def tagged_interfaces(self):
+        if self._values['interfaces'] is None:
+            return None
+        result = [str(x.name) for x in self._values['interfaces'] if x.tagged is True]
+        result = sorted(result)
+        return result
+
+    @property
+    def untagged_interfaces(self):
+        if self._values['interfaces'] is None:
+            return None
+        result = [str(x.name) for x in self._values['interfaces'] if x.untagged is True]
+        result = sorted(result)
+        return result
+
+
+class ModuleParameters(Parameters):
+    @property
+    def untagged_interfaces(self):
+        if self._values['untagged_interfaces'] is None:
+            return None
+        if self._values['untagged_interfaces'] is None:
+            return None
+        if len(self._values['untagged_interfaces']) == 1 and self._values['untagged_interfaces'][0] == '':
+            return ''
+        result = sorted([str(x) for x in self._values['untagged_interfaces']])
+        return result
+
+    @property
+    def tagged_interfaces(self):
+        if self._values['tagged_interfaces'] is None:
+            return None
+        if self._values['tagged_interfaces'] is None:
+            return None
+        if len(self._values['tagged_interfaces']) == 1 and self._values['tagged_interfaces'][0] == '':
+            return ''
+        result = sorted([str(x) for x in self._values['tagged_interfaces']])
+        return result
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    @property
+    def tagged_interfaces(self):
+        if self._values['interfaces'] is None:
+            return None
+        result = [str(x['name']) for x in self._values['interfaces'] if 'tagged' in x and x['tagged'] is True]
+        result = sorted(result)
+        return result
+
+    @property
+    def untagged_interfaces(self):
+        if self._values['interfaces'] is None:
+            return None
+        result = [str(x['name']) for x in self._values['interfaces'] if 'untagged' in x and x['untagged'] is True]
+        result = sorted(result)
+        return result
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def untagged_interfaces(self):
+        result = []
+        if self.want.untagged_interfaces is None:
+            return None
+        elif self.want.untagged_interfaces == '' and self.have.untagged_interfaces is None:
+            return None
+        elif self.want.untagged_interfaces == '' and len(self.have.untagged_interfaces) > 0:
+            pass
+        elif not self.have.untagged_interfaces:
+            result = dict(
+                interfaces=[dict(name=x, untagged=True) for x in self.want.untagged_interfaces]
+            )
+        elif set(self.want.untagged_interfaces) != set(self.have.untagged_interfaces):
+            result = dict(
+                interfaces=[dict(name=x, untagged=True) for x in self.want.untagged_interfaces]
+            )
+        else:
+            return None
+        return result
+
+    @property
+    def tagged_interfaces(self):
+        result = []
+        if self.want.tagged_interfaces is None:
+            return None
+        elif self.want.tagged_interfaces == '' and self.have.tagged_interfaces is None:
+            return None
+        elif self.want.tagged_interfaces == '' and len(self.have.tagged_interfaces) > 0:
+            pass
+        elif not self.have.tagged_interfaces:
+            result = dict(
+                interfaces=[dict(name=x, tagged=True) for x in self.want.tagged_interfaces]
+            )
+        elif set(self.want.tagged_interfaces) != set(self.have.tagged_interfaces):
+            result = dict(
+                interfaces=[dict(name=x, tagged=True) for x in self.want.tagged_interfaces]
+            )
+        else:
+            return None
+        return result
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters()
-        self.want.client = self.client
-        self.want.update(self.client.module.params)
-        self.changes = Parameters()
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = UsableChanges(changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
+        if changed:
+            self.changes = UsableChanges(changed)
+            return True
+        return False
 
     def exec_module(self):
         changed = False
@@ -284,39 +403,20 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Parameters(changed)
-
-    def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
-        if changed:
-            self.changes = Parameters(changed)
-            return True
-        return False
-
-    def _have_interfaces(self, ifcs):
-        untagged = [str(x.name) for x in ifcs if hasattr(x, 'untagged')]
-        tagged = [str(x.name) for x in ifcs if hasattr(x, 'tagged')]
-        if untagged:
-            self.have.update({'untagged_interfaces': untagged})
-        if tagged:
-            self.have.update({'tagged_interfaces': tagged})
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def present(self):
         if self.exists():
@@ -336,9 +436,7 @@ class ModuleManager(object):
         return False
 
     def update(self):
-        self.have, ifcs = self.read_current_from_device()
-        if ifcs:
-            self._have_interfaces(ifcs)
+        self.have = self.read_current_from_device()
         if not self.should_update():
             return False
         if self.client.check_mode:
@@ -355,6 +453,14 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        if self.want.mtu is None:
+            self.want.update({'mtu': 1500})
+        if self.want.untagged_interfaces is not None:
+            interfaces = [dict(name=x, untagged=True) for x in self.want.untagged_interfaces]
+            self.want.update({'interfaces': interfaces})
+        elif self.want.tagged_interfaces is not None:
+            interfaces = [dict(name=x, tagged=True) for x in self.want.tagged_interfaces]
+            self.want.update({'interfaces': interfaces})
         self._set_changed_options()
         if self.client.check_mode:
             return True
@@ -363,35 +469,42 @@ class ModuleManager(object):
 
     def create_on_device(self):
         params = self.want.api_params()
-        self.client.api.tm.net.vlans.vlan.create(**params)
+        self.client.api.tm.net.vlans.vlan.create(
+            name=self.want.name,
+            partition=self.want.partition,
+            **params
+        )
 
     def update_on_device(self):
-        params = self.want.api_params()
-        result = self.client.api.tm.net.vlans.vlan.load(
-            name=self.want.name, partition=self.want.partition
+        params = self.changes.api_params()
+        resource = self.client.api.tm.net.vlans.vlan.load(
+            name=self.want.name,
+            partition=self.want.partition
         )
-        result.modify(**params)
+        resource.modify(**params)
 
     def exists(self):
         return self.client.api.tm.net.vlans.vlan.exists(
-            name=self.want.name, partition=self.want.partition
+            name=self.want.name,
+            partition=self.want.partition
         )
 
     def remove_from_device(self):
-        result = self.client.api.tm.net.vlans.vlan.load(
-            name=self.want.name, partition=self.want.partition
+        resource = self.client.api.tm.net.vlans.vlan.load(
+            name=self.want.name,
+            partition=self.want.partition
         )
-        if result:
-            result.delete()
+        if resource:
+            resource.delete()
 
     def read_current_from_device(self):
-        tmp_res = self.client.api.tm.net.vlans.vlan.load(
+        resource = self.client.api.tm.net.vlans.vlan.load(
             name=self.want.name, partition=self.want.partition
         )
-        ifcs = tmp_res.interfaces_s.get_collection()
-
-        result = tmp_res.attrs
-        return Parameters(result), ifcs
+        interfaces = resource.interfaces_s.get_collection()
+        result = resource.attrs
+        result['interfaces'] = interfaces
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
@@ -412,7 +525,8 @@ class ArgumentSpec(object):
             description=dict(),
             tag=dict(
                 type='int'
-            )
+            ),
+            mtu=dict(type='int')
         )
         self.f5_product_name = 'bigip'
 
