@@ -25,7 +25,7 @@
       - result is not changed
 
 - include_tasks: change-pool-lb-method.yaml
-  with_items: "{{ pool_lb_method_alt }}"
+  loop: "{{ pool_lb_method_alt }}"
 
 - name: Change pool reselect_tries
   bigip_pool:

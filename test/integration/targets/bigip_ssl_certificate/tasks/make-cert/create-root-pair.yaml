@@ -2,61 +2,61 @@
 
 - name: Create directories for files
   file:
-      path: "{{ ca_dir }}/{{ item }}"
-      state: directory
-  with_items:
-      - certs
-      - crl
-      - newcerts
-      - private
+    path: "{{ ca_dir }}/{{ item }}"
+    state: directory
+  loop:
+    - certs
+    - crl
+    - newcerts
+    - private
 
 - name: Ensure correct ownership of private dir
   file:
-      path: "{{ ca_dir }}/private"
-      mode: 0700
-      state: directory
+    path: "{{ ca_dir }}/private"
+    mode: 0700
+    state: directory
 
 - name: Touch index.txt file
   file:
-      path: "{{ ca_dir }}/index.txt"
-      state: touch
+    path: "{{ ca_dir }}/index.txt"
+    state: touch
 
 - name: Create serial file
   copy:
-      dest: "{{ ca_dir }}/serial"
-      content: 1000
+    dest: "{{ ca_dir }}/serial"
+    content: 1000
 
 - name: Create root CA openssl.cnf file
   template:
-      src: root-ca-openssl.cnf
-      dest: "{{ ca_dir }}/openssl.cnf"
+    src: root-ca-openssl.cnf
+    dest: "{{ ca_dir }}/openssl.cnf"
 
 - name: Generate RSA keyfile
   command: >
-      openssl genrsa -passout pass:default
-        -aes256
-        -out private/ca.key.pem 4096
+    openssl genrsa -passout pass:default
+      -aes256
+      -out private/ca.key.pem 4096
   args:
-      chdir: "{{ ca_dir }}"
+    chdir: "{{ ca_dir }}"
 
 - name: Ensure ownership on keyfile
   file:
-      path: "{{ ca_dir }}/private/ca.key.pem"
-      mode: 0400
+    path: "{{ ca_dir }}/private/ca.key.pem"
+    mode: 0400
 
 - name: Create request file
   command: >
-      openssl req -passin pass:default \
-        -subj "/C=GB/ST=England/O=Alice Ltd/OU=Alice Ltd Certificate Authority/CN=Alice Ltd Root CA" \
-        -config openssl.cnf \
-        -key private/ca.key.pem \
-        -new -x509 -days 7300 -sha256 -extensions v3_ca \
-        -out certs/ca.cert.pem
+    openssl req -passin pass:default \
+      -subj "/C=GB/ST=England/O=Alice Ltd/OU=Alice Ltd Certificate Authority/CN=Alice Ltd Root CA" \
+      -config openssl.cnf \
+      -key private/ca.key.pem \
+      -new -x509 -days 7300 -sha256 -extensions v3_ca \
+      -out certs/ca.cert.pem
   args:
-      chdir: "{{ ca_dir }}"
+    chdir: "{{ ca_dir }}"
 
 - name: Get cert output to make sure it is correct
   command: >
-      openssl x509 -noout -text -in certs/ca.cert.pem
+    openssl x509 -noout -text -in certs/ca.cert.pem
   args:
-      chdir: "{{ ca_dir }}"
+    chdir: "{{ ca_dir }}"

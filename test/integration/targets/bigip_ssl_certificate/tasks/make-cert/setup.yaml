@@ -2,21 +2,20 @@
 
 - name: Remove any existing files
   file:
-      path: "{{ base_ca_dir }}"
-      state: absent
+    path: "{{ base_ca_dir }}"
+    state: absent
 
 - name: Create base dir
   file:
-      path: "{{ base_ca_dir }}"
-      state: directory
+    path: "{{ base_ca_dir }}"
+    state: directory
 
 - name: Get a temporary directory name
   tempfile:
-      state: directory
-      path: "{{ base_ca_dir }}"
+    state: directory
+    path: "{{ base_ca_dir }}"
   register: tmp
 
 - name: Set CA fact for all future tasks
   set_fact:
-      ca_dir: "{{ tmp.path }}"
-
+    ca_dir: "{{ tmp.path }}"

@@ -13,7 +13,7 @@
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     ports: "{{ item.port }}"
-  with_items: "{{ port_list }}"
+  loop: "{{ port_list }}"
   register: result
 
 - name: Issue 00512 - Assert Create Port-List
@@ -26,7 +26,7 @@
     name: "{{ item.name }}"
     description: "{{ item.description }}"
     ports: "{{ item.port }}"
-  with_items: "{{ port_list }}"
+  loop: "{{ port_list }}"
   register: result
 
 - name: Issue 00512 - Assert Create Port-List - Idempotent check
@@ -38,7 +38,7 @@
   bigip_security_port_list:
     name: "{{ item.name }}"
     state: absent
-  with_items: "{{ port_list }}"
+  loop: "{{ port_list }}"
   register: result
 
 - name: Issue 00512 - Create Port-List from list
