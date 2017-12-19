@@ -60,6 +60,8 @@ options:
       - Specifies the maximum transmission unit (MTU) for traffic on this VLAN.
         When creating a new VLAN, if this parameter is not specified, the default
         value used will be C(1500).
+      - This number must be between 576 to 9198.
+    version_added: 2.5
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -157,16 +159,16 @@ class Parameters(AnsibleF5Parameters):
     api_map = {}
     updatables = [
         'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description'
+        'description', 'mtu'
     ]
 
     returnables = [
         'description', 'partition', 'tag', 'interfaces',
-        'tagged_interfaces', 'untagged_interfaces'
+        'tagged_interfaces', 'untagged_interfaces', 'mtu'
     ]
 
     api_attributes = [
-        'description', 'interfaces', 'tag'
+        'description', 'interfaces', 'tag', 'mtu'
     ]
 
     def __init__(self, params=None):
@@ -257,6 +259,16 @@ class ModuleParameters(Parameters):
             return ''
         result = sorted([str(x) for x in self._values['tagged_interfaces']])
         return result
+
+    @property
+    def mtu(self):
+        if self._values['mtu'] is None:
+            return None
+        if int(self._values['mtu']) < 576 or int(self._values['mtu']) > 9198:
+            raise F5ModuleError(
+                "The mtu value must be between 576 - 9198"
+            )
+        return int(self._values['mtu'])
 
 
 class Changes(Parameters):
