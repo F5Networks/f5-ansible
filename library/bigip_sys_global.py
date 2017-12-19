@@ -31,45 +31,36 @@ options:
     description:
       - C(enable) or C(disabled) the Setup utility in the browser-based
         Configuration utility
-    choices:
-      - enabled
-      - disabled
+    choices: ['yes', 'no']
   lcd_display:
     description:
       - Specifies, when C(enabled), that the system menu displays on the
         LCD screen on the front of the unit. This setting has no effect
         when used on the VE platform.
-    choices:
-      - enabled
-      - disabled
+    choices: ['yes', 'no']
   mgmt_dhcp:
     description:
       - Specifies whether or not to enable DHCP client on the management
         interface
-    choices:
-      - enabled
-      - disabled
+    choices: ['yes', 'no']
   net_reboot:
     description:
       - Specifies, when C(enabled), that the next time you reboot the system,
         the system boots to an ISO image on the network, rather than an
         internal media drive.
-    choices:
-      - enabled
-      - disabled
+    choices: ['yes', 'no']
   quiet_boot:
     description:
       - Specifies, when C(enabled), that the system suppresses informational
         text on the console during the boot cycle. When C(disabled), the
         system presents messages and informational text on the console during
         the boot cycle.
+    choices: ['yes', 'no']
   security_banner:
     description:
       - Specifies whether the system displays an advisory message on the
         login screen.
-    choices:
-      - enabled
-      - disabled
+    choices: ['yes', 'no']
   state:
     description:
       - The state of the variable on the system. When C(present), guarantees
