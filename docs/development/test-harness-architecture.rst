@@ -1,3 +1,5 @@
+:orphan: true
+
 Test harness architecture
 =========================
 

@@ -5,13 +5,13 @@ Follow this tutorial to create a pool, add two nodes to that pool, and  assign a
 
 You can create your own yaml file to use as a playbook, or follow along with |site_yaml|.
 
-Begin by placing the following in your ``site.yaml``:
+Begin by placing the following in your ``site.yaml`` file:
 
 .. code-block:: yaml
 
    ---
 
-   - name: Create a VIP, pool, pool members and nodes
+   - name: Create a VIP, pool, pool members, and nodes
      hosts: big-ip01.internal
      connection: local
 
@@ -47,7 +47,7 @@ Add two nodes
 
 Now you want to create the nodes in your BIG-IP configuration. Nodes represent the actual devices on your network. They could be physical gear, VMs, or other devices.
 
-To add the two nodes, put the following in your ``site.yaml``:
+To add the two nodes, put the following in your ``site.yaml`` file:
 
 .. code-block:: yaml
 
@@ -73,12 +73,12 @@ To add the two nodes, put the following in your ``site.yaml``:
 
 .. note::
 
-    It is important that the remaining tasks align vertically with the ``Add a pool`` task above. If the spacing doesn't line up, Ansible will raise an error.
+    The remaining tasks must align vertically with the ``Add a pool`` task above. If the spacing doesn't line up, Ansible will raise an error.
 
 Add the nodes to the pool
 -------------------------
 
-With the pool created and your nodes in place, you now want to add those nodes to the pool. At this point you can refer to those nodes as pool members.
+With the pool created and your nodes in place, you now want to add those nodes to the pool. At this point, you can refer to the nodes as pool members.
 
 .. code-block:: yaml
 
@@ -105,9 +105,9 @@ Add a virtual server
 
 Now that you created your pool and the nodes are members of that pool, you want to create a virtual IP address so that external requests go to the pool members.
 
-The below example uses ``172.16.10.108`` as the external address, so you likely need to change it for your own environment.
+The following example uses ``172.16.10.108`` as the external address, so you likely need to change it for your own environment.
 
-To create a virtual server, add the following to your ``site.yaml``:
+To create a virtual server, add the following to your ``site.yaml`` file:
 
 .. code-block:: yaml
 

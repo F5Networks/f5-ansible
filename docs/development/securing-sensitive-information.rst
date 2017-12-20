@@ -3,7 +3,7 @@ Securing sensitive information
 
 The f5-ansible repository contains sensitive information and needs to be secure.
 
-This sensitive nformation includes, but is not limited to:
+This sensitive information includes, but is not limited to:
 
 - Product keys
 - Internal URLs
@@ -11,12 +11,10 @@ This sensitive nformation includes, but is not limited to:
 
 To prevent exposing this information in plain text, F5 uses a series of GPG encrypted files.
 
-The remainder of this document explains how this system works.
-
 Tools used to secure information
 --------------------------------
 
-Many tools help prevent the storing of secret information in an otherwise public place. These include, but are not limited to:
+Many tools help prevent the storage of secret information in an otherwise public place. These include, but are not limited to:
 
 - blackbox (from StackExchange)
 - git-crypt
@@ -173,11 +171,11 @@ Encrypt files
 
 Determining what you should and should not encrypt is the first step in this process.
 
-Generally speaking we encrypt anything that is "F5 specific". This is kind of vague though, so here are some examples.
+Generally speaking, F5 encrypts anything that is "F5-specific". Some examples are:
 
 - Websites that are internal to F5
 - License keys used for integration tests
-- Configuration of system that is irrelevant to the public (insofar as it would not help them in any way to have)
+- System configuration that is irrelevant to the public (insofar as it would not help them in any way to have)
 
 For all of those, and more, instances, encrypt.
 

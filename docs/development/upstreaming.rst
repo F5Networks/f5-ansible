@@ -1,24 +1,24 @@
-About upstreaming
-=================
+Upstreaming
+===========
 
 Upstreaming refers to opening a PR with the Ansible core product.
 
-F5's goal with this repository is to serve as an incubator for modules to mature. Eventually, the modules here should find their way to the upstream Ansible product (core or extras).
+F5's goal with this repository is to serve as an incubator for modules to mature. Eventually, the modules in this repository should find their way to the upstream Ansible product (core or extras).
 
-Incubating modules
-------------------
+Experimental modules
+--------------------
 
-Modules in incubation follow the same naming convention as those you would find in the Ansible product. Incubation modules are easy to distinguish, because their filenames do **not** include a leading underscore.
+Experimental modules follow the same naming convention as those in the Ansible product. Experimental modules are easy to distinguish, because their filenames do **not** include a leading underscore.
 
-You can obtain incubation modules only by using the installation steps outlined here: :ref:`installunstable`.
+You can obtain experimental modules by using the installation steps outlined here: :ref:`installunstable`.
 
-An incubating module may or may not work at any point in time.
+An experimental module may or may not work at any point in time.
 
 .. note::
 
-   Just because a module is incubation does not mean that it is unstable. Many modules remain in the incubator because the community has not expressed enough interest in them.
+   Just because a module is experimental does not mean that it is unstable. Many modules remain in the incubator because the community has not expressed enough interest in them.
 
-A module in incubation should have an associated Issue in Github so that everyone can track its progress and so that others do not repeat work.
+An experimental module should have an associated Issue in Github so everyone can track the module's progress and so that others do not repeat work.
 
 Qualifications for upstreaming
 ------------------------------
@@ -46,12 +46,12 @@ You can get the modules before that point in time, but you must do so manually. 
 How to upstream a module
 ------------------------
 
-A summary of the upstreaming process is below. Only one person needs to upstreaming things.
+A summary of the upstreaming process is below. Only one person needs to know how to upstream modules.
 
 Complete GitHub template
 ------------------------
 
-Ansible provides an Issue template that you receive when you create a new PR in GitHub. You should fill out the various fields, making sure to include the following information in one of the "Summary", "Description", or related fields.
+Ansible provides an Issue template that you receive when you create a new PR in GitHub. You should fill out the various fields, making sure to include the following information in the "Summary", "Description", or related fields.
 
 Here is an example:
 
@@ -70,12 +70,12 @@ Here is an example:
    * https://github.com/F5Networks/f5-ansible/blob/devel/test/integration/bigip_user.yaml
    * https://github.com/F5Networks/f5-ansible/tree/devel/test/integration/targets/bigip_user/tasks
 
-When you include this extra information, it shows your due diligence in writing and testing the module. It helps assure the Ansible maintainers, and F5 customers, that you wrote the code has well.
+When you include this extra information, it shows your due diligence in writing and testing the module. It helps assure the Ansible maintainers, and F5 customers, that you wrote the code well.
 
 Attend the upstream meeting
 ---------------------------
 
-Generally speaking the upstreaming window is open each week, around the times of the Networking meeting. Here is the Networking team's schedule.
+Generally speaking, the upstreaming window is open each week, around the times of the Networking meeting. Here is the Networking team's schedule.
 
 - https://github.com/ansible/community/blob/master/MEETINGS.md#wednesdays
 
