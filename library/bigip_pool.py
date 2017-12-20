@@ -232,6 +232,19 @@ EXAMPLES = r'''
     name: my-pool
     partition: Common
   delegate_to: localhost
+
+- name: Add metadata to pool
+  bigip_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    metadata:
+      ansible: 2.4
+      updated_at: 2017-12-20T17:50:46Z
+  delegate_to: localhost  
 '''
 
 RETURN = r'''
@@ -275,6 +288,11 @@ reselect_tries:
   returned: changed
   type: int
   sample: 10
+metadata:
+  description: The new value of the pool.
+  returned: changed
+  type: dict
+  sample: {'key1': 'foo', 'key2': 'bar'}
 '''
 
 import re
