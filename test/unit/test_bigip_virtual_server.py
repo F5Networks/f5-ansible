@@ -633,10 +633,6 @@ class TestManager(unittest.TestCase):
         assert results['profiles'][1]['name'] == 'clientssl'
         assert results['profiles'][1]['context'] == 'clientside'
 
-
-
-
-
     def test_update_virtual_server(self, *args):
         set_module_args(dict(
             profiles=[
