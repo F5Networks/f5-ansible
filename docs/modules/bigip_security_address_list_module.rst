@@ -76,11 +76,11 @@ Options
         <td>no</td>
         <td></td>
                 <td></td>
-                <td><div>Region name of the geolocation to use.</div>        </td></tr>
+                <td><div>Region name of the country to use.</div>        </td></tr>
                     <tr><td>type<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
-                <td><ul><li>Andorra (AD)</li><li>AE</li><li>AF</li><li>AG</li><li>AI</li><li>AL</li><li>AM</li><li>AN</li><li>AO</li><li>AP</li><li>AQ</li><li>AR</li><li>AS</li><li>AT</li><li>AU</li><li>AW</li><li>Aland Islands (AX)</li><li>AZ</li><li>BA</li><li>BB</li><li>BD</li><li>BE</li><li>BF</li><li>BG</li><li>BH</li><li>BI</li><li>BJ</li><li>BL</li><li>BM</li><li>BN</li><li>BO</li><li>BQ</li><li>BR</li><li>BS</li><li>BT</li><li>BV</li><li>BW</li><li>BY</li><li>BZ</li><li>CA</li><li>CC</li><li>CD</li><li>CF</li><li>CG</li><li>CH</li><li>CI</li><li>CK</li><li>CL</li><li>CM</li><li>CN</li><li>CO</li><li>CR</li><li>CU</li><li>CV</li><li>CX</li><li>CY</li><li>CZ</li><li>DE</li><li>DJ</li><li>DK</li><li>DM</li><li>DO</li><li>DZ</li><li>EC</li><li>EE</li><li>EG</li><li>EH</li><li>ER</li><li>ES</li><li>ET</li><li>EU</li><li>FI</li><li>FJ</li><li>FK</li><li>FM</li><li>FO</li><li>FR</li><li>FX</li><li>GA</li><li>GB</li><li>GD</li><li>GE</li><li>GF</li><li>GG</li><li>GH</li><li>GI</li><li>GL</li><li>GM</li><li>GN</li><li>GP</li><li>GQ</li><li>GR</li><li>GS</li><li>GT</li><li>GU</li><li>GW</li><li>GY</li><li>HK</li><li>HM</li><li>HN</li><li>HR</li><li>HT</li><li>HU</li><li>ID</li><li>IE</li><li>IL</li><li>IM</li><li>IN</li><li>IO</li><li>IQ</li><li>IR</li><li>IS</li><li>IT</li><li>JE</li><li>JM</li><li>JO</li><li>JP</li><li>KE</li><li>KG</li><li>KH</li><li>KI</li><li>JM</li><li>JN</li><li>KP</li><li>KR</li><li>KW</li><li>KY</li><li>KZ</li><li>LA</li><li>LB</li><li>LC</li><li>LI</li><li>LK</li><li>LR</li><li>LS</li><li>LT</li><li>LU</li><li>LV</li><li>LY</li><li>MA</li><li>MC</li><li>MD</li><li>ME</li><li>MF</li><li>MG</li><li>MH</li><li>MK</li><li>ML</li><li>MM</li><li>MN</li><li>MO</li><li>MP</li><li>MQ</li><li>MR</li><li>MS</li><li>MT</li><li>MU</li><li>MV</li><li>MW</li><li>MX</li><li>MY</li><li>MZ</li><li>NA</li><li>NC</li><li>NE</li><li>NF</li><li>NG</li><li>NI</li><li>NL</li><li>False</li><li>NP</li><li>NR</li><li>NU</li><li>NZ</li><li>OM</li><li>PA</li><li>PE</li><li>PF</li><li>PG</li><li>PH</li><li>PK</li><li>PL</li><li>PM</li><li>PN</li><li>PR</li><li>PS</li><li>PT</li><li>PW</li><li>PY</li><li>QA</li><li>RE</li><li>RO</li><li>RS</li><li>RU</li><li>RW</li><li>SA</li><li>SB</li><li>SC</li><li>SD</li><li>SE</li><li>SG</li><li>SH</li><li>SI</li><li>SJ</li><li>SK</li><li>SL</li><li>SM</li><li>SN</li><li>SO</li><li>SR</li><li>ST</li><li>SV</li><li>SY</li><li>SZ</li><li>TC</li><li>TD</li><li>TF</li><li>TG</li><li>TH</li><li>TJ</li><li>TK</li><li>TL</li><li>TM</li><li>TN</li><li>TO</li><li>TR</li><li>TT</li><li>TV</li><li>TW</li><li>TZ</li><li>UA</li><li>UG</li><li>UM</li><li>US</li><li>UY</li><li>UZ</li><li>VA</li></ul></td>
+                <td><ul><li>Any valid 2 character ISO country code.</li><li>Any valid country name.</li></ul></td>
                 <td>        </td></tr>
         </table>
     </td>
@@ -96,6 +96,31 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -134,18 +159,46 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> param2 </td>
-        <td> The new param2 value of the resource. </td>
+        <td> geo_locations </td>
+        <td> The new list of geo locations applied to the address list. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> Foo is bar </td>
+        <td align=center> complex </td>
+        <td align=center>  </td>
     </tr>
             <tr>
-        <td> param1 </td>
-        <td> The new param1 value of the resource. </td>
+        <td> description </td>
+        <td> The new description of the address list. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> string </td>
+        <td align=center> My address list </td>
+    </tr>
+            <tr>
+        <td> address_lists </td>
+        <td> The new list of address list names applied to the address list. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/list1', '/Common/list2'] </td>
+    </tr>
+            <tr>
+        <td> address_ranges </td>
+        <td> The new list of address ranges applied to the address list. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['1.1.1.1-2.2.2.2', '3.3.3.3-4.4.4.4'] </td>
+    </tr>
+            <tr>
+        <td> fqdns </td>
+        <td> The new list of FQDN names applied to the address list. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['google.com', 'mit.edu'] </td>
+    </tr>
+            <tr>
+        <td> addresses </td>
+        <td> The new list of addresses applied to the address list. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['1.1.1.1', '2.2.2.2'] </td>
     </tr>
         
     </table>

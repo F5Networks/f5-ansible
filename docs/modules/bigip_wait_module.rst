@@ -48,6 +48,21 @@ Options
     <td></td>
         <td></td>
         <td><div>This overrides the normal error message from a failure to meet the required conditions.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>sleep<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>1</td>
@@ -58,6 +73,16 @@ Options
     <td>7200</td>
         <td></td>
         <td><div>Maximum number of seconds to wait for.</div><div>When used without other conditions it is equivalent of just sleeping.</div><div>The default timeout is deliberately set to 2 hours because no individual REST API.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 

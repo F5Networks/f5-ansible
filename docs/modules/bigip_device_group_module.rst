@@ -62,16 +62,41 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the name of the device group.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>save_on_auto_sync<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>True</li><li>False</li></ul></td>
         <td><div>When performing an auto-sync, specifies whether the configuration will be saved or not. If <code>false</code>, only the running configuration will be changed on the device(s) being synced to. When creating a new device group, this option will default to <code>false</code>.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>type<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>sync-failover</li><li>sync-only</li></ul></td>
         <td><div>Specifies that the type of group. A <code>sync-failover</code> device group contains devices that synchronize their configuration data and fail over to one another when a device becomes unavailable. A <code>sync-only</code> device group has no such failover. When creating a new device group, this option will default to <code>sync-only</code>. This setting cannot be changed once it has been set.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 

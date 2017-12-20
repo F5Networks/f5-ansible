@@ -53,16 +53,41 @@ Options
     <td></td>
         <td></td>
         <td><div>The license key to put in the pool.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>regkey_pool<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The registration key pool that you want to place the license in.</div><div>You must be mindful to name your registration pools unique names. While BIG-IQ does not require this, this module does. If you do not do this, the behavior of the module is undefined and you may end up putting licenses in the wrong registration key pool.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>absent</li><li>present</li></ul></td>
         <td><div>The state of the regkey license in the pool on the system.</div><div>When <code>present</code>, guarantees that the license exists in the pool.</div><div>When <code>absent</code>, removes the license from the pool.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 

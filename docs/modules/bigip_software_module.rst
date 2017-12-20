@@ -54,6 +54,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The link to an MD5 sum file of the remote hotfix ISO image, it is required when <code>hotfix</code> parameter is used and that parameter is a remote URL.</div><div>Parameter only used when and <code>state</code> is <code>installed</code>, <code>activated</code>, or <code>present</code>.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>remote_src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>no</td>
@@ -64,6 +69,16 @@ Options
     <td></td>
         <td></td>
         <td><div>Automatically chooses the first inactive volume in alphanumeric order. If there is no inactive volume, new volume with incremented volume name will be created. For example, if HD1.1 is currently active and no other volume exists, then the module will create HD1.2 and install the software. If volume name does not end with numeric character, then add <code>.1</code> to the current active volume name. When <code>volume</code> is specified, this option will be ignored.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>software<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -80,6 +95,16 @@ Options
     <td>activated</td>
         <td><ul><li>absent</li><li>activated</li><li>installed</li><li>present</li></ul></td>
         <td><div>When <code>present</code>, ensures that the software is uploaded/downloaded.</div><div>When <code>installed</code>, ensures that the software is uploaded/downloaded and installed on the system. The device is <b>not</b> rebooted into the new software.</div><div>When <code>activated</code>, ensures that the software is uploaded/downloaded, installed, and the system is rebooted to the new software.</div><div>When <code>absent</code>, only the uploaded/downloaded image will be removed from the system.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>volume<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

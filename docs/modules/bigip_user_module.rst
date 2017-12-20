@@ -47,11 +47,26 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the administrative partition to which the user has access. <code>partition_access</code> is required when creating a new account. Should be in the form "partition:role". Valid roles include <code>acceleration-policy-editor</code>, <code>admin</code>, <code>application-editor</code>, <code>auditor</code> <code>certificate-manager</code>, <code>guest</code>, <code>irule-manager</code>, <code>manager</code>, <code>no-access</code> <code>operator</code>, <code>resource-admin</code>, <code>user-manager</code>, <code>web-application-security-administrator</code>, and <code>web-application-security-editor</code>. Partition portion of tuple should be an existing partition or the value 'all'.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>password_credential<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>Set the users password to this unencrypted value. <code>password_credential</code> is required when creating a new account.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>shell<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -67,12 +82,22 @@ Options
     <td>on_create</td>
         <td><ul><li>always</li><li>on_create</li></ul></td>
         <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created users. When <code>username_credential</code> is <code>root</code>, this value will be forced to <code>always</code>.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>username_credential<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>Name of the user to create, remove or modify. There is a special case that exists for the user <code>root</code>.</div></br>
     <div style="font-size: small;">aliases: name<div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 

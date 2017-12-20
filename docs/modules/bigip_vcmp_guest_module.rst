@@ -73,11 +73,36 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the vCMP guest to manage.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>configured</li><li>disabled</li><li>provisioned</li><li>present</li><li>absent</li></ul></td>
         <td><div>The state of the vCMP guest on the system. Each state implies the actions of all states before it.</div><div>When <code>configured</code>, guarantees that the vCMP guest exists with the provided attributes. Additionally, ensures that the vCMP guest is turned off.</div><div>When <code>disabled</code>, behaves the same as <code>configured</code> the name of this state is just a convenience for the user that is more understandable.</div><div>When <code>provisioned</code>, will ensure that the guest is created and installed. This state will not start the guest; use <code>deployed</code> for that. This state is one step beyond <code>present</code> as <code>present</code> will not install the guest; only setup the configuration for it to be installed.</div><div>When <code>present</code>, ensures the guest is properly provisioned and starts the guest so that it is in a running state.</div><div>When <code>absent</code>, removes the vCMP from the system.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlans<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

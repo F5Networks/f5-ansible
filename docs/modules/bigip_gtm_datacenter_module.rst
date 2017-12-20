@@ -57,11 +57,36 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the data center.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>The virtual address state. If <code>absent</code>, an attempt to delete the virtual address will be made. This will only succeed if this virtual address is not in use by a virtual server. <code>present</code> creates the virtual address and enables it. If <code>enabled</code>, enable the virtual address if it exists. If <code>disabled</code>, create the virtual address if needed, and set state to <code>disabled</code>.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -100,6 +125,20 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
+        <td> disabled </td>
+        <td> Whether the datacenter is disabled or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> state </td>
+        <td> State of the datacenter. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> disabled </td>
+    </tr>
+            <tr>
         <td> contact </td>
         <td> The contact that was set on the datacenter. </td>
         <td align=center> changed </td>
@@ -107,18 +146,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> admin@root.local </td>
     </tr>
             <tr>
-        <td> enabled </td>
-        <td> Whether the datacenter is enabled or not </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
-    </tr>
-            <tr>
         <td> description </td>
         <td> The description that was set for the datacenter. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> Datacenter in NYC </td>
+    </tr>
+            <tr>
+        <td> enabled </td>
+        <td> Whether the datacenter is enabled or not </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> location </td>

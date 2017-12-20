@@ -73,6 +73,11 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -83,6 +88,16 @@ Options
     <td></td>
         <td></td>
         <td><div>Sets the number of times the system tries to contact a pool member after a passive failure.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>service_down_action<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -93,6 +108,16 @@ Options
     <td></td>
         <td></td>
         <td><div>Sets the ramp-up time (in seconds) to gradually ramp up the load on newly added or freshly detected up pool members.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -215,6 +240,19 @@ Examples
         partition: Common
       delegate_to: localhost
 
+    - name: Add metadata to pool
+      bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        metadata:
+          ansible: 2.4
+          updated_at: 2017-12-20T17:50:46Z
+      delegate_to: localhost  
+
 
 Return Values
 -------------
@@ -275,6 +313,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 10 </td>
     </tr>
             <tr>
+        <td> quorum </td>
+        <td> The quorum that was set on the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
+    </tr>
+            <tr>
         <td> monitor_type </td>
         <td> The contact that was set on the datacenter. </td>
         <td align=center> changed </td>
@@ -282,11 +327,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> admin@root.local </td>
     </tr>
             <tr>
-        <td> quorum </td>
-        <td> The quorum that was set on the pool. </td>
+        <td> metadata </td>
+        <td> The new value of the pool. </td>
         <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
+        <td align=center> dict </td>
+        <td align=center> {'key2': 'bar', 'key1': 'foo'} </td>
     </tr>
         
     </table>

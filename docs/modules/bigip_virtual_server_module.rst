@@ -75,6 +75,11 @@ Options
         <td></td>
         <td><div>List of rules to be applied in priority order.</div><div>If you want to remove existing iRules, specify a single empty value; <code>""</code>. See the documentation for an example.</div></br>
     <div style="font-size: small;">aliases: all_rules<div>        </td></tr>
+                <tr><td>metdata<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Arbitrary key/value pairs that you can attach to a pool. This is useful in situations where you might want to annotate a virtual to me managed by Ansible.</div><div>Key names will be stored as strings; this includes names that are numbers.</div><div>Values for all of the keys will be stored as strings; this includes values that are numbers.</div><div>Data will be persisted, not ephemeral.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -86,6 +91,11 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>policies<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -137,6 +147,16 @@ Options
     <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Enable route advertisement for destination.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>snat<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -152,6 +172,16 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
         <td><div>The virtual server state. If <code>absent</code>, delete the virtual server if it exists. <code>present</code> creates the virtual server and enable it. If <code>enabled</code>, enable the virtual server if it exists. If <code>disabled</code>, create the virtual server if needed, and set state to <code>disabled</code>.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -261,6 +291,19 @@ Examples
         pool: ""
       delegate_to: localhost
 
+    - name: Add metadata to virtual
+      bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        metadata:
+          ansible: 2.4
+          updated_at: 2017-12-20T17:50:46Z
+      delegate_to: localhost  
+
 
 Return Values
 -------------
@@ -293,13 +336,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> This is my description </td>
     </tr>
             <tr>
-        <td> enabled_vlans </td>
-        <td> List of VLANs that the virtual is enabled for. </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
-    </tr>
-            <tr>
         <td> fallback_persistence_profile </td>
         <td> Fallback persistence profile set on the virtual server. </td>
         <td align=center> changed </td>
@@ -312,6 +348,34 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> /Common/dest_addr </td>
+    </tr>
+            <tr>
+        <td> disabled </td>
+        <td> Whether the virtual server is disabled, or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> enabled_vlans </td>
+        <td> List of VLANs that the virtual is enabled for. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
+    </tr>
+            <tr>
+        <td> port </td>
+        <td> Port that the virtual server is configured to listen on. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 80 </td>
+    </tr>
+            <tr>
+        <td> pool </td>
+        <td> Pool that the virtual server is attached to. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/my-pool </td>
     </tr>
             <tr>
         <td> destination </td>
@@ -335,11 +399,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}] </td>
     </tr>
             <tr>
-        <td> disabled </td>
-        <td> Whether the virtual server is disabled, or not. </td>
+        <td> irules </td>
+        <td> iRules set on the virtual server. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
     </tr>
             <tr>
         <td> source </td>
@@ -347,13 +411,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 1.2.3.4/32 </td>
-    </tr>
-            <tr>
-        <td> irules </td>
-        <td> iRules set on the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
     </tr>
             <tr>
         <td> policies </td>
@@ -370,18 +427,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> Automap </td>
     </tr>
             <tr>
-        <td> port </td>
-        <td> Port that the virtual server is configured to listen on. </td>
+        <td> metadata </td>
+        <td> The new value of the virtual. </td>
         <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 80 </td>
-    </tr>
-            <tr>
-        <td> pool </td>
-        <td> Pool that the virtual server is attached to. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/my-pool </td>
+        <td align=center> dict </td>
+        <td align=center> {'key2': 'bar', 'key1': 'foo'} </td>
     </tr>
         
     </table>

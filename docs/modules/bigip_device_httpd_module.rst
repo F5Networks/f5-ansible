@@ -38,11 +38,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>allow<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>all</li><li>IP address, such as 172.27.1.10</li><li>IP range, such as 172.27.*.* or 172.27.0.0/255.255.0.0</li></ul></td>
+        <td><div>Specifies, if you have enabled HTTPD access, the IP address or address range for other systems that can communicate with this system.</div>        </td></tr>
                 <tr><td>auth_name<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Sets the BIG-IP authentication realm name</div>        </td></tr>
+        <td><div>Sets the BIG-IP authentication realm name.</div>        </td></tr>
                 <tr><td>auth_pam_dashboard_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -78,16 +83,41 @@ Options
     <td></td>
         <td></td>
         <td><div>Sets the maximum number of clients that can connect to the GUI at once.</div>        </td></tr>
+                <tr><td>password<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
                 <tr><td>redirect_http_to_https<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Whether or not to redirect http requests to the GUI to https.</div>        </td></tr>
+                <tr><td>server<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                <tr><td>server_port<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td>443</td>
+        <td></td>
+        <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>ssl_port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>The HTTPS port to listen on.</div>        </td></tr>
+                <tr><td>user<br/><div style="font-size: small;"></div></td>
+    <td>yes</td>
+    <td></td>
+        <td></td>
+        <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
     </br>
 
@@ -141,11 +171,74 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
+        <td> auth_pam_validate_ip </td>
+        <td> The new authPamValidateIp setting. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> hostname_lookup </td>
+        <td> Whether or not to display the hostname, if possible. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> log_level </td>
+        <td> The new minimum httpd log level. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> crit </td>
+    </tr>
+            <tr>
+        <td> auth_name </td>
+        <td> The new authentication realm name. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> foo </td>
+    </tr>
+            <tr>
+        <td> auth_pam_dashboard_timeout </td>
+        <td> Whether or not the BIG-IP dashboard will timeout. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> False </td>
+    </tr>
+            <tr>
+        <td> redirect_http_to_https </td>
+        <td> Whether or not to redirect http requests to the GUI to https. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> fast_cgi_timeout </td>
+        <td> The new timeout of FastCGI. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 500 </td>
+    </tr>
+            <tr>
+        <td> ssl_port </td>
+        <td> The new HTTPS port to listen on. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10443 </td>
+    </tr>
+            <tr>
         <td> auth_pam_idle_timeout </td>
         <td> The new number of seconds for GUI timeout. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 1200 </td>
+    </tr>
+            <tr>
+        <td> max_clients </td>
+        <td> The new maximum number of clients that can connect to the GUI at once. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 20 </td>
     </tr>
         
     </table>
