@@ -1,0 +1,5 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    name: afm

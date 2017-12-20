@@ -22,7 +22,8 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
-    from library.bigip_security_address_list import Parameters
+    from library.bigip_security_address_list import ApiParameters
+    from library.bigip_security_address_list import ModuleParameters
     from library.bigip_security_address_list import ModuleManager
     from library.bigip_security_address_list import ArgumentSpec
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -30,6 +31,8 @@ try:
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_security_address_list import Parameters
+        from ansible.modules.network.f5.bigip_security_address_list import ApiParameters
+        from ansible.modules.network.f5.bigip_security_address_list import ModuleParameters
         from ansible.modules.network.f5.bigip_security_address_list import ModuleManager
         from ansible.modules.network.f5.bigip_security_address_list import ArgumentSpec
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -61,35 +64,78 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            description='this is a description',
+            addresses=['1.1.1.1', '2.2.2.2'],
+            address_ranges=['3.3.3.3-4.4.4.4', '5.5.5.5-6.6.6.6'],
+            address_lists=['/Common/foo', 'foo']
+        )
+
+        p = ModuleParameters(args)
+        assert p.name == 'foo'
+        assert p.description == 'this is a description'
+        assert len(p.addresses) == 2
+        assert len(p.address_ranges) == 2
+        assert len(p.address_lists) == 2
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_security_address_list_1.json')
+
+        p = ApiParameters(args)
+        assert len(p.addresses) == 2
+        assert len(p.address_ranges) == 2
+        assert len(p.address_lists) == 1
+        assert len(p.fqdns) == 1
+        assert len(p.geo_locations) == 5
+        assert sorted(p.addresses) == ['1.1.1.1', '2700:bc00:1f10:101::6']
+        assert sorted(p.address_ranges) == ['2.2.2.2-3.3.3.3', '5.5.5.5-6.6.6.6']
+        assert p.address_lists[0] == '/Common/foo'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise Exception('You must write a creation test')
+        set_module_args(dict(
+            name='foo',
+            description='this is a description',
+            addresses=['1.1.1.1', '2.2.2.2'],
+            address_ranges=['3.3.3.3-4.4.4.4', '5.5.5.5-6.6.6.6'],
+            address_lists=['/Common/foo', 'foo'],
+            geo_locations=[
+                dict(country='US', region='Los Angeles'),
+                dict(country='China'),
+                dict(country='EU')
+            ],
+            fqdns=['google.com', 'mit.edu'],
+            password='password',
+            server='localhost',
+            user='admin'
+        ))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert 'addresses' in results
+        assert 'address_lists' in results
+        assert 'address_ranges' in results
+        assert len(results['addresses']) == 2
+        assert len(results['address_ranges']) == 2
+        assert len(results['address_lists']) == 2
+        assert results['description'] == 'this is a description'

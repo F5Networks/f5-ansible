@@ -117,6 +117,7 @@ address_lists:
   sample: [/Common/list1, /Common/list2]
 '''
 
+import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
@@ -139,7 +140,8 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'addressLists': 'address_lists'
+        'addressLists': 'address_lists',
+        'geo': 'geo_locations'
     }
 
     api_attributes = [
@@ -211,6 +213,7 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+
 class ApiParameters(Parameters):
     @property
     def address_ranges(self):
@@ -220,7 +223,7 @@ class ApiParameters(Parameters):
         for address_range in self._values['addresses']:
             if '-' not in address_range['name']:
                 continue
-            result.append(address_range.strip())
+            result.append(address_range['name'].strip())
         result = sorted(result)
         return result
 
@@ -239,7 +242,7 @@ class ApiParameters(Parameters):
     def addresses(self):
         if self._values['addresses'] is None:
             return None
-        result = [int(x['name']) for x in self._values['addresses'] if '-' not in x['name']]
+        result = [x['name'] for x in self._values['addresses'] if '-' not in x['name']]
         result = sorted(result)
         return result
 
@@ -247,7 +250,7 @@ class ApiParameters(Parameters):
     def fqdns(self):
         if self._values['fqdns'] is None:
             return None
-        result = [str(x.name) for x in self._values['fqdns']]
+        result = [str(x['name']) for x in self._values['fqdns']]
         result = sorted(result)
         return result
 
@@ -255,14 +258,14 @@ class ApiParameters(Parameters):
     def geo_locations(self):
         if self._values['geo_locations'] is None:
             return None
-        result = [str(x.name) for x in self._values['geo']]
+        result = [str(x['name']) for x in self._values['geo_locations']]
         result = sorted(result)
         return result
 
 
 class ModuleParameters(Parameters):
     def __init__(self, params=None):
-        super(ModuleParameters, self).__init__(self, params=params):
+        super(ModuleParameters, self).__init__(params=params)
         self.country_iso_map = {
             'Afghanistan': 'AF',
             'Albania': 'AL',
@@ -532,13 +535,11 @@ class ModuleParameters(Parameters):
 
     @property
     def address_ranges(self):
-        if self._values['addresses'] is None:
+        if self._values['address_ranges'] is None:
             return None
         result = []
-        for address_range in self._values['addresses']:
-            if '-' not in address_range['name']:
-                continue
-            start, stop = address_range['name'].split('-')
+        for address_range in self._values['address_ranges']:
+            start, stop = address_range.split('-')
             start = start.strip()
             stop = stop.strip()
 
@@ -573,7 +574,7 @@ class ModuleParameters(Parameters):
         result = []
         for x in self._values['fqdns']:
             if self.is_valid_hostname(x):
-                result.append(item)
+                result.append(x)
             else:
                 raise F5ModuleError(
                     "The hostname '{0}' looks invalid.".format(x)
@@ -587,7 +588,7 @@ class ModuleParameters(Parameters):
             return None
         result = []
         for x in self._values['geo_locations']:
-            if 'region' in x:
+            if x['region'] is not None and x['region'].strip() != '':
                 tmp = '{0}:{1}'.format(x['country'], x['region'])
             else:
                 tmp = x['country']
@@ -615,16 +616,39 @@ class ReportableChanges(Changes):
         for item in self._values['addresses']:
             if '-' in item['name']:
                 continue
-            result.append(item)
+            result.append(item['name'])
         return result
 
     @property
     def address_ranges(self):
         result = []
-        for item in self._values['address']:
+        for item in self._values['addresses']:
             if '-' not in item['name']:
                 continue
+            start, stop = item['name'].split('-')
+            start = start.strip()
+            stop = stop.strip()
+
+            start = netaddr.IPAddress(start)
+            stop = netaddr.IPAddress(stop)
+            if start.version != stop.version:
+                raise F5ModuleError(
+                    "When specifying a range, IP addresses must be of the same type; IPv4 or IPv6."
+                )
+            if start > stop:
+                stop, start = start, stop
+            item = '{0}-{1}'.format(str(start), str(stop))
             result.append(item)
+        result = sorted(result)
+        return result
+
+    @property
+    def address_lists(self):
+        result = []
+        for x in self._values['address_lists']:
+            item = '/{0}/{1}'.format(x['partition'], x['name'])
+            result.append(item)
+        result = sorted(result)
         return result
 
 
@@ -702,20 +726,22 @@ class Difference(object):
         if sorted(self.want.address_ranges) != sorted(self.have.address_ranges):
             return self.want.address_ranges
 
+    @property
+    def fqdns(self):
+        if self.want.fqdns is None:
+            return None
+        elif self.have.fqdns is None:
+            return self.want.fqdns
+        if sorted(self.want.fqdns) != sorted(self.have.fqdns):
+            return self.want.fqdns
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = Changes(changed)
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -731,7 +757,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -754,7 +780,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -799,14 +826,15 @@ class ModuleManager(object):
         return True
 
     def create(self):
-        self._set_changed_options()
+        self.have = ApiParameters()
+        self._update_changed_options()
         if self.client.check_mode:
             return True
         self.create_on_device()
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.security.firewall.address_lists.address_list.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -814,7 +842,7 @@ class ModuleManager(object):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.security.firewall.address_lists.address_list.load(
             name=self.want.name,
             partition=self.want.partition
@@ -849,10 +877,12 @@ class ArgumentSpec(object):
         self.argument_spec = dict(
             description=dict(),
             name=dict(required=True),
-            addresses=dict(),
-            address_ranges=dict(),
-            address_lists=dict(),
-            geolocation=dict(
+            addresses=dict(type='list'),
+            address_ranges=dict(type='list'),
+            address_lists=dict(type='list'),
+            geo_locations=dict(
+                type='list',
+                elements='dict',
                 options=dict(
                     country=dict(
                         required=True,
@@ -860,7 +890,7 @@ class ArgumentSpec(object):
                     region=dict()
                 )
             ),
-            fqdns=dict()
+            fqdns=dict(type='list')
         )
         self.f5_product_name = 'bigip'
 
