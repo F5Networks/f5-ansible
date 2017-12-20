@@ -134,23 +134,23 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
+description:
+  description: The new description of the port list.
+  returned: changed
+  type: string
+  sample: My port list
 ports:
-  description: The new list of ports applied to the port list
+  description: The new list of ports applied to the port list.
   returned: changed
   type: list
   sample: [80, 443]
 port_ranges:
-  description: The new list of port ranges applied to the port list
+  description: The new list of port ranges applied to the port list.
   returned: changed
   type: list
   sample: [80-100, 200-8080]
-ports:
-  description: The new list of ports applied to the port list
-  returned: changed
-  type: list
-  sample: [80, 443]
 port_lists:
-  description: The new list of port list names applied to the port list
+  description: The new list of port list names applied to the port list.
   returned: changed
   type: list
   sample: [/Common/list1, /Common/list2]
