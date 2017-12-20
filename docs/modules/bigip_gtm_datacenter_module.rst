@@ -47,11 +47,6 @@ Options
     <td></td>
         <td></td>
         <td><div>The description of the data center.</div>        </td></tr>
-                <tr><td>enabled<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>Whether the data center should be enabled. At least one of <code>state</code> and <code>enabled</code> are required.</div><div>Deprecated in 2.4. Use <code>state</code> and either <code>enabled</code> or <code>disabled</code> instead.</div>        </td></tr>
                 <tr><td>location<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

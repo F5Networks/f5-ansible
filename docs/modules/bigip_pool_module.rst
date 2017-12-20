@@ -42,17 +42,16 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies descriptive text that identifies the pool.</div>        </td></tr>
-                <tr><td>host<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Pool member IP.</div><div>Deprecated in 2.4. Use the <code>bigip_pool_member</code> module instead.</div></br>
-    <div style="font-size: small;">aliases: address<div>        </td></tr>
                 <tr><td>lb_method<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>dynamic-ratio-member</li><li>dynamic-ratio-node</li><li>fastest-app-response</li><li>fastest-node</li><li>least-connections-member</li><li>least-connections-node</li><li>least-sessions</li><li>observed-member</li><li>observed-node</li><li>predictive-member</li><li>predictive-node</li><li>ratio-least-connections-member</li><li>ratio-least-connections-node</li><li>ratio-member</li><li>ratio-node</li><li>ratio-session</li><li>round-robin</li><li>weighted-least-connections-member</li><li>weighted-least-connections-nod</li></ul></td>
         <td><div>Load balancing method. When creating a new pool, if this value is not specified, the default of <code>round-robin</code> will be used.</div>        </td></tr>
+                <tr><td>metdata<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Arbitrary key/value pairs that you can attach to a pool. This is useful in situations where you might want to annotate a pool to me managed by Ansible.</div><div>Key names will be stored as strings; this includes names that are numbers.</div><div>Values for all of the keys will be stored as strings; this includes values that are numbers.</div><div>Data will be persisted, not ephemeral.</div>        </td></tr>
                 <tr><td>monitor_type<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -74,11 +73,6 @@ Options
     <td>Common</td>
         <td></td>
         <td><div>Device partition to manage resources on.</div>        </td></tr>
-                <tr><td>port<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Pool member port.</div><div>Deprecated in 2.4. Use the <code>bigip_pool_member</code> module instead.</div>        </td></tr>
                 <tr><td>quorum<br/><div style="font-size: small;"> (added in 1.3)</div></td>
     <td>no</td>
     <td></td>
@@ -118,7 +112,7 @@ Examples
         state: present
         name: my-pool
         partition: Common
-        lb_method: least_connection_member
+        lb_method: least-connection-member
         slow_ramp_time: 120
       delegate_to: localhost
 
@@ -130,16 +124,16 @@ Examples
         state: present
         name: my-pool
         partition: Common
-        lb_method: round_robin
+        lb_method: round-robin
       delegate_to: localhost
 
     - name: Add pool member
-      bigip_pool:
+      bigip_pool_member:
         server: lb.mydomain.com
         user: admin
         password: secret
         state: present
-        name: my-pool
+        pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
@@ -200,12 +194,12 @@ Examples
       delegate_to: localhost
 
     - name: Remove pool member from pool
-      bigip_pool:
+      bigip_pool_member:
         server: lb.mydomain.com
         user: admin
         password: secret
         state: absent
-        name: my-pool
+        pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
         port: 80
@@ -272,20 +266,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> reset </td>
-    </tr>
-            <tr>
-        <td> port </td>
-        <td> Port of pool member included in pool. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 80 </td>
-    </tr>
-            <tr>
-        <td> host </td>
-        <td> IP of pool member included in pool. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 10.10.10.10 </td>
     </tr>
             <tr>
         <td> reselect_tries </td>

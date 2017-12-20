@@ -279,11 +279,109 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> deleted </td>
-        <td> Name of a virtual server that was deleted </td>
+        <td> disabled_vlans </td>
+        <td> List of VLANs that the virtual is disabled for. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/vlan1', '/Common/vlan2'] </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> New description of the virtual server. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> my-virtual-server </td>
+        <td align=center> This is my description </td>
+    </tr>
+            <tr>
+        <td> enabled_vlans </td>
+        <td> List of VLANs that the virtual is enabled for. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
+    </tr>
+            <tr>
+        <td> fallback_persistence_profile </td>
+        <td> Fallback persistence profile set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/source_addr </td>
+    </tr>
+            <tr>
+        <td> default_persistence_profile </td>
+        <td> Default persistence profile set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/dest_addr </td>
+    </tr>
+            <tr>
+        <td> destination </td>
+        <td> Destination of the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 1.1.1.1 </td>
+    </tr>
+            <tr>
+        <td> enabled </td>
+        <td> Whether the virtual server is enabled, or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> False </td>
+    </tr>
+            <tr>
+        <td> profiles </td>
+        <td> List of profiles set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}] </td>
+    </tr>
+            <tr>
+        <td> disabled </td>
+        <td> Whether the virtual server is disabled, or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> source </td>
+        <td> Source address, in CIDR form, set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 1.2.3.4/32 </td>
+    </tr>
+            <tr>
+        <td> irules </td>
+        <td> iRules set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
+    </tr>
+            <tr>
+        <td> policies </td>
+        <td> List of policies attached to the virtual. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/policy1', '/Common/policy2'] </td>
+    </tr>
+            <tr>
+        <td> snat </td>
+        <td> SNAT setting of the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Automap </td>
+    </tr>
+            <tr>
+        <td> port </td>
+        <td> Port that the virtual server is configured to listen on. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 80 </td>
+    </tr>
+            <tr>
+        <td> pool </td>
+        <td> Pool that the virtual server is attached to. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/my-pool </td>
     </tr>
         
     </table>

@@ -48,12 +48,17 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Issuer certificate used for OCSP monitoring.</div><div>This parameter is only valid on versions of BIG-IP 13.0.0 or above</div>        </td></tr>
+        <td><div>Issuer certificate used for OCSP monitoring.</div><div>This parameter is only valid on versions of BIG-IP 13.0.0 or above.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>SSL Certificate Name. This is the cert name used when importing a certificate into the F5. It also determines the filenames of the objects on the LTM (:Partition:name.cer_11111_1 and :Partition_name.key_11111_1).</div>        </td></tr>
+        <td><div>SSL Certificate Name. This is the cert name used when importing a certificate into the F5. It also determines the filenames of the objects on the LTM.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>

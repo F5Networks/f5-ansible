@@ -42,6 +42,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The description to give to the VLAN.</div>        </td></tr>
+                <tr><td>mtu<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the maximum transmission unit (MTU) for traffic on this VLAN. When creating a new VLAN, if this parameter is not specified, the default value used will be <code>1500</code>.</div><div>This number must be between 576 to 9198.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -167,13 +172,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> foo VLAN </td>
-    </tr>
-            <tr>
-        <td> name </td>
-        <td> The name of the VLAN </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> net1 </td>
     </tr>
         
     </table>

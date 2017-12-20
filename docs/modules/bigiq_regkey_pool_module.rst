@@ -92,7 +92,7 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
 
         <tr>
         <td> description </td>
-        <td> New description of the regkey pool </td>
+        <td> New description of the regkey pool. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> My description </td>
