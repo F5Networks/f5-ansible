@@ -217,8 +217,9 @@ class Parameters(AnsibleF5Parameters):
         if self._values['allow'] is None:
             return None
         allow = self._values['allow']
-        return list(set([str(x) for x in allow]))
-
+        result = list(set([str(x) for x in allow]))
+        result = sorted(result)
+        return result
 
 class ModuleManager(object):
     def __init__(self, client):
@@ -289,37 +290,22 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             allow=dict(
-                required=False,
-                default=None,
                 type='list'
             ),
             banner=dict(
-                required=False,
-                default=None,
                 choices=self.choices
             ),
-            banner_text=dict(
-                required=False,
-                default=None
-            ),
+            banner_text=dict(),
             inactivity_timeout=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             log_level=dict(
-                required=False,
-                default=None,
                 choices=self.levels
             ),
             login=dict(
-                required=False,
-                default=None,
                 choices=self.choices
             ),
             port=dict(
-                required=False,
-                default=None,
                 type='int'
             ),
             state=dict(
