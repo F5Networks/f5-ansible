@@ -160,6 +160,15 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
+  metdata:
+    description:
+      - Arbitrary key/value pairs that you can attach to a pool. This is useful in
+        situations where you might want to annotate a virtual to me managed by Ansible.
+      - Key names will be stored as strings; this includes names that are numbers.
+      - Values for all of the keys will be stored as strings; this includes values
+        that are numbers.
+      - Data will be persisted, not ephemeral.
+    version_added: 2.5
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the f5-sdk Python package on the host. This is as easy as pip
@@ -272,6 +281,19 @@ EXAMPLES = r'''
     name: my-virtual-server
     pool: ""
   delegate_to: localhost
+
+- name: Add metadata to virtual
+  bigip_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    metadata:
+      ansible: 2.4
+      updated_at: 2017-12-20T17:50:46Z
+  delegate_to: localhost  
 '''
 
 RETURN = r'''
@@ -350,6 +372,11 @@ source:
   returned: changed
   type: string
   sample: 1.2.3.4/32
+metadata:
+  description: The new value of the virtual.
+  returned: changed
+  type: dict
+  sample: {'key1': 'foo', 'key2': 'bar'}
 '''
 
 
@@ -478,6 +505,7 @@ class VirtualServerParameters(Parameters):
         'disabled',
         'enabled',
         'fallbackPersistence',
+        'metadata',
         'persist',
         'policies',
         'pool',
@@ -499,6 +527,7 @@ class VirtualServerParameters(Parameters):
         'enabled_vlans',
         'fallback_persistence_profile',
         'irules',
+        'metadata',
         'pool',
         'policies',
         'port',
@@ -517,6 +546,7 @@ class VirtualServerParameters(Parameters):
         'enabled_vlans',
         'fallback_persistence_profile',
         'irules',
+        'metadata',
         'pool',
         'policies',
         'port',
@@ -764,8 +794,39 @@ class VirtualServerApiParameters(VirtualServerParameters):
             return True
         return False
 
+    @property
+    def metadata(self):
+        if self._values['metadata'] is None:
+            return None
+        result = []
+        for md in self._values['metadata']:
+            tmp = dict(name=str(md['name']))
+            if 'value' in md:
+                tmp['value'] = str(md['value'])
+            else:
+                tmp['value'] = ''
+            result.append(tmp)
+        return result
+
 
 class VirtualServerModuleParameters(VirtualServerParameters):
+    def _handle_profile_context(self, tmp):
+        if 'context' not in tmp:
+            tmp['context'] = 'all'
+        else:
+            if 'name' not in tmp:
+                raise F5ModuleError(
+                    "A profile name must be specified when a context is specified."
+                )
+        tmp['context'] = tmp['context'].replace('server-side', 'serverside')
+        tmp['context'] = tmp['context'].replace('client-side', 'clientside')
+
+    def _handle_clientssl_profile_nuances(self, profile):
+        if profile['name'] != 'clientssl':
+            return
+        if profile['context'] != 'clientside':
+            profile['context'] = 'clientside'
+
     @property
     def destination(self):
         addr = self._values['destination'].split("%")[0]
@@ -863,23 +924,6 @@ class VirtualServerModuleParameters(VirtualServerParameters):
                 )
             )
         return result
-
-    def _handle_profile_context(self, tmp):
-        if 'context' not in tmp:
-            tmp['context'] = 'all'
-        else:
-            if 'name' not in tmp:
-                raise F5ModuleError(
-                    "A profile name must be specified when a context is specified."
-                )
-        tmp['context'] = tmp['context'].replace('server-side', 'serverside')
-        tmp['context'] = tmp['context'].replace('client-side', 'clientside')
-
-    def _handle_clientssl_profile_nuances(self, profile):
-        if profile['name'] != 'clientssl':
-            return
-        if profile['context'] != 'clientside':
-            profile['context'] = 'clientside'
 
     @property
     def policies(self):
@@ -1033,6 +1077,27 @@ class VirtualServerModuleParameters(VirtualServerParameters):
         else:
             return None
 
+    @property
+    def metadata(self):
+        if self._values['metadata'] is None:
+            return None
+        if self._values['metadata'] == '':
+            return []
+        result = []
+        try:
+            for k, v in iteritems(self._values['metadata']):
+                tmp = dict(name=str(k))
+                if v:
+                    tmp['value'] = str(v)
+                else:
+                    tmp['value'] = ''
+                result.append(tmp)
+        except AttributeError:
+            raise F5ModuleError(
+                "The 'metadata' parameter must be a dictionary of key/value pairs."
+            )
+        return result
+
 
 class VirtualServerUsableChanges(VirtualServerParameters):
     @property
@@ -1129,6 +1194,39 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def to_tuple(self, items):
+        result = []
+        for x in items:
+            tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+            result += tmp
+        return result
+
+    def _diff_complex_items(self, want, have):
+        if want == [] and have is None:
+            return None
+        if want is None:
+            return None
+        w = self.to_tuple(want)
+        h = self.to_tuple(have)
+        if set(w).issubset(set(h)):
+            return None
+        else:
+            return want
+
+    def _update_vlan_status(self, result):
+        if self.want.vlans_disabled is not None:
+            if self.want.vlans_disabled != self.have.vlans_disabled:
+                result['vlans_disabled'] = self.want.vlans_disabled
+                result['vlans_enabled'] = not self.want.vlans_disabled
+        elif self.want.vlans_enabled is not None:
+            if any(x.lower().endswith('/all') for x in self.want.vlans):
+                if self.have.vlans_enabled is True:
+                    result['vlans_disabled'] = True
+                    result['vlans_enabled'] = False
+            elif self.want.vlans_enabled != self.have.vlans_enabled:
+                result['vlans_disabled'] = not self.want.vlans_enabled
+                result['vlans_enabled'] = self.want.vlans_enabled
+
     @property
     def destination(self):
         addr_tuple = [self.want.destination, self.want.port, self.want.route_domain]
@@ -1186,20 +1284,6 @@ class Difference(object):
                 return []
         else:
             return self.want.vlans
-
-    def _update_vlan_status(self, result):
-        if self.want.vlans_disabled is not None:
-            if self.want.vlans_disabled != self.have.vlans_disabled:
-                result['vlans_disabled'] = self.want.vlans_disabled
-                result['vlans_enabled'] = not self.want.vlans_disabled
-        elif self.want.vlans_enabled is not None:
-            if any(x.lower().endswith('/all') for x in self.want.vlans):
-                if self.have.vlans_enabled is True:
-                    result['vlans_disabled'] = True
-                    result['vlans_enabled'] = False
-            elif self.want.vlans_enabled != self.have.vlans_enabled:
-                result['vlans_disabled'] = not self.want.vlans_enabled
-                result['vlans_enabled'] = self.want.vlans_enabled
 
     @property
     def enabled_vlans(self):
@@ -1354,6 +1438,19 @@ class Difference(object):
             return None
         if self.want.pool != self.have.pool:
             return self.want.pool
+
+    @property
+    def metadata(self):
+        if self.want.metadata is None:
+            return None
+        elif len(self.want.metadata) == 0 and self.have.metadata is None:
+            return None
+        elif len(self.want.metadata) == 0:
+            return []
+        elif self.have.metadata is None:
+            return self.want.metadata
+        result = self._diff_complex_items(self.want.metadata, self.have.metadata)
+        return result
 
 
 class ModuleManager(object):
@@ -1699,7 +1796,8 @@ class ArgumentSpec(object):
             ),
             default_persistence_profile=dict(),
             fallback_persistence_profile=dict(),
-            source=dict()
+            source=dict(),
+            metadata=dict(type='raw')
         )
         self.f5_product_name = 'bigip'
         self.mutually_exclusive = [

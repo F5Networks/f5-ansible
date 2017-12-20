@@ -1,0 +1,92 @@
+---
+
+- name: Issue 00456 - Create virtual
+  bigip_virtual_server:
+    name: issue-00456
+    destination: 1.1.1.1
+    port: 80
+    metadata:
+      ansible: 2.4
+  register: result
+
+- name: Issue 00456 - Assert Create virtual
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Create virtual - Idempotent check
+  bigip_virtual_server:
+    name: issue-00456
+    destination: 1.1.1.1
+    port: 80
+    metadata:
+      ansible: 2.4
+  register: result
+
+- name: Issue 00456 - Assert Create virtual
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Add metadata - include other datatypes
+  bigip_virtual_server:
+    name: issue-00456
+    metadata:
+      ansible: 2.4
+      foo: bar
+      baz:
+        - this
+      bar:
+        this: is
+        a: dictionary
+  register: result
+
+- name: Issue 00456 - Assert Add metadata - include other datatypes
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Add metadata - include other datatypes - Idempotent check
+  bigip_virtual_server:
+    name: issue-00456
+    metadata:
+      ansible: 2.4
+      foo: bar
+      baz:
+        - this
+      bar:
+        this: is
+        a: dictionary
+  register: result
+
+- name: Issue 00456 - Assert Add metadata - include other datatypes
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Remove metadata
+  bigip_virtual_server:
+    name: issue-00456
+    metadata: ""
+  register: result
+
+- name: Issue 00456 - Assert Remove metadata
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00456 - Remove metadata - Idempotent check
+  bigip_virtual_server:
+    name: issue-00456
+    metadata: ""
+  register: result
+
+- name: Issue 00456 - Assert Remove metadata
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00456 - Remove virtual
+  bigip_virtual_server:
+    name: issue-00456
+    state: absent
