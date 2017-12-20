@@ -42,6 +42,7 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/ssh-functionality-for-modules
    /development/tutorials/adding-new-admin-to-encrypted-files
    /development/parameters
+   /development/playbook-metadata
 
 
 .. |f5_ansible_github| raw:: html
