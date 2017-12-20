@@ -293,7 +293,7 @@ EXAMPLES = r'''
     metadata:
       ansible: 2.4
       updated_at: 2017-12-20T17:50:46Z
-  delegate_to: localhost  
+  delegate_to: localhost
 '''
 
 RETURN = r'''
