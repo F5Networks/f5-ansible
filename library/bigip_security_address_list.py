@@ -115,6 +115,26 @@ address_lists:
   returned: changed
   type: list
   sample: [/Common/list1, /Common/list2]
+fqdns:
+  description: The new list of FQDN names applied to the address list.
+  returned: changed
+  type: list
+  sample: [google.com, mit.edu]
+geo_locations:
+  description: The new list of geo locations applied to the address list.
+  returned: changed
+  type: complex
+  contains:
+    country:
+      description: Country of the geo location.
+      returned: changed
+      type: string
+      sample: US
+    region:
+      description: Region of the geo location.
+      returned: changed
+      type: string
+      sample: California
 '''
 
 import re
