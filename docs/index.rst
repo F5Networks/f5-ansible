@@ -37,8 +37,6 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/upstreaming
    /development/writing-a-module
    /development/deprecating-code
-   /development/design-decisions
-   /development/dealing-with-replace-all
    /development/module-patterns
    /development/securing-sensitive-information
    /development/ssh-functionality-for-modules
