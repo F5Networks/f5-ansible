@@ -221,6 +221,7 @@ class Parameters(AnsibleF5Parameters):
         result = sorted(result)
         return result
 
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
