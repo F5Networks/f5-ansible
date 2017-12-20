@@ -1,0 +1,69 @@
+---
+
+- name: Issue 00493 - Include issue variables
+  include_vars:
+    file: issue-00493.yaml
+
+- name: Issue 00493 - Set the HTTPD allow string to a specific IP
+  bigip_device_httpd:
+    allow:
+      - "{{ allow[0] }}"
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to a specific IP
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00493 - Set the HTTPD allow string to a specific IP - Idempotent check
+  bigip_device_httpd:
+    allow:
+      - "{{ allow[0] }}"
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to a specific IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00493 - Set the HTTPD allow string to deny all
+  bigip_device_httpd:
+    allow: ""
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to deny all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00493 - Set the HTTPD allow string to deny all - Idempotent check
+  bigip_device_httpd:
+    allow: ""
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to deny all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00493 - Set the HTTPD allow string to allow all
+  bigip_device_httpd:
+    allow:
+      - "{{ allow[1] }}"
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to allow all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00493 - Set the HTTPD allow string to allow all - Idempotent check
+  bigip_device_httpd:
+    allow:
+      - "{{ allow[1] }}"
+  register: result
+
+- name: Issue 00493 - Assert Set the HTTPD allow string to allow all - Idempotent check
+  assert:
+    that:
+      - result is not changed
