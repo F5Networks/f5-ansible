@@ -231,7 +231,7 @@ The `Manager` class is where the specifics of your code will be. The `stubber` w
 
 Below are examples of the different versions of the design standards that have existed at one point or another:
 
-* `version 3.3 (proposed)`_
+* version 3.3 (proposed)
 * `version 3.2 (current)`_
 * `version 3.1`_
 * `version 3`_
