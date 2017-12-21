@@ -1,0 +1,79 @@
+---
+
+- name: Issue 00433 - Create vlan source CMP hash
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: source-address
+  register: result
+
+- name: Issue 00433 - Assert Create vlan source CMP hash
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00433 - Create vlan source CMP hash - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: source-address
+  register: result
+
+- name: Issue 00433 - Assert Create vlan source CMP hash - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00433 - Change CMP hash to destination
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: destination-address
+  register: result
+
+- name: Issue 00433 - Assert Change CMP hash to destination
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00433 - Change CMP hash to destination - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: destination-address
+  register: result
+
+- name: Issue 00433 - Assert Change CMP hash to destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+- name: Issue 00433 - Change CMP hash to default
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: default
+  register: result
+
+- name: Issue 00433 - Assert Change CMP hash to default
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00433 - Change CMP hash to default - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    cmp_hash: default
+  register: result
+
+- name: Issue 00433 - Assert Change CMP hash to default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00433 - Remove VLAN
+  bigip_vlan:
+    name: issue-00433
+    state: absent

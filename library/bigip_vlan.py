@@ -62,6 +62,15 @@ options:
         value used will be C(1500).
       - This number must be between 576 to 9198.
     version_added: 2.5
+  cmp_hash:
+    description:
+      - Specifies how the traffic on the VLAN will be disaggregated. The value
+        selected determines the traffic disaggregation method. You can choose to
+        disaggregate traffic based on C(source-address) (the source IP address),
+        C(destination-address) (destination IP address), or C(default), which
+        specifies that the default CMP hash uses L4 ports.
+      - If this parameter is not specified when creating a new VLAN, C(default)
+        will be used.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -121,25 +130,30 @@ EXAMPLES = r'''
 
 RETURN = r'''
 description:
-    description: The description set on the VLAN
-    returned: changed
-    type: string
-    sample: foo VLAN
+  description: The description set on the VLAN.
+  returned: changed
+  type: string
+  sample: foo VLAN
 interfaces:
-    description: Interfaces that the VLAN is assigned to
-    returned: changed
-    type: list
-    sample: ['1.1','1.2']
+  description: Interfaces that the VLAN is assigned to.
+  returned: changed
+  type: list
+  sample: ['1.1','1.2']
 partition:
-    description: The partition that the VLAN was created on
-    returned: changed
-    type: string
-    sample: Common
+  description: The partition that the VLAN was created on.
+  returned: changed
+  type: string
+  sample: Common
 tag:
-    description: The ID of the VLAN
-    returned: changed
-    type: int
-    sample: 2345
+  description: The ID of the VLAN.
+  returned: changed
+  type: int
+  sample: 2345
+cmp_hash:
+  description: New traffic disaggregation method.
+  returned: changed
+  type: int
+  sample: source-address
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -156,19 +170,23 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {}
+    api_map = {
+        'cmpHash': 'cmp_hash'
+    }
+
     updatables = [
         'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description', 'mtu'
+        'description', 'mtu', 'cmp_hash'
     ]
 
     returnables = [
         'description', 'partition', 'tag', 'interfaces',
-        'tagged_interfaces', 'untagged_interfaces', 'mtu'
+        'tagged_interfaces', 'untagged_interfaces', 'mtu',
+        'cmp_hash'
     ]
 
     api_attributes = [
-        'description', 'interfaces', 'tag', 'mtu'
+        'description', 'interfaces', 'tag', 'mtu', 'cmpHash'
     ]
 
     def __init__(self, params=None):
@@ -269,6 +287,17 @@ class ModuleParameters(Parameters):
                 "The mtu value must be between 576 - 9198"
             )
         return int(self._values['mtu'])
+
+    @property
+    def cmp_hash(self):
+        if self._values['cmp_hash'] is None:
+            return None
+        if self._values['cmp_hash'] in ['source-address', 'src', 'src-ip', 'source']:
+            return 'src-ip'
+        if self._values['cmp_hash'] in ['destination-address', 'dest', 'dst-ip', 'destination', 'dst']:
+            return 'dst-ip'
+        else:
+            return 'default'
 
 
 class Changes(Parameters):
@@ -376,14 +405,6 @@ class ModuleManager(object):
         self.have = ApiParameters()
         self.changes = UsableChanges()
 
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(changed)
-
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
         updatables = Parameters.updatables
@@ -465,22 +486,17 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        self.have = ApiParameters()
         if self.want.mtu is None:
             self.want.update({'mtu': 1500})
-        if self.want.untagged_interfaces is not None:
-            interfaces = [dict(name=x, untagged=True) for x in self.want.untagged_interfaces]
-            self.want.update({'interfaces': interfaces})
-        elif self.want.tagged_interfaces is not None:
-            interfaces = [dict(name=x, tagged=True) for x in self.want.tagged_interfaces]
-            self.want.update({'interfaces': interfaces})
-        self._set_changed_options()
+        self._update_changed_options()
         if self.client.check_mode:
             return True
         self.create_on_device()
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.net.vlans.vlan.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -538,7 +554,14 @@ class ArgumentSpec(object):
             tag=dict(
                 type='int'
             ),
-            mtu=dict(type='int')
+            mtu=dict(type='int'),
+            cmp_hash=dict(
+                choices=[
+                    'default',
+                    'destination-address', 'dest', 'dst-ip', 'destination', 'dst',
+                    'source-address', 'src', 'src-ip', 'source'
+                ]
+            )
         )
         self.f5_product_name = 'bigip'
 

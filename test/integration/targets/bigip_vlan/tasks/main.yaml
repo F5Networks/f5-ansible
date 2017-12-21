@@ -258,5 +258,8 @@
     that:
       - result is changed
 
+- import_tasks: issue-00371.yaml
+  tags: issue-00371
+
 - import_tasks: issue-00433.yaml
   tags: issue-00433
