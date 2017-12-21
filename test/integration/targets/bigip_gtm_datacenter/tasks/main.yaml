@@ -10,7 +10,7 @@
     that:
       - result is changed
 
-- name: Create datacenter - Idepotent check
+- name: Create datacenter - Idempotent check
   bigip_gtm_datacenter:
     name: "{{ dc_name }}"
   register: result
@@ -75,7 +75,7 @@
     that:
       - result is changed
 
-- name: Set datacenter description - Idepotent check
+- name: Set datacenter description - Idempotent check
   bigip_gtm_datacenter:
     description: "{{ valid_description }}"
     name: "{{ dc_name }}"
@@ -151,5 +151,3 @@
   assert:
     that:
       - result is not changed
-
-- import_tasks: legacy.yaml
