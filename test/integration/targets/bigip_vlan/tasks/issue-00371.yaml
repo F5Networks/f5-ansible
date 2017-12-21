@@ -44,9 +44,6 @@
     that:
       - result is not changed
 
-
-
-
 - name: Issue 00433 - Change CMP hash to default
   bigip_vlan:
     name: issue-00433
@@ -68,10 +65,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00433 - Remove VLAN
   bigip_vlan:
