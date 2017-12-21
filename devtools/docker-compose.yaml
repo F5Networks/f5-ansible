@@ -23,12 +23,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py2.7
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -44,7 +38,6 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
@@ -56,12 +49,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py2.7-bare
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -77,7 +64,6 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
@@ -89,12 +75,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py3.5
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -110,7 +90,6 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
@@ -122,12 +101,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py3.5-bare
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -143,7 +116,6 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
@@ -155,12 +127,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py3.6
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -176,7 +142,6 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
@@ -188,12 +153,6 @@ services:
       dockerfile: devtools/dockerfiles/Dockerfile-py3.6-bare
     command: /bin/bash
     secrets:
-      - source: clouds.yaml
-        target: clouds.yaml
-      - source: secure.yaml
-        target: secure.yaml
-      - source: cacerts.pem
-        target: cacerts.pem
       - source: .gitconfig
         target: .gitconfig
     extra_hosts:
@@ -209,17 +168,10 @@ services:
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
-      - OS_CLOUD=default
       - PYTHONDONTWRITEBYTECODE=1
       - GNUPGHOME=/gpg/
       - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
 secrets:
-  clouds.yaml:
-    file: ./secrets/clouds.yaml.secret
-  secure.yaml:
-    file: ./secrets/secure.yaml.secret
-  cacerts.pem:
-    file: ./secrets/cacerts.pem.secret
   .gitconfig:
     file: ./secrets/gitconfig.secret
