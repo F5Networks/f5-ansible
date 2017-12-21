@@ -266,5 +266,10 @@
     - issue-00372
     - f5-metal
 
+- import_tasks: issue-00373.yaml
+  tags:
+    - issue-00373
+    - f5-metal
+
 - import_tasks: issue-00433.yaml
   tags: issue-00433

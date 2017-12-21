@@ -1,0 +1,72 @@
+---
+
+- name: Issue 00373 - Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
+- name: Issue 00373 - Create vlan
+  bigip_vlan:
+    name: issue-00433
+    dag_round_robin: yes
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Assert Create vlan
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Create vlan - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    dag_round_robin: yes
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Assert Create vlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+
+
+
+
+
+
+- name: Issue 00373 - Change vlan
+  bigip_vlan:
+    name: issue-00433
+    dag_round_robin: no
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Assert Change vlan
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Change vlan - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    dag_round_robin: no
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00373 - Assert Change vlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+
+
+
+- name: Issue 00373 - Remove vlan
+  bigip_vlan:
+    name: issue-00433
+    state: absent

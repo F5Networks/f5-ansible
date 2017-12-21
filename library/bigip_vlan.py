@@ -80,6 +80,15 @@ options:
       - When creating a new VLAN, if this parameter is not specified, the default
         of C(outer) is used.
       - This parameter is not supported on Virtual Editions of BIG-IP.
+  dag_round_robin:
+    description:
+      - Specifies whether some of the stateless traffic on the VLAN should be
+        disaggregated in a round-robin order instead of using a static hash. The
+        stateless traffic includes non-IP L2 traffic, ICMP, some UDP protocols,
+        and so on.
+      - When creating a new VLAN, if this parameter is not specified, the default
+        of (no) is used.
+    choices: [yes, no]
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -186,23 +195,25 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     api_map = {
         'cmpHash': 'cmp_hash',
-        'dagTunnel': 'dag_tunnel'
+        'dagTunnel': 'dag_tunnel',
+        'dagRoundRobin': 'dag_round_robin'
     }
 
     updatables = [
         'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description', 'mtu', 'cmp_hash', 'dag_tunnel'
+        'description', 'mtu', 'cmp_hash', 'dag_tunnel',
+        'dag_round_robin'
     ]
 
     returnables = [
         'description', 'partition', 'tag', 'interfaces',
         'tagged_interfaces', 'untagged_interfaces', 'mtu',
-        'cmp_hash', 'dag_tunnel'
+        'cmp_hash', 'dag_tunnel', 'dag_round_robin'
     ]
 
     api_attributes = [
         'description', 'interfaces', 'tag', 'mtu', 'cmpHash',
-        'dagTunnel'
+        'dagTunnel', 'dagRoundRobin'
     ]
 
     def __init__(self, params=None):
@@ -314,6 +325,15 @@ class ModuleParameters(Parameters):
             return 'dst-ip'
         else:
             return 'default'
+
+    @property
+    def dag_round_robin(self):
+        if self._values['dag_round_robin'] is None:
+            return None
+        if self._values['dag_round_robin'] is True:
+            return 'enabled'
+        else:
+            return 'disabled'
 
 
 class Changes(Parameters):
@@ -580,7 +600,8 @@ class ArgumentSpec(object):
             ),
             dag_tunnel=dict(
                 choices=['inner', 'outer']
-            )
+            ),
+            dag_round_robin=dict(type='bool')
         )
         self.f5_product_name = 'bigip'
 
