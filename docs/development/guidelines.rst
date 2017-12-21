@@ -1,7 +1,7 @@
 Guidelines
 ==========
 
-These guidelines should help you understand what F5 expects from you, and help you understand the direction F5 is taking the modules.
+Follow these guidelines when developing F5 modules for Ansible.
 
 Which API to use
 ----------------
@@ -10,22 +10,22 @@ Since Ansible 2.2, all new F5 modules must use the ``f5-sdk``.
 
 Prior to 2.2, modules used ``bigsuds`` (SOAP) or ``requests`` (REST).
 
-As a general rule of thumb, you can consider the SOAP API deprecated. While this is not an official stance from F5, there is clearly more of a push in the REST direction than the SOAP direction. F5 continues to add new functionality to the SOAP interface, but only under certain circumstances.
-
 You can continue to extend modules that use ``bigsuds``, in order to maintain backward compatibility of older modules. ``bigsuds`` and ``f5-sdk`` can co-exist, but F5 recommends that you write all new features, and fix all bugs by using ``f5-sdk``.
 
 
 Module naming convention
 ------------------------
 
-Base the name of the module on the part of BIG-IP that the modules manipulates. A good rule of thumb is to refer to the API the ``f5-sdk`` uses.
+Base the name of the module on the part of BIG-IP that the module manipulates. A good rule of thumb is to refer to the API the ``f5-sdk`` uses.
 
-Don't further abbreviate names -- if something is a well-known abbreviation because it is a major component of BIG-IP, you can use it, but don't create new ones independently (e.g., LTM, GTM, ASM, etc. are fine).
+Don't further abbreviate names. If something is a well-known abbreviation because it is a major component of BIG-IP, you can use it, but don't create new ones independently (e.g., LTM, GTM, ASM, etc. are fine).
 
 Adding new APIs
 ---------------
 
-If a module that you need does not yet exist, the REST API in the ``f5-sdk`` may not have exist yet. Refer to the following github project to confirm if the REST API exists:
+If a module you need does not exist yet, the REST API in the ``f5-sdk`` may not exist yet.
+
+Refer to the following GitHub project to determine if the REST API exists:
 
 - https://github.com/F5Networks/f5-common-python
 
@@ -95,7 +95,7 @@ Inside your module, the `ManagementRoot` is in the `ModuleManager` under the `se
 
 Use the object in the same way that you normally use the `ManagementRoot` of an ``f5-sdk`` product.
 
-For example, the code snippet below illustrates a "normal" method of using the ``f5-sdk``:
+For example, this code snippet illustrates a "normal" method of using the ``f5-sdk``:
 
 .. code-block:: python
 

@@ -3,16 +3,16 @@ Getting involved
 
 Thank you for getting involved with this project.
 
-Becoming involved can take a variety of angles. The people who maintain this project spend their time camping this repository as well as contributing upstream to the Ansible core product, and you can reach them on either forum.
+You can contribute in a number of different ways.
 
-Before you jump feet first in to coding, here is some information that can help set your expectations.
+Before you jump feet first into coding, here is some information that can help set your expectations.
 
 Developing and supporting your module
 -------------------------------------
 
-When you develop a modules, it will go through review before F5 accepts it. This process may be difficult at times, but it ensures the published modules are good quality.
+When you develop a module, it goes through review before F5 accepts it. This review process may be difficult at times, but it ensures the published modules are good quality.
 
-You should *stay up to date* with this site's documentation about module development. As time goes on, things change and F5 and the industry adopt new practices. As this happens, F5 tries to keep the documentation up to date.
+You should *stay up to date* with this site's documentation about module development. As time goes on, things change and F5 and the industry adopt new practices; F5 tries to keep the documentation updated to reflect these changes.
 
 If you develop a module that uses an out-of-date convention, F5 will let you know, and you should take the initiative to fix it.
 
@@ -20,7 +20,9 @@ Ansible requires that the people listed in the author field (usually those who w
 
 Understandably, this might be a big issue for you, so when your module merges to the F5 repo, F5 becomes one of the authors of the code.
 
-With this in place, and with the addition of F5 opening the PR with Ansible upstream, this should be sufficient to meet Ansible's needs for ongoing maintenance. This is a joint effort though, so let's work together to ensure that the module stays in Core. Ansible removes modules that the authors can no longer be support.
+With F5 as the co-author and F5 opening the PR with Ansible upstream, this should meet Ansible's needs for ongoing maintenance.
+
+This is a joint effort though, so let's work together to ensure that the module stays in Core. Ansible removes modules that the authors can no longer support.
 
 What to work on
 ---------------
@@ -39,9 +41,9 @@ Unit tests
 
 The unit tests in the `test/` directory can always use work. Unit tests run fast and are not a burden on the test runner.
 
-Add more test cases for your particular usage scenarios or any other scenarios that are missing tests.
+F5 encourages you to add more test cases for your particular usage scenarios or any other scenarios that are missing tests.
 
-F5 adds enough unit tests to be reasonably comfortable that the code will execute correctly. This, unfortunately, does not cover many of the functional test cases. Writing unit test versions of functional tests is of huge benefit.
+F5 adds enough unit tests to be reasonably comfortable that the code will execute correctly. This, unfortunately, does not cover many of the functional test cases. Writing unit test versions of functional tests is hugely beneficial.
 
 New modules
 ```````````
@@ -56,13 +58,13 @@ If a module is missing a parameter that you think it should have, raise the issu
 Postman collections
 ```````````````````
 
-The Ansible modules make use of the F5 Python SDK. In the SDK, all work is via the product REST APIs and this just happens to fit in perfectly with the Postman tool.
+The Ansible modules make use of the F5 Python SDK. In the SDK, all work is via the product REST APIs. This just happens to fit in perfectly with the Postman tool.
 
 If you want to work on new modules without involving yourself in Python code, a great way to start is to write Postman collections for the APIs that configure BIG-IP.
 
-If you provide F5 with the Postman collections, this F5 can easily write the Ansible module itself.
+If you provide F5 with the Postman collections, F5 can easily write the Ansible module itself.
 
-This is the approach many of the non-dev F5 teams take because it is super-effective. Bonus points for collections that address differences in APIs between versions of BIG-IP.
+And you get bonus points for collections that address differences in APIs between versions of BIG-IP.
 
 Bugs
 ````
@@ -83,9 +85,7 @@ Playbooks show you how to make use of a module when paired with other modules. P
 Roles for F5 DevCentral
 ```````````````````````
 
-Ansible roles provide the opportunity to build new sets of configuration for an F5 product.
-
-There has been some effort to begin writing roles that would be useful for different scenarios (such as the `bigip-hardening` role) but F5 has not yet fully tackled this effort.
+Ansible roles provide the opportunity to build new sets of configurations for an F5 product.
 
 Anyone can write roles. They are just collections of files, templates, modules, and tasks that you are already writing for some purpose.
 

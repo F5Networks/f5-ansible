@@ -38,16 +38,16 @@ Some of the things that F5 **does not** want, and will **never** ask for are:
 Do not comment on closed issues
 -------------------------------
 
-**Important** Please do not comment on closed issues.
+**Important:** Please do not comment on closed issues.
 
-Two things happen when you comment on closed issues:
+When you comment on closed issues:
 
-- F5 cannot reproduce the issue properly in the code base
-- F5 doesn't usually receive the notification for it
+- F5 cannot reproduce the issue properly in the code base.
+- F5 doesn't usually receive the notification for it.
 
 Why is commenting on old issues a problem for the code base?
 
-When you open an issue, F5 creates new files in the integration test directory. These files use your issue name.
+When you open an issue, F5 creates new files with your issue name in the integration test directory.
 
 For example, if you open an issue and give it the number 1234, then F5 creates `issue-01234.yaml` in the source tree. This file is specific to your issue and no other issues.
 
@@ -55,7 +55,7 @@ When the F5 developers solve the problem, they ensure that future F5 Ansible mod
 
 If you do not create a **new** issue:
 
-- F5 might accidentally change code that was already working without issue.
+- F5 might accidentally change code that was already working.
 - It is harder to track which issue any new code relates to.
 - It is harder to repro other issues over time.
 

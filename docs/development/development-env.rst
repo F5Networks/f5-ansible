@@ -1,3 +1,5 @@
+:orphan: true
+
 Development environment
 =======================
 
@@ -24,13 +26,13 @@ This document ultimately serves as a gateway to all the other development-relate
 Choosing an IDE
 ---------------
 
-The Ansible modules are written in the PyCharm IDE.
+F5 uses the PyCharm IDE to write the Ansible modules.
 
 - https://www.jetbrains.com/pycharm/download/
 
-The developers use the Professional edition, but there is also a Community edition available to you as well.
+The developers use the Professional edition, but there is also a Community edition available.
 
-Other editors can be used as you see fit, but the above editor is used in this document.
+You can use other editors as you see fit, but this document uses the above editor.
 
 A vanilla installation of PyCharm is sufficient.
 
@@ -41,16 +43,16 @@ REST communication
 
 You can use a variety of tools to introspect a REST API, but Postman is the one that we used for the F5 Ansible modules.
 
-This tool is used in two ways:
+You can use this tool in two ways:
 
 - As a way to communicate with F5 devices during development
 - As a way for contributors to provide API workflows to the Ansible module developers
 
-Postman can be downloaded from the following URL.
+You can download Postman from the following URL.
 
 - https://www.getpostman.com/
 
-It comes in two parts. First, there is the `postman` tool itself which is a GUI tool that you can use to interact with remote REST APIs. Second, there is a CLI tool called `newman` which can be used to run batches of API calls. These batches are usually in the form of what Postman refers to as "Collections".
+It comes in two parts. First, there is the `postman` tool itself which is a GUI tool that you can use to interact with remote REST APIs. Second, there is a CLI tool called `newman` which you can use to run batches of API calls. These batches are usually in the form of what Postman refers to as "Collections".
 
 We do not use `newman`.
 
@@ -71,10 +73,9 @@ usage of OpenStack's client libraries is constrained to the Docker dev/test
 containers. Once you are in the container, you should have all the tools necessary
 to perform your work.
 
-The usage of the OpenStack tools can either be done using the "plumbing" commands;
-`openstack stack create`, `openstack server create`, etc. Or, they can be done
-using the porcelain commands; `f5ansible harness-create`, `f5ansible harness-delete`,
-etc. It is recommended that you use the porcelain commands.
+You can use the OpenStack tools by using the "plumbing" commands;
+`openstack stack create`, `openstack server create`, etc. Or, you can use the porcelain commands; `f5ansible harness-create`, `f5ansible harness-delete`,
+etc. F5 recommends that you use the porcelain commands.
 
 I also mentioned that, for certain platforms, you have access to local dev tools.
 I specifically mentioned Mac and hardware Linux because there is a limitation in
@@ -82,8 +83,7 @@ Windows in which you can only run one hypervisor.
 
 Docker for Windows requires that HyperV be turned on in Windows. However, doing this
 prevents you from using Virtualbox. You can, alternatively, use HyperV itself in
-Vagrant, but at this time this is not a method that has been determined to work
-by the development team. YMMV.
+Vagrant, but at this time this is not a method that works by the development team. YMMV.
 
 If you are using the aforementioned Mac or hardware Linux, we provide both public
 and private (internal) copies of Vagrantfiles for you to use.
@@ -97,7 +97,7 @@ For private Vagrantfiles, refer to your F5 colleague.
 Docker
 ------
 
-Since the F5 Ansible modules are written in python, it's required that we have
+Since the F5 Ansible modules are written in Python, it's required that we have
 the different installations of Python available to us. To do this, we provide
 a `docker-compose.yaml` file that has all the necessary Python environments.
 
@@ -108,8 +108,7 @@ by following the instructions here.
 
 To make use of this requires the following two steps.
 
-First, you will need to build the initial containers. Rebuilding containers does
-not need to be done frequently; only if we change the base `Dockerfile`.
+First, you will need to build the initial containers. You do not need to rebuild containers frequently; only if we change the base `Dockerfile`.
 
 To build the initial container, you will want to know what the existing Python
 environments that we support are.
@@ -207,16 +206,14 @@ Local Ansible source copy
 It is required that you have a locally available source copy of the Ansible upstream
 codebase. To do this, you must do the following
 
-1. In Github, create a fork of the ansible codebase. This codebase can be found
-   here https://github.com/ansible/ansible. The `Fork` button in the top right of
-   the screen can be used to fork it. Please fork it to your __personal__ Github
-   account
+1. In Github, create a fork of the Ansible codebase. You can find this codebase here https://github.com/ansible/ansible. You can use the `Fork` button in the top right of
+   the screen to fork it. Please fork it to your __personal__ Github
+   account.
 
-2. Clone your fork to the `local/` directory in this (f5-ansible) source tree. This
-   can be done like so. `git clone git@github.com:USERNAME/ansible.git local/ansible`.
+2. Clone your fork to the `local/` directory in this (f5-ansible) source tree. You can do this like so. `git clone git@github.com:USERNAME/ansible.git local/ansible`.
    Replace `USERNAME` with your Github username.
 
-3. Add a `git` remote pointing to the "upstream" ansible source tree. This can be done
+3. Add a `git` remote pointing to the "upstream" ansible source tree. You can do this
    from __within__ the `local/ansible/` directory. From there, issue this command,
    `git remote add upstream https://github.com/ansible/ansible`
 
@@ -263,7 +260,7 @@ easier to just do the following.
      git fetch CONTRIBUTOR
 
 * Next, ask the contributor which branch they have been doing their development
-  on. Suppose it was called `feature.foo-bar-baz`. With this information in mind,
+  on. Suppose its name was `feature.foo-bar-baz`. With this information in mind,
   you would next checkout the given branch and supply the `--track` argument to
   git. This will create a local copy of the branch just for you, and will
   additionally configure `git` so that a `git pull` will pull directly from the
@@ -298,13 +295,13 @@ f5ansible command
 -----------------
 
 This repository provides a convenience command for you to use both inside and outside
-the dev/test containers that are used in this repo.
+the dev/test containers in this repo.
 
-The command is called `f5ansible` and it is located in the `devtools/bin` directory
+The command is called `f5ansible` and it is in the `devtools/bin` directory
 of this repository.
 
-It is recommended that you add the `bash` completions as well as the path to this
-command to you local `$PATH` variable. This can be done by adding the following
+F5 recommends that you add the `bash` completions as well as the path to this
+command to you local `$PATH` variable. YOu can do this by adding the following
 to your `~/.bashrc` file,
 
 .. code-block:: bash
@@ -357,5 +354,5 @@ with our OpenStack distro.
 * Is there a way to get one of those and/or licensing for virtual devices?
 
 You can get any pre-built images from downloads.f5.com (free registration) but
-you will indeed need a license to make much use of it. Licenses can be acquired
+you will indeed need a license to make much use of it. You can acquire a license
 through sales or, in special cases, through a business partnership with F5.

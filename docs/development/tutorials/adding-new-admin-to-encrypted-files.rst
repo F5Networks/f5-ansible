@@ -204,7 +204,7 @@ To do that, you can use the `blackbox_update_all_files` command from inside any 
    WARNING: This will overwrite any unencrypted files laying about.
    Press CTRL-C now to stop. ENTER to continue:
 
-Press **ENTER** to proceed and re-encrypt all of the secrets. You will be asked for your own encryption password in the process.
+Press **ENTER** to proceed and re-encrypt all of the secrets. It will ask for your own encryption password in the process.
 
 .. code-block:: bash
 

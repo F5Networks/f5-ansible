@@ -1,9 +1,12 @@
+Deprecating functionality
+=========================
+
 Deprecating modules
-===================
+-------------------
 
-F5 sometimes deprecates modules. However, before the modules go away, you should have enough time to upgrade to a new version of Ansible.
+F5 sometimes deprecates modules. Before the modules go away, you should have enough time to upgrade to a new version of Ansible.
 
-New releases of Ansible happen approximately once a quarter.
+New releases of Ansible happen approximately once per quarter.
 
 With this in mind, the following process should allow you between three and six months to upgrade your Ansible installation to the new code.
 
@@ -37,7 +40,7 @@ To raise warnings about deprecated functionality, add the following method to yo
 
 Additionally, you should call that method when you collect the `changes` to report to the user. For example:
 
-.. raw::python
+.. code-block:: python
 
    changes = self.changes.to_return()
    result.update(**changes)
@@ -51,7 +54,7 @@ For example, in the `bigip_gtm_wide_ip` module, the `lb_method` property uses th
 
 For example:
 
-.. raw::python
+.. code-block:: python
 
    if self._values['__warnings'] is None:
        self._values['__warnings'] = []
@@ -88,7 +91,7 @@ For example, you might have named the original option `rules`, when the more app
 
 Here is a sample `ArgumentSpec` from the version where we made the mistake. Let's assume we made this mistake in version 2.0.
 
-.. raw::python
+.. code-block:: python
 
    class ArgumentSpec(object):
        def __init__(self):
@@ -107,7 +110,7 @@ Here is a sample `ArgumentSpec` from the version where we made the mistake. Let'
 
 Now, we wish to deprecate that option name. In version 2.1 of Ansible, we would do something like this:
 
-.. raw::python
+.. code-block:: python
 
    class ArgumentSpec(object):
        def __init__(self):
@@ -132,7 +135,7 @@ Additionally, we would include the warnings necessary to make the user aware tha
 
 Finally, during the release cycle of Ansible 2.2, we would want to change our spec to look like this:
 
-.. raw::python
+.. code-block:: python
 
    class ArgumentSpec(object):
        def __init__(self):
@@ -152,3 +155,90 @@ Finally, during the release cycle of Ansible 2.2, we would want to change our sp
 This removes the deprecated functionality.
 
 Also, do not forget to remove any mention of the deprecation inside the actual module code. We don't want the legacy code to stick around. This helps keep technical debt at bay.
+
+Deprecating choices
+-------------------
+
+When functionality is deprecated, it may be necessary to raise warnings to the user.
+
+Normally, you do deprecations in the ArgumentSpec. For example, when you use `removed_in_version`:
+
+.. code-block:: python
+
+   type=dict(
+       removed_in_version='2.4'
+   )
+
+This is only relevant when the **parameter itself** is deprecated.
+
+Sometimes the parameter is a list of choices and the **choices themselves** are deprecated.
+
+For example, consider the following parameter:
+
+.. code-block:: python
+
+   type=dict(
+       choices=['foo_1', 'bar_2', 'baz_3']
+   )
+
+You may need to deprecate the values themselves in favor of other values.
+
+.. code-block:: python
+
+   type=dict(
+       choices=['foo-1', 'bar-2', 'baz-3']
+   )
+
+This may seem like a simple thing that you could add code to fix, but doing so would increase technical debt.
+
+Mapping old values to new values is a candidate for deprecation.
+
+Custom deprecations
+-------------------
+
+To announce deprecations, you can use the `removed_in_version` field mentioned previously, but your module can also raise more customized deprecations.
+
+To do this, begin by amending the `__init__` method of your `Parameters` class to define a `__warnings` variable.
+
+.. code-block:: python
+
+   class Parameters(AnsibleF5Parameters):
+       def __init__(self, params=None):
+           super(Parameters, self).__init__(params)
+           self._values['__warnings'] = []
+
+Next, add a new method to the `ModuleManager`, or, class-specific manager (such as those used when forking logic, like `bigip_gtm_pool`).
+
+The definition of this method is:
+
+.. code-block:: python
+
+   def _announce_deprecations(self):
+       warnings = []
+       if self.want:
+           warnings += self.want._values.get('__warnings', [])
+       if self.have:
+           warnings += self.have._values.get('__warnings', [])
+       for warning in warnings:
+           self.client.module.deprecate(
+               msg=warning['msg'],
+               version=warning['version']
+           )
+
+The third and final step is to actually make use of the deprecation code that you set up previously. To do that, you want to **append** to the aforementioned `__warnings` field.
+
+For example:
+
+.. code-block:: python
+
+   if lb_method in deprecated.keys():
+       if self._values['__warnings'] is None:
+           self._values['__warnings'] = []
+       self._values['__warnings'].append(
+           [
+               dict(
+                   msg='The provided lb_method is deprecated',
+                   version='2.4'
+               )
+           ]
+       )

@@ -1,7 +1,7 @@
 Code conventions
 ================
 
-The F5 modules attempt to follow a set of coding conventions that apply to all new and existing modules. These conventions help new contributors quickly develop new modules, and they help existing contributors maintain the current modules.
+The F5 modules follow a set of coding conventions that apply to all new and existing modules. These conventions help new contributors quickly develop new modules, and they help existing contributors maintain the current modules.
 
 Where possible, F5 tries to automate the validation of these coding conventions so you are aware of mistakes and can fix them yourself.
 
@@ -35,13 +35,11 @@ F5 uses this format for several reasons, including Geerling's.
 
 In addition, some situations will raise syntax errors if you use the simple ``key=value`` format.
 
-Finally, it saves on space and is easier to read and know (by looking) what the arguments to the module are.
+And finally, it saves space and is easier to read and know what the arguments to the module are.
 
 .. |geerling| raw:: html
 
    <a href="http://www.jeffgeerling.com/blog/yaml-best-practices-ansible-playbooks-tasks" target="_blank">here</a>
-
-
 
 
 Alphabetize the module's parameters
@@ -75,7 +73,7 @@ This provides consistency between module usage and a way to see at a glance if a
 Use double quotes for strings
 -----------------------------
 
-Ansible supports a simple form of typing your parameters. If a value is a string, represent it as a string by using double quotes.
+Ansible supports a simple parameter format. If a value is a string, represent it as a string by using double quotes.
 
 **GOOD**
 
@@ -98,7 +96,7 @@ Ansible supports a simple form of typing your parameters. If a value is a string
 Do not use quotes for numbers
 -----------------------------
 
-For numeric characters, do not use any quotes. If the expected value is a number and you provide a number wrapped in quotes, some modules will raise 'type' errors.
+For numeric characters, do not use quotes. If the expected value is a number and you provide a number wrapped in quotes, some modules will raise 'type' errors.
 
 **GOOD**
 
@@ -200,10 +198,9 @@ Good documentation is essential to others being able to use the module, so you m
 Always include an EXAMPLES variable
 -----------------------------------
 
-Useful and valid examples are crucial for people new to Ansible and to the module itself.
+Useful and valid examples are crucial for people new to Ansible and for the module itself.
 
-When providing examples, be mindful of what you provide. If you developed the module with a specific use case in mind, be sure to include that use case. It may be applicable to a large majority of users and may eliminate a significant portion of time that they would otherwise
-spend figuring out what is or is not needed.
+When providing examples, be mindful of what you provide. If you developed the module with a specific use case in mind, be sure to include that use case. It may be applicable to a large majority of users and may eliminate a significant portion of time that they would otherwise spend figuring out what is or is not needed.
 
 **GOOD**
 
@@ -309,7 +306,7 @@ Both Ansible and the F5 Ansible repository are on GitHub. Therefore, for mainten
 Use 2 spaces in DOCUMENTATION, EXAMPLES, and RETURN
 ---------------------------------------------------
 
-This is a simple spacing convention to ensure that everything is properly spaced.
+Follow this simple spacing convention to ensure that everything is properly spaced.
 
 **GOOD**
 
@@ -423,7 +420,7 @@ Never raise a general exception
 
 General exceptions are bad because they hide unknown errors from you, the developer. If a bug report comes in and an exception that you do not handle causes the exception, the issue will be exceedingly difficult to debug.
 
-Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Specifically raise this module and handle those errors. If an unknown error occurs, a full traceback will more easily allow you to debug the problem.
+Instead, only catch the `F5ModuleError` exception that the `f5-sdk` provides. Specifically raise this module and handle those errors. If an unknown error occurs, a full traceback will allow you to debug the problem more easily.
 
 **GOOD**
 
@@ -510,13 +507,11 @@ Therefore, do not use `local_action` when defining examples. Instead, use `deleg
 Set default EXAMPLE parameters
 ------------------------------
 
-For consistency, always use the following values for the given parameters:
+For consistency, always use the following values for the given parameters, so you do not have to over-think the inclusion of your example:
 
 - user: "admin"
 - password: "secret"
 - server: "lb.mydomain.com"
-
-This allows you to not have to overthink the inclusion of your example.
 
 **GOOD**
 
@@ -716,7 +711,7 @@ The stubber creates this for you automatically.
 Do not include required key for non-required parameters
 -------------------------------------------------------
 
-This convention comes to us courtesy of Ansible module authoring rules. This convention limits the amount of verbosity in module code. Additionally, conflict can occur if you do not follow this convention (who is right? docs or code?).
+This convention comes to us courtesy of Ansible module-authoring rules. This convention limits the amount of verbosity in module code. Additionally, conflict can occur if you do not follow this convention (who is right? docs or code?).
 
 Ansible, by default, makes parameters not required. It is redundant to provide it again in your documentation.
 
@@ -784,7 +779,7 @@ Another convention from Ansible, similar to the `required: False` convention, is
    ...
 
 
-Do not decompose to a \*_device method if the using method is itself an \*_device method
+Do not decompose to a \*_device method if the using method is itself a \*_device method
 ----------------------------------------------------------------------------------------
 
 This convention is in place to limit the total amount of function decomposition that you will inevitably try to put into the code.

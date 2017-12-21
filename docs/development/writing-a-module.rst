@@ -101,7 +101,7 @@ Here is an example of the code you will add to your module.
 
 Most documentation variables have a common set of keys and only differ in the values of those keys.
 
-The keys that you commonly find are:
+Commonly-used keys are:
 
 * ``module``
 * ``short_description``
@@ -162,7 +162,7 @@ For this module, the ``EXAMPLES`` variable looks like this:
      delegate_to: localhost
    '''
 
-This variable should go __after__ the ``DOCUMENTATION`` variable.
+This variable should go **after** the ``DOCUMENTATION`` variable.
 
 The examples that you provide should always have the following:
 
@@ -172,7 +172,7 @@ You should run the BIG-IP modules on the Ansible controller only. The best pract
 
 **common args**
 
-The common args as as follows:
+The common args are:
 
 - `password` should always be `secret`
 - `server` should always be `lb.mydomain.com`
@@ -181,7 +181,7 @@ The common args as as follows:
 RETURN variable
 ```````````````
 
-When a module finishes running, F5 always returns the changes by using the module's parameters.
+When a module finishes running, F5 always uses the module's parameters to return the changes.
 
 Some exceptions to this rule apply. For example, where the `state` variable contains more states than just `absent` and `present`, such as in the `bigip_virtual_server` module.
 
@@ -225,7 +225,7 @@ In 90% of cases, this code is boilerplate and you can ignore it when writing a m
 ModuleManager class
 ```````````````````
 
-The next block of code is the skeleton for the module's `Manager` class. Most of our module's steering code is inside this class. It acts as the traffic cop, determining which path the module should take to reach the desired outcome.
+The next block of code is the skeleton for the module's `Manager` class. Most of the module's steering code is inside this class. It acts as the traffic cop, determining which path the module should take to reach the desired outcome.
 
 The `Manager` class is where the specifics of your code will be. The `stubber` will create a generic version of this for you. It is your responsibility to change the API calls as needed.
 
@@ -242,7 +242,7 @@ Below are examples of the different versions of the design standards that have e
 
    The ``ModuleManager`` class will change over time as design standards change. The above examples are for historical reference and training.
 
-For the implementation specifics, refer to the existing module.
+For implementation specifics, refer to the existing module.
 
 A deep dive into the major differences between the different versions of design standards are here: :ref:`designdecisions`.
 
@@ -295,7 +295,7 @@ After you update the ``argument_spec``, instantiate an instance of the class, pr
        supports_check_mode=True
    )
 
-All F5 modules **must** support Check Mode, because you can use it to determine if the module makes changes when it's run against your devices.
+All F5 modules **must** support Check mode, because you can use it to determine if the module makes changes when it's run against your devices.
 
 Try and module execution
 ````````````````````````
@@ -326,7 +326,7 @@ The final two lines in your module inform Python to execute the module's code if
    if __name__ == '__main__':
        main()
 
-Because of how Ansible works, this means that when the ``main`` function contacts the remote device (or runs locally), it is not called if you import the module.
+Because of how Ansible works, when the ``main`` function contacts the remote device (or runs locally), it is not called if you import the module.
 
 You would import the module if you were using it outside of Ansible, or in some sort of test environment where you do not want the module to actually run.
 
@@ -385,7 +385,7 @@ For example, a test role might look like this:
 
 - `test/integration/targets/MODULE_NAME/`
 
-This role has everything you would associate with a normal role in ansible.
+This role has everything you would associate with a normal role in Ansible.
 
 Consider the following examples:
 
@@ -464,8 +464,6 @@ Here is an example of the previous test as an idempotent test:
 
 - The assertion checks that the result has *not* changed. This is the important part, because it ensures that the test itself was idempotent.
 
-Now let's look at how you call the test.
-
 Calling the test
 ````````````````
 
@@ -504,7 +502,7 @@ If you include files inside of the `files/`, `templates`, or other directories i
 
 In this file, you can include steps to reproduce any of the input items that you include in the role subdirectories.
 
-In addition, this is a good location to include references to third party file locations if you have included them in the tests. For example, if you were to include iRules or other things that you downloaded and included from DevCentral or similar.
+In addition, this is a good location to include references to third-party file locations if you have included them in the tests. For example, if you were to include iRules or other things that you downloaded and included from DevCentral or similar.
 
 The `README.md` is there for future developers to reference the information needed to re-create any of the inputs to your tests.
 
