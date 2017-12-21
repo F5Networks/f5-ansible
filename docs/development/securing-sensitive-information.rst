@@ -100,7 +100,7 @@ Your passphrase should be *at least* six words and a symbol, in any order.
 
 If you do not have a pair of dice to roll, the next best option is to use an online service that rolls digitally or generates word lists on the fly. For example:
 
-- https://www.rempe.us/diceware/#eff
+- https://www.rempe.us/diceware/
 
 Complete your key
 `````````````````
