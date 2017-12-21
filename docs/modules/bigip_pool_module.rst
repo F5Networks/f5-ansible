@@ -251,7 +251,7 @@ Examples
         metadata:
           ansible: 2.4
           updated_at: 2017-12-20T17:50:46Z
-      delegate_to: localhost  
+      delegate_to: localhost
 
 
 Return Values
@@ -344,7 +344,7 @@ Notes
     - Requires BIG-IP software version >= 12.
     - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
     - Best run as a local_action in your playbook.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
 
 
 

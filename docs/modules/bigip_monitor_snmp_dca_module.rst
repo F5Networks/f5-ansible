@@ -291,7 +291,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP software version >= 12
     - This module does not support the ``variables`` option because this option is broken in the REST API and does not function correctly in ``tmsh``; for example you cannot remove user-defined params. Therefore, there is no way to automatically configure it.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
 
 
 

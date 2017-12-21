@@ -186,7 +186,7 @@ Notes
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module can take a lot of time to deploy vCMP guests. This is an intrinsic limitation of the vCMP system because it is booting real VMs on the BIG-IP device. This boot time is very similar in length to the time it takes to boot VMs on any other virtualization platform; public or private.
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
 
 
 

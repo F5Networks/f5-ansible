@@ -187,7 +187,7 @@ Notes
     - The UCS restore operation restores the full configuration only if the hostname of the target system matches the hostname on which the UCS archive was created. If the hostname does not match, only the shared configuration is restored. You can ensure hostnames match by using the ``bigip_hostname`` Ansible module in a task before using this module.
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
 
 
 

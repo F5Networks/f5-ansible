@@ -133,7 +133,7 @@ Notes
 
 .. note::
     - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
-    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/ansible-f5.
+    - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
 
 
 
