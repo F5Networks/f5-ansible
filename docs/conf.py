@@ -312,3 +312,9 @@ texinfo_documents = [
 intersphinx_mapping = {
     'requests': ('http://docs.python-requests.org/en/latest/', None)
 }
+
+linkcheck_ignore = [
+    r'L157_',
+    r'diff-.*',
+    r'wednesdays',
+]
