@@ -1,0 +1,65 @@
+---
+
+- name: Issue 00372 - Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
+- name: Issue 00372 - Create vlan
+  bigip_vlan:
+    name: issue-00433
+    dag_tunnel: inner
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Assert Create vlan
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Create vlan - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    dag_tunnel: inner
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Assert Create vlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Change DAG tunnel
+  bigip_vlan:
+    name: issue-00433
+    dag_tunnel: outer
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Assert Create vlan
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Create vlan - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    dag_tunnel: outer
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Assert Create vlan - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Issue 00372 - Remove vlan - Idempotent check
+  bigip_vlan:
+    name: issue-00433
+    state: absent
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"

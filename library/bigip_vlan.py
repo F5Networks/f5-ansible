@@ -69,8 +69,17 @@ options:
         disaggregate traffic based on C(source-address) (the source IP address),
         C(destination-address) (destination IP address), or C(default), which
         specifies that the default CMP hash uses L4 ports.
-      - If this parameter is not specified when creating a new VLAN, C(default)
-        will be used.
+      - When creating a new VLAN, if this parameter is not specified, the default
+        of C(default) is used.
+  dag_tunnel:
+    description:
+      - Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated
+        packets to TMM instances. Select C(inner) to distribute packets based on information
+        in inner headers. Select C(outer) to distribute packets based on information in
+        outer headers without inspecting inner headers.
+      - When creating a new VLAN, if this parameter is not specified, the default
+        of C(outer) is used.
+      - This parameter is not supported on Virtual Editions of BIG-IP.
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -152,8 +161,13 @@ tag:
 cmp_hash:
   description: New traffic disaggregation method.
   returned: changed
-  type: int
+  type: string
   sample: source-address
+dag_tunnel:
+  description: The new DAG tunnel setting.
+  returned: changed
+  type: string
+  sample: outer
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -171,22 +185,24 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'cmpHash': 'cmp_hash'
+        'cmpHash': 'cmp_hash',
+        'dagTunnel': 'dag_tunnel'
     }
 
     updatables = [
         'tagged_interfaces', 'untagged_interfaces', 'tag',
-        'description', 'mtu', 'cmp_hash'
+        'description', 'mtu', 'cmp_hash', 'dag_tunnel'
     ]
 
     returnables = [
         'description', 'partition', 'tag', 'interfaces',
         'tagged_interfaces', 'untagged_interfaces', 'mtu',
-        'cmp_hash'
+        'cmp_hash', 'dag_tunnel'
     ]
 
     api_attributes = [
-        'description', 'interfaces', 'tag', 'mtu', 'cmpHash'
+        'description', 'interfaces', 'tag', 'mtu', 'cmpHash',
+        'dagTunnel'
     ]
 
     def __init__(self, params=None):
@@ -561,6 +577,9 @@ class ArgumentSpec(object):
                     'destination-address', 'dest', 'dst-ip', 'destination', 'dst',
                     'source-address', 'src', 'src-ip', 'source'
                 ]
+            ),
+            dag_tunnel=dict(
+                choices=['inner', 'outer']
             )
         )
         self.f5_product_name = 'bigip'
