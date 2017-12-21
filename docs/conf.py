@@ -314,7 +314,7 @@ intersphinx_mapping = {
 }
 
 linkcheck_ignore = [
-    r'L157_',
-    r'diff-.*',
-    r'wednesdays',
+    r'.*L157_.*',
+    r'.*diff-.*',
+    r'.*wednesdays.*',
 ]
