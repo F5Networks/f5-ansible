@@ -1,99 +1,3 @@
-Deprecating functionality
-=========================
-
-When functionality is deprecated, it may be necessary to raise warnings to the user.
-
-Normally, you do deprecations in the ArgumentSpec. For example, when you use `removed_in_version`:
-
-.. code-block:: python
-
-   type=dict(
-       removed_in_version='2.4'
-   )
-
-This is only relevant when the **parameter itself** is deprecated.
-
-Sometimes the parameter is a list of choices and the **choices themselves** are deprecated.
-
-For example, consider the following parameter:
-
-.. code-block:: python
-
-   type=dict(
-       choices=['foo_1', 'bar_2', 'baz_3']
-   )
-
-You may need to deprecate the values themselves in favor of other values.
-
-.. code-block:: python
-
-   type=dict(
-       choices=['foo-1', 'bar-2', 'baz-3']
-   )
-
-This may seem like a simple thing that you could add code to fix, but doing so would increase technical debt.
-
-Mapping old values to new values is a candidate for deprecation.
-
-Custom deprecations
--------------------
-
-To announce deprecations, you can use the `removed_in_version` field mentioned previously, but your module can also raise more customized deprecations.
-
-To do this, begin by amending the `__init__` method of your `Parameters` class to define a `__warnings` variable.
-
-.. code-block:: python
-
-   class Parameters(AnsibleF5Parameters):
-       def __init__(self, params=None):
-           super(Parameters, self).__init__(params)
-           self._values['__warnings'] = []
-
-Next, add a new method to the `ModuleManager`, or, class-specific manager (such as those used when forking logic, like `bigip_gtm_pool`).
-
-The definition of this method is:
-
-.. code-block:: python
-
-   def _announce_deprecations(self):
-       warnings = []
-       if self.want:
-           warnings += self.want._values.get('__warnings', [])
-       if self.have:
-           warnings += self.have._values.get('__warnings', [])
-       for warning in warnings:
-           self.client.module.deprecate(
-               msg=warning['msg'],
-               version=warning['version']
-           )
-
-The third and final step is to actually make use of the deprecation code that you set up previously. To do that, you want to **append** to the aforementioned `__warnings` field.
-
-For example:
-
-.. code-block:: python
-
-   if lb_method in deprecated.keys():
-       if self._values['__warnings'] is None:
-           self._values['__warnings'] = []
-       self._values['__warnings'].append(
-           [
-               dict(
-                   msg='The provided lb_method is deprecated',
-                   version='2.4'
-               )
-           ]
-       )
-
-pycodestyle
-===========
-
-Your modules should be flake free:
-
-flake8
-
-Your modules should conform to Ansible's validate-modules code.
-
 Design patterns
 ===============
 
@@ -129,17 +33,17 @@ List item as member
 - bigip_remote_syslog
 
 Class variables
-===============
+---------------
 
 The following class variables are common attributes that each `Parameters` class needs to define.
 
 updatables
-----------
+``````````
 
 Specifies a list of `Parameters` properties that the module considers updatable. Use this when doing `should_update()` comparisons and setting properties in `self.changes`.
 
 api_attributes
---------------
+``````````````
 
 Specifies a list `Parameters` properties to provide to the `api_params()` method when generating valid sets of attributes for resources in the REST API.
 
@@ -157,12 +61,12 @@ The `api_params` method uses this to generate a valid set of attributes to provi
 You should specify these values specifically in the `(create|update|delete)_on_device` methods.
 
 returnables
------------
+```````````
 
 Specifies a list of Parameters properties for the `to_return()` method to iterate over when supplying "changed" options back to the user.
 
 api_map
--------
+```````
 
 Sometimes you cannot write the API parameters as methods. For example, the `bigip_device_dns` APIs parameters include:
 
@@ -221,7 +125,7 @@ Requirements
 
 
 Common classes
-==============
+--------------
 
 Nearly every module (see exceptions) should have the following classes. These classes support the stated design patterns.
 

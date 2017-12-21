@@ -8,7 +8,7 @@ General tests check syntax, and specific tests exercise the functionality of the
 General tests
 -------------
 
-All modules go through a set of general tests. Travis CI runs these tests. You can view the tests in the ``.travis.yml`` in the root directory of the ``f5-ansible`` repository.
+All modules go through a set of general tests. Travis CI runs these tests. You can view the tests in ``.travis.yml`` in the root directory of the ``f5-ansible`` repository.
 
 - flake8
 - ansible-lint
@@ -18,9 +18,7 @@ Functional tests
 
 Each Ansible module should have a role associated with it. This role contains all of the functional tests you want run to validate your module.
 
-These tests run against several different test harnesses of BIG-IP VE.
-
-You may not have instances of BIG-IP available to you; these instances have all of the necessary modules enabled for you to test against.
+These tests run against several different test harnesses of BIG-IP VE. You do not need instances of each BIG-IP VE version available to you; the F5 instances have all of the necessary modules enabled for you to test against.
 
 Code coverage
 -------------
@@ -62,7 +60,7 @@ The reason is because of the test layout.
 
 Integration tests build on top of each other. If one of those tests fails, then a cascade of failures will occur. Therefore it's a waste of time to continue with tests; the remainder will never pass.
 
-Take, for example, a type of integration test for bigip_pool. It looks like this.
+Take, for example, a type of integration test for bigip_pool. It looks like this:
 
 - Create pool
 - Assert creation

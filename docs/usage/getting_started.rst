@@ -35,9 +35,9 @@ In addition to Ansible, you should install a few additional Python modules.
 
 At minimum, you should add `f5-sdk`.
 
-You can install these by using pip (either globally or within a virtual environment), for example:
+You can install these by using pip (either globally or within a virtual environment). For example:
 
-.. code-block:: terminal
+.. code-block:: bash
 
    (myansible) $ pip install f5-sdk bigsuds netaddr deepdiff
 

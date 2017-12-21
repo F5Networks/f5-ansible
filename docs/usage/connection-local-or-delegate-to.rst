@@ -12,7 +12,7 @@ Sometimes you might see examples of F5 Ansible playbooks that use ``connection: 
      tasks:
          ...
 
-But other times, you will see delegation used. For example:
+But other times, you will see ``delegate_to`` used. For example:
 
 .. code-block:: yaml
 
@@ -26,7 +26,7 @@ But other times, you will see delegation used. For example:
                - tmsh list ltm virtual
            delegate_to: localhost
 
-See that usage of ``delegate_to: localhost`` at the bottom there?
+See the usage of ``delegate_to: localhost`` at the bottom?
 
 What's the difference?
 ----------------------
@@ -48,7 +48,7 @@ This is because when you specify ``connection: local``, every host is now consid
 This is likely not what you want.
 
 For example, the following playbook is **not what you want**.
-*(The common login variables have been omitted)*
+*(Common login variables omitted)*
 
 .. code-block:: yaml
 
@@ -132,4 +132,4 @@ remote webserver), what is the value of the ``{{ inventory_hostname }}`` variabl
 
 If you answered ``my-web-server`` then you are correct.
 
-This is **context**. The task executed on ``localhost`` using ``my-web-server``'s context, and therefore, its ``facts``.
+This is **context**. The task executes on ``localhost`` using ``my-web-server``'s context, and therefore, its ``facts``.
