@@ -1,0 +1,23 @@
+---
+
+- name: "Change server type - {{ item }}"
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    server_type: "{{ item }}"
+  register: result
+
+- name: "Assert Change server type - {{ item }}"
+  assert:
+    that:
+      - result is changed
+
+- name: "Change server type - {{ item }} - Idempotent check"
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    server_type: "{{ item }}"
+  register: result
+
+- name: "Assert Change server type - {{ item }} - Idempotent check"
+  assert:
+    that:
+      - result is not changed

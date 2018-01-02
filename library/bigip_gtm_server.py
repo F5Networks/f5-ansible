@@ -38,24 +38,24 @@ options:
       - absent
       - enabled
       - disabled
-    datacenter:
-      description:
-        - Data center the server belongs to. When creating a new GTM server, this value
-          is required.
-    devices:
-      description:
-        - Lists the self IP addresses and translations for each device. When creating a
-          new GTM server, this value is required. This list is a complex list that
-          specifies a number of keys. There are several supported keys.
-        - The C(name) key specifies a name for the device. The device name must
-          be unique per server. This key is required.
-        - The C(address) key contains an IP address, or list of IP addresses, for the
-          destination server. This key is required.
-        - The C(translation) key contains an IP address to translate the C(address)
-          value above to. This key is optional.
-        - Specifying duplicate C(name) fields is a supported means of providing device
-          addresses. In this scenario, the addresses will be assigned to the C(name)'s list
-          of addresses.
+  datacenter:
+    description:
+      - Data center the server belongs to. When creating a new GTM server, this value
+        is required.
+  devices:
+    description:
+      - Lists the self IP addresses and translations for each device. When creating a
+        new GTM server, this value is required. This list is a complex list that
+        specifies a number of keys. There are several supported keys.
+      - The C(name) key specifies a name for the device. The device name must
+        be unique per server. This key is required.
+      - The C(address) key contains an IP address, or list of IP addresses, for the
+        destination server. This key is required.
+      - The C(translation) key contains an IP address to translate the C(address)
+        value above to. This key is optional.
+      - Specifying duplicate C(name) fields is a supported means of providing device
+        addresses. In this scenario, the addresses will be assigned to the C(name)'s list
+        of addresses.
   server_type:
     description:
       - Specifies the server type. The server type determines the metrics that the
@@ -77,20 +77,25 @@ options:
       - cisco-local-director-v3
       - foundry-server-iron
       - netapp
-      - windows-2000-servernotes:
+      - windows-2000-server
   link_discovery:
     description:
       - Specifies whether the system auto-discovers the links for this server. When
-        creating a new GTM server, the default value C(disabled) is used.
+        creating a new GTM server, if this parameter is not specified, the default
+        value C(disabled) is used.
+      - If you set this parameter to C(yes), you must also ensure that the
+        C(virtual_server_discovery) parameter is also set to C(yes).
     choices:
-      - enabled
-      - disabled
+      - yes
+      - no
   virtual_server_discovery:
     description:
       - Specifies whether the system auto-discovers the virtual servers for this server.
+        When creating a new GTM server, if this parameter is not specified, the default
+        value C(disabled) is used.
     choices:
-      - enabled
-      - disabled
+      - yes
+      - no
   partition:
     description:
       - Device partition to manage resources on.
@@ -116,9 +121,9 @@ EXAMPLES = r'''
     password: secret
     name: GTM_Server
     datacenter: /Common/New York
-    product: bigip
-    link_discovery: disabled
-    virtual_server_discovery: disabled
+    server_type: bigip
+    link_discovery: no
+    virtual_server_discovery: no
     devices:
       - {'name': 'server_1', 'address': '1.1.1.1'}
       - {'name': 'server_2', 'address': '2.2.2.1', 'translation':'192.168.2.1'}
@@ -134,9 +139,9 @@ EXAMPLES = r'''
     password: secret
     name: GTM_Server
     datacenter: /Common/New York
-    product: bigip
-    link_discovery: disabled
-    virtual_server_discovery: disabled
+    server_type: bigip
+    link_discovery: no
+    virtual_server_discovery: no
     devices:
       - name: server_1
         address: 1.1.1.1
@@ -161,9 +166,9 @@ from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
+from distutils.version import LooseVersion
 
 try:
     from collections import OrderedDict
@@ -188,8 +193,8 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'link_discovery', 'virtual_server_discovery', 'server_type', 'devices',
-        'datacenter', 'enabled'
+        'link_discovery', 'virtual_server_discovery', 'server_type_and_devices',
+        'datacenter', 'state'
     ]
 
     returnables = [
@@ -199,7 +204,7 @@ class Parameters(AnsibleF5Parameters):
 
     api_attributes = [
         'linkDiscovery', 'virtualServerDiscovery', 'product', 'addresses',
-        'datacenter', 'enabled'
+        'datacenter', 'enabled', 'disabled'
     ]
 
     def __init__(self, params=None):
@@ -232,6 +237,59 @@ class Parameters(AnsibleF5Parameters):
                     # If the mapped value is not a @property
                     self._values[map_key] = v
 
+    def api_params(self):
+        result = {}
+        for api_attribute in self.api_attributes:
+            if api_attribute in self.api_map:
+                result[api_attribute] = getattr(
+                    self, self.api_map[api_attribute])
+            else:
+                result[api_attribute] = getattr(self, api_attribute)
+        result = self._filter_params(result)
+        return result
+
+    def _fqdn_name(self, value):
+        if value is not None and not value.startswith('/'):
+            return '/{0}/{1}'.format(self.partition, value)
+        return value
+
+
+class ApiParameters(Parameters):
+    @property
+    def devices(self):
+        if self._values['devices'] is None:
+            return None
+        return self._values['devices']
+
+    @property
+    def server_type(self):
+        if self._values['server_type'] is None:
+            return None
+        elif self._values['server_type'] in ['single-bigip', 'redundant-bigip']:
+            return 'bigip'
+        else:
+            return self._values['server_type']
+
+    @property
+    def raw_server_type(self):
+        if self._values['server_type'] is None:
+            return None
+        return self._values['server_type']
+
+    @property
+    def enabled(self):
+        if self._values['enabled'] is None:
+            return None
+        return True
+
+    @property
+    def disabled(self):
+        if self._values['disabled'] is None:
+            return None
+        return True
+
+
+class ModuleParameters(Parameters):
     @property
     def devices(self):
         if self._values['devices'] is None:
@@ -239,9 +297,10 @@ class Parameters(AnsibleF5Parameters):
         result = []
 
         for device in self._values['devices']:
-            if self.kind == 'tm:gtm:server:serverstate':
-                device['address'] = device.pop('name', 'none')
-                device['name'] = device.pop('deviceName', 'none')
+            if not any(x for x in ['address', 'addresses'] if x in device):
+                raise F5ModuleError(
+                    "The specified device list must contain an 'address' or 'addresses' key"
+                )
 
             if 'address' in device:
                 translation = self._determine_translation(device)
@@ -262,27 +321,18 @@ class Parameters(AnsibleF5Parameters):
                         'deviceName': device_name,
                         'translation': translation
                     })
-
-            else:
-                raise F5ModuleError(
-                    "The specified device list must contain an 'address' or 'addresses' key"
-                )
         return result
 
-    def _determine_translation(self, device):
-        if 'translation' not in device:
-            return 'none'
-        return device['translation']
-
-    @property
-    def addresses(self):
-        return self.devices
+    def devices_list(self):
+        if self._values['devices'] is None:
+            return None
+        return self._values['devices']
 
     @property
     def enabled(self):
         if self._values['state'] in ['present', 'enabled']:
             return True
-        return self._values['enabled']
+        return False
 
     @property
     def datacenter(self):
@@ -290,6 +340,37 @@ class Parameters(AnsibleF5Parameters):
             return None
         return self._fqdn_name(self._values['datacenter'])
 
+    def _determine_translation(self, device):
+        if 'translation' not in device:
+            return 'none'
+        return device['translation']
+
+    @property
+    def state(self):
+        if self._values['state'] == 'enabled':
+            return 'present'
+        return self._values['state']
+
+    @property
+    def link_discovery(self):
+        if self._values['link_discovery'] is None:
+            return None
+        elif self._values['link_discovery'] is True:
+            return 'enabled'
+        elif self._values['link_discovery'] is False:
+            return 'disabled'
+
+    @property
+    def virtual_server_discovery(self):
+        if self._values['virtual_server_discovery'] is None:
+            return None
+        elif self._values['virtual_server_discovery'] is True:
+            return 'enabled'
+        elif self._values['virtual_server_discovery'] is False:
+            return 'disabled'
+
+
+class Changes(Parameters):
     def to_return(self):
         result = {}
         for returnable in self.returnables:
@@ -297,29 +378,30 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if api_attribute in self.api_map:
-                result[api_attribute] = getattr(
-                    self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
 
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
+class UsableChanges(Changes):
+    pass
 
 
-class Changes(Parameters):
+class ReportableChanges(Changes):
     @property
-    def enabled(self):
-        if self._values['enabled'] in BOOLEANS_TRUE:
+    def server_type(self):
+        if self._values['server_type'] in ['single-bigip', 'redundant-bigip']:
+            return 'bigip'
+        return self._values['server_type']
+
+    @property
+    def link_discovery(self):
+        if self._values['link_discovery'] == 'enabled':
             return True
-        else:
+        elif self._values['link_discovery'] == 'disabled':
+            return False
+
+    @property
+    def virtual_server_discovery(self):
+        if self._values['virtual_server_discovery'] == 'enabled':
+            return True
+        elif self._values['virtual_server_discovery'] == 'disabled':
             return False
 
 
@@ -327,18 +409,6 @@ class Difference(object):
     def __init__(self, want, have=None):
         self.want = want
         self.have = have
-
-    @property
-    def devices(self):
-        if self.want.devices is not None and len(self.want.devices) == 0:
-            raise F5ModuleError(
-                "A GTM server must have at least one device associated with it."
-            )
-        want = [OrderedDict(sorted(d.items())) for d in self.want.devices]
-        have = [OrderedDict(sorted(d.items())) for d in self.have.devices]
-        if want != have:
-            return self.want.devices
-        return None
 
     def compare(self, param):
         try:
@@ -356,13 +426,178 @@ class Difference(object):
         except AttributeError:
             return attr1
 
+    def _discovery_constraints(self):
+        if self.want.virtual_server_discovery is None:
+            virtual_server_discovery = self.have.virtual_server_discovery
+        else:
+            virtual_server_discovery = self.want.virtual_server_discovery
+
+        if self.want.link_discovery is None:
+            link_discovery = self.have.link_discovery
+        else:
+            link_discovery = self.want.link_discovery
+
+        if link_discovery == 'enabled' and virtual_server_discovery == 'disabled':
+            raise F5ModuleError(
+                "Virtual server discovery must be enabled if link discovery is enabled"
+            )
+
+    def _devices_changed(self):
+        if self.want.devices is None and self.want.server_type is None:
+            return None
+        if self.want.devices is None:
+            devices = self.have.devices
+        else:
+            devices = self.want.devices
+        if len(devices) == 0:
+            raise F5ModuleError(
+                "A GTM server must have at least one device associated with it."
+            )
+        want = [OrderedDict(sorted(d.items())) for d in devices]
+        have = [OrderedDict(sorted(d.items())) for d in self.have.devices]
+        if want != have:
+            return True
+        return False
+
+    def _server_type_changed(self):
+        if self.want.server_type is None:
+            self.want.update({'server_type': self.have.server_type})
+        if self.want.server_type != self.have.server_type:
+            return True
+        return False
+
+    @property
+    def link_discovery(self):
+        self._discovery_constraints()
+        if self.want.link_discovery != self.have.link_discovery:
+            return self.want.link_discovery
+
+    @property
+    def virtual_server_discovery(self):
+        self._discovery_constraints()
+        if self.want.virtual_server_discovery != self.have.virtual_server_discovery:
+            return self.want.virtual_server_discovery
+
+    def _handle_current_server_type_and_devices(self, devices_change, server_change):
+        result = {}
+        if devices_change:
+            result['devices'] = self.want.devices
+        if server_change:
+            result['server_type'] = self.want.server_type
+        return result
+
+    def _handle_legacy_server_type_and_devices(self, devices_change, server_change):
+        result = {}
+        if server_change and devices_change:
+            result['devices'] = self.want.devices
+            if len(self.want.devices) > 1 and self.want.server_type == 'bigip':
+                if self.have.raw_server_type != 'redundant-bigip':
+                    result['server_type'] = 'redundant-bigip'
+            elif self.want.server_type == 'bigip':
+                if self.have.raw_server_type != 'single-bigip':
+                    result['server_type'] = 'single-bigip'
+            else:
+                result['server_type'] = self.want.server_type
+
+        elif devices_change:
+            result['devices'] = self.want.devices
+            if len(self.want.devices) > 1 and self.have.server_type == 'bigip':
+                if self.have.raw_server_type != 'redundant-bigip':
+                    result['server_type'] = 'redundant-bigip'
+            elif self.have.server_type == 'bigip':
+                if self.have.raw_server_type != 'single-bigip':
+                    result['server_type'] = 'single-bigip'
+            else:
+                result['server_type'] = self.want.server_type
+
+        elif server_change:
+            if len(self.have.devices) > 1 and self.want.server_type == 'bigip':
+                if self.have.raw_server_type != 'redundant-bigip':
+                    result['server_type'] = 'redundant-bigip'
+            elif self.want.server_type == 'bigip':
+                if self.have.raw_server_type != 'single-bigip':
+                    result['server_type'] = 'single-bigip'
+            else:
+                result['server_type'] = self.want.server_type
+        return result
+
+    @property
+    def server_type_and_devices(self):
+        """Compares difference between server type and devices list
+
+        These two parameters are linked with each other and, therefore, must be
+        compared together to ensure that the correct setting is sent to BIG-IP
+
+        :return:
+        """
+        devices_change = self._devices_changed()
+        server_change = self._server_type_changed()
+        if not devices_change and not server_change:
+            return None
+        tmos_version = self.client.api.tmos_version
+        if LooseVersion(tmos_version) >= LooseVersion('13.0.0'):
+            result = self._handle_current_server_type_and_devices(
+                devices_change, server_change
+            )
+            return result
+        else:
+            result = self._handle_legacy_server_type_and_devices(
+                devices_change, server_change
+            )
+            return result
+
+    @property
+    def state(self):
+        if self.want.state == 'disabled' and self.have.enabled:
+            return dict(disabled=True)
+        elif self.want.state in ['present', 'enabled'] and self.have.disabled:
+            return dict(enabled=True)
+
 
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+
+    def exec_module(self):
+        if not self.gtm_provisioned():
+            raise F5ModuleError(
+                "GTM must be provisioned to use this module."
+            )
+        if self.version_is_less_than('13.0.0'):
+            manager = self.get_manager('v1')
+        else:
+            manager = self.get_manager('v2')
+        return manager.exec_module()
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(self.client)
+        elif type == 'v2':
+            return V2Manager(self.client)
+
+    def version_is_less_than(self, version):
+        tmos_version = self.client.api.tmos_version
+        if LooseVersion(tmos_version) < LooseVersion(version):
+            return True
+        else:
+            return False
+
+    def gtm_provisioned(self):
+        resource = self.client.api.tm.sys.dbs.db.load(
+            name='provisioned.cpu.gtm'
+        )
+        if int(resource.value) == 0:
+            return False
+        return True
+
+
+class BaseManager(object):
+    def __init__(self, client):
+        self.client = client
+        self.want = ModuleParameters(params=self.client.module.params)
+        self.want.update(dict(client=client))
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -370,10 +605,11 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = UsableChanges(changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
+        diff.client = self.client
         updatables = Parameters.updatables
         changed = dict()
         for k in updatables:
@@ -381,9 +617,12 @@ class ModuleManager(object):
             if change is None:
                 continue
             else:
-                changed[k] = change
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -400,10 +639,26 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
+
+    def _check_link_discovery_requirements(self):
+        if self.want.link_discovery == 'enabled' and self.want.virtual_server_discovery == 'disabled':
+            raise F5ModuleError(
+                "Virtual server discovery must be enabled if link discovery is enabled"
+            )
 
     def present(self):
         if self.exists():
@@ -412,18 +667,17 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
+        if self.want.state == 'disabled':
+            self.want.update({'disabled': True})
+        elif self.want.state in ['present', 'enabled']:
+            self.want.update({'enabled': True})
         self._set_changed_options()
 
         if self.want.devices is None:
             raise F5ModuleError(
                 "You must provide an initial device."
             )
-        if self.want.server_type is None:
-            self.want.update({'server_type': 'bigip'})
-        if self.want.link_discovery is None:
-            self.want.update({'link_discovery': 'disabled'})
-        if self.want.link_discovery is None:
-            self.want.update({'virtual_server_discovery': 'disabled'})
+        self._assign_creation_defaults()
 
         if self.client.check_mode:
             return True
@@ -456,7 +710,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
     def should_update(self):
         result = self._update_changed_options()
@@ -465,7 +719,7 @@ class ModuleManager(object):
         return False
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.gtm.servers.server.load(
             name=self.want.name,
             partition=self.want.partition
@@ -501,6 +755,40 @@ class ModuleManager(object):
         return result
 
 
+class V1Manager(BaseManager):
+    def _assign_creation_defaults(self):
+        if self.want.server_type is None:
+            if len(self.want.devices) == 0:
+                raise F5ModuleError(
+                    "You must provide at least one device."
+                )
+            elif len(self.want.devices) == 1:
+                self.want.update({'server_type': 'single-bigip'})
+            else:
+                self.want.update({'server_type': 'redundant-bigip'})
+        else:
+            if len(self.want.devices) == 1:
+                self.want.update({'server_type': 'single-bigip'})
+            else:
+                self.want.update({'server_type': 'redundant-bigip'})
+        if self.want.link_discovery is None:
+            self.want.update({'link_discovery': 'disabled'})
+        if self.want.virtual_server_discovery is None:
+            self.want.update({'virtual_server_discovery': 'disabled'})
+        self._check_link_discovery_requirements()
+
+
+class V2Manager(BaseManager):
+    def _assign_creation_defaults(self):
+        if self.want.server_type is None:
+            self.want.update({'server_type': 'bigip'})
+        if self.want.link_discovery is None:
+            self.want.update({'link_discovery': 'disabled'})
+        if self.want.virtual_server_discovery is None:
+            self.want.update({'virtual_server_discovery': 'disabled'})
+        self._check_link_discovery_requirements()
+
+
 class ArgumentSpec(object):
     def __init__(self):
         self.states = ['absent', 'present', 'enabled', 'disabled']
@@ -512,7 +800,6 @@ class ArgumentSpec(object):
             'foundry-server-iron', 'netapp', 'standalone-bigip',
             'redundant-bigip', 'windows-2000-server'
         ]
-        self.enabled_disabled = ['enabled', 'disabled']
         self.supports_check_mode = True
         self.argument_spec = dict(
             state=dict(
@@ -521,20 +808,27 @@ class ArgumentSpec(object):
             ),
             name=dict(required=True),
             server_type=dict(
-                choices=self.server_types
+                choices=self.server_types,
+                aliases=['product']
             ),
             datacenter=dict(),
-            link_discovery=dict(
-                choices=self.enabled_disabled
-            ),
-            virtual_server_discovery=dict(
-                choices=self.enabled_disabled
-            ),
+            link_discovery=dict(type='bool'),
+            virtual_server_discovery=dict(type='bool'),
             devices=dict(
                 type='list'
             )
         )
         self.f5_product_name = 'bigip'
+
+
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
 
 
 def main():
