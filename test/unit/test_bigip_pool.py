@@ -30,7 +30,7 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_pool import Parameters
+        from ansible.modules.network.f5.bigip_pool import ApiParameters
         from ansible.modules.network.f5.bigip_pool import ModuleParameters
         from ansible.modules.network.f5.bigip_pool import ModuleManager
         from ansible.modules.network.f5.bigip_pool import ArgumentSpec
@@ -76,7 +76,6 @@ class TestParameters(unittest.TestCase):
         assert p.monitor_type == 'm_of_n'
         assert p.quorum == 1
         assert p.monitors == 'min 1 of { /Common/Fake /Common/Fake2 }'
-        assert p.member_name == '192.168.1.1:8080'
         assert p.slow_ramp_time == 200
         assert p.reselect_tries == 5
         assert p.service_down_action == 'drop'
