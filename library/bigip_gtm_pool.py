@@ -186,7 +186,6 @@ from ansible.module_utils.six import iteritems
 from collections import defaultdict
 from distutils.version import LooseVersion
 
-
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 except ImportError:
