@@ -5,7 +5,7 @@ Follow this tutorial to create a pool, add two nodes to that pool, and  assign a
 
 You can create your own yaml file to use as a playbook, or follow along with |site_yaml|.
 
-Begin by placing the following in your ``site.yaml`` file:
+Begin by placing the following in your ``playbook.yaml`` file:
 
 .. code-block:: yaml
 
@@ -19,14 +19,14 @@ Your BIG-IP is probably not called ``big-ip01.internal``. It might be a differen
 
 .. |site_yaml| raw:: html
 
-   <a href="https://github.com/F5Networks/f5-ansible/blob/master/examples/getting-started.yaml" target="_blank">this yaml file</a>
+   <a href="https://github.com/F5Networks/f5-ansible/blob/devel/examples/0000-getting-started/playbook.yaml" target="_blank">this yaml file</a>
 
 Add a pool
 ----------
 
 A pool represents a collection of resources. These resource typically deliver a service that is identical. By assigning them to a pool, the BIG-IP is able to distribute requests among them.
 
-Add the following to your ``site.yaml`` to create a pool called ``web``:
+Add the following to your ``playbook.yaml`` to create a pool called ``web``:
 
 .. code-block:: yaml
 
@@ -47,7 +47,7 @@ Add two nodes
 
 Now you want to create the nodes in your BIG-IP configuration. Nodes represent the actual devices on your network. They could be physical gear, VMs, or other devices.
 
-To add the two nodes, put the following in your ``site.yaml`` file:
+To add the two nodes, put the following in your ``playbook.yaml`` file:
 
 .. code-block:: yaml
 
@@ -107,7 +107,7 @@ Now that you created your pool and the nodes are members of that pool, you want 
 
 The following example uses ``172.16.10.108`` as the external address, so you likely need to change it for your own environment.
 
-To create a virtual server, add the following to your ``site.yaml`` file:
+To create a virtual server, add the following to your ``playbook.yaml`` file:
 
 .. code-block:: yaml
 
