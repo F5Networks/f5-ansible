@@ -542,6 +542,13 @@ class ReportableChanges(Changes):
         result = sorted(re.findall(r'/\w+/[^\s}]+', self._values['monitors']))
         return result
 
+    @property
+    def metadata(self):
+        result = dict()
+        for x in self._values['metadata']:
+            result[x['name']] = x['value']
+        return result
+
 
 class Difference(object):
     def __init__(self, want, have=None):
