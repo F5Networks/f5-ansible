@@ -10,6 +10,6 @@ if [ $LOCAL_USER_ID -eq 0 ]; then
 fi
 
 exec docker run -i \
-  -v $PWD:$PWD --workdir $PWD \
+  -v $PWD:/here --workdir /here \
   -e "LOCAL_USER_ID=${LOCAL_USER_ID}" \
   ${DOC_IMG} "$@"
