@@ -14,7 +14,7 @@ exec docker run -i \
   -e "LOCAL_USER_ID=$(id -u)" \
   ${DOC_IMG} /bin/bash -s <<EOF
 set -e
-
+ls -al
 #echo "Installing project dependencies"
 pip install --user -r requirements.readthedocs.txt
 
