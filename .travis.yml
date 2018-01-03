@@ -16,6 +16,8 @@ before_install:
 install:
   - sudo apt-get update
   - sudo apt-get -y install libffi-dev libssl-dev
+  - pip install --upgrade setuptools pip
+  - pip install cffi
   - pip install --upgrade -r requirements.test.txt
 
 script:
