@@ -11,7 +11,7 @@ fi
 
 exec docker run -i \
   -v $PWD:/here --workdir /here \
-  -e "LOCAL_USER_ID=$(id -u)" \
+  -e "LOCAL_USER_ID=${LOCAL_USER_ID}" \
   ${DOC_IMG} /bin/bash -s <<EOF
 set -e
 ls -al
