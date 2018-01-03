@@ -18,7 +18,7 @@ module: bigip_software_update
 short_description: Manage the software update settings of a BIG-IP
 description:
   - Manage the software update settings of a BIG-IP.
-version_added: "2.4"
+version_added: "2.5"
 options:
   auto_check:
     description:
@@ -46,7 +46,7 @@ notes:
     install f5-sdk
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk >= 2.2.3
+  - f5-sdk >= 3.0.6
 author:
   - Tim Rupp (@caphrim007)
 '''
