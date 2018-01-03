@@ -24,16 +24,12 @@ options:
     description:
       - Specifies whether to automatically check for updates on the F5
         Networks downloads server.
-    choices:
-      - yes
-      - no
+    type: bool
   auto_phone_home:
     description:
       - Specifies whether to automatically send phone home data to the
         F5 Networks PhoneHome server.
-    choices:
-      - yes
-      - no
+    type: bool
   frequency:
     description:
       - Specifies the schedule for the automatic update check.
@@ -42,8 +38,8 @@ options:
       - monthly
       - weekly
 notes:
-  - Requires the f5-sdk Python package on the host This is as easy as pip
-    install f5-sdk
+  - Requires the f5-sdk Python package on the host This is as easy as
+    C(pip install f5-sdk)
 extends_documentation_fragment: f5
 requirements:
   - f5-sdk >= 3.0.6
@@ -110,7 +106,7 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'autoCheck',  'autoPhonehome', 'frequency'
+        'autoCheck', 'autoPhonehome', 'frequency'
     ]
 
     updatables = [
