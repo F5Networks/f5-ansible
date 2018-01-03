@@ -13,7 +13,7 @@ exec docker run -i \
   -v $PWD:/here --workdir /here \
   ${DOC_IMG} /bin/bash -s <<EOF
 set -e
-ls -al
+
 #echo "Installing project dependencies"
 pip install --user -r requirements.readthedocs.txt
 
