@@ -24,16 +24,19 @@ options:
     description:
       - Specifies whether to automatically check for updates on the F5
         Networks downloads server.
-    required: False
-    default: None
+    choices:
+      - yes
+      - no
+  auto_phone_home:
+    description:
+      - Specifies whether to automatically send phone home data to the
+        F5 Networks PhoneHome server.
     choices:
       - yes
       - no
   frequency:
     description:
       - Specifies the schedule for the automatic update check.
-    required: False
-    default: None
     choices:
       - daily
       - monthly
@@ -57,16 +60,42 @@ EXAMPLES = r'''
     state: present
     user: admin
   delegate_to: localhost
+
+- name: Disable automatic update checking and phoning home
+  bigip_software_update:
+    auto_check: no
+    auto_phone_home: no
+    password: secret
+    server: lb.mydomain.com
+    state: present
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
-# only common fields returned
+auto_check:
+  description: Whether the system checks for updates automatically.
+  returned: changed
+  type: bool
+  sample: True
+auto_phone_home:
+  description: Whether the system automatically sends phone home data.
+  returned: changed
+  type: bool
+  sample: True
+frequency:
+  description: Frequency of auto update checks
+  returned: changed
+  type: string
+  sample: weekly
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -76,32 +105,56 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'autoCheck': 'auto_check'
+        'autoCheck': 'auto_check',
+        'autoPhonehome': 'auto_phone_home'
     }
 
+    api_attributes = [
+        'autoCheck',  'autoPhonehome', 'frequency'
+    ]
+
     updatables = [
-        'auto_check', 'frequency'
+        'auto_check', 'auto_phone_home', 'frequency'
     ]
 
     returnables = [
-        'auto_check', 'frequency'
+        'auto_check', 'auto_phone_home', 'frequency'
     ]
 
-    @property
-    def auto_check(self):
-        if self._values['auto_check'] is None:
-            return None
-        elif self._values['auto_check'] in [True, 'enabled']:
-            return 'enabled'
-        else:
-            return 'disabled'
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
 
     def api_params(self):
         result = {}
         for api_attribute in self.api_attributes:
-            if self.network == 'default':
-                result['network'] = None
-            elif self.api_map is not None and api_attribute in self.api_map:
+            if self.api_map is not None and api_attribute in self.api_map:
                 result[api_attribute] = getattr(self, self.api_map[api_attribute])
             else:
                 result[api_attribute] = getattr(self, api_attribute)
@@ -109,12 +162,94 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    @property
+    def auto_check(self):
+        if self._values['auto_check'] is None:
+            return None
+        return self._values['auto_check']
+
+
+class ModuleParameters(Parameters):
+    @property
+    def auto_check(self):
+        if self._values['auto_check'] is None:
+            return None
+        elif self._values['auto_check'] is True:
+            return 'enabled'
+        else:
+            return 'disabled'
+
+    @property
+    def auto_phone_home(self):
+        if self._values['auto_phone_home'] is None:
+            return None
+        elif self._values['auto_phone_home'] is True:
+            return 'enabled'
+        else:
+            return 'disabled'
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    @property
+    def auto_check(self):
+        if self._values['auto_check'] == 'enabled':
+            return True
+        elif self._values['auto_check'] == 'disabled':
+            return False
+
+    @property
+    def auto_phone_home(self):
+        if self._values['auto_phone_home'] == 'enabled':
+            return True
+        elif self._values['auto_phone_home'] == 'disabled':
+            return False
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+
 class ModuleManager(object):
     def __init__(self, client):
         self.client = client
         self.have = None
-        self.want = Parameters(self.client.module.params)
-        self.changes = Parameters()
+        self.want = ModuleParameters(self.client.module.params)
+        self.changes = UsableChanges()
 
     def exec_module(self):
         result = dict()
@@ -124,21 +259,36 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
 
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.client.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
+
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = UsableChanges(changed)
             return True
         return False
 
@@ -158,14 +308,14 @@ class ModuleManager(object):
         return True
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         result = self.client.api.tm.sys.software.update.load()
         result.modify(**params)
 
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.software.update.load()
         result = resource.attrs
-        return Parameters(result)
+        return ApiParameters(result)
 
 
 class ArgumentSpec(object):
@@ -175,11 +325,24 @@ class ArgumentSpec(object):
             auto_check=dict(
                 type='bool'
             ),
+            auto_phone_home=dict(
+                type='bool'
+            ),
             frequency=dict(
                 choices=['daily', 'monthly', 'weekly']
             )
         )
         self.f5_product_name = 'bigip'
+
+
+def cleanup_tokens(client):
+    try:
+        resource = client.api.shared.authz.tokens_s.token.load(
+            name=client.api.icrs.token
+        )
+        resource.delete()
+    except Exception:
+        pass
 
 
 def main():
@@ -194,9 +357,15 @@ def main():
         f5_product_name=spec.f5_product_name
     )
 
-    mm = ModuleManager(client)
-    results = mm.exec_module()
-    client.module.exit_json(**results)
+    try:
+        mm = ModuleManager(client)
+        results = mm.exec_module()
+        cleanup_tokens(client)
+        client.module.exit_json(**results)
+    except F5ModuleError as e:
+        cleanup_tokens(client)
+        client.module.fail_json(msg=str(e))
+
 
 if __name__ == '__main__':
     main()

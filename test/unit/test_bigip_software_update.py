@@ -17,14 +17,21 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
+from ansible.module_utils.f5_utils import AnsibleF5Client
 
 try:
-    from library.bigip_software_update import Parameters
+    from library.bigip_software_update import ApiParameters
+    from library.bigip_software_update import ModuleParameters
+    from library.bigip_software_update import ModuleManager
+    from library.bigip_software_update import ArgumentSpec
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_software_update import Parameters
+        from ansible.modules.network.f5.bigip_software_update import ApiParameters
+        from ansible.modules.network.f5.bigip_software_update import ModuleParameters
+        from ansible.modules.network.f5.bigip_software_update import ModuleManager
+        from ansible.modules.network.f5.bigip_software_update import ArgumentSpec
         from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
@@ -58,7 +65,7 @@ class TestParameters(unittest.TestCase):
             auto_check=True,
             frequency="daily"
         )
-        p = Parameters(args)
+        p = ModuleParameters(args)
         assert p.auto_check == 'enabled'
         assert p.frequency == 'daily'
 
@@ -67,6 +74,44 @@ class TestParameters(unittest.TestCase):
             autoCheck="enabled",
             frequency="daily"
         )
-        p = Parameters(args)
+        p = ApiParameters(args)
         assert p.auto_check == 'enabled'
         assert p.frequency == 'daily'
+
+
+@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
+       return_value=True)
+class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_update(self, *args):
+        # Configure the arguments that would be sent to the Ansible module
+        set_module_args(dict(
+            auto_check='no',
+            auto_phone_home='no',
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        # Configure the parameters that would be returned by querying the
+        # remote device
+        current = ApiParameters(load_fixture('load_sys_software_update.json'))
+
+        client = AnsibleF5Client(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            f5_product_name=self.spec.f5_product_name
+        )
+        mm = ModuleManager(client)
+
+        # Override methods to force specific logic in the module to happen
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['auto_check'] is False

@@ -1,0 +1,5 @@
+---
+
+- name: Set frequency to default
+  bigip_software_update:
+    frequency: weekly

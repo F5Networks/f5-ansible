@@ -1,0 +1,152 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Set auto update check to disabled
+  bigip_software_update:
+    auto_check: no
+  register: result
+
+- name: Assert Set auto update check to disabled
+  assert:
+    that:
+      - result is changed
+      - not result['auto_check']|bool
+
+- name: Set auto update check to disabled - Idempotent check
+  bigip_software_update:
+    auto_check: no
+  register: result
+
+- name: Assert Set auto update check to disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set auto update check to enabled
+  bigip_software_update:
+    auto_check: yes
+  register: result
+
+- name: Assert Set auto update check to enabled
+  assert:
+    that:
+      - result is changed
+      - result['auto_check']|bool
+
+- name: Set auto update check to enabled - Idempotent check
+  bigip_software_update:
+    auto_check: yes
+  register: result
+
+- name: Assert Set auto update check to enabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set auto phone home to disabled
+  bigip_software_update:
+    auto_phone_home: no
+  register: result
+
+- name: Assert Set auto phone home to disabled
+  assert:
+    that:
+      - result is changed
+      - not result['auto_phone_home']|bool
+
+- name: Set auto phone home to disabled - Idempotent check
+  bigip_software_update:
+    auto_phone_home: no
+  register: result
+
+- name: Assert Set auto phone home to disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set auto phone home to enabled
+  bigip_software_update:
+    auto_phone_home: yes
+  register: result
+
+- name: Assert Set auto phone home to enabled
+  assert:
+    that:
+      - result is changed
+      - result['auto_phone_home']|bool
+
+- name: Set auto phone home to enabled - Idempotent check
+  bigip_software_update:
+    auto_phone_home: yes
+  register: result
+
+- name: Assert Set auto phone home to enabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set frequency to daily
+  bigip_software_update:
+    frequency: daily
+  register: result
+
+- name: Assert Set frequency to daily
+  assert:
+    that:
+      - result is changed
+      - result['frequency'] == 'daily'
+
+- name: Set frequency to daily - Idempotent check
+  bigip_software_update:
+    frequency: daily
+  register: result
+
+- name: Assert Set frequency to daily - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set frequency to weekly
+  bigip_software_update:
+    frequency: weekly
+  register: result
+
+- name: Assert Set frequency to weekly
+  assert:
+    that:
+      - result is changed
+      - result['frequency'] == 'weekly'
+
+- name: Set frequency to weekly - Idempotent check
+  bigip_software_update:
+    frequency: weekly
+  register: result
+
+- name: Assert Set frequency to weekly - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set frequency to monthly
+  bigip_software_update:
+    frequency: monthly
+  register: result
+
+- name: Assert Set frequency to monthly
+  assert:
+    that:
+      - result is changed
+      - result['frequency'] == 'monthly'
+
+- name: Set frequency to monthly - Idempotent check
+  bigip_software_update:
+    frequency: monthly
+  register: result
+
+- name: Assert Set frequency to monthly - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml
