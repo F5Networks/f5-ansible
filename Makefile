@@ -61,8 +61,8 @@ requirements:
 # Build and test docs in a Docker container
 docker-test:
 	docker pull f5devcentral/containthedocs
-	./docs/scripts/docker-docs.sh \
-	pip install --user -r requirements.readthedocs.txt
+	#./docs/scripts/docker-docs.sh \
+	#pip install --user -r requirements.readthedocs.txt
 	./docs/scripts/test-docs.sh
 
 # Deploy docs to clouddocs
