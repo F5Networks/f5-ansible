@@ -62,7 +62,7 @@ options:
     choices:
       - yes
       - no
-    default: yes
+    default: no
 notes:
   - Requires the f5-sdk Python package on the host. This is as easy as pip
     install f5-sdk.
@@ -329,7 +329,7 @@ class ArgumentSpec(object):
             merge_content=dict(),
             verify=dict(
                 type='bool',
-                default=True
+                default=False
             ),
             save=dict(
                 type='bool',
