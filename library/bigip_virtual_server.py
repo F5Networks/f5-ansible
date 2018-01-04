@@ -140,11 +140,11 @@ options:
   route_advertisement_state:
     description:
       - Enable route advertisement for destination.
+      - Deprecated in 2.4. Use the C(bigip_virtual_address) module instead.
     choices:
       - enabled
       - disabled
     version_added: "2.3"
-    deprecated: Deprecated in 2.4. Use the C(bigip_virtual_address) module instead.
   description:
     description:
       - Virtual server description.
@@ -379,18 +379,26 @@ metadata:
   sample: {'key1': 'foo', 'key2': 'bar'}
 '''
 
-
-import netaddr
 import re
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
 from ansible.module_utils.f5_utils import AnsibleF5Parameters
 from ansible.module_utils.f5_utils import HAS_F5SDK
 from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
 from collections import namedtuple
+
+try:
+    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+except ImportError:
+    HAS_F5SDK = False
+
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -718,7 +726,6 @@ class VirtualServerApiParameters(VirtualServerParameters):
                 # Can be a port of "any". This only happens with IPv6
                 if port == 'any':
                     port = 0
-                pass
             if not self.is_valid_ip(ip):
                 raise F5ModuleError(
                     "The provided destination is not a valid IP address"
@@ -1818,6 +1825,9 @@ def cleanup_tokens(client):
 def main():
     if not HAS_F5SDK:
         raise F5ModuleError("The python f5-sdk module is required")
+
+    if not HAS_NETADDR:
+        raise F5ModuleError("The python netaddr module is required")
 
     spec = ArgumentSpec()
 
