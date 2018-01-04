@@ -91,8 +91,8 @@ class TestManager(unittest.TestCase):
         )
 
         mm = ModuleManager(client)
-        mm.create_on_device = lambda: True
-        mm.exists = lambda: False
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
 
         results = mm.exec_module()
 
