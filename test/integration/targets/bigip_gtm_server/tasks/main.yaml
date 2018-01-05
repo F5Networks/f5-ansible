@@ -292,6 +292,28 @@
     that:
       - result is not changed
 
+- name: Enable-no-delete virtual server discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: enabled-no-delete
+  register: result
+
+- name: Assert Enable-no-delete virtual server discovery
+  assert:
+    that:
+      - result is changed
+
+- name: Enable-no-delete virtual server discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    virtual_server_discovery: enabled-no-delete
+  register: result
+
+- name: Assert Enable-no-delete virtual server discovery - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Disable virtual server discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
@@ -326,6 +348,18 @@
     that:
       - result is not changed
 
+- name: Enable-no-delete link discovery - virtual server discovery disabled
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: enabled-no-delete
+  failed_when: "'Virtual server discovery must be enabled' not in result.msg"
+  register: result
+
+- name: Assert Enable-no-delete link discovery - virtual server discovery disabled
+  assert:
+    that:
+      - result is not changed
+
 - name: Enable virtual server discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
@@ -350,6 +384,28 @@
   register: result
 
 - name: Assert Enable link discovery - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Enable-no-delete link discovery
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: enabled-no-delete
+  register: result
+
+- name: Assert Enable-no-delete link discovery
+  assert:
+    that:
+      - result is changed
+
+- name: Enable-no-delete link discovery - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    link_discovery: enabled-no-delete
+  register: result
+
+- name: Assert Enable-no-delete link discovery - Idempotent check
   assert:
     that:
       - result is not changed
