@@ -1,8 +1,12 @@
 ---
 
-bigip_username: "admin"
-bigip_password: "admin"
-bigip_port: "10443"
-bigip_partition: "Common"
-bigip_ssh_port: 2222
-ansible_python_interpreter: "/usr/local/bin/python"
+bigip_username: admin
+bigip_password: admin
+bigip_port: 10443
+
+bigip_ssh_username: root
+bigip_ssh_password: default
+bigip_ssh_port: 10022
+
+bigip_partition: Common
+ansible_python_interpreter: /usr/local/bin/python
