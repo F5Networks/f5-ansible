@@ -83,19 +83,21 @@ options:
       - Specifies whether the system auto-discovers the links for this server. When
         creating a new GTM server, if this parameter is not specified, the default
         value C(disabled) is used.
-      - If you set this parameter to C(yes), you must also ensure that the
-        C(virtual_server_discovery) parameter is also set to C(yes).
+      - If you set this parameter to C(enabled), you must also ensure that the
+        C(virtual_server_discovery) parameter is also set to C(enabled).
     choices:
-      - yes
-      - no
+      - enabled
+      - disabled
+      - enabled-no-delete
   virtual_server_discovery:
     description:
       - Specifies whether the system auto-discovers the virtual servers for this server.
         When creating a new GTM server, if this parameter is not specified, the default
         value C(disabled) is used.
     choices:
-      - yes
-      - no
+      - enabled
+      - disabled
+      - enabled-no-delete
   partition:
     description:
       - Device partition to manage resources on.
@@ -122,7 +124,7 @@ EXAMPLES = r'''
     name: GTM_Server
     datacenter: /Common/New York
     server_type: bigip
-    link_discovery: no
+    link_discovery: disabled
     virtual_server_discovery: no
     devices:
       - {'name': 'server_1', 'address': '1.1.1.1'}
@@ -140,7 +142,7 @@ EXAMPLES = r'''
     name: GTM_Server
     datacenter: /Common/New York
     server_type: bigip
-    link_discovery: no
+    link_discovery: disabled
     virtual_server_discovery: no
     devices:
       - name: server_1
@@ -160,6 +162,29 @@ EXAMPLES = r'''
             translation: 192.168.14.1
           - address: 4.4.4.2
   delegate_to: localhost
+'''
+
+RETURN = r'''
+link_discovery:
+  description: The new C(link_discovery) configured on the remote device.
+  returned: changed
+  type: string
+  sample: enabled
+virtual_server_discovery:
+  description: The new C(virtual_server_discovery) name for the trap destination.
+  returned: changed
+  type: string
+  sample: disabled
+server_type:
+  description: The new type of the server.
+  returned: changed
+  type: string
+  sample: bigip
+datacenter:
+  description: The new C(datacenter) which the server is part of.
+  returned: changed
+  type: string
+  sample: datacenter01
 '''
 
 from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -351,24 +376,6 @@ class ModuleParameters(Parameters):
             return 'present'
         return self._values['state']
 
-    @property
-    def link_discovery(self):
-        if self._values['link_discovery'] is None:
-            return None
-        elif self._values['link_discovery'] is True:
-            return 'enabled'
-        elif self._values['link_discovery'] is False:
-            return 'disabled'
-
-    @property
-    def virtual_server_discovery(self):
-        if self._values['virtual_server_discovery'] is None:
-            return None
-        elif self._values['virtual_server_discovery'] is True:
-            return 'enabled'
-        elif self._values['virtual_server_discovery'] is False:
-            return 'disabled'
-
 
 class Changes(Parameters):
     def to_return(self):
@@ -389,20 +396,6 @@ class ReportableChanges(Changes):
         if self._values['server_type'] in ['single-bigip', 'redundant-bigip']:
             return 'bigip'
         return self._values['server_type']
-
-    @property
-    def link_discovery(self):
-        if self._values['link_discovery'] == 'enabled':
-            return True
-        elif self._values['link_discovery'] == 'disabled':
-            return False
-
-    @property
-    def virtual_server_discovery(self):
-        if self._values['virtual_server_discovery'] == 'enabled':
-            return True
-        elif self._values['virtual_server_discovery'] == 'disabled':
-            return False
 
 
 class Difference(object):
@@ -812,8 +805,12 @@ class ArgumentSpec(object):
                 aliases=['product']
             ),
             datacenter=dict(),
-            link_discovery=dict(type='bool'),
-            virtual_server_discovery=dict(type='bool'),
+            link_discovery=dict(
+                choices=['enabled', 'disabled', 'enabled-no-delete']
+            ),
+            virtual_server_discovery=dict(
+                choices=['enabled', 'disabled', 'enabled-no-delete']
+            ),
             devices=dict(
                 type='list'
             )
