@@ -149,7 +149,12 @@ class TestManager(unittest.TestCase):
 
     def test_command_with_commas(self, *args):
         set_module_args(dict(
-            commands="tmsh create /auth ldap system-auth {bind-dn uid=binduser,cn=users,dc=domain,dc=com bind-pw $ENCRYPTEDPW check-roles-group enabled search-base-dn cn=users,dc=domain,dc=com servers add { ldap.server.com } }",
+            commands="""
+              tmsh create /auth ldap system-auth {bind-dn uid=binduser,
+              cn=users,dc=domain,dc=com bind-pw $ENCRYPTEDPW check-roles-group
+              enabled search-base-dn cn=users,dc=domain,dc=com servers add {
+              ldap.server.com } }"
+            """,
             server='localhost',
             user='admin',
             password='password'
