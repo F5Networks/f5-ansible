@@ -14,7 +14,15 @@ all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
 	pycodestyle library/*.py
 
-all-tests: style
+all-tests:
+	pycodestyle .
+	bash test/ansible/sanity/correct-defaultdict-import.sh
+	bash test/ansible/sanity/correct-iteritems-import.sh
+	bash test/ansible/sanity/incorrect-comparisons.sh
+	bash test/ansible/sanity/integration-test-idempotent-names.sh
+	bash test/ansible/sanity/q-debugging-exists.sh
+	python test/ansible/sanity/f5-sdk-install-missing-code-highlighting.py
+	python test/ansible/sanity/short-description-ends-with-period.py
 
 docs:
 	rm docs/modules/* || true
