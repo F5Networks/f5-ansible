@@ -7,7 +7,7 @@
   tasks:
       - name: Create a pool
         bigip_pool:
-            lb_method: "ratio_member"
+            lb_method: "ratio-member"
             name: "web"
             password: "{{ bigip_password }}"
             server: "{{ ansible_host }}"
