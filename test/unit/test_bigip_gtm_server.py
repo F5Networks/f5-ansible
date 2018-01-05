@@ -72,8 +72,8 @@ class TestParameters(unittest.TestCase):
             datacenter='New York',
             partition='Common',
             server_type='bigip',
-            link_discovery=False,
-            virtual_server_discovery=False,
+            link_discovery='disabled',
+            virtual_server_discovery='disabled',
             devices=[
                 dict(
                     name='server_1',
@@ -147,8 +147,8 @@ class TestV1Manager(unittest.TestCase):
             name='GTM_Server',
             datacenter='/Common/New York',
             server_type='bigip',
-            link_discovery='no',
-            virtual_server_discovery='no',
+            link_discovery='disabled',
+            virtual_server_discovery='disabled',
             devices=[
                 dict(
                     name='server_1',
@@ -226,8 +226,8 @@ class TestV2Manager(unittest.TestCase):
             name='GTM_Server',
             datacenter='/Common/New York',
             server_type='bigip',
-            link_discovery='no',
-            virtual_server_discovery='no',
+            link_discovery='disabled',
+            virtual_server_discovery='disabled',
             devices=[
                 dict(
                     name='server_1',
