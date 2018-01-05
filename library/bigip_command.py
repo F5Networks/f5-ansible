@@ -184,6 +184,8 @@ from ansible.module_utils.network.common.parsing import FailedConditionsError
 from ansible.module_utils.network.common.parsing import Conditional
 from ansible.module_utils.network.common.utils import ComplexList
 from ansible.module_utils.network.common.utils import to_list
+from ansible.module_utils.six import iteritems
+from collections import defaultdict
 from collections import deque
 
 try:
@@ -195,6 +197,36 @@ except ImportError:
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings']
 
+    def __init__(self, params=None):
+        self._values = defaultdict(lambda: None)
+        self._values['__warnings'] = []
+        if params:
+            self.update(params=params)
+
+    def update(self, params=None):
+        if params:
+            for k, v in iteritems(params):
+                if self.api_map is not None and k in self.api_map:
+                    map_key = self.api_map[k]
+                else:
+                    map_key = k
+
+                # Handle weird API parameters like `dns.proxy.__iter__` by
+                # using a map provided by the module developer
+                class_attr = getattr(type(self), map_key, None)
+                if isinstance(class_attr, property):
+                    # There is a mapped value for the api_map key
+                    if class_attr.fset is None:
+                        # If the mapped value does not have
+                        # an associated setter
+                        self._values[map_key] = v
+                    else:
+                        # The mapped value has a setter
+                        setattr(self, map_key, v)
+                else:
+                    # If the mapped value is not a @property
+                    self._values[map_key] = v
+
     def to_return(self):
         result = {}
         for returnable in self.returnables:
@@ -202,19 +234,28 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
+    def _listify(self, item):
+        if isinstance(item, string_types):
+            result = [item]
+        else:
+            result = item
+        return result
+
     @property
     def commands(self):
-        commands = deque(self._values['commands'])
+        commands = self._listify(self._values['commands'])
+        commands = deque(commands)
         if self._values['transport'] != 'cli':
             commands.appendleft(
                 'tmsh modify cli preference pager disabled'
             )
-            commands = map(self._ensure_tmsh_prefix, list(commands))
+        commands = map(self._ensure_tmsh_prefix, list(commands))
         return list(commands)
 
     @property
     def user_commands(self):
-        return map(self._ensure_tmsh_prefix, list(self._values['commands']))
+        commands = self._listify(self._values['commands'])
+        return map(self._ensure_tmsh_prefix, commands)
 
     def _ensure_tmsh_prefix(self, cmd):
         cmd = cmd.strip()
@@ -260,12 +301,13 @@ class ModuleManager(object):
         result.update(dict(changed=changed))
         return result
 
+    def _run_commands(self, module, commands):
+        return run_commands(module, commands)
+
     def execute(self):
         warnings = list()
         changed = ('tmsh modify', 'tmsh create', 'tmsh delete')
-
         commands = self.parse_commands(warnings)
-
         wait_for = self.want.wait_for or list()
         retries = self.want.retries
 
@@ -276,7 +318,7 @@ class ModuleManager(object):
 
         while retries > 0:
             if self.client.module.params['transport'] == 'cli' and HAS_CLI_TRANSPORT:
-                responses = run_commands(self.client.module, self.want.commands)
+                responses = self._run_commands(self.client.module, commands)
             else:
                 responses = self.execute_on_device(commands)
 
@@ -328,10 +370,15 @@ class ModuleManager(object):
                     'module does not exist, then please file a bug. The command '
                     'in question is "%s..."' % item['command'][0:40]
                 )
-            if item['output'] == 'one-line' and 'one-line' not in item['command']:
+            # This needs to be removed so that the ComplexList used in to_commands
+            # will work correctly.
+            output = item.pop('output', None)
+
+            if output == 'one-line' and 'one-line' not in item['command']:
                 item['command'] += ' one-line'
-            elif item['output'] == 'text' and 'one-line' in item['command']:
+            elif output == 'text' and 'one-line' in item['command']:
                 item['command'] = item['command'].replace('one-line', '')
+
             results.append(item)
         return results
 
@@ -354,7 +401,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             commands=dict(
-                type='list',
+                type='raw',
                 required=True
             ),
             wait_for=dict(
