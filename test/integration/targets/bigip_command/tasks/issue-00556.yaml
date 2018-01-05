@@ -1,0 +1,6 @@
+---
+
+- name: Issue 00556 - Run a single command, specified as non-list, with commas
+  bigip_command:
+    commands: "tmsh create ltm virtual foo destination 1.1.1.1:80 description 'this, would, cause an, error'"
+  register: result
