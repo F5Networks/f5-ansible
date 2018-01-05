@@ -273,7 +273,7 @@
 - name: Enable virtual server discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
-    virtual_server_discovery: yes
+    virtual_server_discovery: enabled
   register: result
 
 - name: Assert Enable virtual server discovery
@@ -284,7 +284,7 @@
 - name: Enable virtual server discovery - Idempotent check
   bigip_gtm_server:
     name: "{{ server_name }}"
-    virtual_server_discovery: yes
+    virtual_server_discovery: enabled
   register: result
 
 - name: Assert Enable virtual server discovery - Idempotent check
@@ -295,7 +295,7 @@
 - name: Disable virtual server discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
-    virtual_server_discovery: no
+    virtual_server_discovery: disabled
   register: result
 
 - name: Assert Disable virtual server discovery
@@ -306,7 +306,7 @@
 - name: Disable virtual server discovery - Idempotent check
   bigip_gtm_server:
     name: "{{ server_name }}"
-    virtual_server_discovery: no
+    virtual_server_discovery: disabled
   register: result
 
 - name: Assert Disable virtual server discovery - Idempotent check
@@ -317,7 +317,7 @@
 - name: Enable link discovery - virtual server discovery disabled
   bigip_gtm_server:
     name: "{{ server_name }}"
-    link_discovery: yes
+    link_discovery: enabled
   failed_when: "'Virtual server discovery must be enabled' not in result.msg"
   register: result
 
@@ -329,13 +329,13 @@
 - name: Enable virtual server discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
-    virtual_server_discovery: yes
+    virtual_server_discovery: enabled
   register: result
 
 - name: Enable link discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
-    link_discovery: yes
+    link_discovery: enabled
   register: result
 
 - name: Assert Enable link discovery
@@ -346,7 +346,7 @@
 - name: Enable link discovery - Idempotent check
   bigip_gtm_server:
     name: "{{ server_name }}"
-    link_discovery: yes
+    link_discovery: enabled
   register: result
 
 - name: Assert Enable link discovery - Idempotent check
@@ -357,7 +357,7 @@
 - name: Disable link discovery
   bigip_gtm_server:
     name: "{{ server_name }}"
-    link_discovery: no
+    link_discovery: disabled
   register: result
 
 - name: Assert Disasble link discovery
@@ -368,7 +368,7 @@
 - name: Disable link discovery - Idempotent check
   bigip_gtm_server:
     name: "{{ server_name }}"
-    link_discovery: no
+    link_discovery: disabled
   register: result
 
 - name: Assert Disable link discovery - Idempotent check
