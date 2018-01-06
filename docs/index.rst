@@ -40,7 +40,6 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /development/module-patterns
    /development/securing-sensitive-information
    /development/ssh-functionality-for-modules
-   /development/tutorials/adding-new-admin-to-encrypted-files
    /development/parameters
    /development/playbook-metadata
 
