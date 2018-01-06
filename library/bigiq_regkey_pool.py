@@ -39,16 +39,11 @@ options:
       - When C(present), guarantees that the pool exists.
       - When C(absent), removes the pool, and the licenses it contains, from the
         system.
-    required: False
     default: present
     choices:
       - absent
       - present
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 requirements:
-  - f5-sdk >= 3.0.5
   - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5
 author:

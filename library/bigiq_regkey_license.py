@@ -45,16 +45,11 @@ options:
       - The state of the regkey license in the pool on the system.
       - When C(present), guarantees that the license exists in the pool.
       - When C(absent), removes the license from the pool.
-    required: False
     default: present
     choices:
       - absent
       - present
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 requirements:
-  - f5-sdk >= 3.0.5
   - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5
 author:
