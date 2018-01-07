@@ -431,7 +431,7 @@ class Difference(object):
         else:
             link_discovery = self.want.link_discovery
 
-        if (link_discovery == 'enabled' or link_discovery == 'enabled-no-delete') and virtual_server_discovery == 'disabled':
+        if link_discovery in ['enabled', 'enabled-no-delete'] and virtual_server_discovery == 'disabled':
             raise F5ModuleError(
                 "Virtual server discovery must be enabled if link discovery is enabled"
             )
@@ -649,7 +649,7 @@ class BaseManager(object):
             )
 
     def _check_link_discovery_requirements(self):
-        if (self.want.link_discovery == 'enabled' or self.want.link_discovery == 'enabled-no-delete') and self.want.virtual_server_discovery == 'disabled':
+        if self.want.link_discovery in ['enabled', 'enabled-no-delete'] and self.want.virtual_server_discovery == 'disabled':
             raise F5ModuleError(
                 "Virtual server discovery must be enabled if link discovery is enabled"
             )
