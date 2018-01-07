@@ -87,12 +87,7 @@ options:
           - Ratio for the pool.
           - The system uses this number with the Ratio load balancing method.
     version_added: 2.5
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

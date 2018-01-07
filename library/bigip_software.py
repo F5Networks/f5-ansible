@@ -111,15 +111,12 @@ options:
          mandatory when C(state is C(present), C(activated) or C(installed).
     default: 'no'
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
   - Requires the isoparser Python package on the host. This can be installed
     with pip install isoparser
   - Requires the lxml Python package on the host. This can be installed
     with pip install lxml
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk
   - isoparser
 author:
   - Tim Rupp (@caphrim007)

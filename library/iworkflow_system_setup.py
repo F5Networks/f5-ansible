@@ -45,13 +45,10 @@ options:
     default: ['pool.ntp.org']
     required: False
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Required the netaddr Python package on the host. This is as easy as pip
     install netaddr.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 2.2.2
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

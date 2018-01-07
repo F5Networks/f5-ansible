@@ -50,8 +50,6 @@ options:
     default: Common
     version_added: 2.5
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module does not behave like other modules that you might include in
     roles where referencing files or templates first looks in the role's
     files or templates directory. To have it behave that way, use the Ansible
@@ -59,7 +57,6 @@ notes:
     a role context.
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk >= 3.0.3
   - BIG-IP >= v12
 author:
   - Tim Rupp (@caphrim007)

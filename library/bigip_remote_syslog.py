@@ -36,13 +36,10 @@ options:
         remote syslog, if this parameter is not specified, the default value
         C(none) is used.
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires the netaddr Python package on the host. This is as easy as pip
     install netaddr.
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk >= 2.2.0
   - netaddr
 author:
   - Tim Rupp (@caphrim007)

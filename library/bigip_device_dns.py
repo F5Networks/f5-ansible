@@ -55,12 +55,7 @@ options:
     choices:
       - absent
       - present
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

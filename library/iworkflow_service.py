@@ -52,12 +52,9 @@ options:
       - The Service Template that you want to base this L4/L7 Service off of.
         This option is required when C(state) is C(present).
 notes:
-  - Requires the f5-sdk Python package on the remote host. This is as easy as
-    pip install f5-sdk.
   - L4/L7 Services cannot be updated once they have been created. Instead, you
     must first delete the service and then re-create it.
 requirements:
-    - f5-sdk >= 2.3.0
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

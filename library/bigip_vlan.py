@@ -90,12 +90,8 @@ options:
         of (no) is used.
     choices: [yes, no]
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires BIG-IP versions >= 12.0.0
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

@@ -33,12 +33,7 @@ options:
       - Perform regex filter of response. Filtering is done on the name of
         the resource. Valid filters are anything that can be provided to
         Python's C(re) module.
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as
-    pip install f5-sdk
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

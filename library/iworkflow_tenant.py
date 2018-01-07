@@ -53,13 +53,10 @@ options:
       - present
       - absent
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Tenants are not useful unless you associate them with a connector
     using the C(iworkflow_tenant_connector) module.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 2.3.0
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

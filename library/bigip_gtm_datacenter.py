@@ -44,19 +44,13 @@ options:
         the virtual address and enables it. If C(enabled), enable the virtual
         address if it exists. If C(disabled), create the virtual address if
         needed, and set state to C(disabled).
-    required: False
     default: present
     choices:
       - present
       - absent
       - enabled
       - disabled
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as
-    pip install f5-sdk.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

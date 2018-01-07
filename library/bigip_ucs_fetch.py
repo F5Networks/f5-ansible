@@ -29,17 +29,13 @@ options:
       - Create a backup file including the timestamp information so you can
         get the original file back if you somehow clobbered it incorrectly.
     default: no
-    choices:
-      - yes
-      - no
+    type: bool
   create_on_missing:
     description:
       - Creates the UCS based on the value of C(src) if the file does not already
         exist on the remote system.
     default: yes
-    choices:
-      - yes
-      - no
+    type: bool
   dest:
     description:
       - A directory to save the UCS file into.
@@ -51,26 +47,21 @@ options:
     description:
       - Make the module fail if the UCS file on the remote system is missing.
     default: no
-    choices:
-      - yes
-      - no
+    type: bool
   force:
     description:
       - If C(no), the file will only be transferred if the destination does not
         exist.
     default: yes
+    type: bool
   src:
     description:
       - The name of the UCS file to create on the remote server for downloading
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - BIG-IP provides no way to get a checksum of the UCS files on the system
     via any interface except, perhaps, logging in directly to the box (which
     would not support appliance mode). Therefore, the best this module can
-    do is check for the existence of the file on disk; no checksumming.
-requirements:
-  - f5-sdk
+    do is check for the existence of the file on disk; no check-summing.
 author:
   - Tim Rupp (@caphrim007)
 '''

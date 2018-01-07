@@ -25,12 +25,8 @@ options:
       - Name of the user to retrieve facts for
     required: true
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
   - Facts are placed in the C(bigip) variable
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

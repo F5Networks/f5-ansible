@@ -94,11 +94,8 @@ options:
       - Device partition to manage resources on.
     default: Common
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk >= 3.0.0
   - BIG-IP >= v12.1.0
 author:
   - Tim Rupp (@caphrim007)

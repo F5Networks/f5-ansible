@@ -54,11 +54,7 @@ options:
         accepted the license. This module will not present you with that EULA
         though, so it is incumbent on you to re
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires BIG-IP software version >= 12
-requirements:
-  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

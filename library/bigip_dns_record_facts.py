@@ -33,11 +33,6 @@ options:
     description:
       - BIG-IP password
     required: true
-notes:
-  - Requires the f5-sdk Python package on the remote host. This is as easy as
-    pip install f5-sdk
-requirements:
-  - f5-sdk
 author:
     - Tim Rupp (@caphrim007)
 '''

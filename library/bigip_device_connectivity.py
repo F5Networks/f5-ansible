@@ -70,13 +70,9 @@ options:
         provided, a default of C(62960) will be used. This value must be between
         0 and 65535.
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
   - Requires BIG-IP >= 12.0.0
-requirements:
-  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

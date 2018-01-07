@@ -48,11 +48,6 @@ options:
         specified in either their fully qualified name (/Common/foo) or their short
         name (foo). If a short name is used, the C(partition) argument will automatically
         be prepended to the short name.
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
-requirements:
-  - f5-sdk >= 3.0.4
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

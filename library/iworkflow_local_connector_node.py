@@ -90,8 +90,6 @@ options:
       - present
       - absent
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires the netaddr Python package on the host. This is as easy as pip
     install netaddr.
   - This module does not support updating of existing nodes that were created
@@ -100,7 +98,6 @@ notes:
     using this module (without knowing the password) a second time.
 extends_documentation_fragment: f5
 requirements:
-    - f5-sdk >= 2.2.0
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

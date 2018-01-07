@@ -114,15 +114,11 @@ options:
       - Device partition to manage resources on.
     default: Common
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires BIG-IP software version >= 12
   - This module does not support the C(variables) option because this option
     is broken in the REST API and does not function correctly in C(tmsh); for
     example you cannot remove user-defined params. Therefore, there is no way
     to automatically configure it.
-requirements:
-  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

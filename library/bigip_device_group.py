@@ -83,13 +83,9 @@ options:
         time for configuration changes. This setting is relevant only when
         C(full_sync) is C(false).
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
   - Requires BIG-IP >= 12.1.x.
-requirements:
-  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

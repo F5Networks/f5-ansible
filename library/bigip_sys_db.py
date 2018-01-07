@@ -30,7 +30,6 @@ options:
         that an existing variable is set to C(value). When C(reset) sets the
         variable back to the default value. At least one of value and state
         C(reset) are required.
-    required: False
     default: present
     choices:
       - present
@@ -39,14 +38,9 @@ options:
     description:
       - The value to set the key to. At least one of value and state C(reset)
         are required.
-    required: False
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires BIG-IP version 12.0.0 or greater
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

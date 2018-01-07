@@ -37,8 +37,6 @@ options:
       - present
       - absent
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires the rpm tool be installed on the host. This can be accomplished through
     different ways on each platform. On Debian based systems with C(apt);
     C(apt-get install rpm). On Mac with C(brew); C(brew install rpm).
@@ -46,7 +44,6 @@ notes:
   - Requires BIG-IP >= 12.1.0 because the required functionality is missing
     on versions earlier than that.
 requirements:
-  - f5-sdk >= 2.2.3
   - Requires BIG-IP >= 12.1.0
   - The 'rpm' tool installed on the Ansible controller
 extends_documentation_fragment: f5

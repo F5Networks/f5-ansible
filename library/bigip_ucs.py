@@ -87,8 +87,6 @@ options:
       - installed
       - present
 notes:
-   - Requires the f5-sdk Python package on the host. This is as easy as
-     pip install f5-sdk.
    - Only the most basic checks are performed by this module. Other checks and
      considerations need to be taken into account. See the following URL.
      https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
@@ -110,8 +108,6 @@ notes:
    - This module does not support restoring encrypted archives on replacement
      RMA units.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

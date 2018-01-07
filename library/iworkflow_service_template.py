@@ -51,12 +51,9 @@ options:
         Service Template for the C(base_template), this module does not yet
         let you do that. This option is required when C(state) is C(present).
 notes:
-  - Requires the f5-sdk Python package on the remote host. This is as easy as
-    pip install f5-sdk
   - Requires the deepdiff Python package on the Ansible controller host. This
     is as easy as pip install deepdiff.
 requirements:
-    - f5-sdk >= 2.3.0
     - iWorkflow >= 2.1.0
 author:
     - Tim Rupp (@caphrim007)

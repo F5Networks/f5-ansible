@@ -65,12 +65,9 @@ options:
     description:
       - The HTTPS port to listen on.
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires the requests Python package on the host. This is as easy as
-    pip install requests.
+    C(pip install requests).
 requirements:
-  - f5-sdk >= 3.0.4
   - requests
 extends_documentation_fragment: f5
 author:

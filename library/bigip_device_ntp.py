@@ -37,12 +37,7 @@ options:
       - The timezone to set for NTP lookups. At least one of C(ntp_servers) or
         C(timezone) is required.
     default: UTC
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
   - Wojciech Wypior (@wojtek0806)

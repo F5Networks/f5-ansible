@@ -66,12 +66,8 @@ options:
     description:
       - Port that you want the SSH daemon to run on.
 notes:
-  - Requires the f5-sdk Python package on the host This is as easy as pip
-    install f5-sdk.
   - Requires BIG-IP version 12.0.0 or greater
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk
 author:
   - Tim Rupp (@caphrim007)
 '''

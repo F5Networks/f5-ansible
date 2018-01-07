@@ -23,19 +23,18 @@ options:
   server:
     description:
       - BIG-IP host
-    required: true
+    required: True
   password:
     description:
       - BIG-IP password
-    required: true
+    required: True
   id:
     description:
       - The unique identifying integer representing the route domain.
-    required: true
+    required: True
   partition:
     description:
       - The partition the route domain resides on
-    required: false
     default: Common
   user:
     description:
@@ -45,13 +44,7 @@ options:
     description:
       - If C(no), SSL certificates will not be validated. This should only be
         used on personally controlled sites using self-signed certificates.
-    required: false
-    default: true
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk
-requirements:
-  - f5-sdk
+    default: yes
 author:
   - Tim Rupp (@caphrim007)
 '''

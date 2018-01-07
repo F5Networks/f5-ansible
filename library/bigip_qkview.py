@@ -37,9 +37,7 @@ options:
       - When C(True), includes the ASM request log data. When C(False),
         excludes the ASM request log data.
     default: no
-    choices:
-      - yes
-      - no
+    type: bool
   max_file_size:
     description:
       - Max file size, in bytes, of the qkview to create. By default, no max
@@ -49,16 +47,12 @@ options:
     description:
       - Include complete information in the qkview.
     default: yes
-    choices:
-      - yes
-      - no
+    type: bool
   exclude_core:
     description:
       - Exclude core files from the qkview.
     default: no
-    choices:
-      - yes
-      - no
+    type: bool
   exclude:
     description:
       - Exclude various file from the qkview.
@@ -72,15 +66,9 @@ options:
       - If C(no), the file will only be transferred if the destination does not
         exist.
     default: yes
-    choices:
-      - yes
-      - no
+    type: bool
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module does not include the "max time" or "restrict to blade" options.
-requirements:
-  - f5-sdk >= 2.2.3
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)

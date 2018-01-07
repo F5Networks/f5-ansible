@@ -50,14 +50,9 @@ options:
   location:
     description:
       - Specifies the description of this system's physical location.
-notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
 extends_documentation_fragment: f5
-requirements:
-    - f5-sdk >= 2.2.0
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''

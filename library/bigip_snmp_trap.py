@@ -58,15 +58,11 @@ options:
       - present
       - absent
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module only supports version v1 and v2c of SNMP.
   - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because
     the platform did not support that option until 12.1.0. If used on versions
     < 12.1.0, it will simply be ignored.
 extends_documentation_fragment: f5
-requirements:
-  - f5-sdk >= 2.2.0
 author:
   - Tim Rupp (@caphrim007)
 '''

@@ -113,8 +113,6 @@ options:
       - In the event of a reboot, the system persists the guest to the same slot on
         which it ran prior to the reboot.
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - This module can take a lot of time to deploy vCMP guests. This is an intrinsic
     limitation of the vCMP system because it is booting real VMs on the BIG-IP
     device. This boot time is very similar in length to the time it takes to
@@ -123,8 +121,6 @@ notes:
     means that it is not unusual for a vCMP host with many guests to take a
     long time (60+ minutes) to reboot and bring all the guests online. The
     BIG-IP chassis will be available before all vCMP guests are online.
-requirements:
-  - f5-sdk >= 3.0.3
   - netaddr
 extends_documentation_fragment: f5
 author:

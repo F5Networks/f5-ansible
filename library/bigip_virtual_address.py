@@ -100,14 +100,11 @@ options:
       - Specifies whether the system uses route advertisement for this
         virtual address. When disabled, the system does not advertise
         routes for this virtual address.
-    choices:
-      - yes
-      - no
+    type: bool
   partition:
     description:
       - Device partition to manage resources on.
-    required: False
-    default: 'Common'
+    default: Common
     version_added: 2.5
   traffic_group:
     description:
@@ -116,13 +113,10 @@ options:
         will be used.
     version_added: 2.5
 notes:
-  - Requires the f5-sdk Python package on the host. This is as easy as pip
-    install f5-sdk.
   - Requires the netaddr Python package on the host. This is as easy as pip
     install netaddr.
 extends_documentation_fragment: f5
 requirements:
-  - f5-sdk
   - netaddr
 author:
   - Tim Rupp (@caphrim007)
