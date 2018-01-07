@@ -550,7 +550,7 @@ class BaseManager(object):
         else:
             return self.remove()
 
-    def exists(self):
+    def exists(self): # pragma: no cover
         policies = self.client.api.tm.asm.policies_s.get_collection()
         if any(p.name == self.want.name and p.partition == self.want.partition for p in policies):
             return True
@@ -621,7 +621,7 @@ class BaseManager(object):
         if task.status == 'COMPLETED':
             return True
 
-    def update_on_device(self):
+    def update_on_device(self): # pragma: no cover
         params = self.changes.api_params()
         policies = self.client.api.tm.asm.policies_s.get_collection()
         name = self.want.name
@@ -656,7 +656,7 @@ class BaseManager(object):
         else:
             return False
 
-    def read_current_from_device(self):
+    def read_current_from_device(self): # pragma: no cover
         policies = self.client.api.tm.asm.policies_s.get_collection()
         for policy in policies:
             if policy.name == self.want.name and policy.partition == self.want.partition:
@@ -665,7 +665,7 @@ class BaseManager(object):
                 return Parameters(params)
         raise F5ModuleError("The policy was not found")
 
-    def import_to_device(self):
+    def import_to_device(self): # pragma: no cover
         self.client.api.tm.asm.file_transfer.uploads.upload_file(self.want.file)
         time.sleep(2)
         name = os.path.split(self.want.file)[1]
@@ -677,14 +677,14 @@ class BaseManager(object):
         )
         return result
 
-    def apply_on_device(self):
+    def apply_on_device(self): # pragma: no cover
         tasks = self.client.api.tm.asm.tasks
         result = tasks.apply_policy_s.apply_policy.create(
             policyReference={'link': self.have.self_link}
         )
         return result
 
-    def create_from_template_on_device(self):
+    def create_from_template_on_device(self): # pragma: no cover
         tasks = self.client.api.tm.asm.tasks
         result = tasks.import_policy_s.import_policy.create(
             name=self.want.name,
@@ -693,14 +693,14 @@ class BaseManager(object):
         )
         return result
 
-    def create_on_device(self):
+    def create_on_device(self): # pragma: no cover
         result = self.client.api.tm.asm.policies_s.policy.create(
             name=self.want.name,
             partition=self.want.partition
         )
         return result
 
-    def remove_from_device(self):
+    def remove_from_device(self): # pragma: no cover
         policies = self.client.api.tm.asm.policies_s.get_collection()
         name = self.want.name
         partition = self.want.partition
