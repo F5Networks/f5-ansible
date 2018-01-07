@@ -1,4 +1,3 @@
----
 
 - name: Import ASM policy from template
   bigip_asm_policy:
