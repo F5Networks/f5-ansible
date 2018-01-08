@@ -163,9 +163,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         self.argument_spec = dict(
             hostname=dict(
-                required=True,
-                default=None,
-                type='str'
+                required=True
             )
         )
         self.f5_product_name = 'bigip'
