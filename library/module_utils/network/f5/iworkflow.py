@@ -6,16 +6,25 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+
+try:
+    from f5.iworkflow import ManagementRoot
+    from icontrol.exceptions import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
 from ansible.module_utils.network.f5.common import F5BaseClient
 
 
 class F5Client(F5BaseClient):
     @property
-    def mgmt(self):
-        return iWorkflowMgmt(
+    def api(self):
+        result = ManagementRoot(
             self.params['server'],
             self.params['user'],
             self.params['password'],
             port=self.params['server_port'],
             token='local'
         )
+        return result

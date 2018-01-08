@@ -24,11 +24,9 @@ f5_provider_spec = {
     'transport': dict(default='rest', choices=['cli', 'rest'])
 }
 
-
 f5_argument_spec = {
     'provider': dict(type='dict', options=f5_provider_spec),
 }
-
 
 f5_top_spec = {
     'server': dict(removed_in_version=2.9, fallback=(env_fallback, ['F5_SERVER'])),
@@ -110,7 +108,7 @@ class F5BaseClient(object):
         self.params = kwargs
 
     @property
-    def mgmt(self):
+    def api(self):
         raise F5ModuleError("Management root must be used from the concrete product classes.")
 
     def reconnect(self):

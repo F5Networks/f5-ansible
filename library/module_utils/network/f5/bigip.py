@@ -6,16 +6,29 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-from ansible.module_utils.network.f5.common import F5BaseClient
 
+try:
+    from f5.bigip import ManagementRoot
+    from icontrol.exceptions import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
+try:
+    from library.module_utils.network.f5.common import F5BaseClient
+except ImportError:
+    from ansible.module_utils.network.f5.common import F5BaseClient
 
 class F5Client(F5BaseClient):
     @property
-    def mgmt(self):
-        return BigIpMgmt(
+    def api(self):
+        import q;
+        q.q(self.params)
+        result = ManagementRoot(
             self.params['server'],
             self.params['user'],
             self.params['password'],
             port=self.params['server_port'],
             token='tmos'
         )
+        return result
