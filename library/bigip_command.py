@@ -352,7 +352,7 @@ class ModuleManager(object):
 
         conditionals = [Conditional(c) for c in wait_for]
 
-        if self.client.check_mode:
+        if self.module.check_mode:
             return
 
         while retries > 0:
@@ -484,8 +484,6 @@ def main():
     if HAS_LEGACY_IMPORTS:
         # Legacy method of bootstrapping the module
         # TODO: Remove in 2.6
-        if client.module.params['transport'] != 'cli' and not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required to use the rest api")
 
         client = AnsibleF5Client(
             argument_spec=spec.argument_spec,
@@ -493,6 +491,8 @@ def main():
             f5_product_name=spec.f5_product_name
         )
         module = client.module
+        if client.module.params['transport'] != 'cli' and not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required to use the rest api")
     else:
         # Current bootstrapping method
         # TODO: The argument spec code should be moved into ArgumentSpec class in 2.6
@@ -502,19 +502,19 @@ def main():
             argument_spec=argument_spec,
             supports_check_mode=spec.supports_check_mode
         )
-        if client.module.params['transport'] != 'cli' and not HAS_F5SDK:
+        if module.params['transport'] != 'cli' and not HAS_F5SDK:
             module.fail_json(msg="The python f5-sdk module is required to use the rest api")
 
         client = F5Client(**module.params)
 
     try:
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
+        module.exit_json(**results)
     except F5ModuleError as e:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(e))
 
 
 if __name__ == '__main__':
