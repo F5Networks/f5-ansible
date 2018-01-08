@@ -138,6 +138,9 @@ multicast_port:
   sample: 1026
 '''
 
+import os
+import sys
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
