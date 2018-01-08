@@ -863,7 +863,22 @@ class ArgumentSpec(object):
 def main():
     spec = ArgumentSpec()
 
-    if not HAS_LEGACY_IMPORTS:
+    if HAS_LEGACY_IMPORTS:
+        # Legacy method of bootstrapping the module
+        # TODO: Remove in 2.6
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+
+        client = AnsibleF5Client(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode,
+            f5_product_name=spec.f5_product_name,
+            mutually_exclusive=[
+                ['file', 'template']
+            ]
+        )
+        module = client.module
+    else:
         # Current bootstrapping method
         # TODO: The argument spec code should be moved into ArgumentSpec class in 2.6
         argument_spec = f5_argument_spec
@@ -879,21 +894,7 @@ def main():
             module.fail_json(msg="The python f5-sdk module is required")
 
         client = F5Client(**module.params)
-    else:
-        # Legacy method of bootstrapping the module
-        # TODO: Remove in 2.6
-        if not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required")
 
-        client = AnsibleF5Client(
-            argument_spec=spec.argument_spec,
-            supports_check_mode=spec.supports_check_mode,
-            f5_product_name=spec.f5_product_name,
-            mutually_exclusive=[
-                ['file', 'template']
-            ]
-        )
-        module = client.module
     try:
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
