@@ -176,12 +176,9 @@ from ansible.module_utils.network.common.parsing import FailedConditionsError
 from ansible.module_utils.network.common.parsing import Conditional
 from ansible.module_utils.network.common.utils import ComplexList
 from ansible.module_utils.network.common.utils import to_list
-from ansible.module_utils.six import iteritems
-from collections import defaultdict
 from collections import deque
 
 HAS_DEVEL_IMPORTS = False
-HAS_LEGACY_IMPORTS = False
 
 try:
     # Sideband repository used for dev
@@ -199,32 +196,14 @@ except ImportError:
     # Remove path which was inserted by dev
     sys.path.pop(0)
 
-    try:
-        # Upstream Ansible
-        from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-        from ansible.module_utils.network.f5.bigip import F5Client
-        from ansible.module_utils.network.f5.common import F5ModuleError
-        from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-        from ansible.module_utils.network.f5.common import cleanup_tokens
-        from ansible.module_utils.network.f5.common import fqdn_name
-        from ansible.module_utils.network.f5.common import f5_argument_spec
-    except ImportError:
-        # Upstream Ansible legacy
-        from ansible.module_utils.f5_utils import AnsibleF5Client
-        from ansible.module_utils.f5_utils import AnsibleF5Parameters
-        from ansible.module_utils.f5_utils import fq_name as fqdn_name
-        from ansible.module_utils.f5_utils import HAS_F5SDK
-        from ansible.module_utils.f5_utils import F5ModuleError
-
-        HAS_LEGACY_IMPORTS = True
-        def cleanup_tokens(client):
-            try:
-                resource = client.api.shared.authz.tokens_s.token.load(
-                    name=client.api.icrs.token
-                )
-                resource.delete()
-            except Exception:
-                pass
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -234,36 +213,6 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings']
-
-    def __init__(self, params=None):
-        self._values = defaultdict(lambda: None)
-        self._values['__warnings'] = []
-        if params:
-            self.update(params=params)
-
-    def update(self, params=None):
-        if params:
-            for k, v in iteritems(params):
-                if self.api_map is not None and k in self.api_map:
-                    map_key = self.api_map[k]
-                else:
-                    map_key = k
-
-                # Handle weird API parameters like `dns.proxy.__iter__` by
-                # using a map provided by the module developer
-                class_attr = getattr(type(self), map_key, None)
-                if isinstance(class_attr, property):
-                    # There is a mapped value for the api_map key
-                    if class_attr.fset is None:
-                        # If the mapped value does not have
-                        # an associated setter
-                        self._values[map_key] = v
-                    else:
-                        # The mapped value has a setter
-                        setattr(self, map_key, v)
-                else:
-                    # If the mapped value is not a @property
-                    self._values[map_key] = v
 
     def to_return(self):
         result = {}
@@ -438,7 +387,7 @@ class ModuleManager(object):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             commands=dict(
                 type='raw',
                 required=True
@@ -474,40 +423,23 @@ class ArgumentSpec(object):
                 fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
-        # TODO: Remove in 2.6. This is part of legacy bootstrapping
-        self.f5_product_name = 'bigip'
+        self.argument_spec = f5_argument_spec
+        self.argument_spec.update(argument_spec)
+
 
 
 def main():
     spec = ArgumentSpec()
 
-    if HAS_LEGACY_IMPORTS:
-        # Legacy method of bootstrapping the module
-        # TODO: Remove in 2.6
-
-        client = AnsibleF5Client(
-            argument_spec=spec.argument_spec,
-            supports_check_mode=spec.supports_check_mode,
-            f5_product_name=spec.f5_product_name
-        )
-        module = client.module
-        if client.module.params['transport'] != 'cli' and not HAS_F5SDK:
-            raise F5ModuleError("The python f5-sdk module is required to use the rest api")
-    else:
-        # Current bootstrapping method
-        # TODO: The argument spec code should be moved into ArgumentSpec class in 2.6
-        argument_spec = f5_argument_spec
-        argument_spec.update(spec.argument_spec)
-        module = AnsibleModule(
-            argument_spec=argument_spec,
-            supports_check_mode=spec.supports_check_mode
-        )
-        if module.params['transport'] != 'cli' and not HAS_F5SDK:
-            module.fail_json(msg="The python f5-sdk module is required to use the rest api")
-
-        client = F5Client(**module.params)
+    module = AnsibleModule(
+        argument_spec=spec.argument_spec,
+        supports_check_mode=spec.supports_check_mode
+    )
+    if module.params['transport'] != 'cli' and not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required to use the rest api")
 
     try:
+        client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
