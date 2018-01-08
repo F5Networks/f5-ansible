@@ -219,13 +219,16 @@ import sys
 import time
 
 from distutils.version import LooseVersion
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
+
+HAS_DEVEL_IMPORTS = False
+HAS_LEGACY_IMPORTS = False
 
 try:
     # Sideband repository used for dev
     sys.path.insert(0, os.path.abspath('/here/'))
 
-    from ansible.module_utils.basic import AnsibleModule
-    from ansible.module_utils.basic import env_fallback
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
@@ -233,16 +236,20 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    HAS_DEVEL_IMPORTS = True
 except ImportError:
     # Remove path which was inserted by dev
     sys.path.pop(0)
 
     try:
         # Upstream Ansible
+        from ansible.module_utils.network.f5.bigip import HAS_F5SDK
         from ansible.module_utils.network.f5.bigip import F5Client
+        from ansible.module_utils.network.f5.common import F5ModuleError
         from ansible.module_utils.network.f5.common import AnsibleF5Parameters
         from ansible.module_utils.network.f5.common import cleanup_tokens
         from ansible.module_utils.network.f5.common import fqdn_name
+        from ansible.module_utils.network.f5.common import f5_argument_spec
     except ImportError:
         # Upstream Ansible legacy
         from ansible.module_utils.f5_utils import AnsibleF5Client
@@ -251,6 +258,7 @@ except ImportError:
         from ansible.module_utils.f5_utils import HAS_F5SDK
         from ansible.module_utils.f5_utils import F5ModuleError
 
+        HAS_LEGACY_IMPORTS = True
         def cleanup_tokens(client):
             try:
                 resource = client.api.shared.authz.tokens_s.token.load(
@@ -855,9 +863,8 @@ class ArgumentSpec(object):
 def main():
     spec = ArgumentSpec()
 
-    try:
+    if not HAS_LEGACY_IMPORTS:
         # Current bootstrapping method
-
         # TODO: The argument spec code should be moved into ArgumentSpec class in 2.6
         argument_spec = f5_argument_spec
         argument_spec.update(spec.argument_spec)
@@ -872,7 +879,7 @@ def main():
             module.fail_json(msg="The python f5-sdk module is required")
 
         client = F5Client(**module.params)
-    except Exception:
+    else:
         # Legacy method of bootstrapping the module
         # TODO: Remove in 2.6
         if not HAS_F5SDK:
