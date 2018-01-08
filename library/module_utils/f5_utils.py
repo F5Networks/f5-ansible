@@ -23,22 +23,20 @@ except ImportError:
 
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.six import iteritems
 
 
 F5_COMMON_ARGS = dict(
     server=dict(
-        type='str',
         required=True,
         fallback=(env_fallback, ['F5_SERVER'])
     ),
     user=dict(
-        type='str',
         required=True,
         fallback=(env_fallback, ['F5_USER'])
     ),
     password=dict(
-        type='str',
         aliases=['pass', 'pwd'],
         required=True,
         no_log=True,
@@ -55,12 +53,10 @@ F5_COMMON_ARGS = dict(
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     state=dict(
-        type='str',
         default='present',
         choices=['present', 'absent']
     ),
     partition=dict(
-        type='str',
         default='Common',
         fallback=(env_fallback, ['F5_PARTITION'])
     )

@@ -19,11 +19,10 @@ try:
 except ImportError:
     from ansible.module_utils.network.f5.common import F5BaseClient
 
+
 class F5Client(F5BaseClient):
     @property
     def api(self):
-        import q;
-        q.q(self.params)
         result = ManagementRoot(
             self.params['server'],
             self.params['user'],
