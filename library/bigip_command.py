@@ -159,6 +159,7 @@ failed_conditions:
   sample: ['...', '...']
 '''
 
+import os
 import re
 import sys
 import time
@@ -271,7 +272,7 @@ class ModuleManager(object):
             'list', 'show',
             'modify cli preference pager disabled'
         ]
-        if self.client.module.params['transport'] != 'cli':
+        if self.module.params['transport'] != 'cli':
             valid_configs = list(map(self.want._ensure_tmsh_prefix, valid_configs))
         if any(cmd.startswith(x) for x in valid_configs):
             return True
@@ -305,8 +306,8 @@ class ModuleManager(object):
             return
 
         while retries > 0:
-            if self.client.module.params['transport'] == 'cli' and HAS_CLI_TRANSPORT:
-                responses = self._run_commands(self.client.module, commands)
+            if self.module.params['transport'] == 'cli' and HAS_CLI_TRANSPORT:
+                responses = self._run_commands(self.module, commands)
             else:
                 responses = self.execute_on_device(commands)
 
@@ -347,11 +348,11 @@ class ModuleManager(object):
             ),
         )
 
-        transform = ComplexList(spec, self.client.module)
+        transform = ComplexList(spec, self.module)
         commands = transform(commands)
 
         for index, item in enumerate(commands):
-            if not self._is_valid_mode(item['command']) and self.client.module.params['transport'] != 'cli':
+            if not self._is_valid_mode(item['command']) and self.module.params['transport'] != 'cli':
                 warnings.append(
                     'Using "write" commands is not idempotent. You should use '
                     'a module that is specifically made for that. If such a '
