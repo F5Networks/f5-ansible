@@ -113,6 +113,7 @@ stdout_lines:
 '''
 
 import os
+import sys
 import tempfile
 
 try:
@@ -120,12 +121,55 @@ try:
 except ImportError:
     from io import StringIO
 
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
+
+HAS_DEVEL_IMPORTS = False
+HAS_LEGACY_IMPORTS = False
+
+try:
+    # Sideband repository used for dev
+    sys.path.insert(0, os.path.abspath('/here/'))
+
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    HAS_DEVEL_IMPORTS = True
+except ImportError:
+    # Remove path which was inserted by dev
+    sys.path.pop(0)
+
+    try:
+        # Upstream Ansible
+        from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+        from ansible.module_utils.network.f5.bigip import F5Client
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+        from ansible.module_utils.network.f5.common import cleanup_tokens
+        from ansible.module_utils.network.f5.common import fqdn_name
+        from ansible.module_utils.network.f5.common import f5_argument_spec
+    except ImportError:
+        # Upstream Ansible legacy
+        from ansible.module_utils.f5_utils import AnsibleF5Client
+        from ansible.module_utils.f5_utils import AnsibleF5Parameters
+        from ansible.module_utils.f5_utils import fq_name as fqdn_name
+        from ansible.module_utils.f5_utils import HAS_F5SDK
+        from ansible.module_utils.f5_utils import F5ModuleError
+
+        HAS_LEGACY_IMPORTS = True
+        def cleanup_tokens(client):
+            try:
+                resource = client.api.shared.authz.tokens_s.token.load(
+                    name=client.api.icrs.token
+                )
+                resource.delete()
+            except Exception:
+                pass
 
 try:
     from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
@@ -173,9 +217,10 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.want = Parameters(self.client.module.params)
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.pop('module', None)
+        self.client = kwargs.pop('client', None)
+        self.want = Parameters(self.module.params)
         self.changes = Parameters()
 
     def _set_changed_options(self):
@@ -331,39 +376,47 @@ class ArgumentSpec(object):
                 default=True
             )
         )
+        # TODO: Remove in 2.6. This is part of legacy bootstrapping
         self.f5_product_name = 'bigip'
 
 
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
-
-
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
-        argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
-    )
+    if HAS_LEGACY_IMPORTS:
+        # Legacy method of bootstrapping the module
+        # TODO: Remove in 2.6
+        if not HAS_F5SDK:
+            raise F5ModuleError("The python f5-sdk module is required")
+
+        client = AnsibleF5Client(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode,
+            f5_product_name=spec.f5_product_name
+        )
+        module = client.module
+    else:
+        # Current bootstrapping method
+        # TODO: The argument spec code should be moved into ArgumentSpec class in 2.6
+        argument_spec = f5_argument_spec
+        argument_spec.update(spec.argument_spec)
+        module = AnsibleModule(
+            argument_spec=spec.argument_spec,
+            supports_check_mode=spec.supports_check_mode
+        )
+        if not HAS_F5SDK:
+            module.fail_json(msg="The python f5-sdk module is required")
+
+        client = F5Client(**module.params)
 
     try:
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
+        module.exit_json(**results)
     except F5ModuleError as e:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(e))
 
 
 if __name__ == '__main__':
