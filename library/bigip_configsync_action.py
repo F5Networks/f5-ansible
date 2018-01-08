@@ -96,6 +96,7 @@ RETURN = r'''
 # only common fields returned
 '''
 
+import os
 import re
 import sys
 import time
