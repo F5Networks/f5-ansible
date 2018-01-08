@@ -424,6 +424,10 @@ class ArgumentSpec(object):
                 required=False,
                 fallback=(env_fallback, ['F5_PASSWORD']),
                 no_log=True
+            ),
+            partition = dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
         self.f5_product_name = 'bigip'
