@@ -20,7 +20,6 @@
     reset: True
     save: True
     merge_content: "{{ lookup('file', 'bigip.scf') }}"
-    verify: False
   register: result
 
 - name: Ensure virtual server description is same as in SCF file
