@@ -342,9 +342,7 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             cache=dict(
-                required=False,
-                choices=['disabled', 'enabled', 'disable', 'enable'],
-                default=None
+                choices=['disabled', 'enabled', 'disable', 'enable']
             ),
             name_servers=dict(
                 required=False,
@@ -368,7 +366,6 @@ class ArgumentSpec(object):
                 type='int'
             ),
             state=dict(
-                required=False,
                 default='present',
                 choices=['absent', 'present']
             )
