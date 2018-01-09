@@ -4,7 +4,6 @@
   bigip_facts:
     include: system_info
   register: result
-  loop: valid_includes
 
 - name: Set the banner text
   bigip_sys_global:
