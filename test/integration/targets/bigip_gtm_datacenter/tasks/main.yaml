@@ -1,5 +1,7 @@
 ---
 
+- import_tasks: setup.yaml
+
 - name: Create datacenter
   bigip_gtm_datacenter:
     name: "{{ dc_name }}"
@@ -151,3 +153,5 @@
   assert:
     that:
       - result is not changed
+
+- import_tasks: teardown.yaml
