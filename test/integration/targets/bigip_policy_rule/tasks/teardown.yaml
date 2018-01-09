@@ -11,7 +11,7 @@
 - name: Remove pools
   bigip_pool:
     name: foo-pool
-    lb_method: round_robin
+    lb_method: round-robin
     state: absent
 
 - name: Deprovision ASM
