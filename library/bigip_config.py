@@ -34,18 +34,14 @@ options:
         no changes are made, the configuration is still saved to the
         startup config. This option will always cause the module to
         return changed.
-    choices:
-      - yes
-      - no
+    type: bool
     default: no
   reset:
     description:
       - Loads the default configuration on the device. If this option
         is specified, the default configuration will be loaded before
         any commands or other provided configuration is run.
-    choices:
-      - yes
-      - no
+    type: bool
     default: no
   merge_content:
     description:
@@ -59,9 +55,7 @@ options:
       - Validates the specified configuration to see whether they are
         valid to replace the running configuration. The running
         configuration will not be changed.
-    choices:
-      - yes
-      - no
+    type: bool
     default: no
 extends_documentation_fragment: f5
 author:
