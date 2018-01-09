@@ -88,6 +88,9 @@ License
 
 GPL V3
 ~~~~~~
+
+This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work.
+
 See `License`_
 
 Contributor License Agreement

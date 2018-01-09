@@ -1,5 +1,5 @@
-F5 Ansible Docs
-===============
+F5 Modules for Ansible
+======================
 
 This project implements a set of Ansible modules for the BIG-IP platform from F5 Networks.
 

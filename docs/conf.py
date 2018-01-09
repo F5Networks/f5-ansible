@@ -65,8 +65,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'F5 Ansible'
-copyright = u'2017, F5 Networks'
+project = u'F5 Modules for Ansible'
+copyright = u'2018, F5 Networks'
 author = u'F5 Networks'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -246,7 +246,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'F5Ansible.tex', u'F5 Ansible Documentation',
+    (master_doc, 'F5Ansible.tex', u'F5 Modules for Ansible Documentation',
      u'F5 Networks', 'manual'),
 ]
 
@@ -276,7 +276,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'f5ansible', u'F5 Ansible Documentation',
+    (master_doc, 'f5ansible', u'F5 Modules for Ansible Documentation',
      [author], 1)
 ]
 
@@ -290,7 +290,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'F5Ansible', u'F5 Ansible Documentation',
+    (master_doc, 'F5Ansible', u'F5 Modules for Ansible Documentation',
      author, 'F5Ansible', 'One line description of project.',
      'Miscellaneous'),
 ]
