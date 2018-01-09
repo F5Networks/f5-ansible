@@ -74,7 +74,7 @@ docker-test:
 # Build and test docs in a Docker container
 docker-test-debug:
 	docker pull f5devcentral/containthedocs
-	./docs/scripts/test-docs.sh
+	./docs/scripts/test-docs-debug.sh
 
 # Deploy docs to clouddocs
 docker-deploy:
