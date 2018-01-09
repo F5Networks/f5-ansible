@@ -25,6 +25,7 @@ class F5Client(F5BaseClient):
             self.params['user'],
             self.params['password'],
             port=self.params['server_port'],
+            verify=self.params['validate_certs'],
             token='local'
         )
         return result

@@ -13,6 +13,12 @@ from ansible.module_utils.network.common.utils import to_list, ComplexList
 from ansible.module_utils.six import iteritems
 from collections import defaultdict
 
+try:
+    from icontrol.exceptions import iControlUnexpectedHTTPError
+    HAS_F5SDK = True
+except ImportError:
+    HAS_F5SDK = False
+
 
 f5_provider_spec = {
     'server': dict(fallback=(env_fallback, ['F5_SERVER'])),
