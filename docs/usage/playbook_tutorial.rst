@@ -33,7 +33,7 @@ Add the following to your ``playbook.yaml`` to create a pool called ``web``:
     tasks:
        - name: Create a pool
          bigip_pool:
-             lb_method: "ratio_member"
+             lb_method: "ratio-member"
              name: "web"
              password: "admin"
              server: "big-ip01.internal"
