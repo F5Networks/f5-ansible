@@ -1,6 +1,16 @@
 ---
 
+- name: Remove DNS resolver from global FQDN resolver
+  bigip_command:
+    commands:
+      - tmsh modify security firewall global-fqdn-policy dns-resolver none
+
 - name: Deprovision AFM
   bigip_provision:
     name: afm
     state: absent
+
+- name: Remove DNS resolver
+  bigip_command:
+    commands:
+      - tmsh delete net dns-resolver foo

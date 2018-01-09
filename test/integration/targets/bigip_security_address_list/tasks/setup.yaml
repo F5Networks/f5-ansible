@@ -3,3 +3,13 @@
 - name: Provision AFM
   bigip_provision:
     name: afm
+
+- name: Create DNS resolver
+  bigip_command:
+    commands:
+      - tmsh create net dns-resolver foo { route-domain 0 }
+
+- name: Set DNS resolver as global FQDN resolver
+  bigip_command:
+    commands:
+      - tmsh modify security firewall global-fqdn-policy dns-resolver foo
