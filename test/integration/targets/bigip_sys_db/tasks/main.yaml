@@ -17,7 +17,7 @@
     value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
-- name: Assert Set setup.run variable "on" - Idempotent checl
+- name: Assert Set setup.run variable "on" - Idempotent check
   assert:
     that:
       - result is not changed
@@ -39,7 +39,7 @@
     value: "{{ bigip_sys_db_val_2 }}"
   register: result
 
-- name: Assert Set setup.run variable "off" - Idempotent checl
+- name: Assert Set setup.run variable "off" - Idempotent check
   assert:
     that:
       - result is not changed
@@ -48,7 +48,6 @@
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     state: reset
-    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Reset setup.run variable
@@ -60,7 +59,6 @@
   bigip_sys_db:
     key: "{{ bigip_sys_db_key_1 }}"
     state: reset
-    value: "{{ bigip_sys_db_val_1 }}"
   register: result
 
 - name: Assert Reset setup.run variable - Idempotent check
@@ -73,4 +71,6 @@
     key: "{{ bigip_sys_db_key_1 }}"
     state: present
   register: result
-  failed_when: result|success
+  failed_when: result is success
+
+- import_tasks: teardown.yaml

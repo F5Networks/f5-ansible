@@ -1,0 +1,7 @@
+---
+
+- name: Set setup.run variable "off"
+  bigip_sys_db:
+    key: "{{ bigip_sys_db_key_1 }}"
+    value: "{{ bigip_sys_db_val_2 }}"
+  register: result
