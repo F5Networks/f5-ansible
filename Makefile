@@ -71,6 +71,11 @@ docker-test:
 	docker pull f5devcentral/containthedocs
 	./docs/scripts/test-docs.sh
 
+# Build and test docs in a Docker container
+docker-test-debug:
+	docker pull f5devcentral/containthedocs
+	./docs/scripts/test-docs.sh
+
 # Deploy docs to clouddocs
 docker-deploy:
 	./docs/scripts/deploy-docs.sh publish-product-docs-to-prod orchestration/ansible devel
