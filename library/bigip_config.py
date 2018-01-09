@@ -226,7 +226,7 @@ class ModuleManager(object):
         })
 
     def reset(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         return self.reset_device()
 
@@ -245,7 +245,7 @@ class ModuleManager(object):
         remote_path = "/var/config/rest/downloads/{0}".format(temp_name)
         temp_path = '/tmp/' + temp_name
 
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
 
         self.upload_to_device(temp_name)
@@ -293,7 +293,7 @@ class ModuleManager(object):
         upload.upload_stringio(template, temp_name)
 
     def save(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         return self.save_on_device()
 
