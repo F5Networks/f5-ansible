@@ -47,23 +47,12 @@ organization introducing yourself and what you do. I love getting email.
 
 -tim (t.rupp@f5.com)
 
-Requirements
-------------
-
-Please refer to the `Requirements`_ docs.
-
 Documentation
 -------------
 
 All documentation is available on `clouddocs.f5.com`_.
 
 When `writing new modules`_, please refer to the `Guidelines`_ document.
-
-Branches
---------
-
-Please refer to the `Branching`_ docs for more info about the branching
-strategy we use.
 
 Your ideas
 ----------
@@ -76,7 +65,6 @@ Copyright
 ---------
 
 Copyright 2017 F5 Networks Inc.
-
 
 Support
 -------
@@ -97,7 +85,7 @@ Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Individuals or business entities who contribute to this project must
 have completed and submitted the `F5 Contributor License
-Agreement <http://clouddocs.f5.com/products/orchestration/ansible/development/cla_landing.html>`_
+Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/development/cla-landing.html>`_
 to Ansible_CLA@f5.com prior to their code submission being included
 in this project.
 
@@ -113,11 +101,6 @@ in this project.
 .. _Guidelines: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html
 .. _writing new modules: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html
 .. _clouddocs.f5.com: http://clouddocs.f5.com/products/orchestration/ansible/devel
-.. _bigsuds Python Client 1.0.4 or later: https://pypi.python.org/pypi/bigsuds/
-.. _f5-sdk Python Client, latest available: https://pypi.python.org/pypi/f5-sdk/
-.. _Ansible 2.2.0 or greater: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/usage/getting_started.html#installing-ansible
 .. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
-.. _License: https://github.com/F5Networks/f5-ansible/blob/master/LICENSE
-.. _Requirements: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/usage/requirements.html
-.. _Branching: http://clouddocs.f5.com/products/orchestration/ansible/development/devel/development/branching.html
+.. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
 .. _stable modules can be found here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
