@@ -60,7 +60,7 @@ def fqdn_name(partition, value):
 def fq_list_names(partition, list_names):
     if list_names is None:
         return None
-    return map(lambda x: fq_name(partition, x), list_names)
+    return map(lambda x: fqdn_name(partition, x), list_names)
 
 
 def to_commands(module, commands):
