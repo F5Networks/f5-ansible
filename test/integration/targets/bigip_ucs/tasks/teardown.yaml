@@ -1,0 +1,6 @@
+---
+
+- name: Remove temporary UCS file
+  file:
+    path: "{{ role_path }}/files/{{ ucs.path|basename }}.ucs"
+    state: absent

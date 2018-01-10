@@ -4,7 +4,8 @@
   tempfile:
     state: file
     suffix: temp
-  register: result
+  register: ucs
 
 - name: Save a UCS file locally for later usage
   bigip_ucs_fetch:
+    dest: "{{ role_path }}/files/{{ ucs.path|basename }}.ucs"
