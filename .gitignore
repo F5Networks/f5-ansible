@@ -31,7 +31,7 @@ tmp/*
 !tmp/licenses
 tmp/licenses/*
 !tmp/licenses/.gitkeep
-
+test/integration/targets/bigip_ucs/files/*.ucs
 examples/hosts.ini
 **/.DS_Store
 **/*.secret
