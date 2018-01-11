@@ -19,20 +19,21 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
 from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.{{ module }} import Parameters
     from library.{{ module }} import ModuleManager
     from library.{{ module }} import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
         from ansible.modules.network.f5.{{ module }} import Parameters
         from ansible.modules.network.f5.{{ module }} import ModuleManager
         from ansible.modules.network.f5.{{ module }} import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")

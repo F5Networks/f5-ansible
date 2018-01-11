@@ -53,18 +53,12 @@ param2:
   sample: Foo is bar
 '''
 
-import os
-import sys
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
 HAS_DEVEL_IMPORTS = False
 
 try:
-    # Sideband repository used for dev
-    sys.path.insert(0, os.path.abspath('/here/'))
-
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
@@ -78,9 +72,6 @@ try:
         HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
 except ImportError:
-    # Remove path which was inserted by dev
-    sys.path.pop(0)
-
     # Upstream Ansible
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
