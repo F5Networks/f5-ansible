@@ -8,7 +8,7 @@
 
 - name: Issue 00101 - Create pool
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: pool-servers
 
 - name: Issue 00101 - Create MKTX_Session_Logging iRule
@@ -102,7 +102,7 @@
 
 - name: Issue 00101 - Remove pool
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: pool-servers
     state: absent
 

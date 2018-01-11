@@ -10,7 +10,7 @@
 
 - name: Issue 00093 - Create pool
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: qa_sites_http_0
     partition: "{{ issue_partition }}"
 

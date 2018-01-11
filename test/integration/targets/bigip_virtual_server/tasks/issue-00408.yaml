@@ -124,6 +124,6 @@
 
 - name: Issue 00408 - Remove pool
   bigip_pool:
-    lb_method: round_robin
+    lb_method: round-robin
     name: web-pool
     state: absent
