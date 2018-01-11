@@ -54,13 +54,6 @@ RUN apt-get update && apt-get install -y \
 # Install required pip packages
 RUN pip install --upgrade pip
 
-# Upgrade gpg to 2.1
-RUN curl -sL "https://gist.githubusercontent.com/caphrim007/998ba54373517c3ee62572fb626e6a53/raw/327fb4d540eccf10f6bc52b73526182aed1537b5/gistfile1.txt" |sh
-
-# Install blackbox commands for encryption in the repository
-RUN cd /tmp && git clone https://github.com/StackExchange/blackbox.git \
-    && cd blackbox && make manual-install
-
 # Because python gets installed in /usr/local/bin instead of /usr/bin
 RUN ln -sf /usr/lib/python3/dist-packages/apt_pkg.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.5/apt_pkg.so && \
     ln -sf /usr/lib/python3/dist-packages/apt_inst.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.5/apt_inst.so && \
