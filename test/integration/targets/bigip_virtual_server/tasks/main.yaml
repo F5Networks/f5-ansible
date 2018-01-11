@@ -58,62 +58,6 @@
     that:
       - result is not changed
 
-- name: Enable route advertisement
-  bigip_virtual_server:
-    destination: "{{ node_host }}"
-    name: "{{ vs_name }}"
-    port: "{{ vs_port2 }}"
-    route_advertisement_state: enabled
-    state: present
-  register: result
-
-- name: Assert Enable route advertisement
-  assert:
-    that:
-      - result is changed
-
-- name: Enable route advertisement - Idempotent check
-  bigip_virtual_server:
-    destination: "{{ node_host }}"
-    name: "{{ vs_name }}"
-    port: "{{ vs_port2 }}"
-    route_advertisement_state: enabled
-    state: present
-  register: result
-
-- name: Assert Enable route advertisement - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
-- name: Disable route advertisement
-  bigip_virtual_server:
-    destination: "{{ node_host }}"
-    name: "{{ vs_name }}"
-    port: "{{ vs_port2 }}"
-    route_advertisement_state: disabled
-    state: present
-  register: result
-
-- name: Assert Disable route advertisement
-  assert:
-    that:
-      - result is changed
-
-- name: Disable route advertisement - Idempotent check
-  bigip_virtual_server:
-    destination: "{{ node_host }}"
-    name: "{{ vs_name }}"
-    port: "{{ vs_port2 }}"
-    route_advertisement_state: disabled
-    state: present
-  register: result
-
-- name: Assert Disable route advertisement - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
 - name: Delete virtual server
   bigip_virtual_server:
     name: "{{ vs_name }}"
@@ -295,17 +239,6 @@
     name: "{{ vs_name }}"
     state: absent
   register: result
-
-
-
-
-
-
-
-
-
-
-
 
 - name: Add virtual server for policies tests
   bigip_virtual_server:
