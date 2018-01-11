@@ -17,3 +17,7 @@
     - policy1
     - policy2
     - policy3
+
+- name: Create VLANs
+  bigip_vlan:
+    name: "{{ enabled_vlans }}"
