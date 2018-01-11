@@ -32,16 +32,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
   py2.7-bare:
     image: f5ansible/py2.7-bare:devel
     build:
@@ -58,16 +54,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
   py3.5:
     image: f5ansible/py3.5:devel
     build:
@@ -84,16 +76,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
   py3.5-bare:
     image: f5ansible/py3.5-bare:devel
     build:
@@ -110,16 +98,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
   py3.6:
     image: f5ansible/py3.6:devel
     build:
@@ -136,16 +120,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
   py3.6-bare:
     image: f5ansible/py3.6-bare:devel
     build:
@@ -162,16 +142,12 @@ services:
         source: ../
         target: /here
       - type: bind
-        source: ~/.gnupg
-        target: /gpg
-      - type: bind
         source: ../tmp/ansible.junit/
         target: /tmp/ansible.junit
     environment:
       - PYTHONDONTWRITEBYTECODE=1
-      - GNUPGHOME=/gpg/
-      - GPG=/usr/local/bin/gpg2
       - JUNIT_OUTPUT_DIR=/tmp/ansible.junit
+      - PYTHONPATH=/here
 secrets:
   .gitconfig:
     file: ./secrets/gitconfig.secret
