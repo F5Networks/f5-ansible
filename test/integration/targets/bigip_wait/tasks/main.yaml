@@ -27,7 +27,7 @@
 - name: Assert Wait for BIG-IP to actually be ready
   assert:
     that:
-      - result is changed
+      - result is not changed
       - "'elapsed' in result"
 
 - name: Attempt to make a change, no failure
