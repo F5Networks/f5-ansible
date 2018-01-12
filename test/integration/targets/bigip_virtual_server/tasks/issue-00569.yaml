@@ -1,0 +1,42 @@
+---
+
+- name: Issue 00569 - Create a partition
+  bigip_partition:
+    name: foo1234
+
+- name: Issue 00569 - Add virtual server
+  bigip_virtual_server:
+    name: issue-00523
+    destination: 1.1.1.1
+    port: 80
+    partition: foo1234
+  register: result
+
+- name: Issue 00569 - Assert Add virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00569 - Add virtual server - Idempotent check
+  bigip_virtual_server:
+    name: issue-00523
+    destination: 1.1.1.1
+    port: 80
+    partition: foo1234
+  register: result
+
+- name: Issue 00569 - Assert Add virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00569 - Remove virtual server
+  bigip_virtual_server:
+    name: issue-00523
+    partition: foo1234
+    state: absent
+
+- name: Issue 00569 - Remove partition
+  bigip_partition:
+    name: foo1234
+    state: absent

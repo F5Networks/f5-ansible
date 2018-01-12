@@ -576,7 +576,7 @@ class ApiParameters(Parameters):
         if self._values['destination'] is None:
             result = Destination(ip=None, port=None, route_domain=None)
             return result
-        destination = re.sub(r'^/[a-zA-Z_.-]+/', '', self._values['destination'])
+        destination = re.sub(r'^/[a-zA-Z0-9_.-]+/', '', self._values['destination'])
 
         if self.is_valid_ip(destination):
             result = Destination(
