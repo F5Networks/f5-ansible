@@ -178,15 +178,41 @@ RETURN = r'''
 
 import os
 import re
-import sys
 import time
 
-from distutils.version import LooseVersion
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
+from distutils.version import LooseVersion
+
+HAS_DEVEL_IMPORTS = False
+
+try:
+    # Sideband repository used for dev
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
+    HAS_DEVEL_IMPORTS = True
+except ImportError:
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 try:
     from collections import OrderedDict
@@ -195,11 +221,6 @@ except ImportError:
         from ordereddict import OrderedDict
     except ImportError:
         pass
-
-try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-except ImportError:
-    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -288,14 +309,15 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.kwargs = kwargs
 
     def exec_module(self):
         if self.is_version_v1():
-            manager = V1Manager(self.client)
+            manager = V1Manager(**self.kwargs)
         else:
-            manager = V2Manager(self.client)
+            manager = V2Manager(**self.kwargs)
 
         return manager.exec_module()
 
@@ -317,10 +339,10 @@ class ModuleManager(object):
 
 
 class BaseManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
 
     def exec_module(self):
@@ -348,7 +370,7 @@ class BaseManager(object):
             return self.create()
 
     def update(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             if self.want.force:
                 return True
             return False
@@ -361,7 +383,7 @@ class BaseManager(object):
             return False
 
     def create(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         if not self.exists():
@@ -382,7 +404,7 @@ class BaseManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
@@ -558,7 +580,7 @@ class V2Manager(V1Manager):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             force=dict(
                 type='bool',
                 default='no'
@@ -580,39 +602,30 @@ class ArgumentSpec(object):
             ),
             ucs=dict(required=True)
         )
-        self.f5_product_name = 'bigip'
-
-
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(argument_spec)
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        supports_check_mode=spec.supports_check_mode
     )
+    if not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        mm = ModuleManager(client)
+        client = F5Client(**module.params)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
+        module.exit_json(**results)
+    except F5ModuleError as ex:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(ex))
 
 
 if __name__ == '__main__':

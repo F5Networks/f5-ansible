@@ -330,7 +330,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         return True
@@ -388,7 +388,7 @@ class ModuleManager(object):
 
     def remove(self):
         self.have = self.read_current_from_device()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

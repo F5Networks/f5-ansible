@@ -294,7 +294,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -307,7 +307,7 @@ class ModuleManager(object):
             else:
                 changed[k] = change
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
             return True
         return False
 
@@ -318,7 +318,7 @@ class ModuleManager(object):
         if self.have:
             warnings += self.have._values.get('__warnings', [])
         for warning in warnings:
-            self.client.module.deprecate(
+            self.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
             )
@@ -391,7 +391,7 @@ class ModuleManager(object):
             self.want.update({'time_until_up': 0})
         if self.want.ip is None:
             self.want.update({'ip': '*'})
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         return True
@@ -406,7 +406,7 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
@@ -417,7 +417,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
@@ -430,7 +430,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return Parameters(params=result)
 
     def exists(self):
         result = self.client.api.tm.ltm.monitor.tcp_echos.tcp_echo.exists(

@@ -107,7 +107,6 @@ stdout_lines:
 '''
 
 import os
-import sys
 import tempfile
 
 try:
@@ -121,8 +120,6 @@ HAS_DEVEL_IMPORTS = False
 
 try:
     # Sideband repository used for dev
-    sys.path.insert(0, os.path.abspath('/here/'))
-
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
@@ -130,11 +127,12 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
 except ImportError:
-    # Remove path which was inserted by dev
-    sys.path.pop(0)
-
     # Upstream Ansible
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
@@ -143,11 +141,10 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fqdn_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-
-try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-except ImportError:
-    HAS_F5SDK = False
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -163,9 +160,9 @@ class Parameters(AnsibleF5Parameters):
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
-        self.module = kwargs.pop('module', None)
-        self.client = kwargs.pop('client', None)
-        self.want = Parameters(self.module.params)
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
 
     def _set_changed_options(self):
@@ -174,7 +171,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
 
     def _to_lines(self, stdout):
         lines = list()
@@ -214,10 +211,11 @@ class ModuleManager(object):
             response = self.save()
             responses.append(response)
 
-        self.changes = Parameters({
+        changes = {
             'stdout': responses,
             'stdout_lines': self._to_lines(responses)
-        })
+        }
+        self.changes = Parameters(params=changes)
 
     def reset(self):
         if self.module.check_mode:
@@ -321,7 +319,8 @@ class ArgumentSpec(object):
                 default=True
             )
         )
-        self.argument_spec = f5_argument_spec
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
 
 

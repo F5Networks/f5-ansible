@@ -355,7 +355,7 @@ class ModuleManager(object):
         if self.want.connector is None:
             self.want.update({'connector': 'all'})
 
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if self.want.base_template is None:
             raise F5ModuleError(
@@ -368,7 +368,7 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
@@ -411,7 +411,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

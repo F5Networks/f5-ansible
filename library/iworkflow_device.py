@@ -126,7 +126,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -137,7 +137,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
             return True
         return False
 
@@ -185,7 +185,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
 
@@ -226,7 +226,7 @@ class ModuleManager(object):
         )
         resource = collection.pop()
         result = resource.attrs
-        return Parameters(result)
+        return Parameters(params=result)
 
     def create_on_device(self):
         dg = self.client.api.shared.resolver.device_groups
@@ -255,7 +255,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

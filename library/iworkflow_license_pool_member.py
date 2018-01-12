@@ -249,7 +249,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         return True
@@ -292,7 +292,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

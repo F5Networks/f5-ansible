@@ -685,7 +685,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         return True
@@ -732,13 +732,13 @@ class ModuleManager(object):
             )
         )
         result = resource.attrs
-        return Parameters(result)
+        return Parameters(params=result)
 
     def update(self):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
 
         # The only way to update is to delete the existing node and re-post.
@@ -758,7 +758,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_connector_node_from_device()
         if self.exists():

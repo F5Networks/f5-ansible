@@ -341,7 +341,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if self.want.service_template is None:
             raise F5ModuleError(
@@ -384,7 +384,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

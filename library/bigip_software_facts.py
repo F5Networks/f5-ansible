@@ -94,12 +94,38 @@ volumes:
         version: 12.1.1
 '''
 
-
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
+
+HAS_DEVEL_IMPORTS = False
+
+try:
+    # Sideband repository used for dev
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
+    HAS_DEVEL_IMPORTS = True
+except ImportError:
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -147,10 +173,17 @@ class Parameters(AnsibleF5Parameters):
         return key, value
 
 
+class Changes(Parameters):
+    pass
+
+
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.want = Parameters(self.client.module.params)
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = Parameters(params=self.module.params)
+        self.kwargs = kwargs
+        self.changes = Changes()
         self.include = self.want.include
 
     def exec_module(self):
@@ -176,17 +209,21 @@ class ModuleManager(object):
 
     def get_manager(self, which):
         if 'image' == which:
-            return ImageFactManager(self.client)
+            return ImageFactManager(**self.kwargs)
         if 'hotfix' == which:
-            return HotfixFactManager(self.client)
+            return HotfixFactManager(**self.kwargs)
         if 'volume' == which:
-            return VolumeFactManager(self.client)
+            return VolumeFactManager(**self.kwargs)
 
 
 class BaseManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.want = Parameters(self.client.module.params)
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.have = None
+        self.want = Parameters(params=self.module.params)
+        self.changes = Changes()
+
         self.result = dict()
         self.filter = self.want.filter
 
@@ -261,34 +298,38 @@ class VolumeFactManager(BaseManager):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             include=dict(
                 type='list',
                 default=['all'],
             ),
             filter=dict()
         )
-        self.f5_product_name = 'bigip'
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(argument_spec)
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        supports_check_mode=spec.supports_check_mode
     )
+    if not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        mm = ModuleManager(client)
+        client = F5Client(**module.params)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
-        client.module.fail_json(msg=str(e))
+        cleanup_tokens(client)
+        module.exit_json(**results)
+    except F5ModuleError as ex:
+        cleanup_tokens(client)
+        module.fail_json(msg=str(ex))
+
 
 if __name__ == '__main__':
     main()

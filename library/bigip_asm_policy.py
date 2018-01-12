@@ -215,7 +215,6 @@ name:
 '''
 
 import os
-import sys
 import time
 
 from distutils.version import LooseVersion
@@ -226,8 +225,6 @@ HAS_DEVEL_IMPORTS = False
 
 try:
     # Sideband repository used for dev
-    sys.path.insert(0, os.path.abspath('/here/'))
-
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
@@ -235,11 +232,12 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
 except ImportError:
-    # Remove path which was inserted by dev
-    sys.path.pop(0)
-
     # Upstream Ansible
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
@@ -248,11 +246,10 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fqdn_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-
-try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-except ImportError:
-    HAS_F5SDK = False
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -462,8 +459,8 @@ class Difference(object):
 
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
-        self.client = kwargs.pop('client', None)
-        self.module = kwargs.pop('module', None)
+        self.client = kwargs.get('client', None)
+        self.module = kwargs.get('module', None)
         self.have = None
         self.changes = Changes()
 
@@ -491,7 +488,7 @@ class BaseManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = Changes(params=changed)
 
     def should_update(self):
         result = self._update_changed_options()
@@ -513,7 +510,7 @@ class BaseManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(changed)
+            self.changes = Changes(params=changed)
             return True
         return False
 
@@ -644,7 +641,7 @@ class BaseManager(object):
             if policy.name == self.want.name and policy.partition == self.want.partition:
                 params = policy.attrs
                 params.update(dict(self_link=policy.selfLink))
-                return Parameters(params)
+                return Parameters(params=params)
         raise F5ModuleError("The policy was not found")
 
     def import_to_device(self):
@@ -693,8 +690,8 @@ class BaseManager(object):
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
-        self.client = kwargs.pop('client', None)
-        self.module = kwargs.pop('module', None)
+        self.client = kwargs.get('client', None)
+        self.kwargs = kwargs
 
     def exec_module(self):
         if self.version_is_less_than_13():
@@ -705,9 +702,9 @@ class ModuleManager(object):
 
     def get_manager(self, type):
         if type == 'v1':
-            return V1Manager(client=self.client, module=self.module)
+            return V1Manager(**self.kwargs)
         elif type == 'v2':
-            return V2Manager(client=self.client, module=self.module)
+            return V2Manager(**self.kwargs)
 
     def version_is_less_than_13(self):
         version = self.client.api.tmos_version
@@ -719,22 +716,18 @@ class ModuleManager(object):
 
 class V1Manager(BaseManager):
     def __init__(self, *args, **kwargs):
-        client = kwargs.pop('client', None)
-        module = kwargs.pop('module', None)
+        client = kwargs.get('client', None)
+        module = kwargs.get('module', None)
         super(V1Manager, self).__init__(client=client, module=module)
-        self.want = V1Parameters()
-        self.want.client = client
-        self.want.update(module.params)
+        self.want = V1Parameters(params=module.params, client=client)
 
 
 class V2Manager(BaseManager):
     def __init__(self, *args, **kwargs):
-        client = kwargs.pop('client', None)
-        module = kwargs.pop('module', None)
+        client = kwargs.get('client', None)
+        module = kwargs.get('module', None)
         super(V2Manager, self).__init__(client=client, module=module)
-        self.want = V2Parameters()
-        self.want.client = client
-        self.want.update(module.params)
+        self.want = V2Parameters(params=module.params, client=client)
 
 
 class ArgumentSpec(object):
@@ -797,7 +790,8 @@ class ArgumentSpec(object):
                 fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
-        self.argument_spec = f5_argument_spec
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
 
 

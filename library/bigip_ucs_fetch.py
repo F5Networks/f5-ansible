@@ -138,21 +138,41 @@ size:
 '''
 
 import os
-import tempfile
 import re
+import tempfile
 
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
-from ansible.module_utils.six import iteritems
-from collections import defaultdict
+from ansible.module_utils.basic import AnsibleModule
 from distutils.version import LooseVersion
 
+HAS_DEVEL_IMPORTS = False
+
 try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    # Sideband repository used for dev
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
+    HAS_DEVEL_IMPORTS = True
 except ImportError:
-    HAS_F5SDK = False
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -160,36 +180,6 @@ class Parameters(AnsibleF5Parameters):
     returnables = ['dest', 'src', 'md5sum', 'checksum', 'backup_file']
     api_attributes = []
     api_map = {}
-
-    def __init__(self, params=None):
-        self._values = defaultdict(lambda: None)
-        self._values['__warnings'] = []
-        if params:
-            self.update(params=params)
-
-    def update(self, params=None):
-        if params:
-            for k, v in iteritems(params):
-                if self.api_map is not None and k in self.api_map:
-                    map_key = self.api_map[k]
-                else:
-                    map_key = k
-
-                # Handle weird API parameters like `dns.proxy.__iter__` by
-                # using a map provided by the module developer
-                class_attr = getattr(type(self), map_key, None)
-                if isinstance(class_attr, property):
-                    # There is a mapped value for the api_map key
-                    if class_attr.fset is None:
-                        # If the mapped value does not have
-                        # an associated setter
-                        self._values[map_key] = v
-                    else:
-                        # The mapped value has a setter
-                        setattr(self, map_key, v)
-                else:
-                    # If the mapped value is not a @property
-                    self._values[map_key] = v
 
     @property
     def options(self):
@@ -208,7 +198,8 @@ class Parameters(AnsibleF5Parameters):
     def src(self):
         if self._values['src'] is not None:
             return self._values['src']
-        result = next(tempfile._get_candidate_names())
+        result = next(tempfile._get_candidate_names()) + '.ucs'
+        self._values['src'] = result
         return result
 
     @property
@@ -247,27 +238,17 @@ class Parameters(AnsibleF5Parameters):
         result = self._filter_params(result)
         return result
 
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if api_attribute in self.api_map:
-                result[api_attribute] = getattr(
-                    self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
-
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, *args, **kwargs):
+        self.client = kwargs.get('client', None)
+        self.kwargs = kwargs
 
     def exec_module(self):
         if self.is_version_v1():
-            manager = V1Manager(self.client)
+            manager = V1Manager(**self.kwargs)
         else:
-            manager = V2Manager(self.client)
+            manager = V2Manager(**self.kwargs)
 
         return manager.exec_module()
 
@@ -289,10 +270,10 @@ class ModuleManager(object):
 
 
 class BaseManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.have = None
-        self.want = Parameters(self.client.module.params)
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = Parameters(params=self.module.params)
         self.changes = Parameters()
 
     def exec_module(self):
@@ -325,10 +306,11 @@ class BaseManager(object):
         try:
             if self.want.backup:
                 if os.path.exists(self.want.fulldest):
-                    backup_file = self.client.module.backup_local(self.want.fulldest)
+                    backup_file = self.module.backup_local(self.want.fulldest)
                     self.changes.update({'backup_file': backup_file})
             self.download()
-        except IOError:
+        except IOError as ex:
+            import q; q.q(str(ex))
             raise F5ModuleError(
                 "Failed to copy: {0} to {1}".format(self.want.src, self.want.fulldest)
             )
@@ -336,19 +318,19 @@ class BaseManager(object):
         self._set_checksum()
         self._set_md5sum()
 
-        file_args = self.client.module.load_file_common_arguments(self.client.module.params)
-        return self.client.module.set_fs_attributes_if_different(file_args, True)
+        file_args = self.module.load_file_common_arguments(self.module.params)
+        return self.module.set_fs_attributes_if_different(file_args, True)
 
     def _set_checksum(self):
         try:
-            result = self.client.module.sha1(self.want.fulldest)
+            result = self.module.sha1(self.want.fulldest)
             self.want.update({'checksum': result})
         except ValueError:
             pass
 
     def _set_md5sum(self):
         try:
-            result = self.client.module.md5(self.want.fulldest)
+            result = self.module.md5(self.want.fulldest)
             self.want.update({'md5sum': result})
         except ValueError:
             pass
@@ -364,7 +346,7 @@ class BaseManager(object):
                 "UCS '{0}' was not found".format(self.want.src)
             )
 
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if self.want.create_on_missing:
             self.create_on_device()
@@ -394,8 +376,8 @@ class BaseManager(object):
 
 
 class V1Manager(BaseManager):
-    def __init__(self, client):
-        super(V1Manager, self).__init__(client)
+    def __init__(self, *args, **kwargs):
+        super(V1Manager, self).__init__(**kwargs)
         self.remote_dir = '/var/config/rest/madm'
 
     def read_current_from_device(self):
@@ -460,6 +442,7 @@ class V2Manager(BaseManager):
 
     def download_from_device(self):
         ucs = self.client.api.shared.file_transfer.ucs_downloads
+        import q; q.q(self.want.src, self.want.dest)
         ucs.download_file(self.want.src, self.want.dest)
         if os.path.exists(self.want.dest):
             return True
@@ -469,7 +452,7 @@ class V2Manager(BaseManager):
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             backup=dict(
                 default='no',
                 type='bool'
@@ -490,41 +473,33 @@ class ArgumentSpec(object):
             ),
             src=dict()
         )
-        self.f5_product_name = 'bigip'
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(argument_spec)
         self.add_file_common_args = True
 
 
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
-
-
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    module = AnsibleModule(
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name,
         add_file_common_args=spec.add_file_common_args
     )
+    if not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        mm = ModuleManager(client)
+        client = F5Client(**module.params)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
+        module.exit_json(**results)
+    except F5ModuleError as ex:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(ex))
+
 
 if __name__ == '__main__':
     main()

@@ -57,6 +57,11 @@ options:
     choices:
       - present
       - absent
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+    version_added: 2.5
 notes:
   - This module only supports version v1 and v2c of SNMP.
   - The C(network) option is not supported on versions of BIG-IP < 12.1.0 because
@@ -123,17 +128,39 @@ network:
   sample: management
 '''
 
-
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
 from distutils.version import LooseVersion
 
+HAS_DEVEL_IMPORTS = False
+
 try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    # Sideband repository used for dev
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
+    HAS_DEVEL_IMPORTS = True
 except ImportError:
-    HAS_F5SDK = False
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -159,16 +186,6 @@ class Parameters(AnsibleF5Parameters):
         result = {}
         for returnable in self.returnables:
             result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
-        return result
-
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
         result = self._filter_params(result)
         return result
 
@@ -218,14 +235,16 @@ class NonNetworkedParameters(Parameters):
 
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.kwargs = kwargs
 
     def exec_module(self):
         if self.is_version_non_networked():
-            manager = NonNetworkedManager(self.client)
+            manager = NonNetworkedManager(**self.kwargs)
         else:
-            manager = NetworkedManager(self.client)
+            manager = NetworkedManager(**self.kwargs)
 
         return manager.exec_module()
 
@@ -245,8 +264,9 @@ class ModuleManager(object):
 
 
 class BaseManager(object):
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
         self.have = None
 
     def exec_module(self):
@@ -282,7 +302,7 @@ class BaseManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if all(getattr(self.want, v) is None for v in self.required_resources):
             raise F5ModuleError(
@@ -302,7 +322,7 @@ class BaseManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
@@ -329,7 +349,7 @@ class BaseManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
@@ -346,12 +366,12 @@ class BaseManager(object):
 
 
 class NetworkedManager(BaseManager):
-    def __init__(self, client):
-        super(NetworkedManager, self).__init__(client)
+    def __init__(self, *args, **kwargs):
+        super(NetworkedManager, self).__init__(**kwargs)
         self.required_resources = [
             'version', 'community', 'destination', 'port', 'network'
         ]
-        self.want = NetworkedParameters(self.client.module.params)
+        self.want = NetworkedParameters(params=self.module.params)
         self.changes = NetworkedParameters()
 
     def _set_changed_options(self):
@@ -360,7 +380,7 @@ class NetworkedManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = NetworkedParameters(changed)
+            self.changes = NetworkedParameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -371,7 +391,7 @@ class NetworkedManager(BaseManager):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = NetworkedParameters(changed)
+            self.changes = NetworkedParameters(params=changed)
             return True
         return False
 
@@ -382,7 +402,7 @@ class NetworkedManager(BaseManager):
         )
         result = resource.attrs
         self._ensure_network(result)
-        return NetworkedParameters(result)
+        return NetworkedParameters(params=result)
 
     def _ensure_network(self, result):
         # BIG-IP's value for "default" is that the key does not
@@ -396,12 +416,12 @@ class NetworkedManager(BaseManager):
 
 
 class NonNetworkedManager(BaseManager):
-    def __init__(self, client):
-        super(NonNetworkedManager, self).__init__(client)
+    def __init__(self, *args, **kwargs):        
+        super(NonNetworkedManager, self).__init__(**kwargs)
         self.required_resources = [
             'version', 'community', 'destination', 'port'
         ]
-        self.want = NonNetworkedParameters(self.client.module.params)
+        self.want = NonNetworkedParameters(params=self.module.params)
         self.changes = NonNetworkedParameters()
 
     def _set_changed_options(self):
@@ -410,7 +430,7 @@ class NonNetworkedManager(BaseManager):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = NonNetworkedParameters(changed)
+            self.changes = NonNetworkedParameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -421,7 +441,7 @@ class NonNetworkedManager(BaseManager):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = NonNetworkedParameters(changed)
+            self.changes = NonNetworkedParameters(params=changed)
             return True
         return False
 
@@ -431,13 +451,13 @@ class NonNetworkedManager(BaseManager):
             partition=self.want.partition
         )
         result = resource.attrs
-        return NonNetworkedParameters(result)
+        return NonNetworkedParameters(params=result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             name=dict(
                 required=True
             ),
@@ -453,41 +473,36 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['absent', 'present']
+            ),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
-        self.f5_product_name = 'bigip'
-
-
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(argument_spec)
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        supports_check_mode=spec.supports_check_mode
     )
+    if not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        mm = ModuleManager(client)
+        client = F5Client(**module.params)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
+        module.exit_json(**results)
+    except F5ModuleError as ex:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(ex))
 
 
 if __name__ == '__main__':

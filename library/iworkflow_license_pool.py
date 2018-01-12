@@ -144,7 +144,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -155,7 +155,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
             return True
         return False
 
@@ -238,7 +238,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if self.want.base_key is None:
             raise F5ModuleError(
@@ -255,7 +255,7 @@ class ModuleManager(object):
         )
         resource = collection.pop()
         result = resource.attrs
-        return Parameters(result)
+        return Parameters(params=result)
 
     def create_on_device(self):
         resource = self.client.api.cm.shared.licensing.pools_s.pool.create(
@@ -287,7 +287,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

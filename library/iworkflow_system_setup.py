@@ -170,7 +170,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(changed)
+            self.changes = Parameters(params=changed)
             return True
         return False
 
@@ -199,7 +199,7 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
@@ -212,7 +212,7 @@ class ModuleManager(object):
         result.update(e.attrs)
         d = self.client.api.shared.identified_devices.config.discovery.load()
         result.update(d.attrs)
-        return Parameters(result)
+        return Parameters(params=result)
 
     def update_on_device(self):
         params = self.want.api_params()

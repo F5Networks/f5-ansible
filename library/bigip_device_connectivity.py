@@ -138,9 +138,6 @@ multicast_port:
   sample: 1026
 '''
 
-import os
-import sys
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.six import iteritems
 
@@ -148,8 +145,6 @@ HAS_DEVEL_IMPORTS = False
 
 try:
     # Sideband repository used for dev
-    sys.path.insert(0, os.path.abspath('/here/'))
-
     from library.module_utils.network.f5.bigip import HAS_F5SDK
     from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
@@ -157,11 +152,12 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
 except ImportError:
-    # Remove path which was inserted by dev
-    sys.path.pop(0)
-
     # Upstream Ansible
     from ansible.module_utils.network.f5.bigip import HAS_F5SDK
     from ansible.module_utils.network.f5.bigip import F5Client
@@ -170,6 +166,10 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fqdn_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 try:
     from netaddr import IPAddress, AddrFormatError
@@ -177,14 +177,10 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
-try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-except ImportError:
-    HAS_F5SDK = False
-
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
+        'unicastAddress': 'unicast_failover',
         'configsyncIp': 'config_sync_ip',
         'multicastInterface': 'multicast_interface',
         'multicastIp': 'multicast_address',
@@ -257,44 +253,6 @@ class Parameters(AnsibleF5Parameters):
         result = self._get_validated_ip_address('config_sync_ip')
         return result
 
-    @property
-    def unicastAddress(self):
-        return self.unicast_failover
-
-    @unicastAddress.setter
-    def unicastAddress(self, value):
-        result = []
-        for item in value:
-            item['address'] = item.pop('ip')
-            result.append(item)
-        if result:
-            self._values['unicast_failover'] = result
-
-    @property
-    def unicast_failover(self):
-        if self._values['unicast_failover'] is None:
-            return None
-        if self._values['unicast_failover'] == ['none']:
-            return []
-        result = []
-        for item in self._values['unicast_failover']:
-            address = item.get('address', None)
-            port = item.get('port', None)
-            address = self._validate_unicast_failover_address(address)
-            port = self._validate_unicast_failover_port(port)
-            result.append(
-                dict(
-                    effectiveIp=address,
-                    effectivePort=port,
-                    ip=address,
-                    port=port
-                )
-            )
-        if result:
-            return result
-        else:
-            return None
-
     def _validate_unicast_failover_port(self, port):
         try:
             result = int(port)
@@ -333,15 +291,36 @@ class Parameters(AnsibleF5Parameters):
                 )
             )
 
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
+
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    @property
+    def unicast_failover(self):
+        if self._values['unicast_failover'] is None:
+            return None
+        if self._values['unicast_failover'] == ['none']:
+            return []
+        result = []
+        for item in self._values['unicast_failover']:
+            address = item.get('address', None)
+            port = item.get('port', None)
+            address = self._validate_unicast_failover_address(address)
+            port = self._validate_unicast_failover_port(port)
+            result.append(
+                dict(
+                    effectiveIp=address,
+                    effectivePort=port,
+                    ip=address,
+                    port=port
+                )
+            )
+        if result:
+            return result
+        else:
+            return None
 
 
 class Changes(Parameters):
@@ -483,9 +462,9 @@ class Difference(object):
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
-        self.module = kwargs.pop('module', None)
-        self.client = kwargs.pop('client', None)
-        self.want = Parameters(self.module.params)
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = ModuleParameters(params=self.module.params)
         self.changes = UsableChanges()
 
     def _update_changed_options(self):
@@ -502,7 +481,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = UsableChanges(changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -523,7 +502,7 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        reportable = ReportableChanges(self.changes.to_return())
+        reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
@@ -533,7 +512,7 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
@@ -554,7 +533,7 @@ class ModuleManager(object):
         for resource in collection:
             if resource.selfDevice == 'true':
                 result = resource.attrs
-                return Parameters(result)
+                return ApiParameters(params=result)
         raise F5ModuleError(
             "The host device was not found."
         )
@@ -583,7 +562,8 @@ class ArgumentSpec(object):
                 choices=['present']
             )
         )
-        self.argument_spec = f5_argument_spec
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.required_together = [
             ['multicast_address', 'multicast_interface', 'multicast_port']

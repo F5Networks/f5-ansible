@@ -291,7 +291,7 @@ class ModuleManager(object):
             return self.create()
 
     def create(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         if self.want.template_content is None:
             raise F5ModuleError(
@@ -314,7 +314,7 @@ class ModuleManager(object):
         return False
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():

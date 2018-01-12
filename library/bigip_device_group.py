@@ -46,18 +46,14 @@ options:
       - Indicates whether configuration synchronization occurs manually or
         automatically. When creating a new device group, this option will
         default to C(false).
-    choices:
-      - true
-      - false
+    type: bool
   save_on_auto_sync:
     description:
       - When performing an auto-sync, specifies whether the configuration
         will be saved or not. If C(false), only the running configuration
         will be changed on the device(s) being synced to. When creating a
         new device group, this option will default to C(false).
-    choices:
-      - true
-      - false
+    type: bool
   full_sync:
     description:
       - Specifies whether the system synchronizes the entire configuration
@@ -71,9 +67,7 @@ options:
         Typically this requires at least one full configuration load to each
         device. When creating a new device group, this option will default
         to C(false).
-    choices:
-      - true
-      - false
+    type: bool
   max_incremental_sync_size:
     description:
       - Specifies the size of the changes cache for incremental sync. For example,
@@ -82,6 +76,17 @@ options:
         incremental synchronization operations can reduce the per-device sync/load
         time for configuration changes. This setting is relevant only when
         C(full_sync) is C(false).
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(state) is C(present), ensures the device group exists.
+      - When C(state) is C(absent), ensures that the device group is removed.
+    choices:
+      - present
+      - absent
 notes:
   - This module is primarily used as a component of configuring HA pairs of
     BIG-IP devices.
@@ -145,21 +150,39 @@ max_incremental_sync_size:
   sample: 1000
 '''
 
-try:
-    from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-except ImportError:
-    # Ansible 2.3??
-    BOOLEANS_TRUE = frozenset(('y', 'yes', 'on', '1', 'true', 't', 1, 1.0, True))
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import AnsibleF5Parameters
-from ansible.module_utils.f5_utils import HAS_F5SDK
-from ansible.module_utils.f5_utils import F5ModuleError
+HAS_DEVEL_IMPORTS = False
 
 try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    # Sideband repository used for dev
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
+    HAS_DEVEL_IMPORTS = True
 except ImportError:
-    HAS_F5SDK = False
+    # Upstream Ansible
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -236,16 +259,6 @@ class Parameters(AnsibleF5Parameters):
             pass
         return result
 
-    def api_params(self):
-        result = {}
-        for api_attribute in self.api_attributes:
-            if self.api_map is not None and api_attribute in self.api_map:
-                result[api_attribute] = getattr(self, self.api_map[api_attribute])
-            else:
-                result[api_attribute] = getattr(self, api_attribute)
-        result = self._filter_params(result)
-        return result
-
 
 class Changes(Parameters):
     @property
@@ -257,10 +270,12 @@ class Changes(Parameters):
 
 
 class ModuleManager(object):
-    def __init__(self, client):
-        self.client = client
-        self.want = Parameters(self.client.module.params)
-        self.changes = Changes()
+    def __init__(self, *args, **kwargs):
+        self.module = kwargs.get('module', None)
+        self.client = kwargs.get('client', None)
+        self.want = Parameters(params=self.module.params)
+        self.have = None
+        self.changes = Parameters()
 
     def _set_changed_options(self):
         changed = {}
@@ -268,7 +283,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(changed)
+            self.changes = Changes(params=changed)
 
     def _update_changed_options(self):
         changed = {}
@@ -279,7 +294,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Changes(changed)
+            self.changes = Changes(params=changed)
             return True
         return False
 
@@ -311,7 +326,7 @@ class ModuleManager(object):
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
         for warning in warnings:
-            self.client.module.deprecate(
+            self.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
             )
@@ -333,13 +348,13 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.update_on_device()
         return True
 
     def remove(self):
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.remove_from_device()
         if self.exists():
@@ -348,7 +363,7 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
-        if self.client.check_mode:
+        if self.module.check_mode:
             return True
         self.create_on_device()
         return True
@@ -388,13 +403,13 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(result)
+        return Parameters(params=result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
-        self.argument_spec = dict(
+        argument_spec = dict(
             type=dict(
                 choices=['sync-failover', 'sync-only']
             ),
@@ -412,41 +427,40 @@ class ArgumentSpec(object):
             name=dict(
                 required=True
             ),
-            max_incremental_sync_size=dict()
+            max_incremental_sync_size=dict(),
+            state=dict(
+                default='present',
+                choices=['absent', 'present']
+            ),
+            partition=dict(
+                default='Common',
+                fallback=(env_fallback, ['F5_PARTITION'])
+            )
         )
-        self.f5_product_name = 'bigip'
-
-
-def cleanup_tokens(client):
-    try:
-        resource = client.api.shared.authz.tokens_s.token.load(
-            name=client.api.icrs.token
-        )
-        resource.delete()
-    except Exception:
-        pass
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
+        self.argument_spec.update(argument_spec)
 
 
 def main():
-    if not HAS_F5SDK:
-        raise F5ModuleError("The python f5-sdk module is required")
-
     spec = ArgumentSpec()
 
-    client = AnsibleF5Client(
+    module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        f5_product_name=spec.f5_product_name
+        supports_check_mode=spec.supports_check_mode
     )
+    if not HAS_F5SDK:
+        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        mm = ModuleManager(client)
+        client = F5Client(**module.params)
+        mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
         cleanup_tokens(client)
-        client.module.exit_json(**results)
-    except F5ModuleError as e:
+        module.exit_json(**results)
+    except F5ModuleError as ex:
         cleanup_tokens(client)
-        client.module.fail_json(msg=str(e))
+        module.fail_json(msg=str(ex))
 
 
 if __name__ == '__main__':
