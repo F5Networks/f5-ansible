@@ -17,14 +17,15 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
-from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.bigip_vlan import ApiParameters
     from library.bigip_vlan import ModuleParameters
     from library.bigip_vlan import ModuleManager
     from library.bigip_vlan import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
@@ -32,7 +33,8 @@ except ImportError:
         from ansible.modules.network.f5.bigip_vlan import ModuleParameters
         from ansible.modules.network.f5.bigip_vlan import ModuleManager
         from ansible.modules.network.f5.bigip_vlan import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -72,7 +74,7 @@ class TestParameters(unittest.TestCase):
             description='fakevlan',
             untagged_interfaces=['1.1'],
         )
-        p = ModuleParameters(args)
+        p = ModuleParameters(params=args)
 
         assert p.name == 'somevlan'
         assert p.tag == 213
@@ -86,15 +88,13 @@ class TestParameters(unittest.TestCase):
             tag=213
         )
 
-        p = ApiParameters(args)
+        p = ApiParameters(params=args)
 
         assert p.name == 'somevlan'
         assert p.tag == 213
         assert p.description == 'fakevlan'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
 
     def setUp(self):
@@ -110,14 +110,13 @@ class TestManager(unittest.TestCase):
             partition='Common'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
 
@@ -137,14 +136,13 @@ class TestManager(unittest.TestCase):
             partition='Common'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
 
@@ -164,14 +162,13 @@ class TestManager(unittest.TestCase):
             partition='Common'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
 
@@ -191,14 +188,13 @@ class TestManager(unittest.TestCase):
             partition='Common'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
 
@@ -218,14 +214,13 @@ class TestManager(unittest.TestCase):
             partition='Common',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.create_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=False)
 
@@ -244,16 +239,15 @@ class TestManager(unittest.TestCase):
             partition='Common',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
-        current = ApiParameters(load_fixture('load_vlan.json'))
+        current = ApiParameters(params=load_fixture('load_vlan.json'))
         interfaces = load_fixture('load_vlan_interfaces.json')
         current.update({'interfaces': interfaces})
 
@@ -276,16 +270,15 @@ class TestManager(unittest.TestCase):
             partition='Common',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
-        current = ApiParameters(load_fixture('load_vlan.json'))
+        current = ApiParameters(params=load_fixture('load_vlan.json'))
 
         mm.update_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=True)
@@ -306,16 +299,15 @@ class TestManager(unittest.TestCase):
             partition='Common',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
-        current = ApiParameters(load_fixture('update_vlan_description.json'))
+        current = ApiParameters(params=load_fixture('update_vlan_description.json'))
 
         mm.update_on_device = Mock(return_value=True)
         mm.exists = Mock(return_value=True)

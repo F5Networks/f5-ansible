@@ -18,14 +18,15 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
-from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.bigip_software_facts import Parameters
     from library.bigip_software_facts import ModuleManager
     from library.bigip_software_facts import ArgumentSpec
     from library.bigip_software_facts import F5ModuleError
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
@@ -33,7 +34,8 @@ except ImportError:
         from ansible.modules.network.f5.bigip_software_facts import ModuleManager
         from ansible.modules.network.f5.bigip_software_facts import ArgumentSpec
         from ansible.modules.network.f5.bigip_software_facts import F5ModuleError
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -86,14 +88,12 @@ class TestParameters(unittest.TestCase):
             filter='version:12.1.1'
         )
 
-        p = Parameters(args)
+        p = Parameters(params=args)
 
         assert p.filter == ('version', '12.1.1')
         assert p.include == ['image', 'hotfix', 'volume']
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 @patch('library.bigip_software_facts.ImageFactManager.get_facts_from_device', return_value=loaded_images)
 @patch('library.bigip_software_facts.HotfixFactManager.get_facts_from_device', return_value=loaded_hotfixes)
 @patch('library.bigip_software_facts.VolumeFactManager.get_facts_from_device', return_value=loaded_volumes)
@@ -109,13 +109,12 @@ class TestFactManagerBase(unittest.TestCase):
             include='all'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
 
@@ -132,13 +131,12 @@ class TestFactManagerBase(unittest.TestCase):
             include='image'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
 
@@ -155,13 +153,12 @@ class TestFactManagerBase(unittest.TestCase):
             include='hotfix'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
 
@@ -178,13 +175,12 @@ class TestFactManagerBase(unittest.TestCase):
             include='volume'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
 
@@ -201,13 +197,12 @@ class TestFactManagerBase(unittest.TestCase):
             include=['image', 'hotfix']
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
 
@@ -225,13 +220,12 @@ class TestFactManagerBase(unittest.TestCase):
             filter='version:12.1.1'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
         images = results['images'][0]
@@ -259,13 +253,12 @@ class TestFactManagerBase(unittest.TestCase):
             filter='active:true'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
         mm.exit_json = Mock(return_value=False)
         results = mm.exec_module()
         volumes = results['volumes'][0]
@@ -287,15 +280,14 @@ class TestFactManagerBase(unittest.TestCase):
             filter='foo:bar'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"foo" is not a supported filter. Supported key values are: name, build, version, status, active'
-            mm = ModuleManager(client)
+            mm = ModuleManager(module=module)
             mm.exec_module()
 
         assert str(err.value) == msg
@@ -308,15 +300,14 @@ class TestFactManagerBase(unittest.TestCase):
             filter='foobar'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"foobar" is not a valid filter format. Filters must have key:value format'
-            mm = ModuleManager(client)
+            mm = ModuleManager(module=module)
             mm.exec_module()
 
         assert str(err.value) == msg
@@ -329,15 +320,14 @@ class TestFactManagerBase(unittest.TestCase):
             filter=':foobar'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         with pytest.raises(F5ModuleError) as err:
             msg = '":foobar" is not a valid filter format. Filters must have key:value format'
-            mm = ModuleManager(client)
+            mm = ModuleManager(module=module)
             mm.exec_module()
 
         assert str(err.value) == msg
@@ -350,15 +340,14 @@ class TestFactManagerBase(unittest.TestCase):
             filter='name:'
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         with pytest.raises(F5ModuleError) as err:
             msg = '"name:" is not a valid filter format. Filters must have key:value format'
-            mm = ModuleManager(client)
+            mm = ModuleManager(module=module)
             mm.exec_module()
 
         assert str(err.value) == msg
@@ -371,15 +360,14 @@ class TestFactManagerBase(unittest.TestCase):
             include=['bar', 'foo']
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         with pytest.raises(F5ModuleError) as err:
             msg = 'Include parameter may only be specified as one or more of the following: all, volume, image, hotfix'
-            mm = ModuleManager(client)
+            mm = ModuleManager(module=module)
             mm.exec_module()
 
         assert str(err.value) == msg

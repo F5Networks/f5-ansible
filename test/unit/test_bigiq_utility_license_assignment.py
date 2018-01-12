@@ -18,21 +18,21 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import F5ModuleError
 
 try:
     from library.bigiq_utility_license_assignment import Parameters
     from library.bigiq_utility_license_assignment import ModuleManager
     from library.bigiq_utility_license_assignment import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
         from ansible.modules.network.f5.bigiq_utility_license_assignment import Parameters
         from ansible.modules.network.f5.bigiq_utility_license_assignment import ModuleManager
         from ansible.modules.network.f5.bigiq_utility_license_assignment import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -61,20 +61,20 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
+        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
         # args = dict(
         #     monitor_type='m_of_n',
         #     host='192.168.1.1',
         #     port=8080
         # )
         #
-        # p = Parameters(args)
+        # p = Parameters(params=args)
         # assert p.monitor == 'min 1 of'
         # assert p.host == '192.168.1.1'
         # assert p.port == 8080
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
+        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
         # args = dict(
         #     monitor_type='and_list',
         #     slowRampTime=200,
@@ -82,14 +82,12 @@ class TestParameters(unittest.TestCase):
         #     serviceDownAction='drop'
         # )
         #
-        # p = Parameters(args)
+        # p = Parameters(params=args)
         # assert p.slow_ramp_time == 200
         # assert p.reselect_tries == 5
         # assert p.service_down_action == 'drop'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestManager(unittest.TestCase):
     def test_create(self, *args):
-        raise Exception('You must write a creation test')
+        raise SkipTest('You must write a creation test')

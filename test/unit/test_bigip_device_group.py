@@ -17,20 +17,22 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
-from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.bigip_device_group import Parameters
     from library.bigip_device_group import ModuleManager
     from library.bigip_device_group import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
         from ansible.modules.network.f5.bigip_device_group import Parameters
         from ansible.modules.network.f5.bigip_device_group import ModuleManager
         from ansible.modules.network.f5.bigip_device_group import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -67,7 +69,7 @@ class TestParameters(unittest.TestCase):
             auto_sync=True
         )
 
-        p = Parameters(args)
+        p = Parameters(params=args)
         assert p.save_on_auto_sync is True
         assert p.full_sync is False
         assert p.description == "my description"
@@ -85,7 +87,7 @@ class TestParameters(unittest.TestCase):
             type="sync-only"
         )
 
-        p = Parameters(args)
+        p = Parameters(params=args)
         assert p.auto_sync == 'enabled'
         assert p.full_sync is False
         assert p.max_incremental_sync_size == 1024
@@ -93,8 +95,6 @@ class TestParameters(unittest.TestCase):
         assert p.type == 'sync-only'
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestModuleManager(unittest.TestCase):
 
     def setUp(self):
@@ -111,12 +111,11 @@ class TestModuleManager(unittest.TestCase):
             )
         )
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
         mm.create_on_device = Mock(return_value=True)
@@ -137,13 +136,12 @@ class TestModuleManager(unittest.TestCase):
             )
         )
 
-        current = Parameters(load_fixture('load_tm_cm_device_group.json'))
-        client = AnsibleF5Client(
+        current = Parameters(params=load_fixture('load_tm_cm_device_group.json'))
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
         mm.update_on_device = Mock(return_value=True)
@@ -164,12 +162,11 @@ class TestModuleManager(unittest.TestCase):
             )
         )
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
-        mm = ModuleManager(client)
+        mm = ModuleManager(module=module)
 
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(side_effect=[True, False])

@@ -12,6 +12,9 @@ import pytest
 import sys
 
 from nose.plugins.skip import SkipTest
+
+# TODO: This module is in the process of being rewritten
+raise SkipTest("F5 Ansible modules require Python >= 2.7")
 if sys.version_info < (2, 7):
     raise SkipTest("F5 Ansible modules require Python >= 2.7")
 
@@ -19,15 +22,15 @@ from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
 from ansible.compat.tests.mock import DEFAULT
-from ansible.module_utils.f5_utils import AnsibleF5Client
-from ansible.module_utils.f5_utils import F5ModuleError
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.bigip_software import Parameters
     from library.bigip_software import LocalManager
     from library.bigip_software import RemoteManager
     from library.bigip_software import ArgumentSpec
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
@@ -35,7 +38,8 @@ except ImportError:
         from ansible.modules.network.f5.bigip_software import LocalManager
         from ansible.modules.network.f5.bigip_software import RemoteManager
         from ansible.modules.network.f5.bigip_software import ArgumentSpec
-        from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
+        from ansible.module_utils.network.f5.common import F5ModuleError
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
         from units.modules.utils import set_module_args
     except ImportError:
         raise SkipTest("F5 Ansible modules require the f5-sdk Python library")
@@ -134,7 +138,7 @@ class TestParameters(unittest.TestCase):
             reuse_inactive_volume='yes'
         )
 
-        p = Parameters(args)
+        p = Parameters(params=args)
         assert p.volume == 'HD1.1'
         assert p.software == '/var/fake/software_iso.iso'
         assert p.hotfix == '/var/fake/hotfix_iso.iso'
@@ -154,7 +158,7 @@ class TestParameters(unittest.TestCase):
             hotfix_md5sum='https://somesite/hotfix_iso.iso.md5'
         )
 
-        p = Parameters(args)
+        p = Parameters(params=args)
         assert p.volume == 'HD1.1'
         assert p.force == 'yes'
         assert p.reuse_inactive_volume == 'yes'
@@ -182,13 +186,11 @@ class TestParameters(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = False
 
             tmp = [{'create-volume': True}, {'reboot': True}]
-            p = Parameters(args)
+            p = Parameters(params=args)
             assert p.volume == 'HD1.1'
             assert p.options == tmp
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestLocalManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
@@ -240,10 +242,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -256,7 +257,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.reboot_volume_on_device = Mock(return_value=True)
@@ -278,10 +279,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -294,7 +294,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.reboot_volume_on_device = Mock(return_value=True)
@@ -316,10 +316,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -332,7 +331,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=True)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -367,10 +366,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -385,7 +383,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -423,10 +421,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -441,7 +438,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_trimmed
@@ -477,17 +474,16 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
         with patch.object(Parameters, '_check_active_volume') as obj:
             obj.return_value = False
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.list_images_on_device = Mock(
@@ -526,10 +522,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -544,7 +539,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.list_images_on_device = Mock(
@@ -584,10 +579,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -602,7 +596,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_trimmed
@@ -643,10 +637,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -659,7 +652,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -687,10 +680,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -703,7 +695,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -737,10 +729,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -755,7 +746,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = True
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -790,10 +781,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -808,7 +798,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = False
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_trimmed
@@ -843,10 +833,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -859,7 +848,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.list_images_on_device = Mock(
@@ -897,10 +886,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -915,7 +903,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = True
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.delete_volume_on_device = Mock(return_value=True)
@@ -954,10 +942,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(
@@ -972,7 +959,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = False
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_trimmed)
@@ -1009,10 +996,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1024,7 +1010,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -1052,10 +1038,9 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_volume_exists_on_device=DEFAULT, _load_volume_from_device=DEFAULT)
@@ -1065,7 +1050,7 @@ class TestLocalManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = True
             patched['_load_volume_from_device'].return_value = self.active_volume
 
-            mm = LocalManager(client)
+            mm = LocalManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1086,14 +1071,13 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = LocalManager(client)
+        mm = LocalManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes_2)
 
@@ -1112,14 +1096,13 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = LocalManager(client)
+        mm = LocalManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.image_exists_on_device = Mock(return_value=False)
         mm.upload_to_device = Mock(return_value=True)
@@ -1144,14 +1127,13 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = LocalManager(client)
+        mm = LocalManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.image_exists_on_device = Mock(return_value=False)
         mm.hotfix_exists_on_device = Mock(return_value=False)
@@ -1178,14 +1160,13 @@ class TestLocalManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = LocalManager(client)
+        mm = LocalManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.image_exists_on_device = Mock(return_value=False)
         mm.hotfix_exists_on_device = Mock(return_value=False)
@@ -1204,8 +1185,6 @@ class TestLocalManager(unittest.TestCase):
         assert results['software'] == self.iso2
 
 
-@patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
-       return_value=True)
 class TestRemoteManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
@@ -1254,10 +1233,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1269,7 +1247,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.reboot_volume_on_device = Mock(return_value=True)
@@ -1295,10 +1273,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1310,7 +1287,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes)
             mm.reboot_volume_on_device = Mock(return_value=True)
@@ -1336,10 +1313,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1351,7 +1327,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=True)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1394,10 +1370,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1411,7 +1386,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1455,10 +1430,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1472,7 +1446,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1517,10 +1491,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1532,7 +1505,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1585,10 +1558,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1602,7 +1574,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.delete_volume_on_device = Mock(return_value=True)
             mm.list_volumes_on_device = Mock(
@@ -1657,10 +1629,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1674,7 +1645,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
@@ -1726,10 +1697,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1741,7 +1711,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1775,10 +1745,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1790,7 +1759,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=True)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1832,10 +1801,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1849,7 +1817,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1892,10 +1860,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1909,7 +1876,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -1953,10 +1920,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -1968,7 +1934,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -2020,10 +1986,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -2037,7 +2002,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_2
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -2091,10 +2056,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -2108,7 +2072,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_list_volumes_on_device'].return_value = self.loaded_volumes_trimmed
             patched['_volume_exists_on_device'].return_value = False
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.image_exists_on_device = Mock(return_value=False)
             mm.hotfix_exists_on_device = Mock(return_value=False)
@@ -2159,10 +2123,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_check_active_volume=DEFAULT,
@@ -2174,7 +2137,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_check_active_volume'].return_value = True
             patched['_volume_exists_on_device'].return_value = True
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -2208,10 +2171,9 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         to_patch = dict(_volume_exists_on_device=DEFAULT, _load_volume_from_device=DEFAULT)
@@ -2221,7 +2183,7 @@ class TestRemoteManager(unittest.TestCase):
             patched['_volume_exists_on_device'].return_value = True
             patched['_load_volume_from_device'].return_value = self.active_volume
 
-            mm = RemoteManager(client)
+            mm = RemoteManager(module=module)
             mm.exit_json = Mock(return_value=False)
             mm.list_volumes_on_device = Mock(
                 return_value=self.loaded_volumes_2
@@ -2246,14 +2208,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_volumes_on_device = Mock(return_value=self.loaded_volumes_2)
 
@@ -2275,14 +2236,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_image_by_name_from_device = Mock(return_value=None)
 
@@ -2305,14 +2265,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_hotfix_by_name_from_device = Mock(return_value=None)
 
@@ -2336,14 +2295,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_image_by_name_from_device = Mock(return_value=None)
 
@@ -2367,14 +2325,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_hotfix_by_name_from_device = Mock(return_value=None)
 
@@ -2398,14 +2355,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_image_by_name_from_device = Mock(return_value=None)
 
@@ -2429,14 +2385,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.load_hotfix_by_name_from_device = Mock(return_value=None)
 
@@ -2459,14 +2414,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         msg = 'You must provide md5sum file links if using remote source.'
 
@@ -2488,14 +2442,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_hotfixes_on_device = Mock(return_value=self.loaded_hotfixes)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2521,14 +2474,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_hotfixes_on_device = Mock(return_value=self.loaded_hotfixes)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2556,14 +2508,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_hotfixes_on_device = Mock(return_value=self.loaded_hotfixes)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2592,14 +2543,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_hotfixes_on_device = Mock(return_value=self.loaded_hotfixes)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2645,14 +2595,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.image_exists_on_device = Mock(return_value=False)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2686,14 +2635,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.hotfix_exists_on_device = Mock(return_value=False)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2727,14 +2675,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.list_hotfixes_on_device = Mock(return_value=self.loaded_hotfixes)
         mm.list_images_on_device = Mock(return_value=self.loaded_images)
@@ -2771,14 +2718,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.exists = Mock(return_value=True)
         mm.remove = Mock(return_value=True)
@@ -2799,14 +2745,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.exists = Mock(return_value=True)
         mm.remove = Mock(return_value=True)
@@ -2828,14 +2773,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         mm.exists = Mock(return_value=True)
         mm.remove = Mock(return_value=True)
@@ -2857,14 +2801,13 @@ class TestRemoteManager(unittest.TestCase):
             user='admin',
         ))
 
-        client = AnsibleF5Client(
+        module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
-            supports_check_mode=self.spec.supports_check_mode,
-            f5_product_name=self.spec.f5_product_name
+            supports_check_mode=self.spec.supports_check_mode
         )
 
         # Override methods to force specific logic in the module to happen
-        mm = RemoteManager(client)
+        mm = RemoteManager(module=module)
         mm.exit_json = Mock(return_value=False)
         msg = '/root/path/to/md5/BIGIP-12.1.2.0.0.249.iso.md5 is not a valid URL, please provide a valid link'
 

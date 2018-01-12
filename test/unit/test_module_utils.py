@@ -8,9 +8,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from ansible.compat.tests import unittest
-from ansible.module_utils.f5_utils import (
-    AnsibleF5Parameters
-)
+from library.module_utils.network.f5.common import AnsibleF5Parameters
 
 
 class TestRegular(unittest.TestCase):
@@ -36,7 +34,7 @@ class TestRegular(unittest.TestCase):
             dns='alice',
             lb_method='bob'
         )
-        test = TestRegular.Foo(args)
+        test = TestRegular.Foo(params=args)
         assert test.dns == 'alice'
         assert test.lb_method == 'bob'
 
@@ -68,7 +66,7 @@ class TestKeysWithPunctuation(unittest.TestCase):
             'dns.proxy.__iter__': 'alice',
             'baz': 'bob'
         }
-        test = TestKeysWithPunctuation.Foo(args)
+        test = TestKeysWithPunctuation.Foo(params=args)
         assert test.bar == 'alice'
         assert test.baz == 'bob'
         assert 'dns.proxy.__iter__' not in test._values
@@ -109,7 +107,7 @@ class TestInheritence(unittest.TestCase):
             'baz': 'carol',
             'dns.proxy.__iter__': 'dan',
         }
-        test = TestInheritence.Foo(args)
+        test = TestInheritence.Foo(params=args)
         assert test.foo == 'alice'
         assert test.bar == 'bob'
         assert test.baz == 'carol'
@@ -124,7 +122,7 @@ class TestNoProperties(unittest.TestCase):
             dns='alice',
             lb_method='bob'
         )
-        test = TestNoProperties.Foo(args)
+        test = TestNoProperties.Foo(params=args)
         assert test.dns == 'alice'
         assert test.lb_method == 'bob'
 
@@ -151,7 +149,7 @@ class TestReferenceAnother(unittest.TestCase):
         args = dict(
             lb_method='bob'
         )
-        test = TestReferenceAnother.Foo(args)
+        test = TestReferenceAnother.Foo(params=args)
         assert test.lb_method == 'bob'
         assert test.poolLbMode == 'bob'
 
@@ -176,7 +174,7 @@ class TestMissingAttrSetter(unittest.TestCase):
             destination='10.10.10.10',
             reject='yes'
         )
-        test = TestMissingAttrSetter.Foo(args)
+        test = TestMissingAttrSetter.Foo(params=args)
         assert test.destination == '10.10.10.10'
         assert test.reject == 'yes'
 
@@ -197,7 +195,7 @@ class TestAssureNoInstanceAttributes(unittest.TestCase):
             destination='10.10.10.10',
             reject='yes'
         )
-        test = TestAssureNoInstanceAttributes.Foo(args)
+        test = TestAssureNoInstanceAttributes.Foo(params=args)
         assert test.destination == '10.10.10.10'
         assert test.reject == 'yes'
         assert 'destination' not in dir(test)
