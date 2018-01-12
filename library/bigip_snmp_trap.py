@@ -416,7 +416,7 @@ class NetworkedManager(BaseManager):
 
 
 class NonNetworkedManager(BaseManager):
-    def __init__(self, *args, **kwargs):        
+    def __init__(self, *args, **kwargs):
         super(NonNetworkedManager, self).__init__(**kwargs)
         self.required_resources = [
             'version', 'community', 'destination', 'port'

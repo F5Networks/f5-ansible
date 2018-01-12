@@ -315,7 +315,6 @@ class ArgumentSpec(object):
         self.argument_spec.update(argument_spec)
 
 
-
 def main():
     spec = ArgumentSpec()
 

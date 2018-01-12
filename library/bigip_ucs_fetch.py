@@ -310,7 +310,6 @@ class BaseManager(object):
                     self.changes.update({'backup_file': backup_file})
             self.download()
         except IOError as ex:
-            import q; q.q(str(ex))
             raise F5ModuleError(
                 "Failed to copy: {0} to {1}".format(self.want.src, self.want.fulldest)
             )
@@ -442,7 +441,6 @@ class V2Manager(BaseManager):
 
     def download_from_device(self):
         ucs = self.client.api.shared.file_transfer.ucs_downloads
-        import q; q.q(self.want.src, self.want.dest)
         ucs.download_file(self.want.src, self.want.dest)
         if os.path.exists(self.want.dest):
             return True

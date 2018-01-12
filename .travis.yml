@@ -22,10 +22,7 @@ install:
 
 script:
   - make all-tests
-  - bash test/ansible/sanity/integration-test-idempotent-names.sh
-  - ./test/ansible/sanity/short-description-ends-with-period.py
-  - pycodestyle library/
-  - pycodestyle test/unit
+
   - make docker-test
 
 deploy:

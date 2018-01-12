@@ -707,7 +707,7 @@ class ArgumentSpec(object):
                 choices=['absent', 'present', 'enabled', 'disabled', 'offline'],
                 default='present'
             ),
-            partition = dict(
+            partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
             )

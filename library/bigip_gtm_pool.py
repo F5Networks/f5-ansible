@@ -356,8 +356,6 @@ class Difference(object):
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.kwargs = kwargs
-        import q;
-        q.q(kwargs)
         self.client = kwargs.get('client', None)
 
     def exec_module(self):

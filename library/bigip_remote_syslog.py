@@ -310,7 +310,6 @@ class ModuleManager(object):
         self.want = Parameters(params=self.module.params)
         self.changes = Changes()
 
-
     def _set_changed_options(self):
         changed = {}
         for key in Parameters.returnables:

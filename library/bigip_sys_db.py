@@ -249,8 +249,8 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
         self.reset_on_device()
-        self.want.update({'key':self.want.key})
-        self.want.update({'value':self.have.default_value})
+        self.want.update({'key': self.want.key})
+        self.want.update({'value': self.have.default_value})
         if self.exists():
             return True
         else:

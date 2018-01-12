@@ -93,7 +93,6 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
-notes:
 extends_documentation_fragment: f5
 requirements:
   - BIG-IP >= v12.1.0
