@@ -36,9 +36,13 @@ Check the tested versions
 - [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
 - [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
 - [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 12.1.3 (BIGIP-12.1.3.0.0.378)
 - [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
 - [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 - [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
+- [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
+- [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
+- [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
 
 **Python 3.5**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
@@ -50,9 +54,13 @@ Check the tested versions
 - [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
 - [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
 - [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 12.1.3 (BIGIP-12.1.3.0.0.378)
 - [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
 - [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 - [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
+- [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
+- [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
+- [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
 
 **Python 3.6**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
@@ -64,9 +72,13 @@ Check the tested versions
 - [ ] BIG-IP 12.1.1-hf2 (BIGIP-12.1.1.2.0.204-HF2)
 - [ ] BIG-IP 12.1.2 (BIGIP-12.1.2.0.0.249)
 - [ ] BIG-IP 12.1.2-hf1 (BIGIP-12.1.2.1.0.264-HF1)
+- [ ] BIG-IP 12.1.3 (BIGIP-12.1.3.0.0.378)
 - [ ] BIG-IP 13.0.0 (BIGIP-13.0.0.0.0.1645)
 - [ ] BIG-IP 13.0.0-hf1 (BIGIP-13.0.0.1.0.1668-HF1)
 - [ ] BIG-IP 13.0.0-hf2 (BIGIP-13.0.0.2.0.1671-HF2)
+- [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
+- [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
+- [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
 
 ##### CHECKLIST
 <!---
