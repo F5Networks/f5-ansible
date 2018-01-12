@@ -22,7 +22,6 @@ install:
 
 script:
   - make all-tests
-
   - make docker-test
 
 deploy:
