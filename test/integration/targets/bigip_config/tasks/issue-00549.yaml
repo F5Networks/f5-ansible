@@ -1,0 +1,30 @@
+---
+
+- name: Create nodes
+  bigip_node:
+    host: "{{ item.host }}"
+    name: "{{ item.name }}"
+  loop:
+    - host: 10.200.24.2
+      name: node1
+    - host: 10.200.24.3
+      name: node2
+
+- name: Configure nodes
+  bigip_config:
+    merge_content: "{{ lookup('file', 'issue-00549.scf') }}"
+  register: result
+  failed_when: result is success
+
+- name: Assert Configure nodes
+  assert:
+    that:
+      - result is success
+
+- name: Remove nodes
+  bigip_node:
+    name: "{{ item.name }}"
+    state: absent
+  loop:
+    - name: node1
+    - name: node2

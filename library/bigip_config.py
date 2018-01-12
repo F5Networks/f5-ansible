@@ -211,11 +211,21 @@ class ModuleManager(object):
             response = self.save()
             responses.append(response)
 
+        self._detect_errors(responses)
         changes = {
             'stdout': responses,
             'stdout_lines': self._to_lines(responses)
         }
         self.changes = Parameters(params=changes)
+
+    def _detect_errors(self, stdout):
+        errors = [
+            'Unexpected Error:'
+        ]
+        if any(x for x in stdout for y in errors if y in x):
+            # Error only contains the lines that include the error
+            msg = [x for x in stdout for y in errors if y in x]
+            raise F5ModuleError(' '.join(msg))
 
     def reset(self):
         if self.module.check_mode:
