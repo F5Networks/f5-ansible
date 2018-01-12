@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -47,6 +47,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the name of the device that you want to add to the device group. Often this will be the hostname of the device. This member must be trusted by the device already. Trusting can be done with the <code>bigip_device_group</code> module and the <code>peer_hostname</code> option to that module.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -111,8 +116,8 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

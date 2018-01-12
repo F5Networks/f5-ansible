@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -50,12 +50,12 @@ Options
                 <tr><td>reset<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Loads the default configuration on the device. If this option is specified, the default configuration will be loaded before any commands or other provided configuration is run.</div>        </td></tr>
                 <tr><td>save<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>The <code>save</code> argument instructs the module to save the running-config to startup-config. This operation is performed after any changes are made to the current running config. If no changes are made, the configuration is still saved to the startup config. This option will always cause the module to return changed.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -79,8 +79,8 @@ Options
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>verify<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Validates the specified configuration to see whether they are valid to replace the running configuration. The running configuration will not be changed.</div>        </td></tr>
         </table>
     </br>
@@ -160,8 +160,8 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

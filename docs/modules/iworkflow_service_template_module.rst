@@ -21,7 +21,6 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.3.0
   * iWorkflow >= 2.1.0
 
 
@@ -84,7 +83,6 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the remote host. This is as easy as pip install f5-sdk
     - Requires the deepdiff Python package on the Ansible controller host. This is as easy as pip install deepdiff.
 
 

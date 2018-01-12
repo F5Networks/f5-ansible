@@ -60,7 +60,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -150,6 +150,11 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the profile exists.</div><div>When <code>absent</code>, ensures the profile is removed.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -235,9 +240,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

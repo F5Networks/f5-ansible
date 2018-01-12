@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -50,8 +50,8 @@ Options
                 <tr><td>link_discovery<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Specifies whether the system auto-discovers the links for this server. When creating a new GTM server, the default value <code>disabled</code> is used.</div>        </td></tr>
+        <td><ul><li>enabled</li><li>disabled</li><li>enabled-no-delete</li></ul></td>
+        <td><div>Specifies whether the system auto-discovers the links for this server. When creating a new GTM server, if this parameter is not specified, the default value <code>disabled</code> is used.</div><div>If you set this parameter to <code>enabled</code> or <code>enabled-no-delete</code>, you must also ensure that the <code>virtual_server_discovery</code> parameter is also set to <code>enabled</code> or <code>enabled-no-delete</code>.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -80,7 +80,7 @@ Options
                 <tr><td>server_type<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>alteon-ace-director</li><li>cisco-css</li><li>cisco-server-load-balancer</li><li>generic-host</li><li>radware-wsd</li><li>windows-nt-4.0</li><li>bigip</li><li>cisco-local-director-v2</li><li>extreme</li><li>generic-load-balancer</li><li>sun-solaris</li><li>cacheflow</li><li>cisco-local-director-v3</li><li>foundry-server-iron</li><li>netapp</li><li>{u'windows-2000-servernotes': None}</li></ul></td>
+        <td><ul><li>alteon-ace-director</li><li>cisco-css</li><li>cisco-server-load-balancer</li><li>generic-host</li><li>radware-wsd</li><li>windows-nt-4.0</li><li>bigip</li><li>cisco-local-director-v2</li><li>extreme</li><li>generic-load-balancer</li><li>sun-solaris</li><li>cacheflow</li><li>cisco-local-director-v3</li><li>foundry-server-iron</li><li>netapp</li><li>windows-2000-server</li></ul></td>
         <td><div>Specifies the server type. The server type determines the metrics that the system can collect from the server. When creating a new GTM server, the default value <code>bigip</code> is used.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -100,8 +100,8 @@ Options
                 <tr><td>virtual_server_discovery<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Specifies whether the system auto-discovers the virtual servers for this server.</div>        </td></tr>
+        <td><ul><li>enabled</li><li>disabled</li><li>enabled-no-delete</li></ul></td>
+        <td><div>Specifies whether the system auto-discovers the virtual servers for this server. When creating a new GTM server, if this parameter is not specified, the default value <code>disabled</code> is used.</div>        </td></tr>
         </table>
     </br>
 
@@ -120,7 +120,7 @@ Examples
         password: secret
         name: GTM_Server
         datacenter: /Common/New York
-        product: bigip
+        server_type: bigip
         link_discovery: disabled
         virtual_server_discovery: disabled
         devices:
@@ -138,7 +138,7 @@ Examples
         password: secret
         name: GTM_Server
         datacenter: /Common/New York
-        product: bigip
+        server_type: bigip
         link_discovery: disabled
         virtual_server_discovery: disabled
         devices:
@@ -161,13 +161,60 @@ Examples
       delegate_to: localhost
 
 
+Return Values
+-------------
+
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> link_discovery </td>
+        <td> The new C(link_discovery) configured on the remote device. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
+    </tr>
+            <tr>
+        <td> server_type </td>
+        <td> The new type of the server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> bigip </td>
+    </tr>
+            <tr>
+        <td> virtual_server_discovery </td>
+        <td> The new C(virtual_server_discovery) name for the trap destination. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> disabled </td>
+    </tr>
+            <tr>
+        <td> datacenter </td>
+        <td> The new C(datacenter) which the server is part of. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> datacenter01 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

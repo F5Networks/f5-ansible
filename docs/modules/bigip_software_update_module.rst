@@ -4,7 +4,7 @@
 bigip_software_update - Manage the software update settings of a BIG-IP
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -39,12 +39,17 @@ Options
     </tr>
                 <tr><td>auto_check<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Specifies whether to automatically check for updates on the F5 Networks downloads server.</div>        </td></tr>
+                <tr><td>auto_phone_home<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>Specifies whether to automatically send phone home data to the F5 Networks PhoneHome server.</div>        </td></tr>
                 <tr><td>frequency<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td><ul><li>daily</li><li>monthly</li><li>weekly</li></ul></td>
         <td><div>Specifies the schedule for the automatic update check.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
@@ -92,14 +97,64 @@ Examples
         user: admin
       delegate_to: localhost
 
+    - name: Disable automatic update checking and phoning home
+      bigip_software_update:
+        auto_check: no
+        auto_phone_home: no
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
 
+
+Return Values
+-------------
+
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> auto_phone_home </td>
+        <td> Whether the system automatically sends phone home data. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> auto_check </td>
+        <td> Whether the system checks for updates automatically. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> frequency </td>
+        <td> Frequency of auto update checks </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> weekly </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.3.0
+  * f5-sdk >= 3.0.6
   * iWorkflow >= 2.1.0
 
 
@@ -128,9 +128,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Tenants are not useful unless you associate them with a connector using the ``iworkflow_tenant_connector`` module.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -40,7 +40,7 @@ Options
                 <tr><td>auto_sync<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Indicates whether configuration synchronization occurs manually or automatically. When creating a new device group, this option will default to <code>false</code>.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -50,7 +50,7 @@ Options
                 <tr><td>full_sync<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Specifies whether the system synchronizes the entire configuration during synchronization operations. When <code>false</code>, the system performs incremental synchronization operations, based on the cache size specified in <code>max_incremental_sync_size</code>. Incremental configuration synchronization is a mechanism for synchronizing a device-group's configuration among its members, without requiring a full configuration load for each configuration change. In order for this to work, all devices in the device-group must initially agree on the configuration. Typically this requires at least one full configuration load to each device. When creating a new device group, this option will default to <code>false</code>.</div>        </td></tr>
                 <tr><td>max_incremental_sync_size<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -62,6 +62,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the name of the device group.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -70,7 +75,7 @@ Options
                 <tr><td>save_on_auto_sync<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>When performing an auto-sync, specifies whether the configuration will be saved or not. If <code>false</code>, only the running configuration will be changed on the device(s) being synced to. When creating a new device group, this option will default to <code>false</code>.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -82,6 +87,11 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>state</code> is <code>present</code>, ensures the device group exists.</div><div>When <code>state</code> is <code>absent</code>, ensures that the device group is removed.</div>        </td></tr>
                 <tr><td>type<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -194,10 +204,10 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module is primarily used as a component of configuring HA pairs of BIG-IP devices.
     - Requires BIG-IP >= 12.1.x.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * bigsuds
+  * f5-sdk >= 3.0.6
   * requests
 
 
@@ -134,6 +135,7 @@ Notes
 .. note::
     - Requires the bigsuds Python package on the host if using the iControl interface. This is as easy as pip install bigsuds
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

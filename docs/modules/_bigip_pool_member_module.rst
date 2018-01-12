@@ -26,6 +26,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * bigsuds
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -219,6 +220,7 @@ Notes
     - Best run as a local_action in your playbook
     - Supersedes bigip_pool for managing pool members
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.

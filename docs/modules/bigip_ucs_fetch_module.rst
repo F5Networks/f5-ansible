@@ -18,10 +18,6 @@ Synopsis
 * This module is used for fetching UCS files from remote machines and storing them locally in a file tree, organized by hostname. Note that this module is written to transfer UCS files that might not be present, so a missing remote UCS won't be an error unless fail_on_missing is set to 'yes'.
 
 
-Requirements (on host that executes module)
--------------------------------------------
-
-  * f5-sdk
 
 
 Options
@@ -40,12 +36,12 @@ Options
                 <tr><td>backup<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.</div>        </td></tr>
                 <tr><td>create_on_missing<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Creates the UCS based on the value of <code>src</code> if the file does not already exist on the remote system.</div>        </td></tr>
                 <tr><td>dest<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -60,12 +56,12 @@ Options
                 <tr><td>fail_on_missing<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Make the module fail if the UCS file on the remote system is missing.</div>        </td></tr>
                 <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div>        </td></tr>
                 <tr><td>src<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -194,8 +190,7 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - BIG-IP provides no way to get a checksum of the UCS files on the system via any interface except, perhaps, logging in directly to the box (which would not support appliance mode). Therefore, the best this module can do is check for the existence of the file on disk; no checksumming.
+    - BIG-IP provides no way to get a checksum of the UCS files on the system via any interface except, perhaps, logging in directly to the box (which would not support appliance mode). Therefore, the best this module can do is check for the existence of the file on disk; no check-summing.
 
 
 

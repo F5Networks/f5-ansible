@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 3.0.4
+  * f5-sdk >= 3.0.6
   * requests
 
 
@@ -51,7 +51,7 @@ Options
                 <tr><td>auth_pam_dashboard_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>on</li><li>off</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Sets whether or not the BIG-IP dashboard will timeout.</div>        </td></tr>
                 <tr><td>auth_pam_idle_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -61,7 +61,7 @@ Options
                 <tr><td>auth_pam_validate_ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>on</li><li>off</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Sets the authPamValidateIp setting.</div>        </td></tr>
                 <tr><td>fast_cgi_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -71,7 +71,7 @@ Options
                 <tr><td>hostname_lookup<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>on</li><li>off</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Sets whether or not to display the hostname, if possible.</div>        </td></tr>
                 <tr><td>log_level<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -248,9 +248,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
-    - Requires the requests Python package on the host. This is as easy as pip install requests.
+    - Requires the requests Python package on the host. This is as easy as ``pip install requests``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

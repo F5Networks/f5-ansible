@@ -18,10 +18,6 @@ Synopsis
 * Run commands on F5 devices via api
 
 
-Requirements (on host that executes module)
--------------------------------------------
-
-  * f5-sdk
 
 
 Options

@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -37,6 +37,21 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>cmp_hash<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies how the traffic on the VLAN will be disaggregated. The value selected determines the traffic disaggregation method. You can choose to disaggregate traffic based on <code>source-address</code> (the source IP address), <code>destination-address</code> (destination IP address), or <code>default</code>, which specifies that the default CMP hash uses L4 ports.</div><div>When creating a new VLAN, if this parameter is not specified, the default of <code>default</code> is used.</div>        </td></tr>
+                <tr><td>dag_round_robin<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><div>Specifies whether some of the stateless traffic on the VLAN should be disaggregated in a round-robin order instead of using a static hash. The stateless traffic includes non-IP L2 traffic, ICMP, some UDP protocols, and so on.</div><div>When creating a new VLAN, if this parameter is not specified, the default of (no) is used.</div>        </td></tr>
+                <tr><td>dag_tunnel<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated packets to TMM instances. Select <code>inner</code> to distribute packets based on information in inner headers. Select <code>outer</code> to distribute packets based on information in outer headers without inspecting inner headers.</div><div>When creating a new VLAN, if this parameter is not specified, the default of <code>outer</code> is used.</div><div>This parameter is not supported on Virtual Editions of BIG-IP.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -171,32 +186,46 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> interfaces </td>
-        <td> Interfaces that the VLAN is assigned to </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['1.1', '1.2'] </td>
-    </tr>
-            <tr>
-        <td> partition </td>
-        <td> The partition that the VLAN was created on </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> Common </td>
-    </tr>
-            <tr>
         <td> tag </td>
-        <td> The ID of the VLAN </td>
+        <td> The ID of the VLAN. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
         <td align=center> 2345 </td>
     </tr>
             <tr>
         <td> description </td>
-        <td> The description set on the VLAN </td>
+        <td> The description set on the VLAN. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> foo VLAN </td>
+    </tr>
+            <tr>
+        <td> cmp_hash </td>
+        <td> New traffic disaggregation method. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> source-address </td>
+    </tr>
+            <tr>
+        <td> interfaces </td>
+        <td> Interfaces that the VLAN is assigned to. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['1.1', '1.2'] </td>
+    </tr>
+            <tr>
+        <td> partition </td>
+        <td> The partition that the VLAN was created on. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Common </td>
+    </tr>
+            <tr>
+        <td> dag_tunnel </td>
+        <td> The new DAG tunnel setting. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> outer </td>
     </tr>
         
     </table>
@@ -206,9 +235,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

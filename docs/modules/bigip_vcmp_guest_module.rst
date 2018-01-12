@@ -21,8 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 3.0.3
-  * netaddr
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -73,6 +72,11 @@ Options
     <td></td>
         <td></td>
         <td><div>The name of the vCMP guest to manage.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -183,10 +187,11 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module can take a lot of time to deploy vCMP guests. This is an intrinsic limitation of the vCMP system because it is booting real VMs on the BIG-IP device. This boot time is very similar in length to the time it takes to boot VMs on any other virtualization platform; public or private.
     - When BIG-IP starts, the VMs are booted sequentially; not in parallel. This means that it is not unusual for a vCMP host with many guests to take a long time (60+ minutes) to reboot and bring all the guests online. The BIG-IP chassis will be available before all vCMP guests are online.
+    - netaddr
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

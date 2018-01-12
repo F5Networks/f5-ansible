@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -42,6 +42,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Full name of the user.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>partition_access<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -236,9 +241,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires BIG-IP versions >= 12.0.0
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

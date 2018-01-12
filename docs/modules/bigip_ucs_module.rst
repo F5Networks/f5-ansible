@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -177,7 +177,6 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Only the most basic checks are performed by this module. Other checks and considerations need to be taken into account. See the following URL. https://support.f5.com/kb/en-us/solutions/public/11000/300/sol11318.html
     - This module does not handle devices with the FIPS 140 HSM
     - This module does not handle BIG-IPs systems on the 6400, 6800, 8400, or 8800 hardware platform.
@@ -188,6 +187,7 @@ Notes
     - This module does not support re-licensing a BIG-IP restored from a UCS
     - This module does not support restoring encrypted archives on replacement RMA units.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

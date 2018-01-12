@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.0
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -57,6 +57,11 @@ Options
     <td></td>
         <td><ul><li>other</li><li>management</li><li>default</li></ul></td>
         <td><div>Specifies the name of the trap network. This option is not supported in versions of BIG-IP &lt; 12.1.0. If used on versions &lt; 12.1.0, it will simply be ignored.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td>Common</td>
+        <td></td>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -194,10 +199,10 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module only supports version v1 and v2c of SNMP.
     - The ``network`` option is not supported on versions of BIG-IP < 12.1.0 because the platform did not support that option until 12.1.0. If used on versions < 12.1.0, it will simply be ignored.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

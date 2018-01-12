@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 2.2.3
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -40,12 +40,12 @@ Options
                 <tr><td>asm_request_log<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>When <code>True</code>, includes the ASM request log data. When <code>False</code>, excludes the ASM request log data.</div>        </td></tr>
                 <tr><td>complete_information<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Include complete information in the qkview.</div>        </td></tr>
                 <tr><td>dest<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -60,7 +60,7 @@ Options
                 <tr><td>exclude_core<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>Exclude core files from the qkview.</div>        </td></tr>
                 <tr><td>filename<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -70,7 +70,7 @@ Options
                 <tr><td>force<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, the file will only be transferred if the destination does not exist.</div>        </td></tr>
                 <tr><td>max_file_size<br/><div style="font-size: small;"></div></td>
     <td>no</td>
@@ -161,9 +161,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - This module does not include the "max time" or "restrict to blade" options.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

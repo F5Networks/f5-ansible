@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -211,9 +211,9 @@ Notes
 -----
 
 .. note::
-    - Requires the f5-sdk Python package on the host This is as easy as pip install f5-sdk.
     - Requires BIG-IP version 12.0.0 or greater
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

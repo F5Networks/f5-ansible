@@ -20,8 +20,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
-  * Python >= 2.7
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -342,9 +341,9 @@ Notes
 
 .. note::
     - Requires BIG-IP software version >= 12.
-    - F5 developed module 'F5-SDK' required (https://github.com/F5Networks/f5-common-python).
-    - Best run as a local_action in your playbook.
+    - To add members do a pool, use the ``bigip_pool_member`` module. Previously, the ``bigip_pool`` module allowed the management of users, but this has been removed in version 2.5 of Ansible.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

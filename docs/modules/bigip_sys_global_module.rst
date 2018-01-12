@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk
+  * f5-sdk >= 3.0.6
 
 
 Options
@@ -51,7 +52,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div><code>enable</code> or <code>disabled</code> the Setup utility in the browser-based Configuration utility</div>        </td></tr>
+        <td><div><code>enable</code> or <code>disabled</code> the Setup utility in the browser-based Configuration utility.</div>        </td></tr>
                 <tr><td>lcd_display<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -213,6 +214,7 @@ Notes
 .. note::
     - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

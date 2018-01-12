@@ -33,19 +33,16 @@ All Modules
   bigip_irule - Manage iRules across different modules on a BIG-IP <bigip_irule_module>
   bigip_license - Manage license installation and activation on BIG-IP devices <bigip_license_module>
   bigip_monitor_http - Manages F5 BIG-IP LTM http monitors <bigip_monitor_http_module>
-  _bigip_monitor_http (D) - Manages F5 BIG-IP LTM http monitors <_bigip_monitor_http_module>
   bigip_monitor_https - Manages F5 BIG-IP LTM https monitors <bigip_monitor_https_module>
   bigip_monitor_snmp_dca - Manages BIG-IP SNMP data collecting agent (DCA) monitors <bigip_monitor_snmp_dca_module>
   bigip_monitor_tcp - Manages F5 BIG-IP LTM tcp monitors <bigip_monitor_tcp_module>
   bigip_monitor_tcp_echo - Manages F5 BIG-IP LTM tcp echo monitors <bigip_monitor_tcp_echo_module>
   bigip_monitor_tcp_half_open - Manages F5 BIG-IP LTM tcp half-open monitors <bigip_monitor_tcp_half_open_module>
   bigip_monitor_udp - Manages F5 BIG-IP LTM udp monitors <bigip_monitor_udp_module>
-  _bigip_node (D) - Manages F5 BIG-IP LTM nodes <_bigip_node_module>
   bigip_node - Manages F5 BIG-IP LTM nodes <bigip_node_module>
   bigip_partition - Manage BIG-IP partitions <bigip_partition_module>
   bigip_policy - Manage general policy configuration on a BIG-IP <bigip_policy_module>
   bigip_policy_rule - Manage LTM policy rules on a BIG-IP <bigip_policy_rule_module>
-  _bigip_pool (D) - Manages F5 BIG-IP LTM pools <_bigip_pool_module>
   bigip_pool - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   _bigip_pool_member (D) - Manages F5 BIG-IP LTM pool members <_bigip_pool_member_module>
   bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP <bigip_profile_client_ssl_module>
@@ -63,9 +60,7 @@ All Modules
   bigip_service - Manage BIG-IP service states <bigip_service_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP <bigip_snat_pool_module>
   bigip_snmp - Manipulate general SNMP settings on a BIG-IP <bigip_snmp_module>
-  bigip_snmp_community - foo <bigip_snmp_community_module>
   bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP <bigip_snmp_trap_module>
-  bigip_snmp_user - foo <bigip_snmp_user_module>
   bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_facts - Collect software facts from BIG-IP devices <bigip_software_facts_module>
   bigip_software_update - Manage the software update settings of a BIG-IP <bigip_software_update_module>
@@ -82,7 +77,6 @@ All Modules
   bigip_vcmp_guest - Manages vCMP guests on a BIG-IP <bigip_vcmp_guest_module>
   bigip_view - Manage ZoneRunner Views on a BIG-IP <bigip_view_module>
   bigip_virtual_address - Manage LTM virtual addresses on a BIG-IP <bigip_virtual_address_module>
-  _bigip_virtual_server (D) - Manages F5 BIG-IP LTM virtual servers <_bigip_virtual_server_module>
   bigip_virtual_server - Manage LTM virtual servers on a BIG-IP <bigip_virtual_server_module>
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
   bigip_wait - Wait for a BIG-IP condition before continuing <bigip_wait_module>

@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk
+  * f5-sdk >= 3.0.6
   * netaddr
 
 
@@ -142,11 +142,6 @@ Options
     </td>
     </tr>
         </td></tr>
-                <tr><td>route_advertisement_state<br/><div style="font-size: small;"> (added in 2.3)</div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Enable route advertisement for destination.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -442,9 +437,9 @@ Notes
 
 .. note::
     - Requires BIG-IP software version >= 11
-    - Requires the f5-sdk Python package on the host. This is as easy as pip install f5-sdk.
     - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
+    - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
 
 

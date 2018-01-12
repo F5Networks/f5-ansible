@@ -18,10 +18,6 @@ Synopsis
 * foo
 
 
-Requirements (on host that executes module)
--------------------------------------------
-
-  * f5-sdk
 
 
 Options
@@ -108,11 +104,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </table>
     </br></br>
 
-Notes
------
-
-.. note::
-    - Requires the f5-sdk Python package on the remote host. This is as easy as pip install f5-sdk
 
 
 
