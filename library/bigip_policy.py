@@ -242,9 +242,7 @@ class Parameters(AnsibleF5Parameters):
                 return self._get_custom_strategy_name()
 
     def _get_builtin_strategy(self, strategy):
-        return '/{0}/{1}-match'.format(
-            self.partition, strategy
-        )
+        return '/Common/{0}-match'.format(strategy)
 
     def _get_custom_strategy_name(self):
         strategy = self._values['strategy']

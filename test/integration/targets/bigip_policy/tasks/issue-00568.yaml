@@ -1,0 +1,42 @@
+---
+
+- name: Create a partition
+  bigip_partition:
+    name: foo
+
+- name: Create a published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: present
+    strategy: first
+    partition: foo
+  register: result
+
+- name: Create a published policy
+  assert:
+    that:
+      result is changed
+
+- name: Create a published policy - Idempotent check
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: present
+    strategy: first
+    partition: foo
+  register: result
+
+- name: Create a published policy - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove published policy
+  bigip_policy:
+    name: "{{ policy_name1 }}"
+    state: absent
+    partition: foo
+
+- name: Remove partition
+  bigip_partition:
+    name: foo
+    state: absent
