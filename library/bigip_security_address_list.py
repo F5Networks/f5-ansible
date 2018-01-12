@@ -29,7 +29,6 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
-    version_added: 2.5
   description:
     description:
       - Description of the address list
@@ -37,8 +36,8 @@ options:
     description:
       - List of geolocations specified by their C(country) and C(region).
     suboptions:
-      type:
-        country:
+      country:
+        description:
           - The country name, or code, of the geolocation to use.
           - In addition to the country full names, you may also specify their abbreviated
             form, such as C(US) instead of C(United States).
@@ -50,7 +49,6 @@ options:
       region:
         description:
           - Region name of the country to use.
-        choices:
   address_ranges:
     description:
       - A list of address ranges where the range starts with a port number, is followed
@@ -81,7 +79,6 @@ options:
     choices:
       - present
       - absent
-    version_added: 2.5
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
