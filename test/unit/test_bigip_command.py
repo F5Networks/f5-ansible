@@ -131,7 +131,7 @@ class TestManager(unittest.TestCase):
             password='password',
             transport='cli'
         ))
-        import q; q.q(self.spec.argument_spec, self.spec.supports_check_mode)
+
         module = AnsibleModule(
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
