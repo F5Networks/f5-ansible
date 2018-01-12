@@ -48,7 +48,49 @@ if [ "$findings" ]; then
     found=1
 fi
 
+findings=$(egrep "= ApiParameters\(params\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "= ModuleParameters\(args\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
 findings=$(egrep "Parameters\(changed\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "ApiParameters\(args\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "NetworkedParameters\(args\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "NonNetworkedParameters\(args\)" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "ApiParameters\(load_fixture" library/ -R)
+if [ "$findings" ]; then
+    echo "${findings}"
+    found=1
+fi
+
+findings=$(egrep "Parameters\(load_fixture" library/ -R)
 if [ "$findings" ]; then
     echo "${findings}"
     found=1
