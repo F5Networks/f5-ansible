@@ -44,6 +44,7 @@ options:
     description:
       - Issuer certificate used for OCSP monitoring.
       - This parameter is only valid on versions of BIG-IP 13.0.0 or above.
+    version_added: 2.5
   partition:
     description:
       - Device partition to manage resources on.
