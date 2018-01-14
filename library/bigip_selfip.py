@@ -60,8 +60,8 @@ options:
         IP, this value is required.
   route_domain:
     description:
-        - The route domain id of the system. When creating a new Self IP, if
-          this value is not specified, a default value of C(0) will be used.
+      - The route domain id of the system. When creating a new Self IP, if
+        this value is not specified, a default value of C(0) will be used.
     version_added: 2.3
   partition:
     description:
@@ -70,15 +70,6 @@ options:
         by a Self IP. In that sense, Self IPs are not isolated by partitions as
         other resources on a BIG-IP are.
     default: Common
-    version_added: 2.5
-  state:
-    description:
-      - When C(present), ensures that the Self IP exists.
-      - When C(absent), ensures the Self IP is removed.
-    default: present
-    choices:
-      - present
-      - absent
     version_added: 2.5
 notes:
   - Requires the netaddr Python package on the host.
