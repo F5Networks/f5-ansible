@@ -328,8 +328,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode,
-        required_one_of=spec.required_one_of
+        supports_check_mode=spec.supports_check_mode
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
