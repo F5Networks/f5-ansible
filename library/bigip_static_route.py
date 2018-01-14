@@ -26,14 +26,11 @@ options:
   description:
     description:
       - Descriptive text that identifies the route.
-    required: False
-    default: None
   destination:
     description:
       - Specifies an IP address, and netmask, for the static entry in the
         routing table. When C(state) is C(present), this value is required.
-    required: False
-    default: None
+      - This value cannot be changed once it is set.
   gateway_address:
     description:
       - Specifies the router for the system to use when forwarding packets
@@ -42,31 +39,27 @@ options:
         IPv6 address that starts with C(FE80:), the address will be treated
         as a link-local address. This requires that the C(vlan) parameter
         also be supplied.
-    required: False
-    default: None
   vlan:
     description:
       - Specifies the VLAN or Tunnel through which the system forwards packets
         to the destination. When C(gateway_address) is a link-local IPv6
         address, this value is required
-    required: False
-    default: None
   pool:
     description:
       - Specifies the pool through which the system forwards packets to the
         destination.
-    required: False
-    default: None
   reject:
     description:
       - Specifies that the system drops packets sent to the destination.
-    required: False
-    default: None
   mtu:
     description:
       - Specifies a specific maximum transmission unit (MTU).
-    required: False
-    default: None
+  route_domain:
+    description:
+      - The route domain id of the system. When creating a new static route, if
+        this value is not specified, a default value of C(0) will be used.
+      - This value cannot be changed once it is set.
+    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the cloud connector exists. When
@@ -132,6 +125,8 @@ reject:
   sample: true
 '''
 
+import re
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 
@@ -182,7 +177,7 @@ class Parameters(AnsibleF5Parameters):
 
     updatables = [
         'description', 'gateway_address', 'vlan',
-        'pool', 'mtu', 'reject'
+        'pool', 'mtu', 'reject', 'destination', 'route_domain'
     ]
 
     returnables = [
@@ -202,13 +197,17 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
+    def reject(self):
+        if self._values['reject'] in BOOLEANS_TRUE:
+            return True
+
+
+class ModuleParameters(Parameters):
+    @property
     def vlan(self):
         if self._values['vlan'] is None:
             return None
-        if self._values['vlan'].startswith('/' + self.partition):
-            return self._values['vlan']
-        else:
-            return '/{0}/{1}'.format(self.partition, self._values['vlan'])
+        return fqdn_name(self.partition, self._values['vlan'])
 
     @property
     def gateway_address(self):
@@ -223,12 +222,11 @@ class Parameters(AnsibleF5Parameters):
             )
 
     @property
-    def reject(self):
-        if self._values['reject'] in BOOLEANS_TRUE:
-            return True
-        else:
-            # None is the value accepted by the API
+    def route_domain(self):
+        if self._values['route_domain'] is None:
             return None
+        result = int(self._values['route_domain'])
+        return result
 
     @property
     def destination(self):
@@ -237,7 +235,46 @@ class Parameters(AnsibleF5Parameters):
         if self._values['destination'] == 'default':
             self._values['destination'] = '0.0.0.0/0'
         try:
-            ip = netaddr.IPNetwork(self._values['destination'])
+            ip = netaddr.IPNetwork(self.destination_ip)
+            if self.route_domain:
+                return '{0}%{2}/{1}'.format(ip.ip, ip.prefixlen, self.route_domain)
+            else:
+                return '{0}/{1}'.format(ip.ip, ip.prefixlen)
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "The provided destination is not an IP address"
+            )
+
+    @property
+    def destination_ip(self):
+        pattern = r'(?P<rd>%[0-9]+)'
+        if self._values['destination']:
+            result = re.sub(pattern, '', self._values['destination'])
+            ip = netaddr.IPNetwork(result)
+            return '{0}/{1}'.format(ip.ip, ip.prefixlen)
+
+
+class ApiParameters(Parameters):
+    @property
+    def route_domain(self):
+        if self._values['destination'] is None:
+            return None
+        pattern = r'([0-9:]%(?P<rd>[0-9]+))'
+        matches = re.search(pattern, self._values['destination'])
+        if matches:
+            return int(matches.group('rd'))
+        return 0
+
+    @property
+    def destination_ip(self):
+        if self._values['destination'] is None:
+            return None
+        if self._values['destination'] == 'default':
+            self._values['destination'] = '0.0.0.0/0'
+        try:
+            pattern = r'(?P<rd>%[0-9]+)'
+            addr = re.sub(pattern, '', self._values['destination'])
+            ip = netaddr.IPNetwork(addr)
             return '{0}/{1}'.format(ip.ip, ip.prefixlen)
         except netaddr.core.AddrFormatError:
             raise F5ModuleError(
@@ -249,13 +286,62 @@ class Changes(Parameters):
     pass
 
 
+class UsableChanges(Parameters):
+    pass
+
+
+class ReportableChanges(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def destination(self):
+        if self.want.destination_ip is None:
+            return None
+        if self.want.destination_ip != self.have.destination_ip:
+            raise F5ModuleError(
+                "The destination cannot be changed. Delete and recreate "
+                "the static route if you need to do this."
+            )
+
+    @property
+    def route_domain(self):
+        if self.want.route_domain is None:
+            return None
+        if self.want.route_domain is None and self.have.route_domain == 0:
+            return None
+        if self.want.route_domain != self.have.route_domain:
+            raise F5ModuleError("You cannot change the route domain.")
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.have = None
-        self.want = Parameters(params=self.module.params)
-        self.changes = Changes()
+        self.want = ModuleParameters(params=self.module.params)
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -263,18 +349,23 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if k in ['netmask', 'route_domain']:
+                    changed['address'] = change
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -291,10 +382,20 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def exists(self):
         collection = self.client.api.tm.net.routes.get_collection()
@@ -334,12 +435,6 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
-        if self.want.destination is not None:
-            if self.have.destination != self.want.destination:
-                raise F5ModuleError(
-                    "The destination cannot be changed. Delete and recreate"
-                    "the static route if you need to do this."
-                )
         if not self.should_update():
             return False
         if self.module.check_mode:
@@ -364,7 +459,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -413,7 +508,8 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['absent', 'present']
-            )
+            ),
+            route_domain=dict(type='int')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
