@@ -71,6 +71,7 @@ options:
         specifies that the default CMP hash uses L4 ports.
       - When creating a new VLAN, if this parameter is not specified, the default
         of C(default) is used.
+    version_added: 2.5
   dag_tunnel:
     description:
       - Specifies how the disaggregator (DAG) distributes received tunnel-encapsulated
@@ -80,6 +81,7 @@ options:
       - When creating a new VLAN, if this parameter is not specified, the default
         of C(outer) is used.
       - This parameter is not supported on Virtual Editions of BIG-IP.
+    version_added: 2.5
   dag_round_robin:
     description:
       - Specifies whether some of the stateless traffic on the VLAN should be
@@ -88,6 +90,7 @@ options:
         and so on.
       - When creating a new VLAN, if this parameter is not specified, the default
         of (no) is used.
+    version_added: 2.5
     choices: [yes, no]
 notes:
   - Requires BIG-IP versions >= 12.0.0
