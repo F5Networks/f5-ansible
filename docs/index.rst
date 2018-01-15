@@ -14,10 +14,11 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
 
    /usage/getting_started
    /usage/support
+   /usage/filing-issues
    /usage/playbook_tutorial
    /usage/connection-local-or-delegate-to
    /usage/installing-modules
-   /usage/filing-issues
+
 
 .. toctree::
    :maxdepth: 2
