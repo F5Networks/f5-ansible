@@ -17,7 +17,7 @@ module: bigip_static_route
 short_description: Manipulate static routes on a BIG-IP
 description:
   - Manipulate static routes on a BIG-IP.
-version_added: 2.3
+version_added: 2.5
 options:
   name:
     description:
@@ -28,8 +28,14 @@ options:
       - Descriptive text that identifies the route.
   destination:
     description:
-      - Specifies an IP address, and netmask, for the static entry in the
-        routing table. When C(state) is C(present), this value is required.
+      - Specifies an IP address for the static entry in the routing table.
+        When creating a new static route, this value is required.
+      - This value cannot be changed once it is set.
+  netmask:
+    description:
+      - The netmask for the static route. When creating a new static route, this value
+        is required.
+      - This value can be in either IP or CIDR format.
       - This value cannot be changed once it is set.
   gateway_address:
     description:
@@ -59,7 +65,6 @@ options:
       - The route domain id of the system. When creating a new static route, if
         this value is not specified, a default value of C(0) will be used.
       - This value cannot be changed once it is set.
-    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the cloud connector exists. When
@@ -74,15 +79,16 @@ notes:
     install netaddr.
 extends_documentation_fragment: f5
 requirements:
-    - netaddr
+  - netaddr
 author:
-    - Tim Rupp (@caphrim007)
+  - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
 - name: Create static route with gateway address
   bigip_static_route:
     destination: 10.10.10.10
+    netmask: 255.255.255.255
     gateway_address: 10.2.2.3
     name: test-route
     password: secret
@@ -108,6 +114,16 @@ destination:
   returned: changed
   type: string
   sample: true
+route_domain:
+  description: Route domain of the static route.
+  returned: changed
+  type: int
+  sample: 1
+netmask:
+  description: Netmask of the destination.
+  returned: changed
+  type: string
+  sample: 255.255.255.255
 pool:
   description: Whether the banner is enabled or not.
   returned: changed
@@ -177,12 +193,13 @@ class Parameters(AnsibleF5Parameters):
 
     updatables = [
         'description', 'gateway_address', 'vlan',
-        'pool', 'mtu', 'reject', 'destination', 'route_domain'
+        'pool', 'mtu', 'reject', 'destination', 'route_domain',
+        'netmask'
     ]
 
     returnables = [
         'vlan', 'gateway_address', 'destination', 'pool', 'description',
-        'reject', 'mtu'
+        'reject', 'mtu', 'netmask', 'route_domain'
     ]
 
     api_attributes = [
@@ -247,11 +264,38 @@ class ModuleParameters(Parameters):
 
     @property
     def destination_ip(self):
-        pattern = r'(?P<rd>%[0-9]+)'
         if self._values['destination']:
-            result = re.sub(pattern, '', self._values['destination'])
-            ip = netaddr.IPNetwork(result)
+            ip = netaddr.IPNetwork('{0}/{1}'.format(self._values['destination'], self.netmask))
             return '{0}/{1}'.format(ip.ip, ip.prefixlen)
+
+    @property
+    def netmask(self):
+        if self._values['netmask'] is None:
+            return None
+        # Check if numeric
+        if isinstance(self._values['netmask'], int):
+            result = int(self._values['netmask'])
+            if 0 < result < 256:
+                return result
+            raise F5ModuleError(
+                'The provided netmask {0} is neither in IP or CIDR format'.format(result)
+            )
+        else:
+            try:
+                # IPv4 netmask
+                address = '0.0.0.0/' + self._values['netmask']
+                ip = netaddr.IPNetwork(address)
+            except netaddr.AddrFormatError as ex:
+                try:
+                    # IPv6 netmask
+                    address = '::/' + self._values['netmask']
+                    ip = netaddr.IPNetwork(address)
+                except netaddr.AddrFormatError as ex:
+                    raise F5ModuleError(
+                        'The provided netmask {0} is neither in IP or CIDR format'.format(self._values['netmask'])
+                    )
+            result = int(ip.prefixlen)
+        return result
 
 
 class ApiParameters(Parameters):
@@ -280,6 +324,11 @@ class ApiParameters(Parameters):
             raise F5ModuleError(
                 "The provided destination is not an IP address"
             )
+
+    @property
+    def netmask(self):
+        ip = netaddr.IPNetwork(self.destination_ip)
+        return int(ip.prefixlen)
 
 
 class Changes(Parameters):
@@ -333,6 +382,17 @@ class Difference(object):
             return None
         if self.want.route_domain != self.have.route_domain:
             raise F5ModuleError("You cannot change the route domain.")
+
+    @property
+    def netmask(self):
+        if self.want.netmask is None:
+            return None
+        # It's easiest to just check the netmask by comparing dest IPs.
+        if self.want.destination_ip != self.have.destination_ip:
+            raise F5ModuleError(
+                "The netmask cannot be changed. Delete and recreate "
+                "the static route if you need to do this."
+            )
 
 
 class ModuleManager(object):
@@ -418,6 +478,10 @@ class ModuleManager(object):
             raise F5ModuleError(
                 'destination must be specified when creating a static route'
             )
+        if self.want.netmask is None:
+            raise F5ModuleError(
+                'netmask must be specified when creating a static route'
+            )
         if all(getattr(self.want, v) is None for v in required_resources):
             raise F5ModuleError(
                 "You must specify at least one of " + ', '.join(required_resources)
@@ -498,6 +562,7 @@ class ArgumentSpec(object):
             name=dict(required=True),
             description=dict(),
             destination=dict(),
+            netmask=dict(),
             gateway_address=dict(),
             vlan=dict(),
             pool=dict(),
