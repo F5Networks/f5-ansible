@@ -1,9 +1,9 @@
-Getting started
-===============
+Install F5 Modules for Ansible
+==============================
 
-This document explains how to begin using the F5 Ansible modules.
+This document explains how to install the F5 Modules for Ansible.
 
-**Note:** F5 Ansible modules are not currently supported by F5.
+**Note:** F5 does not officially support the F5 Modules for Ansible.
 
 Install Python
 --------------
@@ -35,7 +35,7 @@ In addition to Ansible, you should install a few additional Python modules.
 
 At minimum, you should add `f5-sdk`.
 
-You can install these by using pip (either globally or within a virtual environment). For example:
+You can install these modules by using pip (either globally or within a virtual environment). For example:
 
 .. code-block:: bash
 

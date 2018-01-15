@@ -1,23 +1,14 @@
-Version support
-===============
+Get Help
+========
 
-F5 develops the Ansible modules in tandem with the REST API, and newer versions of BIG-IP provide better support for the REST API.
+F5 Ansible modules are not currently supported by F5 Technical Support.
 
-F5 has tested these versions of BIG-IP with the Ansible modules:
+However, F5 provides informal support through a number of channels.
 
-* 12.1.0
-* 12.0.0
-* 11.6.0
+File an issue
+-------------
 
-You may need a later version, depending on the needs of the REST API.
-
-**Note:** F5 Ansible modules are not currently supported by F5.
-
-Get assistance
---------------
-
-If you need help with anything related to these modules, F5 recommends that you open an issue |github_issue|.
-
+If you need help with anything related to the F5 Modules for Ansible, you should open an issue |github_issue|.
 
 .. |github_issue| raw:: html
 
@@ -25,61 +16,71 @@ If you need help with anything related to these modules, F5 recommends that you 
 
 When communicating with F5 on the Issues page, use the GitHub user interface, rather than email.
 
-You should not expose the name of your company when communicating an issue in a public forum.
+For best practices, see :doc:`Filing issues <filing-issues>`.
 
-If you need more in-depth technical assistance, you can ask us to ping you offline.
+Get community support on Slack
+------------------------------
 
-Credentials and secret things
-`````````````````````````````
+We encourage you to use |slackansible| for discussion and assistance on the F5 Modules for Ansible.
 
-You should not expose credentials in a GitHub issue.
+F5 employees are members of this community and typically monitor the channel Monday-Friday 9-5 PST. They will offer best-effort assistance.
 
-F5 *does not need any* of the following task arguments to debug your issue:
+.. |slackansible| raw:: html
 
-- user
-- password
-- server
-- server_port
+   <a href="https://f5cloudsolutions.slack.com" target="_blank">the F5 Ansible channel on Slack</a>
 
-When you submit an issue:
+Send email
+----------
 
-- Do not provide this information (leave it empty with quotes "").
-- Provide placeholders for this information (such as "admin," "secret," and "lb.mydomain.com").
+Contact us at solutionsfeedback@f5.com for general feedback or enhancement requests.
 
-F5 does not need this information to provide you with assistance.
+Exposing confidential information
+---------------------------------
 
-Is a module supported?
-----------------------
+When submitting a request for help or feedback, you should NEVER:
 
-Remember that, ultimately, this repository contains *experimental* code.
+- Enter any private or personally identifying information about you, your network, organization, etc.
+- Enter any passwords/credentials, logs, IP addresses, or servers/server ports.
+- Expect that F5 Technical Support will reply to your request. They will not.
+- Expect that an F5 employee will immediately respond. Employees offer best-effort assistance, but there may be times when responses are delayed.
 
-However, with that said, there is a quick way to determine if a particular module works on a particular platform.
+If you need more in-depth technical assistance, you can ask us to contact you privately.
 
-First, look for your modules in the *tests/* directory.
+Supported BIG-IP versions
+-------------------------
 
-Each module has a doc block which includes a "Tested platforms" section. For example:
+The F5 Modules for Ansible are supported on BIG-IP VE versions later than 12.0.0.
+
+For a detailed list of BIG-IP VE versions that are currently supported, see |k5903|.
+
+.. |k5903| raw:: html
+
+   <a href="https://support.f5.com/csp/article/K5903" target="_blank">this solution article</a>
+
+When a version of BIG-IP reaches end of technical support, it is supported until the next Ansible release.
+
+For example, if a version of BIG-IP reaches end of technical support on January 1, and Ansible releases a new version on March 1, then the F5 Modules for Ansible are supported on that version of BIG-IP until March 1.
+
+F5 does not back-port changes to earlier versions of Ansible.
+
+F5 develops the Ansible modules in tandem with the REST API, and newer versions of BIG-IP provide better support for the REST API.
+
+Supported modules
+-----------------
+
+F5 modules are included when you install Ansible. These modules are informally supported by F5 employees.
+
+F5 modules are also in the |github_repo|. These modules are also informally supported by F5 employees, but you should consider these modules to be experimental and not production-ready.
+
+However, if the module's DOCUMENTATION block has a completed ``Tested platforms`` section, then the module is likely complete and ready for use. You can file bugs against modules that are complete.
 
 .. code-block:: python
 
    # Tested platforms:
    #
-   #    - NA
-   #
-
-The above doc block tells you that F5 has not tested this particular module on any platforms, and the module is likely not complete yet.
-
-Therefore, F5 does not recommend filing bugs against the module.
-
-Here is another example:
-
-.. code-block:: python
-
-   # Tested platforms:
-   #
-   #    - 11.6.0
    #    - 12.0.0
    #
 
-This module specifies the versions of BIG-IP that F5 has tested. Therefore, you can consider this module to be "complete" and ready for use.
+.. |github_repo| raw:: html
 
-You can file bugs against modules that are complete.
+   <a href="https://github.com/F5Networks/f5-ansible/issues" target="_blank">F5 GitHub repository</a>
