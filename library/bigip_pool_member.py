@@ -179,7 +179,14 @@ except ImportError:
     pass  # Handled by f5_utils.bigsuds_found
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.f5_utils import bigip_api, bigsuds_found, f5_argument_spec, fq_name
+from ansible.module_utils.f5_utils import bigip_api, bigsuds_found
+
+try:
+    from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import fqdn_name
+except ImportError:
+    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
 
 
 def pool_exists(api, pool):
@@ -376,7 +383,7 @@ def get_member_monitor_status(api, pool, address, port):
 
 def main():
     result = {}
-    argument_spec = f5_argument_spec()
+    argument_spec = f5_argument_spec
 
     meta_args = dict(
         session_state=dict(type='str', choices=['enabled', 'disabled']),
