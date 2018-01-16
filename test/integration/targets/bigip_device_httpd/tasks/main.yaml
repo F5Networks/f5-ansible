@@ -206,7 +206,7 @@
 - name: Change ssl port - using correct port - Idempotent check
   bigip_device_httpd:
     ssl_port: 8444
-    server_port: 8444
+    server_port: 10444
   register: result
   ignore_errors: true
 
