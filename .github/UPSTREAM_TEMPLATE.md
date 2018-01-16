@@ -21,7 +21,7 @@
 
 ##### TESTED VERSIONS
 <!---
-Paste a list of BIG-IP versions this was tested on.
+Paste a list of F5 product versions this was tested on.
 This is usually reflected in the playbook that runs the functional test.
 
 Check the tested versions
@@ -43,6 +43,7 @@ Check the tested versions
 - [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
 - [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
 - [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
+- [ ] BIG-IQ 5.3.0 (BIG-IQ-5.3.0.0.0.1119)
 
 **Python 3.5**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
@@ -61,6 +62,7 @@ Check the tested versions
 - [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
 - [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
 - [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
+- [ ] BIG-IQ 5.3.0 (BIG-IQ-5.3.0.0.0.1119)
 
 **Python 3.6**
 - [ ] BIG-IP 12.0.0 (BIGIP-12.0.0.0.0.606)
@@ -79,6 +81,7 @@ Check the tested versions
 - [ ] BIG-IP 13.0.0-hf3 (BIGIP-13.0.0.2.0.1679-HF3)
 - [ ] BIG-IP 13.1.0 (BIGIP-13.1.0.0.0.1868)
 - [ ] BIG-IP 13.1.0.1 (BIGIP-13.1.0.1-0.0.8)
+- [ ] BIG-IQ 5.3.0 (BIG-IQ-5.3.0.0.0.1119)
 
 ##### CHECKLIST
 <!---
