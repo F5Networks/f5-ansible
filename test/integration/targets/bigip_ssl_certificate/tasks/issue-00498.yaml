@@ -1,9 +1,15 @@
 ---
 
+- name: Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
 - name: Issue 00498 - Import issuer cert
   bigip_ssl_certificate:
     content: "{{ lookup('file', 'issue.00498.issuer.crt') }}"
     name: issue.00498.issuer
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Import cert with issuer
   bigip_ssl_certificate:
@@ -11,11 +17,13 @@
     issuer_cert: issue.00498.issuer
     name: issue.00498.local
   register: result
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Assert Import cert with issuer
   assert:
     that:
       - result is changed
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Import cert with issuer - Idempotent check
   bigip_ssl_certificate:
@@ -23,19 +31,23 @@
     issuer_cert: issue.00498.issuer
     name: issue.00498.local
   register: result
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Assert Import cert with issuer - Idempotent check
   assert:
     that:
       - result is not changed
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Remove cert with issuer
   bigip_ssl_certificate:
     name: issue.00498.local
     state: absent
   register: result
+  when: system_info.product_information.product_version >= "13.0.0"
 
 - name: Issue 00498 - Remove issuer cert
   bigip_ssl_certificate:
     name: issue.00498.issuer
     state: absent
+  when: system_info.product_information.product_version >= "13.0.0"
