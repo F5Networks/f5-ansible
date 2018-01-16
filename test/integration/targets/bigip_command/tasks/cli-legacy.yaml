@@ -1,0 +1,135 @@
+---
+
+- name: Run single command - cli
+  bigip_command:
+    commands:
+      - tmsh show sys version
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run single command - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 1
+
+- name: Run multiple commands - cli
+  bigip_command:
+    commands:
+      - tmsh show sys clock
+      - tmsh list auth
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run multiple commands - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 2
+
+- name: Run command missing tmsh - cli
+  bigip_command:
+    commands:
+      - show sys clock
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run command missing tmsh - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 1
+
+- name: Run multiple commands, one missing tmsh - cli
+  bigip_command:
+    commands:
+      - tmsh show sys clock
+      - list auth
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run multiple commands, one missing tmsh - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 2
+
+- name: Wait for something - cli
+  bigip_command:
+    commands:
+      - tmsh show sys clock
+    wait_for:
+      - result[0] contains Sys::Clock
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Wait for something - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 1
+      - "'Sys::Clock' in result.stdout[0]"
+
+- name: Run modify commands - cli
+  bigip_command:
+    commands:
+      - tmsh modify sys db setup.run value true
+      - tmsh modify sys db setup.run value false
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run modify commands - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 2
+
+- name: Run modify commands with a show command - cli
+  bigip_command:
+    commands:
+      - tmsh modify sys db setup.run value true
+      - tmsh modify sys db setup.run value false
+      - tmsh show sys clock
+    provider:
+      transport: cli
+      user: "{{ bigip_ssh_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_ssh_port }}"
+      password: "{{ bigip_ssh_password|default(omit) }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+  register: result
+
+- name: Assert Run modify commands with a show command - cli
+  assert:
+    that:
+      - result.stdout_lines|length == 3
