@@ -30,11 +30,11 @@ f5_provider_spec = {
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'user': dict(
-        fallback=(env_fallback, ['F5_USER'])
+        fallback=(env_fallback, ['F5_USER', 'ANSIBLE_NET_USERNAME'])
     ),
     'password': dict(
         no_log=True,
-        fallback=(env_fallback, ['F5_PASSWORD'])
+        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
     ),
     'ssh_keyfile': dict(
         fallback=(env_fallback, ['ANSIBLE_NET_SSH_KEYFILE']),
@@ -47,7 +47,8 @@ f5_provider_spec = {
     'transport': dict(
         default='rest',
         choices=['cli', 'rest']
-    )
+    ),
+    'timeout': dict(type='int'),
 }
 
 f5_argument_spec = {
@@ -66,7 +67,7 @@ f5_top_spec = {
     'password': dict(
         removed_in_version=2.9,
         no_log=True,
-        fallback=(env_fallback, ['F5_PASSWORD'])
+        fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
     ),
     'validate_certs': dict(
         removed_in_version=2.9,
