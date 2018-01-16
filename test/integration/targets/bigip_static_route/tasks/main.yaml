@@ -3,6 +3,7 @@
 - name: Create static route with gateway address
   bigip_static_route:
     destination: "{{ destination1 }}"
+    netmask: 255.255.255.255
     gateway_address: "{{ gateway_address1 }}"
     name: "{{ static_route_name }}"
   register: result
@@ -15,6 +16,7 @@
 - name: Create static route with gateway address - Idempotent check
   bigip_static_route:
     destination: "{{ destination1 }}"
+    netmask: 255.255.255.255
     gateway_address: "{{ gateway_address1 }}"
     name: "{{ static_route_name }}"
   register: result
@@ -68,6 +70,27 @@
     that:
       - result is not changed
 
+
+
+
+
+- name: Attempt to change netmask
+  bigip_static_route:
+    name: "{{ static_route_name }}"
+    netmask: 24
+    reject: yes
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt to change netmask
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+
+
+
 - name: Delete a static route
   bigip_static_route:
     name: "{{ static_route_name }}"
@@ -89,6 +112,53 @@
   assert:
     that:
       - result is not changed
+
+- name: Create static route with CIDR
+  bigip_static_route:
+    destination: "{{ destination3 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: route2
+  register: result
+
+- name: Assert Create static route with gateway address
+  assert:
+    that:
+      - result is changed
+
+- name: Create static route with gateway address - Idempotent check
+  bigip_static_route:
+    destination: "{{ destination3 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: route2
+  register: result
+
+- name: Assert Create static route with gateway address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete other static route
+  bigip_static_route:
+    name: route2
+    state: absent
+  register: result
+
+- name: Attempt to create static route from hostname (not allowed)
+  bigip_static_route:
+    destination: "{{ destination2 }}"
+    netmask: 32
+    gateway_address: "{{ gateway_address1 }}"
+    name: bad
+  register: result
+  failed_when: result is success
+
+- name: Assert Attempt to create static route from hostname (not allowed)
+  assert:
+    that:
+      - result is not changed
+      - result is success
 
 - import_tasks: issue-00104.yaml
   tags: issue-00104

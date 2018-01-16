@@ -9,7 +9,8 @@
 
 - name: Create static route with route domain
   bigip_static_route:
-    destination: 1.1.1.1/32
+    destination: 1.1.1.1
+    netmask: 255.255.255.255
     route_domain: 2
     name: issue-00545
     reject: yes
@@ -22,7 +23,8 @@
 
 - name: Create static route with route domain - Idempotent check
   bigip_static_route:
-    destination: 1.1.1.1/32
+    destination: 1.1.1.1
+    netmask: 255.255.255.255
     route_domain: 2
     name: issue-00545
     reject: yes
