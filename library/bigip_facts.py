@@ -15,9 +15,8 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: _bigip_facts
+module: bigip_facts
 short_description: Collect facts from F5 BIG-IP devices
-deprecated: Deprecated in 2.5. Use individual facts modules instead.
 description:
   - Collect facts from F5 BIG-IP devices via iControl SOAP API
 version_added: "1.6"
@@ -105,6 +104,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
 except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
+
 
 class F5(object):
     """F5 iControl class.
