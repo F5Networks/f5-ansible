@@ -1,0 +1,71 @@
+---
+
+- name: Issue 00571 - Provision GTM
+  bigip_provision:
+    module: gtm
+
+- name: Issue 00571 - Create datacenter
+  bigip_gtm_datacenter:
+    name: issue-00571
+  register: result
+
+- name: Issue 00571 - Create GTM server
+  bigip_gtm_server:
+    name: foo
+    devices:
+      - name: foo
+        address: 1.1.1.1
+        translation: 2.2.2.2
+    datacenter: issue-00571
+    state: present
+
+- name: Issue 00571 - Create virtual server
+  bigip_gtm_virtual_server:
+    address: 10.10.10.10
+    port: 443
+    state: present
+    virtual_server_name: baz_vs
+    virtual_server_server: foo
+  register: result
+
+- name: Issue 00571 - Get facts
+  bigip_gtm_facts:
+    include:
+      - server
+      - wide_ip
+  register: result
+
+- name: Issue 00571 - Assert Get facts
+  assert:
+    that:
+      - "'server' in result"
+      - result['server']|count == 1
+      - "'virtual_servers' in result['server'][0]"
+      - result['server'][0]['virtual_servers']|count == 1
+      - result['server'][0]['virtual_servers'][0]['destination'] == '10.10.10.10:443'
+
+- name: Issue 00571 - Remove virtual server
+  bigip_gtm_virtual_server:
+    address: 10.10.10.10
+    port: 443
+    state: absent
+    virtual_server_name: baz_vs
+    virtual_server_server: foo
+  register: result
+
+- name: Issue 00571 - Remove GTM server
+  bigip_gtm_server:
+    name: foo
+    datacenter: issue-00571
+    state: absent
+
+- name: Issue 00571 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: issue-00571
+    state: absent
+  register: result
+
+- name: Issue 00571 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent

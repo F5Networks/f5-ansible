@@ -36,17 +36,6 @@
       - result is changed
       - "'server' in result"
 
-- name: Get GTM virtual_server facts (deprecated)
-  bigip_gtm_facts:
-    include: virtual_server
-  register: result
-
-- name: Assert Get GTM virtual_server facts (deprecated)
-  assert:
-    that:
-      - result is changed
-      - "'virtual_server' in result"
-
 - name: Get GTM pool facts, many
   bigip_gtm_facts:
     include:
@@ -118,3 +107,6 @@
 
 - import_tasks: issue-00283.yaml
   tags: issue-00283
+
+- import_tasks: issue-00571.yaml
+  tags: issue-00571
