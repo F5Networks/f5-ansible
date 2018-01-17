@@ -100,7 +100,6 @@ class ActionModule(_ActionModule):
         result = super(ActionModule, self).run(tmp, task_vars)
         return result
 
-
     @staticmethod
     def rest_implementation(provider, play_context):
         """Provides a generic argument spec using Play context vars
