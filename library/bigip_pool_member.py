@@ -15,11 +15,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: _bigip_pool_member
+module: bigip_pool_member
 short_description: Manages F5 BIG-IP LTM pool members
-deprecated: Deprecated in 2.5. Use the C(bigip_pool_member) module instead.
 description:
-  - Manages F5 BIG-IP LTM pool members via iControl SOAP API
+  - Manages F5 BIG-IP LTM pool members via iControl SOAP API.
 version_added: 1.4
 author:
   - Matt Hite (@mhite)
@@ -110,7 +109,7 @@ EXAMPLES = '''
     state: present
     pool: my-pool
     partition: Common
-    host: "{{ ansible_default_ipv4["address"] }}"
+    host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     description: web server
     connection_limit: 100
@@ -126,7 +125,7 @@ EXAMPLES = '''
     state: present
     pool: my-pool
     partition: Common
-    host: "{{ ansible_default_ipv4["address"] }}"
+    host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
     ratio: 1
     description: nginx server
@@ -140,7 +139,7 @@ EXAMPLES = '''
     state: absent
     pool: my-pool
     partition: Common
-    host: "{{ ansible_default_ipv4["address"] }}"
+    host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
   delegate_to: localhost
 
@@ -168,22 +167,26 @@ EXAMPLES = '''
     monitor_state: disabled
     pool: my-pool
     partition: Common
-    host: "{{ ansible_default_ipv4["address"] }}"
+    host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
   delegate_to: localhost
 '''
 
 try:
     import bigsuds
+    HAS_BIGSUDS = True
 except ImportError:
     pass  # Handled by f5_utils.bigsuds_found
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.f5_utils import bigip_api, bigsuds_found
 
+HAS_DEVEL_IMPORTS = False
+
 try:
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import fqdn_name
+    HAS_DEVEL_IMPORTS = True
 except ImportError:
     from ansible.module_utils.network.f5.common import fqdn_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
@@ -411,7 +414,9 @@ def main():
     if module.params['validate_certs']:
         import ssl
         if not hasattr(ssl, 'SSLContext'):
-            module.fail_json(msg='bigsuds does not support verifying certificates with python < 2.7.9.  Either update python or set validate_certs=False on the task')
+            module.fail_json(
+                msg='bigsuds does not support verifying certificates with python < 2.7.9. '
+                    'Either update python or set validate_certs=False on the task')
 
     server = module.params['server']
     server_port = module.params['server_port']
@@ -423,14 +428,14 @@ def main():
 
     session_state = module.params['session_state']
     monitor_state = module.params['monitor_state']
-    pool = fq_name(partition, module.params['pool'])
+    pool = fqdn_name(partition, module.params['pool'])
     connection_limit = module.params['connection_limit']
     description = module.params['description']
     rate_limit = module.params['rate_limit']
     ratio = module.params['ratio']
     priority_group = module.params['priority_group']
     host = module.params['host']
-    address = fq_name(partition, host)
+    address = fqdn_name(partition, host)
     port = module.params['port']
     preserve_node = module.params['preserve_node']
 
