@@ -27,7 +27,7 @@ options:
       - Specifies the name of the device that you want to add to the
         device group. Often this will be the hostname of the device.
         This member must be trusted by the device already. Trusting
-        can be done with the C(bigip_device_group) module and the
+        can be done with the C(bigip_device_trust) module and the
         C(peer_hostname) option to that module.
     required: True
   device_group:
