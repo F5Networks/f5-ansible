@@ -222,9 +222,10 @@ class ModuleManager(object):
         errors = [
             'Unexpected Error:'
         ]
-        if any(x for x in stdout for y in errors if y in x):
+
+        msg = [x for x in stdout for y in errors if y in x]
+        if msg:
             # Error only contains the lines that include the error
-            msg = [x for x in stdout for y in errors if y in x]
             raise F5ModuleError(' '.join(msg))
 
     def reset(self):
