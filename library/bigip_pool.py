@@ -57,14 +57,16 @@ options:
       - weighted-least-connections-nod
   monitor_type:
     description:
-      - Monitor rule type when C(monitors) is specified. When creating a new
-        pool, if this value is not specified, the default of 'and_list' will
-        be used.
+      - Monitor rule type when C(monitors) is specified.
+      - When creating a new pool, if this value is not specified, the default
+        of 'and_list' will be used.
       - When C(single) ensures that all specified monitors are checked, but
         additionally includes checks to make sure you only specified a single
         monitor.
       - When C(and_list) ensures that B(all) monitors are checked.
-      - When C(m_of_n) ensures that C(quorum) of C(monitors) are checked.
+      - When C(m_of_n) ensures that C(quorum) of C(monitors) are checked. C(m_of_n)
+        B(requires) that a C(quorum) of 1 or greater be set either in the playbook,
+        or already existing on the device.
       - Both C(single) and C(and_list) are functionally identical since BIG-IP
         considers all monitors as "a list".
     version_added: "1.3"
@@ -72,6 +74,7 @@ options:
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
+      - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n). 
     version_added: "1.3"
   monitors:
     description:
