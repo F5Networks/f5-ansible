@@ -175,6 +175,8 @@
     that:
       - result is changed
 
+- import_tasks: issue-00573.yaml
+  tags: issue-00573
+
 - import_tasks: pr-23128.yaml
-  tags:
-    - pr-23128
+  tags: pr-23128
