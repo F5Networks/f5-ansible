@@ -171,7 +171,7 @@ class ModuleManager(object):
 
     def exists(self):
         self.have = self.read_current_from_device()
-        exists = self.have.device_group.devices_s.devices.exists(
+        exists = self.client.api.tm.cm.device_group.devices_s.devices.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -195,7 +195,7 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        self.have.device_group.devices_s.devices.create(
+        self.client.api.tm.cm.have.device_group.devices_s.devices.create(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -206,7 +206,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.have.device_group.devices_s.devices.load(
+        resource = self.client.api.tm.cm.device_group.devices_s.devices.load(
             name=self.want.name,
             partition=self.want.partition
         )
