@@ -1,0 +1,122 @@
+---
+
+- name: Issue 00572 - Create pool
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors: /Common/http
+    monitor_type: and_list
+    quorum: 1
+  register: result
+  failed_when: result is success
+
+- name: Assert Create pool
+  assert:
+    that:
+      - result is success
+
+- name: Issue 00572 - Create pool, allow zero quorum
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors: /Common/http
+    monitor_type: and_list
+    quorum: 0
+  register: result
+
+- name: Assert Create pool, allow zero quorum
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00572 - Create pool, allow zero quorum - Idempotent check
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors: /Common/http
+    monitor_type: and_list
+    quorum: 0
+  register: result
+
+- name: Assert Create pool, allow zero quorum - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+
+- name: Issue 00572 - Attempt to change and_list to m_of_n on zero quorum
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors: /Common/http
+    monitor_type: m_of_n
+  register: result
+  failed_when: result is success
+
+- name: Assert Create pool, allow zero quorum - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+
+
+- name: Issue 00572 - Change pool monitors, type, and quorum
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors:
+      - /Common/http
+      - /Common/gateway_icmp
+    monitor_type: m_of_n
+    quorum: 1
+  register: result
+
+- name: Assert Change pool monitors, type, and quorum
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00572 - Change pool monitors, type, and quorum - Idempotent check
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors:
+      - /Common/http
+      - /Common/gateway_icmp
+    monitor_type: m_of_n
+    quorum: 1
+  register: result
+
+- name: Assert Change pool monitors, type, and quorum - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00572 - Change quorum to zero
+  bigip_pool:
+    name: foo-pool
+    lb_method: round-robin
+    monitors:
+      - /Common/http
+      - /Common/gateway_icmp
+    monitor_type: m_of_n
+    quorum: 0
+  register: result
+  failed_when: result is success
+
+- name: Assert Change quorum to zero
+  assert:
+    that:
+      - result is success
+
+- name: Remove pool
+  bigip_pool:
+    name: foo-pool
+    state: absent
