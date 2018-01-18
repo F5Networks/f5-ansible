@@ -170,11 +170,11 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        self.have = self.read_current_from_device()
-        exists = self.client.api.tm.cm.device_group.devices_s.devices.exists(
-            name=self.want.name,
+        parent = self.client.api.tm.cm.device_groups.device_group.load(
+            name=self.want.device_group,
             partition=self.want.partition
         )
+        exists = parent.devices_s.devices.exists(name=self.want.name)
         if exists:
             return True
         return False
@@ -195,10 +195,11 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        self.client.api.tm.cm.have.device_group.devices_s.devices.create(
-            name=self.want.name,
+        parent = self.client.api.tm.cm.device_groups.device_group.load(
+            name=self.want.device_group,
             partition=self.want.partition
         )
+        parent.devices_s.devices.create(name=self.want.name)
 
     def absent(self):
         if self.exists():
@@ -206,24 +207,13 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.tm.cm.device_group.devices_s.devices.load(
-            name=self.want.name,
+        parent = self.client.api.tm.cm.device_groups.device_group.load(
+            name=self.want.device_group,
             partition=self.want.partition
         )
+        resource = parent.devices_s.devices.load(name=self.want.name)
         if resource:
             resource.delete()
-
-    def read_current_from_device(self):
-        try:
-            resource = self.client.api.tm.cm.device_groups.device_group.load(
-                name=self.want.device_group,
-                partition=self.want.partition
-            )
-            return Parameters({"device_group": resource})
-        except iControlUnexpectedHTTPError:
-            raise F5ModuleError(
-                "The specified device group does not exist"
-            )
 
 
 class ArgumentSpec(object):
