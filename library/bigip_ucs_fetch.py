@@ -204,6 +204,7 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def fulldest(self):
+        result = None
         if os.path.isdir(self.dest):
             result = os.path.join(self.dest, self.src)
         else:
@@ -246,11 +247,16 @@ class ModuleManager(object):
 
     def exec_module(self):
         if self.is_version_v1():
-            manager = V1Manager(**self.kwargs)
+            manager = self.get_manager('v1')
         else:
-            manager = V2Manager(**self.kwargs)
-
+            manager = self.get_manager('v2')
         return manager.exec_module()
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(**self.kwargs)
+        elif type == 'v2':
+            return V2Manager(**self.kwargs)
 
     def is_version_v1(self):
         """Checks to see if the TMOS version is less than 12.1.0
@@ -302,21 +308,22 @@ class BaseManager(object):
                 )
         self.execute()
 
+    def _get_backup_file(self):
+        return self.module.backup_local(self.want.fulldest)
+
     def execute(self):
         try:
             if self.want.backup:
                 if os.path.exists(self.want.fulldest):
-                    backup_file = self.module.backup_local(self.want.fulldest)
+                    backup_file = self._get_backup_file()
                     self.changes.update({'backup_file': backup_file})
             self.download()
-        except IOError as ex:
+        except IOError:
             raise F5ModuleError(
                 "Failed to copy: {0} to {1}".format(self.want.src, self.want.fulldest)
             )
-
         self._set_checksum()
         self._set_md5sum()
-
         file_args = self.module.load_file_common_arguments(self.module.params)
         return self.module.set_fs_attributes_if_different(file_args, True)
 
@@ -379,15 +386,19 @@ class V1Manager(BaseManager):
         super(V1Manager, self).__init__(**kwargs)
         self.remote_dir = '/var/config/rest/madm'
 
-    def read_current_from_device(self):
+    def read_current(self):
         result = None
+        output = self.read_current_from_device()
+        if hasattr(output, 'commandResult'):
+            result = self._read_ucs_files_from_output(output.commandResult)
+        return result
+
+    def read_current_from_device(self):
         output = self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "tmsh list sys ucs"'
         )
-        if hasattr(output, 'commandResult'):
-            result = self._read_ucs_files_from_output(output.commandResult)
-        return result
+        return output
 
     def _read_ucs_files_from_output(self, output):
         search = re.compile(r'filename\s+(.*)').search
@@ -396,7 +407,7 @@ class V1Manager(BaseManager):
         return result
 
     def exists(self):
-        collection = self.read_current_from_device()
+        collection = self.read_current()
         base = os.path.basename(self.want.src)
         if any(base == os.path.basename(x) for x in collection):
             return True
@@ -424,16 +435,20 @@ class V1Manager(BaseManager):
 
 
 class V2Manager(BaseManager):
-    def read_current_from_device(self):
-        collection = self.client.api.tm.sys.ucs.load()
+    def read_current(self):
+        collection = self.read_current_from_device()
         if 'items' not in collection.attrs:
             return []
         resources = collection.attrs['items']
         result = [x['apiRawValues']['filename'] for x in resources]
         return result
 
+    def read_current_from_device(self):
+        collection = self.client.api.tm.sys.ucs.load()
+        return collection
+
     def exists(self):
-        collection = self.read_current_from_device()
+        collection = self.read_current()
         base = os.path.basename(self.want.src)
         if any(base == os.path.basename(x) for x in collection):
             return True
@@ -460,7 +475,10 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             encryption_password=dict(no_log=True),
-            dest=dict(required=True),
+            dest=dict(
+                required=True,
+                type='path'
+            ),
             force=dict(
                 default='yes',
                 type='bool'
