@@ -90,7 +90,6 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
 
 
-
 def server_exists(api, server):
     # hack to determine if virtual server exists
     result = False

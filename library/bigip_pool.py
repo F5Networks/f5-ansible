@@ -74,7 +74,7 @@ options:
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
-      - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n). 
+      - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n).
     version_added: "1.3"
   monitors:
     description:
