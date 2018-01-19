@@ -34,10 +34,6 @@ options:
     description:
       - The device group that you want to add the member to.
     required: True
-  partition:
-    description:
-      - Device partition to manage resources on.
-    default: Common
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
