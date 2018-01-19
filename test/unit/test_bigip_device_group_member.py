@@ -62,38 +62,41 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        # raise Exception('You must write your own module param test. See examples, then remove this exception')
-        pass
+        args = dict(
+            name='bigip1',
+            device_group='dg1'
+        )
 
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
-
-    def test_api_parameters(self):
-        # raise Exception('You must write your own API param test. See examples, then remove this exception')
-        pass
-
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = Parameters(params=args)
+        assert p.name == 'bigip1'
+        assert p.device_group == 'dg1'
 
 
 class TestManager(unittest.TestCase):
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        # raise Exception('You must write a creation test')
-        pass
+        set_module_args(
+            dict(
+                name="bigip1",
+                device_group="dg1",
+                state="present",
+                server='localhost',
+                user='admin',
+                password='password'
+            )
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
