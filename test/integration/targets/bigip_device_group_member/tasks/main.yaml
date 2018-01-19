@@ -1,0 +1,65 @@
+---
+
+- name: Configure BIG-IP1 hostname
+  bigip_hostname:
+    hostname:  bigip1
+
+- name: Add Device Group
+  bigip_device_group:
+    name: deviceGrp
+    auto_sync: yes
+    type: sync-failover
+
+- name: Add members to the device group
+  bigip_device_group_member:
+    device_group: deviceGrp
+    name: bigip1
+  register: result
+
+- name: Assert Add members to the device group
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Add members to the device group - Idempotent check
+  bigip_device_group_member:
+    device_group: deviceGrp
+    name: bigip1
+  register: result
+
+- name: Assert Add members to the device group
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Remove members from the device group
+  bigip_device_group_member:
+    device_group: deviceGrp
+    name: bigip1
+    state: absent
+  register: result
+
+- name: Assert Remove members from the device group
+  assert:
+    that:
+      - result is changed
+
+- name: Remove members from the device group - Idempotent check
+  bigip_device_group_member:
+    device_group: deviceGrp
+    name: bigip1
+    state: absent
+  register: result
+
+- name: Assert Remove members from the device group - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove Device Group
+  bigip_device_group:
+    name: deviceGrp
+    auto_sync: yes
+    type: sync-failover

@@ -365,7 +365,7 @@ class ModuleManager(object):
     def create_on_device(self):
         params = self.want.api_params()
         self.client.api.tm.cm.device_groups.device_group.create(
-            name=self.want.name
+            name=self.want.name,
             **params
         )
 
