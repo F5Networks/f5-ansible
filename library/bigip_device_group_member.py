@@ -72,7 +72,6 @@ RETURN = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.basic import env_fallback
 
 HAS_DEVEL_IMPORTS = False
 
@@ -171,8 +170,7 @@ class ModuleManager(object):
 
     def exists(self):
         parent = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.device_group,
-            partition=self.want.partition
+            name=self.want.device_group
         )
         exists = parent.devices_s.devices.exists(name=self.want.name)
         if exists:
@@ -196,8 +194,7 @@ class ModuleManager(object):
 
     def create_on_device(self):
         parent = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.device_group,
-            partition=self.want.partition
+            name=self.want.device_group
         )
         parent.devices_s.devices.create(name=self.want.name)
 
@@ -208,8 +205,7 @@ class ModuleManager(object):
 
     def remove_from_device(self):
         parent = self.client.api.tm.cm.device_groups.device_group.load(
-            name=self.want.device_group,
-            partition=self.want.partition
+            name=self.want.device_group
         )
         resource = parent.devices_s.devices.load(name=self.want.name)
         if resource:
@@ -225,10 +221,6 @@ class ArgumentSpec(object):
             state=dict(
                 default='present',
                 choices=['absent', 'present']
-            ),
-            partition=dict(
-                default='Common',
-                fallback=(env_fallback, ['F5_PARTITION'])
             )
         )
         self.argument_spec = {}
