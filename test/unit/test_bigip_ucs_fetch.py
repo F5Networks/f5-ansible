@@ -117,7 +117,7 @@ class TestV1Manager(unittest.TestCase):
         mm.get_manager = Mock(return_value=m1)
         mm.is_version_v1 = Mock(return_value=True)
 
-        p1 = patch('os.path.exists', side_effect=[False, True, True])
+        p1 = patch('os.path.exists', return_value=True)
         p1.start()
         p2 = patch('os.path.isdir', return_value=False)
         p2.start()
