@@ -22,7 +22,7 @@ description:
      this module is written to transfer UCS files that might not be present,
      so a missing remote UCS won't be an error unless fail_on_missing is
      set to 'yes'.
-version_added: "2.4"
+version_added: 2.5
 options:
   backup:
     description:
@@ -62,6 +62,7 @@ notes:
     via any interface except, perhaps, logging in directly to the box (which
     would not support appliance mode). Therefore, the best this module can
     do is check for the existence of the file on disk; no check-summing.
+extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -192,7 +193,8 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def dest(self):
-        return os.path.expanduser(self._values['dest'])
+        result = os.path.expanduser(self._values['dest'])
+        return result
 
     @property
     def src(self):
@@ -232,12 +234,25 @@ class Parameters(AnsibleF5Parameters):
             )
         return result
 
+
+class Changes(Parameters):
     def to_return(self):
         result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
         return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    pass
 
 
 class ModuleManager(object):
@@ -280,7 +295,7 @@ class BaseManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.want = Parameters(params=self.module.params)
-        self.changes = Parameters()
+        self.changes = UsableChanges()
 
     def exec_module(self):
         result = dict()
@@ -290,7 +305,9 @@ class BaseManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        result.update(**self.changes.to_return())
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
+        result.update(**changes)
         result.update(dict(changed=True))
         return result
 
