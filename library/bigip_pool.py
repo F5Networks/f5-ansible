@@ -105,7 +105,17 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
-  metdata:
+  state:
+    description:
+      - When C(present), guarantees that the pool exists with the provided
+        attributes.
+      - When C(absent), removes the pool from the system.
+    default: present
+    choices:
+      - absent
+      - present
+    version_added: 2.5
+  metadata:
     description:
       - Arbitrary key/value pairs that you can attach to a pool. This is useful in
         situations where you might want to annotate a pool to me managed by Ansible.
@@ -528,6 +538,15 @@ class ReportableChanges(Changes):
         return result
 
     @property
+    def monitor_type(self):
+        pattern = r'min\s+\d+\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            return 'm_of_n'
+        else:
+            return 'and_list'
+
+    @property
     def metadata(self):
         result = dict()
         for x in self._values['metadata']:
@@ -587,7 +606,7 @@ class Difference(object):
                 )
             if self.want.monitors != self.have.monitors:
                 return dict(
-                    monitors=self.want.monitor_type
+                    monitors=self.want.monitors
                 )
         elif self.want.monitor_type == 'and_list':
             if self.want.quorum is not None and self.want.quorum > 0:
@@ -596,7 +615,7 @@ class Difference(object):
                 )
             if self.want.monitors != self.have.monitors:
                 return dict(
-                    monitors=self.want.monitor_type
+                    monitors=self.want.monitors
                 )
         elif self.want.monitor_type == 'single':
             if len(self.want.monitors_list) > 1:

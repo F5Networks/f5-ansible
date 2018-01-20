@@ -192,11 +192,6 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
-    def dest(self):
-        result = os.path.expanduser(self._values['dest'])
-        return result
-
-    @property
     def src(self):
         if self._values['src'] is not None:
             return self._values['src']

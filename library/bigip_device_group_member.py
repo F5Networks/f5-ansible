@@ -34,6 +34,14 @@ options:
     description:
       - The device group that you want to add the member to.
     required: True
+  state:
+    description:
+      - When C(present), ensures that the device group member.
+      - When C(absent), ensures the device group member is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
