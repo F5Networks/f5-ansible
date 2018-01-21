@@ -14,11 +14,11 @@ before_install:
   - git config --global user.name "Travis F5 Openstack"
 
 install:
-  - sudo apt-get update
-  - sudo apt-get -y install libffi-dev libssl-dev
-  - pip install --upgrade setuptools pip
-  - pip install cffi
-  - pip install --upgrade -r requirements.test.txt
+  - travis_retry sudo apt-get update
+  - travis_retry sudo apt-get -y install libffi-dev libssl-dev
+  - travis_retry pip install --upgrade setuptools pip
+  - travis_retry pip install cffi
+  - travis_retry pip install --upgrade -r requirements.test.txt
 
 script:
   - make all-tests
