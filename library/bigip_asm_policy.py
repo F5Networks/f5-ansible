@@ -761,12 +761,10 @@ class V1Manager(BaseManager):
         name = os.path.split(self.want.file)[1]
         full_name = fqdn_name(self.want.partition, self.want.name)
         cmd = 'tmsh load asm policy {0} file /var/config/rest/downloads/{1}'.format(full_name, name)
-        output = self.client.api.tm.util.bash.exec_cmd(
+        self.client.api.tm.util.bash.exec_cmd(
             'run',
             utilCmdArgs='-c "{0}"'.format(cmd)
         )
-        if hasattr(output, 'commandResult'):
-            result = output.commandResult
         return True
 
 
