@@ -61,7 +61,7 @@ Options
     <td>no</td>
     <td>None</td>
         <td></td>
-        <td><div>The tenant whose service is going to be managed. This is a required option when using the system's <code>admin</code> account as the admin is not a tenant, and therefore cannot manipulate any of the L4/L7 services that exist. If the <code>user</code> option is not the <code>admin</code> account, then this tenant option is assumed to be the user who is connecting to the BIG-IP. This assumption can always be changed by setting this option to whatever tenant you wish.</div>        </td></tr>
+        <td><div>The tenant whose service is going to be managed. This is a required option when using the system&#x27;s <code>admin</code> account as the admin is not a tenant, and therefore cannot manipulate any of the L4/L7 services that exist. If the <code>user</code> option is not the <code>admin</code> account, then this tenant option is assumed to be the user who is connecting to the BIG-IP. This assumption can always be changed by setting this option to whatever tenant you wish.</div>        </td></tr>
         </table>
     </br>
 

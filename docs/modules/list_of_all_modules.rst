@@ -1,4 +1,4 @@
-All Modules
+All modules
 ```````````
 
 .. toctree:: :maxdepth: 1
@@ -19,7 +19,7 @@ All Modules
   bigip_dns_record_facts - foo <bigip_dns_record_facts_module>
   bigip_dns_zone - Manages DNS zones on a BIG-IP <bigip_dns_zone_module>
   bigip_drop_connection - Run commands on F5 devices via api <bigip_drop_connection_module>
-  _bigip_facts (D) - Collect facts from F5 BIG-IP devices <_bigip_facts_module>
+  bigip_facts - Collect facts from F5 BIG-IP devices <bigip_facts_module>
   bigip_gtm_datacenter - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
   bigip_gtm_pool - Manages F5 BIG-IP GTM pools <bigip_gtm_pool_module>
@@ -44,7 +44,7 @@ All Modules
   bigip_policy - Manage general policy configuration on a BIG-IP <bigip_policy_module>
   bigip_policy_rule - Manage LTM policy rules on a BIG-IP <bigip_policy_rule_module>
   bigip_pool - Manages F5 BIG-IP LTM pools <bigip_pool_module>
-  _bigip_pool_member (D) - Manages F5 BIG-IP LTM pool members <_bigip_pool_member_module>
+  bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
   bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP <bigip_profile_client_ssl_module>
   bigip_provision - Manage BIG-IP module provisioning <bigip_provision_module>
   bigip_qkview - Manage qkviews on the device <bigip_qkview_module>
@@ -85,7 +85,6 @@ All Modules
   bigiq_regkey_pool - Manages registration key pools on BIG-IQ <bigiq_regkey_pool_module>
   bigiq_utility_license - __SHORT_DESCRIPTION__ <bigiq_utility_license_module>
   bigiq_utility_license_assignment - __SHORT_DESCRIPTION__ <bigiq_utility_license_assignment_module>
-  f5_support_upload - Manage BIG-IP partitions <f5_support_upload_module>
   iworkflow_device - Manipulate cloud managed devices in iWorkflow <iworkflow_device_module>
   iworkflow_iapp_template - Manages iApp templates <iworkflow_iapp_template_module>
   iworkflow_license - Manage license of iWorkflow itself <iworkflow_license_module>
@@ -102,7 +101,6 @@ All Modules
   iworkflow_user - Manage users in iWorkflow <iworkflow_user_module>
 
 
-
 .. note::
-    -  (D): This marks a module as deprecated, which means a module is kept for backwards compatibility but usage is discouraged.
-       The module documentation details page may explain more about this rationale.
+    - **(D)**: This marks a module as deprecated, which means a module is kept for backwards compatibility but usage is discouraged.
+      The module documentation details page may explain more about this rationale.

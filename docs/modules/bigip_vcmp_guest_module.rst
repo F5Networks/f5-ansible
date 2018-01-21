@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 3.0.6
+  * f5-sdk >= 3.0.9
 
 
 Options
@@ -51,7 +51,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the base software release ISO image file for installing the TMOS hypervisor instance and any licensed BIG-IP modules onto the guest's virtual disk. When creating a new guest, this parameter is required.</div>        </td></tr>
+        <td><div>Specifies the base software release ISO image file for installing the TMOS hypervisor instance and any licensed BIG-IP modules onto the guest&#x27;s virtual disk. When creating a new guest, this parameter is required.</div>        </td></tr>
                 <tr><td>mgmt_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -61,7 +61,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>bridged</li><li>isolated</li><li>host only</li></ul></td>
-        <td><div>Specifies the method by which the management address is used in the vCMP guest.</div><div>When <code>bridged</code>, specifies that the guest can communicate with the vCMP host's management network.</div><div>When <code>isolated</code>, specifies that the guest is isolated from the vCMP host's management network. In this case, the only way that a guest can communicate with the vCMP host is through the console port or through a self IP address on the guest that allows traffic through port 22.</div><div>When <code>host only</code>, prevents the guest from installing images and hotfixes other than those provided by the hypervisor.</div><div>If the guest setting is <code>isolated</code> or <code>host only</code>, the <code>mgmt_address</code> does not apply.</div><div>Concerning mode changing, changing <code>bridged</code> to <code>isolated</code> causes the vCMP host to remove all of the guest's management interfaces from its bridged management network. This immediately disconnects the guest's VMs from the physical management network. Changing <code>isolated</code> to <code>bridged</code> causes the vCMP host to dynamically add the guest's management interfaces to the bridged management network. This immediately connects all of the guest's VMs to the physical management network. Changing this property while the guest is in the <code>configured</code> or <code>provisioned</code> state has no immediate effect.</div>        </td></tr>
+        <td><div>Specifies the method by which the management address is used in the vCMP guest.</div><div>When <code>bridged</code>, specifies that the guest can communicate with the vCMP host&#x27;s management network.</div><div>When <code>isolated</code>, specifies that the guest is isolated from the vCMP host&#x27;s management network. In this case, the only way that a guest can communicate with the vCMP host is through the console port or through a self IP address on the guest that allows traffic through port 22.</div><div>When <code>host only</code>, prevents the guest from installing images and hotfixes other than those provided by the hypervisor.</div><div>If the guest setting is <code>isolated</code> or <code>host only</code>, the <code>mgmt_address</code> does not apply.</div><div>Concerning mode changing, changing <code>bridged</code> to <code>isolated</code> causes the vCMP host to remove all of the guest&#x27;s management interfaces from its bridged management network. This immediately disconnects the guest&#x27;s VMs from the physical management network. Changing <code>isolated</code> to <code>bridged</code> causes the vCMP host to dynamically add the guest&#x27;s management interfaces to the bridged management network. This immediately connects all of the guest&#x27;s VMs to the physical management network. Changing this property while the guest is in the <code>configured</code> or <code>provisioned</code> state has no immediate effect.</div>        </td></tr>
                 <tr><td>mgmt_route<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -81,7 +81,67 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
+    <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
+                <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td><td></td>
+    <td> <div>A dict object containing connection details.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object provider</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>password<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>True</td>
+                <td><ul><li>yes</li><li>no</li></ul></td>
+                <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>transport<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td>cli</td>
+                <td><ul><li>rest</li><li>cli</li></ul></td>
+                <td><div>Configures the transport connection to use when connecting to the remote device.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -105,13 +165,13 @@ Options
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlans<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>VLANs that the guest uses to communicate with other guests, the host, and with the external network. The available VLANs in the list are those that are currently configured on the vCMP host.</div><div>The order of these VLANs is not important; in fact, it's ignored. This module will order the VLANs for you automatically. Therefore, if you deliberately re-order them in subsequent tasks, you will find that this module will <b>not</b> register a change.</div>        </td></tr>
+        <td><div>VLANs that the guest uses to communicate with other guests, the host, and with the external network. The available VLANs in the list are those that are currently configured on the vCMP host.</div><div>The order of these VLANs is not important; in fact, it&#x27;s ignored. This module will order the VLANs for you automatically. Therefore, if you deliberately re-order them in subsequent tasks, you will find that this module will <b>not</b> register a change.</div>        </td></tr>
         </table>
     </br>
 

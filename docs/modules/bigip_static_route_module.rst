@@ -4,7 +4,7 @@
 bigip_static_route - Manipulate static routes on a BIG-IP
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.3
+.. versionadded:: 2.5
 
 
 .. contents::
@@ -21,7 +21,7 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * f5-sdk >= 3.0.6
+  * f5-sdk >= 3.0.9
   * netaddr
 
 
@@ -40,22 +40,22 @@ Options
     </tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Descriptive text that identifies the route.</div>        </td></tr>
                 <tr><td>destination<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
-        <td><div>Specifies an IP address, and netmask, for the static entry in the routing table. When <code>state</code> is <code>present</code>, this value is required.</div>        </td></tr>
+        <td><div>Specifies an IP address for the static entry in the routing table. When creating a new static route, this value is required.</div><div>This value cannot be changed once it is set.</div>        </td></tr>
                 <tr><td>gateway_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the router for the system to use when forwarding packets to the destination host or network. Also known as the next-hop router address. This can be either an IPv4 or IPv6 address. When it is an IPv6 address that starts with <code>FE80:</code>, the address will be treated as a link-local address. This requires that the <code>vlan</code> parameter also be supplied.</div>        </td></tr>
                 <tr><td>mtu<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies a specific maximum transmission unit (MTU).</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
@@ -63,21 +63,91 @@ Options
     <td></td>
         <td></td>
         <td><div>Name of the static route.</div>        </td></tr>
+                <tr><td>netmask<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The netmask for the static route. When creating a new static route, this value is required.</div><div>This value can be in either IP or CIDR format.</div><div>This value cannot be changed once it is set.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+        <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
+    <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
                 <tr><td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the pool through which the system forwards packets to the destination.</div>        </td></tr>
+                <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+    <td>no</td>
+    <td></td><td></td>
+    <td> <div>A dict object containing connection details.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object provider</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>password<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>True</td>
+                <td><ul><li>yes</li><li>no</li></ul></td>
+                <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>transport<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td>cli</td>
+                <td><ul><li>rest</li><li>cli</li></ul></td>
+                <td><div>Configures the transport connection to use when connecting to the remote device.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
                 <tr><td>reject<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies that the system drops packets sent to the destination.</div>        </td></tr>
+                <tr><td>route_domain<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The route domain id of the system. When creating a new static route, if this value is not specified, a default value of <code>0</code> will be used.</div><div>This value cannot be changed once it is set.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -101,11 +171,11 @@ Options
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
     <td>True</td>
-        <td><ul><li>True</li><li>False</li></ul></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlan<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>None</td>
+    <td></td>
         <td></td>
         <td><div>Specifies the VLAN or Tunnel through which the system forwards packets to the destination. When <code>gateway_address</code> is a link-local IPv6 address, this value is required</div>        </td></tr>
         </table>
@@ -122,6 +192,7 @@ Examples
     - name: Create static route with gateway address
       bigip_static_route:
         destination: 10.10.10.10
+        netmask: 255.255.255.255
         gateway_address: 10.2.2.3
         name: test-route
         password: secret
@@ -169,14 +240,28 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> True </td>
     </tr>
             <tr>
-        <td> reject </td>
+        <td> vlan </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> True </td>
     </tr>
             <tr>
-        <td> vlan </td>
+        <td> route_domain </td>
+        <td> Route domain of the static route. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 1 </td>
+    </tr>
+            <tr>
+        <td> netmask </td>
+        <td> Netmask of the destination. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 255.255.255.255 </td>
+    </tr>
+            <tr>
+        <td> reject </td>
         <td> Whether the banner is enabled or not. </td>
         <td align=center> changed </td>
         <td align=center> string </td>

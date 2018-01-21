@@ -41,7 +41,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The iApp template that you want to base this Service Template off of. Note that, while iWorkflow's UI also allows you to specify another Service Template for the <code>base_template</code>, this module does not yet let you do that. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
+        <td><div>The iApp template that you want to base this Service Template off of. Note that, while iWorkflow&#x27;s UI also allows you to specify another Service Template for the <code>base_template</code>, this module does not yet let you do that. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
                 <tr><td>connector<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -56,7 +56,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>A dictionary containing the values of input parameters that the Service Template contains. You will see these in iWorkflow's UI labeled as "Application Tier Information" and "Sections". This is the way by which you customize the Service Template and specify which values are tenant editable. Since this value can be particularly large, the recommended practice is to put it in an external file and include it with the Ansible <code>file</code> or <code>template</code> lookup plugins. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
+        <td><div>A dictionary containing the values of input parameters that the Service Template contains. You will see these in iWorkflow&#x27;s UI labeled as &quot;Application Tier Information&quot; and &quot;Sections&quot;. This is the way by which you customize the Service Template and specify which values are tenant editable. Since this value can be particularly large, the recommended practice is to put it in an external file and include it with the Ansible <code>file</code> or <code>template</code> lookup plugins. This option is required when <code>state</code> is <code>present</code>.</div>        </td></tr>
         </table>
     </br>
 
