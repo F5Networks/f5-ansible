@@ -25,18 +25,21 @@ except ImportError:
 class F5Client(F5BaseClient):
     @property
     def api(self):
-        try:
-            result = ManagementRoot(
-                self.params['server'],
-                self.params['user'],
-                self.params['password'],
-                port=self.params['server_port'],
-                verify=self.params['validate_certs'],
-                token='local'
-            )
-        except Exception:
+        for x in range(0, 10):
+            try:
+                result = ManagementRoot(
+                    self.params['server'],
+                    self.params['user'],
+                    self.params['password'],
+                    port=self.params['server_port'],
+                    verify=self.params['validate_certs'],
+                    token='local'
+                )
+                return result
+            except Exception:
+                time.sleep(3)
+        else:
             raise F5ModuleError(
                 'Unable to connect to {0} on port {1}. '
                 'Is "validate_certs" preventing this?'.format(self.params['server'], self.params['server_port'])
             )
-        return result
