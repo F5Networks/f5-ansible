@@ -85,3 +85,6 @@ sync-to-upstream:
 	cp plugins/action/bigip.py local/ansible/lib/ansible/plugins/action/ && \
     cp library/module_utils/network/f5/* local/ansible/lib/ansible/module_utils/network/f5/ && \
     cp library/utils/module_docs_fragments/f5.py local/ansible/lib/ansible/utils/module_docs_fragments/
+
+find-ignores:
+	cd local/ansible && ! find . -name *ignore* | egrep -v "(gitignore|dockerignore)" | xargs egrep "(bigip|bigiq)" -R
