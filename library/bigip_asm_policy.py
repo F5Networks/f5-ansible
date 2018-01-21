@@ -530,7 +530,6 @@ class BaseManager(object):
         policies = self.client.api.tm.asm.policies_s.get_collection()
         if any(p.name == self.want.name and p.partition == self.want.partition for p in policies):
             return True
-
         return False
 
     def _file_is_missing(self):
@@ -720,6 +719,55 @@ class V1Manager(BaseManager):
         module = kwargs.get('module', None)
         super(V1Manager, self).__init__(client=client, module=module)
         self.want = V1Parameters(params=module.params, client=client)
+
+    def create(self):
+        if self.want.active is None:
+            self.want.update(dict(active=False))
+        if self._file_is_missing():
+            raise F5ModuleError(
+                "The specified ASM policy file does not exist"
+            )
+        self._set_changed_options()
+        if self.module.check_mode:
+            return True
+
+        if self.want.template is None and self.want.file is None:
+            self.create_blank()
+        else:
+            if self.want.template is not None:
+                task = self.create_from_template_on_device()
+                if not task:
+                    return False
+                if not self.wait_for_task(task):
+                    raise F5ModuleError('Import policy task failed.')
+            elif self.want.file is not None:
+                self.import_to_device()
+                self.remove_temp_policy_from_device()
+
+        if self.want.active:
+            self.activate()
+            return True
+        else:
+            return True
+
+    def remove_temp_policy_from_device(self):
+        name = os.path.split(self.want.file)[1]
+        tpath_name = '/var/config/rest/downloads/{0}'.format(name)
+        self.client.api.tm.util.unix_rm.exec_cmd('run', utilCmdArgs=tpath_name)
+
+    def import_to_device(self):
+        self.client.api.shared.file_transfer.uploads.upload_file(self.want.file)
+        time.sleep(2)
+        name = os.path.split(self.want.file)[1]
+        full_name = fqdn_name(self.want.partition, self.want.name)
+        cmd = 'tmsh load asm policy {0} file /var/config/rest/downloads/{1}'.format(full_name, name)
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(cmd)
+        )
+        if hasattr(output, 'commandResult'):
+            result = output.commandResult
+        return True
 
 
 class V2Manager(BaseManager):

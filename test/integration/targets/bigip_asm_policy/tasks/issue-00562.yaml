@@ -1,0 +1,104 @@
+---
+
+- name: Issue 00562 - Create a partition
+  bigip_partition:
+    name: Tenant-001
+
+- name: Issue 00562 - Provision ASM
+  bigip_provision:
+    name: asm
+
+- name: Issue 00562 - Import active ASM policy into common partition
+  bigip_asm_policy:
+    name: can-fed-base
+    file: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+    state: present
+    active: yes
+
+- name: Issue 00562 - Import active ASM policy into tenant partition
+  bigip_asm_policy:
+    partition: Tenant-001
+    name: can-fed-base
+    file: "{{ role_path }}/files/v1_policy_default_compact_format_enabled.xml"
+    state: present
+    active: yes
+  register: result
+
+- name: Issue 00562 - Assert Import active ASM policy into tenant partition
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00562 - Import active ASM policy into tenant partition - Idempotent check
+  bigip_asm_policy:
+    partition: Tenant-001
+    name: can-fed-base
+    file: "{{ role_path }}/v1_policy_default_compact_format_enabled.xml"
+    state: present
+    active: yes
+  register: result
+
+- name: Issue 00562 - Assert Import active ASM policy into tenant partition - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00562 - Remove active ASM policy from tenant partition
+  bigip_asm_policy:
+    partition: Tenant-001
+    name: can-fed-base
+    state: absent
+  register: result
+
+- name: Issue 00562 - Assert Remove active ASM policy from tenant partition
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00562 - Remove active ASM policy from tenant partion - Idempotent check
+  bigip_asm_policy:
+    partition: Tenant-001
+    name: can-fed-base
+    state: absent
+  register: result
+
+- name: Issue 00562 - Assert Remove active ASM policy from tenant partition - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00562 - Remove active ASM policy from common partition
+  bigip_asm_policy:
+    name: can-fed-base
+    state: absent
+  register: result
+
+- name: Issue 00562 - Assert Remove active ASM policy from common partition
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00562 - Remove active ASM policy from common partion - Idempotent check
+  bigip_asm_policy:
+    name: can-fed-base
+    state: absent
+  register: result
+
+- name: Issue 00562 - Assert Remove active ASM policy from common partition - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00562 - Remove partition
+  bigip_partition:
+    name: Tenant-001
+    state: absent
+
+- name: Issue 00562 - Deprovision ASM
+  bigip_provision:
+    name: asm
+    state: absent
