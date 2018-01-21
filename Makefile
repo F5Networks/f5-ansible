@@ -26,7 +26,7 @@ all-tests:
 
 docs:
 	rm docs/modules/* || true
-	python devtools/bin//plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v
+	python devtools/bin/plugin_formatter.py --module-dir library/ --template-dir devtools/templates/ --output-dir docs/modules/ -v --limit-to $(shell ls -m library/bigip* library/bigiq* library/iworkflow* | sed -e 's/library\///g' | sed -e 's/.py//g' | sed -e 's/, /,/g' | tr -d '\n')
 	cd docs && make html
 
 style:
