@@ -9,34 +9,6 @@ RUN mkdir -p /root/.config/openstack && \
 # Misc symlinks
 RUN ln -s /var/run/secrets/.gitconfig /root/.gitconfig
 
-# Symlinks to OpenStack config files
-#
-# This is required because the os-client-config library is incapable of
-# taking an environment variable that specifies a **DIRECTORY** to find the
-# OpenStack config files in.
-#
-# You will find in the documentation here,
-#
-#  https://docs.openstack.org/os-client-config/latest/user/configuration.html#site-specific-file-locations
-#
-# the mention of what appear to be environment variables to override. This is
-# not the case however. These values are the documentations way of saying that
-# the code will look in platform specific locations. It is not an actual variable
-# that you may override.
-#
-# There is also an OS_CLIENT_CONFIG_FILE environment variable that you **CAN**
-# override, mentioned here,
-#
-#  https://docs.openstack.org/os-client-config/latest/user/configuration.html#config-files
-#
-# This variable, however, has a deficiency in that it is unable to find a secrets
-# file that may reside in the same directory as it. Therefore we cannot use this
-# environment variable because we then cannot use secrets.
-RUN ln -s /var/run/secrets/clouds.yaml /root/.config/openstack/clouds.yaml && \
-    ln -s /var/run/secrets/secure.yaml /root/.config/openstack/secure.yaml && \
-    ln -s /var/run/secrets/cacerts.pem /root/.config/openstack/cacerts.pem && \
-    ln -s /here/devtools/secrets/jenkins_jobs.ini.secret /etc/jenkins_jobs/jenkins_jobs.ini
-
 # Conveniance aliases
 RUN echo 'alias ll="ls -l --color"' >> ~/.bashrc && \
     echo 'alias q="tail -f /tmp/q"' >> ~/.bashrc && \
