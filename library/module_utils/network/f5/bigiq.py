@@ -7,6 +7,8 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
+import time
+
 try:
     from f5.bigiq import ManagementRoot
     from icontrol.exceptions import iControlUnexpectedHTTPError
@@ -25,6 +27,7 @@ except ImportError:
 class F5Client(F5BaseClient):
     @property
     def api(self):
+        result = None
         for x in range(0, 10):
             try:
                 result = ManagementRoot(
@@ -35,9 +38,11 @@ class F5Client(F5BaseClient):
                     verify=self.params['validate_certs'],
                     token='local'
                 )
-                return result
+                break
             except Exception:
                 time.sleep(3)
+        if result:
+            return result
         else:
             raise F5ModuleError(
                 'Unable to connect to {0} on port {1}. '
