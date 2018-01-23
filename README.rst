@@ -24,52 +24,46 @@ Ansible F5
 Introduction
 ------------
 
-This repository provides the foundation for working with F5 devices and Ansible.
+This repository provides the foundation for working with the F5 Modules for Ansible.
 The architecture of the modules makes inherent use of the BIG-IP SOAP and REST
 APIs as well as the tmsh API where required.
 
-This repository is an **incubator** for Ansible modules that we would like to
-have upstreamed over the course of time. The modules in this repository **may be
+This repository is an **incubator** for Ansible modules. The modules in this repository **may be
 broken due to experimentation or refactoring**.
 
 If you want to download the stable modules, they are shipped with Ansible
-automatically. In-between major releases of Ansible, new `stable modules can
-be found here`_.
+automatically. In-between major releases of Ansible, new |ansible_stablemodules|.
 
-These modules are freely provided to the open source community for automating
-BIG-IP device configurations using Ansible. Support for the modules is provided
-on a best effort basis by the F5 community. Please file any bugs, questions or
-enhancement requests using `Github Issues`_
+The F5 Modules for Ansible are freely provided to the open source community for automating
+BIG-IP device configurations. Support for the modules is provided on a best effort basis by the F5 community.
 
-One last ask. I'm curious who has Ansible in house and is considering using it
-with BIG-IP. If you've got the time, consider sending me an email from your
-organization introducing yourself and what you do. I love getting email.
+Please file any bugs, questions, or enhancement requests by using |ansible_issues|. For details, see |ansiblegethelp|.
 
--tim (t.rupp@f5.com)
+One last ask. We are curious about who has Ansible in-house and is considering using it with BIG-IP. If you've got the time, consider sending an email that introduces yourself and what you do. We love hearing from you.
+
+- Tim Rupp and the F5 team - solutionsfeedback@f5.com
 
 Documentation
 -------------
 
-All documentation is available on `clouddocs.f5.com`_.
+All documentation is available on |ansiblehelp|.
 
-When `writing new modules`_, please refer to the `Guidelines`_ document.
+When |writingmodules|, please refer to the |ansibleguidelines| document.
 
 Your ideas
 ----------
 
-We are curious to know what sort of modules you want to see created. If you have
-a use case and can sufficiently describe the behavior you want to see, open
-an issue here and we will hammer out the details.
+What types of modules do you want created? If you have a use case and can sufficiently describe the behavior you want to see, open an issue and we will hammer out the details.
 
 Copyright
 ---------
 
-Copyright 2017 F5 Networks Inc.
+Copyright 2017-2018 F5 Networks Inc.
 
 Support
 -------
 
-See `Support <SUPPORT.rst>`_.
+See |ansiblegethelp|.
 
 License
 -------
@@ -79,15 +73,11 @@ GPL V3
 
 This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work.
 
-See `License`_
+See `License`_.
 
 Contributor License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Individuals or business entities who contribute to this project must
-have completed and submitted the `F5 Contributor License
-Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/development/cla-landing.html>`_
-to Ansible_CLA@f5.com prior to their code submission being included
-in this project.
+Individuals or business entities who contribute to this project must complete and submit the `F5 Contributor License Agreement <http://clouddocs.f5.com/products/orchestration/ansible/devel/development/cla-landing.html>`_ to Ansible_CLA@f5.com prior to their code submission being included in this project.
 
 
 .. |travis badge| image:: https://travis-ci.org/F5Networks/f5-ansible.svg?branch=devel
@@ -98,9 +88,32 @@ in this project.
     :target: https://f5cloudsolutions.herokuapp.com
     :alt: Slack Status
 
-.. _Guidelines: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html
-.. _writing new modules: http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html
-.. _clouddocs.f5.com: http://clouddocs.f5.com/products/orchestration/ansible/devel
-.. _Github Issues: https://github.com/F5Networks/f5-ansible/issues
+
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
-.. _stable modules can be found here: https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5
+
+
+.. |ansible_stablemodules| raw:: html
+
+   <a href="https://github.com/ansible/ansible/tree/devel/lib/ansible/modules/network/f5" target="_blank">stable modules can be found here</a>
+
+.. |ansible_issues| raw:: html
+
+   <a href="https://github.com/F5Networks/f5-ansible/issues" target="_blank">Github Issues</a>
+
+.. |ansiblehelp| raw:: html
+
+   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/" target="_blank">clouddocs.f5.com</a>
+
+.. |writingmodules| raw:: html
+
+   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/development/writing-a-module.html" target="_blank">writing new modules</a>
+
+.. |ansibleguidelines| raw:: html
+
+   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/development/guidelines.html" target="_blank">Guidelines</a>
+
+.. |ansiblegethelp| raw:: html
+
+   <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html" target="_blank">Get Help</a>
+
+
