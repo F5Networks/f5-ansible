@@ -1,0 +1,13 @@
+# About
+#
+# This is the list of allowed git-secrets patterns. There is no information
+# in this file that is "secret". It is jut a way to avoid false positives
+# from being reported.
+
+[X]+-[X]+-[X]+-[X]+-[X]+
+[Y]+-[Y]+-[Y]+-[Y]+-[Y]+
+[Z]+-[Z]+-[Z]+-[Z]+-[Z]+
+[1]+-[2]+-[3]+-[4]+-[5]+
+BIG-IP-WITH-ADMIN-SSH
+!SSLv3:!SSLv2:
+sslCiphersuite
