@@ -166,15 +166,6 @@ Examples
           key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
       delegate_to: localhost
 
-    - name: License BIG-IP using a development key
-      bigip_license:
-          server: "lb.mydomain.com"
-          user: "admin"
-          password: "secret"
-          key: "XXXXX-XXXXX-XXXXX-XXXXX-XXXXXXX"
-          license_server: "xxx.f5net.com"
-      delegate_to: localhost
-
     - name: License BIG-IP using a pre-acquired license
       bigip_license:
           server: "lb.mydomain.com"
