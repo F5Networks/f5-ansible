@@ -82,7 +82,7 @@ docker-deploy:
 
 sync-to-upstream:
 	ls local/ansible/lib/ansible/modules/network/f5/* | grep -v .pyc | egrep "(bigip|bigiq)" | xargs -I {} basename -s '.py' {} | xargs -I {} f5ansible module-upstream {} && \
-	cp plugins/action/bigip.py local/ansible/lib/ansible/plugins/action/ && \
+	cp library/plugins/action/bigip.py local/ansible/lib/ansible/plugins/action/ && \
     cp library/module_utils/network/f5/* local/ansible/lib/ansible/module_utils/network/f5/ && \
     cp library/utils/module_docs_fragments/f5.py local/ansible/lib/ansible/utils/module_docs_fragments/
 
