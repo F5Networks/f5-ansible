@@ -1,0 +1,75 @@
+---
+
+- name: Common HA configuration on all devices
+  hosts: f5-test
+  connection: local
+
+  vars:
+    provider:
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      validate_certs: "{{ validate_certs }}"
+
+  tasks:
+    - name: Add VLANs
+      bigip_vlan:
+        name: "{{ item.name }}"
+        tag: "{{ item.tag }}"
+        tagged_interfaces: "{{ item.interfaces }}"
+        provider: "{{ provider }}"
+      loop: "{{ vlans }}"
+
+    - name: Add HA Self-IPs
+      bigip_selfip:
+       name: "{{ item.name }}"
+       address: "{{ item.address }}"
+       netmask: "{{ item.netmask }}"
+       vlan: "{{ item.vlan }}"
+       provider: "{{ provider }}"
+      loop: "{{ self_ips }}"
+
+    - name: Configure hostname
+      bigip_hostname:
+        hostname: "{{ inventory_hostname }}"
+        provider: "{{ provider }}"
+
+    - name: Set CMI device parameters
+      bigip_device_connectivity:
+        config_sync_ip: "{{ config_sync_ip }}"
+        mirror_primary_address: "{{ mirror_primary_address }}"
+        unicast_failover: "{{ unicast_failover }}"
+        provider: "{{ provider }}"
+
+    - name: Trust peer device
+      bigip_device_trust:
+        peer_server: "{{ hostvars[groups['f5-test'][1]].ansible_host }}"
+        peer_hostname: "{{ hostvars[groups['f5-test'][1]].inventory_hostname }}"
+        peer_user: "{{ bigip_username }}"
+        peer_password: "{{ bigip_password }}"
+        provider: "{{ provider }}"
+      when: inventory_hostname == ansible_play_hosts[0]
+
+    - name: Add Device Group
+      bigip_device_group:
+        name: deviceGrp
+        auto_sync: yes
+        type: sync-failover
+        provider: "{{ provider }}"
+      when: inventory_hostname == ansible_play_hosts[0]
+
+    - name: Add members to the device group
+      bigip_device_group_member:
+        device_group: deviceGrp
+        name: "{{ item }}"
+        provider: "{{ provider }}"
+      loop: "{{ groups['f5-test'] }}"
+      when: inventory_hostname == ansible_play_hosts[0]
+
+    - name: Perform a config sync
+      bigip_configsync_action:
+        device_group: deviceGrp
+        sync_device_to_group: yes
+        provider: "{{ provider }}"
+      when: inventory_hostname == ansible_play_hosts[0]

@@ -1,0 +1,22 @@
+---
+
+ansible_host: 20.20.20.20
+
+self_ips:
+  - name: Self-Internal
+    address: 10.1.10.2
+    netmask: 255.255.255.0
+    vlan: Internal
+  - name: Self-External
+    address: 10.1.20.2
+    netmask: 255.255.255.0
+    vlan: External
+  - name: Self-HA
+    address: 10.1.30.2
+    netmask: 255.255.255.0
+    vlan: HA
+
+config_sync_ip: 10.1.30.2
+mirror_primary_address: 10.1.30.2
+unicast_failover:
+  - address: 10.1.30.2
