@@ -25,3 +25,23 @@
   assert:
     that:
       - result is not changed
+
+- name: Remove remote peer device
+  bigip_device_trust:
+    peer_server: "{{ hostvars[groups['f5-test'][1]].ansible_host }}"
+  register: result
+
+- name: Assert Trust remote peer device
+  assert:
+    that:
+      - result is changed
+
+- name: Remove remote peer device - Idempotent check
+  bigip_device_trust:
+    peer_server: "{{ hostvars[groups['f5-test'][1]].ansible_host }}"
+  register: result
+
+- name: Assert Trust remote peer device - Idempotent check
+  assert:
+    that:
+      - result is not changed
