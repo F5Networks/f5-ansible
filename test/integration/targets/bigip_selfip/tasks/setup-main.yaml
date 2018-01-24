@@ -1,7 +1,7 @@
 ---
 
-- name: Create VLAN 1
-  bigip_selfip:
+- name: Remove VLANs
+  bigip_vlan:
     name: "{{ item }}"
     state: absent
   loop:

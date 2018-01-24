@@ -6,7 +6,8 @@
     state: absent
   register: result
   loop:
-    - net1
+    - "{{ selfip_vlan }}"
+    - "{{ selfip_vlan2 }}"
 
 - name: Remove route domain
   bigip_routedomain:

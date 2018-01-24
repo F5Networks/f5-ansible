@@ -4,8 +4,8 @@ selfip: 10.10.10.10
 selfip_netmask: 255.255.255.0
 selfip_netmask2: 255.255.0.0
 selfip_name: netfoo
-selfip_vlan: net1
-selfip_vlan2: net2
+selfip_vlan: net_self1
+selfip_vlan2: net_self2
 selfip_rd: 100
 invalid_vlan:
   - 01767424
