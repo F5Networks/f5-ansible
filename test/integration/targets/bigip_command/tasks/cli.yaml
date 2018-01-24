@@ -9,8 +9,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run single command - cli
@@ -28,8 +27,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run multiple commands - cli
@@ -46,8 +44,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run command missing tmsh - cli
@@ -65,8 +62,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run multiple commands, one missing tmsh - cli
@@ -85,8 +81,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Wait for something - cli
@@ -105,8 +100,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run modify commands - cli
@@ -125,8 +119,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password|default(omit) }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
+      password: "{{ bigip_ssh_password }}"
   register: result
 
 - name: Assert Run modify commands with a show command - cli
