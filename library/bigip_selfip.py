@@ -451,7 +451,6 @@ class ApiParameters(Parameters):
         return str(result.ip)
 
 
-
 class Changes(Parameters):
     pass
 
