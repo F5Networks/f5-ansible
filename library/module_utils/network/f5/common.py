@@ -84,6 +84,7 @@ f5_top_spec = {
     ),
     'transport': dict(
         removed_in_version=2.9,
+        default='rest',
         choices=['cli', 'rest']
     )
 }
@@ -151,7 +152,8 @@ def cleanup_tokens(client):
 def is_cli(module):
     transport = module.params['transport']
     provider_transport = (module.params['provider'] or {}).get('transport')
-    return 'cli' in (transport, provider_transport)
+    result = 'cli' in (transport, provider_transport)
+    return result
 
 
 class Noop(object):
@@ -200,6 +202,7 @@ class AnsibleF5Parameters(object):
         self._values = defaultdict(lambda: None)
         self._values['__warnings'] = []
         self.client = kwargs.pop('client', None)
+
         params = kwargs.pop('params', None)
         if params:
             self.update(params=params)
