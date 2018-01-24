@@ -9,7 +9,7 @@
       user: "{{ bigip_ssh_username }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_ssh_port }}"
-      ssh_keyfile: "{{ bigip_ssh_keyfile }}"
+      ssh_keyfile: "{{ bigip_ssh_keyfile|default(omit) }}"
   register: result
 
 - name: Assert Run single command - cli
