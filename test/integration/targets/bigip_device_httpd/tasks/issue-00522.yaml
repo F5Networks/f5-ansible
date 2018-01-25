@@ -1,0 +1,41 @@
+---
+
+- name: Issue 00522 - Set SSL cipher suite
+  bigip_device_httpd:
+    ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
+  register: result
+
+- name: Issue 00522 - Set SSL cipher suite
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00522 - Set SSL cipher suite - Idempotent check
+  bigip_device_httpd:
+    ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
+  register: result
+
+- name: Issue 00522 - Set SSL cipher suite - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00522 - Set SSL cipher suite to system default
+  bigip_device_httpd:
+    ssl_cipher_suite: default
+  register: result
+
+- name: Issue 00522 - Set SSL cipher suite to system default
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00522 - Set SSL cipher suite to system default - Idempotent check
+  bigip_device_httpd:
+    ssl_cipher_suite: default
+  register: result
+
+- name: Issue 00522 - Set SSL cipher suite to system default - Idempotent check
+  assert:
+    that:
+      - result is not changed

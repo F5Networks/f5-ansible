@@ -117,3 +117,55 @@ class TestModuleManager(unittest.TestCase):
 
         results = mm.exec_module()
         assert results['changed'] is True
+
+    def test_update_issue_00522(self, *args):
+        set_module_args(
+            dict(
+                ssl_cipher_suite='ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384',
+                server='localhost',
+                user='admin',
+                password='password'
+            )
+        )
+
+        current = Parameters(params=load_fixture('load_sys_httpd.json'))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['ssl_cipher_suite'] == 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384'
+
+    def test_update_issue_00522_default(self, *args):
+        set_module_args(
+            dict(
+                ssl_cipher_suite='default',
+                server='localhost',
+                user='admin',
+                password='password'
+            )
+        )
+
+        current = Parameters(params=load_fixture('load_sys_httpd_non_default.json'))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+        assert results['changed'] is True
+        assert results['ssl_cipher_suite'] == 'default'

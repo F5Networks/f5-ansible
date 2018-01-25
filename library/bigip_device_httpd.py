@@ -64,6 +64,12 @@ options:
   ssl_port:
     description:
       - The HTTPS port to listen on.
+  ssl_cipher_suite:
+    description:
+      - Specifies the ciphers that the system uses.
+      - Use the value C(default) to set the cipher suite to the default values
+        provided by the system.
+    version_added: 2.6
 notes:
   - Requires the requests Python package on the host. This is as easy as
     C(pip install requests).
@@ -152,6 +158,11 @@ ssl_port:
   returned: changed
   type: int
   sample: 10443
+ssl_cipher_suite:
+  description: The new ciphers that the system uses.
+  returned: changed
+  type: string
+  sample: ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
 '''
 
 import time
@@ -206,28 +217,51 @@ class Parameters(AnsibleF5Parameters):
         'logLevel': 'log_level',
         'maxClients': 'max_clients',
         'redirectHttpToHttps': 'redirect_http_to_https',
-        'sslPort': 'ssl_port'
+        'sslPort': 'ssl_port',
+        'sslCiphersuite': 'ssl_cipher_suite'
     }
 
     api_attributes = [
         'authPamIdleTimeout', 'authPamValidateIp', 'authName', 'authPamDashboardTimeout',
         'fastcgiTimeout', 'hostnameLookup', 'logLevel', 'maxClients', 'sslPort',
-        'redirectHttpToHttps', 'allow'
+        'redirectHttpToHttps', 'allow', 'sslCiphersuite'
     ]
 
     returnables = [
         'auth_pam_idle_timeout', 'auth_pam_validate_ip', 'auth_name',
         'auth_pam_dashboard_timeout', 'fast_cgi_timeout', 'hostname_lookup',
         'log_level', 'max_clients', 'redirect_http_to_https', 'ssl_port',
-        'allow'
+        'allow', 'ssl_cipher_suite'
     ]
 
     updatables = [
         'auth_pam_idle_timeout', 'auth_pam_validate_ip', 'auth_name',
         'auth_pam_dashboard_timeout', 'fast_cgi_timeout', 'hostname_lookup',
         'log_level', 'max_clients', 'redirect_http_to_https', 'ssl_port',
-        'allow'
+        'allow', 'ssl_cipher_suite'
     ]
+
+    ciphers = "ECDHE-RSA-AES128-GCM-SHA256:" \
+              "ECDHE-RSA-AES256-GCM-SHA384:" \
+              "ECDHE-RSA-AES128-SHA:" \
+              "ECDHE-RSA-AES256-SHA:" \
+              "ECDHE-RSA-AES128-SHA256:" \
+              "ECDHE-RSA-AES256-SHA384:" \
+              "ECDHE-ECDSA-AES128-GCM-SHA256:" \
+              "ECDHE-ECDSA-AES256-GCM-SHA384:" \
+              "ECDHE-ECDSA-AES128-SHA:" \
+              "ECDHE-ECDSA-AES256-SHA:" \
+              "ECDHE-ECDSA-AES128-SHA256:" \
+              "ECDHE-ECDSA-AES256-SHA384:" \
+              "AES128-GCM-SHA256:" \
+              "AES256-GCM-SHA384:" \
+              "AES128-SHA:" \
+              "AES256-SHA:" \
+              "AES128-SHA256:" \
+              "AES256-SHA256:" \
+              "ECDHE-RSA-DES-CBC3-SHA:" \
+              "ECDHE-ECDSA-DES-CBC3-SHA:" \
+              "DES-CBC3-SHA"
 
     @property
     def auth_pam_idle_timeout(self):
@@ -300,6 +334,19 @@ class ModuleParameters(Parameters):
         result = sorted(result)
         return result
 
+    @property
+    def ssl_cipher_suite(self):
+        if self._values['ssl_cipher_suite'] is None:
+            return None
+        ciphers = self._values['ssl_cipher_suite'].strip()
+        if not ciphers:
+            raise F5ModuleError(
+                "ssl_cipher_suite may not be set to 'none'"
+            )
+        if ciphers == 'default':
+            ciphers = Parameters.ciphers
+        return ciphers
+
 
 class ApiParameters(Parameters):
     @property
@@ -331,7 +378,12 @@ class UsableChanges(Changes):
 
 
 class ReportableChanges(Changes):
-    pass
+    @property
+    def ssl_cipher_suite(self):
+        if self._values['ssl_cipher_suite'] == Parameters.ciphers:
+            return 'default'
+        else:
+            return self._values['ssl_cipher_suite']
 
 
 class Difference(object):
@@ -506,7 +558,8 @@ class ArgumentSpec(object):
             ),
             redirect_http_to_https=dict(
                 type='bool'
-            )
+            ),
+            ssl_cipher_suite=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
