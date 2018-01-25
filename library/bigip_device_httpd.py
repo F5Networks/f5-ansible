@@ -67,9 +67,28 @@ options:
   ssl_cipher_suite:
     description:
       - Specifies the ciphers that the system uses.
-      - Use the value C(default) to set the cipher suite to the default values
-        provided by the system.
+      - The values in the suite are separated by colons (:).
+      - Can be specified in either a string or list form. The list form is the
+        recommended way to provide the cipher suite. See examples for usage.
+      - Use the value C(default) to set the cipher suite to the system default.
+        This value is equivalent to specifying a list of C(ECDHE-RSA-AES128-GCM-SHA256,
+        ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-SHA,ECDHE-RSA-AES256-SHA,
+        ECDHE-RSA-AES128-SHA256,ECDHE-RSA-AES256-SHA384,ECDHE-ECDSA-AES128-GCM-SHA256,
+        ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-ECDSA-AES128-SHA,ECDHE-ECDSA-AES256-SHA,
+        ECDHE-ECDSA-AES128-SHA256,ECDHE-ECDSA-AES256-SHA384,AES128-GCM-SHA256,
+        AES256-GCM-SHA384,AES128-SHA,AES256-SHA,AES128-SHA256,AES256-SHA256,
+        ECDHE-RSA-DES-CBC3-SHA,ECDHE-ECDSA-DES-CBC3-SHA,DES-CBC3-SHA).
     version_added: 2.6
+  ssl_protocols:
+    description:
+      - The list of SSL protocols to accept on the management console.
+      - A space-separated list of tokens in the format accepted by the Apache
+        mod_ssl SSLProtocol directive.
+      - Can be specified in either a string or list form. The list form is the
+        recommended way to provide the cipher suite. See examples for usage.
+      - Use the value C(default) to set the SSL protocols to the system default.
+        This value is equivalent to specifying a list of C(all,-SSLv2,-SSLv3).
+    version_added: 2.6 
 notes:
   - Requires the requests Python package on the host. This is as easy as
     C(pip install requests).
@@ -104,6 +123,26 @@ EXAMPLES = r'''
     password: secret
     server: lb.mydomain.com
     user: admin
+  delegate_to: localhost
+
+- name: Set SSL cipher suite by list
+  bigip_device_httpd:
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    ssl_cipher_suite:
+      - ECDHE-RSA-AES128-GCM-SHA256
+      - ECDHE-RSA-AES256-GCM-SHA384
+      - ECDHE-RSA-AES128-SHA
+      - AES256-SHA256
+  delegate_to: localhost
+
+- name: Set SSL cipher suite by string
+  bigip_device_httpd:
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:AES256-SHA256
   delegate_to: localhost
 '''
 
@@ -163,11 +202,16 @@ ssl_cipher_suite:
   returned: changed
   type: string
   sample: ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA
+ssl_protocols:
+  description: The new list of SSL protocols to accept on the management console.
+  returned: changed
+  type: string
 '''
 
 import time
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import string_types
 
 HAS_DEVEL_IMPORTS = False
 
@@ -218,30 +262,31 @@ class Parameters(AnsibleF5Parameters):
         'maxClients': 'max_clients',
         'redirectHttpToHttps': 'redirect_http_to_https',
         'sslPort': 'ssl_port',
-        'sslCiphersuite': 'ssl_cipher_suite'
+        'sslCiphersuite': 'ssl_cipher_suite',
+        'sslProtocol': 'ssl_protocols'
     }
 
     api_attributes = [
         'authPamIdleTimeout', 'authPamValidateIp', 'authName', 'authPamDashboardTimeout',
         'fastcgiTimeout', 'hostnameLookup', 'logLevel', 'maxClients', 'sslPort',
-        'redirectHttpToHttps', 'allow', 'sslCiphersuite'
+        'redirectHttpToHttps', 'allow', 'sslCiphersuite', 'sslProtocol'
     ]
 
     returnables = [
         'auth_pam_idle_timeout', 'auth_pam_validate_ip', 'auth_name',
         'auth_pam_dashboard_timeout', 'fast_cgi_timeout', 'hostname_lookup',
         'log_level', 'max_clients', 'redirect_http_to_https', 'ssl_port',
-        'allow', 'ssl_cipher_suite'
+        'allow', 'ssl_cipher_suite', 'ssl_protocols'
     ]
 
     updatables = [
         'auth_pam_idle_timeout', 'auth_pam_validate_ip', 'auth_name',
         'auth_pam_dashboard_timeout', 'fast_cgi_timeout', 'hostname_lookup',
         'log_level', 'max_clients', 'redirect_http_to_https', 'ssl_port',
-        'allow', 'ssl_cipher_suite'
+        'allow', 'ssl_cipher_suite', 'ssl_protocols'
     ]
 
-    ciphers = "ECDHE-RSA-AES128-GCM-SHA256:" \
+    _ciphers = "ECDHE-RSA-AES128-GCM-SHA256:" \
               "ECDHE-RSA-AES256-GCM-SHA384:" \
               "ECDHE-RSA-AES128-SHA:" \
               "ECDHE-RSA-AES256-SHA:" \
@@ -262,6 +307,8 @@ class Parameters(AnsibleF5Parameters):
               "ECDHE-RSA-DES-CBC3-SHA:" \
               "ECDHE-ECDSA-DES-CBC3-SHA:" \
               "DES-CBC3-SHA"
+
+    _protocols = 'all -SSLv2 -SSLv3'
 
     @property
     def auth_pam_idle_timeout(self):
@@ -338,14 +385,41 @@ class ModuleParameters(Parameters):
     def ssl_cipher_suite(self):
         if self._values['ssl_cipher_suite'] is None:
             return None
-        ciphers = self._values['ssl_cipher_suite'].strip()
+        if isinstance(self._values['ssl_cipher_suite'], string_types):
+            ciphers = self._values['ssl_cipher_suite'].strip()
+        else:
+            ciphers = self._values['ssl_cipher_suite']
         if not ciphers:
             raise F5ModuleError(
                 "ssl_cipher_suite may not be set to 'none'"
             )
         if ciphers == 'default':
-            ciphers = Parameters.ciphers
+            ciphers = ':'.join(sorted(Parameters._ciphers.split(':')))
+        elif isinstance(self._values['ssl_cipher_suite'], string_types):
+            ciphers = ':'.join(sorted(ciphers.split(':')))
+        else:
+            ciphers = ':'.join(sorted(ciphers))
         return ciphers
+
+    @property
+    def ssl_protocols(self):
+        if self._values['ssl_protocols'] is None:
+            return None
+        if isinstance(self._values['ssl_protocols'], string_types):
+            protocols = self._values['ssl_protocols'].strip()
+        else:
+            protocols = self._values['ssl_protocols']
+        if not protocols:
+            raise F5ModuleError(
+                "ssl_protocols may not be set to 'none'"
+            )
+        if protocols == 'default':
+            protocols = ' '.join(sorted(Parameters._protocols.split(' ')))
+        elif isinstance(protocols, string_types):
+            protocols = ' '.join(sorted(protocols.split(' ')))
+        else:
+            protocols = ' '.join(sorted(protocols))
+        return protocols
 
 
 class ApiParameters(Parameters):
@@ -380,10 +454,19 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def ssl_cipher_suite(self):
-        if self._values['ssl_cipher_suite'] == Parameters.ciphers:
+        default = ':'.join(sorted(Parameters._ciphers.split(':')))
+        if self._values['ssl_cipher_suite'] == default:
             return 'default'
         else:
             return self._values['ssl_cipher_suite']
+
+    @property
+    def ssl_protocols(self):
+        default = ' '.join(sorted(Parameters._protocols.split(' ')))
+        if self._values['ssl_protocols'] == default:
+            return 'default'
+        else:
+            return self._values['ssl_protocols']
 
 
 class Difference(object):
@@ -501,7 +584,6 @@ class ModuleManager(object):
     def update_on_device(self):
         params = self.changes.api_params()
         resource = self.client.api.tm.sys.httpd.load()
-
         try:
             resource.modify(**params)
             return True
@@ -559,7 +641,8 @@ class ArgumentSpec(object):
             redirect_http_to_https=dict(
                 type='bool'
             ),
-            ssl_cipher_suite=dict()
+            ssl_cipher_suite=dict(type='raw'),
+            ssl_protocols=dict(type='raw')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

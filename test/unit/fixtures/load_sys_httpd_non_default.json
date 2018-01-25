@@ -30,7 +30,7 @@
     "sslOcspResponseMaxAge": -1,
     "sslOcspResponseTimeSkew": 300,
     "sslPort": 443,
-    "sslProtocol": "all -SSLv2 -SSLv3",
+    "sslProtocol": "all -SSLv2",
     "sslVerifyClient": "no",
     "sslVerifyDepth": 10
 }

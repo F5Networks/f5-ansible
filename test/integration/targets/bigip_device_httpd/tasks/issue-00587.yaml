@@ -1,0 +1,65 @@
+---
+
+- name: Issue 00587 - Set SSL protocols
+  bigip_device_httpd:
+    ssl_protocols: all -SSLv2
+  register: result
+
+- name: Issue 00587 - Set SSL protocols
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00587 - Set SSL protocols - Idempotent check
+  bigip_device_httpd:
+    ssl_protocols: all -SSLv2
+  register: result
+
+- name: Issue 00587 - Set SSL protocols - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00587 - Set SSL protocols by list
+  bigip_device_httpd:
+    ssl_protocols:
+      - all
+      - -SSLv3
+  register: result
+
+- name: Issue 00587 - Set SSL protocols by list
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00587 - Set SSL protocols by list - Idempotent check
+  bigip_device_httpd:
+    ssl_protocols:
+      - all
+      - -SSLv3
+  register: result
+
+- name: Issue 00587 - Set SSL protocols by list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00587 - Set SSL protocols to system default
+  bigip_device_httpd:
+    ssl_protocols: default
+  register: result
+
+- name: Issue 00587 - Set SSL protocols to system default
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00587 - Set SSL protocols to system default - Idempotent check
+  bigip_device_httpd:
+    ssl_protocols: default
+  register: result
+
+- name: Issue 00522 - Set SSL protocols to system default - Idempotent check
+  assert:
+    that:
+      - result is not changed
