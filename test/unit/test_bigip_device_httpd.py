@@ -199,24 +199,6 @@ class TestModuleManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['ssl_cipher_suite'] == 'default'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def test_update_issue_00587(self, *args):
         set_module_args(
             dict(
