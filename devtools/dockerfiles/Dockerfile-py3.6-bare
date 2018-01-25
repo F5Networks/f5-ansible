@@ -31,6 +31,11 @@ RUN ln -sf /usr/lib/python3/dist-packages/apt_pkg.cpython-34m-x86_64-linux-gnu.s
     ln -sf /usr/lib/python3/dist-packages/apt_inst.cpython-34m-x86_64-linux-gnu.so /usr/local/lib/python3.6/apt_inst.so && \
     ln -sf /usr/lib/python3/dist-packages/apt /usr/local/lib/python3.6/apt
 
+# Install git-secrets
+RUN git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets && \
+    cd /tmp/git-secrets && \
+    make install
+
 # The dependencies of the f5-ansible repository are installed here.
 #
 # Note that the entire codebase is **NOT** installed because it is instead
@@ -41,6 +46,7 @@ RUN pip install -r /tmp/__src__/requirements.bare.txt
 # Clears any cache that may have been saved when running the package installation
 # steps earlier.
 RUN rm -rf /var/lib/apt/lists/*
+RUN rm -rf /tmp/git-secrets
 
 # The /here directory will be bind-mounted to your f5-ansible source tree,
 # allowing you to use a proper editor outside of the container, and have the
