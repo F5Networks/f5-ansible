@@ -144,6 +144,25 @@ EXAMPLES = r'''
     user: admin
     ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:AES256-SHA256
   delegate_to: localhost
+
+- name: Set SSL protocols by list
+  bigip_device_httpd:
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    ssl_protocols:
+      - all
+      - -SSLv2
+      - -SSLv3
+  delegate_to: localhost
+
+- name: Set SSL protocols by string
+  bigip_device_httpd:
+    password: secret
+    server: lb.mydomain.com
+    user: admin
+    ssl_cipher_suite: all -SSLv2 -SSLv3
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -206,6 +225,7 @@ ssl_protocols:
   description: The new list of SSL protocols to accept on the management console.
   returned: changed
   type: string
+  sample: all -SSLv2 -SSLv3
 '''
 
 import time
