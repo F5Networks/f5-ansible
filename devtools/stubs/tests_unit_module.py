@@ -62,7 +62,7 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise Exception('You must write your own module param test. See examples, then remove this exception')
+        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
         # args = dict(
         #     monitor_type='m_of_n',
         #     host='192.168.1.1',
@@ -75,7 +75,7 @@ class TestParameters(unittest.TestCase):
         # assert p.port == 8080
 
     def test_api_parameters(self):
-        raise Exception('You must write your own API param test. See examples, then remove this exception')
+        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
         # args = dict(
         #     monitor_type='and_list',
         #     slowRampTime=200,
@@ -93,4 +93,4 @@ class TestParameters(unittest.TestCase):
        return_value=True)
 class TestManager(unittest.TestCase):
     def test_create(self, *args):
-        raise Exception('You must write a creation test')
+        raise SkipTest('You must write a creation test')
