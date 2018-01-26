@@ -290,6 +290,8 @@ class Difference(object):
 
     @property
     def allowed_addresses(self):
+        if self.want.allowed_addresses is None:
+            return None
         want = set(self.want.allowed_addresses)
         have = set(self.have.allowed_addresses)
         if want != have:
