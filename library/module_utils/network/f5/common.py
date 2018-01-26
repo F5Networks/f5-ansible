@@ -6,6 +6,8 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import re
+
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import exec_command
@@ -153,6 +155,31 @@ def is_cli(module):
     transport = module.params['transport']
     provider_transport = (module.params['provider'] or {}).get('transport')
     result = 'cli' in (transport, provider_transport)
+    return result
+
+
+def is_valid_hostname(host):
+    """Reasonable attempt at validating a hostname
+
+    Compiled from various paragraphs outlined here
+    https://tools.ietf.org/html/rfc3696#section-2
+    https://tools.ietf.org/html/rfc1123
+
+    Notably,
+    * Host software MUST handle host names of up to 63 characters and
+      SHOULD handle host names of up to 255 characters.
+    * The "LDH rule", after the characters that it permits. (letters, digits, hyphen)
+    * If the hyphen is used, it is not permitted to appear at
+      either the beginning or end of a label
+
+    :param host:
+    :return:
+    """
+    if len(host) > 255:
+        return False
+    host = host.rstrip(".")
+    allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
+    result = all(allowed.match(x) for x in host.split("."))
     return result
 
 
