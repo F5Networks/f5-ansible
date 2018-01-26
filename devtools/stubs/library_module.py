@@ -18,7 +18,7 @@ module: {{ module }}
 short_description: __SHORT_DESCRIPTION__
 description:
   - __LONG DESCRIPTION__.
-version_added: "2.5"
+version_added: "2.6"
 options:
   name:
     description:
@@ -303,7 +303,8 @@ class ArgumentSpec(object):
         argument_spec = dict(
             __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
         )
-        self.argument_spec = f5_argument_spec
+        self.argument_spec = {}
+        self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
 
 
