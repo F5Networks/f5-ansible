@@ -3,20 +3,17 @@
 Install Ansible by using virtualenv
 ===================================
 
-To keep up with the latest version of Ansible and F5 Ansible modules, F5 recommends using virtualenv.
+To keep up with the latest version of Ansible and the F5 modules, F5 recommends using virtualenv.
 
 Install virtualenv
 ------------------
 
-.. note::
-
-   To install Python virtualenv, you need administrative/root access. Use caution if you are installing
-   on a shared system to ensure you do not impact your co-workers!
+.. note:: To install Python virtualenv, you need administrative/root access. Use caution if you are installing on a shared system to ensure you do not impact your co-workers.
 
 Mac OS
 ``````
 
-Pip does not come pre-installed on a Mac. To install pip, run the following commands:
+Pip does not come pre-installed on Mac. To install pip, run the following commands:
 
 .. code-block:: bash
 
@@ -30,7 +27,7 @@ Pip does not come pre-installed on a Mac. To install pip, run the following comm
 RHEL/CentOS 7
 `````````````
 
-On RHEL/CentOS, You can install by using yum.
+On RHEL/CentOS, you can install by using yum.
 
 .. code-block:: bash
 
@@ -54,11 +51,9 @@ After you install virtualenv, you can create a "virtual environment" to host you
 
    virtualenv myansible
 
-In your current working directory, you will find a new directory called myansible (you do not have to call
-it "myansible", I just chose that name as an example, you could also call it "ansible24", etc...).
+This command creates a directory called ``myansible`` in your current working directory.
 
-This directory contains a copy of Python that will install any modules within that local directory. When you
-use this method, you can install Python modules without stomping on the system-wide ones.
+This directory contains a copy of Python that will install modules in the ``myansible`` directory. This keeps them separate from other modules.
 
 To use this new location, you must activate it.
 
@@ -66,25 +61,23 @@ To use this new location, you must activate it.
 
    source myansible/bin/activate
 
-You should see your prompt change to include the virtualenv name. For example:
+You should see the prompt change to include the virtualenv name. For example:
 
 .. code-block:: bash
 
   (myansible) $
 
-Your prompt may differ, but the important part is that you see "(myansible)".
-
 Now that the virtualenv is active, all future Python commands (such as pip) will install modules into the virtualenv.
 
 Let's install Ansible to make it possible to use the modules.
 
-First, make sure you installed `ansible`.
+First, make sure you installed Ansible.
 
 .. code-block:: bash
 
    (myansible) $ pip install ansible
 
-You should be able to verify that you are running Ansible by using the `--version` argument to the `ansible` command, for example:
+You should be able to verify that you are running Ansible by using the ``--version`` argument to the ``ansible`` command, for example:
 
 .. code-block:: bash
 
@@ -141,13 +134,14 @@ Install modules
 
 Refer to the documentation on `installing the modules here <installing-modules.html>`_.
 
-This is useful if you want to run the latest/development version of the F5 Ansible module.  If you are using Ansible
-2.4.0 or newer you may want to skip this step.
+This is useful if you want to run the latest/development version of the F5 modules for Ansible.
+
+If you are using Ansible 2.4.0 or later you may want to skip this step.
 
 Upgrade Ansible
 ---------------
 
-If you need to upgrade Ansible (i.e. from 2.3.0 to 2.4.0) you can run the following command:
+If you need to upgrade Ansible (i.e., from 2.3.0 to 2.4.0), you can run the following command:
 
 .. code-block:: bash
 
@@ -157,12 +151,9 @@ If you need to upgrade Ansible (i.e. from 2.3.0 to 2.4.0) you can run the follow
 Install the latest development version of Ansible and F5 modules
 ----------------------------------------------------------------
 
-The following example shows how to install the latest development version of Ansible and the F5 Ansible modules.
+The following example shows how to install the latest development version of Ansible and the F5 Modules for Ansible.
 
-.. warning::
-
-   Only provided as an example, not recommended for day-to-day use. Do not expect any support. Use only
-   if you want to use experimental/unstable features and/or contribute code/testing.
+.. warning:: This is an unsupported example. Use only if you want to use experimental/unstable features and/or contribute code/tests.
 
 .. code-block:: bash
 
