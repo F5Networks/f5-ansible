@@ -97,7 +97,9 @@ options:
     version_added: 2.5
 notes:
   - Requires the netaddr Python package on the host. This is as easy as
-    pip install netaddr
+    C(pip install netaddr).
+requirements:
+  - netaddr
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
