@@ -67,9 +67,8 @@ options:
       - This value cannot be changed once it is set.
   state:
     description:
-      - When C(present), ensures that the cloud connector exists. When
-        C(absent), ensures that the cloud connector does not exist.
-    required: False
+      - When C(present), ensures that the static route exists.
+      - When C(absent), ensures that the static does not exist.
     default: present
     choices:
       - present
