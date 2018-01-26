@@ -19,6 +19,14 @@ description:
   - Manipulate general SNMP settings on a BIG-IP.
 version_added: 2.4
 options:
+  allowed_addresses:
+    description:
+      - Configures the IP addresses of the SNMP clients from which the snmpd
+        daemon accepts requests.
+      - This value can be hostnames, IP addresses, or IP networks.
+      - You may specify a single list item of C(default) to set the value back
+        to the system's default of C(127.0.0.0/8).
+    version_added: 2.6
   contact:
     description:
       - Specifies the name of the person who administers the SNMP
@@ -51,6 +59,11 @@ options:
     description:
       - Specifies the description of this system's physical location.
 extends_documentation_fragment: f5
+notes:
+  - Requires the netaddr Python package on the host. This is as easy as
+    C(pip install netaddr).
+requirements:
+  - netaddr
 author:
   - Tim Rupp (@caphrim007)
 '''
@@ -101,7 +114,14 @@ location:
   returned: changed
   type: string
   sample: US West 1a
+allowed_addresses:
+  description: The new allowed addresses for SNMP client connections.
+  returned: changed
+  type: list
+  sample: ['127.0.0.0/8', 'foo.bar.com', '10.10.10.10']
 '''
+
+import re
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -135,6 +155,12 @@ except ImportError:
     except ImportError:
         HAS_F5SDK = False
 
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
+
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
@@ -142,21 +168,23 @@ class Parameters(AnsibleF5Parameters):
         'authTrap': 'agent_authentication_traps',
         'bigipTraps': 'device_warning_traps',
         'sysLocation': 'location',
-        'sysContact': 'contact'
+        'sysContact': 'contact',
+        'allowedAddresses': 'allowed_addresses'
     }
 
     updatables = [
         'agent_status_traps', 'agent_authentication_traps',
-        'device_warning_traps', 'location', 'contact'
+        'device_warning_traps', 'location', 'contact', 'allowed_addresses'
     ]
 
     returnables = [
         'agent_status_traps', 'agent_authentication_traps',
-        'device_warning_traps', 'location', 'contact'
+        'device_warning_traps', 'location', 'contact', 'allowed_addresses'
     ]
 
     api_attributes = [
-        'agentTrap', 'authTrap', 'bigipTraps', 'sysLocation', 'sysContact'
+        'agentTrap', 'authTrap', 'bigipTraps', 'sysLocation', 'sysContact',
+        'allowedAddresses'
     ]
 
     def to_return(self):
@@ -167,28 +195,130 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    @property
+    def allowed_addresses(self):
+        if self._values['allowed_addresses'] is None:
+            return None
+        result = list(set(self._values['allowed_addresses']))
+        return result
+
+
+class ModuleParameters(Parameters):
+    @property
+    def allowed_addresses(self):
+        if self._values['allowed_addresses'] is None:
+            return None
+        result = []
+        addresses = self._values['allowed_addresses']
+        if len(addresses) == 1 and addresses[0] in ['default', '']:
+            result = ['127.0.0.0/8']
+            return result
+        for address in addresses:
+            try:
+                # Check for valid IPv4 or IPv6 entries
+                netaddr.IPNetwork(address)
+                result.append(address)
+            except netaddr.core.AddrFormatError:
+                # else fallback to checking reasonably well formatted hostnames
+                if self.is_valid_hostname(address):
+                    result.append(str(address))
+                    continue
+                raise F5ModuleError(
+                    "The provided 'allowed_address' value {0} is not a valid IP or hostname".format(address)
+                )
+        result = list(set(result))
+        return result
+
+    def is_valid_hostname(self, host):
+        """Reasonable attempt at validating a hostname
+
+        Compiled from various paragraphs outlined here
+        https://tools.ietf.org/html/rfc3696#section-2
+        https://tools.ietf.org/html/rfc1123
+
+        Notably,
+        * Host software MUST handle host names of up to 63 characters and
+          SHOULD handle host names of up to 255 characters.
+        * The "LDH rule", after the characters that it permits. (letters, digits, hyphen)
+        * If the hyphen is used, it is not permitted to appear at
+          either the beginning or end of a label
+
+        :param host:
+        :return:
+        """
+        if len(host) > 255:
+            return False
+        host = host.rstrip(".")
+        allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
+        result = all(allowed.match(x) for x in host.split("."))
+        return result
+
+
 class Changes(Parameters):
     pass
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            return self.__default(param)
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def allowed_addresses(self):
+        want = set(self.want.allowed_addresses)
+        have = set(self.have.allowed_addresses)
+        if want != have:
+            return want
 
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.have = None
-        self.want = Parameters(params=self.module.params)
-        self.changes = Changes()
+        self.have = ApiParameters()
+        self.want = ModuleParameters(params=self.module.params)
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -200,10 +330,20 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def should_update(self):
         result = self._update_changed_options()
@@ -228,7 +368,7 @@ class ModuleManager(object):
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.snmp.load()
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
 
 class ArgumentSpec(object):
@@ -246,7 +386,8 @@ class ArgumentSpec(object):
             device_warning_traps=dict(
                 choices=self.choices
             ),
-            location=dict()
+            location=dict(),
+            allowed_addresses=dict(type='list')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -262,6 +403,8 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
+    if not HAS_NETADDR:
+        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
