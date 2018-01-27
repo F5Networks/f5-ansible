@@ -1,0 +1,380 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create SMTP server configuration, default port
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server: 1.1.1.1
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, default port
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, default port - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server: 1.1.1.1
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, default port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create SMTP server configuration, custom port
+  bigip_smtp:
+    name: my-smtp2
+    smtp_server: 1.1.1.1
+    smtp_server_port: 234
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom port
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, custom port - Idempotent check
+  bigip_smtp:
+    name: my-smtp2
+    smtp_server: 1.1.1.1
+    smtp_server_port: 234
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create SMTP server configuration, custom authentication
+  bigip_smtp:
+    name: my-smtp3
+    smtp_server: 1.1.1.1
+    smtp_server_username: admin
+    smtp_server_password: password
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom authentication
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, custom authentication, expected change - Idempotent check
+  bigip_smtp:
+    name: my-smtp3
+    smtp_server: 1.1.1.1
+    smtp_server_username: admin
+    smtp_server_password: password
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+# When providing an smtp_server_password, Idempotency is not available unless
+# you specify `update_password: on_create`
+- name: Assert Create SMTP server configuration, custom authentication, expected change - Idempotent check
+  assert:
+    that:
+      - result is changed
+
+- name: Only update authenication on create
+  bigip_smtp:
+    name: my-smtp3
+    smtp_server: 1.1.1.1
+    smtp_server_username: admin
+    smtp_server_password: password
+    update_password: on_create
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+# When providing an smtp_server_password, Idempotency is not available unless
+# you specify `update_password: on_create`
+- name: Assert Create SMTP server configuration, custom authentication
+  assert:
+    that:
+      - result is not changed
+
+- name: Create SMTP server configuration, custom authentication, on create
+  bigip_smtp:
+    name: my-smtp5
+    smtp_server: 1.1.1.1
+    smtp_server_username: admin
+    smtp_server_password: password
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+    update_password: on_create
+  register: result
+
+- name: Assert Create SMTP server configuration, custom authentication, on create
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, custom authentication, on create - Idempotent check
+  bigip_smtp:
+    name: my-smtp5
+    smtp_server: 1.1.1.1
+    smtp_server_username: admin
+    smtp_server_password: password
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+    update_password: on_create
+  register: result
+
+- name: Assert Create SMTP server configuration, custom authentication, on create - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create SMTP server configuration, custom encryption SSL
+  bigip_smtp:
+    name: my-smtp4
+    smtp_server: 1.1.1.1
+    encryption: ssl
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom encryption SSL
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, custom encryption SSL - Idempotent check
+  bigip_smtp:
+    name: my-smtp4
+    smtp_server: 1.1.1.1
+    encryption: ssl
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom encryption SSL - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create SMTP server configuration, custom encryption TLS
+  bigip_smtp:
+    name: my-smtp5
+    smtp_server: 1.1.1.1
+    encryption: tls
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom encryption TLS
+  assert:
+    that:
+      - result is changed
+
+- name: Create SMTP server configuration, custom encryption TLS - Idempotent check
+  bigip_smtp:
+    name: my-smtp5
+    smtp_server: 1.1.1.1
+    encryption: tls
+    local_host_name: smtp.bar.com
+    from_address: mailer@bar.com
+  register: result
+
+- name: Assert Create SMTP server configuration, custom encryption TLS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP server
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server: 2.2.2.2
+  register: result
+
+- name: Assert Change SMTP server
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP server - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server: 2.2.2.2
+  register: result
+
+- name: Assert Change SMTP server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP server port
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server_port: 1234
+  register: result
+
+- name: Assert Change SMTP server port
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP server port - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    smtp_server_port: 1234
+  register: result
+
+- name: Assert Change SMTP server port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP local host name
+  bigip_smtp:
+    name: my-smtp1
+    local_host_name: yogi.bear.com
+  register: result
+
+- name: Assert Change SMTP local host name
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP local host name - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    local_host_name: yogi.bear.com
+  register: result
+
+- name: Assert Change SMTP local host name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP "from" address
+  bigip_smtp:
+    name: my-smtp1
+    from_address: mickey@mouse.com
+  register: result
+
+- name: Assert Change SMTP "from" address
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP "from" address - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    from_address: mickey@mouse.com
+  register: result
+
+- name: Assert Change SMTP "from" address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP encryption to SSL
+  bigip_smtp:
+    name: my-smtp1
+    encryption: ssl
+  register: result
+
+- name: Assert Change SMTP encryption to SSL
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP encryption to SSL - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    encryption: ssl
+  register: result
+
+- name: Assert Change SMTP encryption to SSL - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change SMTP encryption to TLS
+  bigip_smtp:
+    name: my-smtp1
+    encryption: tls
+  register: result
+
+- name: Assert Change SMTP encryption to TLS
+  assert:
+    that:
+      - result is changed
+
+- name: Change SMTP encryption to TLS - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    encryption: tls
+  register: result
+
+- name: Assert Change SMTP encryption to TLS - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Enable authentication
+  bigip_smtp:
+    name: my-smtp1
+    authentication: yes
+  register: result
+
+- name: Assert Enable authentication
+  assert:
+    that:
+      - result is changed
+
+- name: Change Enable authentication - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    authentication: yes
+  register: result
+
+- name: Assert Enable authentication - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Disable authentication
+  bigip_smtp:
+    name: my-smtp1
+    authentication: no
+  register: result
+
+- name: Assert Disable authentication
+  assert:
+    that:
+      - result is changed
+
+- name: Change Disable authentication - Idempotent check
+  bigip_smtp:
+    name: my-smtp1
+    authentication: no
+  register: result
+
+- name: Assert Disable authentication - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove SMTP servers
+  bigip_smtp:
+    name: "my-smtp{{ item }}"
+    state: absent
+  with_sequence: start=1 end=5
+
+
+- import_tasks: teardown.yaml
