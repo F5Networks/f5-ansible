@@ -88,7 +88,7 @@ class TestParameters(unittest.TestCase):
         assert p.update_password == 'always'
         assert p.from_address == 'no-reply@mydomain.com'
         assert p.authentication_disabled is None
-        assert p.authentication_enabled == True
+        assert p.authentication_enabled is True
 
     def test_api_parameters(self):
         p = ApiParameters(params=load_fixture('load_sys_smtp_server.json'))
@@ -101,7 +101,7 @@ class TestParameters(unittest.TestCase):
         assert p.encryption == 'ssl'
         assert p.from_address == 'no-reply@foo.bar'
         assert p.authentication_disabled is None
-        assert p.authentication_enabled == True
+        assert p.authentication_enabled is True
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
