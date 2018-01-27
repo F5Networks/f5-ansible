@@ -71,7 +71,7 @@ class TestParameters(unittest.TestCase):
         #     port=8080
         # )
         #
-        # p = Parameters(args)
+        # p = ModuleParameters(params=args)
         # assert p.monitor == 'min 1 of'
         # assert p.host == '192.168.1.1'
         # assert p.port == 8080
@@ -85,7 +85,7 @@ class TestParameters(unittest.TestCase):
         #     serviceDownAction='drop'
         # )
         #
-        # p = Parameters(args)
+        # p = ApiParameters(params=args)
         # assert p.slow_ramp_time == 200
         # assert p.reselect_tries == 5
         # assert p.service_down_action == 'drop'
