@@ -18,7 +18,7 @@ if sys.version_info < (2, 7):
 from ansible.compat.tests import unittest
 from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
-from ansible.module_utils.f5_utils import AnsibleF5Client
+from ansible.module_utils.basic import AnsibleModule
 
 try:
     from library.{{ module }} import ApiParameters
