@@ -161,6 +161,15 @@ options:
         that are numbers.
       - Data will be persisted, not ephemeral.
     version_added: 2.5
+  address_translation:
+    description:
+      - Specifies, when C(enabled), that the system translates the address of the
+        virtual server.
+      - When C(disabled), specifies that the system uses the address without translation.
+      - This option is useful when the system is load balancing devices that have the
+        same IP address.
+      - When creating a new virtual server, the default is C(enabled).
+    type: bool
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -366,6 +375,11 @@ metadata:
   returned: changed
   type: dict
   sample: {'key1': 'foo', 'key2': 'bar'}
+address_translation:
+  description: The new value specifying whether address translation is on or off
+  returned: changed
+  type: bool
+  sample: True
 '''
 
 import re
@@ -419,7 +433,8 @@ class Parameters(AnsibleF5Parameters):
         'vlansDisabled': 'vlans_disabled',
         'profilesReference': 'profiles',
         'policiesReference': 'policies',
-        'rules': 'irules'
+        'rules': 'irules',
+        'translateAddress': 'address_translation'
     }
 
     api_attributes = [
@@ -439,6 +454,7 @@ class Parameters(AnsibleF5Parameters):
         'vlans',
         'vlansEnabled',
         'vlansDisabled',
+        'translateAddress'
     ]
 
     updatables = [
@@ -456,7 +472,8 @@ class Parameters(AnsibleF5Parameters):
         'port',
         'profiles',
         'snat',
-        'source'
+        'source',
+        'address_translation'
     ]
 
     returnables = [
@@ -478,7 +495,8 @@ class Parameters(AnsibleF5Parameters):
         'source',
         'vlans',
         'vlans_enabled',
-        'vlans_disabled'
+        'vlans_disabled',
+        'address_translation'
     ]
 
     profiles_mutex = [
@@ -1033,6 +1051,14 @@ class ModuleParameters(Parameters):
             )
         return result
 
+    @property
+    def address_translation(self):
+        if self._values['address_translation'] is None:
+            return None
+        if self._values['address_translation']:
+            return 'enabled'
+        return 'disabled'
+
 
 class Changes(Parameters):
     pass
@@ -1101,6 +1127,12 @@ class ReportableChanges(Changes):
     def disabled_vlans(self):
         if len(self._values['vlans']) > 0 and self._values['vlans_disabled'] is True:
             return self._values['vlans']
+
+    @property
+    def address_translation(self):
+        if self._values['address_translation'] == 'enabled':
+            return True
+        return False
 
 
 class Difference(object):
@@ -1619,7 +1651,8 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
-            )
+            ),
+            address_translation=dict(type='bool')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
