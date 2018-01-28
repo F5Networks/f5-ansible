@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_smtp
-short_description: Manages SMTP settings on the BIG-IP.
+short_description: Manages SMTP settings on the BIG-IP
 description:
   - Allows configuring of the BIG-IP to send mail via an SMTP server by
     configuring the parameters of an SMTP server.
