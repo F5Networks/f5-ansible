@@ -801,25 +801,6 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert results['address_translation'] is False
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def test_create_virtual_server_with_port_translation_bool_true(self, *args):
         set_module_args(dict(
             destination="10.10.10.10",
