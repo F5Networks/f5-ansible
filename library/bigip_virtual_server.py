@@ -170,6 +170,17 @@ options:
         same IP address.
       - When creating a new virtual server, the default is C(enabled).
     type: bool
+    version_added: 2.6
+  port_translation:
+    description:
+      - Specifies, when C(enabled), that the system translates the port of the virtual
+        server.
+      - When C(disabled), specifies that the system uses the port without translation.
+        Turning off port translation for a virtual server is useful if you want to use
+        the virtual server to load balance connections to any service.
+      - When creating a new virtual server, the default is C(enabled).
+    type: bool
+    version_added: 2.6
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -380,6 +391,11 @@ address_translation:
   returned: changed
   type: bool
   sample: True
+port_translation:
+  description: The new value specifying whether port translation is on or off
+  returned: changed
+  type: bool
+  sample: True
 '''
 
 import re
@@ -434,7 +450,8 @@ class Parameters(AnsibleF5Parameters):
         'profilesReference': 'profiles',
         'policiesReference': 'policies',
         'rules': 'irules',
-        'translateAddress': 'address_translation'
+        'translateAddress': 'address_translation',
+        'translatePort': 'port_translation'
     }
 
     api_attributes = [
@@ -454,10 +471,12 @@ class Parameters(AnsibleF5Parameters):
         'vlans',
         'vlansEnabled',
         'vlansDisabled',
-        'translateAddress'
+        'translateAddress',
+        'translatePort'
     ]
 
     updatables = [
+        'address_translation',
         'description',
         'default_persistence_profile',
         'destination',
@@ -470,13 +489,14 @@ class Parameters(AnsibleF5Parameters):
         'pool',
         'policies',
         'port',
+        'port_translation',
         'profiles',
         'snat',
         'source',
-        'address_translation'
     ]
 
     returnables = [
+        'address_translation',
         'description',
         'default_persistence_profile',
         'destination',
@@ -490,13 +510,13 @@ class Parameters(AnsibleF5Parameters):
         'pool',
         'policies',
         'port',
+        'port_translation',
         'profiles',
         'snat',
         'source',
         'vlans',
         'vlans_enabled',
         'vlans_disabled',
-        'address_translation'
     ]
 
     profiles_mutex = [
@@ -1059,6 +1079,14 @@ class ModuleParameters(Parameters):
             return 'enabled'
         return 'disabled'
 
+    @property
+    def port_translation(self):
+        if self._values['port_translation'] is None:
+            return None
+        if self._values['port_translation']:
+            return 'enabled'
+        return 'disabled'
+
 
 class Changes(Parameters):
     pass
@@ -1131,6 +1159,12 @@ class ReportableChanges(Changes):
     @property
     def address_translation(self):
         if self._values['address_translation'] == 'enabled':
+            return True
+        return False
+
+    @property
+    def port_translation(self):
+        if self._values['port_translation'] == 'enabled':
             return True
         return False
 
@@ -1652,7 +1686,8 @@ class ArgumentSpec(object):
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
             ),
-            address_translation=dict(type='bool')
+            address_translation=dict(type='bool'),
+            port_translation=dict(type='bool')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

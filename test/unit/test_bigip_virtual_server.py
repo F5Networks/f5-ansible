@@ -800,3 +800,134 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert results['address_translation'] is False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def test_create_virtual_server_with_port_translation_bool_true(self, *args):
+        set_module_args(dict(
+            destination="10.10.10.10",
+            port_translation=True,
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['port_translation'] is True
+
+    def test_create_virtual_server_with_port_translation_string_yes(self, *args):
+        set_module_args(dict(
+            destination="10.10.10.10",
+            port_translation='yes',
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['port_translation'] is True
+
+    def test_create_virtual_server_with_port_translation_bool_false(self, *args):
+        set_module_args(dict(
+            destination="10.10.10.10",
+            port_translation=False,
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['port_translation'] is False
+
+    def test_create_virtual_server_with_port_translation_string_no(self, *args):
+        set_module_args(dict(
+            destination="10.10.10.10",
+            port_translation='no',
+            name="my-snat-pool",
+            partition="Common",
+            password="secret",
+            port="443",
+            server="localhost",
+            state="present",
+            user="admin",
+            validate_certs="no"
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(return_value=False)
+        mm.create_on_device = Mock(return_value=True)
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['port_translation'] is False
