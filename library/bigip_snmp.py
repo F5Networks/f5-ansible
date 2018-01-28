@@ -135,6 +135,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import is_valid_hostname
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -149,6 +150,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import is_valid_hostname
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -221,37 +223,13 @@ class ModuleParameters(Parameters):
                 result.append(address)
             except netaddr.core.AddrFormatError:
                 # else fallback to checking reasonably well formatted hostnames
-                if self.is_valid_hostname(address):
+                if is_valid_hostname(address):
                     result.append(str(address))
                     continue
                 raise F5ModuleError(
                     "The provided 'allowed_address' value {0} is not a valid IP or hostname".format(address)
                 )
         result = list(set(result))
-        return result
-
-    def is_valid_hostname(self, host):
-        """Reasonable attempt at validating a hostname
-
-        Compiled from various paragraphs outlined here
-        https://tools.ietf.org/html/rfc3696#section-2
-        https://tools.ietf.org/html/rfc1123
-
-        Notably,
-        * Host software MUST handle host names of up to 63 characters and
-          SHOULD handle host names of up to 255 characters.
-        * The "LDH rule", after the characters that it permits. (letters, digits, hyphen)
-        * If the hyphen is used, it is not permitted to appear at
-          either the beginning or end of a label
-
-        :param host:
-        :return:
-        """
-        if len(host) > 255:
-            return False
-        host = host.rstrip(".")
-        allowed = re.compile(r'(?!-)[A-Z0-9-]{1,63}(?<!-)$', re.IGNORECASE)
-        result = all(allowed.match(x) for x in host.split("."))
         return result
 
 
