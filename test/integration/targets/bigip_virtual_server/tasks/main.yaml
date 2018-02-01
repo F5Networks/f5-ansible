@@ -4,7 +4,7 @@
 
 - name: Add virtual server
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -20,7 +20,7 @@
 
 - name: Add virtual server - Idempotent check
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -82,7 +82,7 @@
 
 - name: Add virtual server for VLAN test
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -98,7 +98,7 @@
 
 - name: Set VLAN on virtual server
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -115,7 +115,7 @@
 
 - name: Set VLAN on virtual server - Idempotent check
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -132,7 +132,7 @@
 
 - name: Set ALL VLAN on virtual server
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -149,7 +149,7 @@
 
 - name: Set ALL VLAN on virtual server - Idempotent check
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles1 }}"
+    profiles: "{{ vs_profiles1 }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -225,7 +225,7 @@
 
 - name: Add virtual server (FastHTTP)
   bigip_virtual_server:
-    all_profiles: "{{ vs_profiles_fasthttp }}"
+    profiles: "{{ vs_profiles_fasthttp }}"
     description: "{{ vs_description }}"
     destination: "{{ node_host }}"
     name: "{{ vs_name }}"
@@ -301,8 +301,70 @@
     name: "{{ vs_name }}"
     state: absent
 
+- name: Add virtual server, HTTP and specified TCP profile
+  bigip_virtual_server:
+    profiles:
+      - http
+      - tcp
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+  register: result
 
+- name: Add virtual server, HTTP and specified TCP profile
+  assert:
+    that:
+      - result is changed
 
+- name: Add virtual server, HTTP and specified TCP profile - Idempotent check
+  bigip_virtual_server:
+    profiles:
+      - http
+      - tcp
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+  register: result
+
+- name: Add virtual server, HTTP and specified TCP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Specifically remove HTTP profile
+  bigip_virtual_server:
+    profiles:
+      - tcp
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+  register: result
+
+- name: Specifically remove HTTP profile
+  assert:
+    that:
+      - result is changed
+
+- name: Specifically remove HTTP profile - Idempotent check
+  bigip_virtual_server:
+    profiles:
+      - tcp
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+  register: result
+
+- name: Specifically remove HTTP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove TCP virtual
+  bigip_virtual_server:
+    destination: "{{ node_host }}"
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: absent
 
 - import_tasks: teardown.yaml
 
