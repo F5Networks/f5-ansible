@@ -73,6 +73,9 @@ options:
       - If you only want to apply a particular profile to the server-side of
         the connection, specify C(server-side) for the profile's C(context).
       - If C(context) is not provided, it will default to C(all).
+      - If you want to remove a profile from the list of profiles currently active
+        on the virtual, then simply remove it from the C(profiles) list. See
+        examples for an illustration of this.
     suboptions:
       name:
         description:
@@ -302,6 +305,31 @@ EXAMPLES = r'''
     metadata:
       ansible: 2.4
       updated_at: 2017-12-20T17:50:46Z
+  delegate_to: localhost
+
+- name: Add virtual with two profiles
+  bigip_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    profiles:
+      - http
+      - tcp
+  delegate_to: localhost
+
+- name: Remove HTTP profile from previous virtual
+  bigip_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    profiles:
+      - tcp
   delegate_to: localhost
 '''
 
