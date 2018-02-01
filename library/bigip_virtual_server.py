@@ -76,6 +76,9 @@ options:
       - If you want to remove a profile from the list of profiles currently active
         on the virtual, then simply remove it from the C(profiles) list. See
         examples for an illustration of this.
+      - If you want to add a profile to the list of profiles currently active
+        on the virtual, then simply add it to the C(profiles) list. See
+        examples for an illustration of this.
     suboptions:
       name:
         description:
@@ -329,6 +332,19 @@ EXAMPLES = r'''
     name: my-pool
     partition: Common
     profiles:
+      - tcp
+  delegate_to: localhost
+
+- name: Add the HTTP profile back to the previous virtual
+  bigip_pool:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    state: absent
+    name: my-pool
+    partition: Common
+    profiles:
+      - http
       - tcp
   delegate_to: localhost
 '''
