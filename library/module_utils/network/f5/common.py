@@ -201,6 +201,7 @@ class F5BaseClient(object):
     def __init__(self, *args, **kwargs):
         self.params = kwargs
         load_params(self.params)
+        self._client = None
 
     @property
     def api(self):
@@ -221,7 +222,7 @@ class F5BaseClient(object):
         :return:
         :raises iControlUnexpectedHTTPError
         """
-        self.api = self.mgmt
+        self._client = self.mgmt
 
 
 class AnsibleF5Parameters(object):
@@ -229,13 +230,17 @@ class AnsibleF5Parameters(object):
         self._values = defaultdict(lambda: None)
         self._values['__warnings'] = []
         self.client = kwargs.pop('client', None)
+        self._module = kwargs.pop('module', None)
+        self._params = {}
 
         params = kwargs.pop('params', None)
         if params:
             self.update(params=params)
+            self._params.update(params)
 
     def update(self, params=None):
         if params:
+            self._params.update(params)
             for k, v in iteritems(params):
                 if self.api_map is not None and k in self.api_map:
                     map_key = self.api_map[k]
