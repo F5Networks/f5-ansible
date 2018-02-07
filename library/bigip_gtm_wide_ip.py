@@ -134,6 +134,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import is_valid_fqdn
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -148,6 +149,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import is_valid_fqdn
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -162,11 +164,6 @@ class Parameters(AnsibleF5Parameters):
     updatables = ['pool_lb_method', 'state', 'pools']
     returnables = ['name', 'pool_lb_method', 'state', 'pools']
     api_attributes = ['poolLbMode', 'enabled', 'disabled', 'pools']
-
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
 
 
 class ApiParameters(Parameters):
@@ -249,7 +246,7 @@ class ModuleParameters(Parameters):
     def name(self):
         if self._values['name'] is None:
             return None
-        if not re.search(r'.*\..*\..*', self._values['name']):
+        if not is_valid_fqdn(self._values['name']):
             raise F5ModuleError(
                 "The provided name must be a valid FQDN"
             )
@@ -288,7 +285,7 @@ class ModuleParameters(Parameters):
             pool = dict()
             if 'ratio' in item:
                 pool['ratio'] = item['ratio']
-            pool['name'] = self._fqdn_name(item['name'])
+            pool['name'] = fqdn_name(self.partition, item['name'])
             result.append(pool)
         return result
 
