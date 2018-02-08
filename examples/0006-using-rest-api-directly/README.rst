@@ -32,8 +32,8 @@ Additional resources on using the iControl REST API
 
 * https://devcentral.f5.com/wiki/iControl.HomePage.ashx
 
-Warning
--------
+Please note
+-----------
 
 The following are things you **must** be aware of when following this technique.
 These are all risks that you accept by using the REST API directly.
@@ -47,7 +47,7 @@ go to great lengths to hide these issues from you in Ansible modules.
   however, does not tell you which version the particular API refers to.
 
 * Some rest API resources support a "example" suffix.  This can be helpful for determining
-  attributes for specific versions of BIG-IP. 
+  attributes for specific versions of BIG-IP.
   https://devcentral.f5.com/wiki/iControlREST.iControlRestUserGuide_v1300_10.ashx
 
 * Using the ``uri`` module, you will have no ability to do file chunking. This means that
@@ -61,14 +61,8 @@ go to great lengths to hide these issues from you in Ansible modules.
 
 * Never trust the ``generation`` attribute of a resource.
 
-* Some APIs will not work. By this, I mean the values you set the attributes to will be
-  invalid, even if you received them in this format from the API. The classic example is
-  ``PUT``ing what you ``GET`` and failing.
-
-* Return values may or may not contain accurate information.
-
 * The iControl REST API can have breaking changes between versions.  Examples are Local Traffic
-  Policy support of Draft policies in 12.1.x, GTM APIs changes in 12.x to support a new schema 
+  Policy support of Draft policies in 12.1.x, GTM APIs changes in 12.x to support a new schema
   for additional record types, OCSP stapling APIs changed in 13.x.  Be sure to test any playbooks
   that uses iControl REST API directly to ensure consistent behavior between versions.
 
@@ -87,7 +81,7 @@ go to great lengths to hide these issues from you in Ansible modules.
 * Some API URLs include redundant information (such as pool members repeating the partition
   name in it's self link). Using the pool members example, refer to the illogical URL
   ``/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80``. Note the duplication
-  (bu required) mention of ``~Common``. This is not unusual across the API.
+  (bu required) mention of ``~Common``.
 
 * Names of resources translate forward slashes to tilde. Therefore, / becomes ~.
   For example, ``~Common~my-pool``.
@@ -112,8 +106,7 @@ go to great lengths to hide these issues from you in Ansible modules.
 * Some APIs reference resources at other APIs (such as LTM virtuals referencing LTM
   profiles). In many cases, there is no indication in the first API where in the API the
   second resource is. For example in virtuals, LTM profiles will list the profile name
-  ``/Common/foo``, but will not tell you that it is a ``diametersession`` profile. This
-  is not unusual across the API.
+  ``/Common/foo``, but will not tell you that it is a ``diametersession`` profile.
 
 * The full API encompasses nearly 2500+ URLs.
 
@@ -133,8 +126,7 @@ go to great lengths to hide these issues from you in Ansible modules.
   whether your BIG-IP is actually named that or not.
 
 * Many resources have a ``/stats`` URL associated with them. This resource is a deeply
-  nested combination of lists and dicts. Often, it is un-intuitive to use. This
-  is not unusual.
+  nested combination of lists and dicts. Often, it is un-intuitive to use.
 
 * Some resources that you think are resources, are actually links to stats APIs even if
   the url does not end with ``/stats``. For example, ``/mgmt/tm/cm/failover-status`` or
@@ -148,10 +140,6 @@ go to great lengths to hide these issues from you in Ansible modules.
 * Some attributes cannot be set upon POST and require that you first create the
   resource in a POST and then followup with a PATCH or PUT to the attribute you
   want to set.
-
-* The HTTP return code is not trustworthy. This is illustrated to great effect in the
-  ``/mgmt/tm/sys/util`` suite of APIs, which will happily return one of a number of
-  ``400`` errors even if they succeed.
 
 * Using the REST API directly is **not** idempotent. This example playbook makes use of
   fake idempotentency similar to: https://github.com/F5Networks/f5-ansible/tree/devel/examples/0004-faking-idempotency-with-bigip-command
