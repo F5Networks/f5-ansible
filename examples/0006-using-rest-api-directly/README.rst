@@ -90,7 +90,7 @@ go to great lengths to hide these issues from you in Ansible modules.
 
 * Certain modules have further limitations. For example,
 
-  * APM has no REST API exposure. Therefore, you cannot configure it with the URI module
+  * APM has no REST API exposure. Therefore, you cannot configure it with the URI module.
   * ASM has concurrency limitations, therefore, you cannot run many ASM REST calls concurrently.
 
 * While most APIs are synchronous, several are asynchronous. Therefore, you must use
