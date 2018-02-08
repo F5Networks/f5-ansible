@@ -31,7 +31,7 @@ Issues
 The following are things you **must** be aware of when following this technique.
 These are all risks that you accept by using the REST API directly.
 
-Most of these issues were discovered while writing the F5 Python SDK, therefore
+All of these issues were discovered while writing the `F5 Python SDK`_, therefore
 I'm reiterating them here for your awareness. The F5 Modules for Ansible maintainers
 go to great lengths to hide these issues from you in Ansible modules.
 
@@ -138,3 +138,5 @@ go to great lengths to hide these issues from you in Ansible modules.
 * The HTTP return code is not trustworthy. This is illustrated to great effect in the
   ``/mgmt/tm/sys/util`` suite of APIs, which will happily return one of a number of
   ``400`` errors even if they succeed.
+
+.. _F5 Python SDK: https://github.com/F5Networks/f5-common-python
