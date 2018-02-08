@@ -1,3 +1,14 @@
+#
+# This playbook will remove the LTM objects that were created by "playbook.yaml".
+#
+# It is not necessary to explicitly delete a pool member when deleting a pool (it is
+# done implicitly).
+#
+# It is necessary to explicitly delete a node that was implicitly created when
+# creating a pool member.
+#
+# The objects deleted:  virtual, (pool member), pool, and node
+#
 ---
 
 - name: Use the REST API directly
@@ -15,7 +26,6 @@
             "password": "{{ bigip_password }}",
             "loginProviderName": "tmos"
           }
-        force_basic_auth: yes
         status_code: 200
         body_format: json
         validate_certs: "{{ validate_certs }}"
@@ -42,17 +52,7 @@
           X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
         status_code: 200
         validate_certs: "{{ validate_certs }}"
-      when: virtual.status == "404"
-
-    ###  when you delete a pool the pool members will be deleted
-    # - name: Delete a pool member
-    #   uri:
-    #     url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80"
-    #     method: DELETE
-    #     headers:
-    #       X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
-    #     status_code: 200
-    #     validate_certs: "{{ validate_certs }}"
+      when: virtual.status == 200
 
     - name: Check for a pool
       uri:
@@ -72,7 +72,27 @@
           X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
         status_code: 200
         validate_certs: "{{ validate_certs }}"
-      when: pool.status == "404"
+      when: pool.status == 200
+
+    - name: Check for a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: node
+
+    - name: Delete a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: node.status == 200
 
     - name: Destroy an API token
       uri:
