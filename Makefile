@@ -88,3 +88,6 @@ sync-to-upstream:
 
 find-ignores:
 	cd local/ansible && ! find . -name *ignore* | egrep -v "(gitignore|dockerignore)" | xargs egrep "(bigip|bigiq)" -R
+
+pyclean:
+	find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
