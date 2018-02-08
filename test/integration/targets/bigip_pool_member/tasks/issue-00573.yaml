@@ -13,11 +13,11 @@
 
 - name: Issue 00573 - Add Pool members
   bigip_pool_member:
-      state: present
-      name: issue-00573-host
-      host: issue-00573-host
-      port: 80
-      pool: issue-00573-pool
+    state: present
+    name: issue-00573-host
+    host: issue-00573-host
+    port: 80
+    pool: issue-00573-pool
 
 - name: Issue 00573 - Remove pool
   bigip_pool:
@@ -27,3 +27,4 @@
 - name: Issue 00573 - Remove node
   bigip_node:
     name: issue-00573-host
+    state: absent

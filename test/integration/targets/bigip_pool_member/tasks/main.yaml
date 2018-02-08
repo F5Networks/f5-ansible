@@ -7,11 +7,6 @@
     state: present
   register: result
 
-- name: Assert Create pool
-  assert:
-    that:
-      - result is changed
-
 - name: Add pool member
   bigip_pool_member:
     connection_limit: "{{ connection_limit }}"
@@ -76,14 +71,33 @@
     that:
       - result is not changed
 
+- name: Disable pool member
+  bigip_pool_member:
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: disabled
+  register: result
+
+- name: Assert Disable pool member
+  assert:
+    that:
+      - result is changed
+
+- name: Disable pool member - Idempotent check
+  bigip_pool_member:
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: disabled
+  register: result
+
 - name: Force pool member offline
   bigip_pool_member:
     host: "{{ node_host }}"
-    monitor_state: disabled
     pool: "{{ pool_name }}"
     port: "{{ node_port }}"
-    session_state: disabled
-    state: present
+    state: forced_offline
   register: result
 
 - name: Assert Force pool member offline
@@ -91,27 +105,18 @@
     that:
       - result is changed
 
-# TODO (Make this work. Currently this behavior is not idempotent)
-#- name: Force pool member offline - Idempotent check
-#  bigip_pool_member:
-#      host: "{{ node_host }}"
-#      monitor_state: "disabled"
-#      partition: "{{ bigip_partition }}"
-#      password: "{{ bigip_password }}"
-#      pool: "{{ pool_name }}"
-#      port: "{{ node_port }}"
-#      server: "{{ inventory_hostname }}"
-#      server_port: "{{ bigip_port }}"
-#      session_state: "disabled"
-#      state: "present"
-#      user: "{{ bigip_username }}"
-#      validate_certs: "{{ validate_certs }}"
-#  register: result
+- name: Force pool member offline - Idempotent check
+  bigip_pool_member:
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: forced_offline
+  register: result
 
-#- name: Assert Force pool member offline - Idempotent check
-#  assert:
-#      that:
-#          - result is not changed
+- name: Assert Force pool member offline - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - name: Remove pool member from pool, preserve node
   bigip_pool_member:
@@ -153,6 +158,202 @@
     state: present
   register: result
 
+
+
+
+
+- name: Remove non-existent pool member from pool, do not preserve node
+  bigip_pool_member:
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    preserve_node: no
+    state: absent
+  register: result
+
+- name: Assert Remove non-existent pool member from pool, do not preserve node
+  assert:
+    that:
+      - result is changed
+
+- name: Remove non-existent pool member from pool, do not preserve node - Idempotent check
+  bigip_pool_member:
+    host: "{{ node_host }}"
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    preserve_node: no
+    state: absent
+  register: result
+
+- name: Assert Remove non-existent pool member from pool, do not preserve node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Add pool member by address
+  bigip_pool_member:
+    address: 2.2.2.2
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Assert Add pool member by address
+  assert:
+    that:
+      - result is changed
+
+- name: Add pool member by address - Idempotent check
+  bigip_pool_member:
+    address: 2.2.2.2
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Add pool member by address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+- name: Add pool member by FQDN
+  bigip_pool_member:
+    fqdn: foo.baz.bar
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Assert Add pool member by FQDN
+  assert:
+    that:
+      - result is changed
+
+- name: Add pool member by FQDN - Idempotent check
+  bigip_pool_member:
+    fqdn: foo.baz.bar
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Add pool member by FQDN - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+- name: Add pool member by FQDN, setting the node name
+  bigip_pool_member:
+    name: foo1-node1
+    fqdn: foo1.baz.bar
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Assert Add pool member by FQDN, setting the node name
+  assert:
+    that:
+      - result is changed
+
+- name: Add pool member by FQDN, setting the node name - Idempotent check
+  bigip_pool_member:
+    name: foo1-node1
+    fqdn: foo1.baz.bar
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Add pool member by FQDN, setting the node name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Add pool member by address, setting the node name
+  bigip_pool_member:
+    name: foo2-node2
+    address: 1.2.3.4
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Assert Add pool member by address, setting the node name
+  assert:
+    that:
+      - result is changed
+
+- name: Add pool member by address, setting the node name - Idempotent check
+  bigip_pool_member:
+    name: foo2-node2
+    address: 1.2.3.4
+    pool: "{{ pool_name }}"
+    port: "{{ node_port }}"
+    state: present
+  register: result
+
+- name: Add pool member by address, setting the node name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 - name: Delete pool
   bigip_pool:
     name: "{{ pool_name }}"
@@ -164,16 +365,18 @@
     that:
       - result is changed
 
-- name: Delete node
+- name: Delete nodes
   bigip_node:
-    name: "{{ node_host }}"
+    name: "{{ item }}"
     state: absent
-  register: result
+  loop:
+    - 2.2.2.2
+    - foo.baz.bar
+    - foo1-node1
+    - foo2-node2
 
-- name: Assert delete node
-  assert:
-    that:
-      - result is changed
+- import_tasks: legacy.yaml
+  tags: legacy
 
 - import_tasks: issue-00573.yaml
   tags: issue-00573
