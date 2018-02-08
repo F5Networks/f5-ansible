@@ -73,7 +73,7 @@ RETURN = r'''
 import re
 from netaddr import IPNetwork
 
-from ansible.module_utils.basic import BOOLEANS_TRUE
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.f5_utils import (
     AnsibleF5Client,
     AnsibleF5Parameters,
