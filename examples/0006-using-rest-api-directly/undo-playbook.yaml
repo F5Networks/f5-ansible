@@ -100,14 +100,6 @@
         method: DELETE
         headers:
           X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
-        body: |
-          {
-            "uuid": "{{ auth['json']['token']['name'] }}",
-            "kind": "shared:authz:tokens:authtokenitemstate",
-            "selfLink": "https://localhost/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"
-          }
-        force_basic_auth: yes
         status_code: 200
-        body_format: json
         validate_certs: "{{ validate_certs }}"
       register: auth
