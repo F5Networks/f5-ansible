@@ -17,7 +17,7 @@ to get a new token.
 
 APIs change between versions so, in some sense, there is a large risk to using
 the REST APIs directly if you will be upgrading your BIG-IPs, or, be using the
-``uri`` module directly against a number of BIG-IPs that vary in version. For
+`uri`_ module directly against a number of BIG-IPs that vary in version. For
 this situation, it is recommended that you use the ``bigip_facts`` module to
 at least get the current version so that you can use ``when`` conditionals on
 your tasks as needed.
@@ -39,7 +39,7 @@ go to great lengths to hide these issues from you in Ansible modules.
   https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This series of pages,
   however, does not tell you which version the particular API refers to.
 
-* Using the ``uri`` module, you will have no ability to do file chunking this means that
+* Using the ``uri`` module, you will have no ability to do file chunking. This means that
   you cannot upload files.
 
 * The REST API is always truthy. Therefore you will find attributes that, instead
@@ -140,3 +140,4 @@ go to great lengths to hide these issues from you in Ansible modules.
   ``400`` errors even if they succeed.
 
 .. _F5 Python SDK: https://github.com/F5Networks/f5-common-python
+.. _uri: https://docs.ansible.com/ansible/latest/uri_module.html
