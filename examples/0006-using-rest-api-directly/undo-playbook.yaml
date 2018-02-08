@@ -9,6 +9,9 @@
 #
 # The objects deleted:  virtual, (pool member), pool, and node
 #
+# This playbook has been tested on version 13.1.0 of BIG-IP. It may work on other
+# versions, but it has not been tested on other versions.
+#
 ---
 
 - name: Use the REST API directly
@@ -40,9 +43,6 @@
         status_code: 200, 404
         validate_certs: "{{ validate_certs }}"
       register: virtual
-
-    - debug:
-        msg: "{{virtual.status}}"
 
     - name: Delete a virtual server
       uri:

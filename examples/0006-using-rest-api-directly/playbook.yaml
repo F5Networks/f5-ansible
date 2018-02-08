@@ -13,6 +13,9 @@
 # - bigip_pool_member
 # - bigip_virtual_server
 #
+# This playbook has been tested on version 13.1.0 of BIG-IP. It may work on other
+# versions, but it has not been tested on other versions.
+#
 
 ---
 
@@ -31,7 +34,6 @@
             "password": "{{ bigip_password }}",
             "loginProviderName": "tmos"
           }
-        force_basic_auth: yes
         status_code: 200
         body_format: json
         validate_certs: "{{ validate_certs }}"
@@ -100,10 +102,6 @@
         status_code: 200, 404
         validate_certs: "{{ validate_certs }}"
       register: virtual
-
-    - debug:
-        msg: "{{virtual.status}}"
-
 
     - name: Create a virtual server
       uri:
