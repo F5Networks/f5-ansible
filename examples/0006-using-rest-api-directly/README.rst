@@ -38,10 +38,6 @@ Please note
 The following are things you **must** be aware of when following this technique.
 These are all risks that you accept by using the REST API directly.
 
-All of these issues were discovered while writing the `F5 Python SDK`_, therefore
-I'm reiterating them here for your awareness. The F5 Modules for Ansible maintainers
-go to great lengths to hide these issues from you in Ansible modules.
-
 * The attributes for the different rest API resources is, at best, documented here
   https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This series of pages,
   however, does not tell you which version the particular API refers to.
