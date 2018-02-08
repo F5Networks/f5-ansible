@@ -8,6 +8,9 @@ There may be reasons for which you want to do this, and Ansible caters to your
 desire to do this. Beware however, that the REST API is the "Wild West" of ways
 to interact with your BIG-IP. You will likely encounter quirks.
 
+The F5 Modules for Ansible maintainers **cannot** help you if you encounter a
+problem while using the method described in this playbook.
+
 The secret to using the REST API in Ansible is that you must first authenticate
 to it and get a token. From that point on, all further operations should use that
 token.
