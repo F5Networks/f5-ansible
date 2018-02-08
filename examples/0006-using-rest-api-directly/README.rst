@@ -28,6 +28,10 @@ your tasks as needed.
 If you find yourself using the method illustrated in this playbook, consider
 filing an issue to have a real module developed to handle your use case.
 
+Additional resources on using the iControl REST API
+
+* https://devcentral.f5.com/wiki/iControl.HomePage.ashx
+
 Warning
 -------
 
@@ -41,6 +45,10 @@ go to great lengths to hide these issues from you in Ansible modules.
 * The attributes for the different rest API resources is, at best, documented here
   https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This series of pages,
   however, does not tell you which version the particular API refers to.
+
+* Some rest API resources support a "example" suffix.  This can be helpful for determining
+  attributes for specific versions of BIG-IP. 
+  https://devcentral.f5.com/wiki/iControlREST.iControlRestUserGuide_v1300_10.ashx
 
 * Using the ``uri`` module, you will have no ability to do file chunking. This means that
   you cannot upload files.
@@ -59,10 +67,10 @@ go to great lengths to hide these issues from you in Ansible modules.
 
 * Return values may or may not contain accurate information.
 
-* GTM APIs changed in 12.x, breaking backwards compatibility.
-
-* OCSP stapling APIs changed in 13.x, breaking backwards compatibility. This act of breaking
-  backwards compatibility is not unusual.
+* The iControl REST API can have breaking changes between versions.  Examples are Local Traffic
+  Policy support of Draft policies in 12.1.x, GTM APIs changes in 12.x to support a new schema 
+  for additional record types, OCSP stapling APIs changed in 13.x.  Be sure to test any playbooks
+  that uses iControl REST API directly to ensure consistent behavior between versions.
 
 * You cannot ``DELETE`` a collection. For example, do not send a ``DELETE`` to
   ``/mgmt/tm/ltm/virtual`` expecting it to delete all the virtuals. It will not.
@@ -70,7 +78,7 @@ go to great lengths to hide these issues from you in Ansible modules.
 * You must delete all objects that depend on an object before you can delete the object
   itself. For example, it's nearly impossible to delete a partition that has been used for
   any moderate period of time, because you need to know all the resources that exist in
-  the partition and delete them first. And, speaking of which...
+  the partition and delete them first.
 
 * It's not possible to trace all of an objects dependencies. Therefore, you cannot know
   what other objects use the object in question, without querying every API endpoint and
@@ -84,9 +92,10 @@ go to great lengths to hide these issues from you in Ansible modules.
 * Names of resources translate forward slashes to tilde. Therefore, / becomes ~.
   For example, ``~Common~my-pool``.
 
-* You must delete your token after you are done doing your work. BIGIPs can run out of
-  file descriptors (and kill all future API calls) if too many tokens are created. This
-  limitation exists for admin accounts as well.
+* You must delete your token after you are done doing your work. iControl REST only supports
+  a limited number of active tokens.  If you exceed this number you will get an error of
+  "maximum active login tokens" and no longer be able to create new tokens until you delete
+  existing tokens.  https://devcentral.f5.com/wiki/iControl.Authentication_token_resource_API.ashx
 
 * Certain modules have further limitations. For example,
 
