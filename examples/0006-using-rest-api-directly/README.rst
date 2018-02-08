@@ -25,8 +25,8 @@ your tasks as needed.
 If you find yourself using the method illustrated in this playbook, consider
 filing an issue to have a real module developed to handle your use case.
 
-Warning Warning Warning
------------------------
+Warning
+-------
 
 The following are things you **must** be aware of when following this technique.
 These are all risks that you accept by using the REST API directly.
