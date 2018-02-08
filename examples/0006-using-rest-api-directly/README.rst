@@ -144,5 +144,9 @@ go to great lengths to hide these issues from you in Ansible modules.
   ``/mgmt/tm/sys/util`` suite of APIs, which will happily return one of a number of
   ``400`` errors even if they succeed.
 
+* Using the REST API directly is **not** idempotent. For example, if you run this playbook
+  twice in succession without changing anything in it, or the BIG-IP, the playbook
+  **will fail** on the ``Create a pool`` step.
+
 .. _F5 Python SDK: https://github.com/F5Networks/f5-common-python
 .. _uri: https://docs.ansible.com/ansible/latest/uri_module.html
