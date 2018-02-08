@@ -1,0 +1,93 @@
+---
+
+- name: Use the REST API directly
+  hosts: f5-test
+  connection: local
+
+  tasks:
+    - name: Get an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authn/login"
+        method: POST
+        body: |
+          {
+            "username": "{{ bigip_username }}",
+            "password": "{{ bigip_password }}",
+            "loginProviderName": "tmos"
+          }
+        force_basic_auth: yes
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: auth
+
+    - name: Check for a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200, 404
+        validate_certs: "{{ validate_certs }}"
+      register: virtual
+
+    - debug:
+        msg: "{{virtual.status}}"
+
+    - name: Delete a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: virtual.status == "404"
+
+    ###  when you delete a pool the pool members will be deleted
+    # - name: Delete a pool member
+    #   uri:
+    #     url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80"
+    #     method: DELETE
+    #     headers:
+    #       X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+    #     status_code: 200
+    #     validate_certs: "{{ validate_certs }}"
+
+    - name: Check for a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: pool
+
+    - name: Delete a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: pool.status == "404"
+
+    - name: Destroy an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        body: |
+          {
+            "uuid": "{{ auth['json']['token']['name'] }}",
+            "kind": "shared:authz:tokens:authtokenitemstate",
+            "selfLink": "https://localhost/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"
+          }
+        force_basic_auth: yes
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: auth
