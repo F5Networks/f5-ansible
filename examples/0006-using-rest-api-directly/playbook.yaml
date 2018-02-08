@@ -1,0 +1,72 @@
+---
+
+- name: Use the REST API directly
+  hosts: f5-test
+  connection: local
+
+  tasks:
+    - name: Get an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authn/login"
+        method: POST
+        body: |
+          {
+            "username": "{{ bigip_username }}",
+            "password": "{{ bigip_password }}",
+            "loginProviderName": "tmos"
+          }
+        force_basic_auth: yes
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: auth
+
+    - name: Create a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool"
+        method: POST
+        body: |
+          {
+            "name": "my-pool",
+            "partition": "Common",
+            "loadBalancingMode": "round-robin"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+        body_format: json
+
+    - name: Create a pool member
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members"
+        method: POST
+        body: |
+          {
+            "name": "1.1.1.1:80",
+            "address": "1.1.1.1",
+            "partition": "Common"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+        body_format: json
+
+    - name: Create a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual"
+        method: POST
+        body: |
+          {
+            "name": "foo",
+            "partition": "Common",
+            "destination": "/Common/2.2.2.2:80",
+            "mask": "255.255.255.255",
+            "pool": "/Common/my-pool"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
