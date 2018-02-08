@@ -38,9 +38,9 @@ Please note
 The following are things you **must** be aware of when following this technique.
 These are all risks that you accept by using the REST API directly.
 
-* The attributes for the different rest API resources is, at best, documented here
-  https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This series of pages,
-  however, does not tell you which version the particular API refers to.
+* The attributes for the different rest API resources are documented here
+  https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This content,
+  however, does not indicate which version the particular API refers to.
 
 * Some rest API resources support a "example" suffix.  This can be helpful for determining
   attributes for specific versions of BIG-IP.
@@ -57,16 +57,16 @@ These are all risks that you accept by using the REST API directly.
 
 * Never trust the ``generation`` attribute of a resource.
 
-* The iControl REST API can have breaking changes between versions.  Examples are Local Traffic
-  Policy support of Draft policies in 12.1.x, GTM APIs changes in 12.x to support a new schema
-  for additional record types, OCSP stapling APIs changed in 13.x.  Be sure to test any playbooks
-  that uses iControl REST API directly to ensure consistent behavior between versions.
+* Local Traffic Policy APIs changed in 12.1.x to require use of Draft policies.
+  GTM APIs changes in 12.x to support a new schema for additional record types, OCSP
+  stapling APIs changed in 13.x.  Be sure to test any playbooks that uses iControl REST
+  API directly to ensure consistent behavior between versions.
 
 * You cannot ``DELETE`` a collection. For example, do not send a ``DELETE`` to
   ``/mgmt/tm/ltm/virtual`` expecting it to delete all the virtuals. It will not.
 
 * You must delete all objects that depend on an object before you can delete the object
-  itself. For example, it's nearly impossible to delete a partition that has been used for
+  itself. For example, it is difficult to delete a partition that has been used for
   any moderate period of time, because you need to know all the resources that exist in
   the partition and delete them first.
 
@@ -75,9 +75,9 @@ These are all risks that you accept by using the REST API directly.
   comparing.
 
 * Some API URLs include redundant information (such as pool members repeating the partition
-  name in it's self link). Using the pool members example, refer to the illogical URL
-  ``/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80``. Note the duplication
-  (bu required) mention of ``~Common``.
+  name in it's self link). Using the pool members example, refer to the URL
+  ``/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80``. Note the duplicate
+  (but required) mention of ``~Common``.
 
 * Names of resources translate forward slashes to tilde. Therefore, / becomes ~.
   For example, ``~Common~my-pool``.
@@ -89,7 +89,7 @@ These are all risks that you accept by using the REST API directly.
 
 * Certain modules have further limitations. For example,
 
-  * APM has no REST API exposure. Therefore, you cannot configure it with the URI module.
+  * APM has no REST API exposure. Therefore, you cannot configure it with the ``uri`` module.
   * ASM has concurrency limitations, therefore, you cannot run many ASM REST calls concurrently.
 
 * While most APIs are synchronous, several are asynchronous. Therefore, you must use
