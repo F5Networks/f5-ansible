@@ -185,8 +185,6 @@ EXAMPLES = '''
 RETURN = '''
 '''
 
-import q
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
