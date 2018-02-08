@@ -44,15 +44,15 @@ go to great lengths to hide these issues from you in Ansible modules.
 
 * The REST API is always truthy. Therefore you will find attributes that, instead
   of being boolean False and True, will always be boolean True and the attribute name
-  will change to accommodate this. For example ``vlansDisabled: true``, vlansEnabled: true``.
+  will change to accommodate this. For example ``vlansDisabled: true``, ``vlansEnabled: true``.
 
 * Not all APIs support the common HTTP verbs (GET, POST, PUT, PATCH)
 
 * Never trust the ``generation`` attribute of a resource.
 
-* Some APIs will not work. By this I mean the values you set the attributes to will be
-  invalid even if you received them in this format from the API. The classic example is
-  PUTing what you GET and failing.
+* Some APIs will not work. By this, I mean the values you set the attributes to will be
+  invalid, even if you received them in this format from the API. The classic example is
+  ``PUT``ing what you ``GET`` and failing.
 
 * Return values may or may not contain accurate information.
 
@@ -62,19 +62,21 @@ go to great lengths to hide these issues from you in Ansible modules.
   backwards compatibility is not unusual.
 
 * You cannot ``DELETE`` a collection. For example, do not send a ``DELETE`` to
-  ``/mgmt/tm/ltm/virtual`` expecting it to delete all the virtuals.
+  ``/mgmt/tm/ltm/virtual`` expecting it to delete all the virtuals. It will not.
 
 * You must delete all objects that depend on an object before you can delete the object
-  itself. For example, its nearly impossible to delete a partition that has been used for
-  and moderate period of time because you need to know all the resources that exist in
+  itself. For example, it's nearly impossible to delete a partition that has been used for
+  any moderate period of time, because you need to know all the resources that exist in
   the partition and delete them first. And, speaking of which...
 
 * It's not possible to trace all of an objects dependencies. Therefore, you cannot know
-  what other objects use your object in question without querying every API endpoint and
-  comparing by hand.
+  what other objects use the object in question, without querying every API endpoint and
+  comparing.
 
 * Some API URLs include redundant information (such as pool members repeating the partition
-  name in it's self link). This is not unusual across the API.
+  name in it's self link). Using the pool members example, refer to the illogical URL
+  ``/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80``. Note the duplication
+  (bu required) mention of ``~Common``. This is not unusual across the API.
 
 * Names of resources translate forward slashes to tilde. Therefore, / becomes ~.
   For example, ``~Common~my-pool``.
@@ -84,13 +86,13 @@ go to great lengths to hide these issues from you in Ansible modules.
   limitation exists for admin accounts as well.
 
 * Certain modules have further limitations. For example,
-  * APM has no REST API exposure. Therefore, you cannot configure it with the URI module
-  * ASM has concurrency limitations, therefore, you cannot run many ASM REST calls
-    concurrently.
+
+    * APM has no REST API exposure. Therefore, you cannot configure it with the URI module
+    * ASM has concurrency limitations, therefore, you cannot run many ASM REST calls concurrently.
 
 * While most APIs are synchronous, several are asynchronous. Therefore, you must use
-  future tasks to poll for their status and make use of Ansible's ``retries`` and ``delay``
-  attributes.
+  subsequent Ansible tasks to poll for their status and make use of Ansible's ``retries``
+  and ``delay`` attributes.
 
 * All of BIGIQs APIs are asynchronous. It is your job to use them in a synchronous way
   by polling.
@@ -107,11 +109,11 @@ go to great lengths to hide these issues from you in Ansible modules.
   of names. Therefore you will need to keep track of the human readable names in another
   medium so that you remember what to access at which API.
 
-* Some of the API resources must be updated by ``PUT``ing to their resources reference,
+* Some of the API resources must be updated by doing a ``PUT`` to their resources reference,
   the full payload instead of updating individual attributes. For example LTM policy
   conditions and actions. There is an ``actionsReference`` attribute that refers to a
   ``/actions`` url. You may not update any resources at that url though. For example, if
-  there were an ``foo`` action with a selfLink that ended in ``/actions/foo`, you would not
+  there were an ``foo`` action with a selfLink that ended in ``/actions/foo``, you would not
   be able to update its attributes. If you want to change the actions, you must put ALL
   the actions new and only to the ``/actions`` url.
 
@@ -119,7 +121,7 @@ go to great lengths to hide these issues from you in Ansible modules.
   whether your BIG-IP is actually named that or not.
 
 * Many resources have a ``/stats`` URL associated with them. This resource is a deeply
-  nested combination of lists and dicts. Often, it is very intuitive how to use. This
+  nested combination of lists and dicts. Often, it is un-intuitive to use. This
   is not unusual.
 
 * Some resources that you think are resources, are actually links to stats APIs even if
