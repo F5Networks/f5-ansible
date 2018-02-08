@@ -39,7 +39,7 @@ go to great lengths to hide these issues from you in Ansible modules.
   https://devcentral.f5.com/wiki/iControlREST.APIRef.ashx. This series of pages,
   however, does not tell you which version the particular API refers to.
 
-* Using the URI module you will have no ability to do file chunking this means that
+* Using the URI module, you will have no ability to do file chunking this means that
   you cannot upload files.
 
 * The REST API is always truthy. Therefore you will find attributes that, instead
