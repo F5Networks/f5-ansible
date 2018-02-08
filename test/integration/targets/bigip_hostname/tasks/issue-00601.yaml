@@ -1,0 +1,35 @@
+---
+
+- name: Issue 00601 - Include issue variables
+  include_vars:
+    file: issue-00601.yaml
+
+- name: Issue 00601 - Change the hostname to simulate breakage
+  bigip_command:
+    commands:
+      - tmsh modify sys global-settings hostname foo.bar
+
+- name: Issue 00601 - Change the hostname
+  bigip_hostname:
+    hostname: "{{ valid_hostname }}"
+  register: result
+
+- name: Issue 00601 - Assert Change the hostname
+  assert:
+    that:
+      - result is changed
+      - result['hostname'] == valid_hostname
+
+- name: Issue 00601 - Change the hostname - Idempotent check
+  bigip_hostname:
+    hostname: "{{ valid_hostname }}"
+  register: result
+
+- name: Issue 00601 - Assert Change the hostname - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change the hostname
+  bigip_hostname:
+    hostname: "{{ reset_hostname }}"

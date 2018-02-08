@@ -2,3 +2,5 @@
 
 valid_hostname: foo.local.com
 invalid_hostname: foo
+
+reset_hostname: bigip1.local

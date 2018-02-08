@@ -20,7 +20,8 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.bigip_hostname import Parameters
+    from library.bigip_hostname import ApiParameters
+    from library.bigip_hostname import ModuleParameters
     from library.bigip_hostname import ModuleManager
     from library.bigip_hostname import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
@@ -28,7 +29,8 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_hostname import Parameters
+        from ansible.modules.network.f5.bigip_hostname import ApiParameters
+        from ansible.modules.network.f5.bigip_hostname import ModuleParameters
         from ansible.modules.network.f5.bigip_hostname import ModuleManager
         from ansible.modules.network.f5.bigip_hostname import ArgumentSpec
         from ansible.module_utils.network.f5.common import F5ModuleError
@@ -64,7 +66,7 @@ class TestParameters(unittest.TestCase):
         args = dict(
             hostname='foo.internal.com'
         )
-        p = Parameters(params=args)
+        p = ModuleParameters(params=args)
         assert p.hostname == 'foo.internal.com'
 
 
@@ -83,8 +85,8 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = Parameters(
-            dict(
+        current = ApiParameters(
+            params=dict(
                 hostname='foo.internal.com'
             )
         )
