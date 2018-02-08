@@ -63,7 +63,6 @@ author:
   - Tim Rupp (@caphrim007)
 '''
 
-
 EXAMPLES = r'''
 - name: Use a file lookup to import PEM Certificate
   bigip_ssl_certificate:
