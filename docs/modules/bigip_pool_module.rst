@@ -201,7 +201,7 @@ Examples
         state: present
         name: my-pool
         partition: Common
-        lb_method: least-connection-member
+        lb_method: least-connections-member
         slow_ramp_time: 120
       delegate_to: localhost
 

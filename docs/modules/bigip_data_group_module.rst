@@ -1,10 +1,10 @@
-.. _bigip_selfip:
+.. _bigip_data_group:
 
 
-bigip_selfip - Manage Self-IPs on a BIG-IP system
+bigip_data_group - Manage data groups on a BIG-IP
 +++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.6
 
 
 .. contents::
@@ -15,14 +15,13 @@ bigip_selfip - Manage Self-IPs on a BIG-IP system
 Synopsis
 --------
 
-* Manage Self-IPs on a BIG-IP system.
+* Allows for managing data groups on a BIG-IP. Data groups provide a way to store collections of values on a BIG-IP for later use in things such as LTM rules, iRules, and ASM policies.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 3.0.9
-  * netaddr
 
 
 Options
@@ -38,31 +37,26 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>address<br/><div style="font-size: small;"></div></td>
+                <tr><td>delete_data_group_file<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
-        <td><div>The IP addresses for the new self IP. This value is ignored upon update as addresses themselves cannot be changed after they are created.</div><div>This value is required when creating new self IPs.</div>        </td></tr>
-                <tr><td>allow_service<br/><div style="font-size: small;"></div></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>When <code>yes</code>, will ensure that the remote data group file is deleted.</div><div>This parameter is only relevant when <code>state</code> is <code>absent</code> and <code>internal</code> is <code>no</code>.</div>        </td></tr>
+                <tr><td>internal<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
-        <td><div>Configure port lockdown for the Self IP. By default, the Self IP has a &quot;default deny&quot; policy. This can be changed to allow TCP and UDP ports as well as specific protocols. This list should contain <code>protocol</code>:<code>port</code> values.</div>        </td></tr>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>The type of this data group.</div><div>You should only consider setting this value in cases where you know exactly what you&#x27;re doing, <b>or</b>, you are working with a pre-existing internal data group.</div><div>Be aware that if you deliberately force this parameter to <code>yes</code>, and you have a either a large number of records or a large total records size, this large amount of data will be reflected in your BIG-IP configuration. This can lead to <b>long</b> system configuration load times due to needing to parse and verify the large configuration.</div><div>There is a limit of either 4 megabytes or 65,000 records (whichever is more restrictive) for uploads when this parameter is <code>yes</code>.</div><div>This value cannot be changed once the data group is created.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td>Value of C(address)</td>
-        <td></td>
-        <td><div>The self IP to create.</div>        </td></tr>
-                <tr><td>netmask<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The netmask for the self IP. When creating a new Self IP, this value is required.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+        <td><div>Specifies the name of the data group.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.6)</div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
-        <td><div>Device partition to manage resources on. You can set different partitions for Self IPs, but the address used may not match any other address used by a Self IP. In that sense, Self IPs are not isolated by partitions as other resources on a BIG-IP are.</div>        </td></tr>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -128,11 +122,45 @@ Options
     </td>
     </tr>
         </td></tr>
-                <tr><td>route_domain<br/><div style="font-size: small;"> (added in 2.3)</div></td>
+                <tr><td rowspan="2">records<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td><td></td>
+    <td> <div>Specifies the records that you want to add to a data group.</div><div>If you have a large number of records, it is recommended that you use <code>records_content</code> instead of typing all those records here.</div><div>The technical limit of either 1. the number of records, or 2. the total size of all records, varies with the size of the total resources on your system; in particular, RAM.</div>    </tr>
+    <tr>
+    <td colspan="5">
+    <table border=1 cellpadding=4>
+    <caption><b>Dictionary object records</b></caption>
+    <tr>
+    <th class="head">parameter</th>
+    <th class="head">required</th>
+    <th class="head">default</th>
+    <th class="head">choices</th>
+    <th class="head">comments</th>
+    </tr>
+                    <tr><td>key<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The key describing the record in the data group.</div><div>Your key will be used for validation of the <code>type</code> parameter to this module.</div>        </td></tr>
+                    <tr><td>value<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>The value of the key describing the record in the data group.</div>        </td></tr>
+        </table>
+    </td>
+    </tr>
+        </td></tr>
+                <tr><td>records_content<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The route domain id of the system. When creating a new Self IP, if this value is not specified, a default value of <code>0</code> will be used.</div><div>This value cannot be changed after it is set.</div>        </td></tr>
+        <td><div>Content of a file with records in it.</div><div>The file should be well-formed. This means that it includes records, one per line, that resemble the following format &quot;key separator value&quot;. For example, <code>foo := bar</code>.</div><div>BIG-IP is strict about this format, but this module is a bit more lax. It will allow you to include arbitrary amounts (including none) of empty space on either side of the separator. For an illustration of this, see the Examples section.</div><div>Record keys are limited in length to no more than 65520 characters.</div><div>Values of record keys are limited in length to no more than 65520 characters.</div><div>The total number of records you can have in your BIG-IP is limited by the memory of the BIG-IP.</div>        </td></tr>
+                <tr><td>separator<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>When specifying <code>records_content</code>, this is the string of characters that will be used to break apart entries in the <code>records_content</code> into key/value pairs.</div><div>By default, this parameter&#x27;s value is <code>:=</code>.</div><div>This value cannot be changed once it is set.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -145,14 +173,14 @@ Options
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>present</td>
-        <td><ul><li>absent</li><li>present</li></ul></td>
-        <td><div>When <code>present</code>, guarantees that the Self-IP exists with the provided attributes.</div><div>When <code>absent</code>, removes the Self-IP from the system.</div>        </td></tr>
-                <tr><td>traffic_group<br/><div style="font-size: small;"></div></td>
+    <td></td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>state</code> is <code>present</code>, ensures the data group exists.</div><div>When <code>state</code> is <code>absent</code>, ensures that the data group is removed.</div>        </td></tr>
+                <tr><td>type<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
-        <td><div>The traffic group for the Self IP addresses in an active-active, redundant load balancer configuration. When creating a new Self IP, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div>        </td></tr>
+        <td><ul><li>address</li><li>string</li><li>integer</li></ul></td>
+        <td><div>The type of records in this data group.</div><div>This parameter is especially important because it causes BIG-IP to store your data in different ways so-as to optimize access to it. For example, it would be wrong to specify a list of records containing IP addresses, but label them as a <code>string</code> type.</div><div>This value is required when creating new data groups.</div><div>This value cannot be changed once the data group is created.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -163,11 +191,6 @@ Options
     <td>True</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
-                <tr><td>vlan<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The VLAN that the new self IPs will be on. When creating a new Self IP, this value is required.</div>        </td></tr>
         </table>
     </br>
 
@@ -179,102 +202,64 @@ Examples
  ::
 
     
-    - name: Create Self IP
-      bigip_selfip:
-        address: 10.10.10.10
-        name: self1
-        netmask: 255.255.255.0
+    - name: Create a data group of addresses
+      bigip_data_group:
+        name: foo
         password: secret
         server: lb.mydomain.com
+        state: present
         user: admin
-        validate_certs: no
-        vlan: vlan1
+        records:
+          - key: 0.0.0.0/32
+            value: External_NAT
+          - key: 10.10.10.10
+            value: No_NAT
+        type: address
       delegate_to: localhost
 
-    - name: Create Self IP with a Route Domain
-      bigip_selfip:
-        server: lb.mydomain.com
-        user: admin
+    - name: Create a data group of strings
+      bigip_data_group:
+        name: foo
         password: secret
-        validate_certs: no
-        name: self1
-        address: 10.10.10.10
-        netmask: 255.255.255.0
-        vlan: vlan1
-        route_domain: 10
-        allow_service: default
+        server: lb.mydomain.com
+        state: present
+        user: admin
+        records:
+          - key: caddy
+            value: ""
+          - key: cafeteria
+            value: ""
+          - key: cactus
+            value: ""
+        type: string
       delegate_to: localhost
 
-    - name: Delete Self IP
-      bigip_selfip:
-        name: self1
+    - name: Create a data group of IP addresses from a file
+      bigip_data_group:
+        name: foo
         password: secret
         server: lb.mydomain.com
-        state: absent
+        state: present
         user: admin
-        validate_certs: no
+        records_content: "{{ lookup('file', '/path/to/dg-file') }}"
+        type: address
       delegate_to: localhost
 
-    - name: Allow management web UI to be accessed on this Self IP
-      bigip_selfip:
-        name: self1
+    - name: Update an existing internal data group of strings
+      bigip_data_group:
+        name: foo
         password: secret
         server: lb.mydomain.com
-        state: absent
+        state: present
+        internal: yes
         user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:443
-      delegate_to: localhost
-
-    - name: Allow HTTPS and SSH access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:443
-          - tcp:22
-      delegate_to: localhost
-
-    - name: Allow all services access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - all
-      delegate_to: localhost
-
-    - name: Allow only GRE and IGMP protocols access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - gre:0
-          - igmp:0
-      delegate_to: localhost
-
-    - name: Allow all TCP, but no other protocols access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:0
+        records:
+          - key: caddy
+            value: ""
+          - key: cafeteria
+            value: ""
+          - key: cactus
+            value: ""
       delegate_to: localhost
 
 
@@ -283,7 +268,6 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

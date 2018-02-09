@@ -38,6 +38,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>address_translation<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>Specifies, when <code>enabled</code>, that the system translates the address of the virtual server.</div><div>When <code>disabled</code>, specifies that the system uses the address without translation.</div><div>This option is useful when the system is load balancing devices that have the same IP address.</div><div>When creating a new virtual server, the default is <code>enabled</code>.</div>        </td></tr>
                 <tr><td>default_persistence_profile<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -69,6 +74,11 @@ Options
     <td></td>
         <td></td>
         <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div><div>If you want to remove the existing fallback persistence profile, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>        </td></tr>
+                <tr><td>ip_protocol<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>0-255</li><li>ah</li><li>bna</li><li>esp</li><li>etherip</li><li>gre</li><li>icmp</li><li>ipencap</li><li>ipv6</li><li>ipv6-auth</li><li>ipv6-crypt</li><li>ipv6-icmp</li><li>isp-ip</li><li>mux</li><li>ospf</li><li>sctp</li><li>tcp</li><li>udp</li><li>udplite</li></ul></td>
+        <td><div>Specifies a network protocol name you want the system to use to direct traffic on this virtual server.</div><div>When creating a new virtual server, the default is <code>tcp</code>.</div><div>The Protocol setting is not available when you select Performance (HTTP) as the Type.</div><div>The value of this argument can be specified in either it&#x27;s numeric value, or, for convenience, in a select number of named values. Refer to <code>choices</code> for examples.</div><div>For a list of valid IP protocol numbers, refer to this page https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers</div>        </td></tr>
                 <tr><td>irules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
@@ -113,10 +123,15 @@ Options
     <td></td>
         <td></td>
         <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div><div>If you do not want to specify a particular port, use the value <code>0</code>. The result is that the virtual server will listen on any port.</div>        </td></tr>
+                <tr><td>port_translation<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>Specifies, when <code>enabled</code>, that the system translates the port of the virtual server.</div><div>When <code>disabled</code>, specifies that the system uses the port without translation. Turning off port translation for a virtual server is useful if you want to use the virtual server to load balance connections to any service.</div><div>When creating a new virtual server, the default is <code>enabled</code>.</div>        </td></tr>
                 <tr><td rowspan="2">profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td><td></td>
-    <td> <div>List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides of the connection (client-side and server-side).</div><div>If you only want to apply a particular profile to the client-side of the connection, specify <code>client-side</code> for the profile&#x27;s <code>context</code>.</div><div>If you only want to apply a particular profile to the server-side of the connection, specify <code>server-side</code> for the profile&#x27;s <code>context</code>.</div><div>If <code>context</code> is not provided, it will default to <code>all</code>.</div></br>
+    <td> <div>List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides of the connection (client-side and server-side).</div><div>If you only want to apply a particular profile to the client-side of the connection, specify <code>client-side</code> for the profile&#x27;s <code>context</code>.</div><div>If you only want to apply a particular profile to the server-side of the connection, specify <code>server-side</code> for the profile&#x27;s <code>context</code>.</div><div>If <code>context</code> is not provided, it will default to <code>all</code>.</div><div>If you want to remove a profile from the list of profiles currently active on the virtual, then simply remove it from the <code>profiles</code> list. See examples for an illustration of this.</div><div>If you want to add a profile to the list of profiles currently active on the virtual, then simply add it to the <code>profiles</code> list. See examples for an illustration of this.</div><div><b>Profiles matter</b>. There is a good chance that this module will fail to configure a BIG-IP if you mix up your profiles, or, if you attempt to set an IP protocol which you current or new profiles do not support. Either this module, or BIG-IP, will tell you when you are wrong with an error resembling <code>lists profiles incompatible with its protocol</code>.</div><div>If you are unsure what correct profile combinations are, then have a BIG-IP available to you in which you can make changes and copy what the correct combinations are.</div></br>
     <div style="font-size: small;">aliases: all_profiles<div>    </tr>
     <tr>
     <td colspan="5">
@@ -359,6 +374,44 @@ Examples
           updated_at: 2017-12-20T17:50:46Z
       delegate_to: localhost
 
+    - name: Add virtual with two profiles
+      bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        profiles:
+          - http
+          - tcp
+      delegate_to: localhost
+
+    - name: Remove HTTP profile from previous virtual
+      bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        profiles:
+          - tcp
+      delegate_to: localhost
+
+    - name: Add the HTTP profile back to the previous virtual
+      bigip_pool:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        state: absent
+        name: my-pool
+        partition: Common
+        profiles:
+          - http
+          - tcp
+      delegate_to: localhost
+
 
 Return Values
 -------------
@@ -433,6 +486,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> /Common/my-pool </td>
     </tr>
             <tr>
+        <td> ip_protocol </td>
+        <td> The new value of the IP protocol </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 6 </td>
+    </tr>
+            <tr>
         <td> destination </td>
         <td> Destination of the virtual server. </td>
         <td align=center> changed </td>
@@ -475,11 +535,25 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> ['/Common/policy1', '/Common/policy2'] </td>
     </tr>
             <tr>
+        <td> address_translation </td>
+        <td> The new value specifying whether address translation is on or off </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
         <td> snat </td>
         <td> SNAT setting of the virtual server. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> Automap </td>
+    </tr>
+            <tr>
+        <td> port_translation </td>
+        <td> The new value specifying whether port translation is on or off </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> metadata </td>

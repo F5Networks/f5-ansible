@@ -21,7 +21,6 @@ Synopsis
 Requirements (on host that executes module)
 -------------------------------------------
 
-  * bigsuds
   * f5-sdk >= 3.0.9
 
 
@@ -38,6 +37,12 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>address<br/><div style="font-size: small;"> (added in 2.2)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>IP address of the pool member. This can be either IPv4 or IPv6. When creating a new pool member, one of either <code>address</code> or <code>fqdn</code> must be provided. This parameter cannot be updated after it is set.</div></br>
+    <div style="font-size: small;">aliases: ip, host<div>        </td></tr>
                 <tr><td>connection_limit<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -48,17 +53,22 @@ Options
     <td></td>
         <td></td>
         <td><div>Pool member description.</div>        </td></tr>
-                <tr><td>host<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>Pool member IP.</div></br>
-    <div style="font-size: small;">aliases: address, name<div>        </td></tr>
-                <tr><td>monitor_state<br/><div style="font-size: small;"> (added in 2.0)</div></td>
+                <tr><td>fqdn<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Set monitor availability status for pool member.</div>        </td></tr>
+        <td></td>
+        <td><div>FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS name. Therefore, the only characters that can be used are &quot;A&quot; to &quot;Z&quot;, &quot;a&quot; to &quot;z&quot;, &quot;0&quot; to &quot;9&quot;, the hyphen (&quot;-&quot;) and the period (&quot;.&quot;).</div><div>FQDN names must include at lease one period; delineating the host from the domain. ex. <code>host.domain</code>.</div><div>FQDN names must end with a letter or a number.</div><div>When creating a new pool member, one of either <code>address</code> or <code>fqdn</code> must be provided. This parameter cannot be updated after it is set.</div></br>
+    <div style="font-size: small;">aliases: hostname<div>        </td></tr>
+                <tr><td>fqdn_auto_populate<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies whether the system automatically creates ephemeral nodes using the IP addresses returned by the resolution of a DNS query for a node defined by an FQDN.</div><div>When <code>enabled</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div><div>When <code>disabled</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div><div>When creating a new pool member, the default for this parameter is <code>yes</code>.</div><div>This parameter is ignored when <code>reuse_nodes</code> is <code>yes</code>.</div>        </td></tr>
+                <tr><td>name<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Name of the node to create, or re-use, when creating a new pool member.</div><div>This parameter is optional and, if not specified, a node name will be created automatically from either the specified <code>address</code> or <code>fqdn</code>.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
@@ -79,12 +89,12 @@ Options
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Pool member port.</div>        </td></tr>
+        <td><div>Pool member port.</div><div>This value cannot be changed after it has been set.</div>        </td></tr>
                 <tr><td>preserve_node<br/><div style="font-size: small;"> (added in 2.1)</div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>True</li><li>False</li></ul></td>
-        <td><div>When state is absent and the pool member is no longer referenced in other pools, the default behavior removes the unused node o bject. Setting this to &#x27;yes&#x27; disables this behavior.</div>        </td></tr>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>When state is <code>absent</code> attempts to remove the node that the pool member references.</div><div>The node will not be removed if it is still referenced by other pool members. If this happens, the module will not raise an error.</div><div>Setting this to <code>yes</code> disables this behavior.</div>        </td></tr>
                 <tr><td>priority_group<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td>
@@ -169,15 +179,10 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>session_state<br/><div style="font-size: small;"> (added in 2.0)</div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Set new session availability status for pool member.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li><li>forced_offline</li></ul></td>
         <td><div>Pool member state.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
@@ -242,28 +247,12 @@ Examples
         port: 80
       delegate_to: localhost
 
-
-    # The BIG-IP GUI doesn't map directly to the API calls for "Pool ->
-    # Members -> State". The following states map to API monitor
-    # and session states.
-    #
-    # Enabled (all traffic allowed):
-    # monitor_state=enabled, session_state=enabled
-    # Disabled (only persistent or active connections allowed):
-    # monitor_state=enabled, session_state=disabled
-    # Forced offline (only active connections allowed):
-    # monitor_state=disabled, session_state=disabled
-    #
-    # See https://devcentral.f5.com/questions/icontrol-equivalent-call-for-b-node-down
-
     - name: Force pool member offline
       bigip_pool_member:
         server: lb.mydomain.com
         user: admin
         password: secret
-        state: present
-        session_state: disabled
-        monitor_state: disabled
+        state: forced_offline
         pool: my-pool
         partition: Common
         host: "{{ ansible_default_ipv4['address'] }}"
@@ -276,10 +265,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 11
-    - F5 developed module 'bigsuds' required (see http://devcentral.f5.com)
-    - Best run as a local_action in your playbook
-    - Supersedes bigip_pool for managing pool members
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

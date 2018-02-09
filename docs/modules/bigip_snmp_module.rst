@@ -22,6 +22,7 @@ Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 3.0.9
+  * netaddr
 
 
 Options
@@ -47,6 +48,11 @@ Options
     <td></td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>When <code>enabled</code>, ensures that the system sends a trap whenever the SNMP agent starts running or stops running. This is usually enabled by default on a BIG-IP.</div>        </td></tr>
+                <tr><td>allowed_addresses<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Configures the IP addresses of the SNMP clients from which the snmpd daemon accepts requests.</div><div>This value can be hostnames, IP addresses, or IP networks.</div><div>You may specify a single list item of <code>default</code> to set the value back to the system&#x27;s default of <code>127.0.0.0/8</code>.</div>        </td></tr>
                 <tr><td>contact<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -194,13 +200,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> agent_status_traps </td>
-        <td> Value that the agent status traps was set to. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> enabled </td>
-    </tr>
-            <tr>
         <td> contact </td>
         <td> The new value for the person who administers SNMP on the device. </td>
         <td align=center> changed </td>
@@ -215,15 +214,29 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> US West 1a </td>
     </tr>
             <tr>
-        <td> device_warning_traps </td>
-        <td> Value that the warning status traps was set to. </td>
+        <td> agent_status_traps </td>
+        <td> Value that the agent status traps was set to. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
     </tr>
             <tr>
+        <td> allowed_addresses </td>
+        <td> The new allowed addresses for SNMP client connections. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['127.0.0.0/8', 'foo.bar.com', '10.10.10.10'] </td>
+    </tr>
+            <tr>
         <td> agent_authentication_traps </td>
         <td> Value that the authentication status traps was set to. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> enabled </td>
+    </tr>
+            <tr>
+        <td> device_warning_traps </td>
+        <td> Value that the warning status traps was set to. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> enabled </td>
@@ -236,6 +249,7 @@ Notes
 -----
 
 .. note::
+    - Requires the netaddr Python package on the host. This is as easy as ``pip install netaddr``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

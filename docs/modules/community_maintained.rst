@@ -9,6 +9,7 @@ Modules Maintained by the Ansible Community
   bigip_command - Run arbitrary command on F5 devices <bigip_command_module>
   bigip_config - Manage BIG-IP configuration sections <bigip_config_module>
   bigip_configsync_action - Perform different actions related to config-sync <bigip_configsync_action_module>
+  bigip_data_group - Manage data groups on a BIG-IP <bigip_data_group_module>
   bigip_device_connectivity - Manages device IP configuration settings for HA on a BIG-IP <bigip_device_connectivity_module>
   bigip_device_dns - Manage BIG-IP device DNS settings <bigip_device_dns_module>
   bigip_device_group - Manage device groups on a BIG-IP <bigip_device_group_module>
@@ -60,6 +61,7 @@ Modules Maintained by the Ansible Community
   bigip_security_rule_list - __SHORT_DESCRIPTION__ <bigip_security_rule_list_module>
   bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
   bigip_service - Manage BIG-IP service states <bigip_service_module>
+  bigip_smtp - Manages SMTP settings on the BIG-IP <bigip_smtp_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP <bigip_snat_pool_module>
   bigip_snmp - Manipulate general SNMP settings on a BIG-IP <bigip_snmp_module>
   bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP <bigip_snmp_trap_module>

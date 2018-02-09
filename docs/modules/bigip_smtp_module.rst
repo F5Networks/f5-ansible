@@ -1,10 +1,10 @@
-.. _bigip_selfip:
+.. _bigip_smtp:
 
 
-bigip_selfip - Manage Self-IPs on a BIG-IP system
-+++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_smtp - Manages SMTP settings on the BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.6
 
 
 .. contents::
@@ -15,7 +15,7 @@ bigip_selfip - Manage Self-IPs on a BIG-IP system
 Synopsis
 --------
 
-* Manage Self-IPs on a BIG-IP system.
+* Allows configuring of the BIG-IP to send mail via an SMTP server by configuring the parameters of an SMTP server.
 
 
 Requirements (on host that executes module)
@@ -38,31 +38,36 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>address<br/><div style="font-size: small;"></div></td>
+                <tr><td>authentication<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The IP addresses for the new self IP. This value is ignored upon update as addresses themselves cannot be changed after they are created.</div><div>This value is required when creating new self IPs.</div>        </td></tr>
-                <tr><td>allow_service<br/><div style="font-size: small;"></div></td>
+        <td><div>Credentials can be set on an SMTP server&#x27;s configuration even if that authentication is not used (think staging configs or emergency changes). This parameter acts as a switch to make the specified <code>smtp_server_username</code> and <code>smtp_server_password</code> parameters active or not.</div><div>When <code>yes</code>, the authentication parameters will be active.</div><div>When <code>no</code>, the authentication parameters will be inactive.</div>        </td></tr>
+                <tr><td>encryption<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>none</li><li>ssl</li><li>tls</li></ul></td>
+        <td><div>Specifies whether the SMTP server requires an encrypted connection in order to send mail.</div>        </td></tr>
+                <tr><td>from_address<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Configure port lockdown for the Self IP. By default, the Self IP has a &quot;default deny&quot; policy. This can be changed to allow TCP and UDP ports as well as specific protocols. This list should contain <code>protocol</code>:<code>port</code> values.</div>        </td></tr>
+        <td><div>Email address that the email is being sent from. This is the &quot;Reply-to&quot; address that the recipient sees.</div>        </td></tr>
+                <tr><td>local_host_name<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Host name used in SMTP headers in the format of a fully qualified domain name. This setting does not refer to the BIG-IP system’s hostname.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
-    <td>Value of C(address)</td>
-        <td></td>
-        <td><div>The self IP to create.</div>        </td></tr>
-                <tr><td>netmask<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The netmask for the self IP. When creating a new Self IP, this value is required.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+        <td><div>Specifies the name of the SMTP server configuration.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
-        <td><div>Device partition to manage resources on. You can set different partitions for Self IPs, but the address used may not match any other address used by a Self IP. In that sense, Self IPs are not isolated by partitions as other resources on a BIG-IP are.</div>        </td></tr>
+        <td><div>Device partition to manage resources on.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -128,11 +133,6 @@ Options
     </td>
     </tr>
         </td></tr>
-                <tr><td>route_domain<br/><div style="font-size: small;"> (added in 2.3)</div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The route domain id of the system. When creating a new Self IP, if this value is not specified, a default value of <code>0</code> will be used.</div><div>This value cannot be changed after it is set.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -143,16 +143,36 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>absent</li><li>present</li></ul></td>
-        <td><div>When <code>present</code>, guarantees that the Self-IP exists with the provided attributes.</div><div>When <code>absent</code>, removes the Self-IP from the system.</div>        </td></tr>
-                <tr><td>traffic_group<br/><div style="font-size: small;"></div></td>
+                <tr><td>smtp_server<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The traffic group for the Self IP addresses in an active-active, redundant load balancer configuration. When creating a new Self IP, if this value is not specified, the default of <code>/Common/traffic-group-local-only</code> will be used.</div>        </td></tr>
+        <td><div>SMTP server host name in the format of a fully qualified domain name.</div><div>This value is required when create a new SMTP configuration.</div>        </td></tr>
+                <tr><td>smtp_server_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Password that the SMTP server requires when validating a user.</div>        </td></tr>
+                <tr><td>smtp_server_port<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the SMTP port number.</div><div>When creating a new SMTP configuration, the default is <code>25</code> when <code>encryption</code> is <code>none</code> or <code>tls</code>. The default is <code>465</code> when <code>ssl</code> is selected.</div>        </td></tr>
+                <tr><td>smtp_server_username<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>User name that the SMTP server requires when validating a user.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the SMTP configuration exists.</div><div>When <code>absent</code>, ensures that the SMTP configuration does not exist.</div>        </td></tr>
+                <tr><td>update_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>on_create</td>
+        <td><ul><li>always</li><li>on_create</li></ul></td>
+        <td><div>Passwords are stored encrypted, so the module cannot know if the supplied <code>smtp_server_password</code> is the same or different than the existing password. This parameter controls the updating of the <code>smtp_server_password</code> credential.</div><div>When <code>always</code>, will always update the password.</div><div>When <code>on_create</code>, will only set the password for newly created SMTP server configurations.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -163,11 +183,6 @@ Options
     <td>True</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
-                <tr><td>vlan<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The VLAN that the new self IPs will be on. When creating a new Self IP, this value is required.</div>        </td></tr>
         </table>
     </br>
 
@@ -179,111 +194,88 @@ Examples
  ::
 
     
-    - name: Create Self IP
-      bigip_selfip:
-        address: 10.10.10.10
-        name: self1
-        netmask: 255.255.255.0
+    - name: Create a base SMTP server configuration
+      bigip_smtp:
+        name: my-smtp
+        smtp_server: 1.1.1.1
+        smtp_server_username: mail-admin
+        smtp_server_password: mail-secret
+        local_host_name: smtp.mydomain.com
+        from_address: no-reply@mydomain.com
         password: secret
         server: lb.mydomain.com
+        state: present
         user: admin
-        validate_certs: no
-        vlan: vlan1
-      delegate_to: localhost
-
-    - name: Create Self IP with a Route Domain
-      bigip_selfip:
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        validate_certs: no
-        name: self1
-        address: 10.10.10.10
-        netmask: 255.255.255.0
-        vlan: vlan1
-        route_domain: 10
-        allow_service: default
-      delegate_to: localhost
-
-    - name: Delete Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-      delegate_to: localhost
-
-    - name: Allow management web UI to be accessed on this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:443
-      delegate_to: localhost
-
-    - name: Allow HTTPS and SSH access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:443
-          - tcp:22
-      delegate_to: localhost
-
-    - name: Allow all services access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - all
-      delegate_to: localhost
-
-    - name: Allow only GRE and IGMP protocols access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - gre:0
-          - igmp:0
-      delegate_to: localhost
-
-    - name: Allow all TCP, but no other protocols access to this Self IP
-      bigip_selfip:
-        name: self1
-        password: secret
-        server: lb.mydomain.com
-        state: absent
-        user: admin
-        validate_certs: no
-        allow_service:
-          - tcp:0
       delegate_to: localhost
 
 
+Return Values
+-------------
+
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> smtp_server_port </td>
+        <td> The new C(smtp_server_port) value of the SMTP configuration. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 25 </td>
+    </tr>
+            <tr>
+        <td> authentication </td>
+        <td> Whether the authentication parameters are active or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> from_address </td>
+        <td> The new C(from_address) value of the SMTP configuration. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> no-reply@mydomain.com </td>
+    </tr>
+            <tr>
+        <td> local_host_name </td>
+        <td> The new C(local_host_name) value of the SMTP configuration. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> smtp.mydomain.com </td>
+    </tr>
+            <tr>
+        <td> encryption </td>
+        <td> The new C(encryption) value of the SMTP configuration. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> tls </td>
+    </tr>
+            <tr>
+        <td> smtp_server </td>
+        <td> The new C(smtp_server) value of the SMTP configuration. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> mail.mydomain.com </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host.
+    - Requires the netaddr Python package on the host. This is as easy as ``pip install netaddr``.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

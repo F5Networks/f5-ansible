@@ -163,11 +163,21 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                <tr><td>ssl_cipher_suite<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the ciphers that the system uses.</div><div>The values in the suite are separated by colons (:).</div><div>Can be specified in either a string or list form. The list form is the recommended way to provide the cipher suite. See examples for usage.</div><div>Use the value <code>default</code> to set the cipher suite to the system default. This value is equivalent to specifying a list of <code>ECDHE-RSA-AES128-GCM-SHA256, ECDHE-RSA-AES256-GCM-SHA384,ECDHE-RSA-AES128-SHA,ECDHE-RSA-AES256-SHA, ECDHE-RSA-AES128-SHA256,ECDHE-RSA-AES256-SHA384,ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-ECDSA-AES256-GCM-SHA384,ECDHE-ECDSA-AES128-SHA,ECDHE-ECDSA-AES256-SHA, ECDHE-ECDSA-AES128-SHA256,ECDHE-ECDSA-AES256-SHA384,AES128-GCM-SHA256, AES256-GCM-SHA384,AES128-SHA,AES256-SHA,AES128-SHA256,AES256-SHA256, ECDHE-RSA-DES-CBC3-SHA,ECDHE-ECDSA-DES-CBC3-SHA,DES-CBC3-SHA</code>.</div>        </td></tr>
                 <tr><td>ssl_port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>The HTTPS port to listen on.</div>        </td></tr>
+                <tr><td>ssl_protocols<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The list of SSL protocols to accept on the management console.</div><div>A space-separated list of tokens in the format accepted by the Apache mod_ssl SSLProtocol directive.</div><div>Can be specified in either a string or list form. The list form is the recommended way to provide the cipher suite. See examples for usage.</div><div>Use the value <code>default</code> to set the SSL protocols to the system default. This value is equivalent to specifying a list of <code>all,-SSLv2,-SSLv3</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -213,6 +223,45 @@ Examples
         user: admin
       delegate_to: localhost
 
+    - name: Set SSL cipher suite by list
+      bigip_device_httpd:
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        ssl_cipher_suite:
+          - ECDHE-RSA-AES128-GCM-SHA256
+          - ECDHE-RSA-AES256-GCM-SHA384
+          - ECDHE-RSA-AES128-SHA
+          - AES256-SHA256
+      delegate_to: localhost
+
+    - name: Set SSL cipher suite by string
+      bigip_device_httpd:
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        ssl_cipher_suite: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA:AES256-SHA256
+      delegate_to: localhost
+
+    - name: Set SSL protocols by list
+      bigip_device_httpd:
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        ssl_protocols:
+          - all
+          - -SSLv2
+          - -SSLv3
+      delegate_to: localhost
+
+    - name: Set SSL protocols by string
+      bigip_device_httpd:
+        password: secret
+        server: lb.mydomain.com
+        user: admin
+        ssl_cipher_suite: all -SSLv2 -SSLv3
+      delegate_to: localhost
+
 
 Return Values
 -------------
@@ -252,11 +301,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> crit </td>
     </tr>
             <tr>
-        <td> auth_name </td>
-        <td> The new authentication realm name. </td>
+        <td> redirect_http_to_https </td>
+        <td> Whether or not to redirect http requests to the GUI to https. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> foo </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
     </tr>
             <tr>
         <td> auth_pam_dashboard_timeout </td>
@@ -266,11 +315,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> False </td>
     </tr>
             <tr>
-        <td> redirect_http_to_https </td>
-        <td> Whether or not to redirect http requests to the GUI to https. </td>
+        <td> ssl_protocols </td>
+        <td> The new list of SSL protocols to accept on the management console. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> string </td>
+        <td align=center> all -SSLv2 -SSLv3 </td>
     </tr>
             <tr>
         <td> fast_cgi_timeout </td>
@@ -299,6 +348,20 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> int </td>
         <td align=center> 20 </td>
+    </tr>
+            <tr>
+        <td> ssl_cipher_suite </td>
+        <td> The new ciphers that the system uses. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA </td>
+    </tr>
+            <tr>
+        <td> auth_name </td>
+        <td> The new authentication realm name. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> foo </td>
     </tr>
         
     </table>
