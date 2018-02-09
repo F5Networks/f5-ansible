@@ -77,7 +77,7 @@ options:
             list will provide a match.
           - When C(type) is C(all_traffic), will remove all existing conditions from
             this rule.
-        required: true
+        required: True
         choices: [ 'http_uri', 'all_traffic' ]
       path_begins_with_any:
         description:
