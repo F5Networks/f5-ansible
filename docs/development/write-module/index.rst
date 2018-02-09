@@ -1,243 +1,40 @@
 Writing a module
 ================
 
-The following tutorial explains how to create a module.
+The following tutorial explains how to create a module. During the course of this
+tutorial, we will explore what is necessary to re-create the ``bigip_policy_rule``
+module. This module is the body of LTM Policy manipulation and, therefore, a core
+feature of a BIG-IP.
 
-Requirements
-------------
+This tutorial is split up into a number of different sections to keep the document
+from becoming overwhelming. Feel free to jump to any section for a reference. Otherwise,
+your next stop will be at the first item below.
 
-To develop modules, the following are required
+The module that you will be re-creating is considered an advanced module. It is, however,
+the one that illustrates using all pieces of the current coding conventions. So it is
+useful to see the standards in their completeness instead of illustrating many different
+modules.
 
-- docker
-- docker-compose
-- A copy of the development container built
+.. toctree::
+   :maxdepth: 1
+   :includehidden:
+   :caption: Writing a module
 
-To acquire a copy of the development container, you can issue the following command
-once you have acquired the first two requirements
+   requirements
+   stubbing-module-fragments
+   documentation-var
+   examples-var
 
-.. code-block:: shell
 
-    $> docker-compose -f devtools/docker-compose.yaml build
 
-This step can take some time to finish because each of the containers needs to built.
-
-Once the containers are built, you should use the docker-compose command with the
-`run` argument to enter one of the containers. For example,
-
-.. code-block:: shell
-
-    $> docker-compose -f devtools/docker-compose.yaml run py2.7
-
-All of the remaining steps can take place inside of this container. Actual writing of
-code does not need to happen inside of the container due to `docker-compose` mounting
-your source directory to the container's `/here` directory.
-
-Give the module a name
-----------------------
-
-The first step is to decide what to call your module. This tutorial recreates the
-``bigip_device_sshd`` module, because it provides good examples of the common idioms
-you will encounter when developing or maintaining modules.
-
-Because this module already exists, change the name of the module to the following:
-
-``bigip_device_ssh``
-
-This name will prevent you from tabbing to the existing sshd module.
-
-Create the directory layout
----------------------------
-
-In addition to your module, there are a number of files and directories you must create
-to hold the various test and validation code.
-
-To create the necessary directories and files automatically, use this executable file:
-
-.. code-block:: shell
-
-    $> f5ansible stub module MODULE_NAME
-
-When it finishes running, you will have the necessary files available to begin working
-on your module.
-
-Stub files
-----------
-
-The stubber creates a number of files that you need to do some form of development on.
-These files are:
-
-* ``docs/modules/MODULE_NAME.rst``
-* ``library/MODULE_NAME.py``
-* ``test/integration/MODULE_NAME.yaml``
-* ``test/integration/targets/MODULE_NAME/``
-* ``test/unit/bigip/test_MODULE_NAME.py``
-
-DOCUMENTATION variable
-``````````````````````
-
-The next chunk of code that you will insert describes the module, which parameter it
-accepts, who the authors/maintainers are, its dependencies, etc.
-
-Here is an example of the code you will add to your module.
-
-.. code-block:: python
-
-   DOCUMENTATION = '''
-   ---
-   module: bigip_device_sshd
-   short_description: Manage the SSHD settings of a BIG-IP
-   description:
-     - Manage the SSHD settings of a BIG-IP.
-   version_added: 2.5
-   options:
-     banner:
-       description:
-         - Whether to enable the banner or not.
-       choices:
-         - enabled
-         - disabled
-     banner_text:
-       description:
-         - Specifies the text to include on the pre-login banner that displays
-           when a user attempts to login to the system using SSH.
-     inactivity_timeout:
-       description:
-         - Specifies the number of seconds before inactivity causes an SSH
-           session to log out.
-     log_level:
-       description:
-         - Specifies the minimum SSHD message level to include in the system log.
-       choices:
-         - debug
-         - debug1
-         - debug2
-         - debug3
-         - error
-         - fatal
-         - info
-         - quiet
-         - verbose
-     login:
-       description:
-         - Specifies, when checked C(enabled), that the system accepts SSH
-           communications.
-     port:
-       description:
-         - Port that you want the SSH daemon to run on.
-   extends_documentation_fragment: f5
-   author:
-     - Tim Rupp (@caphrim007)
-   '''
-
-Most documentation variables have a common set of keys and only differ in the values of
-those keys.
-
-Commonly-used keys are:
-
-* ``module``
-* ``short_description``
-* ``description``
-* ``version_added``
-* ``options``
-* ``notes``
-* ``requirements``
-* ``author``
-* ``extends_documentation_fragment``
-
-.. note::
-
-   The ``extends_documentation_fragment`` key is special as it automatically injects the
-   variables ``user``, ``password``, ``server``, ``server_port``, and ``validate_certs``
-   into your documentation. You should use it for all modules.
-
-Additionally, note that Ansible upstream has several rules for their documentation blocks.
-At the time of this writing, the rules include:
-
-- If a parameter is *not* required, **do not** include a ``required: false`` field in the parameter's `DOCUMENTATION` section.
-
-EXAMPLES variable
-`````````````````
-
-The EXAMPLES variable contains the most common use cases for this module.
-
-Setting the banner is the most common case, but you are free to add to these examples.
-
-These examples also serve as a basis for the functional tests.
-
-For this module, the ``EXAMPLES`` variable looks like this:
-
-.. code-block:: python
-
-   EXAMPLES = '''
-   - name: Set the banner for the SSHD service from a string
-     bigip_device_sshd:
-       banner: enabled
-       banner_text: banner text goes here
-       password: secret
-       server: lb.mydomain.com
-       user: admin
-     delegate_to: localhost
-
-   - name: Set the banner for the SSHD service from a file
-     bigip_device_sshd:
-       banner: enabled
-       banner_text: "{{ lookup('file', '/path/to/file') }}"
-       password: secret
-       server: lb.mydomain.com
-       user: admin
-     delegate_to: localhost
-
-   - name: Set the SSHD service to run on port 2222
-     bigip_device_sshd:
-       password: secret
-       port: 2222
-       server: lb.mydomain.com
-       user: admin
-     delegate_to: localhost
-   '''
-
-This variable should go **after** the ``DOCUMENTATION`` variable.
-
-The examples that you provide should always have the following:
-
-**delegate_to: localhost**
-
-You should run the BIG-IP modules on the Ansible controller only. The best practice is to
-use ``delegate_to:`` here so that you get in the habit of using it.
-
-**common args**
-
-The common args are:
-
-- `password` should always be `secret`
-- `server` should always be `lb.mydomain.com`
-- `user` should always be `admin`
-
-RETURN variable
-```````````````
-
-When a module finishes running, F5 always uses the module's parameters to return the changes.
-
-Some exceptions to this rule apply. For example, where the ``state`` variable contains more states than just `absent` and `present`, such as in the `bigip_virtual_server` module.
-
-For the sample module, these values include:
-
-- ``banner``
-- ``banner_text``
-- ``inactivity_timeout``
-- ``log_level``
-- ``login``
-
-The ``RETURN`` variable describes these values, specifies when they're returned, and provides examples of what the values returned might look like.
-
-When the Ansible module documentation generates, these values are output in a table.
 
 The import block
 ````````````````
 
 The next section is the block of code where the imports happen.
 
-This code usually just involves importing the ``module_util`` helper libraries, but may also include imports of other libraries if you are working with legacy code.
+This code usually just involves importing the ``module_utils`` helper libraries, but may
+also include imports of other libraries if you are working with legacy code.
 
 For this module, the import block is:
 
@@ -255,16 +52,22 @@ For this module, the import block is:
    except ImportError:
        HAS_F5SDK = False
 
-In 90% of cases, this code is boilerplate and you can ignore it when writing a module. `stubber.py` takes care of this for you.
+In 90% of cases, this code is boilerplate and you can ignore it when writing a module.
+The ``f5ansible`` command takes care of this for you.
 
 ModuleManager class
 ```````````````````
 
-The next block of code is the skeleton for the module's `Manager` class. Most of the module's steering code is inside this class. It acts as the traffic cop, determining which path the module should take to reach the desired outcome.
+The next block of code is the skeleton for the module's ``ModuleManager`` class. Most of the
+module's steering code is inside this class. It acts as the traffic cop, determining which
+path the module should take to reach the desired outcome.
 
-The `Manager` class is where the specifics of your code will be. The `stubber` will create a generic version of this for you. It is your responsibility to change the API calls as needed.
+The ``ModuleManager`` class is where the specifics of your code will be. The ``f5ansible``
+command will create a generic version of this for you. It is your responsibility to change
+the API calls as needed.
 
-Below are examples of the different versions of the design standards that have existed at one point or another:
+Below are examples of the different versions of the design standards that have existed at
+one point or another:
 
 * `version 3.1.1 (current)`_
 * `version 3.1`_
@@ -274,51 +77,46 @@ Below are examples of the different versions of the design standards that have e
 
 .. note::
 
-   The ``ModuleManager`` class will change over time as design standards change. The above examples are for historical reference and training.
+   The ``ModuleManager`` class will change over time as design standards change. The above
+   examples are for historical reference and training.
 
 For implementation specifics, refer to the existing module.
 
-A deep dive into the major differences between the different versions of design standards are here: :ref:`designdecisions`.
+ArgumentSpec class
+``````````````````
 
-Connect to Ansible
-------------------
+The ``ArgumentSpec`` defines what arguments your module will accept. It should closely
+mirror what is written in the ``DOCUMENTATION`` variable.
 
-After you complete the implementation details of the module, you can work on the code that hooks the module up to Ansible itself.
-
-The main function
-`````````````````
-
-This code begins with the definition of the ``main`` function. This code should come after the definition of your class that you wrote earlier.
-
-.. code-block:: python
-
-   def main():
-
-Argument spec and instantiation
-```````````````````````````````
-
-Next, generate the common argument spec using a utility method of Ansible.
 
 .. code-block:: python
 
    argument_spec = f5_argument_spec()
 
-With the ``argument_spec`` generated, update the values in it to match the ``options`` you declared in your ``DOCUMENTATION`` variable earlier.
+With the ``argument_spec`` generated, update the values in it to match the ``options`` you
+declared in your ``DOCUMENTATION`` variable earlier.
 
-The values that you must specify here are, again, the ones that are **not** common to all F5 modules. Below is the code you need to update your ``argument_spec``.
+The values that you must specify here are, again, the ones that are **not** common to all
+F5 modules. Below is the code you need to update your ``argument_spec``.
 
 .. code-block:: python
 
    meta_args = dict(
-       allow=dict(required=False, default=None),
-       banner=dict(required=False, default=None, choices=CHOICES),
-       banner_text=dict(required=False, default=None),
-       inactivity_timeout=dict(required=False, default=None, type='int'),
-       log_level=dict(required=False, default=None, choices=LEVELS),
-       login=dict(required=False, default=None, choices=CHOICES),
-       port=dict(required=False, default=None, type='int')
+       allow=dict(),
+       banner=dict(choices=CHOICES),
+       banner_text=dict(),
+       inactivity_timeout=dict(type='int'),
+       log_level=dict(choices=LEVELS),
+       login=dict(choices=CHOICES),
+       port=dict(type='int')
    )
    argument_spec.update(meta_args)
+           self.choices = ['enabled', 'disabled']
+        self.levels = [
+            'debug', 'debug1', 'debug2', 'debug3', 'error', 'fatal', 'info',
+            'quiet', 'verbose'
+        ]
+        self.supports_check_mode = True
 
 After you update the ``argument_spec``, instantiate an instance of the class, providing the ``argument_spec`` and the value that indicates it supports Check mode.
 
@@ -330,6 +128,25 @@ After you update the ``argument_spec``, instantiate an instance of the class, pr
    )
 
 All F5 modules **must** support Check mode, because you can use it to determine if the module makes changes when it's run against your devices.
+
+
+
+
+Connect to Ansible
+------------------
+
+After you complete the implementation details of the module, you can work on the code that
+hooks the module up to Ansible itself.
+
+The main function
+`````````````````
+
+This code begins with the definition of the ``main`` function. This code should come after
+the definition of your class that you wrote earlier.
+
+.. code-block:: python
+
+   def main():
 
 Try and module execution
 ````````````````````````
