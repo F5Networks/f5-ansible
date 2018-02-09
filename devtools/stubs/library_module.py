@@ -18,7 +18,7 @@ module: {{ module }}
 short_description: __SHORT_DESCRIPTION__
 description:
   - __LONG DESCRIPTION__.
-version_added: "2.6"
+version_added: 2.6
 options:
   name:
     description:
