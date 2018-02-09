@@ -1,0 +1,56 @@
+---
+
+- name: Issue 00315 - Include issue variables
+  include_vars:
+    file: issue-00315.yaml
+
+- name: Issue 00315 - Ensure internal VLAN exists
+  bigip_vlan:
+    name: internal
+
+- name: Issue 00315 - Create self-IPs
+  bigip_selfip:
+    name: "{{ item.name }}"
+    address: "{{ item.address|ipaddr('address') }}"
+    netmask: "{{ item.address|ipaddr('netmask') }}"
+    vlan: "{{ item.vlan }}"
+    route_domain: "{{ item.route_domain|default(omit) }}"
+    allow_service: default
+    state: present
+  delegate_to: localhost
+  loop: "{{ issue_315 }}"
+  register: result
+
+- name: Issue 00315 - Assert Create self-IPs
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00315 - Create self-IPs - Idempotent check
+  bigip_selfip:
+    name: "{{ item.name }}"
+    address: "{{ item.address|ipaddr('address') }}"
+    netmask: "{{ item.address|ipaddr('netmask') }}"
+    vlan: "{{ item.vlan }}"
+    route_domain: "{{ item.route_domain|default(omit) }}"
+    allow_service: default
+    state: present
+  delegate_to: localhost
+  loop: "{{ issue_315 }}"
+  register: result
+
+- name: Issue 00315 - Assert Create self-IPs - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00315 - Remove self-IPs
+  bigip_selfip:
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ issue_315 }}"
+
+- name: Issue 00315 - Remove VLANs
+  bigip_vlan:
+    name: internal
+    state: absent

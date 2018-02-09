@@ -1,0 +1,49 @@
+---
+
+- name: Issue 00420 - Include issue variables
+  include_vars:
+    file: issue-00420.yaml
+
+- name: Issue 00420 - Create VLAN
+  bigip_vlan:
+    name: issue-00420v
+
+- name: Issue 00420 - Create Self IPV4 Trusted Address
+  bigip_selfip:
+    address: 1.2.3.4
+    name: issue-00420n
+    netmask: 255.255.255.0
+    vlan: issue-00420v
+    allow_service: none
+    state: present
+  register: result
+
+- name: Issue 0040 - Assert Create Self IPV4 Trusted Address
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00420 - Create Self IPV4 Trusted Address - Idempotent check
+  bigip_selfip:
+    address: 1.2.3.4
+    name: issue-00420n
+    netmask: 255.255.255.0
+    vlan: issue-00420v
+    allow_service: none
+    state: present
+  register: result
+
+- name: Issue 00420 - Create Self IPV4 Trusted Address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00420 - Remove Self-IP
+  bigip_selfip:
+    name: issue-00420n
+    state: absent
+
+- name: Issue 00420 - Remove VLAN
+  bigip_vlan:
+    name: issue-00420v
+    state: absent

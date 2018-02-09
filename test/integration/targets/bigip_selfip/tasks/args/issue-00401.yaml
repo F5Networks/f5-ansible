@@ -1,0 +1,61 @@
+---
+
+- name: Issue 00401 - Ensure VLAN exists
+  bigip_vlan:
+    name: issue-00401
+
+- name: Issue 00401 - Create initial non-floating self ip
+  bigip_selfip:
+    name: foo
+    address: 1.2.3.4
+    netmask: 255.255.255.0
+    vlan: issue-00401
+    state: present
+  register: result
+
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network
+  bigip_selfip:
+    name: foo-float
+    address: 1.2.3.5
+    netmask: 255.255.255.0
+    vlan: issue-00401
+    traffic_group: traffic-group-1
+    state: present
+  register: result
+
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00401 - Create initial floating address for non-floating address defined for this network - Idempotent check
+  bigip_selfip:
+    name: foo-float
+    address: 1.2.3.5
+    netmask: 255.255.255.0
+    vlan: issue-00401
+    traffic_group: traffic-group-1
+    state: present
+  register: result
+
+- name: Issue 00401 - Assert Create initial floating address for non-floating address defined for this network - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00401 - Remove floating address
+  bigip_selfip:
+    name: foo-float
+    state: absent
+  register: result
+
+- name: Issue 00401 - Remove non-floating address
+  bigip_selfip:
+    name: foo
+    state: absent
+  register: result
+
+- name: Issue 00401 - Remove vlan
+  bigip_vlan:
+    name: issue-00401
+    state: absent

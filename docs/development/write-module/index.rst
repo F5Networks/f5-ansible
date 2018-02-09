@@ -3,10 +3,41 @@ Writing a module
 
 The following tutorial explains how to create a module.
 
+Requirements
+------------
+
+To develop modules, the following are required
+
+- docker
+- docker-compose
+- A copy of the development container built
+
+To acquire a copy of the development container, you can issue the following command
+once you have acquired the first two requirements
+
+.. code-block:: shell
+
+    $> docker-compose -f devtools/docker-compose.yaml build
+
+This step can take some time to finish because each of the containers needs to built.
+
+Once the containers are built, you should use the docker-compose command with the
+`run` argument to enter one of the containers. For example,
+
+.. code-block:: shell
+
+    $> docker-compose -f devtools/docker-compose.yaml run py2.7
+
+All of the remaining steps can take place inside of this container. Actual writing of
+code does not need to happen inside of the container due to `docker-compose` mounting
+your source directory to the container's `/here` directory.
+
 Give the module a name
 ----------------------
 
-The first step is to decide what to call your module. This tutorial recreates the ``bigip_device_sshd`` module, because it provides good examples of the common idioms you will encounter when developing or maintaining modules.
+The first step is to decide what to call your module. This tutorial recreates the
+``bigip_device_sshd`` module, because it provides good examples of the common idioms
+you will encounter when developing or maintaining modules.
 
 Because this module already exists, change the name of the module to the following:
 
@@ -17,20 +48,23 @@ This name will prevent you from tabbing to the existing sshd module.
 Create the directory layout
 ---------------------------
 
-In addition to your module, there are a number of files and directories you must create to hold the various test and validation code.
+In addition to your module, there are a number of files and directories you must create
+to hold the various test and validation code.
 
 To create the necessary directories and files automatically, use this executable file:
 
 .. code-block:: shell
 
-    $> ./devtools/bin/stubber.py --module MODULE_NAME stub
+    $> f5ansible stub module MODULE_NAME
 
-When it finishes running, you will have the necessary files available to begin working on your module.
+When it finishes running, you will have the necessary files available to begin working
+on your module.
 
 Stub files
 ----------
 
-The stubber creates a number of files that you need to do some form of development on. These files are:
+The stubber creates a number of files that you need to do some form of development on.
+These files are:
 
 * ``docs/modules/MODULE_NAME.rst``
 * ``library/MODULE_NAME.py``
@@ -41,7 +75,8 @@ The stubber creates a number of files that you need to do some form of developme
 DOCUMENTATION variable
 ``````````````````````
 
-The next chunk of code that you will insert describes the module, which parameter it accepts, who the authors/maintainers are, its dependencies, etc.
+The next chunk of code that you will insert describes the module, which parameter it
+accepts, who the authors/maintainers are, its dependencies, etc.
 
 Here is an example of the code you will add to your module.
 
@@ -52,26 +87,26 @@ Here is an example of the code you will add to your module.
    module: bigip_device_sshd
    short_description: Manage the SSHD settings of a BIG-IP
    description:
-     - Manage the SSHD settings of a BIG-IP
-   version_added: "2.5"
+     - Manage the SSHD settings of a BIG-IP.
+   version_added: 2.5
    options:
      banner:
        description:
-         - Whether to enable the banner or not
+         - Whether to enable the banner or not.
        choices:
          - enabled
          - disabled
      banner_text:
        description:
          - Specifies the text to include on the pre-login banner that displays
-           when a user attempts to login to the system using SSH
+           when a user attempts to login to the system using SSH.
      inactivity_timeout:
        description:
          - Specifies the number of seconds before inactivity causes an SSH
-           session to log out
+           session to log out.
      log_level:
        description:
-         - Specifies the minimum SSHD message level to include in the system log
+         - Specifies the minimum SSHD message level to include in the system log.
        choices:
          - debug
          - debug1
@@ -85,21 +120,17 @@ Here is an example of the code you will add to your module.
      login:
        description:
          - Specifies, when checked C(enabled), that the system accepts SSH
-           communications
+           communications.
      port:
        description:
-         - Port that you want the SSH daemon to run on
-   notes:
-     - Requires the f5-sdk Python package on the host This is as easy as pip
-       install f5-sdk
+         - Port that you want the SSH daemon to run on.
    extends_documentation_fragment: f5
-   requirements:
-     - f5-sdk
    author:
      - Tim Rupp (@caphrim007)
    '''
 
-Most documentation variables have a common set of keys and only differ in the values of those keys.
+Most documentation variables have a common set of keys and only differ in the values of
+those keys.
 
 Commonly-used keys are:
 
@@ -115,11 +146,14 @@ Commonly-used keys are:
 
 .. note::
 
-   The `extends_documentation_fragment` key is special as it automatically injects the variables `user`, `password`, `server`, `server_port`, and `validate_certs` into your documentation. You should use it for all modules.
+   The ``extends_documentation_fragment`` key is special as it automatically injects the
+   variables ``user``, ``password``, ``server``, ``server_port``, and ``validate_certs``
+   into your documentation. You should use it for all modules.
 
-Additionally, note that Ansible upstream has several rules for their documentation blocks. At the time of this writing, the rules include:
+Additionally, note that Ansible upstream has several rules for their documentation blocks.
+At the time of this writing, the rules include:
 
-- If a parameter is *not* required, **do not** include a `required: false` field in the parameter's `DOCUMENTATION` section.
+- If a parameter is *not* required, **do not** include a ``required: false`` field in the parameter's `DOCUMENTATION` section.
 
 EXAMPLES variable
 `````````````````
@@ -168,7 +202,8 @@ The examples that you provide should always have the following:
 
 **delegate_to: localhost**
 
-You should run the BIG-IP modules on the Ansible controller only. The best practice is to use `delegate_to:` here so that you get in the habit of using it.
+You should run the BIG-IP modules on the Ansible controller only. The best practice is to
+use ``delegate_to:`` here so that you get in the habit of using it.
 
 **common args**
 
@@ -183,7 +218,7 @@ RETURN variable
 
 When a module finishes running, F5 always uses the module's parameters to return the changes.
 
-Some exceptions to this rule apply. For example, where the `state` variable contains more states than just `absent` and `present`, such as in the `bigip_virtual_server` module.
+Some exceptions to this rule apply. For example, where the ``state`` variable contains more states than just `absent` and `present`, such as in the `bigip_virtual_server` module.
 
 For the sample module, these values include:
 
@@ -231,8 +266,7 @@ The `Manager` class is where the specifics of your code will be. The `stubber` w
 
 Below are examples of the different versions of the design standards that have existed at one point or another:
 
-* version 3.3 (proposed)
-* `version 3.2 (current)`_
+* `version 3.1.1 (current)`_
 * `version 3.1`_
 * `version 3`_
 * `version 2`_
@@ -521,4 +555,4 @@ Therefore, please cleanup after yourself. Since you need to test the `absent` ca
 .. _version 2: https://github.com/F5Networks/f5-ansible/blob/b6a502034e21d1d7039ec0cbb642e22259d646fc/library/bigip_routedomain.py
 .. _version 3: https://github.com/F5Networks/f5-ansible/blob/b81304b75d0d3a4d406f20e121ac3c3285168c2d/library/bigip_device_sshd.py
 .. _version 3.1: https://github.com/F5Networks/f5-ansible/blob/f6ae5eecbcffdf0008905830dbefb4044f849a14/library/bigip_monitor_tcp_echo.py
-.. _version 3.2 (current): https://github.com/F5Networks/f5-ansible/blob/8505ed1a245673aa856eb88baad9896bbe87994b/library/bigip_pool.py
+.. _version 3.1.1 (current): https://github.com/F5Networks/f5-ansible/blob/8505ed1a245673aa856eb88baad9896bbe87994b/library/bigip_pool.py
