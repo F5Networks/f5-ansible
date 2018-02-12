@@ -250,6 +250,8 @@ class ModuleParameters(Parameters):
             return None
         if self._values['destination'] == 'default':
             self._values['destination'] = '0.0.0.0/0'
+        if self._values['destination'] == 'default-inet6':
+            self._values['destination'] = '::/::'
         try:
             ip = netaddr.IPNetwork(self.destination_ip)
             if self.route_domain:
@@ -314,6 +316,8 @@ class ApiParameters(Parameters):
             return None
         if self._values['destination'] == 'default':
             self._values['destination'] = '0.0.0.0/0'
+        if self._values['destination'] == 'default-inet6':
+            self._values['destination'] = '::/::'
         try:
             pattern = r'(?P<rd>%[0-9]+)'
             addr = re.sub(pattern, '', self._values['destination'])

@@ -1,0 +1,49 @@
+---
+
+- name: Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - net_self1
+    - net_self2
+
+- name: Create VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+  loop:
+    - net_self1
+
+- name: Issue 00365 - Create self-IPs, type a
+  bigip_selfip:
+    name: issue-00365-a
+    address: 2001:4860:4860:0:0:0:0:8887
+    netmask: "ffff:ffff:ffff:ffff::"
+    vlan: net_self1
+    state: present
+
+- name: Create IPv6 default route
+  bigip_static_route:
+    destination: '::'
+    netmask: '::'
+    gateway_address: 2001:4860:4860:0:0:0:0:8888
+    name: default-v6-route
+  register: result
+
+- name: Assert Create IPv6 default route
+  assert:
+    that:
+      - result is changed
+
+- name: Create IPv6 default route - Idempotent check
+  bigip_static_route:
+    destination: '::'
+    netmask: '::'
+    gateway_address: 2001:4860:4860:0:0:0:0:8888
+    name: default-v6-route
+  register: result
+
+- name: Assert Create IPv6 default route - Idempotent check
+  assert:
+    that:
+      - result is not changed

@@ -70,10 +70,6 @@
     that:
       - result is not changed
 
-
-
-
-
 - name: Attempt to change netmask
   bigip_static_route:
     name: "{{ static_route_name }}"
@@ -87,9 +83,6 @@
     that:
       - result is not changed
       - result is success
-
-
-
 
 - name: Delete a static route
   bigip_static_route:
@@ -165,3 +158,6 @@
 
 - import_tasks: issue-00545.yaml
   tags: issue-00545
+
+- import_tasks: issue-00618.yaml
+  tags: issue-00618
