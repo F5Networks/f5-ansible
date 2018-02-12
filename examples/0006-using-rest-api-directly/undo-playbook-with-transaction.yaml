@@ -1,0 +1,182 @@
+#
+# This playbook will remove the LTM objects that were created by "playbook.yaml" or
+# "playbook-with-transaction.yaml".
+#
+# It is not necessary to explicitly delete a pool member when deleting a pool (it is
+# done implicitly).
+#
+# It is necessary to explicitly delete a node that was implicitly created when
+# creating a pool member.
+#
+# The objects deleted:  virtual, (pool member), pool, and node
+#
+# This also makes use of iControl REST transactions.  Notice that the order
+# of operations is intentionally different from undo-playbook.yaml to highlight
+# the difference of being able to batch operations together. In this example
+# the batched operation is to delete a node, pool, and then virtual.
+# Normally this is the reverse order of operations that you would use w/out
+# transactions.
+#
+#
+# This playbook has been tested on version 13.1.0 of BIG-IP. It may work on other
+# versions, but it has not been tested on other versions.
+#
+---
+
+- name: Use the REST API directly
+  hosts: f5-test
+  connection: local
+
+  tasks:
+    - name: Get an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authn/login"
+        method: POST
+        body: |
+          {
+            "username": "{{ bigip_username }}",
+            "password": "{{ bigip_password }}",
+            "loginProviderName": "tmos"
+          }
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: auth
+
+    - name: Get transaction ID
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction"
+        method: POST
+        body: |
+          {
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      register: transaction_id
+
+    - name: Check for a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: node
+
+    - name: Delete a node
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/node/~Common~1.1.1.1"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: node.status == 200
+
+    - name: Check for a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: pool
+
+    - name: Delete a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: pool.status == 200
+
+
+    - name: Check for a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200, 404
+        validate_certs: "{{ validate_certs }}"
+      register: virtual
+
+    - name: Delete a virtual server
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/virtual/~Common~foo"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: virtual.status == 200
+
+    - name: Check transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status:code: 200
+        validate_certs: "{{ validate_certs }}"
+      register: transaction_state
+
+    - name: Execute transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: PATCH
+        body: |
+          {
+           "state":"VALIDATING"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "UPDATING"
+
+    - name: Delete transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "STARTED"
+
+    - name: Save config to disk
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/sys/config"
+        method: POST
+        body: |
+          {
+            "command":"save"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "UPDATING"
+
+    - name: Destroy an API token
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      register: auth

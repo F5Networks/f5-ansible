@@ -94,6 +94,20 @@
         validate_certs: "{{ validate_certs }}"
       when: node.status == 200
 
+    - name: Save config to disk
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/sys/config"
+        method: POST
+        body: |
+          {
+            "command":"save"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+
     - name: Destroy an API token
       uri:
         url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/shared/authz/tokens/{{ auth['json']['token']['name'] }}"

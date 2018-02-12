@@ -6,6 +6,13 @@
 # This is not a recommended way of creating these objects, but it is provided
 # as an example of how to use the iControl REST API directly from Ansible.
 #
+# This also makes use of iControl REST transactions.  Notice that the order
+# of operations is intentionally different from playbook.yaml to highlight
+# the difference of being able to batch operations together. In this example
+# the batched operation is to create a virtual, pool member, and then pool.
+# Normally this is the reverse order of operations that you would use w/out
+# transactions.
+#
 # The preferred method is to use the following Ansible modules:
 #
 # - bigip_pool
@@ -39,59 +46,19 @@
         validate_certs: "{{ validate_certs }}"
       register: auth
 
-    - name: Check for a pool
+    - name: Get transaction ID
       uri:
-        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
-        method: GET
-        headers:
-          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
-        status_code: [200,404]
-        validate_certs: "{{ validate_certs }}"
-      register: pool
-
-    - name: Create a pool
-      uri:
-        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool"
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction"
         method: POST
         body: |
           {
-            "name": "my-pool",
-            "partition": "Common",
-            "loadBalancingMode": "round-robin"
           }
         headers:
           X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
         status_code: 200
-        validate_certs: "{{ validate_certs }}"
         body_format: json
-      when: pool.status == 404
-
-    - name: Check for a pool member
-      uri:
-        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80"
-        method: GET
-        headers:
-          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
-        status_code: 200, 404
         validate_certs: "{{ validate_certs }}"
-      register: pool_member
-
-    - name: Create a pool member
-      uri:
-        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members"
-        method: POST
-        body: |
-          {
-            "name": "1.1.1.1:80",
-            "address": "1.1.1.1",
-            "partition": "Common"
-          }
-        headers:
-          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
-        status_code: 200
-        validate_certs: "{{ validate_certs }}"
-        body_format: json
-      when: pool_member.status == 404
+      register: transaction_id
 
     - name: Check for a virtual server
       uri:
@@ -117,10 +84,102 @@
           }
         headers:
           X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
         status_code: 200
         body_format: json
         validate_certs: "{{ validate_certs }}"
       when: virtual.status == 404
+
+    - name: Check for a pool member
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members/~Common~1.1.1.1:80"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200, 404
+        validate_certs: "{{ validate_certs }}"
+      register: pool_member
+
+    - name: Create a pool member
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool/members"
+        method: POST
+        body: |
+          {
+            "name": "1.1.1.1:80",
+            "address": "1.1.1.1",
+            "partition": "Common"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+        body_format: json
+      when: pool_member.status == 404
+
+    - name: Check for a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool/~Common~my-pool"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: [200,404]
+        validate_certs: "{{ validate_certs }}"
+      register: pool
+
+    - name: Create a pool
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/ltm/pool"
+        method: POST
+        body: |
+          {
+            "name": "my-pool",
+            "partition": "Common",
+            "loadBalancingMode": "round-robin"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+          X-F5-REST-Coordination-Id: "{{ transaction_id.json.transId }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+        body_format: json
+      when: pool.status == 404
+
+    - name: Check transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: GET
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status:code: 200
+        validate_certs: "{{ validate_certs }}"
+      register: transaction_state
+
+    - name: Execute transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: PATCH
+        body: |
+          {
+           "state":"VALIDATING"
+          }
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        body_format: json
+        validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "UPDATING"
+
+    - name: Delete transaction
+      uri:
+        url: "https://{{ ansible_host }}:{{ bigip_port }}/mgmt/tm/transaction/{{ transaction_id.json.transId }}"
+        method: DELETE
+        headers:
+          X-F5-Auth-Token: "{{ auth['json']['token']['name'] }}"
+        status_code: 200
+        validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "STARTED"
 
     - name: Save config to disk
       uri:
@@ -135,6 +194,7 @@
         status_code: 200
         body_format: json
         validate_certs: "{{ validate_certs }}"
+      when: transaction_state.json.state == "UPDATING"
 
     - name: Destroy an API token
       uri:
