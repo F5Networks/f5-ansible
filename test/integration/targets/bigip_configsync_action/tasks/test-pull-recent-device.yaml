@@ -14,7 +14,7 @@
       - result is changed
 
 - name: Sync configuration from most recent - Second device
-  bigip_configsync_actions:
+  bigip_configsync_action:
     device_group: "{{ device_group }}"
     sync_most_recent_to_device: yes
   register: result
@@ -25,7 +25,7 @@
       - result is changed
 
 - name: Sync configuration from most recent - Second device - Idempotent check
-  bigip_configsync_actions:
+  bigip_configsync_action:
     device_group: "{{ device_group }}"
     sync_most_recent_to_device: yes
   register: result

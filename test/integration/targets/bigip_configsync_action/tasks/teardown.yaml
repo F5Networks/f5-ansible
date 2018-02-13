@@ -15,7 +15,7 @@
       - result is changed
 
 - name: Sync configuration from device to group
-  bigip_configsync_actions:
+  bigip_configsync_action:
     device_group: "{{ device_group }}"
     sync_device_to_group: yes
   register: result
