@@ -102,6 +102,7 @@ EXAMPLES = r'''
     password: secret
     user: admin
     validate_certs: no
+  register: result
   delegate_to: localhost
 
 - name: run multiple commands on remote nodes
@@ -127,6 +128,7 @@ EXAMPLES = r'''
     password: secret
     user: admin
     validate_certs: no
+  register: result
   delegate_to: localhost
 
 - name: tmsh prefixes will automatically be handled
