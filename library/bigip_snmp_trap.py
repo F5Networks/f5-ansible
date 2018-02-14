@@ -464,7 +464,7 @@ class ArgumentSpec(object):
             snmp_version=dict(
                 choices=['1', '2c']
             ),
-            community=dict(),
+            community=dict(no_log=True),
             destination=dict(),
             port=dict(),
             network=dict(
