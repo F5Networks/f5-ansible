@@ -1,0 +1,82 @@
+---
+
+- name: Issue 00626 - Set base snmp to none
+  bigip_snmp:
+    allowed_addresses: none
+  register: result
+
+- name: Issue 00626 - Assert Set base snmp to none
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00626 - Set base snmp to none - Idempotent check
+  bigip_snmp:
+    allowed_addresses: none
+  register: result
+
+- name: Issue 00626 - Assert Set base snmp to none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00626 - Set allowed addresses
+  bigip_snmp:
+    allowed_addresses:
+      - 3.4.5.6
+      - 1.0.0.0/8
+      - foo.bar.com
+      - baz
+  register: result
+
+- name: Issue 00626 - Assert Set allowed addresses
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00626 - Set allowed addresses - Idempotent check
+  bigip_snmp:
+    allowed_addresses:
+      - 3.4.5.6
+      - 1.0.0.0/8
+      - foo.bar.com
+      - baz
+  register: result
+
+- name: Issue 00626 - Assert Set allowed addresses - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00626 - Set base snmp to empty
+  bigip_snmp:
+    allowed_addresses: ""
+  register: result
+
+- name: Issue 00626 - Assert Set base snmp to empty
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00626 - Set base snmp to empty - Idempotent check
+  bigip_snmp:
+    allowed_addresses: ""
+  register: result
+
+- name: Issue 00626 - Assert Set base snmp to empty - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00626 - Set allowed addresses
+  bigip_snmp:
+    allowed_addresses:
+      - 3.4.5.6
+      - 1.0.0.0/8
+      - foo.bar.com
+      - baz
+
+- name: Issue 00626 - Set allowed addresses back to default
+  bigip_snmp:
+    allowed_addresses:
+      - 127.0.0.0/8

@@ -26,6 +26,8 @@ options:
       - This value can be hostnames, IP addresses, or IP networks.
       - You may specify a single list item of C(default) to set the value back
         to the system's default of C(127.0.0.0/8).
+      - You can remove all allowed addresses by either providing the word C(none), or
+        by providing the empty string C("").
     version_added: 2.6
   contact:
     description:
@@ -121,9 +123,8 @@ allowed_addresses:
   sample: ['127.0.0.0/8', 'foo.bar.com', '10.10.10.10']
 '''
 
-import re
-
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import string_types
 
 HAS_DEVEL_IMPORTS = False
 
@@ -213,6 +214,11 @@ class ModuleParameters(Parameters):
             return None
         result = []
         addresses = self._values['allowed_addresses']
+        if isinstance(addresses, string_types):
+            if addresses in ['', 'none']:
+                return []
+            else:
+                addresses = [addresses]
         if len(addresses) == 1 and addresses[0] in ['default', '']:
             result = ['127.0.0.0/8']
             return result
@@ -269,6 +275,10 @@ class Difference(object):
     @property
     def allowed_addresses(self):
         if self.want.allowed_addresses is None:
+            return None
+        if self.have.allowed_addresses is None:
+            if self.want.allowed_addresses:
+                return self.want.allowed_addresses
             return None
         want = set(self.want.allowed_addresses)
         have = set(self.have.allowed_addresses)
@@ -367,7 +377,7 @@ class ArgumentSpec(object):
                 choices=self.choices
             ),
             location=dict(),
-            allowed_addresses=dict(type='list')
+            allowed_addresses=dict(type='raw')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
