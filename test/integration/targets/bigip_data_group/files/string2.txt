@@ -1,0 +1,6 @@
+d := delta,
+e := echo,
+f := foxtrot,
+u := uniform,
+v := victor,
+w := whiskey,

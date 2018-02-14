@@ -1,0 +1,96 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Generic string external data group file
+  bigip_data_group:
+    name: foo
+    records_content: "{{ lookup('file', 'string1.txt') }}"
+  register: result
+
+- name: Assert Generic string external data group file
+  assert:
+    that:
+      result is changed
+
+- name: Generic string external data group file - Idempotent check
+  bigip_data_group:
+    name: foo
+    records_content: "{{ lookup('file', 'string1.txt') }}"
+  register: result
+
+- name: Assert Generic string external data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Update generic string external data group file
+  bigip_data_group:
+    name: foo
+    records_content: "{{ lookup('file', 'string2.txt') }}"
+  register: result
+
+- name: Assert Update generic string external data group file
+  assert:
+    that:
+      result is changed
+
+- name: Update generic string external data group file - Idempotent check
+  bigip_data_group:
+    name: foo
+    records_content: "{{ lookup('file', 'string2.txt') }}"
+  register: result
+
+- name: Assert Update generic string external data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove generic string external data group (retain DG file)
+  bigip_data_group:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove generic string external data group (retain DG file)
+  assert:
+    that:
+      result is changed
+
+- name: Remove generic string external data group (retain DG file) - Idempotent check
+  bigip_data_group:
+    name: foo
+    state: absent
+  register: result
+
+- name: Assert Remove generic string external data group (retain DG file) - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove file used in generic string external data group
+  bigip_data_group:
+    name: foo
+    delete_data_group_file: yes
+    state: absent
+  register: result
+
+- name: Assert Remove file used in generic string external data group
+  assert:
+    that:
+      result is changed
+
+- name: Remove file used in generic string external data group - Idempotent check
+  bigip_data_group:
+    name: foo
+    delete_data_group_file: yes
+    state: absent
+  register: result
+
+- name: Assert Remove file used in generic string external data group - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+
+- import_tasks: teardown.yaml
