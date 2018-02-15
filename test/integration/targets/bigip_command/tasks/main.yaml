@@ -87,9 +87,11 @@
 
 - import_tasks: cli.yaml
   tags: cli
+  when: bigip_ssh_password is defined
 
 - import_tasks: cli-legacy.yaml
   tags: cli
+  when: bigip_ssh_password is defined
 
 #- import_tasks: cli-with-ssh-key.yaml
 #  tags: ssh-key

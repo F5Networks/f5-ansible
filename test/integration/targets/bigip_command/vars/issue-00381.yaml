@@ -3,6 +3,8 @@
 snmp_contact: Test Lab
 snmp_location: Test Location
 snmp_comm_name: SNMP_RO
-snmp_community: 'F!r3R1sK$L'
-snmp_trap_target: { 'poll1' : '10.10.10.10', 'poll2' : '155.165.10.1' }
+snmp_community: badnewsbears
+snmp_trap_target:
+  poll1: 10.10.10.10
+  poll2: 155.165.10.1
 snmp_whitelist: 10.10.10.10 155.165.10.1
