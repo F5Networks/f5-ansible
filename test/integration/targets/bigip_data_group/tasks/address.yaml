@@ -1,0 +1,160 @@
+---
+
+- name: Generic address external data group file
+  bigip_data_group:
+    name: dg1
+    records_content: "{{ lookup('file', 'address1.txt') }}"
+    type: address
+  register: result
+
+- name: Assert Generic address external data group file
+  assert:
+    that:
+      result is changed
+
+- name: Generic address external data group file - Idempotent check
+  bigip_data_group:
+    name: dg1
+    records_content: "{{ lookup('file', 'address1.txt') }}"
+    type: address
+  register: result
+
+- name: Assert Generic address external data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Update generic address external data group file
+  bigip_data_group:
+    name: dg1
+    records_content: "{{ lookup('file', 'address2.txt') }}"
+    type: address
+  register: result
+
+- name: Assert Update generic address external data group file
+  assert:
+    that:
+      result is changed
+
+- name: Update generic address external data group file - Idempotent check
+  bigip_data_group:
+    name: dg1
+    records_content: "{{ lookup('file', 'address2.txt') }}"
+    type: address
+  register: result
+
+- name: Assert Update generic address external data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove generic address external data group (retain DG file)
+  bigip_data_group:
+    name: dg1
+    state: absent
+  register: result
+
+- name: Assert Remove generic address external data group (retain DG file)
+  assert:
+    that:
+      result is changed
+
+- name: Remove generic address external data group (retain DG file) - Idempotent check
+  bigip_data_group:
+    name: dg1
+    state: absent
+  register: result
+
+- name: Assert Remove generic address external data group (retain DG file) - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove file used in generic address external data group
+  bigip_data_group:
+    name: dg1
+    delete_data_group_file: yes
+    type: address
+    state: absent
+  register: result
+
+- name: Assert Remove file used in generic address external data group
+  assert:
+    that:
+      result is changed
+
+- name: Remove file used in generic address external data group - Idempotent check
+  bigip_data_group:
+    name: dg1
+    delete_data_group_file: yes
+    type: address
+    state: absent
+  register: result
+
+- name: Assert Remove file used in generic address external data group - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic address external data group list
+  bigip_data_group:
+    name: dg2
+    type: address
+    records:
+      - key: network 10.0.0.0 prefixlen 8
+        value: Network1
+      - key: network 172.16.0.0 prefixlen 12
+        value: Network2
+      - key: network 192.168.0.0 prefixlen 16
+        value: Network3
+      - key: host 192.168.20.1
+        value: Host1
+      - key: host 172.16.1.1
+        value: Host2
+  register: result
+
+- name: Assert Generic address external data group list
+  assert:
+    that:
+      result is changed
+
+- name: Generic address external data group list - Idempotent check
+  bigip_data_group:
+    name: dg2
+    type: address
+    records:
+      - key: network 10.0.0.0 prefixlen 8
+        value: Network1
+      - key: network 172.16.0.0 prefixlen 12
+        value: Network2
+      - key: network 192.168.0.0 prefixlen 16
+        value: Network3
+      - key: host 192.168.20.1
+        value: Host1
+      - key: host 172.16.1.1
+        value: Host2
+  register: result
+
+- name: Assert Generic address external data group list - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic address external data group empty list - Expected failure
+  bigip_data_group:
+    name: dg2
+    records: ""
+    type: address
+  register: result
+  failed_when: result is success
+
+- name: Assert Generic address external data group empty list - Expected success
+  assert:
+    that:
+      result is success
+
+- name: Remove Generic address external data group list
+  bigip_data_group:
+    name: dg2
+    state: absent
+    delete_data_group_file: yes
