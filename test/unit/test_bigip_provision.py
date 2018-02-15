@@ -75,6 +75,11 @@ class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.patcher1 = patch('time.sleep')
+        self.patcher1.start()
+
+    def tearDown(self):
+        self.patcher1.stop()
 
     def test_provision_one_module_default_level(self, *args):
         # Configure the arguments that would be sent to the Ansible module
@@ -107,9 +112,7 @@ class TestManager(unittest.TestCase):
         # or more seconds to run. This is deliberate.
         mm._is_mprov_running_on_device = Mock(side_effect=[True, False, False, False, False])
 
-        with patch('time.sleep') as mo:
-            mo.return_value = True
-            results = mm.exec_module()
+        results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['level'] == 'nominal'
