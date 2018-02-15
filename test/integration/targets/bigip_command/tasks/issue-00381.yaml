@@ -20,7 +20,7 @@
     community: "{{ snmp_community }}"
     destination: "{{ item.value }}"
     name: "{{ item.key }}"
-    network: default
+    network: management
     snmp_version: 2c
   with_dict: "{{ snmp_trap_target }}"
 

@@ -45,6 +45,10 @@ options:
       - Specifies the name of the trap network. This option is not supported in
         versions of BIG-IP < 12.1.0. If used on versions < 12.1.0, it will simply
         be ignored.
+      - The value C(default) was removed in BIG-IP version 13.1.0. Specifying this
+        value when configuring a BIG-IP will cause the module to stop and report
+        an error. The usual rememdy is to choose one of the other options, such as
+        C(management).
     choices:
       - other
       - management
@@ -190,7 +194,36 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class NetworkedParameters(Parameters):
+class V3Parameters(Parameters):
+    updatables = [
+        'snmp_version', 'community', 'destination', 'port', 'network'
+    ]
+
+    returnables = [
+        'snmp_version', 'community', 'destination', 'port', 'network'
+    ]
+
+    api_attributes = [
+        'version', 'community', 'host', 'port', 'network'
+    ]
+
+    @property
+    def network(self):
+        if self._values['network'] is None:
+            return None
+        network = str(self._values['network'])
+        if network == 'management':
+            return 'mgmt'
+        elif network == 'default':
+            raise F5ModuleError(
+                "'default' is not a valid option for this version of BIG-IP. "
+                "Use either 'management', 'or 'other' instead."
+            )
+        else:
+            return network
+
+
+class V2Parameters(Parameters):
     updatables = [
         'snmp_version', 'community', 'destination', 'port', 'network'
     ]
@@ -216,7 +249,7 @@ class NetworkedParameters(Parameters):
             return network
 
 
-class NonNetworkedParameters(Parameters):
+class V1Parameters(Parameters):
     updatables = [
         'snmp_version', 'community', 'destination', 'port'
     ]
@@ -241,23 +274,35 @@ class ModuleManager(object):
         self.kwargs = kwargs
 
     def exec_module(self):
-        if self.is_version_non_networked():
-            manager = NonNetworkedManager(**self.kwargs)
+        if self.is_version_without_network():
+            manager = V1Manager(**self.kwargs)
+        elif self.is_version_with_default_network():
+            manager = V2Manager(**self.kwargs)
         else:
-            manager = NetworkedManager(**self.kwargs)
+            manager = V3Manager(**self.kwargs)
 
         return manager.exec_module()
 
-    def is_version_non_networked(self):
-        """Checks to see if the TMOS version is less than 13
+    def is_version_without_network(self):
+        """Is current BIG-IP version missing "network" value support
 
-        Anything less than BIG-IP 13.x does not support users
-        on different partitions.
-
-        :return: Bool
+        Returns:
+            bool: True when it is missing. False otherwise.
         """
         version = self.client.api.tmos_version
         if LooseVersion(version) < LooseVersion('12.1.0'):
+            return True
+        else:
+            return False
+
+    def is_version_with_default_network(self):
+        """Is current BIG-IP version missing "default" network value support
+
+        Returns:
+            bool: True when it is missing. False otherwise.
+        """
+        version = self.client.api.tmos_version
+        if LooseVersion(version) < LooseVersion('13.1.0'):
             return True
         else:
             return False
@@ -365,33 +410,72 @@ class BaseManager(object):
             result.delete()
 
 
-class NetworkedManager(BaseManager):
+class V3Manager(BaseManager):
     def __init__(self, *args, **kwargs):
-        super(NetworkedManager, self).__init__(**kwargs)
+        super(V3Manager, self).__init__(**kwargs)
         self.required_resources = [
             'version', 'community', 'destination', 'port', 'network'
         ]
-        self.want = NetworkedParameters(params=self.module.params)
-        self.changes = NetworkedParameters()
+        self.want = V3Parameters(params=self.module.params)
+        self.changes = V3Parameters()
 
     def _set_changed_options(self):
         changed = {}
-        for key in NetworkedParameters.returnables:
+        for key in V3Parameters.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = NetworkedParameters(params=changed)
+            self.changes = V3Parameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
-        for key in NetworkedParameters.updatables:
+        for key in V3Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = NetworkedParameters(params=changed)
+            self.changes = V3Parameters(params=changed)
+            return True
+        return False
+
+    def read_current_from_device(self):
+        resource = self.client.api.tm.sys.snmp.traps_s.trap.load(
+            name=self.want.name,
+            partition=self.want.partition
+        )
+        result = resource.attrs
+        return V3Parameters(params=result)
+
+
+class V2Manager(BaseManager):
+    def __init__(self, *args, **kwargs):
+        super(V2Manager, self).__init__(**kwargs)
+        self.required_resources = [
+            'version', 'community', 'destination', 'port', 'network'
+        ]
+        self.want = V2Parameters(params=self.module.params)
+        self.changes = V2Parameters()
+
+    def _set_changed_options(self):
+        changed = {}
+        for key in V2Parameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = V2Parameters(params=changed)
+
+    def _update_changed_options(self):
+        changed = {}
+        for key in V2Parameters.updatables:
+            if getattr(self.want, key) is not None:
+                attr1 = getattr(self.want, key)
+                attr2 = getattr(self.have, key)
+                if attr1 != attr2:
+                    changed[key] = attr1
+        if changed:
+            self.changes = V2Parameters(params=changed)
             return True
         return False
 
@@ -402,7 +486,7 @@ class NetworkedManager(BaseManager):
         )
         result = resource.attrs
         self._ensure_network(result)
-        return NetworkedParameters(params=result)
+        return V2Parameters(params=result)
 
     def _ensure_network(self, result):
         # BIG-IP's value for "default" is that the key does not
@@ -415,33 +499,33 @@ class NetworkedManager(BaseManager):
             result['network'] = 'default'
 
 
-class NonNetworkedManager(BaseManager):
+class V1Manager(BaseManager):
     def __init__(self, *args, **kwargs):
-        super(NonNetworkedManager, self).__init__(**kwargs)
+        super(V1Manager, self).__init__(**kwargs)
         self.required_resources = [
             'version', 'community', 'destination', 'port'
         ]
-        self.want = NonNetworkedParameters(params=self.module.params)
-        self.changes = NonNetworkedParameters()
+        self.want = V1Parameters(params=self.module.params)
+        self.changes = V1Parameters()
 
     def _set_changed_options(self):
         changed = {}
-        for key in NonNetworkedParameters.returnables:
+        for key in V1Parameters.returnables:
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = NonNetworkedParameters(params=changed)
+            self.changes = V1Parameters(params=changed)
 
     def _update_changed_options(self):
         changed = {}
-        for key in NonNetworkedParameters.updatables:
+        for key in V1Parameters.updatables:
             if getattr(self.want, key) is not None:
                 attr1 = getattr(self.want, key)
                 attr2 = getattr(self.have, key)
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = NonNetworkedParameters(params=changed)
+            self.changes = V1Parameters(params=changed)
             return True
         return False
 
@@ -451,7 +535,7 @@ class NonNetworkedManager(BaseManager):
             partition=self.want.partition
         )
         result = resource.attrs
-        return NonNetworkedParameters(params=result)
+        return V1Parameters(params=result)
 
 
 class ArgumentSpec(object):
