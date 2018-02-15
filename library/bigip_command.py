@@ -396,8 +396,11 @@ class ModuleManager(object):
                 'run',
                 utilCmdArgs='-c "{0}"'.format(command)
             )
-            if hasattr(output, 'commandResult'):
-                responses.append(str(output.commandResult))
+            try:
+                if hasattr(output, 'commandResult'):
+                    responses.append(str(output.commandResult))
+            except Exception:
+                pass
         return responses
 
 
