@@ -48,7 +48,6 @@ EXAMPLES = r'''
     auto_check: yes
     password: secret
     server: lb.mydomain.com
-    state: present
     user: admin
   delegate_to: localhost
 
@@ -58,7 +57,6 @@ EXAMPLES = r'''
     auto_phone_home: no
     password: secret
     server: lb.mydomain.com
-    state: present
     user: admin
   delegate_to: localhost
 '''
