@@ -107,7 +107,9 @@ class TestManager(unittest.TestCase):
         # or more seconds to run. This is deliberate.
         mm._is_mprov_running_on_device = Mock(side_effect=[True, False, False, False, False])
 
-        results = mm.exec_module()
+        with patch('time.sleep') as mo:
+            mo.return_value = True
+            results = mm.exec_module()
 
         assert results['changed'] is True
         assert results['level'] == 'nominal'
