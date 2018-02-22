@@ -200,6 +200,14 @@ class iControlRestSession(object):
 
         Args:
             url (string): Path of URL on the server to call.
+            data (bytes): An object specifying additional data to send to the server,
+                or ``None`` if no such data is needed. Currently HTTP requests are the
+                only ones that use data. The supported object types include bytes,
+                file-like objects, and iterables.
+                See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
+            \*\*kwargs (dict): Dictionary containing other information that may need to be
+                sent to the request. Typically this contains extra headers, or headers that the
+                caller wants to override, such as the Content-Type.
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
@@ -224,6 +232,9 @@ class iControlRestSession(object):
 
         Args:
             url (string): Path of URL on the server to call.
+            \*\*kwargs (dict): Dictionary containing other information that may need to be
+                sent to the request. Typically this contains extra headers, or headers that the
+                caller wants to override, such as the Content-Type.
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
@@ -252,6 +263,9 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
+            \*\*kwargs (dict): Dictionary containing other information that may need to be
+                sent to the request. Typically this contains extra headers, or headers that the
+                caller wants to override, such as the Content-Type.
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
@@ -281,6 +295,9 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
+            \*\*kwargs (dict): Dictionary containing other information that may need to be
+                sent to the request. Typically this contains extra headers, or headers that the
+                caller wants to override, such as the Content-Type.
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
@@ -310,6 +327,9 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
+            \*\*kwargs (dict): Dictionary containing other information that may need to be
+                sent to the request. Typically this contains extra headers, or headers that the
+                caller wants to override, such as the Content-Type.
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
