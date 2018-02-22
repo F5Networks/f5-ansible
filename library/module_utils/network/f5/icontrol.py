@@ -58,7 +58,7 @@ class iControlRestSession(object):
     """
     def __init__(self, server=None, username=None, password=None, server_port=443,
                  validate_certs=True, auth_provider=None, timeout=10, token=None,
-                 **kwargs):
+                 debug=False, **kwargs):
         """Instantiate REST session.
 
         Attributes:
@@ -86,7 +86,7 @@ class iControlRestSession(object):
 
         self._auth_provider = auth_provider
         self._debug_output = []
-        self._debug = False
+        self._debug = debug
         self._default_headers = {
             'Content-Type': 'application/json'
         }
@@ -193,7 +193,7 @@ class iControlRestSession(object):
     def debug_output(self):
         return self._debug_output
 
-    def delete(self, url):
+    def delete(self, url, data=None, **kwargs):
         """Sends a HTTP DELETE command to an F5 REST Server.
 
         Use this method to send a DELETE command to an F5 product.
@@ -203,9 +203,12 @@ class iControlRestSession(object):
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
+        if self.debug:
+            self._debug_output.append(debug_prepared_request(url, 'DELETE', headers, data))
         try:
             response = open_url(
-                url, method='DELETE', headers=headers, validate_certs=self._validate_certs
+                url, method='DELETE', data=data, headers=headers,
+                validate_certs=self._validate_certs
             )
             try:
                 return json.loads(response.read())
@@ -214,7 +217,7 @@ class iControlRestSession(object):
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
-    def get(self, url):
+    def get(self, url, **kwargs):
         """Sends a HTTP GET command to an F5 REST Server.
 
         Use this method to send a GET command to an F5 product.
@@ -224,6 +227,8 @@ class iControlRestSession(object):
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
+        if self.debug:
+            self._debug_output.append(debug_prepared_request(url, 'GET', headers))
         try:
             response = open_url(
                 url, method='GET', headers=headers, validate_certs=self._validate_certs
@@ -235,7 +240,7 @@ class iControlRestSession(object):
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
-    def patch(self, url, data=None):
+    def patch(self, url, data=None, **kwargs):
         """Sends a HTTP PATCH command to an F5 REST Server.
 
         Use this method to send a PATCH command to an F5 product.
@@ -250,6 +255,8 @@ class iControlRestSession(object):
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
+        if self.debug:
+            self._debug_output.append(debug_prepared_request(url, 'PATCH', headers, data))
         try:
             response = open_url(
                 url, method='PATCH', data=data, headers=headers,
@@ -262,7 +269,7 @@ class iControlRestSession(object):
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
-    def post(self, url, data=None):
+    def post(self, url, data=None, **kwargs):
         """Sends a HTTP POST command to an F5 REST Server.
 
         Use this method to send a POST command to an F5 product.
@@ -277,6 +284,8 @@ class iControlRestSession(object):
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
+        if self.debug:
+            self._debug_output.append(debug_prepared_request(url, 'POST', headers, data))
         try:
             response = open_url(
                 url, method='POST', data=data, headers=headers,
@@ -289,7 +298,7 @@ class iControlRestSession(object):
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
-    def put(self, url, data=None):
+    def put(self, url, data=None, **kwargs):
         """Sends a HTTP PUT command to an F5 REST Server.
 
         Use this method to send a PUT command to an F5 product.
@@ -304,6 +313,8 @@ class iControlRestSession(object):
         """
         headers = self.get_headers(**kwargs)
         url = self.get_full_url(url)
+        if self.debug:
+            self._debug_output.append(debug_prepared_request(url, 'PUT', headers, data))
         try:
             response = open_url(
                 url, method='PUT', data=data, headers=headers,
@@ -317,12 +328,12 @@ class iControlRestSession(object):
             raise F5ModuleError(str(ex))
 
 
-def debug_prepared_request(request):
-    result = "curl -k -X {0} {1}".format(request.method.upper(), request.url)
-    for k, v in iteritems(request.headers):
+def debug_prepared_request(url, method, headers, data=None):
+    result = "curl -k -X {0} {1}".format(method.upper(), url)
+    for k, v in iteritems(headers):
         result = result + " -H '{0}: {1}'".format(k, v)
-    if any(v == 'application/json' for k, v in iteritems(request.headers)):
-        if request.body:
-            kwargs = json.loads(request.body.decode('utf-8'))
+    if any(v == 'application/json' for k, v in iteritems(headers)):
+        if data:
+            kwargs = json.loads(data.decode('utf-8'))
             result = result + " -d '" + json.dumps(kwargs, sort_keys=True) + "'"
     return result
