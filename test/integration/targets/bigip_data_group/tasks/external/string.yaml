@@ -2,8 +2,8 @@
 
 - name: Generic string external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'string1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/string1.txt"
   register: result
 
 - name: Assert Generic string external data group file
@@ -13,8 +13,8 @@
 
 - name: Generic string external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'string1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/string1.txt"
   register: result
 
 - name: Assert Generic string external data group file - Idempotent check
@@ -24,8 +24,8 @@
 
 - name: Update generic string external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'string2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/string2.txt"
   register: result
 
 - name: Assert Update generic string external data group file
@@ -35,8 +35,8 @@
 
 - name: Update generic string external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'string2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/string2.txt"
   register: result
 
 - name: Assert Update generic string external data group file - Idempotent check
@@ -46,7 +46,7 @@
 
 - name: Remove generic string external data group (retain DG file)
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -57,7 +57,7 @@
 
 - name: Remove generic string external data group (retain DG file) - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -68,7 +68,7 @@
 
 - name: Remove file used in generic string external data group
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     state: absent
   register: result
@@ -80,7 +80,7 @@
 
 - name: Remove file used in generic string external data group - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     state: absent
   register: result
@@ -92,7 +92,7 @@
 
 - name: Generic string external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     records:
       - key: a
         value: alpha
@@ -115,7 +115,7 @@
 
 - name: Generic string external data group list - Idempotent check
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     records:
       - key: a
         value: alpha
@@ -138,7 +138,7 @@
 
 - name: Generic string external data group empty list - Expected failure
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     records: ""
   register: result
   failed_when: result is success
@@ -150,6 +150,6 @@
 
 - name: Remove Generic string external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     state: absent
     delete_data_group_file: yes

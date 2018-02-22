@@ -2,8 +2,8 @@
 
 - name: Generic integer external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'integer1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/integer1.txt"
     type: integer
   register: result
 
@@ -14,8 +14,8 @@
 
 - name: Generic integer external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'integer1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/integer1.txt"
     type: integer
   register: result
 
@@ -26,8 +26,8 @@
 
 - name: Update generic integer external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'integer2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/integer2.txt"
     type: integer
   register: result
 
@@ -38,8 +38,8 @@
 
 - name: Update generic integer external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'integer2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/integer2.txt"
     type: integer
   register: result
 
@@ -50,7 +50,7 @@
 
 - name: Remove generic integer external data group (retain DG file)
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -61,7 +61,7 @@
 
 - name: Remove generic integer external data group (retain DG file) - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -72,7 +72,7 @@
 
 - name: Remove file used in generic integer external data group
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     type: integer
     state: absent
@@ -85,7 +85,7 @@
 
 - name: Remove file used in generic integer external data group - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     type: integer
     state: absent
@@ -98,7 +98,7 @@
 
 - name: Generic integer external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     type: integer
     records:
       - key: 1
@@ -116,7 +116,7 @@
 
 - name: Generic integer external data group list - Idempotent check
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     type: integer
     records:
       - key: 1
@@ -134,7 +134,7 @@
 
 - name: Generic integer external data group empty list - Expected failure
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     records: ""
     type: integer
   register: result
@@ -147,6 +147,6 @@
 
 - name: Remove Generic integer external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     state: absent
     delete_data_group_file: yes

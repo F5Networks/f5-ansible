@@ -2,8 +2,8 @@
 
 - name: Generic address external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'address1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/address1.txt"
     type: address
   register: result
 
@@ -14,8 +14,8 @@
 
 - name: Generic address external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'address1.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/address1.txt"
     type: address
   register: result
 
@@ -26,8 +26,8 @@
 
 - name: Update generic address external data group file
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'address2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/address2.txt"
     type: address
   register: result
 
@@ -38,8 +38,8 @@
 
 - name: Update generic address external data group file - Idempotent check
   bigip_data_group:
-    name: dg1
-    records_content: "{{ lookup('file', 'address2.txt') }}"
+    name: external-dg1
+    records_src: "{{ role_path }}/files/address2.txt"
     type: address
   register: result
 
@@ -50,7 +50,7 @@
 
 - name: Remove generic address external data group (retain DG file)
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -61,7 +61,7 @@
 
 - name: Remove generic address external data group (retain DG file) - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     state: absent
   register: result
 
@@ -72,7 +72,7 @@
 
 - name: Remove file used in generic address external data group
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     type: address
     state: absent
@@ -85,7 +85,7 @@
 
 - name: Remove file used in generic address external data group - Idempotent check
   bigip_data_group:
-    name: dg1
+    name: external-dg1
     delete_data_group_file: yes
     type: address
     state: absent
@@ -98,18 +98,18 @@
 
 - name: Generic address external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     type: address
     records:
-      - key: network 10.0.0.0 prefixlen 8
+      - key: 10.0.0.0/8
         value: Network1
-      - key: network 172.16.0.0 prefixlen 12
+      - key: 172.16.0.0/12
         value: Network2
-      - key: network 192.168.0.0 prefixlen 16
+      - key: 192.168.0.0/16
         value: Network3
-      - key: host 192.168.20.1
+      - key: 192.168.20.1
         value: Host1
-      - key: host 172.16.1.1
+      - key: 172.16.1.1
         value: Host2
   register: result
 
@@ -120,18 +120,18 @@
 
 - name: Generic address external data group list - Idempotent check
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     type: address
     records:
-      - key: network 10.0.0.0 prefixlen 8
+      - key: 10.0.0.0/8
         value: Network1
-      - key: network 172.16.0.0 prefixlen 12
+      - key: 172.16.0.0/12
         value: Network2
-      - key: network 192.168.0.0 prefixlen 16
+      - key: 192.168.0.0/16
         value: Network3
-      - key: host 192.168.20.1
+      - key: 192.168.20.1
         value: Host1
-      - key: host 172.16.1.1
+      - key: 172.16.1.1
         value: Host2
   register: result
 
@@ -142,7 +142,7 @@
 
 - name: Generic address external data group empty list - Expected failure
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     records: ""
     type: address
   register: result
@@ -155,6 +155,6 @@
 
 - name: Remove Generic address external data group list
   bigip_data_group:
-    name: dg2
+    name: external-dg2
     state: absent
     delete_data_group_file: yes

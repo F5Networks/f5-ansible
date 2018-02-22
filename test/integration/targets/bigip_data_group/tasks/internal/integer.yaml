@@ -1,0 +1,147 @@
+---
+
+- name: Generic integer internal data group file
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/integer1.txt"
+    type: integer
+  register: result
+
+- name: Assert Generic integer internal data group file
+  assert:
+    that:
+      result is changed
+
+- name: Generic integer internal data group file - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/integer1.txt"
+    type: integer
+  register: result
+
+- name: Assert Generic integer internal data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Update generic integer internal data group file
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/integer2.txt"
+    type: integer
+  register: result
+
+- name: Assert Update generic integer internal data group file
+  assert:
+    that:
+      result is changed
+
+- name: Update generic integer internal data group file - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/integer2.txt"
+    type: integer
+  register: result
+
+- name: Assert Update generic integer internal data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove generic integer internal data group
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    state: absent
+  register: result
+
+- name: Assert Remove generic integer internal data group
+  assert:
+    that:
+      result is changed
+
+- name: Remove generic integer internal data group - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    state: absent
+  register: result
+
+- name: Assert Remove generic integer internal data group - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic integer internal data group list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    type: integer
+    records:
+      - key: 1
+        value: bar
+      - key: 2
+        value: baz
+      - key: 3
+      - key: 4
+  register: result
+
+- name: Assert Generic integer internal data group list
+  assert:
+    that:
+      result is changed
+
+- name: Generic integer internal data group list - Idempotent check
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    type: integer
+    records:
+      - key: 1
+        value: bar
+      - key: 2
+        value: baz
+      - key: 3
+      - key: 4
+  register: result
+
+- name: Assert Generic integer internal data group list - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic integer internal data group empty list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records: ""
+    type: integer
+  register: result
+
+- name: Assert Generic integer internal data group empty list
+  assert:
+    that:
+      result is changed
+
+- name: Generic integer internal data group empty list - Idempotent check
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records: ""
+    type: integer
+  register: result
+
+- name: Assert Generic integer internal data group empty list - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove Generic integer internal data group list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    state: absent

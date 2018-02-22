@@ -1,0 +1,5 @@
+---
+
+- import_tasks: internal/string.yaml
+- import_tasks: internal/address.yaml
+- import_tasks: internal/integer.yaml

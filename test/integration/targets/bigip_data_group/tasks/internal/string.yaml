@@ -1,0 +1,151 @@
+---
+
+- name: Generic string internal data group file
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Assert Generic string internal data group file
+  assert:
+    that:
+      result is changed
+
+- name: Generic string internal data group file - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/string1.txt"
+  register: result
+
+- name: Assert Generic string internal data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Update generic string internal data group file
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/string2.txt"
+  register: result
+
+- name: Assert Update generic string internal data group file
+  assert:
+    that:
+      result is changed
+
+- name: Update generic string internal data group file - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    records_src: "{{ role_path }}/files/string2.txt"
+  register: result
+
+- name: Assert Update generic string internal data group file - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove generic string internal data group
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    state: absent
+  register: result
+
+- name: Assert Remove generic string internal data group
+  assert:
+    that:
+      result is changed
+
+- name: Remove generic string internal data group - Idempotent check
+  bigip_data_group:
+    name: internal-dg1
+    internal: yes
+    state: absent
+  register: result
+
+- name: Assert Remove generic string internal data group - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic string internal data group list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records:
+      - key: a
+        value: alpha
+      - key: b
+        value: bravo
+      - key: c
+        value: charlie
+      - key: x
+        value: x-ray
+      - key: y
+        value: yankee
+      - key: z
+        value: zulu
+  register: result
+
+- name: Assert Generic string internal data group list
+  assert:
+    that:
+      result is changed
+
+- name: Generic string internal data group list - Idempotent check
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records:
+      - key: a
+        value: alpha
+      - key: b
+        value: bravo
+      - key: c
+        value: charlie
+      - key: x
+        value: x-ray
+      - key: y
+        value: yankee
+      - key: z
+        value: zulu
+  register: result
+
+- name: Assert Generic string internal data group list - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Generic string internal data group empty list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records: ""
+  register: result
+
+- name: Assert Generic string internal data group empty list
+  assert:
+    that:
+      result is changed
+
+- name: Generic string internal data group empty list - Idempotent check
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    records: ""
+  register: result
+
+- name: Assert Generic string internal data group empty list - Idempotent check
+  assert:
+    that:
+      result is not changed
+
+- name: Remove Generic string internal data group list
+  bigip_data_group:
+    name: internal-dg2
+    internal: yes
+    state: absent
