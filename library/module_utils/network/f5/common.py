@@ -107,10 +107,55 @@ def load_params(params):
 
 # Fully Qualified name (with the partition)
 def fqdn_name(partition, value):
+    """This method is not used
+
+    This was the original name of a method that was used throughout all
+    the F5 Ansible modules. This is now deprecated, and should be removed
+    in 2.9. All modules should be changed to use ``fq_name``.
+
+    TODO(Remove in Ansible 2.9)
+    """
+    return fq_name(partition, value)
+
+
+def fq_name(partition, value):
+    """Returns a 'Fully Qualified' name
+
+    A BIG-IP expects most names of resources to be in a fully-qualified
+    form. This means that both the simple name, and the partition need
+    to be combined.
+
+    The Ansible modules, however, can accept (as names for several
+    resources) their name in the FQ format. This becomes an issue when
+    the FQ name and the partition are both specified as separate values.
+
+    Consider the following examples.
+
+        # Name not FQ
+        name: foo
+        partition: Common
+
+        # Name FQ
+        name: /Common/foo
+        partition: Common
+
+    This method will rectify the above situation and will, in both cases,
+    return the following for name.
+
+        /Common/foo
+
+    Args:
+        partition (string): The partition that you would want attached to
+            the name if the name has no partition.
+        value (string): The name that you want to attach a partition to.
+            This value will be returned unchanged if it has a partition
+            attached to it already.
+    Returns:
+        string: The fully qualified name, given the input parameters.
+    """
     if value is not None and not value.startswith('/'):
         return '/{0}/{1}'.format(partition, value)
     return value
-
 
 # Fully Qualified name (with partition) for a list
 def fq_list_names(partition, list_names):
@@ -210,6 +255,54 @@ def is_valid_fqdn(host):
         if len(parts) > 1:
             return True
     return False
+
+
+def dict2tuple(items):
+    """Convert a dictionary to a list of tuples
+
+    This method is used in cases where dictionaries need to be compared. Due
+    to dictionaries inherently having no order, it is easier to compare list
+    of tuples because these lists can be converted to sets.
+
+    This conversion only supports dicts of simple values. Do not give it dicts
+    that contain sub-dicts. This will not give you the result you want when using
+    the returned tuple for comparison.
+
+    Args:
+        items (dict): The dictionary of items that should be converted
+
+    Returns:
+        list: Returns a list of tuples upon success. Otherwise, an empty list.
+    """
+    result = []
+    for x in items:
+        tmp = [(str(k), str(v)) for k, v in iteritems(x)]
+        result += tmp
+    return result
+
+
+def compare_dictionary(want, have):
+    """Performs a dictionary comparison
+
+    Args:
+        want (dict): Dictionary to compare with second parameter.
+        have (dict): Dictionary to compare with first parameter.
+
+    Returns:
+        bool:
+    :param have:
+    :return:
+    """
+    if want == [] and have is None:
+        return None
+    if want is None:
+        return None
+    w = dict2tuple(want)
+    h = dict2tuple(have)
+    if set(w) == set(h):
+        return None
+    else:
+        return want
 
 
 class Noop(object):
