@@ -50,7 +50,7 @@ options:
         configuration.
       - There is a limit of either 4 megabytes or 65,000 records (whichever is more restrictive)
         for uploads when this parameter is C(yes).
-      - This value cannot be changed once the data group is created. 
+      - This value cannot be changed once the data group is created.
     type: bool
     default: no
   external_file_name:
@@ -191,15 +191,33 @@ EXAMPLES = r'''
         value: ""
   delegate_to: localhost
 
-- name: Show the data format expected for records_content - address
+- name: Show the data format expected for records_content - address 1
   copy:
     dest: /path/to/addresses.txt
     content: |
       network 10.0.0.0 prefixlen 8 := "Network1",
       network 172.16.0.0 prefixlen 12 := "Network2",
       network 192.168.0.0 prefixlen 16 := "Network3",
+      network 2402:9400:1000:0:: prefixlen 64 := "Network4",
       host 192.168.20.1 := "Host1",
       host 172.16.1.1 := "Host2",
+      host 172.16.1.1/32 := "Host3",
+      host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4",
+      host 2001:0db8:85a3:0000:0000:8a2e:0370:7334/128 := "Host5"
+
+- name: Show the data format expected for records_content - address 2
+  copy:
+    dest: /path/to/addresses.txt
+    content: |
+      10.0.0.0/8 := "Network1",
+      172.16.0.0/12 := "Network2",
+      192.168.0.0/16 := "Network3",
+      2402:9400:1000:0::/64 := "Network4",
+      192.168.20.1 := "Host1",
+      172.16.1.1 := "Host2",
+      172.16.1.1/32 := "Host3",
+      2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4",
+      2001:0db8:85a3:0000:0000:8a2e:0370:7334/128 := "Host5"
 
 - name: Show the data format expected for records_content - string
   copy:
@@ -232,6 +250,7 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils._text import to_text
 from io import StringIO
 
 HAS_DEVEL_IMPORTS = False
@@ -242,7 +261,9 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import dict2tuple
+    from library.module_utils.network.f5.common import compare_dictionary
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     HAS_DEVEL_IMPORTS = True
@@ -253,7 +274,9 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import dict2tuple
+    from ansible.module_utils.network.f5.common import compare_dictionary
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 
@@ -264,118 +287,207 @@ except ImportError:
     HAS_NETADDR = False
 
 
-class ContentValidator(object):
-    def __init__(self, content, separator, type):
-        """Create instance of ContentValidator
+LINE_LIMIT = 65000
+SIZE_LIMIT_BYTES = 4000000
 
-        External data-groups will usually provide a StringIO object where-as the Internal
-        data-groups are usually represented by lists. Either of them can be iterated over.
 
-        Args:
-            content (iterable): The data to iterate over looking for discrepancies in.
-            type (string): The proposed type of data that is sent to the module. The
-                content will be checked against this type to ensure it is correct.
-        """
-        self._content = content
+def zero_length(content):
+    content.seek(0, os.SEEK_END)
+    length = content.tell()
+    content.seek(0)
+    if length == 0:
+        return True
+    return False
+
+
+def size_exceeded(content):
+    records = content
+    records.seek(0, os.SEEK_END)
+    size = records.tell()
+    records.seek(0)
+    if size > SIZE_LIMIT_BYTES:
+        return True
+    return False
+
+
+def lines_exceeded(content):
+    result = False
+    for i, line in enumerate(content):
+        if i > LINE_LIMIT:
+            result = True
+    content.seek(0)
+    return result
+
+
+class RecordsEncoder(object):
+    def __init__(self, record_type=None, separator=None):
+        self._record_type = record_type
         self._separator = separator
-        self._type = type
-        self._invalid_line = 0
+        self._network_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
+        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
 
-    def is_valid(self):
-        self._content.seek(0)
-        if self._type == 'ip':
-            result = self._is_valid_address()
-        elif self._type == 'integer':
-            result = self._is_valid_integer()
+    def encode(self, record):
+        if isinstance(record, dict):
+            return self.encode_dict(record)
         else:
-            result = self._is_valid_string()
-        self._content.seek(0)
-        return result
+            return self.encode_string(record)
 
-    def _is_valid_string(self):
-        for line in self._content:
-            line = line.strip().strip(',')
-            if line == "":
-                continue
-            self._invalid_line += 1
-            key, value = line.split(self._separator)
-            key = key.strip()
-            try:
-                netaddr.IPNetwork(key)
-                return False
-            except netaddr.core.AddrFormatError:
-                pass
-            try:
-                int(key)
-                return False
-            except ValueError:
-                pass
-        return True
+    def encode_dict(self, record):
+        if self._record_type == 'ip':
+            return self.encode_address_from_dict(record)
+        elif self._record_type == 'integer':
+            return self.encode_integer_from_dict(record)
+        else:
+            return self.encode_string_from_dict(record)
 
-    def _is_valid_address(self):
-        for line in self._content:
-            line = line.strip().strip(',')
-            if line == "":
-                continue
-            self._invalid_line += 1
-            if self._is_valid_network_address(line):
-                continue
-            elif self._is_valid_host_address(line):
-                continue
-            return False
-        return True
+    def encode_address_from_dict(self, record):
+        key = netaddr.IPNetwork(record['key'])
+        if key and 'value' in record:
+            if key.prefixlen in [32, 128]:
+                return self.encode_host(key.ip, record['value'])
+            else:
+                return self.encode_network(key.network, key.prefixlen, record['value'])
+        elif key:
+            if key.prefixlen in [32, 128]:
+                return self.encode_host(key.ip, key.ip)
+            else:
+                return self.encode_network(key.network, key.prefixlen, key.network)
 
-    def _is_valid_network_address(self, line):
-        pattern = r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*'
-        matches = re.match(pattern, line)
-        if matches:
-            address = matches.group('addr').strip()
-            prefixlen = matches.group('prefix').strip()
-            cidr = '{0}/{1}'.format(address, prefixlen)
-            try:
-                netaddr.IPNetwork(cidr)
-                return True
-            except netaddr.core.AddrFormatError:
-                pass
-        return False
+    def encode_integer_from_dict(self, record):
+        try:
+            int(record['key'])
+        except ValueError:
+            raise F5ModuleError(
+                "When specifying an 'integer' type, the value to the left of the separator must be a number."
+            )
+        if 'key' in record and 'value' in record:
+            return '{0} {1} {2}'.format(record['key'], self._separator, record['value'])
+        elif 'key' in record:
+            return str(record['key'])
 
-    def _is_valid_host_address(self, line):
-        pattern = r'^host\s+(?P<addr>[^ ]+)\s+.*'
-        matches = re.match(pattern, line)
-        if matches:
-            try:
-                netaddr.IPNetwork(matches.group('addr'))
-                return True
-            except netaddr.core.AddrFormatError:
-                pass
-        return False
+    def encode_string_from_dict(self, record):
+        if 'key' in record and 'value' in record:
+            return '{0} {1} {2}'.format(record['key'], self._separator, record['value'])
+        elif 'key' in record:
+            return '{0} {1} ""'.format(record['key'], self._separator)
 
-    def _is_valid_integer(self):
-        for line in self._content:
-            line = line.strip().strip(',')
-            if line == "":
-                continue
-            self._invalid_line += 1
-            try:
-                int(line)
-                return True
-            except ValueError:
-                pass
-            key, value = line.split(self._separator)
-            key = key.strip()
-            try:
-                int(key)
-            except ValueError:
-                return False
-        return True
+    def encode_string(self, record):
+        record = record.strip().strip(',')
+        if self._record_type == 'ip':
+            return self.encode_address_from_string(record)
+        elif self._record_type == 'integer':
+            return self.encode_integer_from_string(record)
+        else:
+            return self.encode_string_from_string(record)
 
-    @property
-    def invalid_line(self):
-        return self._invalid_line
+    def encode_address_from_string(self, record):
+        if self._network_pattern.match(record):
+            # network 192.168.0.0 prefixlen 16 := "Network3",
+            # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
+            return record
+        elif self._host_pattern.match(record):
+            # host 172.16.1.1/32 := "Host3"
+            # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
+            return record
+        else:
+            # 192.168.0.0/16 := "Network3",
+            # 2402:9400:1000:0::/64 := "Network4",
+            parts = record.split(self._separator)
+            if len(parts) == 2:
+                key = netaddr.IPNetwork(parts[0])
+                if key.prefixlen in [32, 128]:
+                    return self.encode_host(key.ip, parts[1])
+                else:
+                    return self.encode_network(key.network, key.prefixlen, parts[1])
+            elif len(parts) == 1 and parts[0] != '':
+                key = netaddr.IPNetwork(parts[0])
+                if key.prefixlen in [32, 128]:
+                    return self.encode_host(key.ip, key.ip)
+                else:
+                    return self.encode_network(key.network, key.prefixlen, key.network)
+
+    def encode_host(self, key, value):
+        return 'host {0} {1} {2}'.format(str(key), self._separator, str(value))
+
+    def encode_network(self, key, prefixlen, value):
+        return 'network {0} prefixlen {1} {2} {3}'.format(
+            str(key), str(prefixlen), self._separator, str(value)
+        )
+
+    def encode_integer_from_string(self, record):
+        parts = record.split(self._separator)
+        if len(parts) == 1 and parts[0] == '':
+            return None
+        try:
+            int(parts[0])
+        except ValueError:
+            raise F5ModuleError(
+                "When specifying an 'integer' type, the value to the left of the separator must be a number."
+            )
+        if len(parts) == 2:
+            return '{0} {1} {2}'.format(parts[0], self._separator, parts[1])
+        elif len(parts) == 1:
+            return str(parts[0])
+
+    def encode_string_from_string(self, record):
+        parts = record.split(self._separator)
+        if len(parts) == 2:
+            return '{0} {1} {2}'.format(parts[0], self._separator, parts[1])
+        elif len(parts) == 1 and parts[0] != '':
+            return '{0} {1} ""'.format(key, self._separator)
+
+
+class RecordsDecoder(object):
+    def __init__(self, record_type=None, separator=None):
+        self._record_type = record_type
+        self._separator = separator
+        self._network_pattern = re.compile(r'^network\s+(?P<addr>[^ ]+)\s+prefixlen\s+(?P<prefix>\d+)\s+.*')
+        self._host_pattern = re.compile(r'^host\s+(?P<addr>[^ ]+)\s+.*')
+
+    def decode(self, record):
+        record = record.strip().strip(',')
+        if self._record_type == 'ip':
+            return self.decode_address_from_string(record)
+        else:
+            return self.decode_from_string(record)
+
+    def decode_address_from_string(self, record):
+        try:
+            matches = self._network_pattern.match(record)
+            if matches:
+                # network 192.168.0.0 prefixlen 16 := "Network3",
+                # network 2402:9400:1000:0:: prefixlen 64 := "Network4",
+                key = "{0}/{1}".format(matches.group('addr'), matches.group('prefix'))
+                addr = netaddr.IPNetwork(key)
+                value = record.split(self._separator)[1].strip().strip('"')
+                result = dict(name=str(addr), data=value)
+                return result
+            matches = self._host_pattern.match(record)
+            if matches:
+                # host 172.16.1.1/32 := "Host3"
+                # host 2001:0db8:85a3:0000:0000:8a2e:0370:7334 := "Host4"
+                key = matches.group('addr')
+                addr = netaddr.IPNetwork(key)
+                value = record.split(self._separator)[1].strip().strip('"')
+                result = dict(name=str(addr), data=value)
+                return result
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                'The value "{0}" is not an address'.format(record)
+            )
+
+    def decode_from_string(self, record):
+        parts = record.split(self._separator)
+        if len(parts) == 2:
+            return dict(name=parts[0].strip(), data=parts[1].strip('"').strip())
+        else:
+            return dict(name=parts[0].strip(), data="")
 
 
 class Parameters(AnsibleF5Parameters):
-    api_map = {}
+    api_map = {
+        'externalFileName': 'external_file_name'
+    }
 
     api_attributes = [
         'records', 'type'
@@ -383,35 +495,57 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = []
 
+    updatables = [
+        'records', 'checksum'
+    ]
+
     @property
     def type(self):
         if self._values['type'] in ['address', 'addr', 'ip']:
             return 'ip'
         elif self._values['type'] in ['integer', 'int']:
             return 'integer'
-        else:
+        elif self._values['type'] in ['string']:
             return 'string'
 
-
-class InternalApiParameters(Parameters):
-    updatables = [
-        'records'
-    ]
-
     @property
-    def records(self):
-        pass
+    def records_src(self):
+        try:
+            self._values['records_src'].seek(0)
+            return self._values['records_src']
+        except AttributeError:
+            pass
+        if self._values['records_src']:
+            records = open(self._values['records_src'])
+        else:
+            records = self._values['records']
+
+        # There is a 98% chance that the user will supply a data group that is < 1MB.
+        # 99.917% chance it is less than 10 MB. This is well within the range of typical
+        # memory available on a system.
+        #
+        # If this changes, this may need to be changed to use temporary files instead.
+        self._values['records_src'] = StringIO()
+
+        self._write_records_to_file(records)
+        return self._values['records_src']
+
+    def _write_records_to_file(self, records):
+        bucket_size = 1000000
+        bucket = []
+        encoder = RecordsEncoder(record_type=self.type, separator=self.separator)
+        for record in records:
+            result = encoder.encode(record)
+            if result:
+                bucket.append(to_text(result + ",\n"))
+                if len(bucket) == bucket_size:
+                    self._values['records_src'].writelines(bucket)
+                    bucket = []
+        self._values['records_src'].writelines(bucket)
+        self._values['records_src'].seek(0)
 
 
-class ExternalApiParameters(Parameters):
-    api_map = {
-        'externalFileName': 'external_file_name'
-    }
-
-    updatables = [
-        'checksum'
-    ]
-
+class ApiParameters(Parameters):
     @property
     def checksum(self):
         if self._values['checksum'] is None:
@@ -419,71 +553,29 @@ class ExternalApiParameters(Parameters):
         result = self._values['checksum'].split(':')[2]
         return result
 
-
-class InternalModuleParameters(Parameters):
     @property
     def records(self):
+        if self._values['records'] is None:
+            return None
+        return self._values['records']
 
     @property
-    def records_stringio(self):
-        if self._values['records_stringio']:
-            return self._values['records_stringio']
-        if self._values['records_content'] is None:
-            result = self._convert_records_list_to_string(self._values['records'])
-            result = StringIO(u"{0}".format(result))
-        else:
-            result = StringIO(u"{0}".format(self._values['records_content']))
-        self._values['records_stringio'] = result
-        return result
-
-    def _convert_records_list_to_string(self, contents):
-        """Converts a list of record dicts to a string
-
-        Args:
-            contents (list): The list of k/v records to convert.
-
-        Returns:
-            string: The string that the k/v records was converted to.
-        """
-        result = []
-        if len(contents) == 1 and contents[0] == "":
-            return ""
-        for content in contents:
-            addr = netaddr.IPNetwork(content['key'])
-            if 'key' in content and 'value' in content:
-                if addr.prefixlen in [32, 128]:
-                    line = 'host {0} {1} {2},'.format(
-                        content['key'], self.separator, content['value']
-                    )
-                else:
-                    line = 'network {0} prefixlen {1} {2} {3},'.format(
-                        str(addr.network), str(addr.prefixlen), self.separator,
-                        content['value']
-                    )
-            elif 'key' in content:
-                if addr.prefixlen in [32, 128]:
-                    line = 'host {0} {1} "",'.format(
-                        content['key'], self.separator
-                    )
-                else:
-                    line = 'network {0} prefixlen {1} {2} "",'.format(
-                        str(addr.network), str(addr.prefixlen), self.separator
-                    )
-            else:
-                raise F5ModuleError(
-                    "You must specify at least a 'key' when specifying a list of records."
-                )
-            result.append(line)
-        result = "\n".join(result)
-        return result
+    def records_list(self):
+        return self.records
 
 
-class ExternalModuleParameters(Parameters):
+class ModuleParameters(Parameters):
     @property
     def checksum(self):
         if self._values['checksum']:
             return self._values['checksum']
-        result = hashlib.sha1(self.records_stringio.getvalue())
+        result = hashlib.sha1()
+        records = self.records_src
+        while True:
+            data = records.read(4096)
+            if not data:
+                break
+            result.update(data)
         result = result.hexdigest()
         self._values['checksum'] = result
         return result
@@ -501,41 +593,20 @@ class ExternalModuleParameters(Parameters):
         return name
 
     @property
-    def records_stringio(self):
-        if self._values['records_stringio']:
-            return self._values['records_stringio']
-        if self._values['records_content'] is None:
-            result = self._convert_records_list_to_string(self._values['records'])
-            result = StringIO(u"{0}".format(result))
-        else:
-            result = StringIO(u"{0}".format(self._values['records_content']))
-        self._values['records_stringio'] = result
-        return result
+    def records(self):
+        results = []
+        decoder = RecordsDecoder(record_type=self.type, separator=self.separator)
+        for record in self.records_src:
+            result = decoder.decode(record)
+            if result:
+                results.append(result)
+        return results
 
-    def _convert_records_list_to_string(self, contents):
-        """Converts a list of record dicts to a string
-
-        Args:
-            contents (list): The list of k/v records to convert.
-
-        Returns:
-            string: The string that the k/v records was converted to.
-        """
-        result = []
-        if len(contents) == 1 and contents[0] == "":
-            return ""
-        for content in contents:
-            if 'key' in content and 'value' in content:
-                line = "{0} {1} {2},".format(content['key'], self.separator, content['value'])
-            elif 'key' in content:
-                line = "{0},".format(content['key'])
-            else:
-                raise F5ModuleError(
-                    "You must specify at least a 'key' when specifying a list of records."
-                )
-            result.append(line)
-        result = "\n".join(result)
-        return result
+    @property
+    def records_list(self):
+        if self._values['records'] is None:
+            return None
+        return self.records
 
 
 class Changes(Parameters):
@@ -580,7 +651,30 @@ class Difference(object):
             return attr1
 
     @property
+    def records(self):
+        # External data groups are compared by their checksum, not their records. This
+        # is because the BIG-IP does not store the actual records in the API. It instead
+        # stores the checksum of the file. External DGs have the possibility of being huge
+        # and we would never want to do a comparison of such huge files.
+        #
+        # Therefore, comparison is no-op if the DG being worked with is an external DG.
+        if self.want.internal is False:
+            return
+        if self.have.records is None and self.want.records == []:
+            return None
+        if self.have.records is None:
+            return self.want.records
+        result = compare_dictionary(self.want.records, self.have.records)
+        return result
+
+    @property
+    def type(self):
+        return None
+
+    @property
     def checksum(self):
+        if self.want.internal:
+            return None
         if self.want.checksum != self.have.checksum:
             return True
 
@@ -589,32 +683,9 @@ class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-
-    def _set_changed_options(self):
-        changed = {}
-        for key in Parameters.returnables:
-            if getattr(self.want, key) is not None:
-                changed[key] = getattr(self.want, key)
-        if changed:
-            self.changes = UsableChanges(params=changed)
-
-    def _update_changed_options(self):
-        diff = Difference(self.want, self.have)
-        updatables = Parameters.updatables
-        changed = dict()
-        for k in updatables:
-            change = diff.compare(k)
-            if change is None:
-                continue
-            else:
-                if isinstance(change, dict):
-                    changed.update(change)
-                else:
-                    changed[k] = change
-        if changed:
-            self.changes = UsableChanges(params=changed)
-            return True
-        return False
+        self.want = ModuleParameters(params=self.module.params)
+        self.have = ApiParameters()
+        self.changes = UsableChanges()
 
     def should_update(self):
         result = self._update_changed_options()
@@ -650,52 +721,42 @@ class BaseManager(object):
                 version=warning['version']
             )
 
+    def _set_changed_options(self):
+        changed = {}
+        for key in ApiParameters.returnables:
+            if getattr(self.want, key) is not None:
+                changed[key] = getattr(self.want, key)
+        if changed:
+            self.changes = UsableChanges(params=changed)
+
+    def _update_changed_options(self):
+        diff = Difference(self.want, self.have)
+        updatables = ApiParameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
+        if changed:
+            self.changes = UsableChanges(params=changed)
+            return True
+        return False
+
     def present(self):
         if self.exists():
             return self.update()
         else:
             return self.create()
 
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
-            return False
-        if self.module.check_mode:
-            return True
-        self.update_on_device()
-        return True
-
     def absent(self):
         if self.exists():
             return self.remove()
         return False
-
-
-class InternalManager(BaseManager):
-    def __init__(self, *args, **kwargs):
-        super(InternalManager, self).__init__(*args, **kwargs)
-        self.want = InternalModuleParameters(params=self.module.params)
-        self.have = InternalApiParameters()
-        self.changes = UsableChanges()
-
-    def _content_size_is_too_big(self):
-        records = self.want.records_stringio
-        records.seek(0, os.SEEK_END)
-        size = records.tell()
-        records.seek(0)
-        if size > 4000000:
-            return True
-        records.seek(0)
-        return False
-
-    def _too_many_lines(self):
-        result = False
-        seek_cur = self.want.records_stringio.tell()
-        for i, line in enumerate(self.want.records_stringio):
-            if i > 65000:
-                result = True
-        self.want.records_stringio.seek(seek_cur)
-        return result
 
     def remove(self):
         if self.module.check_mode:
@@ -705,24 +766,26 @@ class InternalManager(BaseManager):
             raise F5ModuleError("Failed to delete the resource.")
         return True
 
+
+class InternalManager(BaseManager):
     def create(self):
         self._set_changed_options()
-        if self._content_size_is_too_big() or self._too_many_lines():
+        if size_exceeded(self.want.records_src) or lines_exceeded(self.want.records_src):
             raise F5ModuleError(
                 "The size of the provided data (or file) is too large for an internal data group."
-            )
-        validator = ContentValidator(
-            self.want.records_stringio, self.want.separator, self.want.type
-        )
-        if not validator.is_valid():
-            raise F5ModuleError(
-                "The value on line '{0}' does not match the type '{1}'".format(
-                    validator.invalid_line, self.want.type
-                )
             )
         if self.module.check_mode:
             return True
         self.create_on_device()
+        return True
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
         return True
 
     def exists(self):
@@ -741,7 +804,7 @@ class InternalManager(BaseManager):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.ltm.data_group.internals.internal.load(
             name=self.want.name,
             partition=self.want.partition
@@ -762,16 +825,10 @@ class InternalManager(BaseManager):
             partition=self.want.partition
         )
         result = resource.attrs
-        return InternalApiParameters(params=result)
+        return ApiParameters(params=result)
 
 
 class ExternalManager(BaseManager):
-    def __init__(self, *args, **kwargs):
-        super(ExternalManager, self).__init__(*args, **kwargs)
-        self.want = ExternalModuleParameters(params=self.module.params)
-        self.have = ExternalApiParameters()
-        self.changes = UsableChanges()
-
     def absent(self):
         result = False
         if self.exists():
@@ -780,28 +837,28 @@ class ExternalManager(BaseManager):
             result = self.remove_data_group_file_from_device()
         return result
 
-    def remove(self):
-        if self.module.check_mode:
-            return True
-        self.remove_from_device()
-        if self.exists():
-            raise F5ModuleError("Failed to delete the resource.")
-        return True
-
     def create(self):
-        self._set_changed_options()
-        validator = ContentValidator(
-            self.want.records_stringio, self.want.separator, self.want.type
-        )
-        if not validator.is_valid():
+        if zero_length(self.want.records_src):
             raise F5ModuleError(
-                "The value on line '{0}' does not match the type '{1}'".format(
-                    validator.invalid_line, self.want.type
-                )
+                "An external data group cannot be empty."
             )
+        self._set_changed_options()
         if self.module.check_mode:
             return True
         self.create_on_device()
+        return True
+
+    def update(self):
+        self.have = self.read_current_from_device()
+        if not self.should_update():
+            return False
+        if zero_length(self.want.records_src):
+            raise F5ModuleError(
+                "An external data group cannot be empty."
+            )
+        if self.module.check_mode:
+            return True
+        self.update_on_device()
         return True
 
     def exists(self):
@@ -818,24 +875,8 @@ class ExternalManager(BaseManager):
         )
         return result
 
-    def _is_zero_length_file(self):
-        current = self.want.records_stringio.tell()
-        self.want.records_stringio.seek(0, os.SEEK_END)
-        length = self.want.records_stringio.tell()
-        self.want.records_stringio.seek(current)
-        if length == 0:
-            return True
-        return False
-
     def _upload_to_file(self, name, type, remote_path, update=False):
-        if self._is_zero_length_file():
-            raise F5ModuleError(
-                "External data groups may not be empty"
-            )
-
-        self.client.api.shared.file_transfer.uploads.upload_stringio(
-            self.want.records_stringio, name
-        )
+        self.client.api.shared.file_transfer.uploads.upload_stringio(self.want.records_src, name)
         resource = self.client.api.tm.sys.file.data_groups
         if update:
             resource = resource.data_group.load(
@@ -858,9 +899,7 @@ class ExternalManager(BaseManager):
     def create_on_device(self):
         name = self.want.external_file_name
         remote_path = '/var/config/rest/downloads/{0}'.format(name)
-        external_file = self._upload_to_file(
-            name, self.want.type, remote_path, update=False
-        )
+        external_file = self._upload_to_file(name, self.want.type, remote_path, update=False)
         self.client.api.tm.ltm.data_group.externals.external.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -871,9 +910,7 @@ class ExternalManager(BaseManager):
     def update_on_device(self):
         name = self.want.external_file_name
         remote_path = '/var/config/rest/downloads/{0}'.format(name)
-        external_file = self._upload_to_file(
-            name, self.have.type, remote_path, update=True
-        )
+        external_file = self._upload_to_file(name, self.have.type, remote_path, update=True)
         resource = self.client.api.tm.ltm.data_group.externals.external.load(
             name=self.want.name,
             partition=self.want.partition
@@ -933,7 +970,7 @@ class ExternalManager(BaseManager):
             partition=external_file_partition
         )
         result = resource.attrs
-        return ExternalApiParameters(params=result)
+        return ApiParameters(params=result)
 
 
 class ModuleManager(object):
