@@ -21,8 +21,7 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.bigip_data_group import ExternalModuleParameters
-    from library.bigip_data_group import InternalModuleParameters
+    from library.bigip_data_group import ModuleParameters
     from library.bigip_data_group import ModuleManager
     from library.bigip_data_group import ExternalManager
     from library.bigip_data_group import InternalManager
@@ -32,8 +31,7 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_data_group import ExternalModuleParameters
-        from ansible.modules.network.f5.bigip_data_group import InternalModuleParameters
+        from ansible.modules.network.f5.bigip_data_group import ModuleParameters
         from ansible.modules.network.f5.bigip_data_group import ModuleManager
         from ansible.modules.network.f5.bigip_data_group import ExternalManager
         from ansible.modules.network.f5.bigip_data_group import InternalManager
@@ -75,7 +73,7 @@ class TestParameters(unittest.TestCase):
             internal=False,
             records=[
                 dict(
-                    key='foo',
+                    key='10.10.10.10/32',
                     value='bar'
                 )
             ],
@@ -84,15 +82,15 @@ class TestParameters(unittest.TestCase):
             partition='Common'
         )
 
-        p = InternalModuleParameters(params=args)
+        p = ModuleParameters(params=args)
         assert p.name == 'foo'
-        assert p.type == 'address'
+        assert p.type == 'ip'
         assert p.delete_data_group_file is False
         assert len(p.records) == 1
-        assert 'key' in p.records[0]
-        assert 'value' in p.records[0]
-        assert p.records[0]['key'] == 'foo'
-        assert p.records[0]['value'] == 'bar'
+        assert 'data' in p.records[0]
+        assert 'name' in p.records[0]
+        assert p.records[0]['data'] == 'bar'
+        assert p.records[0]['name'] == '10.10.10.10/32'
         assert p.separator == ':='
         assert p.state == 'present'
         assert p.partition == 'Common'
@@ -110,14 +108,7 @@ class TestManager(unittest.TestCase):
             name='foo',
             delete_data_group_file=False,
             internal=False,
-            records_content="""
-            a := alpha
-            b := bravo
-            c := charlie
-            x := x-ray
-            y := yankee
-            z := zulu
-            """,
+            records_src="{0}/data-group-string.txt".format(fixture_path),
             separator=':=',
             state='present',
             partition='Common',
@@ -151,14 +142,7 @@ class TestManager(unittest.TestCase):
             delete_data_group_file=False,
             internal=False,
             type='address',
-            records_content="""
-            a := alpha
-            b := bravo
-            c := charlie
-            x := x-ray
-            y := yankee
-            z := zulu
-            """,
+            records_src="{0}/data-group-string.txt".format(fixture_path),
             separator=':=',
             state='present',
             partition='Common',
@@ -185,7 +169,7 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as ex:
             mm0.exec_module()
 
-        assert "The value on line '1' does not match the type 'address'" == str(ex.value)
+        assert "When specifying an 'address' type, the value to the left of the separator must be an IP." == str(ex.value)
 
     def test_create_external_incorrect_integer_data(self, *args):
         set_module_args(dict(
@@ -193,14 +177,7 @@ class TestManager(unittest.TestCase):
             delete_data_group_file=False,
             internal=False,
             type='integer',
-            records_content="""
-            a := alpha
-            b := bravo
-            c := charlie
-            x := x-ray
-            y := yankee
-            z := zulu
-            """,
+            records_src="{0}/data-group-string.txt".format(fixture_path),
             separator=':=',
             state='present',
             partition='Common',
@@ -227,22 +204,79 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as ex:
             mm0.exec_module()
 
-        assert "The value on line '1' does not match the type 'integer'" == str(ex.value)
+        assert "When specifying an 'integer' type, the value to the left of the separator must be a number." == str(ex.value)
 
-    def test_update_external_string_data(self, *args):
+    def test_remove_data_group_keep_file(self, *args):
         set_module_args(dict(
             name='foo',
             delete_data_group_file=False,
             internal=False,
-            type='integer',
-            records_content="""
-            a := alpha,
-            b := bravo,
-            c := charlie,
-            x := x-ray,
-            y := yankee,
-            z := zulu
-            """,
+            state='absent',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = ExternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[True, False])
+        mm1.remove_from_device = Mock(return_value=True)
+        mm1.external_file_exists = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
+
+    def test_remove_data_group_remove_file(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=True,
+            internal=False,
+            state='absent',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = ExternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[True, False])
+        mm1.remove_from_device = Mock(return_value=True)
+        mm1.external_file_exists = Mock(return_value=True)
+        mm1.remove_data_group_file_from_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_internal_datagroup_type_string(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=False,
+            internal=True,
+            records_src="{0}/data-group-string.txt".format(fixture_path),
             separator=':=',
             state='present',
             partition='Common',
@@ -258,7 +292,41 @@ class TestManager(unittest.TestCase):
         )
 
         # Override methods in the specific type of manager
-        mm1 = ExternalManager(module=module, params=module.params)
+        mm1 = InternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[False, True])
+        mm1.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_internal_incorrect_integer_data(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=False,
+            internal=True,
+            type='integer',
+            records_src="{0}/data-group-string.txt".format(fixture_path),
+            separator=':=',
+            state='present',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = InternalManager(module=module, params=module.params)
         mm1.exists = Mock(side_effect=[False, True])
         mm1.create_on_device = Mock(return_value=True)
 
@@ -269,4 +337,127 @@ class TestManager(unittest.TestCase):
         with pytest.raises(F5ModuleError) as ex:
             mm0.exec_module()
 
-        assert "The value on line '1' does not match the type 'integer'" == str(ex.value)
+        assert "When specifying an 'integer' type, the value to the left of the separator must be a number." == str(ex.value)
+
+    def test_create_internal_datagroup_type_integer(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=False,
+            internal=True,
+            type='integer',
+            records_src="{0}/data-group-integer.txt".format(fixture_path),
+            separator=':=',
+            state='present',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = InternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[False, True])
+        mm1.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_internal_datagroup_type_address(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=False,
+            internal=True,
+            type='address',
+            records_src="{0}/data-group-address.txt".format(fixture_path),
+            separator=':=',
+            state='present',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = InternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[False, True])
+        mm1.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
+
+    def test_create_internal_datagroup_type_address_list(self, *args):
+        set_module_args(dict(
+            name='foo',
+            delete_data_group_file=False,
+            internal=True,
+            type='address',
+            records=[
+                dict(
+                    key='10.0.0.0/8',
+                    value='Network1'
+                ),
+                dict(
+                    key='172.16.0.0/12',
+                    value='Network2'
+                ),
+                dict(
+                    key='192.168.20.1/16',
+                    value='Network3'
+                ),
+                dict(
+                    key='192.168.20.1',
+                    value='Host1'
+                ),
+                dict(
+                    key='172.16.1.1',
+                    value='Host2'
+                )
+            ],
+            separator=':=',
+            state='present',
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode,
+            mutually_exclusive=self.spec.mutually_exclusive,
+        )
+
+        # Override methods in the specific type of manager
+        mm1 = InternalManager(module=module, params=module.params)
+        mm1.exists = Mock(side_effect=[False, True])
+        mm1.create_on_device = Mock(return_value=True)
+
+        # Override methods to force specific logic in the module to happen
+        mm0 = ModuleManager(module=module)
+        mm0.get_manager = Mock(return_value=mm1)
+
+        results = mm0.exec_module()
+
+        assert results['changed'] is True
