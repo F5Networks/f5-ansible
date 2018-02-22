@@ -669,7 +669,7 @@ class Difference(object):
         #
         # Therefore, comparison is no-op if the DG being worked with is an external DG.
         if self.want.internal is False:
-            return
+            return None
         if self.have.records is None and self.want.records == []:
             return None
         if self.have.records is None:
