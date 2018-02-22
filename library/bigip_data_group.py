@@ -341,7 +341,12 @@ class RecordsEncoder(object):
             return self.encode_string_from_dict(record)
 
     def encode_address_from_dict(self, record):
-        key = netaddr.IPNetwork(record['key'])
+        try:
+            key = netaddr.IPNetwork(record['key'])
+        except netaddr.core.AddrFormatError:
+            raise F5ModuleError(
+                "When specifying an 'address' type, the value to the left of the separator must be an IP."
+            )
         if key and 'value' in record:
             if key.prefixlen in [32, 128]:
                 return self.encode_host(key.ip, record['value'])
@@ -392,19 +397,24 @@ class RecordsEncoder(object):
         else:
             # 192.168.0.0/16 := "Network3",
             # 2402:9400:1000:0::/64 := "Network4",
-            parts = record.split(self._separator)
-            if len(parts) == 2:
-                key = netaddr.IPNetwork(parts[0])
-                if key.prefixlen in [32, 128]:
-                    return self.encode_host(key.ip, parts[1])
-                else:
-                    return self.encode_network(key.network, key.prefixlen, parts[1])
-            elif len(parts) == 1 and parts[0] != '':
-                key = netaddr.IPNetwork(parts[0])
-                if key.prefixlen in [32, 128]:
-                    return self.encode_host(key.ip, key.ip)
-                else:
-                    return self.encode_network(key.network, key.prefixlen, key.network)
+            try:
+                parts = record.split(self._separator)
+                if len(parts) == 2:
+                    key = netaddr.IPNetwork(parts[0])
+                    if key.prefixlen in [32, 128]:
+                        return self.encode_host(key.ip, parts[1])
+                    else:
+                        return self.encode_network(key.network, key.prefixlen, parts[1])
+                elif len(parts) == 1 and parts[0] != '':
+                    key = netaddr.IPNetwork(parts[0])
+                    if key.prefixlen in [32, 128]:
+                        return self.encode_host(key.ip, key.ip)
+                    else:
+                        return self.encode_network(key.network, key.prefixlen, key.network)
+            except netaddr.core.AddrFormatError:
+                raise F5ModuleError(
+                    "When specifying an 'address' type, the value to the left of the separator must be an IP."
+                )
 
     def encode_host(self, key, value):
         return 'host {0} {1} {2}'.format(str(key), self._separator, str(value))
