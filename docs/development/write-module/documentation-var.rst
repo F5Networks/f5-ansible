@@ -173,6 +173,9 @@ Commonly-used keys are:
    variables ``user``, ``password``, ``server``, ``server_port``, and ``validate_certs``
    into your documentation. You should use it for all modules.
 
+Documentation header
+--------------------
+
 Starting at the top, we include the following
 
 .. code-block:: python
@@ -193,6 +196,58 @@ This set of documentation tells you
 
 If you were developing your own module (and not re-creating an existing one) you would
 want to change these fragments to reflect your situation.
+
+A note on raw string literals
+-----------------------------
+
+Take special note of how the string content of this variable is *started*. There is
+an ``r`` character before the string. What is that?
+
+When an ``r`` character prefixes a string, Python considers that string a "raw" string
+literal.
+
+Alex Martelli has a `great explanation of this on Stack Overflow`_.
+
+::
+
+  A "raw string literal" is a slightly different syntax for a string literal, in which a
+  backslash, \, is taken as meaning "just a backslash" (except when it comes right before
+  a quote that would otherwise terminate the literal) -- no "escape sequences" to represent
+  newlines, tabs, backspaces, form-feeds, and so on. In normal string literals, each
+  backslash must be doubled up to avoid being taken as the start of an escape sequence.
+
+What this means is that nowhere in the string do you need to do things like escape
+characters.
+
+Consider the string "C:\Users\John Smith\Documents\test.txt"
+
+This variable contains documentation, so you would want to present that full string to
+a user when they were reading the documentation. Python, however, will interpret the
+``\`` characters as an escape sequence and will attempt to escape them for you when
+rendering the documentation. The above example would ``print()`` in Python as
+
+::
+
+  C:\Users\John Smith\Documents   est.txt
+
+Which is definitely not what a user expects. By attaching the ``r`` character though, the
+documentation renders like this instead.
+
+::
+
+  C:\Users\John Smith\Documents\test.txt
+
+This is much more likely what you want the documentation to look like. So always use ``r``
+strings for the documentation related variables at the top of a module. These include,
+
+* ``DOCUMENTATION``
+* ``EXAMPLES``
+* ``RETURN``
+
+If you do, you will never need to worry about escape sequences.
+
+Specifying options (parameters)
+-------------------------------
 
 Next up there are a series of options,
 
@@ -323,3 +378,5 @@ ensure that *all modules have user facing documentation*.
 
 Turn the page to continue with the tutorial, where we will cover the next section of the
 module.
+
+.. _great explanation of this on Stack Overflow: https://stackoverflow.com/a/2081708

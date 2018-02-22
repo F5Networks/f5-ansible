@@ -1,9 +1,10 @@
 EXAMPLES variable
 =================
 
-The EXAMPLES variable contains the most common use cases for this module.
+The ``EXAMPLES`` variable contains the most common use cases for this module.
 
-Setting the banner is the most common case, but you are free to add to these examples.
+You are free to add any examples that you think would help a user of the module solve a
+problem quickly.
 
 These examples also serve as a basis for the functional tests.
 
@@ -11,31 +12,56 @@ For this module, the ``EXAMPLES`` variable looks like this:
 
 .. code-block:: python
 
-   EXAMPLES = '''
-   - name: Set the banner for the SSHD service from a string
-     bigip_device_sshd:
-       banner: enabled
-       banner_text: banner text goes here
-       password: secret
-       server: lb.mydomain.com
-       user: admin
+   EXAMPLES = r'''
+   - name: Create policies
+     bigip_policy:
+       name: Policy-Foo
+       state: present
      delegate_to: localhost
 
-   - name: Set the banner for the SSHD service from a file
-     bigip_device_sshd:
-       banner: enabled
-       banner_text: "{{ lookup('file', '/path/to/file') }}"
-       password: secret
-       server: lb.mydomain.com
-       user: admin
+   - name: Add a rule to the new policy
+     bigip_policy_rule:
+       policy: Policy-Foo
+       name: rule3
+       conditions:
+         - type: http_uri
+           path_begins_with_any: /ABC
+       actions:
+         - type: forward
+           pool: pool-svrs
      delegate_to: localhost
 
-   - name: Set the SSHD service to run on port 2222
-     bigip_device_sshd:
-       password: secret
-       port: 2222
-       server: lb.mydomain.com
-       user: admin
+   - name: Add multiple rules to the new policy
+     bigip_policy_rule:
+       policy: Policy-Foo
+       name: "{{ item.name }}"
+       conditions: "{{ item.conditions }}"
+       actions: "{{ item.actions }}"
+     delegate_to: localhost
+     loop:
+       - name: rule1
+         actions:
+           - type: forward
+             pool: pool-svrs
+         conditions:
+           - type: http_uri
+             path_starts_with: /euro
+       - name: rule2
+         actions:
+           - type: forward
+             pool: pool-svrs
+         conditions:
+           - type: http_uri
+             path_starts_with: /HomePage/
+
+   - name: Remove all rules and confitions from the rule
+     bigip_policy_rule:
+       policy: Policy-Foo
+       name: rule1
+       conditions:
+         - type: all_traffic
+       actions:
+         - type: ignore
      delegate_to: localhost
    '''
 
@@ -48,10 +74,22 @@ The examples that you provide should always have the following:
 You should run the BIG-IP modules on the Ansible controller only. The best practice is to
 use ``delegate_to:`` here so that you get in the habit of using it.
 
+The ``delegate_to`` keyword is **not** an argument to your module. It is an argument to
+the Ansible Task. Therefore, it should be indented so-as to align with the *module name*.
+
 **common args**
 
-The common args are:
+The common args to modules include:
 
-- ``password`` should always be ``secret``
-- ``server`` should always be ``lb.mydomain.com``
-- ``user`` should always be ``admin``
+- ``password``. This should always be ``secret``
+- ``server``. This should always be ``lb.mydomain.com``
+- ``user``. This should always be ``admin``
+
+Conclusion
+----------
+
+There is nothing special about this documentation blob compared to the ``DOCUMENTATION``
+variable mentioned earlier. It is still YAML, and therefore must follow the constaints that
+you were made familiar with earlier.
+
+In the next section we'll cover the final documentation blob. The ``RETURN`` variable.
