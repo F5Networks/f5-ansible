@@ -156,7 +156,7 @@ class iControlRestSession(object):
             url, method='POST', data=json.dumps(login_body),
             validate_certs=self._validate_certs
         )
-        if not response.code in [200]:
+        if response.code not in [200]:
             raise F5ModuleError('{0} Unexpected Error: {1} for uri: {2}\nText: {3}'.format(
                 response.status_code, response.reason, response.url, response.text
             ))
