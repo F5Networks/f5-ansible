@@ -157,6 +157,7 @@ def fq_name(partition, value):
         return '/{0}/{1}'.format(partition, value)
     return value
 
+
 # Fully Qualified name (with partition) for a list
 def fq_list_names(partition, list_names):
     if list_names is None:
