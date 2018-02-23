@@ -365,8 +365,8 @@ There are *hundreds* if not *thousands* of tests. If the F5 unit tests are slowi
 total execution time of the test suite (beyond reason of course) then this should be
 considered a bug, and fixed.
 
-In the next section, the concept of functional tests will be explored in greater depth.
-Functional tests are the most important tests which can be run because they confirm or reject
+In the next section, the concept of integration tests will be explored in greater depth.
+Integration tests are the most important tests which can be run because they confirm or reject
 the correctness of a module.
 
 .. _can be found here: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/test/unit/test_bigip_policy_rule.py
