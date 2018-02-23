@@ -46,12 +46,4 @@ All of the remaining steps can take place inside of this container. Actual writi
 code does not need to happen inside of the container due to ``docker-compose`` mounting
 your source directory to the container's ``/here`` directory.
 
-For F5'ers
-----------
-
-F5 colleagues do not need to follow this step because F5 provides these containers
-pre-built for you.
-
-Contact an F5 Modules for Ansible dev team member for details on how to get them.
-
 .. _f5-ansible source code: https://github.com/F5Networks/f5-ansible
