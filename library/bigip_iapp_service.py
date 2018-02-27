@@ -46,6 +46,7 @@ options:
         This option is equivalent to re-configuring the iApp if that template
         has changed.
     default: no
+    type: bool
   state:
     description:
       - When C(present), ensures that the iApp service is created and running.
