@@ -27,9 +27,7 @@ options:
     description:
       - Specifies to which Simple Network Management Protocol (SNMP) version
         the trap destination applies.
-    choices:
-      - 1
-      - 2c
+    choices: ['1', '2c']
   community:
     description:
       - Specifies the community name for the trap destination.
