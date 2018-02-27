@@ -46,7 +46,7 @@ options:
   complete_information:
     description:
       - Include complete information in the qkview.
-    default: yes
+    default: no
     type: bool
   exclude_core:
     description:
@@ -434,7 +434,10 @@ class ArgumentSpec(object):
                 type='bool'
             ),
             exclude=dict(
-                type='list'
+                type='list',
+                choices=[
+                    'all', 'audit', 'secure', 'bash_history'
+                ]
             ),
             dest=dict(
                 type='path',
