@@ -21,7 +21,7 @@ description:
     standard levels of Dedicated, Nominal, and Minimum.
 version_added: "2.4"
 options:
-  name:
+  module:
     description:
       - The module to provision in BIG-IP.
     required: true
@@ -41,7 +41,7 @@ options:
       - swg
       - vcmp
     aliases:
-      - module
+      - name
   level:
     description:
       - Sets the provisioning level for the requested modules. Changing the
