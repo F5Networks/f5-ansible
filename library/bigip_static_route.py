@@ -57,6 +57,7 @@ options:
   reject:
     description:
       - Specifies that the system drops packets sent to the destination.
+    type: bool
   mtu:
     description:
       - Specifies a specific maximum transmission unit (MTU).

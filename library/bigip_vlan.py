@@ -93,6 +93,9 @@ options:
         of C(outer) is used.
       - This parameter is not supported on Virtual Editions of BIG-IP.
     version_added: 2.5
+    choices:
+      - inner
+      - outer
   dag_round_robin:
     description:
       - Specifies whether some of the stateless traffic on the VLAN should be
