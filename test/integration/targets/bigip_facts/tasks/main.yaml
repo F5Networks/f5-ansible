@@ -1,10 +1,16 @@
 ---
 
-- name: Collect BIG-IP facts, address class
+- name: Collect BIG-IP facts
   bigip_facts:
     include: "{{ item }}"
   register: result
   loop: "{{ valid_includes }}"
+
+- name: Collect multiple BIG-IP facts
+  bigip_facts:
+    include:
+      - system_info
+      - interface
 
 - import_tasks: issue-00393.yaml
   tags: issue-00393

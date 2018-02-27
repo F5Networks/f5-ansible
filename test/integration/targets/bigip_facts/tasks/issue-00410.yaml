@@ -12,7 +12,7 @@
   register: result
 
 - name: Issue 00410 - Collect BIG-IP facts
-  _bigip_facts:
+  bigip_facts:
     include:
       - pool
   register: result
