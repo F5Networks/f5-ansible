@@ -545,7 +545,10 @@ def main():
         strict=dict(choices=STRICTS),
         parent=dict(type='int'),
         vlans=dict(type='list'),
-        routing_protocol=dict(type='list'),
+        routing_protocol=dict(
+            type='list',
+            choices=['BFD', 'BGP', 'IS-IS', 'OSPFv2', 'OSPFv3', 'PIM', 'RIP', 'RIPng']
+        ),
         bwc_policy=dict(),
         connection_limit=dict(type='int',),
         flow_eviction_policy=dict(),

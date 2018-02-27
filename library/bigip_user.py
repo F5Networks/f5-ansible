@@ -70,7 +70,7 @@ options:
       - C(always) will allow to update passwords if the user chooses to do so.
         C(on_create) will only set the password for newly created users. When
         C(username_credential) is C(root), this value will be forced to C(always).
-    default: on_create
+    default: always
     choices:
       - always
       - on_create

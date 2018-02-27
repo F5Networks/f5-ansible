@@ -40,6 +40,7 @@ options:
       - A key that signifies that you accept the F5 EULA for this license.
       - A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902
       - This is required when C(state) is C(present).
+    type: bool
   state:
     description:
       - The state of the regkey license in the pool on the system.

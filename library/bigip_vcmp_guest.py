@@ -68,6 +68,7 @@ options:
     description:
       - When C(state) is C(absent), will additionally delete the virtual disk associated
         with the vCMP guest. By default, this value is C(no).
+    type: bool
     default: no
   mgmt_address:
     description:

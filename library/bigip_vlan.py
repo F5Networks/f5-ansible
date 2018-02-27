@@ -71,6 +71,17 @@ options:
         specifies that the default CMP hash uses L4 ports.
       - When creating a new VLAN, if this parameter is not specified, the default
         of C(default) is used.
+    choices:
+      - default
+      - destination-address
+      - source-address
+      - dst-ip
+      - src-ip
+      - dest
+      - destination
+      - source
+      - dst
+      - src
     version_added: 2.5
   dag_tunnel:
     description:

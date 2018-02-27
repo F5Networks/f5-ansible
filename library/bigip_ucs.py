@@ -25,9 +25,7 @@ options:
       - During restore of the UCS file, include chassis level configuration
         that is shared among boot volume sets. For example, cluster default
         configuration.
-    choices:
-      - yes
-      - no
+    type: bool
   ucs:
     description:
       - The path to the UCS file to install. The parameter must be
@@ -42,38 +40,29 @@ options:
         device. If C(no), the file will only be uploaded if it does not already
         exist. Generally should be C(yes) only in cases where you have reason
         to believe that the image was corrupted during upload.
-    choices:
-      - yes
-      - no
+    type: bool
+    default: no
   no_license:
     description:
       - Performs a full restore of the UCS file and all the files it contains,
         with the exception of the license file. The option must be used to
         restore a UCS on RMA devices (Returned Materials Authorization).
-    choices:
-      - yes
-      - no
+    type: bool
   no_platform_check:
     description:
       - Bypasses the platform check and allows a UCS that was created using a
         different platform to be installed. By default (without this option),
         a UCS created from a different platform is not allowed to be installed.
-    choices:
-      - yes
-      - no
+    type: bool
   passphrase:
     description:
       - Specifies the passphrase that is necessary to load the specified UCS file.
-    choices:
-      - yes
-      - no
+    type: bool
   reset_trust:
     description:
       - When specified, the device and trust domain certs and keys are not
         loaded from the UCS. Instead, a new set is regenerated.
-    choices:
-      - yes
-      - no
+    type: bool
   state:
     description:
       - When C(installed), ensures that the UCS is uploaded and installed,
