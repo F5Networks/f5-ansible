@@ -1648,7 +1648,16 @@ def main():
     argument_spec = f5_argument_spec
     meta_args = dict(
         session=dict(type='bool', default=False),
-        include=dict(type='list', required=True),
+        include=dict(
+            type='list',
+            required=True,
+            choices=[
+                'address_class', 'certificate', 'client_ssl_profile', 'device',
+                'device_group', 'interface', 'key', 'node', 'pool', 'provision',
+                'rule', 'self_ip', 'software', 'system_info', 'traffic_group',
+                'trunk', 'virtual_address', 'virtual_server', 'vlan'
+            ]
+        ),
         filter=dict(type='str', required=False),
     )
     argument_spec.update(meta_args)
