@@ -1,22 +1,13 @@
 DOCUMENTATION variable
 ======================
 
-The first chunk of code that you will insert describes the module. It names which
-parameters it accepts, who the authors/maintainers are, its dependencies, and a variety
-of other things.
+The DOCUMENTATION variable is the first chunk of code that you will insert. It describes the module and names the parameters it accepts, who the authors/maintainers are, its dependencies, and a variety of other things.
 
-.. note::
+This area of the module is near the top, but note that you were not instructed to change anything else near the top. This is because when fleshing out a stub, a lot of boilerplate is included for you automatically.
 
-   This area of the module is near the top, but note that you were not instructed to
-   change anything else near the top. This is because when fleshing out a stub, there
-   is a lot of boilerplate included for you automatically.
+This actually makes writing modules easier. You no longer need to concern yourself with writing this boilerplate; only changing it as necessary. This can really shorten your development time for a module that uses a good API.
 
-   This actually makes writing modules easier! You no longer need to concern yourself
-   with writing this boilerplate; only changing it as necessary. This can really shorten
-   your development time for a module that uses a good API.
-
-The ``f5ansible`` tool created all of what you see, but you are concerned right now with
-only documenting this module. The stub includes some of that work for you. For example,
+The ``f5ansible`` tool created all of what you see, but you are concerned right now with only documenting this module. The stub includes some of that work for you. For example:
 
 .. code-block:: python
 
@@ -37,17 +28,11 @@ only documenting this module. The stub includes some of that work for you. For e
      - Tim Rupp (@caphrim007)
    '''
 
-While this is a good start (and even completely valid) it is not helpful at all. Earlier
-I mentioned that you do not need to pay attention to the document file that was created
-by the ``f5ansible`` tool. The reason why is because **this** documentation you see here
-is what is going to be used to generate the online docs.
+This content is used to generate the online documentation and you must update it.
 
-It's critical that this documentation here reflect what the module is intended to do, as
-well as what it actually does.
+It's critical that this documentation reflects what the module is intended to do, as well as what it actually does.
 
-Below is a paste of all of the code that you should enter into your own copy of the
-``bigip_policy_rule`` module. We'll cover its different sections once you have completed
-that.
+Now copy the following code into your own copy of the ``bigip_policy_rule`` module.
 
 .. code-block:: python
 
@@ -142,8 +127,7 @@ that.
      - Tim Rupp (@caphrim007)
    '''
 
-The first key take-away from this documentation blob is that the order of the keys is
-completely irrelevant.
+The first key takeaway from this documentation blob is that the order of the keys is irrelevant.
 
 This is a variable in Python that contains a string that is formatted in YAML. YAML
 has a number of data structures that it supports; one of those being a *dictionary*.
@@ -169,14 +153,14 @@ Commonly-used keys are:
 
 .. note::
 
-   The ``extends_documentation_fragment`` key is special as it automatically injects the
+   The ``extends_documentation_fragment`` key is special because it automatically injects the
    variables ``user``, ``password``, ``server``, ``server_port``, and ``validate_certs``
    into your documentation. You should use it for all modules.
 
 Documentation header
 --------------------
 
-Starting at the top, we include the following
+Starting at the top of the DOCUMENTATION section:
 
 .. code-block:: python
 
@@ -186,16 +170,16 @@ Starting at the top, we include the following
      - This module will manage LTM policy rules on a BIG-IP.
    version_added: 2.5
 
-This set of documentation tells you
+This set of documentation tells you:
 
-- What the name of the module is.
-- Provides a title for the module as will be seen in Ansible's documentation.
-- Provides an area for a more full description of what the module is used for, including
+- The name of the module.
+- A title for the module, which will be shown in Ansible's documentation.
+- An area for a more full description of what the module is used for, including
   its capabilities and limitations.
-- The version that the module was added to Ansible.
+- The version of Ansible that the module was added to.
 
 If you were developing your own module (and not re-creating an existing one) you would
-want to change these fragments to reflect your situation.
+change these fragments to reflect your situation.
 
 A note on raw string literals
 -----------------------------
@@ -219,12 +203,13 @@ Alex Martelli has a `great explanation of this on Stack Overflow`_.
 What this means is that nowhere in the string do you need to do things like escape
 characters.
 
-Consider the string "C:\Users\John Smith\Documents\test.txt"
+Consider the string ``C:\Users\John Smith\Documents\test.txt``
 
 This variable contains documentation, so you would want to present that full string to
-a user when they were reading the documentation. Python, however, will interpret the
-``\`` characters as an escape sequence and will attempt to escape them for you when
-rendering the documentation. The above example would ``print()`` in Python as
+a user when they are reading the documentation.
+
+Python, however, will interpret the ``\`` characters as an escape sequence and will attempt to escape them for you when
+rendering the documentation. The above example would ``print()`` in Python as:
 
 ::
 
@@ -238,7 +223,7 @@ documentation renders like this instead.
   C:\Users\John Smith\Documents\test.txt
 
 This is much more likely what you want the documentation to look like. So always use ``r``
-strings for the documentation related variables at the top of a module. These include,
+strings for the documentation related variables at the top of a module. These include:
 
 * ``DOCUMENTATION``
 * ``EXAMPLES``
@@ -249,7 +234,7 @@ If you do, you will never need to worry about escape sequences.
 Specifying options (parameters)
 -------------------------------
 
-Next up there are a series of options,
+Next, there are a series of options:
 
 .. code-block:: python
 
@@ -289,38 +274,36 @@ Next up there are a series of options,
          - The name of the policy that you want to associate this rule with.
        required: True
 
-I've only selected a few here so-as to touch upon the key points.
+A few points:
 
 First, the top-level key for this block is called ``options``. Yours should be the same.
 This is how Ansible knows to report this section of documentation in the module's parameters
 table.
 
-The first parameter that is listed above is the ``description`` parameter. It itself has
-a ``description`` field which describes what the purpose of the ``description`` parameter
-is.
+The first parameter listed above is the ``description`` parameter. It has a ``description`` field that describes what the purpose of the ``description`` parameter is.
 
-The next parameter is one called ``actions``. Like the previous parameter, this one also
-has a ``description`` field that describes what its purpose in the module it. In fact, it
+The next parameter is called ``actions``. Like the previous parameter, this one also
+has a ``description`` field that describes what its purpose in the module is. In fact, it
 has many descriptions.
 
 This is actually a recommended way of writing documentation bits about your parameter.
-You may have many thoughts about what a parameter does. Instead of cramming them into one
+You may have many thoughts about what a parameter does. Instead of putting them into one
 long line, it is recommended that you define them as a list (indicated by the leading hyphen).
 
-This parameter has another field; ``suboptions``. This field, itself, acts in the same
-was as the top-level ``options`` field does. It allows you to define a series of fields that
+This parameter has another field; ``suboptions``. This field acts in the same
+way as the top-level ``options`` field does. It allows you to define a series of fields that
 can be specified to the parameter. This is a great way to spell out what is *exactly* required
 by the parameter. It is also a great way to enforce compliance with input. Were these not here,
 the user may expect that they need to provide a free-form string of data when providing
-the ``actions``. Such as,
+the ``actions``. Such as:
 
 .. code-block:: python
 
    actions: Are these actions that I put here?
 
-Instead, however, the ``suboptions`` tells the user that the module will ``require`` the field
+Instead, the ``suboptions`` tell the user that the module will ``require`` the field
 ``type``, and can optionally accept a ``pool`` field and ``asm_policy`` field. Each of those
-fields themselves has their own documentation. The end result is that the user will know
+fields has their own documentation. The end result is that the user will know
 that their ``action`` will resemble the following when used in a playbook.
 
 .. code-block:: python
@@ -340,21 +323,21 @@ that their ``action`` will resemble the following when used in a playbook.
      - type: ignore
 
 Now, you have not yet *codified* that enforcement, but you *have* made known to the user
-your plan on doing so. This is a great approach.
+your plan to do so. This is a great approach.
 
 The final parameter in the snippet above is the ``policy`` parameter. Note that it is similar
-to the first parameter (``description``) but it includes another field; ``required``.
+to the first parameter (``description``) but it includes another field: ``required``.
 
 Ansible does not require you to specify ``False`` or ``default: None`` in either your
-documentation or ``ArgumentSpec`` (we'll get to that). It does, however, require that
-you specify truthiness. Therefore, since this parameter will be required by the module,
+documentation or ``ArgumentSpec``. It does, however, require that
+you specify truthiness. Therefore, because this parameter will be required by the module,
 we specify in the documentation that it is indeed required.
 
 If you leave anything out
 -------------------------
 
 Note that Ansible upstream has several rules for their documentation blocks.
-At the time of this writing, some of the rules are,
+At the time of this writing, some of the rules are:
 
 - If a parameter is *not* required, **do not** include a ``required: false`` field in the
   parameter's ``DOCUMENTATION`` section.
@@ -371,12 +354,11 @@ when you attempt to upstream a new module.
 Conclusion
 ----------
 
-This puts in place the first important part of the module. It gets you thinking on what
+This puts in place the first important part of the module. It gets you thinking about what
 you want in the module, as well as what is even possible. Since a module will be flagged
 as incorrect if any of this information is wrong or missing, it is also a great way to
-ensure that *all modules have user facing documentation*.
+ensure that *all modules have user-facing documentation*.
 
-Turn the page to continue with the tutorial, where we will cover the next section of the
-module.
+Click the **Next** button to continue to the next variable.
 
 .. _great explanation of this on Stack Overflow: https://stackoverflow.com/a/2081708

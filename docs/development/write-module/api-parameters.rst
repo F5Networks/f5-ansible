@@ -4,29 +4,25 @@ ApiParameters class
 ===================
 
 The ``ApiParameters`` class is one of two major Adapter-based classes that routinely appears
-in the F5 Modules for Ansible. The job of this class is to act as a translation layer, or adapter
+in the F5 Modules for Ansible. This class acts as a translation layer, or adapter
 between the data received from the API and the data used in the module.
 
 For this tutorial, you should `navigate to the appropriate section`_ of the stable 2.5 source
-code and copy it in to your working module at the same location that it exists in the stable
+code and copy it into your working module at the same location that it exists in the stable
 branch.
 
-The remainder of this section will discuss implementation details of the class. It seeks to
-build a greater understanding of the class in your mind. This will allow you to understand
-the inner working of the class, should you need to implement similar functionality in a module
-of your own.
+The rest of this section discusses implementation details of this class.
 
 Internal methods
 ----------------
 
-Adapter classes such as ``ApiParameters`` may have any number of internal methods added to them.
+Adapter classes like ``ApiParameters`` may have any number of internal methods added to them.
 
-In this module's implementation, the class has one method; ``_remove_internal_keywords``.
-Adding new internal methods is a great way to tease out common functionality that you may
-want to reuse across a wide variety of modules.
+In this module's implementation, the class has one method: ``_remove_internal_keywords``.
+Adding new internal methods is a great way to tease out common functionality that you may want to reuse across a wide variety of modules.
 
-The quintessential example is the ``fq_name` method. You know its common, because if you
-remember back to the :ref:`import-block` section, it was included in one of the imports;
+The quintessential example is the ``fq_name`` method. You know it is common, because if you
+remember back to the :doc:`import block <import-block>` section, it was included in one of the imports:
 
 .. code-block:: python
 
@@ -36,30 +32,30 @@ The history of this particular function goes back to the earliest days of the F5
 In fact, its original implementation was not written by F5, but by customer contributors before
 F5 ever became involved.
 
-This method is used to combine a resources name and its partition. This behavior though, is
-so common, that it affects *every* resource on the device. Therefore, it was a great
+This method is used to combine a resource's name and its partition. This behavior is
+so common that it affects *every* resource on the device. Therefore, it was a great
 candidate for inclusion in the common methods.
 
-This same process of deducing what is common, and then re-using it across modules, is what
+This same process of deducing what is common, and then re-using it across modules,
 typically begins with internal methods.
 
 Ansible's means of supporting this inclusion is through the ``module_utils`` area of Ansible.
 
-What about situations where you method may apply to a small subset of modules, but not all
+What should you do in situations where your method may apply to a small subset of modules, but not all
 modules? It turns out that Ansible can support that too. The ``module_utils`` directory contains
-a number of sub-directories; one of them delegate for use by F5.
+a number of sub-directories; one of them is delegated for use by F5.
 
-Inside F5's directory (conveniently called ``f5``) module developers may add more files for
-use in common subsets of modules. Examples might be "the GTM modules", or "the monitor modules".
-The combinations cary vary, but including them is all the same.
+Inside F5's directory (conveniently called ``f5``), module developers may add more files for
+use in common subsets of modules. Examples might be "the GTM modules", or "the monitor modules."
+The combinations may vary, but including them is all the same.
 
-Suppose for example, there was a common function used in all monitor related modules. This
+Suppose there was a common function used in all monitor-related modules. This
 function is only relevant to monitors though, so it makes no sense to include it in all
 modules. The result is that the developer may create a new file in F5's ``module_utils``
 directory called ``monitors.py`` and inside of that file, put the implementation of the
 function.
 
-Usage of thi method could then be done in the monitor-related modules, like this.
+Usage of this method could then be done in the monitor-related modules, like this.
 
 .. code-block:: python
 
@@ -80,21 +76,21 @@ This object **is** the ``ApiParameters`` class. You should make sure that you ha
 properties as needed to make your development easier.
 
 There is an additional, special, piece of functionality that all ``ApiParameters`` inherit;
-tthey can be populated by the ``api_map``. If you'll remember back to the previous section
+they can be populated by the ``api_map``. If you'll remember back to the previous section
 on the base ``Parameters`` class, one of the top-of-class variables was the ``api_map``
 variable. The ``ApiParameters`` class is where this variable is most useful because it will
 auto-map the API resource attribute name to the ``@property`` you specify.
 
 Some modules implement additional ``@property`` methods that are neither mapped to the API
-nor provided by the module user. The reason this is done (usually) is to get a more simple
+nor provided by the module user. The reason this is done (usually) is to get a simpler
 view of data that either the API or the user provide. This simpler implementation is then used
 for comparisons for validity checks.
 
-Looking deeper into a @property method
---------------------------------------
+Looking deeper into an @property method
+---------------------------------------
 
 To illustrate an example of a ``@property`` method, consider the ``actions`` property. The
-implementation of this property is
+implementation of this property is:
 
 .. code-block:: python
 
@@ -121,7 +117,7 @@ implementation of this property is
 Remember that the purpose of a the ``ApiParameters`` adapter is to take the content from the
 API and translate it to something that is usable in the module.
 
-The API representation of this action data is a list of dictionaries, as shown below
+The API representation of this action data is a list of dictionaries:
 
 .. code-block:: javascript
 
@@ -154,13 +150,12 @@ The API representation of this action data is a list of dictionaries, as shown b
        ]
    }
 
-The adapter needs to take this payload, and turn it into something that the module can use.
+The adapter needs to take this payload and turn it into something that the module can use.
 A lot of thought needs to go into the "that the module can use" part, because there is no
 prescribed way of handling data.
 
-The developer of this module, needed to know some existing things about what was stored in
-the API so that they could do an accurate comparison. These things were outlined back in
-the ``DOCUMENTATION`` blob that we wrote. If you'll remember, that data was the following.
+The developer of this module needed to know about what was stored in the API so that they could do an accurate comparison. These things were outlined back in
+the ``DOCUMENTATION`` blob that you wrote. If you'll remember, that data was the following:
 
 .. code-block:: yaml
 
@@ -194,10 +189,10 @@ the ``DOCUMENTATION`` blob that we wrote. If you'll remember, that data was the 
 
 This documentation tells us that the module intends to receive an ``actions`` argument.
 Inside this argument will be a list. Each item in the list will be a dictionary containing
-a required ``type`` key, and then one of the two other keys; either ``pool``, or
+a required ``type`` key, and then one of the two other keys: either ``pool``, or
 ``asm_policy``.
 
-So we know that the data we want to compare with, should look something like this in terms
+So we know that the data we want to compare with should look something like this in terms
 of its Python representation.
 
 .. code-block:: python
@@ -219,7 +214,7 @@ of its Python representation.
    ]
 
 Additionally, the data could possibly be a combination of the above, because policies allow
-this. Perhaps something like this.
+this. Perhaps something like this:
 
 .. code-block:: python
 
@@ -235,9 +230,9 @@ this. Perhaps something like this.
    ]
 
 Python lets us compare dictionaries pretty easily using their tuple representations, so
-lets assume that we want to make the API data reflect the data structure shown above.
+let's assume that we want to make the API data reflect the data structure shown above.
 
-To do this, we need to know the ``type``, and one of two values; either the ``pool`` or
+To do this, we need to know the ``type``, and one of two values: either the ``pool`` or
 ``asm_policy``. It turns out that the action payload shown earlier actually contains this
 information. Furthermore, we can see that the ``actions`` ``@property`` converts the JSON
 payload to a dict that resembles the intended data structure above.
@@ -245,12 +240,12 @@ payload to a dict that resembles the intended data structure above.
 First, because the module data structure wants a list, the method sets the ``result`` local
 variable to a Python empty list. This allows the method to then add values to the list later.
 
-Next, the method checks to see if either of two conditions are true.
+Next, the method checks to see if either of two conditions are true:
 
 - Is the ``actions`` attribute of the LTM policy rule missing? If it is, its value will be
   Python's ``None`` value.
 - Is the ``actions`` attribute missing the ``items`` key? Earlier, in the JSON payload, you
-  saw that the actions payload will have three top-level keys; ``kind``, ``selfLink``, and
+  saw that the actions payload will have three top-level keys: ``kind``, ``selfLink``, and
   ``items``. If the ``items`` value is missing, then there are no actions to be taken.
 
 If either of the above conditions are met, the method immediately returns a single item list
@@ -270,11 +265,11 @@ they will go in this variable.
 Next, the module removes any keywords that it deems internal, from the current action in
 the ``items`` list.
 
-After removing internal (ie, useless to the module) keywords, the method makes a judgement
+After removing internal (i.e., useless to the module) keywords, the method makes a judgement
 call about the ``type``. This judgement call also says a lot about which ``type``s the module
 supports.
 
-The two decisions are
+The two decisions are:
 
 - Does the current action have an attribute named ``forward``?
 - Does the current action have an attribute named ``enable``?
@@ -291,7 +286,7 @@ all of the entries in the local ``result`` variable by the ``name`` key of the i
 ``result`` list.
 
 This is a **very important** step because it ensures that any future comparisons will be
-done on lists that are in the same order. When determining "difference", it is not enough
+done on lists that are in the same order. When determining "difference," it is not enough
 to assume that all items in a list have the same value. *Order* of that list is just as
 important in certain circumstances. Those circumstances are usually when the data on the
 BIG-IP itself is *un*ordered.
@@ -300,7 +295,7 @@ If BIG-IP does not consider order important for a particular resource, then the 
 developer **must** consider it important. This is because when there is no order, the users
 are not expecting there to be any order, and therefore, can arrange things in any way they
 want. For the module developer, this is a problem because all of the following are technically
-the same
+the same:
 
 .. code-block:: python
 
@@ -311,19 +306,19 @@ the same
 The module then, is responsible for assuming that all values can possibly be unordered, and
 ordering them sanely for comparison.
 
-Contract this with a situation where the above **is** ordered. then, each one of those lists
-is a different value. And a comparison of one order would fail against another order; ie, if
-the customer change the order of an ordered list, it implies their desire to change the
+Contrast this with a situation where the above **is** ordered. Then, each one of those lists
+is a different value. And a comparison of one order would fail against another order-- i.e., if
+the customer changes the order of an ordered list, it implies their desire to change the
 order of the values in the BIG-IP.
 
-Rules in a policy is a great example of this. The *rules* have order. However the *actions*
-and *conditions* in that rule, have no order.
+Rules in a policy are a great example of this. The *rules* have order. However the *actions*
+and *conditions* in that rule have no order.
 
 Conclusion
 ----------
 
-Understanding, and using, the ``ApiParameters`` class is a core tenant of understanding
+Understanding and using the ``ApiParameters`` class is a core tenant of understanding
 the F5 Modules for Ansible. From here, you may want to go back and consider exploring the
-twin of this class (but which operates on the user's side) the ``ModuleParameters`` class.
+twin of this class (but which operates on the user's side): the ``ModuleParameters`` class.
 
 .. _navigate to the appropriate section: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L271

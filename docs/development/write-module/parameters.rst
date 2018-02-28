@@ -1,7 +1,7 @@
 Parameters
 ==========
 
-The ``Parameters`` topic is more broad than just a single class. Therefore, In this section,
+The ``Parameters`` topic is more broad than just a single class. Therefore, in this section,
 only the ``Parameters`` base class will be discussed. There are concrete classes that inherit
 from this base class and they are discussed in the sections listed below.
 
@@ -13,23 +13,22 @@ from this base class and they are discussed in the sections listed below.
    api-parameters
    module-parameters
 
-The ``Parameters`` base class
------------------------------
+The Parameters base class
+-------------------------
 
-In each module, there will exist a class named ``Parameters``. This class is a base class
+Each module has a class named ``Parameters``. This class is a base class
 for the more specialized ``ApiParameters`` and ``ModuleParameters`` classes. The purpose of
 this base class is to provide functionality and data that is used in both of the specialized
 classes.
 
-The ``Parameters`` classes implementation is a little boiler plate mixed with several module
-specific changes. This means that for this tutorial (and for any custom modules that you
+The ``Parameters`` classes implementation is a little boiler plate mixed with several module-specific changes. This means that for this tutorial (and for any custom modules that you
 may write in the future) it is almost certain that you will be changing parts of it.
 
 For the tutorial's module, please refer `to this link`_ for the correct source code for the
 module's ``Parameters`` class. Replicate this implementation in the tutorial's module.
 
-The ``Parameters`` class boilerplate
-------------------------------------
+The Parameters class boilerplate
+--------------------------------
 
 The implementation of the ``Parameters`` class contains some boilerplate code. Let's look
 at that boilerplate and what it means.
@@ -37,27 +36,26 @@ at that boilerplate and what it means.
 The top-of-class variables
 ``````````````````````````
 
-There are several variables that each ``Parameters`` class usually defines. What they are,
-and their purpose in the module, is explained below.
+There are several variables that each ``Parameters`` class usually defines.
 
 +------------------+-------------------------------------------------------------------------+
 | Variable         | Purpose                                                                 |
 +==================+=========================================================================+
 | api_map          | This is a dictionary (use ``{ ... }`` form) that maps API Parameter     |
-|                  | attribute names, to property names used internally by the module.       |
+|                  | attribute names to property names used internally by the module.        |
 |                  | This functions as a quick way for the module developer to define a      |
-|                  | series of ``property`` variable that require no form of manipulation    |
+|                  | series of ``property`` variables that require no form of manipulation   |
 |                  | when they are received from the API. There are many resource attributes |
 |                  | that play well with the user of the API, but they vary from API to API. |
 +------------------+-------------------------------------------------------------------------+
 | api_attributes   | This is a list of attributes for the resource being modified **as they  |
-|                  | are named in the API. This is used when generating the return value     |
+|                  | are named in the API**. This is used when generating the return value   |
 |                  | that the ``api_params`` method returns. Nearly every module should have |
 |                  | this class parameter defined. The value of this list will vary with the |
 |                  | module. ``name`` and ``partition`` attributes are not defined here.     |
 +------------------+-------------------------------------------------------------------------+
 | updatables       | This is a list of attributes that should be updatable. The list         |
-|                  | contains **internal** attribute names; ie, the ``property`` values      |
+|                  | contains **internal** attribute names; i.e., the ``property`` values    |
 |                  | that the developer uses within the module. This list is also used by    |
 |                  | the ``Difference`` class to determine which attributes should be        |
 |                  | compared during an update.                                              |
@@ -82,10 +80,10 @@ properties (and their return values) to be used in both the ``ApiParameters`` an
 .. note::
 
    Be sure to *only* put properties here that are 100% common to the API and Module parameters
-   classes. Even a slight deviation in return values amongst code in the different parameters
-   class can cause things to get out-of-whack.
+   classes. Even a slight deviation in return values among code in the different parameters
+   classes can cause issues.
 
-Some of the common properties that *this* module has (but which others may not) are,
+Some of the common properties that *this* module has (but that others may not) are:
 
 * ``name``
 * ``description``
@@ -94,10 +92,9 @@ Some of the common properties that *this* module has (but which others may not) 
 Conclusion
 ----------
 
-The general ``Parameters`` should onyl be used for the things are are truly generic between
+The general ``Parameters`` should only be used for the things that are truly generic between
 the ``ApiParameters`` and ``ModuleParameters`` classes. The most common of these are the
 top-of-class variables. Links to deeper dives on the concrete classes are listed at the top
-of this file. The reader is encouraged to follow them to be introduced to those classes, and
-their purpose in the module.
+of this topic. Use them as an introduction to those classes and their purpose in the module.
 
 .. _to this link: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L231

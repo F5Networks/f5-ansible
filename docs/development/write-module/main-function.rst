@@ -49,7 +49,7 @@ Next, a series of validations are made on the available libraries used in this m
 series above only includes one check, but others can be added as necessary. See the section
 later in this document that discusses under what circumstances you would want to do this.
 
-Next is the main ``try...except`` block. This exception handling is inplace to catch all of the
+Next is the main ``try...except`` block. This exception handling is in place to catch all of the
 known **F5 generated** errors. It very specifically does not catch the general Python ``Exception``
 class. This is done this way because module developers want bugs reported that are not known to
 them already. Handling ``Exception`` though, would prevent those bugs from raising.
@@ -60,8 +60,8 @@ object will be used later for all communication with the F5 product.
 .. note::
 
    When the ``F5Client`` class is instantiated, a connection is **not** immediately made to the
-   remote F5 product. This is intentional, because there are modules that require this does not
-   happen (such as the ``bigip_wait`` module.
+   remote F5 product. This is intentional, because some modules (like ``bigip_wait``) require that this does not
+   happen.
 
 The ``ModuleManager`` class is also instantiated here and is given the ``AnsibleModule`` object
 as well as the ``F5Client`` object. These will be necessary later when the manager is busy
@@ -86,10 +86,10 @@ If failure occurred at any time, the ``except`` block is invoked and a cleanup o
 tokens is done. The failing module reports back to Ansible with the ``fail_json`` method of
 the ``AnsibleModule`` class.
 
-When you would change the main function
----------------------------------------
+When to change the main function
+--------------------------------
 
-The only time that it would be necessary to change the ``main`` function is if you included other
+The only time it would be necessary to change the ``main`` function is if you included other
 module dependencies that needed to be checked for at runtime.
 
 Note the two lines above, shown here.
@@ -126,7 +126,7 @@ Conclusion
 This concludes the entirety of the core module development tutorial. At this point in time, if
 you followed along and copied code correctly, you should have a functioning module.
 
-In the remaining sections, we'll cover the business of testing; a requirement for F5 module
+In the remaining sections, we'll cover the business of testing: a requirement for F5 module
 development.
 
 .. _bottom of the source code: https://github.com/F5Networks/f5-ansible/blob/stable-2.5/library/bigip_policy_rule.py#L859

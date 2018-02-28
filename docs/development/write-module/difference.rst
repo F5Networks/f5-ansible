@@ -3,20 +3,19 @@ Detecting Configuration Differences
 
 When it comes to deciding what changes to make to a remote BIG-IP, the majority of the job
 falls on the shoulders of the ``Difference`` class (or suite of ``Difference`` classes).
-The act of rectifying an existing config with a provided config is easily the most difficult
+Rectifying an existing config with a provided config can be the most difficult
 part of module development.
 
-In this section we'll explore the implementation of the ``Difference`` class used for the
+This section explores the implementation of the ``Difference`` class that is used for the
 module we've been working with. We'll also see the module execution that leads up to the
 usage of the ``Difference`` class.
 
-You may here the ``Difference`` class also referred to as the ``Difference`` "engine" by the
-F5 Modules for Ansible developers.
+You may hear the ``Difference`` class referred to as the ``Difference`` "engine."
 
 Difference class implementation
 -------------------------------
 
-The implementation for the module under `development begins here`_. Open this in a new tab
+The implementation for the module under `development begins here`_. Open this content in a new tab
 and begin re-implementing it in the module under development.
 
 The ``Difference`` class will be comparing the *internal module* representations of the
@@ -28,12 +27,12 @@ What follows is a deeper dive into the components that make up the ``Difference`
 The common methods
 ------------------
 
-This ``Difference`` class includes a couple common methods. The base ``Difference`` class
+This ``Difference`` class includes a couple of common methods. The base ``Difference`` class
 is capable of doing simple, non-typed, key/value comparisons. If this satisfies all of your
-needs, then it is not required that you implement any further code in this class.
+needs, then you do not need to implement any further code in this class.
 
-The ``__init__`` method
-```````````````````````
+The __init__ method
+```````````````````
 
 The first method that a developer will encounter is the ``__init__`` method. There is no
 need to change any of the code in this method.
@@ -42,7 +41,7 @@ The purpose of the method is to initialize a ``Difference`` object from the clas
 There is a well-defined set of work that this method does, respective to this class. In
 particular, it sets two instance variables to the values that are passed to the class.
 
-The variables are,
+The variables are:
 
 * ``self.want``
 * ``self.have``
@@ -51,11 +50,10 @@ These names should be familiar, as they are the same ``self.want`` and ``self.ha
 are used throughout the ``ModuleManager`` class that was explored earlier. When used in the
 ``Difference`` class, these methods will be the conduit from which you will do comparisons.
 
-The ``compare`` method
-``````````````````````
+The compare method
+``````````````````
 
-This method is responsible for deciding whether a comparison should be done using predefined
-properties, or, with the default comparison method.
+This method is responsible for deciding whether a comparison should be done by using predefined properties or the default comparison method.
 
 The default comparison method is a simple ``if foo != bar: return foo`` comparison. It does
 not take into consideration things like datatypes, where a comparison such as the one done
@@ -66,15 +64,14 @@ above might fail.
    This underscores an important point about the earlier adapter patterns that were discussed
    in the ``ApiParameters`` and ``ModuleParameters`` classes. When writing the properties in
    these methods, it is imperative that you take comparison into consideration. Doing simple
-   things like sorting, or type casting your return values can go a **long** way in minimizing
+   things like sorting or type casting your return values can go a **long** way in minimizing
    the problems you would otherwise have when implementing the ``Difference`` class.
 
-For more complex comparisons, you will want to implement your own comparison method instead
-of using the default method. To do this, you will follow the same methodology that was
-followed when writing the ``ApiParameters`` and ``ModuleParameters`` adapters; using the
+For more complex comparisons, implement your own comparison method instead of using the default method. To do this, follow the same methodology that you
+followed when writing the ``ApiParameters`` and ``ModuleParameters`` adapters: using the
 ``@property`` decorator on methods.
 
-You can see this implementation at work in the method below.
+You can see this implementation at work in the following method.
 
 .. code-block:: python
 
@@ -92,10 +89,10 @@ property of the ``ApiParameters`` and ``ModuleParameters`` classes. Its implemen
 looks pretty simple because most of the heavy lifting is done in other functions. The basic
 idea though should drive the point home.
 
-The ``__default`` method
-````````````````````````
+The __default method
+````````````````````
 
-This method is the fallback method which is called, in the event that there is no user-defined
+This method is the fallback method that is called in the event that there is no user-defined
 method with a ``@property`` decorator that matches the property being compared. This
 fallback method allows you to avoid common situations involving comparison. For example,
 consider the comparison of one description to another. This is clearly a simple task and,
@@ -110,23 +107,23 @@ updating an API? The answer to that has three components.
 First, the return value of any ``@property`` decorated method in the ``Difference``
 class should return the value for the API attribute that it wants to change. Any value
 these methods return is considered by the Ansible module to be **the** value for the
-attribute in the API. The only exception to this is ``None``. If you return ``None``,
+attribute in the API. The only exception is ``None``. If you return ``None``,
 then the API attribute will be filtered out from any further operations.
 
 The second part of the tool chain is handled by the ``_update_changed_options`` method
 of the ``ModuleManager``. This method initiates the ``Difference`` object, and also is
 responsible for making the calls to ``compare`` to compare. There is a fragment of the
 ``_update_changed_options`` code that is responsible for checking the return value of the
-``compare`` method. The behavior is defined as such,
+``compare`` method. The behavior is defined as such:
 
 * If the returned value is a ``dict``, then merge it into the dictionary of ``changed`` properties
-* Else, set the ``changed`` dictionary, at key ``k`` to the returned value.
+* Else, set the ``changed`` dictionary at key ``k`` to the returned value.
 
-Recognize that this behavior implies that you are able to change *multiple* properties
+This behavior implies that you are able to change *multiple* properties
 with a single return value. Furthermore, you can return properties that are not even named
 after the key being compared.
 
-An example will help. Consider the following
+Consider the following:
 
 **Simple return**
 
@@ -176,7 +173,7 @@ For any situation in which the comparison of properties is more complicated than
 the module developer will definitely need to implement their own comparison check.
 
 Consider a property that contains dictionaries. In Python, it is not possible to compare two
-dictionaries in their native state. The reason for this is because dictionaries inherently
+dictionaries in their native state. The reason is because dictionaries inherently
 have no order.
 
 To perform this comparison, a ``@property`` should be defined in the ``Difference`` class.
@@ -184,8 +181,8 @@ The name of the ``@property`` must match the name of the property being compared
 earlier sections.
 
 It is then the responsibility of the module developer to figure out how to carry out the
-differentiation between the two values. Below is an example of such a comparison of two dicts
-and also other comparisons that are taken into consideration when diff'ing two values.
+differentiation between the two values. Below is a comparison of two dicts
+and other comparisons to take into consideration when diff'ing two values.
 
 .. code-block:: python
    :linenos:
@@ -218,17 +215,17 @@ Ignore the comments at the top and begin at line 9.
    if self.want.internal is False:
 
 This comparison function begins by checking a ``self.want`` variable. In this module's case,
-the reason for doing that is described in the comment block above the comparison. Remember that
+the reason is described in the comment block above the comparison. Remember that
 ``self.want`` is the data that the user provided to the Ansible module.
 
-Line 10 brings you do a feature of the ``Difference`` class's properties.
+Line 10 brings you to a feature of the ``Difference`` class's properties.
 
 .. code-block:: python
 
    return None
 
 By returning ``None``, the particular property will not be made available to the
-``UsableChanges`` class (and, subsequently, wont be sent to the API). The lesson here is that
+``UsableChanges`` class (and, subsequently, won't be sent to the API). The lesson here is that
 you should return ``None`` when there is **no change** in the values being compared.
 
 Line 11 contains another comparison, but this comparison is done for a completely different
@@ -238,14 +235,14 @@ reason.
 
    if self.have.records is None and self.want.records == []:
 
-This comparison checks to see if there are
+This comparison checks to see if there are:
 
 - No existing records
 - No records specified by the user to the module
 
 The equality check with an empty list (``[]``) may be a bit confusing. The reason for a comparison
-like this though is because the ```ModuleParameters`` returns an empty list when the user specifies
-a single empty item in the Ansible module. For example, something like this,
+like this is because the ```ModuleParameters`` returns an empty list when the user specifies
+a single empty item in the Ansible module. For example, something like this:
 
 .. code-block:: yaml
 
@@ -254,7 +251,7 @@ a single empty item in the Ansible module. For example, something like this,
 This allows the user of the module to zero out the values of records. So this comparison is
 essentially checking that there are no existiing records, and that the user specified a single
 empty record. Therefore, a no-op, or no change, and the comparison returns what is seen on line
-12; ``None``.
+12: ``None``.
 
 On line 13, there is a shortcut in logic for this comparison method.
 
@@ -278,18 +275,18 @@ Finally, on line 15, a serious comparison takes place.
 
 This line illustrates a true comparison of dictionaries. In this case, the module is using a
 method called ``compare_dictionary``, found in ``ansible.module_utils.network.f5.common``.
-This method allows you to do a comparison of dictionaries to find out if there are the same
+This method allows you to compare dictionaries to find out if there are the same
 or different.
 
 Finally, the method here returns the return value from the ``compare_dictionary`` function.
 For your information, the return value is the content of ``self.want`` for the property being
-compared. Which in this case, means that the records the user *wants* will be returned if the
+compared. In this case, the records the user *wants* will be returned if the
 two values differ.
 
 Conclusion
 ----------
 
-The ``Difference`` class is a core piece of functionality in the F5 Ansible modules. It is
+The ``Difference`` class is a core piece of functionality in the F5 Modules for Ansible. It is
 responsible for much of the heavy lifting when doing an update of an existing resource. The work
 it does, however, can be complicated and prone to error because of this complexity. It is
 highly recommended that you utilize unit tests when working on your module's own implementation.

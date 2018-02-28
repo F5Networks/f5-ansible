@@ -9,10 +9,7 @@ For this tutorial, you should `navigate to the appropriate section`_ of the stab
 code and copy it in to your working module at the same location that it exists in the stable
 branch.
 
-The remainder of this section will discuss implementation details of the class. It seeks to
-build a greater understanding of the class in your mind. This will allow you to understand
-the inner working of the class, should you need to implement similar functionality in a module
-of your own.
+The rest of this section discusses implementation details of this class.
 
 Internal methods
 ----------------
@@ -20,7 +17,7 @@ Internal methods
 Adapter classes such as ``ModuleParameters`` may have any number of internal methods added to
 them.
 
-In this module's implementation, the class has several methods,
+In this module's implementation, the class has several methods:
 
 * ``_handle_http_uri_condition``
 * ``_handle_forward_action``
@@ -32,18 +29,17 @@ functions that handle assist the developer in meeting their goal, are encouraged
 @property methods
 -----------------
 
-Like the ``ApiParameters`` class, the ``ModuleParameters`` will also be composed of (module
-specific) ``@property`` decorators. The purpose is completely the same as the
-``ApiParameters`` too. This module is an implementation of the Adapter pattern, and therefore,
-it should be used to adapt the values that are received from the Ansible module (ie, the user)
+Like the ``ApiParameters`` class, the ``ModuleParameters`` will also be composed of (module-specific) ``@property`` decorators. The purpose is completely the same as the
+``ApiParameters``. This module is an implementation of the Adapter pattern, and therefore,
+it should be used to adapt the values that are received from the Ansible module (i.e., the user)
 into what is usable inside the module code.
 
 Conclusion
 ----------
 
 There is nothing specific about the ``ModuleParameters`` class that has not already been
-covered in the ``ApiParameters`` chapter. In a module, the most likely adapter that a developer
-will be modifying is the ``ModuleParameters`` class. The reason for this is because the Ansible
+covered in the ``ApiParameters`` content. In a module, the most likely adapter that you
+will modify is the ``ModuleParameters`` class. This is because the Ansible
 module will often offer arguments that do not map cleanly to the F5 product's API.
 
 In the next section, the ``Difference`` class will be explored in greater detail.
