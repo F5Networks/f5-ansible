@@ -38,6 +38,18 @@ options:
       - present
       - absent
     version_added: 2.5
+  mac_address:
+    description:
+      - Specifies the floating Media Access Control (MAC) address associated with the floating IP addresses
+        defined for a traffic group.
+      - Primarily, a MAC masquerade address minimizes ARP communications or dropped packets as a result of failover.
+      - A MAC masquerade address ensures that any traffic destined for a specific traffic group reaches an available
+        device after failover, which happens because along with the traffic group, the MAC masquerade address floats
+        to the available device.
+      - Without a MAC masquerade address, the sending host must learn the MAC address for a newly-active device,
+        either by sending an ARP request or by relying on the gratuitous ARP from the newly-active device.
+      - To unset the MAC address, specify an empty value (C("")) to this parameter.
+    version_added: 2.6
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -94,19 +106,19 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'mac': 'mac_address'
     }
 
     api_attributes = [
-
+        'mac'
     ]
 
     returnables = [
-
+        'mac_address'
     ]
 
     updatables = [
-
+        'mac_address'
     ]
 
     def to_return(self):
@@ -118,6 +130,20 @@ class Parameters(AnsibleF5Parameters):
         except Exception:
             pass
         return result
+
+
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    @property
+    def mac_address(self):
+        if self._values['mac_address'] is None:
+            return None
+        if self._values['mac_address'] == '':
+            return 'none'
+        return self._values['mac_address']
 
 
 class Changes(Parameters):
@@ -156,7 +182,7 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.want = Parameters(params=self.module.params)
+        self.want = ModuleParameters(params=self.module.params)
         self.changes = Changes()
 
     def _set_changed_options(self):
@@ -294,7 +320,7 @@ class ModuleManager(object):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
 
 class ArgumentSpec(object):
@@ -306,7 +332,8 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
-            )
+            ),
+            mac_address=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
