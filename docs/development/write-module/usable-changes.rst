@@ -12,7 +12,7 @@ The general purpose of all the ``Changes`` classes is to serve as a place for ma
 The ``UsableChanges`` class is responsible for massaging data that is about to be sent to the API.
 
 This class implements an Adapter pattern, similar to the Adapter patterns that were implemented
-by the ``ApiParameters`` and ``ModuleParameters`` classes. Since you have already worked with
+by the ``ApiParameters`` and ``ModuleParameters`` classes. Because you have already worked with
 those classes, you should be more than familiar with what needs to happen in this class.
 
 Additionally, because this class is nothing more than another Adapter, its implementation is
@@ -58,7 +58,7 @@ observed in the different ``Parameters`` classes, and even the ``Difference`` cl
 
 For the module to have done its work, it needed to create an internal representation of the data
 to do things like comparison. It did this in the ``Parameters`` classes. Now that the comparison
-is done though, it needs to send those updates to the BIG-IP. The internal data format though is
+is done though, it needs to send those updates to the BIG-IP. The internal data format, though, is
 unlikely to be the same as the data format expected by BIG-IP.
 
 Therefore, this adapter for the ``actions`` property is tasked with converting the internal
@@ -76,7 +76,7 @@ The values that are received by the ``UsableChanges`` are those that were output
 ``Difference`` class. You can see this at work in the ``_update_changed_options`` method of the
 ``ModuleManager`` class.
 
-For example,
+For example:
 
 .. code-block:: python
 

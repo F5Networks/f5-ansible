@@ -8,9 +8,10 @@ You can use these modules to create, edit, update, and delete configuration obje
 The code is open source, and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :includehidden:
    :caption: User Documentation
+   :glob:
 
    /usage/getting_started
    /usage/support
@@ -27,7 +28,7 @@ The code is open source, and |f5_ansible_github|. Additionally, some modules hav
    /modules/modules_by_category
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Developer Documentation
 
    /development/cla-landing

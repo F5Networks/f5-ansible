@@ -61,13 +61,13 @@ to do things like comparison. It did this in the ``Parameters`` classes. Now tha
 is done though, it has to sent those updates to the BIG-IP. The data format used by the API
 though is unlikely to be the same as the data format expected by the user.
 
-Remember that, in the user's world view, they are unaware of,
+Remember that, in the user's world view, they are unaware of:
 
 * The F5 product API data format
 * The internal Ansible module representation
 
 The user is only familiar with the format of the parameters sent to the module. This classes
-adaptation therefore, needs to go towards making sure that what was sent to the API is translated
+adaptation, therefore, needs to go towards making sure that what was sent to the API is translated
 back to what the user is familiar with.
 
 Therefore, this adapter for the ``actions`` property is tasked with converting the API
@@ -85,7 +85,7 @@ The values that are received by the ``ReportableChanges`` are those that were co
 ``UsableChanges`` class. You can see this at work in the ``exec_module`` method of the
 ``ModuleManager`` class.
 
-For example,
+For example:
 
 .. code-block:: python
 

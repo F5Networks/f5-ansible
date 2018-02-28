@@ -1,38 +1,31 @@
 Stubbing the module fragments
 =============================
 
-At this point, you're ready to begin working in the development environment that you
-downloaded, or built, earlier.
+At this point, you're ready to begin working in the development environment that you downloaded or built.
 
-If you have not already, please run the development container now. We will work with
-the ``py3.6`` container for the remainder of the tutorial.
+If you have not already, run the development container now. The remainder of the tutorial uses the ``py3.6`` container.
 
-For the general public
-----------------------
-
-For the public, you should use the following command
+Use the following command to run the development container:
 
 .. code-block:: shell
 
     $ docker-compose -f devtools/docker-compose.yaml run py3.6
 
-For F5'ers
-----------
 
-F5'ers should use the following command. This assumes that you have contacted a member
-of the dev team to prepare your environment.
+.. note::
 
-.. code-block:: shell
+   F5 employees should use the following command. This assumes that you have contacted a member of the development team to prepare your environment.
 
-    $ docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
+   .. code-block:: shell
 
-Stubbing
---------
+      $ docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
 
-This tutorial recreates the ``bigip_policy_rule`` module, because it provides good examples
-of the common idioms you will encounter when developing or maintaining modules.
+Recreate the stubs
+------------------
 
-Because this module already exists, we'll first want to remove it. The development
+This tutorial recreates the ``bigip_policy_rule`` module, because it provides good examples of the common idioms you will encounter when developing or maintaining modules.
+
+Because this module already exists, you must first remove it. The development
 container provides a tool to do this. Using the ``f5ansible`` command, provide the
 following arguments to delete the existing ``bigip_policy_rule`` module and its
 associated stubs.
@@ -41,25 +34,23 @@ associated stubs.
 
    $ f5ansible unstub module bigip_policy_rule
 
-Using the ``git status`` command, you should see that there are a number of files being
-reported as deleted now. This is OK. Now, we need to recreate the stubs from scratch.
+Use the ``git status`` command to see that a number of files are reported as deleted now. Now, recreate the stubs from scratch.
 
-There are a number of files and directories you must create to hold the various test and
-validation code, in addition to the module code itself and docs.
+There are a number of files and directories you must create to hold the various test and validation code, in addition to the module code itself and docs.
 
-To create the necessary directories and files automatically, use this command,
+To create the necessary directories and files automatically, use this command:
 
 .. code-block:: shell
 
     $ f5ansible stub module bigip_policy_rule
 
-When it finishes running, you will have the necessary files available to begin working
-on your module.
+When it finishes running, you will have the necessary files available to begin working on your module.
 
 Stubbed files
 -------------
 
 The stubber creates a number of files that you need to do some form of development on.
+
 These files are:
 
 * ``docs/modules/bigip_policy_rule.rst``
@@ -68,21 +59,19 @@ These files are:
 * ``test/integration/targets/bigip_policy_rule/``
 * ``test/unit/bigip/test_bigip_policy_rule.py``
 
-For now we will disregard the first file there (the docs file) because we have tools at our
-disposal in this container that will help us build all of those tools automatically.
+For now, disregard the first file there (the docs file) because you have tools in this container that will help you build all of those tools automatically.
 
-With these files in place, you're ready to begin re-creating the source for the
-``bigip_policy_rule`` module.
+With these files in place, you're ready to begin re-creating the source for the ``bigip_policy_rule`` module.
 
 Open the ``library/bigip_policy_rule.py`` file.
 
-Library Stub
+Library stub
 ------------
 
-The library file is the module itself. Inside of this file is all of the work that you
-will be doing to make this add LTM Policy Rule functionality to Ansible.
+The library file is the module itself. Inside this file is all of the work that you
+will be doing to make this add LTM policy rule functionality to Ansible.
 
-The ``f5ansible`` command graciously provides you with quite a starting point though.
+The ``f5ansible`` command provides you with a starting point.
 
 As you scroll through the library file, take note of the names of the classes that you
 encounter. Take note of the imports near the top of the file and how there are different
@@ -93,11 +82,10 @@ is written using the standard Python pattern of writing a Python module (not an 
 module; same words, different meaning) that can be both included and executed. In other
 words, used as a library, or run as an application.
 
-In the tutorial, you will see how the module is used in both ways. Whether it be included
+In the tutorial, you will see how the module is used in both ways: whether it will be included
 in a unit test, or executed in a Playbook run.
 
 Up next
 -------
 
-In the next section, we will see how to change one of the required areas to update; the
-``DOCUMENTATION`` variable.
+In the next section, we will see how to change one of the required areas to update: the ``DOCUMENTATION`` variable.

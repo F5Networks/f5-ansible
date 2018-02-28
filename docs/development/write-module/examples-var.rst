@@ -3,7 +3,7 @@ EXAMPLES variable
 
 The ``EXAMPLES`` variable contains the most common use cases for this module.
 
-You are free to add any examples that you think would help a user of the module solve a
+You are free to add any examples you think would help a user of the module solve a
 problem quickly.
 
 These examples also serve as a basis for the functional tests.
@@ -75,7 +75,7 @@ You should run the BIG-IP modules on the Ansible controller only. The best pract
 use ``delegate_to:`` here so that you get in the habit of using it.
 
 The ``delegate_to`` keyword is **not** an argument to your module. It is an argument to
-the Ansible Task. Therefore, it should be indented so-as to align with the *module name*.
+the Ansible Task. Therefore, it should align with the *module name*.
 
 **common args**
 
@@ -88,8 +88,7 @@ The common args to modules include:
 Conclusion
 ----------
 
-There is nothing special about this documentation blob compared to the ``DOCUMENTATION``
-variable mentioned earlier. It is still YAML, and therefore must follow the constaints that
-you were made familiar with earlier.
+There is nothing unique about this documentation blob compared to the ``DOCUMENTATION``
+variable mentioned earlier. It is still YAML, and therefore must follow the constraints covered earlier.
 
-In the next section we'll cover the final documentation blob. The ``RETURN`` variable.
+The next section covers the final documentation blob: the ``RETURN`` variable.

@@ -10,7 +10,6 @@ ensure that your modules work as designed.
 .. toctree::
    :maxdepth: 1
    :includehidden:
-   :caption: Writing a module
 
    unit-testing
    integration-testing

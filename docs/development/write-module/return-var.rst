@@ -1,12 +1,10 @@
 RETURN variable
 ===============
 
-When a module finishes running, F5 usually wants to report back to the user, the new state
+When a module finishes running, F5 usually wants to report back to the user with the new state
 of the module and anything that may be relevant to them.
 
-The general rule of thumb is to,
-
-* Return to the user data that is in the same format that they supplied to the module.
+The general rule of thumb is to return data that is in the same format that the user supplied to the module.
 
 Why is this important?
 
@@ -14,13 +12,13 @@ Parameter consistency and validity
 ----------------------------------
 
 Imagine, if you will, a scenario where you go to your bank to have a $20 bill broken up
-into a smaller denomination of money. For example,
+into a smaller denomination of money. For example:
 
 * A $10 bill
 * A $5 bill
 * And five $1 bills
 
-When you reach the teller and hand them your money, they instead give you back,
+When you reach the teller and hand them your money, they instead give you back:
 
 * A duck
 * A chicken
@@ -29,8 +27,8 @@ When you reach the teller and hand them your money, they instead give you back,
 Technically, these are all birds, but combined, they have no relevance to what you put *in*
 to the transaction. If you put money in, you expected money out; not various fowl.
 
-The same principal applies with to the F5 Ansible modules. If you put in a list of dictionaries,
-such as the example below
+The same principal applies with to the F5 Modules for Ansible. If you put in a list of dictionaries,
+such as the example below:
 
 .. code-block:: yaml
 
@@ -39,7 +37,7 @@ such as the example below
        pool: pool-svrs
 
 Then it would make sense that after the module completes and makes any changes it deems
-necessary, that you should receive data back out, that is in the same usable form.
+necessary, you should receive data back out that is in the same usable form.
 
 Exceptions to the rule
 ----------------------
@@ -53,7 +51,7 @@ more than just ``absent`` and ``present``, such as in the ``bigip_virtual_server
 
 Another example would be when the module consumes otherwise sensitive information. For example,
 the ``bigip_ssl_certificate`` and ``bigip_ssl_key`` modules consume parameters that you
-probably do not want echo'd back out (like keys and certs). Therefore, we suppress that in
+probably do not want echoed back out (like keys and certs). Therefore, we suppress that in
 the return value.
 
 One more example is in situations where modules can consume a whole lot of data. For example,
@@ -112,7 +110,7 @@ Conclusion
 ----------
 
 When the Ansible module documentation is generated, these values are output in a table.
-You an see an example of the kind of `table that is created here`_. This is the final
+You can see an example of the kind of `table that is created here`_. This is the final
 documentation-related blob that will be added to the module. Up next, we will cover the
 ``import`` block.
 

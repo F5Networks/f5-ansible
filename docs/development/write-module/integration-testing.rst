@@ -26,7 +26,7 @@ The playbook
 ````````````
 
 All integration tests begin their life in the ``Playbook``. The Playbook used by the tests is a regular
-Playbook as you might find in regular Ansible deployments. For the module being developed, `here is the
+Playbook that you might find in regular Ansible deployments. For the module being developed, `here is the
 Playbook that is used`_.
 
 As might be expected, this Playbook has all the components of a "normal" Playbook. It specifies hosts,
@@ -67,7 +67,7 @@ The Playbook and its contents are shown below.
      roles:
        - bigip_policy_rule
 
-Since most of this is a normal Playbook, this tutorial will just cover the parts that are interesting.
+Because most of this is a normal Playbook, this tutorial will just cover the parts that are interesting.
 
 The first interesting bit is the large ``vars`` section. Frankly speaking, this can be ignored by
 most contributors as it is not something that is used by the functional tests directly. Its
@@ -77,10 +77,9 @@ purpose is to provide metadata to the module developers for use in tracking test
 | Variable         | Purpose                                                                                         |
 +==================+=================================================================================================+
 | ``limit_to``     | * Not currently used                                                                            |
-|                  | * In the future, it is expected that this var will allow you to select                          |
-|                  |   the tests that you want to run.                                                               |
+|                  | * In the future, this var may allow you to select the tests that you want to run.               |
 +------------------+-------------------------------------------------------------------------------------------------+
-| ``__metadata__`` | * Special variable used by F5 only to track F5 specific interests.                              |
+| ``__metadata__`` | * Special variable used by F5 only to track F5-specific interests.                              |
 |                  | * Playbook metadata versions are described more :doc:`in this document <../playbook-metadata>`. |
 +------------------+-------------------------------------------------------------------------------------------------+
 
@@ -91,7 +90,7 @@ them in each task. To keep the size of the tasks small, the developers use this 
 The role
 ````````
 
-The Role is what contains all of the tests that will be run as part of the integration test suite.
+The Role contains all of the tests that will be run as part of the integration test suite.
 Roles are written, and use all the same conventions, that normal Ansible Roles use.
 
 Roles for integration tests can be found in the ``targets`` directory, right alongside the test
@@ -107,14 +106,14 @@ This role has everything you would associate with a normal role in Ansible.
 * All roles will perform some work to test the module, so a ``tasks/`` directory should be in
   your role.
 
-When Ansible executes a role, it calls one file and one file only. That file is,
+When Ansible executes a role, it calls one file and one file only. That file is:
 
 * ``tasks/main.yaml``
 
-It is this file from which all integration tests will originate.
+All integration tests will originate from this file.
 
 Additional files that are commonly found in the ``tasks/`` directory alongside the
-``main.yaml`` file include,
+``main.yaml`` file include:
 
 * ``setup.yaml``
 * ``teardown.yaml``
@@ -192,14 +191,13 @@ arguments to the CLI at runtime.
 Calling the test
 ----------------
 
-There are two ways to run the tests. They are,
+There are two ways to run the tests. They are:
 
 * Use a ``make`` command
 * Run the playbook directly
 
 The methods have different pros and cons depending on your objective. For those concerned
-with developing modules, you will likely prefer the latter method; running playbooks directly.
-The pros and concerns for each method are,
+with developing modules, you will likely prefer the latter method: running playbooks directly.
 
 +------------------+-------------------------------------------------------+------------------------------------------+
 | Method           | Pros                                                  | Cons                                     |
@@ -258,12 +256,12 @@ Other testing notes
 When writing your tests, you **should** concern yourself with "undoing" what you have done
 previously to the test environment.
 
-The test environment boots harnesses for each suite of tests. That means that all tests run on
+The test environment boots harnesses for each suite of tests. This means that all tests run on
 the same harness. Therefore, someone might accidentally use changes you made in one of the integration
 tests as a basis for subsequent tests. This makes using the ``ansible-playbook`` previously mentioned
-arguments (``--step``, ``--start-at-task``, ``--tags``, etc) much more difficult.
+arguments (``--step``, ``--start-at-task``, ``--tags``, etc.) much more difficult.
 
-Therefore, please cleanup after yourself. Since you need to test the ``absent`` case in most
+Therefore, please clean up after yourself. Since you need to test the ``absent`` case in most
 cases, this is a good opportunity to do that. The ``teardown.yaml`` file can also be used to
 teardown any resources that were created to assist in testing your module.
 
