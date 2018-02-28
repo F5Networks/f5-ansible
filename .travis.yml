@@ -2,16 +2,15 @@ sudo: required
 
 language: python
 
-matrix:
-  include:
-    - python: 2.7
-      env: TOXENV=unit
-    - python: 2.6
-      env: TOXENV=unit
-    - python: 3.5
-      env: TOXENV=unit
-    - env: TOXENV=flake
-    - env: TOXENV=docs
+python:
+  - 2.7
+  - 2.6
+  - 3.5
+  - 3.6
+
+env:
+  - TOXENV=unit
+  - TOXENV=flake
 
 before_install:
   # NOTE: this is probably not required since you're not trying to pull or
@@ -31,6 +30,12 @@ script:
 
 jobs:
   include:
+    - stage: test
+      script: tox
+      python: 3.5
+      env: TOXENV=docs
+      if: branch = devel
+
     - stage: deploy
       script: make docker-deploy
       python: 3.5
