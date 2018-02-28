@@ -29,13 +29,10 @@ install:
 script:
   - tox
 
-deploy:
-  provider: script
-  skip_cleanup: true
-  on:
-    branch: devel
-    # only deploy to clouddocs after one build; python 3.5 chosen arbitrarily
-    python: '3.5'
-    repo: F5Networks/f5-ansible
-  script:
-    - make docker-deploy
+jobs:
+  include:
+    - stage: deploy
+      script: make docker-deploy
+      python: 3.5
+      env: TOXENV=docs
+      if: branch = devel
