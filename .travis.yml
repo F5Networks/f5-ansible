@@ -10,7 +10,7 @@ python:
 
 env:
   - TOXENV=unit
-  - TOXENV=flake
+  - TOXENV=style
 
 before_install:
   # NOTE: this is probably not required since you're not trying to pull or
