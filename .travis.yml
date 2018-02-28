@@ -1,7 +1,5 @@
 sudo: required
 
-language: python
-
 python:
   - 2.7
   - 2.6
@@ -31,13 +29,16 @@ script:
 jobs:
   include:
     - stage: test
-      script: tox
+      script: make docker-test
       python: 3.5
-      env: TOXENV=docs
+      if: branch = devel
+
+    - stage: test
+      script: make all-tests
+      python: 3.5
       if: branch = devel
 
     - stage: deploy
       script: make docker-deploy
       python: 3.5
-      env: TOXENV=docs
       if: branch = devel
