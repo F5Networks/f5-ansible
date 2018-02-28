@@ -31,16 +31,14 @@ script:
 jobs:
   include:
     - stage: test
-      script: make docker-test
+      script: make sanity
       python: 3.5
+      env: TOXENV=sanity
       if: branch = devel
 
     - stage: test
-      script: make all-tests
+      script:
+        - make docker-test && make docker-deploy
       python: 3.5
-      if: branch = devel
-
-    - stage: deploy
-      script: make docker-deploy
-      python: 3.5
+      env: TOXENV=docks-deploy
       if: branch = devel
