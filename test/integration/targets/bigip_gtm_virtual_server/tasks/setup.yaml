@@ -1,0 +1,24 @@
+---
+
+- name: Provision GTM
+  bigip_provision:
+    name: gtm
+
+- name: Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Create GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 6.5.7.4
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name1 }}"
+    state: present
+
+- name: Create GTM link
+  bigip_command:
+    commands:
+      - "tmsh create gtm link {{ link_name }} router-addresses replace-all-with { 1.2.3.4 } datacenter {{ dc_name1 }}"

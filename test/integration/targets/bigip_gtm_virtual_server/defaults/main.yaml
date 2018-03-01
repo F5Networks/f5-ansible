@@ -1,4 +1,8 @@
 ---
 
-valid_vs_name: my.vs
-valid_vs_server: my.vs
+virtual_server_name: foo
+dc_name1: foo_dc
+server_name: foo_gtm_server
+link_name: foo-link
+virtual_server_address_1: 5.6.7.8
+translation_address_1: 4.3.2.1

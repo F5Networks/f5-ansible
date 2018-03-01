@@ -2,6 +2,50 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a GTM virtual server
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name }}"
+    server_name: "{{ server_name }}"
+    address: "{{ virtual_server_address_1 }}"
+    port: 80
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      bits_limit: 100
+      packets_limit: 200
+      connections_limit: 300
+    link: "{{ link_name }}"
+    translation_address: "{{ translation_address_1 }}"
+    translation_port: 8080
+  register: result
+
+- name: Assert Create a GTM virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Create a GTM virtual server - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name }}"
+    server_name: "{{ server_name }}"
+    address: "{{ virtual_server_address_1 }}"
+    port: 80
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      bits_limit: 100
+      packets_limit: 200
+      connections_limit: 300
+    link: "{{ link_name }}"
+    translation_address: "{{ translation_address_1 }}"
+    translation_port: 8080
+  register: result
+
+- name: Assert Create a GTM virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - import_tasks: teardown.yaml
