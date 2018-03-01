@@ -18,7 +18,8 @@
     datacenter: "{{ dc_name1 }}"
     state: present
 
-- name: Create GTM link
+- name: Create GTM links
   bigip_command:
     commands:
-      - "tmsh create gtm link {{ link_name }} router-addresses replace-all-with { 1.2.3.4 } datacenter {{ dc_name1 }}"
+      - "tmsh create gtm link {{ link_name_1 }} router-addresses replace-all-with { {{ link_address_1 }} } datacenter {{ dc_name1 }}"
+      - "tmsh create gtm link {{ link_name_2 }} router-addresses replace-all-with { {{ link_address_2 }} } datacenter {{ dc_name1 }}"

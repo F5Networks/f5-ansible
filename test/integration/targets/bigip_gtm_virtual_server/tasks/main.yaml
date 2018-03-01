@@ -4,7 +4,7 @@
 
 - name: Create a GTM virtual server
   bigip_gtm_virtual_server:
-    name: "{{ virtual_server_name }}"
+    name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
     address: "{{ virtual_server_address_1 }}"
     port: 80
@@ -15,7 +15,7 @@
       bits_limit: 100
       packets_limit: 200
       connections_limit: 300
-    link: "{{ link_name }}"
+    link: "{{ link_name_1 }}"
     translation_address: "{{ translation_address_1 }}"
     translation_port: 8080
   register: result
@@ -27,7 +27,7 @@
 
 - name: Create a GTM virtual server - Idempotent check
   bigip_gtm_virtual_server:
-    name: "{{ virtual_server_name }}"
+    name: "{{ virtual_server_name_1 }}"
     server_name: "{{ server_name }}"
     address: "{{ virtual_server_address_1 }}"
     port: 80
@@ -38,7 +38,7 @@
       bits_limit: 100
       packets_limit: 200
       connections_limit: 300
-    link: "{{ link_name }}"
+    link: "{{ link_name_1 }}"
     translation_address: "{{ translation_address_1 }}"
     translation_port: 8080
   register: result
@@ -47,5 +47,537 @@
   assert:
     that:
       - result is not changed
+
+- name: Create more GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ server_name }}"
+    address: "{{ item.address }}"
+  loop:
+    - name: "{{ virtual_server_name_2 }}"
+      address: "{{ virtual_server_address_2 }}"
+    - name: "{{ virtual_server_name_3 }}"
+      address: "{{ virtual_server_address_3 }}"
+    - name: "{{ virtual_server_name_4 }}"
+      address: "{{ virtual_server_address_4 }}"
+
+- name: Create a GTM virtual server, no address - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_5 }}"
+    server_name: "{{ server_name }}"
+    port: 80
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, no address - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Change GTM virtual server, port
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    port: 8080
+  register: result
+
+- name: Assert Create a GTM virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, port - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    port: 8080
+  register: result
+
+- name: Assert Change GTM virtual server, port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, IPv4 address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: 20.20.20.20
+  register: result
+
+- name: Assert Change GTM virtual server, IPv4 address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, IPv4 address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: 20.20.20.20
+  register: result
+
+- name: Assert Change GTM virtual server, IPv4 address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, long IPv6 address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: 7c62:20f6:4b9a:4222:dd4d:f35d:3dac:0db5
+  register: result
+
+- name: Assert Change GTM virtual server, long IPv6 address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, long IPv6 address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: 7c62:20f6:4b9a:4222:dd4d:f35d:3dac:0db5
+  register: result
+
+- name: Assert Change GTM virtual server, long IPv6 address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, short IPv6 address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: "2001::"
+  register: result
+
+- name: Assert Change GTM virtual server, short IPv6 address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, short IPv6 address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    address: "2001::"
+  register: result
+
+- name: Assert Change GTM virtual server, short IPv6 address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, bits limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      bits_limit: 300
+  register: result
+
+- name: Assert Change GTM virtual server, bits limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, bits limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      bits_limit: 300
+  register: result
+
+- name: Assert Change GTM virtual server, bits limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, packets limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      packets_limit: 400
+  register: result
+
+- name: Assert Change GTM virtual server, packets limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, packets limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      packets_limit: 400
+  register: result
+
+- name: Assert Change GTM virtual server, packets limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, connections limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      connections_limit: 500
+  register: result
+
+- name: Assert Change GTM virtual server, connections limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, connections limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      connections_limit: 500
+  register: result
+
+- name: Assert Change GTM virtual server, connections limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, disable bits limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      bits_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable bits limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, disable bits limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      bits_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable bits limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, disable packets limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      packets_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable packets limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, disable packets limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      packets_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable packets limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, disable connections limit
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      connections_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable connections limit
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, disable connections limit - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    limits:
+      connections_enabled: no
+  register: result
+
+- name: Assert Change GTM virtual server, disable connections limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, link
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    link: "{{ link_name_2 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, link
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, link - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    link: "{{ link_name_2 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, link - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, translation port
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    port: 10443
+  register: result
+
+- name: Assert Create a GTM virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, translation port - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    port: 10443
+  register: result
+
+- name: Assert Change GTM virtual server, translation port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, IPv4 translation address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: 30.30.30.30
+  register: result
+
+- name: Assert Change GTM virtual server, IPv4 address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, IPv4 translation address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: 30.30.30.30
+  register: result
+
+- name: Assert Change GTM virtual server, IPv4 translation address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, long IPv6 translation address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: 919b:b062:9c58:2188:528f:a637:2fd2:22df
+  register: result
+
+- name: Assert Change GTM virtual server, long IPv6 translation address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, long IPv6 translation address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: 919b:b062:9c58:2188:528f:a637:2fd2:22df
+  register: result
+
+- name: Assert Change GTM virtual server, long IPv6 translation address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, short IPv6 translation address
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: "919b::"
+  register: result
+
+- name: Assert Change GTM virtual server, short IPv6 translation address
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, short IPv6 translation address - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    translation_address: "919b::"
+  register: result
+
+- name: Assert Change GTM virtual server, short IPv6 translation address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, virtual server dependencies
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    virtual_server_dependencies:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_3 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_4 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, virtual server dependencies
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, virtual server dependencies - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    virtual_server_dependencies:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_3 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_4 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, virtual server dependencies - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change GTM virtual server, remove virtual server dependency
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    virtual_server_dependencies:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_3 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, remove virtual server dependency
+  assert:
+    that:
+      - result is changed
+
+- name: Change GTM virtual server, remove virtual server dependency - Idempotent check
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    virtual_server_dependencies:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_3 }}"
+  register: result
+
+- name: Assert Change GTM virtual server, remove virtual server dependency - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create a GTM virtual server, wrong availability params - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    availability_requirements:
+      type: require
+      at_least: 100
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, wrong availability params - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create a GTM virtual server, missing 1 availability params - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    availability_requirements:
+      type: require
+      number_of_probes: 100
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, missing 1 availability params - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create a GTM virtual server, missing 2 availability params - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    availability_requirements:
+      type: require
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, missing 2 availability params - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create a GTM virtual server, missing 1 at_least availability params - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    availability_requirements:
+      type: at_least
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, missing 1 at_least availability params - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create a GTM virtual server, wrong at_least availability params - Expected failure
+  bigip_gtm_virtual_server:
+    name: "{{ virtual_server_name_1 }}"
+    server_name: "{{ server_name }}"
+    availability_requirements:
+      type: at_least
+      number_of_probes: 100
+      number_of_probers: 200
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a GTM virtual server, wrong at_least at_least availability params - Expected failure
+  assert:
+    that:
+      - result is success
 
 - import_tasks: teardown.yaml

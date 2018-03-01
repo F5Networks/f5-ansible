@@ -1,8 +1,19 @@
 ---
 
-virtual_server_name: foo
+virtual_server_name_1: foo
+virtual_server_name_2: bar
+virtual_server_name_3: baz
+virtual_server_name_4: apple
+virtual_server_name_5: banana
 dc_name1: foo_dc
 server_name: foo_gtm_server
-link_name: foo-link
+link_name_1: foo-link
+link_name_2: foo-link2
+link_address_1: 6.3.74.2
+link_address_2: 8.3.57.4
 virtual_server_address_1: 5.6.7.8
+virtual_server_address_2: 11.11.11.11
+virtual_server_address_3: 9.9.9.9
+virtual_server_address_4: 8.8.8.8
 translation_address_1: 4.3.2.1
+translation_address_2: 10.10.10.10

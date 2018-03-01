@@ -5,10 +5,11 @@
     name: "{{ server_name }}"
     state: absent
 
-- name: Remove GTM link
+- name: Remove GTM links
   bigip_command:
     commands:
-      - "tmsh delete gtm link {{ link_name }}"
+      - "tmsh delete gtm link {{ link_name_1 }}"
+      - "tmsh delete gtm link {{ link_name_2 }}"
 
 - name: Remove datacenters
   bigip_gtm_datacenter:
