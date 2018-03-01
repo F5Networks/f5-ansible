@@ -254,6 +254,12 @@ except ImportError:
     except ImportError:
         HAS_F5SDK = False
 
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
+
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
@@ -294,10 +300,11 @@ class ApiParameters(Parameters):
         if self._values['destination'].count(':') >= 2:
             # IPv6
             parts = self._values['destination'].split('.')
-            return parts[0]
-        # IPv4
-        parts = self._values['destination'].split(':')
-        return parts[0]
+        else:
+            # IPv4
+            parts = self._values['destination'].split(':')
+        addr = netaddr.IPAddress(parts[0])
+        return str(addr)
 
     @property
     def port(self):
@@ -344,6 +351,13 @@ class ModuleParameters(Parameters):
         return 'disabled'
 
     @property
+    def address(self):
+        if self._values['address'] is None:
+            return None
+        addr = netaddr.IPAddress(self._values['address'])
+        return str(addr)
+
+    @property
     def port(self):
         if self._values['port'] is None:
             return None
@@ -353,7 +367,15 @@ class ModuleParameters(Parameters):
 
     @property
     def destination(self):
-        result = '{0}:{1}'.format(self.address, self.port)
+        if self.address is None:
+            return None
+        if self.port is None:
+            return None
+        addr = netaddr.IPAddress(self.address)
+        if addr.version == 4:
+            result = '{0}:{1}'.format(self.address, self.port)
+        else:
+            result = '{0}.{1}'.format(self.address, self.port)
         return result
 
     @property
@@ -725,6 +747,8 @@ def main():
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
+    if not HAS_NETADDR:
+        module.fail_json(msg="The python netaddr module is required")
 
     try:
         client = F5Client(**module.params)
