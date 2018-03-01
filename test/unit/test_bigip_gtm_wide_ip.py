@@ -108,12 +108,12 @@ class TestParameters(unittest.TestCase):
 
     def test_module_not_fqdn_name(self):
         args = dict(
-            name='foo.baz',
+            name='foo',
             lb_method='round-robin'
         )
         with pytest.raises(F5ModuleError) as excinfo:
             p = ModuleParameters(params=args)
-            assert p.name == 'foo.baz'
+            assert p.name == 'foo'
         assert 'The provided name must be a valid FQDN' in str(excinfo)
 
 
