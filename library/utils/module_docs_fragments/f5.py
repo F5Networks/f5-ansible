@@ -108,8 +108,8 @@ options:
             remote device.
         required: true
         choices:
-            - rest
-            - cli
+          - rest
+          - cli
         default: cli
 
 notes:
