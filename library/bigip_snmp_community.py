@@ -188,8 +188,6 @@ param2:
   sample: Foo is bar
 '''
 
-import q
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -642,9 +640,6 @@ class V2Manager(BaseManager):
 
     def create_on_device(self):
         params = self.changes.api_params()
-        from six import iteritems
-        for k,v in iteritems(params):
-            q.q(k,v)
         self.client.api.tm.sys.snmp.users_s.user.create(
             name=self.want.snmp_username,
             partition=self.want.partition,
