@@ -13,7 +13,7 @@
 #
 # Examples:
 #
-#    Run all tests on the {module} module
+#    Run all tests on the {{module}} module
 #
 #    ansible-playbook -i notahost, test/integration/{{ module }}.yaml
 #
