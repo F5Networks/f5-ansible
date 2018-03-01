@@ -31,18 +31,24 @@ options:
   address:
     description:
       - Specifies the IP Address of the virtual server.
+      - When creating a new GTM virtual server, this parameter is required.
   port:
     description:
       - Specifies the service port number for the virtual server or pool member. For example,
         the HTTP service is typically port 80.
       - To specify all ports, use an C(*).
+      - When creating a new GTM virtual server, if this parameter is not specified, a
+        default of C(*) will be used.
   translation_address:
     description:
       - Specifies the translation IP address for the virtual server.
+      - To unset this parameter, provide an empty string (C("")) as a value.
   translation_port:
     description:
       - Specifies the translation port number or service name for the virtual server.
       - To specify all ports, use an C(*).
+      - When creating a new GTM virtual server, if this parameter is not specified, a
+        default of C(*) will be used.
   availability_requirements:
     suboptions:
       type:
@@ -79,6 +85,15 @@ options:
     description:
       - Specifies the virtual servers on which the current virtual server depends.
       - If any of the specified servers are unavailable, the current virtual server is also listed as unavailable.
+    suboptions:
+      server:
+        description:
+          - Server which the dependant virtual server is part of.
+        required: True
+      virtual_server:
+        description:
+          - Virtual server to depend on.
+        required: True
   link:
     description:
       - Specifies a link to assign to the server or virtual server.
@@ -144,8 +159,8 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    virtual_server_name: myname
-    virtual_server_server: myserver
+    server_name: server1
+    name: my-virtual-server
     state: enabled
   delegate_to: localhost
 '''
@@ -203,6 +218,8 @@ limits:
   sample: { 'bits_enabled': true, 'bits_limit': 100 }
 '''
 
+import os
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
@@ -215,6 +232,7 @@ try:
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
+    from library.module_utils.network.f5.common import compare_dictionary
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -229,6 +247,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import compare_dictionary
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -270,16 +289,54 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def address(self):
+        if self._values['destination'].count(':') >= 2:
+            # IPv6
+            parts = self._values['destination'].split('.')
+            return parts[0]
+        # IPv4
+        parts = self._values['destination'].split(':')
+        return parts[0]
+
+    @property
+    def port(self):
+        if self._values['destination'].count(':') >= 2:
+            # IPv6
+            parts = self._values['destination'].split('.')
+            return parts[1]
+        # IPv4
+        parts = self._values['destination'].split(':')
+        return parts[1]
+
+    @property
+    def virtual_server_dependencies(self):
+        if self._values['virtual_server_dependencies'] is None:
+            return None
+        results = []
+        for dependency in self._values['virtual_server_dependencies']:
+            parts = dependency['name'].split(':')
+            result = dict(
+                server=parts[0],
+                virtual_server=parts[1],
+            )
+            results.append(result)
+        if results:
+            results = sorted(results, key=lambda k: k['server'])
+        return results
 
 
 class ModuleParameters(Parameters):
     def _get_limit_value(self, type):
+        if self._values['limits'] is None:
+            return None
         if self._values['limits'][type] is None:
             return None
         return int(self._values['limits'][type])
 
     def _get_limit_status(self, type):
+        if self._values['limits'] is None:
+            return None
         if self._values['limits'][type] is None:
             return None
         if self._values['limits'][type]:
@@ -327,11 +384,38 @@ class ModuleParameters(Parameters):
 
     @property
     def connections_enabled(self):
-        if self._values['limits']['connections_enabled'] is None:
+        return self._get_limit_status('connections_enabled')
+
+    @property
+    def translation_address(self):
+        if self._values['translation_address'] is None:
             return None
-        if self._values['limits']['connections_enabled']:
-            return 'enabled'
-        return 'disabled'
+        if self._values['translation_address'] == '':
+            return 'none'
+        return self._values['translation_address']
+
+    @property
+    def translation_port(self):
+        if self._values['port'] is None:
+            return None
+        if self._values['port'] == '*':
+            return 0
+        return int(self._values['port'])
+
+    @property
+    def virtual_server_dependencies(self):
+        if self._values['virtual_server_dependencies'] is None:
+            return None
+        results = []
+        for dependency in self._values['virtual_server_dependencies']:
+            result = dict(
+                server=fq_name(self.partition, dependency['server']),
+                virtual_server=os.path.basename(dependency['virtual_server'])
+            )
+            results.append(result)
+        if results:
+            results = sorted(results, key=lambda k: k['server'])
+        return results
 
 
 class Changes(Parameters):
@@ -347,7 +431,15 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def virtual_server_dependencies(self):
+        if self._values['virtual_server_dependencies'] is None:
+            return None
+        results = []
+        for depend in self._values['virtual_server_dependencies']:
+            name = '{0}:{1}'.format(depend['server'], depend['virtual_server'])
+            results.append(dict(name=name))
+        return results
 
 
 class ReportableChanges(Changes):
@@ -374,6 +466,25 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def destination(self):
+        if self.want.port is None:
+            self.want.update({'port': self.have.port})
+        if self.want.address is None:
+            self.want.update({'address': self.have.address})
+        if self.want.destination != self.have.destination:
+            return self.want.destination
+
+    @property
+    def virtual_server_dependencies(self):
+        if self.have.virtual_server_dependencies is None:
+            return self.want.virtual_server_dependencies
+        if self.want.virtual_server_dependencies is None and self.have.virtual_server_dependencies is None:
+            return None
+        if self.want.virtual_server_dependencies is None:
+            return None
+        return compare_dictionary(self.want.virtual_server_dependencies, self.have.virtual_server_dependencies)
 
 
 class ModuleManager(object):
@@ -478,7 +589,17 @@ class ModuleManager(object):
         return True
 
     def create(self):
+        if self.want.port is None:
+            self.want.update({'port': '*'})
+        if self.want.translation_port is None:
+            self.want.update({'translation_port': '*'})
+
         self._set_changed_options()
+
+        if self.want.address is None:
+            raise F5ModuleError(
+                "You must supply an 'address' when creating a new virtual server."
+            )
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -546,19 +667,33 @@ class ArgumentSpec(object):
             translation_port=dict(type='int'),
             availability_requirements=dict(
                 type='dict',
-                suboptions=dict(
-                    type=dict(),
+                options=dict(
+                    type=dict(choices=['all', 'at_least', 'require']),
                     at_least=dict(),
                     number_of_probes=dict(),
                     number_of_probers=dict()
-                )
+                ),
+                mutually_exclusive=[
+                    ['at_least', 'number_of_probes'],
+                    ['at_least', 'number_of_probers'],
+                ],
+                required_if=[
+                    ['type', 'at_least', ['at_least']],
+                    ['type', 'require', ['number_of_probes', 'number_of_probers']]
+                ]
             ),
             monitors=dict(type='list'),
-            virtual_server_dependencies=dict(type='list'),
+            virtual_server_dependencies=dict(
+                type='list',
+                options=dict(
+                    server=dict(required=True),
+                    virtual_server=dict(required=True)
+                )
+            ),
             link=dict(),
             limits=dict(
                 type='dict',
-                suboptions=dict(
+                options=dict(
                     bits_enabled=dict(type='bool'),
                     packets_enabled=dict(type='bool'),
                     connections_enabled=dict(type='bool'),
@@ -586,7 +721,7 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
     )
     if not HAS_F5SDK:
         module.fail_json(msg="The python f5-sdk module is required")
