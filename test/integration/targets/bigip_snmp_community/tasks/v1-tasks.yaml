@@ -1,0 +1,146 @@
+---
+
+- name: Create v1 SNMP community
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    version: v1
+  register: result
+
+- name: Assert Create v1 SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Create v1 SNMP community - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    version: v1
+  register: result
+
+- name: Assert Create v1 SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove v1 SNMP community
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    state: absent
+  register: result
+
+- name: Assert Remove v1 SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Remove v1 SNMP community - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    version: v1
+    state: absent
+  register: result
+
+- name: Assert Remove v1 SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create v1 SNMP community, more options
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    source: 1.1.1.1
+    oid: .1
+    version: v1
+    access: rw
+  register: result
+
+- name: Assert Create v1 SNMP community, more options
+  assert:
+    that:
+      - result is changed
+
+- name: Create v1 SNMP community, more options - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    source: 1.1.1.1
+    oid: .1
+    version: v1
+    access: rw
+  register: result
+
+- name: Assert Create v1 SNMP community, more options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v1 SNMP ip_version
+  bigip_snmp_community:
+    community: foo
+    ip_version: 6
+    version: v1
+  register: result
+
+- name: Assert Change v1 SNMP ip_version
+  assert:
+    that:
+      - result is changed
+
+- name: Change v1 SNMP ip_version - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 6
+    version: v1
+  register: result
+
+- name: Assert Change v1 SNMP ip_version - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v1 SNMP source
+  bigip_snmp_community:
+    community: foo
+    source: 2.2.2.2
+    version: v1
+  register: result
+
+- name: Assert Change v1 SNMP source
+  assert:
+    that:
+      - result is changed
+
+- name: Change v1 SNMP source - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    source: 2.2.2.2
+    version: v1
+  register: result
+
+- name: Assert Change v1 SNMP source - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Try to set source to 'all' - Expected failure
+  bigip_snmp_community:
+    community: foo
+    source: all
+    version: v1
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to set source to 'all'  - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Remove v1 SNMP community
+  bigip_snmp_community:
+    community: foo
+    version: v1
+    state: absent

@@ -1,0 +1,146 @@
+---
+
+- name: Create v2c SNMP community
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    version: v2c
+  register: result
+
+- name: Assert Create v2c SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Create v2c SNMP community - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    version: v2c
+  register: result
+
+- name: Assert Create v2c SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove v2c SNMP community
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    state: absent
+  register: result
+
+- name: Assert Remove v2c SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Remove v2c SNMP community - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    version: v2c
+    state: absent
+  register: result
+
+- name: Assert Remove v2c SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create v2c SNMP community, more options
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    source: 1.1.1.1
+    oid: .1
+    version: v2c
+    access: rw
+  register: result
+
+- name: Assert Create v2c SNMP community, more options
+  assert:
+    that:
+      - result is changed
+
+- name: Create v2c SNMP community, more options - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 4
+    source: 1.1.1.1
+    oid: .1
+    version: v2c
+    access: rw
+  register: result
+
+- name: Assert Create v2c SNMP community, more options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v2c SNMP ip_version
+  bigip_snmp_community:
+    community: foo
+    ip_version: 6
+    version: v2c
+  register: result
+
+- name: Assert Change v2c SNMP ip_version
+  assert:
+    that:
+      - result is changed
+
+- name: Change v2c SNMP ip_version - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    ip_version: 6
+    version: v2c
+  register: result
+
+- name: Assert Change v2c SNMP ip_version - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v2c SNMP source
+  bigip_snmp_community:
+    community: foo
+    source: 2.2.2.2
+    version: v2c
+  register: result
+
+- name: Assert Change v2c SNMP source
+  assert:
+    that:
+      - result is changed
+
+- name: Change v2c SNMP source - Idempotent check
+  bigip_snmp_community:
+    community: foo
+    source: 2.2.2.2
+    version: v2c
+  register: result
+
+- name: Assert Change v2c SNMP source - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Try to set source to 'all' - Expected failure
+  bigip_snmp_community:
+    community: foo
+    source: all
+    version: v2c
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to set source to 'all'  - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Remove v2c SNMP community
+  bigip_snmp_community:
+    community: foo
+    version: v2c
+    state: absent

@@ -1,0 +1,243 @@
+---
+
+- name: Create v3 SNMP community
+  bigip_snmp_community:
+    oid: .1
+    snmp_username: foo
+    snmp_auth_password: foobarbaz
+    snmp_privacy_password: foobarbaz
+    update_password: on_create
+    version: v3
+  register: result
+
+- name: Assert Create v3 SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Create v3 SNMP community - Idempotent check
+  bigip_snmp_community:
+    oid: .1
+    snmp_username: foo
+    snmp_auth_password: foobarbaz
+    snmp_privacy_password: foobarbaz
+    update_password: on_create
+    version: v3
+  register: result
+
+- name: Assert Create v3 SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove v3 SNMP community
+  bigip_snmp_community:
+    snmp_username: foo
+    version: v3
+    state: absent
+  register: result
+
+- name: Assert Remove v3 SNMP community
+  assert:
+    that:
+      - result is changed
+
+- name: Remove v3 SNMP community - Idempotent check
+  bigip_snmp_community:
+    snmp_username: foo
+    version: v3
+    state: absent
+  register: result
+
+- name: Assert Remove v3 SNMP community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create v3 SNMP community, more options
+  bigip_snmp_community:
+    oid: .1
+    snmp_username: foo
+    snmp_auth_password: foobarbaz
+    snmp_auth_protocol: md5
+    snmp_privacy_password: foobarbaz
+    snmp_privacy_protocol: des
+    update_password: on_create
+    version: v3
+    access: rw
+  register: result
+
+- name: Assert Create v3 SNMP community, more options
+  assert:
+    that:
+      - result is changed
+
+- name: Create v3 SNMP community, more options - Idempotent check
+  bigip_snmp_community:
+    oid: .1
+    snmp_username: foo
+    snmp_auth_password: foobarbaz
+    snmp_auth_protocol: md5
+    snmp_privacy_password: foobarbaz
+    snmp_privacy_protocol: des
+    update_password: on_create
+    version: v3
+    access: rw
+  register: result
+
+- name: Assert Create v3 SNMP community, more options - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, oid
+  bigip_snmp_community:
+    oid: .2
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, oid
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, oid - Idempotent check
+  bigip_snmp_community:
+    oid: .2
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, oid - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, access
+  bigip_snmp_community:
+    access: ro
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, access
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, access - Idempotent check
+  bigip_snmp_community:
+    access: ro
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, access - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, snmp_auth_protocol
+  bigip_snmp_community:
+    snmp_auth_protocol: sha
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_auth_protocol
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, snmp_auth_protocol - Idempotent check
+  bigip_snmp_community:
+    snmp_auth_protocol: sha
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_auth_protocol - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, snmp_privacy_protocol
+  bigip_snmp_community:
+    snmp_privacy_protocol: aes
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_privacy_protocol
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, snmp_privacy_protocol - Idempotent check
+  bigip_snmp_community:
+    snmp_privacy_protocol: aes
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_privacy_protocol - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, snmp_auth_password
+  bigip_snmp_community:
+    snmp_auth_password: newsecretpassword
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_auth_password
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, snmp_auth_password
+  bigip_snmp_community:
+    snmp_auth_password: newsecretpassword
+    snmp_username: foo
+    version: v3
+    update_password: on_create
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_auth_password
+  assert:
+    that:
+      - result is not changed
+
+- name: Change v3 SNMP, snmp_privacy_password
+  bigip_snmp_community:
+    snmp_privacy_password: newsecretpassword
+    snmp_username: foo
+    version: v3
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_privacy_password
+  assert:
+    that:
+      - result is changed
+
+- name: Change v3 SNMP, snmp_privacy_password
+  bigip_snmp_community:
+    snmp_privacy_password: newsecretpassword
+    snmp_username: foo
+    version: v3
+    update_password: on_create
+  register: result
+
+- name: Assert Change v3 SNMP, snmp_privacy_password
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove v3 SNMP
+  bigip_snmp_community:
+    snmp_username: foo
+    version: v3
+    state: absent
