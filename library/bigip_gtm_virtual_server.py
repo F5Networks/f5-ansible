@@ -214,7 +214,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -228,7 +228,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -247,7 +247,7 @@ class Parameters(AnsibleF5Parameters):
         'translationAddress': 'translation_address',
         'translationPort': 'translation_port',
         'dependsOn': 'virtual_server_dependencies',
-        'explicitLinkName': 'link'
+        'explicitLinkName': 'link',
     }
 
     api_attributes = [
@@ -259,13 +259,13 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
         'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link'
+        'virtual_server_dependencies', 'link', 'destination'
     ]
 
     updatables = [
         'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
         'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link'
+        'virtual_server_dependencies', 'link', 'destination'
     ]
 
 
@@ -274,7 +274,64 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    def _get_limit_value(self, type):
+        if self._values['limits'][type] is None:
+            return None
+        return int(self._values['limits'][type])
+
+    def _get_limit_status(self, type):
+        if self._values['limits'][type] is None:
+            return None
+        if self._values['limits'][type]:
+            return 'enabled'
+        return 'disabled'
+
+    @property
+    def port(self):
+        if self._values['port'] is None:
+            return None
+        if self._values['port'] == '*':
+            return 0
+        return int(self._values['port'])
+
+    @property
+    def destination(self):
+        result = '{0}:{1}'.format(self.address, self.port)
+        return result
+
+    @property
+    def link(self):
+        if self._values['link'] is None:
+            return None
+        return fq_name(self.partition, self._values['link'])
+
+    @property
+    def bits_limit(self):
+        return self._get_limit_value('bits_limit')
+
+    @property
+    def packets_limit(self):
+        return self._get_limit_value('packets_limit')
+
+    @property
+    def connections_limit(self):
+        return self._get_limit_value('connections_limit')
+
+    @property
+    def bits_enabled(self):
+        return self._get_limit_status('bits_enabled')
+
+    @property
+    def packets_enabled(self):
+        return self._get_limit_status('packets_enabled')
+
+    @property
+    def connections_enabled(self):
+        if self._values['limits']['connections_enabled'] is None:
+            return None
+        if self._values['limits']['connections_enabled']:
+            return 'enabled'
+        return 'disabled'
 
 
 class Changes(Parameters):
@@ -398,7 +455,7 @@ class ModuleManager(object):
             name=self.want.server_name,
             partition=self.want.partition
         )
-        result = resource.virtual_servers_s.virtual_servers.exists(
+        result = resource.virtual_servers_s.virtual_server.exists(
             name=self.want.name
         )
         return result
@@ -433,7 +490,7 @@ class ModuleManager(object):
             name=self.want.server_name,
             partition=self.want.partition
         )
-        resource.virtual_servers_s.virtual_servers.create(
+        resource.virtual_servers_s.virtual_server.create(
             name=self.want.name,
             **params
         )
@@ -444,7 +501,7 @@ class ModuleManager(object):
             name=self.want.server_name,
             partition=self.want.partition
         )
-        resource = resource.virtual_servers_s.virtual_servers.load(
+        resource = resource.virtual_servers_s.virtual_server.load(
             name=self.want.name
         )
         resource.modify(**params)
@@ -459,7 +516,7 @@ class ModuleManager(object):
             name=self.want.server_name,
             partition=self.want.partition
         )
-        resource = resource.virtual_servers_s.virtual_servers.load(
+        resource = resource.virtual_servers_s.virtual_server.load(
             name=self.want.name
         )
         if resource:
@@ -470,7 +527,7 @@ class ModuleManager(object):
             name=self.want.server_name,
             partition=self.want.partition
         )
-        resource = resource.virtual_servers_s.virtual_servers.load(
+        resource = resource.virtual_servers_s.virtual_server.load(
             name=self.want.name
         )
         result = resource.attrs
@@ -488,6 +545,7 @@ class ArgumentSpec(object):
             translation_address=dict(),
             translation_port=dict(type='int'),
             availability_requirements=dict(
+                type='dict',
                 suboptions=dict(
                     type=dict(),
                     at_least=dict(),
@@ -499,6 +557,7 @@ class ArgumentSpec(object):
             virtual_server_dependencies=dict(type='list'),
             link=dict(),
             limits=dict(
+                type='dict',
                 suboptions=dict(
                     bits_enabled=dict(type='bool'),
                     packets_enabled=dict(type='bool'),
