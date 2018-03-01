@@ -209,6 +209,46 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
+rate_limit:
+  description: The new rate limit, in connections per second, of the pool member.
+  returned: changed
+  type: integer
+  sample: 100
+connection_limit:
+  description: The new connection limit of the pool member
+  returned: changed
+  type: integer
+  sample: 1000
+description:
+  description: The new description of pool member.
+  returned: changed
+  type: string
+  sample: My pool member
+ratio:
+  description: The new pool member ratio weight.
+  returned: changed
+  type: integer
+  sample: 50
+priority_group:
+  description: The new priority group.
+  returned: changed
+  type: integer
+  sample: 3
+fqdn_auto_populate:
+  description: Whether FQDN auto population was set on the member or not.
+  returned: changed
+  type: bool
+  sample: True
+fqdn:
+  description: The FQDN of the pool member.
+  returned: changed
+  type: string
+  sample: foo.bar.com
+address:
+  description: The address of the pool member.
+  returned: changed
+  type: string
+  sample: 1.2.3.4
 '''
 
 from ansible.module_utils.basic import AnsibleModule
