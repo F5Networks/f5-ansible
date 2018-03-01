@@ -180,6 +180,32 @@ EXAMPLES = '''
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 80
   delegate_to: localhost
+
+- name: Create members with priority groups
+  bigip_pool_member:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    pool: my-pool
+    partition: Common
+    host: "{{ item.address }}"
+    name: "{{ item.name }}"
+    priority_group: "{{ item.priority_group }}"
+    port: 80
+  delegate_to: localhost
+  loop:
+    - host: 1.1.1.1
+      name: web1
+      priority_group: 4
+    - host: 2.2.2.2
+      name: web2
+      priority_group: 3
+    - host: 3.3.3.3
+      name: web3
+      priority_group: 2
+    - host: 4.4.4.4
+      name: web4
+      priority_group: 1      
 '''
 
 RETURN = '''
