@@ -284,13 +284,13 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
         'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link', 'destination'
+        'virtual_server_dependencies', 'link', 'destination', 'enabled', 'disabled'
     ]
 
     updatables = [
         'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
         'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link', 'destination'
+        'virtual_server_dependencies', 'link', 'destination', 'enabled'
     ]
 
 
@@ -331,6 +331,19 @@ class ApiParameters(Parameters):
         if results:
             results = sorted(results, key=lambda k: k['server'])
         return results
+
+    @property
+    def enabled(self):
+        if 'enabled' in self._values:
+            return True
+        else:
+            return False
+
+    @property
+    def disabled(self):
+        if 'disabled' in self._values:
+            return True
+        return False
 
 
 class ModuleParameters(Parameters):
@@ -439,6 +452,24 @@ class ModuleParameters(Parameters):
             results = sorted(results, key=lambda k: k['server'])
         return results
 
+    @property
+    def enabled(self):
+        if self._values['state'] == 'enabled':
+            return True
+        elif self._values['state'] == 'disabled':
+            return False
+        else:
+            return None
+
+    @property
+    def disabled(self):
+        if self._values['state'] == 'enabled':
+            return False
+        elif self._values['state'] == 'disabled':
+            return True
+        else:
+            return None
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -507,6 +538,21 @@ class Difference(object):
         if self.want.virtual_server_dependencies is None:
             return None
         return compare_dictionary(self.want.virtual_server_dependencies, self.have.virtual_server_dependencies)
+
+    @property
+    def enabled(self):
+        if self.want.state == 'enabled' and self.have.disabled:
+            result = dict(
+                enabled=True,
+                disabled=False
+            )
+            return result
+        elif self.want.state == 'disabled' and self.have.enabled:
+            result = dict(
+                enabled=False,
+                disabled=True
+            )
+            return result
 
 
 class ModuleManager(object):
