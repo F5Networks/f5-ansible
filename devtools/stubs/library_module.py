@@ -260,7 +260,7 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.__API_ENDPOINT__.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -268,7 +268,7 @@ class ModuleManager(object):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.__API_ENDPOINT__.load(
             name=self.want.name,
             partition=self.want.partition
