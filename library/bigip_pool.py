@@ -54,7 +54,7 @@ options:
       - ratio-session
       - round-robin
       - weighted-least-connections-member
-      - weighted-least-connections-nod
+      - weighted-least-connections-node
   monitor_type:
     description:
       - Monitor rule type when C(monitors) is specified.
