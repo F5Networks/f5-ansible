@@ -43,6 +43,8 @@ options:
     description:
       - Specifies the translation IP address for the virtual server.
       - To unset this parameter, provide an empty string (C("")) as a value.
+      - When creating a new GTM virtual server, if this parameter is not specified, a
+        default of C(::) will be used.
   translation_port:
     description:
       - Specifies the translation port number or service name for the virtual server.
@@ -81,6 +83,8 @@ options:
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor this resource.
+      - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
+        C(monitors) list.
   virtual_server_dependencies:
     description:
       - Specifies the virtual servers on which the current virtual server depends.
@@ -219,6 +223,7 @@ limits:
 '''
 
 import os
+import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
@@ -236,6 +241,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
@@ -251,6 +257,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
 
@@ -273,24 +280,61 @@ class Parameters(AnsibleF5Parameters):
         'translationPort': 'translation_port',
         'dependsOn': 'virtual_server_dependencies',
         'explicitLinkName': 'link',
+        'monitor': 'monitors'
     }
 
     api_attributes = [
-        'limitMaxBps', 'limitMaxBpsStatus', 'limitMaxConnections', 'limitMaxConnectionsStatus',
-        'limitMaxPps', 'limitMaxPpsStatus', 'translationAddress', 'translationPort',
-        'dependsOn', 'explicitLinkName', 'monitor', 'enabled', 'disabled', 'destination'
+        'dependsOn',
+        'destination',
+        'disabled',
+        'enabled',
+        'explicitLinkName',
+        'limitMaxBps',
+        'limitMaxBpsStatus',
+        'limitMaxConnections',
+        'limitMaxConnectionsStatus',
+        'limitMaxPps',
+        'limitMaxPpsStatus',
+        'translationAddress',
+        'translationPort',
+        # The monitor attribute is not included here, because it can break the
+        # API calls to the device. If this bug is ever fixed, uncomment this code.
+        #
+        # monitor
+
     ]
 
     returnables = [
-        'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
-        'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link', 'destination', 'enabled', 'disabled'
+        'bits_enabled',
+        'bits_limit',
+        'connections_enabled',
+        'connections_limit',
+        'destination',
+        'disabled',
+        'enabled',
+        'link',
+        'monitors',
+        'packets_enabled',
+        'packets_limit',
+        'translation_address',
+        'translation_port',
+        'virtual_server_dependencies',
     ]
 
     updatables = [
-        'bits_limit', 'bits_enabled', 'connections_limit', 'connections_enabled',
-        'packets_limit', 'packets_enabled', 'translation_address', 'translation_port',
-        'virtual_server_dependencies', 'link', 'destination', 'enabled'
+        'bits_enabled',
+        'bits_limit',
+        'connections_enabled',
+        'connections_limit',
+        'destination',
+        'enabled',
+        'link',
+        'monitors',
+        'packets_limit',
+        'packets_enabled',
+        'translation_address',
+        'translation_port',
+        'virtual_server_dependencies',
     ]
 
 
@@ -345,6 +389,110 @@ class ApiParameters(Parameters):
             return True
         return False
 
+    @property
+    def availability_requirement_type(self):
+        if self._values['monitors'] is None:
+            return None
+        if 'min ' in self._values['monitors']:
+            return 'at_least'
+        elif 'require ' in self._values['monitors']:
+            return 'require'
+        else:
+            return 'all'
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    @property
+    def number_of_probes(self):
+        """Returns the probes value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probes" value that can be updated in the module.
+
+        Returns:
+             int: The probes value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+(?P<probes>\d+)\s+from'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probes')
+
+    @property
+    def number_of_probers(self):
+        """Returns the probers value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probers" value that can be updated in the module.
+
+        Returns:
+             int: The probers value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+\d+\s+from\s+(?P<probers>\d+)\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probers')
+
+    @property
+    def at_least(self):
+        """Returns the 'at least' value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            min 1 of { /Common/gateway_icmp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "at_least" value that can be updated in the module.
+
+        Returns:
+             int: The at_least value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<least>\d+)\s+of\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('least')
+
 
 class ModuleParameters(Parameters):
     def _get_limit_value(self, type):
@@ -353,6 +501,13 @@ class ModuleParameters(Parameters):
         if self._values['limits'][type] is None:
             return None
         return int(self._values['limits'][type])
+
+    def _get_availability_value(self, type):
+        if self._values['availability_requirements'] is None:
+            return None
+        if self._values['availability_requirements'][type] is None:
+            return None
+        return int(self._values['availability_requirements'][type])
 
     def _get_limit_status(self, type):
         if self._values['limits'] is None:
@@ -431,11 +586,11 @@ class ModuleParameters(Parameters):
 
     @property
     def translation_port(self):
-        if self._values['port'] is None:
+        if self._values['translation_port'] is None:
             return None
-        if self._values['port'] == '*':
+        if self._values['translation_port'] == '*':
             return 0
-        return int(self._values['port'])
+        return int(self._values['translation_port'])
 
     @property
     def virtual_server_dependencies(self):
@@ -469,6 +624,59 @@ class ModuleParameters(Parameters):
             return True
         else:
             return None
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            if self.at_least > len(self.monitors_list):
+                raise F5ModuleError(
+                    "The 'at_least' value must not exceed the number of 'monitors'."
+                )
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            if self.number_of_probes > self.number_of_probers:
+                raise F5ModuleError(
+                    "The 'number_of_probes' must not exceed the 'number_of_probers'."
+                )
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    @property
+    def availability_requirement_type(self):
+        if self._values['availability_requirements'] is None:
+            return None
+        return self._values['availability_requirements']['type']
+
+    @property
+    def number_of_probes(self):
+        return self._get_availability_value('number_of_probes')
+
+    @property
+    def number_of_probers(self):
+        return self._get_availability_value('number_of_probers')
+
+    @property
+    def at_least(self):
+        return self._get_availability_value('at_least')
 
 
 class Changes(Parameters):
@@ -553,6 +761,13 @@ class Difference(object):
                 disabled=True
             )
             return result
+
+    @property
+    def monitors(self):
+        if self.have.monitors is None:
+            return self.want.monitors
+        if self.have.monitors != self.want.monitors:
+            return self.want.monitors
 
 
 class ModuleManager(object):
@@ -661,12 +876,18 @@ class ModuleManager(object):
             self.want.update({'port': '*'})
         if self.want.translation_port is None:
             self.want.update({'translation_port': '*'})
+        if self.want.translation_address is None:
+            self.want.update({'translation_address': '::'})
 
         self._set_changed_options()
 
         if self.want.address is None:
             raise F5ModuleError(
                 "You must supply an 'address' when creating a new virtual server."
+            )
+        if self.want.availability_requirement_type == 'require' and len(self.want.monitors_list) > 1:
+            raise F5ModuleError(
+                "Only one monitor may be specified when using an availability_requirement type of 'require'"
             )
         if self.module.check_mode:
             return True
@@ -683,6 +904,8 @@ class ModuleManager(object):
             name=self.want.name,
             **params
         )
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def update_on_device(self):
         params = self.changes.api_params()
@@ -694,6 +917,8 @@ class ModuleManager(object):
             name=self.want.name
         )
         resource.modify(**params)
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def absent(self):
         if self.exists():
@@ -722,6 +947,36 @@ class ModuleManager(object):
         result = resource.attrs
         return ApiParameters(params=result)
 
+    def update_monitors_on_device(self):
+        """Updates the monitors string on a virtual server
+
+        There is a long-standing bug in GTM virtual servers where the monitor value
+        is a string that includes braces. These braces cause the REST API to panic and
+        fail to update or create any resources that have an "at_least" or "require"
+        set of availability_requirements.
+
+        This method exists to do a tmsh command to cause the update to take place on
+        the device.
+
+        Preferably, this method can be removed and the bug be fixed. The API should
+        be working, obviously, but the more concerning issue is if tmsh commands change
+        over time, breaking this method.
+        """
+        command = 'tmsh modify gtm server /{0}/{1} virtual-servers modify {{ {2} {{ monitor {3} }} }}'.format(
+            self.want.partition, self.want.server_name, self.want.name, self.want.monitors
+        )
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        try:
+            if hasattr(output, 'commandResult'):
+                if len(output.commandResult.strip()) > 0:
+                    raise F5ModuleError(output.commandResult)
+        except (AttributeError, NameError, LazyAttributesRequired):
+            pass
+        return True
+
 
 class ArgumentSpec(object):
     def __init__(self):
@@ -736,10 +991,13 @@ class ArgumentSpec(object):
             availability_requirements=dict(
                 type='dict',
                 options=dict(
-                    type=dict(choices=['all', 'at_least', 'require']),
-                    at_least=dict(),
-                    number_of_probes=dict(),
-                    number_of_probers=dict()
+                    type=dict(
+                        choices=['all', 'at_least', 'require'],
+                        required=True
+                    ),
+                    at_least=dict(type='int'),
+                    number_of_probes=dict(type='int'),
+                    number_of_probers=dict(type='int')
                 ),
                 mutually_exclusive=[
                     ['at_least', 'number_of_probes'],
