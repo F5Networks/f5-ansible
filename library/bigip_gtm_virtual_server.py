@@ -52,6 +52,10 @@ options:
       - When creating a new GTM virtual server, if this parameter is not specified, a
         default of C(*) will be used.
   availability_requirements:
+    description:
+      - Specifies, if you activate more than one health monitor, the number of health
+        monitors that must receive successful responses in order for the link to be
+        considered available.
     suboptions:
       type:
         description:
