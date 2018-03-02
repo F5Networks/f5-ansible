@@ -64,6 +64,7 @@ Modules Maintained by the Ansible Community
   bigip_smtp - Manages SMTP settings on the BIG-IP <bigip_smtp_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP <bigip_snat_pool_module>
   bigip_snmp - Manipulate general SNMP settings on a BIG-IP <bigip_snmp_module>
+  bigip_snmp_community - Manages SNMP communities on a BIG-IP. <bigip_snmp_community_module>
   bigip_snmp_trap - Manipulate SNMP trap information on a BIG-IP <bigip_snmp_trap_module>
   bigip_software - Manage BIG-IP software versions and hotfixes <bigip_software_module>
   bigip_software_facts - Collect software facts from BIG-IP devices <bigip_software_facts_module>
@@ -85,7 +86,7 @@ Modules Maintained by the Ansible Community
   bigip_vlan - Manage VLANs on a BIG-IP system <bigip_vlan_module>
   bigip_wait - Wait for a BIG-IP condition before continuing <bigip_wait_module>
   bigiq_regkey_license - Manages licenses in a BIG-IQ registration key pool <bigiq_regkey_license_module>
-  bigiq_regkey_license_assignment - __SHORT_DESCRIPTION__ <bigiq_regkey_license_assignment_module>
+  bigiq_regkey_license_assignment - Manage regkey license assignment on BIG-IPs from a BIG-IQ. <bigiq_regkey_license_assignment_module>
   bigiq_regkey_pool - Manages registration key pools on BIG-IQ <bigiq_regkey_pool_module>
   bigiq_utility_license - __SHORT_DESCRIPTION__ <bigiq_utility_license_module>
   bigiq_utility_license_assignment - __SHORT_DESCRIPTION__ <bigiq_utility_license_assignment_module>

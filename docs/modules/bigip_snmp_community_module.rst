@@ -1,10 +1,10 @@
-.. _bigip_monitor_https:
+.. _bigip_snmp_community:
 
 
-bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_snmp_community - Manages SNMP communities on a BIG-IP.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.6
 
 
 .. contents::
@@ -15,43 +15,7 @@ bigip_monitor_https - Manages F5 BIG-IP LTM https monitors
 Synopsis
 --------
 
-* M
-* a
-* n
-* a
-* g
-* e
-* s
-*  
-* F
-* 5
-*  
-* B
-* I
-* G
-* -
-* I
-* P
-*  
-* L
-* T
-* M
-*  
-* h
-* t
-* t
-* p
-* s
-*  
-* m
-* o
-* n
-* i
-* t
-* o
-* r
-* s
-* .
+* Assists in managing SNMP communities on a BIG-IP. Different SNMP versions are supported by this module. Take note of the different parameters offered by this module, as different parameters work for different versions of SNMP. Typically this becomes an interest if you are mixing versions ``v2c`` and ``3``.
 
 
 Requirements (on host that executes module)
@@ -73,26 +37,27 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>interval<br/><div style="font-size: small;"></div></td>
+                <tr><td>access<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>ro</li><li>rw</li><li>read-only</li><li>read-write</li></ul></td>
+        <td><div>Specifies the user&#x27;s access level to the MIB.</div><div>When creating a new community, if this parameter is not specified, the default is <code>ro</code>.</div><div>When <code>ro</code>, specifies that the user can view the MIB, but cannot modify the MIB.</div><div>When <code>rw</code>, specifies that the user can view and modify the MIB.</div>        </td></tr>
+                <tr><td>community<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
-                <tr><td>ip<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies the community string (password) for access to the MIB.</div><div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div><div>When <code>version</code> is <code>v1</code> or <code>v2c</code>, this parameter is required.</div></br>
+    <div style="font-size: small;">aliases: name<div>        </td></tr>
+                <tr><td>ip_version<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>4</li><li>6</li></ul></td>
+        <td><div>Specifies whether the record applies to IPv4 or IPv6 addresses.</div><div>When creating a new community, if this value is not specified, the default of <code>4</code> will be used.</div><div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>        </td></tr>
+                <tr><td>oid<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
-                <tr><td>name<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>Monitor name.</div>        </td></tr>
-                <tr><td>parent<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>/Common/https</td>
-        <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>https</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>Specifies the object identifier (OID) for the record.</div><div>When <code>version</code> is <code>v3</code>, this parameter is required.</div><div>When <code>version</code> is either <code>v1</code> or <code>v2c</code>, if this value is specified, then <code>source</code> must not be set to <code>all</code>.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
@@ -108,7 +73,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
+        <td><div>Specifies the port for the trap destination.</div><div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div>        </td></tr>
                 <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td><td></td>
@@ -168,21 +133,6 @@ Options
     </td>
     </tr>
         </td></tr>
-                <tr><td>receive<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The receive string for the monitor call.</div>        </td></tr>
-                <tr><td>receive_disable<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>This setting works like <code>receive</code>, except that the system marks the node or pool member disabled when its response matches the <code>receive_disable</code> string but not <code>receive</code>. To use this setting, you must specify both <code>receive_disable</code> and <code>receive</code>.</div>        </td></tr>
-                <tr><td>send<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The send string for the monitor call. When creating a new monitor, if this value is not provided, the default <code>GET /\\r\\n</code> will be used.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -193,31 +143,46 @@ Options
     <td>443</td>
         <td></td>
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+                <tr><td>snmp_auth_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the password for the user.</div><div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div><div>This value must be at least 8 characters long.</div>        </td></tr>
+                <tr><td>snmp_auth_protocol<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>md5</li><li>sha</li><li>none</li></ul></td>
+        <td><div>Specifies the authentication method for the user.</div><div>When <code>md5</code>, specifies that the system uses the MD5 algorithm to authenticate the user.</div><div>When <code>sha</code>, specifies that the secure hash algorithm (SHA) to authenticate the user.</div><div>When <code>none</code>, specifies that user does not require authentication.</div><div>When creating a new SNMP <code>v3</code> community, if this parameter is not specified, the default of <code>sha</code> will be used.</div>        </td></tr>
+                <tr><td>snmp_privacy_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the password for the user.</div><div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div><div>This value must be at least 8 characters long.</div>        </td></tr>
+                <tr><td>snmp_privacy_protocol<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>aes</li><li>des</li><li>none</li></ul></td>
+        <td><div>Specifies the encryption protocol.</div><div>When <code>aes</code>, specifies that the system encrypts the user information using AES (Advanced Encryption Standard).</div><div>When <code>des</code>, specifies that the system encrypts the user information using DES (Data Encryption Standard).</div><div>When <code>none</code>, specifies that the system does not encrypt the user information.</div><div>When creating a new SNMP <code>v3</code> community, if this parameter is not specified, the default of <code>aes</code> will be used.</div>        </td></tr>
+                <tr><td>snmp_username<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the name of the user for whom you want to grant access to the SNMP v3 MIB.</div><div>This parameter is only relevant when <code>version</code> is <code>v3</code>. If <code>version</code> is something else, this parameter is ignored.</div><div>When creating a new SNMP <code>v3</code> community, this parameter is required.</div><div>This parameter cannot be changed once it has been set.</div>        </td></tr>
+                <tr><td>source<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the source address for access to the MIB.</div><div>This parameter can accept a value of <code>all</code>.</div><div>If this parameter is not specified, the value <code>all</code> is used.</div><div>This parameter is only relevant when <code>version</code> is <code>v1</code>, or <code>v2c</code>. If <code>version</code> is something else, this parameter is ignored.</div><div>If <code>source</code> is set to <code>all</code>, then it is not possible to specify an <code>oid</code>. This will raise an error.</div>        </td></tr>
+                <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>When <code>present</code>, ensures that the monitor exists.</div><div>When <code>absent</code>, ensures the monitor is removed.</div>        </td></tr>
-                <tr><td>target_password<br/><div style="font-size: small;"></div></td>
+        <td><div>When <code>present</code>, ensures that the address list and entries exists.</div><div>When <code>absent</code>, ensures the address list is removed.</div>        </td></tr>
+                <tr><td>update_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the password, if the monitored target requires authentication.</div>        </td></tr>
-                <tr><td>target_username<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the user name, if the monitored target requires authentication.</div>        </td></tr>
-                <tr><td>time_until_up<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the amount of time in seconds after the first successful response before a node will be marked up. A value of 0 will cause a node to be marked up immediately after a valid response is received from the node. If this parameter is not provided when creating a new monitor, then the default value will be 0.</div>        </td></tr>
-                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>        </td></tr>
+    <td>always</td>
+        <td><ul><li>always</li><li>on_create</li></ul></td>
+        <td><div><code>always</code> will allow to update passwords if the user chooses to do so. <code>on_create</code> will only set the password for newly created resources.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -228,6 +193,11 @@ Options
     <td>True</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                <tr><td>version<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>v2c</td>
+        <td><ul><li>v1</li><li>v2c</li><li>v3</li></ul></td>
+        <td><div>Specifies to which Simple Network Management Protocol (SNMP) version the trap destination applies.</div>        </td></tr>
         </table>
     </br>
 
@@ -239,23 +209,35 @@ Examples
  ::
 
     
-    - name: Create HTTPS Monitor
-      bigip_monitor_https:
-        state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
-        user: admin
+    - name: Create an SMNP v2c read-only community
+      bigip_snmp_community:
+        name: foo
+        version: v2c
+        community: foo
+        source: all
+        oid: .1
+        access: ro
         password: secret
-        name: my_http_monitor
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
-    - name: Remove HTTPS Monitor
-      bigip_monitor_https:
-        state: absent
-        server: lb.mydomain.com
-        user: admin
+    - name: Create an SMNP v3 read-write community
+      bigip_snmp_community:
+        name: foo
+        version: v3
+        snmp_username: foo
+        snmp_auth_protocol: sha
+        snmp_auth_password: secret
+        snmp_privacy_protocol: aes
+        snmp_privacy_password: secret
+        oid: .1
+        access: rw
         password: secret
-        name: my_http_monitor
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
 
@@ -276,39 +258,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> parent </td>
-        <td> New parent template of the monitor. </td>
+        <td> param1 </td>
+        <td> The new param1 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> param2 </td>
+        <td> The new param2 value of the resource. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> https </td>
-    </tr>
-            <tr>
-        <td> ip </td>
-        <td> The new IP of IP/port definition. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 10.12.13.14 </td>
-    </tr>
-            <tr>
-        <td> interval </td>
-        <td> The new interval in which to run the monitor check. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
-    </tr>
-            <tr>
-        <td> timeout </td>
-        <td> The new timeout in which the remote system must respond to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> time_until_up </td>
-        <td> The new time in which to mark a system as up after first successful response. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
+        <td align=center> Foo is bar </td>
     </tr>
         
     </table>
@@ -318,7 +279,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

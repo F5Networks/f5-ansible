@@ -115,41 +115,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td></td>
-                <td></td>
-                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                     <tr><td>password<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
                 <td></td>
                 <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                     <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
         <td>no</td>
         <td>True</td>
                 <td><ul><li>yes</li><li>no</li></ul></td>
                 <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -259,7 +259,108 @@ Examples
         port: 80
       delegate_to: localhost
 
+    - name: Create members with priority groups
+      bigip_pool_member:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        pool: my-pool
+        partition: Common
+        host: "{{ item.address }}"
+        name: "{{ item.name }}"
+        priority_group: "{{ item.priority_group }}"
+        port: 80
+      delegate_to: localhost
+      loop:
+        - host: 1.1.1.1
+          name: web1
+          priority_group: 4
+        - host: 2.2.2.2
+          name: web2
+          priority_group: 3
+        - host: 3.3.3.3
+          name: web3
+          priority_group: 2
+        - host: 4.4.4.4
+          name: web4
+          priority_group: 1      
 
+
+Return Values
+-------------
+
+Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=1 cellpadding=4>
+    <tr>
+    <th class="head">name</th>
+    <th class="head">description</th>
+    <th class="head">returned</th>
+    <th class="head">type</th>
+    <th class="head">sample</th>
+    </tr>
+
+        <tr>
+        <td> rate_limit </td>
+        <td> The new rate limit, in connections per second, of the pool member. </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 100 </td>
+    </tr>
+            <tr>
+        <td> connection_limit </td>
+        <td> The new connection limit of the pool member </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 1000 </td>
+    </tr>
+            <tr>
+        <td> description </td>
+        <td> The new description of pool member. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> My pool member </td>
+    </tr>
+            <tr>
+        <td> ratio </td>
+        <td> The new pool member ratio weight. </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 50 </td>
+    </tr>
+            <tr>
+        <td> priority_group </td>
+        <td> The new priority group. </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 3 </td>
+    </tr>
+            <tr>
+        <td> fqdn_auto_populate </td>
+        <td> Whether FQDN auto population was set on the member or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> fqdn </td>
+        <td> The FQDN of the pool member. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> foo.bar.com </td>
+    </tr>
+            <tr>
+        <td> address </td>
+        <td> The address of the pool member. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 1.2.3.4 </td>
+    </tr>
+        
+    </table>
+    </br></br>
 
 Notes
 -----
