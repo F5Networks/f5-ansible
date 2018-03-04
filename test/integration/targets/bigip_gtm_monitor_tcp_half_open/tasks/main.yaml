@@ -1,0 +1,291 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create TCP Monitor - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create TCP Monitor - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Create TCP Monitor - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create TCP Monitor - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change IP - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change IP - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change port - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change port - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, less than timeout - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change interval, less than timeout - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, greater than timeout, expect failure - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    interval: 200
+  register: result
+  ignore_errors: true
+
+- name: Assert Change interval, greater than timeout, expect failure - Half Open
+  assert:
+    that:
+      - result is not changed
+
+- name: Change timeout - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change timeout - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Change probe_timeout - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_timeout: 80
+  register: result
+
+- name: Assert Change probe_timeout - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change probe_timeout - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_timeout: 80
+  register: result
+
+- name: Assert Change probe_timeout - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Change probe_interval - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_interval: 80
+  register: result
+
+- name: Assert Change probe_interval - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change probe_interval - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_interval: 80
+  register: result
+
+- name: Assert Change probe_interval - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Change probe_attempts - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_attempts: 80
+  register: result
+
+- name: Assert Change probe_attempts - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change probe_attempts - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    probe_attempts: 80
+  register: result
+
+- name: Assert Change probe_attempts - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Change transparent - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change transparent - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    transparent: yes
+  register: result
+
+- name: Assert Change transparent - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Change ignore_down_response - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    ignore_down_response: yes
+  register: result
+
+- name: Assert Change ignore_down_response - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Change ignore_down_response - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    ignore_down_response: yes
+  register: result
+
+- name: Assert Change ignore_down_response - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+- name: Remove TCP Monitor - Half Open
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove TCP Monitor - Half Open
+  assert:
+    that:
+      - result is changed
+
+- name: Remove TCP Monitor - Half Open - Idempotent check
+  bigip_gtm_monitor_tcp_half_open:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove TCP Monitor - Half Open - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml
