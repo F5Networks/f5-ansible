@@ -87,7 +87,7 @@ author:
 '''
 
 EXAMPLES = r'''
-- name: Create TCP Monitor
+- name: Create TCP half-open Monitor
   bigip_monitor_tcp_half_open:
     state: present
     ip: 10.10.10.10
@@ -97,7 +97,7 @@ EXAMPLES = r'''
     name: my_tcp_monitor
   delegate_to: localhost
 
-- name: Remove TCP Monitor
+- name: Remove TCP half-open Monitor
   bigip_monitor_tcp_half_open:
     state: absent
     server: lb.mydomain.com
