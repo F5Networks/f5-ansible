@@ -229,13 +229,33 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
+
+class Changes(Parameters):
+    pass
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    pass
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.have = None
-        self.want = Parameters(params=self.module.params)
-        self.changes = Parameters()
+        self.want = ModuleParameters(params=self.module.params)
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
         changed = {}
@@ -246,7 +266,7 @@ class ModuleManager(object):
                 if attr1 != attr2:
                     changed[key] = attr1
         if changed:
-            self.changes = Parameters(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -266,7 +286,7 @@ class ModuleManager(object):
     def read_current_from_device(self):
         resource = self.client.api.tm.sys.sshd.load()
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -284,7 +304,7 @@ class ModuleManager(object):
         return False
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         resource = self.client.api.tm.sys.sshd.load()
         resource.update(**params)
 
