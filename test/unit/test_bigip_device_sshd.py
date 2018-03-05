@@ -20,7 +20,8 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.bigip_device_sshd import Parameters
+    from library.bigip_device_sshd import ApiParameters
+    from library.bigip_device_sshd import ModuleParameters
     from library.bigip_device_sshd import ModuleManager
     from library.bigip_device_sshd import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
@@ -28,7 +29,8 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_device_sshd import Parameters
+        from ansible.modules.network.f5.bigip_device_sshd import ApiParameters
+        from ansible.modules.network.f5.bigip_device_sshd import ModuleParameters
         from ansible.modules.network.f5.bigip_device_sshd import ModuleManager
         from ansible.modules.network.f5.bigip_device_sshd import ArgumentSpec
         from ansible.module_utils.network.f5.common import F5ModuleError
@@ -73,7 +75,7 @@ class TestParameters(unittest.TestCase):
             user='admin',
             password='password'
         )
-        p = Parameters(params=args)
+        p = ModuleParameters(params=args)
         assert p.allow == ['all']
         assert p.banner == 'enabled'
         assert p.banner_text == 'asdf'
@@ -104,8 +106,8 @@ class TestManager(unittest.TestCase):
 
         # Configure the parameters that would be returned by querying the
         # remote device
-        current = Parameters(
-            dict(
+        current = ApiParameters(
+            params=dict(
                 allow=['172.27.1.1']
             )
         )
