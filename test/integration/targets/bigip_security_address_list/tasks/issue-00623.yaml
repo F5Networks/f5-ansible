@@ -1,0 +1,67 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    name: afm
+
+- name: Create a simple address list
+  bigip_security_address_list:
+    name: foo1
+    addresses:
+      - 1.1.1.1
+      - 2.2.2.2
+  register: result
+
+- name: Assert Create a simple address list
+  assert:
+    that:
+      - result is changed
+
+- name: Create a simple address list - Idempotent check
+  bigip_security_address_list:
+    name: foo1
+    addresses:
+      - 1.1.1.1
+      - 2.2.2.2
+  register: result
+
+- name: Create a simple address list with CIDRs
+  bigip_security_address_list:
+    name: foo2
+    addresses:
+      - 1.1.1.0/24
+      - 2.2.2.128/27
+      - 204.15.5.0/27
+  register: result
+
+- name: Assert Create a simple address list with CIDRs
+  assert:
+    that:
+      - result is changed
+
+- name: Create a simple address list with CIDRs - Idempotent check
+  bigip_security_address_list:
+    name: foo2
+    addresses:
+      - 1.1.1.0/24
+      - 2.2.2.128/27
+      - 204.15.5.0/27
+  register: result
+
+- name: Assert Create a simple address list with CIDRs - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove address lists
+  bigip_security_address_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - foo1
+    - foo2
+
+- name: Deprovision AFM
+  bigip_provision:
+    name: afm
+    state: absent

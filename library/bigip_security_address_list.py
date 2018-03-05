@@ -538,8 +538,15 @@ class ModuleParameters(Parameters):
                 netaddr.IPAddress(x)
             except netaddr.core.AddrFormatError:
                 raise F5ModuleError(
-                    "Address {0} must be either an IPv4 or IPv6 address".format(x)
+                    "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
                 )
+            except ValueError:
+                try:
+                    netaddr.IPNetwork(x)
+                except netaddr.core.AddrFormatError:
+                    raise F5ModuleError(
+                        "Address {0} must be either an IPv4 or IPv6 address or network.".format(x)
+                    )
         result = [str(x) for x in self._values['addresses']]
         result = sorted(result)
         return result
