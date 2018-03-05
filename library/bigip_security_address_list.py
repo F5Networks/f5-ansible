@@ -54,6 +54,7 @@ options:
       - Individual addresses that you want to add to the list. These addresses differ
         from ranges, and lists of lists such as what can be used in C(address_ranges)
         and C(address_lists) respectively.
+      - This list can also include networks that have CIDR notation.
   address_ranges:
     description:
       - A list of address ranges where the range starts with a port number, is followed
