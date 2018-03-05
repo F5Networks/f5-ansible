@@ -194,17 +194,15 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'recv', 'send',
-        'destination'
+        'timeUntilUp', 'defaultsFrom', 'interval', 'timeout', 'destination'
     ]
 
     returnables = [
-        'parent', 'send', 'receive', 'ip', 'port', 'interval', 'timeout',
-        'time_until_up'
+        'parent', 'ip', 'port', 'interval', 'timeout', 'time_until_up'
     ]
 
     updatables = [
-        'destination', 'send', 'receive', 'interval', 'timeout', 'time_until_up'
+        'destination', 'interval', 'timeout', 'time_until_up'
     ]
 
     def _fqdn_name(self, value):
@@ -241,7 +239,7 @@ class Parameters(AnsibleF5Parameters):
             return None
 
         # Per BZ617284, the BIG-IP UI does not raise a warning about this.
-        # So i
+        # So I raise the error instead.
         if 1 > int(self._values['interval']) > 86400:
             raise F5ModuleError(
                 "Interval value must be between 1 and 86400"
