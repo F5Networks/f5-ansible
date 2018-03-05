@@ -24,28 +24,6 @@
     that:
       - result is not changed
 
-- name: Set the SSHD allow string to deny all
-  bigip_device_sshd:
-    allow:
-      - "{{ allow[1] }}"
-  register: result
-
-- name: Assert Set the SSHD allow string to deny all
-  assert:
-    that:
-      - result is changed
-
-- name: Set the SSHD allow string to deny all - Idempotent check
-  bigip_device_sshd:
-    allow:
-      - "{{ allow[1] }}"
-  register: result
-
-- name: Assert Set the SSHD allow string to deny all - Idempotent check
-  assert:
-    that:
-      - result is not changed
-
 - name: Set the SSHD allow string to allow all
   bigip_device_sshd:
     allow:
@@ -150,14 +128,23 @@
 
 - name: Set the SSHD inactivity timeout (Good)
   bigip_device_sshd:
-    inactivity_timeout: "{{ item }}"
+    inactivity_timeout: "{{ inactivity_timeout_good_1 }}"
   register: result
-  loop: "{{ inactivity_timeout_good }}"
 
 - name: Assert Set the SSHD inactivity timeout (Good)
   assert:
     that:
       - result is changed
+
+- name: Set the SSHD inactivity timeout (Good) - Idempotent check
+  bigip_device_sshd:
+    inactivity_timeout: "{{ inactivity_timeout_good_1 }}"
+  register: result
+
+- name: Assert Set the SSHD inactivity timeout (Good) - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - name: Set the SSHD inactivity timeout (Bad)
   bigip_device_sshd:

@@ -7,9 +7,8 @@ allow:
 allow2: all
 banner_file: banner.txt
 banner_string: banner foo
-inactivity_timeout_good:
-  - 10
-  - "20"
+inactivity_timeout_good_1: 10
+inactivity_timeout_good_2: "20"
 inactivity_timeout_bad:
   - "ASDASD"
   - 999999999999999999999
