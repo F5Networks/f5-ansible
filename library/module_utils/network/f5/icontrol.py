@@ -10,6 +10,7 @@ __metaclass__ = type
 
 from ansible.module_utils.urls import open_url
 from ansible.module_utils.parsing.convert_bool import BOOLEANS
+from ansible.module_utils.six import string_types
 from six import iteritems
 
 try:
@@ -162,9 +163,12 @@ class iControlRestSession(object):
             ))
         resp = json.loads(response.read())
         self._token = resp.get('token', None)
-        return self._token.get('name', None)
-
-        # request.headers['X-F5-Auth-Token'] = self.token
+        if self._token.get('token') is not None:
+            # BIG-IQ stores tokens in the 'token' key
+            return self._token.get('token', None)
+        else:
+            # BIG-IP stores tokens in the token dict, 'name' key
+            return self._token.get('name', None)
 
     def get_headers(self, *args, **kwargs):
         result = {}
@@ -218,10 +222,7 @@ class iControlRestSession(object):
                 url, method='DELETE', data=data, headers=headers,
                 validate_certs=self._validate_certs
             )
-            try:
-                return json.loads(response.read())
-            except ValueError:
-                return response.read()
+            return Response(response=response)
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
@@ -244,10 +245,7 @@ class iControlRestSession(object):
             response = open_url(
                 url, method='GET', headers=headers, validate_certs=self._validate_certs
             )
-            try:
-                return json.loads(response.read())
-            except ValueError:
-                return response.read()
+            return Response(response=response)
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
@@ -276,10 +274,7 @@ class iControlRestSession(object):
                 url, method='PATCH', data=data, headers=headers,
                 validate_certs=self._validate_certs
             )
-            try:
-                return json.loads(response.read())
-            except ValueError:
-                return response.read()
+            return Response(response=response)
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
@@ -308,10 +303,7 @@ class iControlRestSession(object):
                 url, method='POST', data=data, headers=headers,
                 validate_certs=self._validate_certs
             )
-            try:
-                return json.loads(response.read())
-            except ValueError:
-                return response.read()
+            return Response(response=response)
         except Exception as ex:
             raise F5ModuleError(str(ex))
 
@@ -340,12 +332,25 @@ class iControlRestSession(object):
                 url, method='PUT', data=data, headers=headers,
                 validate_certs=self._validate_certs
             )
-            try:
-                return json.loads(response.read())
-            except ValueError:
-                return response.read()
+            return Response(response=response)
         except Exception as ex:
             raise F5ModuleError(str(ex))
+
+
+class Response(object):
+    def __init__(self, response):
+        self._response = response
+        self._payload = response.read()
+        self._status_code = int(response.code)
+        self._metadata = [
+            'generation', 'kind', 'selfLink'
+        ]
+
+    def json(self):
+        return json.loads(self._payload)
+
+    def status_code(self):
+        return self._status_code
 
 
 def debug_prepared_request(url, method, headers, data=None):
