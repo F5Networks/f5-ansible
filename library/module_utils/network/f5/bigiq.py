@@ -41,9 +41,33 @@ class F5Client(F5BaseClient):
                 )
                 self._client = result
                 return self._client
-            except Exception:
+            except Exception as ex:
                 time.sleep(3)
         raise F5ModuleError(
             'Unable to connect to {0} on port {1}. '
-            'Is "validate_certs" preventing this?'.format(self.params['server'], self.params['server_port'])
+            'The reported error was "{2}".'.format(
+                self.params['server'], self.params['server_port'], str(ex)
+            )
         )
+
+
+class F5RestClient(F5BaseClient):
+    @property
+    def api(self):
+        if self._client:
+            return self._client
+        for x in range(0, 10):
+            try:
+                result = iControlRestSession(
+                    self.params['server'],
+                    self.params['user'],
+                    self.params['password'],
+                    port=self.params['server_port'],
+                    verify=self.params['validate_certs'],
+                    token='local'
+                )
+                self._client = result
+                return self._client
+            except Exception:
+                time.sleep(3)
+        raise F5ModuleError('Unable to connect to {0} on port {1}.')

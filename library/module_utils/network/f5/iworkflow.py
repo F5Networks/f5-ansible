@@ -41,9 +41,11 @@ class F5Client(F5BaseClient):
                 )
                 self._client = result
                 return self._client
-            except Exception:
+            except Exception as ex:
                 time.sleep(3)
         raise F5ModuleError(
             'Unable to connect to {0} on port {1}. '
-            'Is "validate_certs" preventing this?'.format(self.params['server'], self.params['server_port'])
+            'The reported error was "{2}".'.format(
+                self.params['server'], self.params['server_port'], str(ex)
+            )
         )
