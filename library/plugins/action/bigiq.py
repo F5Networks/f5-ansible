@@ -126,7 +126,7 @@ class ActionModule(_ActionModule):
 
         For example, this may leave your inventory looking like this
 
-          bigip2 ansible_host=1.2.3.4 ansible_port=10443 ansible_user=admin ansible_password=admin
+          bigiq2 ansible_host=1.2.3.4 ansible_port=10443 ansible_user=admin ansible_password=admin
 
         :param provider:
         :param play_context:
