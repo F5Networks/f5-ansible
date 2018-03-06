@@ -14,8 +14,7 @@ all: clean-coverage
 	ansible-playbook -i inventory/hosts playbooks/toggle-coverage.yaml -e "f5_module=all toggle=off" -vvvv
 	pycodestyle library/*.py
 
-all-tests:
-	pycodestyle .
+sanity:
 	bash test/ansible/sanity/correct-defaultdict-import.sh
 	bash test/ansible/sanity/correct-iteritems-import.sh
 	bash test/ansible/sanity/incorrect-comparisons.sh
@@ -90,4 +89,4 @@ find-ignores:
 	cd local/ansible && ! find . -name *ignore* | egrep -v "(gitignore|dockerignore)" | xargs egrep "(bigip|bigiq)" -R
 
 pyclean:
-	find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
+	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
