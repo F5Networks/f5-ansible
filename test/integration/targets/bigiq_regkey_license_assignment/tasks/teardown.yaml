@@ -1,0 +1,6 @@
+---
+
+- name: Remove regkey pool
+  bigiq_regkey_pool:
+    name: foo-pool
+    state: absent
