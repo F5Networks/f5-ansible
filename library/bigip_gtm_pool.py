@@ -316,6 +316,14 @@ class Parameters(AnsibleF5Parameters):
         return True
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
+
 class Changes(Parameters):
     pass
 
@@ -396,7 +404,7 @@ class BaseManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.have = None
-        self.want = Parameters(params=self.module.params)
+        self.want = ModuleParameters(params=self.module.params)
         self.changes = Changes()
 
     def _set_changed_options(self):
@@ -546,7 +554,7 @@ class TypedManager(BaseManager):
             partition=self.want.partition
         )
         result = result.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -593,7 +601,7 @@ class UntypedManager(BaseManager):
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
     def create_on_device(self):
         params = self.want.api_params()
