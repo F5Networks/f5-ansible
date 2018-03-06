@@ -120,4 +120,4 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is False
-        assert results['elapsed'] == 1
+        assert results['elapsed'] == 0
