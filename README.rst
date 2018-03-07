@@ -37,11 +37,10 @@ automatically. In-between major releases of Ansible, new |ansible_stablemodules|
 The F5 Modules for Ansible are freely provided to the open source community for automating
 BIG-IP device configurations. Support for the modules is provided on a best effort basis by the F5 community.
 
+Bugs, Issues
+------------
+
 Please file any bugs, questions, or enhancement requests by using |ansible_issues|. For details, see |ansiblegethelp|.
-
-One last ask. We are curious about who has Ansible in-house and is considering using it with BIG-IP. If you've got the time, consider sending an email that introduces yourself and what you do. We love hearing from you.
-
-- Tim Rupp and the F5 team - solutionsfeedback@f5.com
 
 Documentation
 -------------
@@ -54,6 +53,10 @@ Your ideas
 ----------
 
 What types of modules do you want created? If you have a use case and can sufficiently describe the behavior you want to see, open an issue and we will hammer out the details.
+
+If you've got the time, consider sending an email that introduces yourself and what you do. We love hearing about how you're using the F5 Modules for Ansible.
+
+- Tim Rupp and the F5 team - solutionsfeedback@f5.com
 
 Copyright
 ---------

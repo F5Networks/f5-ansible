@@ -6,11 +6,11 @@ Follow these guidelines when developing F5 modules for Ansible.
 Which API to use
 ----------------
 
-Since Ansible 2.2, all new F5 modules must use the ``f5-sdk``.
+In Ansible 2.2 and later, all new F5 modules must use the ``f5-sdk``.
 
 Prior to 2.2, modules used ``bigsuds`` (SOAP) or ``requests`` (REST).
 
-You can continue to extend modules that use ``bigsuds``, in order to maintain backward compatibility of older modules. ``bigsuds`` and ``f5-sdk`` can co-exist, but F5 recommends that you write all new features, and fix all bugs by using ``f5-sdk``.
+To maintain backward compatibility of older modules, you can continue to extend modules that use ``bigsuds``. ``bigsuds`` and ``f5-sdk`` can co-exist, but F5 recommends that you write all new features, and fix all bugs by using ``f5-sdk``.
 
 
 Module naming convention
@@ -69,8 +69,8 @@ Example tests include, but are not limited to:
 - ansible-test sanity --test import --python 3.5
 - ansible-test sanity --test import --python 3.6
 
-Connecting to a BIG-IP
-^^^^^^^^^^^^^^^^^^^^^^
+Connecting to BIG-IP
+^^^^^^^^^^^^^^^^^^^^
 
 Connecting to an F5 product is automatic. You can control which product you are communicating with by changing the appropriate value in your `ArgumentSpec` class.
 

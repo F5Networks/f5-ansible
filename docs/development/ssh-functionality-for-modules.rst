@@ -1,5 +1,5 @@
-Use SSH to configure the modules
-================================
+Using SSH to configure the modules
+==================================
 
 Users have requested the ability to use SSH to configure the F5 Modules for Ansible.
 

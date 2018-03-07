@@ -1,5 +1,5 @@
-Getting involved
-================
+How to get involved
+===================
 
 Thank you for getting involved with this project.
 
