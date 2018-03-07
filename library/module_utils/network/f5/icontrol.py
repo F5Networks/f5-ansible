@@ -153,6 +153,7 @@ class iControlRestSession(object):
             login_body['loginProviderName'] = self.auth_provider
 
         url = "https://{0}:{1}/mgmt/shared/authn/login".format(self._server, self._server_port)
+
         response = open_url(
             url, method='POST', data=json.dumps(login_body),
             validate_certs=self._validate_certs
