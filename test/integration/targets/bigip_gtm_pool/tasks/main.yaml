@@ -10,7 +10,10 @@
   import_tasks: untyped-gtm-pools.yaml
   when: system_info.product_information.product_version < "12.0.0"
 
+- import_tasks: teardown.yaml
+
+- import_tasks: issue-00125.yaml
+  tags: issue-00125
+
 - import_tasks: issue-00375.yaml
   tags: issue-00375
-
-- import_tasks: teardown.yaml

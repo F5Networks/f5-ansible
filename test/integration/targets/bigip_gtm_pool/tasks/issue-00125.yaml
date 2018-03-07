@@ -1,0 +1,44 @@
+---
+
+- name: Issue 00125 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+
+- name: Issue 00125 - Create GTM pool
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    type: cname
+    name: mypool
+    state: present
+  register: result
+
+- name: Issue 00125 - Assert Create GTM pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00125 - Create GTM pool - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    type: cname
+    name: mypool
+    state: present
+  register: result
+
+- name: Issue 00125 - Assert Create GTM pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00125 - Remove GTM pool
+  bigip_gtm_pool:
+    preferred_lb_method: round-robin
+    type: cname
+    name: mypool
+    state: absent
+  register: result
+
+- name: Issue 00125 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
