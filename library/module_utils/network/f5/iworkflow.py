@@ -29,7 +29,7 @@ class F5Client(F5BaseClient):
     def api(self):
         if self._client:
             return self._client
-        for x in range(0, 10):
+        for x in range(0, 3):
             try:
                 result = ManagementRoot(
                     self.params['server'],
