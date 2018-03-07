@@ -29,7 +29,7 @@ class F5Client(F5BaseClient):
     def api(self):
         if self._client:
             return self._client
-        for x in range(0, 10):
+        for x in range(0, 3):
             try:
                 result = ManagementRoot(
                     self.params['server'],
@@ -53,7 +53,7 @@ class F5Client(F5BaseClient):
 
 class F5RestClient(F5BaseClient):
     @property
-    def request(self):
+    def api(self):
         if self._client:
             return self._client
         for x in range(0, 10):
@@ -68,6 +68,11 @@ class F5RestClient(F5BaseClient):
                 )
                 self._client = result
                 return self._client
-            except Exception:
+            except Exception as ex:
                 time.sleep(3)
-        raise F5ModuleError('Unable to connect to {0} on port {1}.')
+        raise F5ModuleError(
+            'Unable to connect to {0} on port {1}. '
+            'The reported error was "{2}".'.format(
+                self.params['server'], self.params['server_port'], str(ex)
+            )
+        )
