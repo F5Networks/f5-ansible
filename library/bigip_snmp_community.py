@@ -40,6 +40,8 @@ options:
     description:
       - Name that identifies the SNMP community.
       - When C(version) is C(v1) or C(v2c), this parameter is required.
+      - The name C(public) is a reserved name on the BIG-IP. This module handles that name differently
+        than others. Functionally, you should not see a difference however.
   community:
     description:
       - Specifies the community string (password) for access to the MIB.
