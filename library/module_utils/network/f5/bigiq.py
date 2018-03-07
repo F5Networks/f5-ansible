@@ -19,9 +19,11 @@ except ImportError:
 try:
     from library.module_utils.network.f5.common import F5BaseClient
     from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.icontrol import iControlRestSession
 except ImportError:
     from ansible.module_utils.network.f5.common import F5BaseClient
     from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.icontrol import iControlRestSession
 
 
 class F5Client(F5BaseClient):
@@ -29,7 +31,7 @@ class F5Client(F5BaseClient):
     def api(self):
         if self._client:
             return self._client
-        for x in range(0, 10):
+        for x in range(0, 3):
             try:
                 result = ManagementRoot(
                     self.params['server'],
@@ -37,7 +39,6 @@ class F5Client(F5BaseClient):
                     self.params['password'],
                     port=self.params['server_port'],
                     verify=self.params['validate_certs'],
-                    token='local'
                 )
                 self._client = result
                 return self._client
@@ -63,11 +64,16 @@ class F5RestClient(F5BaseClient):
                     self.params['user'],
                     self.params['password'],
                     port=self.params['server_port'],
-                    verify=self.params['validate_certs'],
-                    token='local'
+                    validate_certs=self.params['validate_certs'],
+                    auth_provider='local'
                 )
                 self._client = result
                 return self._client
-            except Exception:
+            except Exception as ex:
                 time.sleep(3)
-        raise F5ModuleError('Unable to connect to {0} on port {1}.')
+        raise F5ModuleError(
+            'Unable to connect to {0} on port {1}. '
+            'The reported error was "{2}".'.format(
+                self.params['server'], self.params['server_port'], str(ex)
+            )
+        )
