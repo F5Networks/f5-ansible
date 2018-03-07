@@ -36,13 +36,15 @@ options:
       - Specifies to which Simple Network Management Protocol (SNMP) version the trap destination applies.
     choices: ['v1', 'v2c', 'v3']
     default: v2c
+  name:
+    description:
+      - Name that identifies the SNMP community.
+      - When C(version) is C(v1) or C(v2c), this parameter is required.
   community:
     description:
       - Specifies the community string (password) for access to the MIB.
       - This parameter is only relevant when C(version) is C(v1), or C(v2c). If C(version) is
         something else, this parameter is ignored.
-      - When C(version) is C(v1) or C(v2c), this parameter is required.
-    aliases: ['name']
   source:
     description:
       - Specifies the source address for access to the MIB.
@@ -52,6 +54,10 @@ options:
         something else, this parameter is ignored.
       - If C(source) is set to C(all), then it is not possible to specify an C(oid). This will
         raise an error.
+      - This parameter should be provided when C(state) is C(absent), so that the correct community
+        is removed. To remove the C(public) SNMP community that comes with a BIG-IP, this parameter
+        should be set to C(default).
+    default: all
   port:
     description:
       - Specifies the port for the trap destination.
@@ -147,7 +153,6 @@ EXAMPLES = r'''
   bigip_snmp_community:
     name: foo
     version: v2c
-    community: foo
     source: all
     oid: .1
     access: ro
@@ -171,6 +176,16 @@ EXAMPLES = r'''
     password: secret
     server: lb.mydomain.com
     state: present
+    user: admin
+  delegate_to: localhost
+
+- name: Remove the default 'public' SNMP community
+  bigip_snmp_community:
+    name: public
+    source: default
+    password: secret
+    server: lb.mydomain.com
+    state: absent
     user: admin
   delegate_to: localhost
 '''
@@ -320,6 +335,12 @@ class ModuleParameters(Parameters):
                 "snmp_privacy_password must be at least 8 characters long."
             )
         return self._values['snmp_privacy_password']
+
+    @property
+    def name(self):
+        if self._values['name'] == 'public':
+            return 'comm-public'
+        return self._values['name']
 
 
 class Changes(Parameters):
@@ -679,7 +700,8 @@ class ArgumentSpec(object):
                 default='v2c',
                 choices=['v1', 'v2c', 'v3']
             ),
-            name=dict(aliases=['community']),
+            name=dict(),
+            community=dict(),
             source=dict(),
             port=dict(type='int'),
             oid=dict(),

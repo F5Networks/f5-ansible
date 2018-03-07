@@ -1,0 +1,33 @@
+---
+
+- name: Issue 00659 - Remove the default public community
+  bigip_snmp_community:
+    name: public
+    version: v2c
+    state: absent
+  register: result
+
+- name: Issue 00659 - Assert Remove the default public community
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00659 - Remove the default public community - Idempotent check
+  bigip_snmp_community:
+    name: public
+    version: v2c
+    state: absent
+  register: result
+
+- name: Issue 00659 - Assert Remove the default public community - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Recreate the default public SNMP community
+  bigip_snmp_community:
+    name: public
+    access: ro
+    community: public
+    ip_version: 4
+    source: default
