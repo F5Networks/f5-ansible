@@ -33,7 +33,7 @@ In addition to Ansible, you should install a few additional Python modules.
 - netaddr
 - deepdiff
 
-At minimum, you should add `f5-sdk`.
+At minimum, you should add ``f5-sdk``.
 
 You can install these modules by using pip (either globally or within a virtual environment). For example:
 

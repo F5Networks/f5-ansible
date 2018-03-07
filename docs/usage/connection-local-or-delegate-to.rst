@@ -1,7 +1,7 @@
 Connection or delegation
 ========================
 
-Sometimes you might see examples of F5 Ansible playbooks that use ``connection: local``:
+Sometimes you might see examples of playbooks that use ``connection: local``:
 
 .. code-block:: yaml
 
@@ -43,7 +43,7 @@ Connection: local
 First, ``connection: local`` applies to **all** hosts in the playbook. If you find yourself mixing and matching BIG-IP
 hosts with things like web servers, it would cause your legitimate ssh connections to fail.
 
-This is because when you specify ``connection: local``, every host is now considered to have 127.0.0.1 as their IP address.
+This is because when you specify ``connection: local``, every host is now considered to have 127.0.0.1 as its IP address.
 
 This is likely not what you want.
 
@@ -80,11 +80,11 @@ however, specifically states that it wants to upgrade the **remote** webserver.
 Delegation
 ----------
 
-You can remedy this situation with ``delegate_to``. For the most part, you will use this feature when the ``connection`` line
+You can remedy this situation with ``delegate_to``. For the most part, you will use ``delegate_to`` when the ``connection`` line
 is ``ssh`` (the default).
 
-Delegation allows you to mix and match remote hosts. You continue to use an SSH connection for legitimate purposes, such
-as connecting to remove servers, but for the devices that don't support this option, you delegate their tasks.
+With delegation, you can mix and match remote hosts. You continue to use an SSH connection for legitimate purposes, such
+as connecting to remote servers, but for the devices that don't support this option, you delegate their tasks.
 
 For example, this playbook will correct your problem:
 
@@ -113,15 +113,13 @@ For example, this playbook will correct your problem:
              state: enabled
            delegate_to: localhost
 
-The ``delegate_to`` parameter delegates the running of the task to some completely different machine.
+The ``delegate_to`` parameter delegates the running of the task to a completely different machine.
 
 However, instead of the module having access to that totally different machine's ``facts``, it instead has the ``facts``
 of the inventory item where the delegation happened. This is *using the context of the host*.
 
 Summary
 -------
-
-Quiz time.
 
 In the above example, *even though* the first and third tasks are running on the Ansible controller (instead of the
 remote webserver), what is the value of the ``{{ inventory_hostname }}`` variable?
