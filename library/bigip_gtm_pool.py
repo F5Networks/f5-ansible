@@ -22,11 +22,10 @@ version_added: 2.4
 options:
   state:
     description:
-      - Pool member state. When C(present), ensures that the pool is
-        created and enabled. When C(absent), ensures that the pool is
-        removed from the system. When C(enabled) or C(disabled), ensures
-        that the pool is enabled or disabled (respectively) on the remote
-        device.
+      - Pool state. When C(present), ensures that the pool is created and enabled.
+        When C(absent), ensures that the pool is removed from the system. When
+        C(enabled) or C(disabled), ensures that the pool is enabled or disabled
+        (respectively) on the remote device.
     choices:
       - present
       - absent
