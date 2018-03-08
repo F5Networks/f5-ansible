@@ -1,0 +1,47 @@
+---
+
+- name: Issue 00658 - Run command that raises warnings
+  bigip_command:
+    commands:
+      - create ltm virtual foo { destination 1.1.1.1:80 }
+  register: result
+
+- name: Issue 00658 - Assert Run command that raises warnings
+  assert:
+    that:
+      - result is changed
+      - "'warnings' in result"
+
+- name: Issue 00658 - Run command that does not raise warnings
+  bigip_command:
+    commands:
+      - list ltm virtual
+  register: result
+
+- name: Issue 00658 - Assert Run command that does not raise warnings
+  assert:
+    that:
+      - result is not changed
+      - "'warnings' not in result"
+
+- name: Issue 00658 - Remove virtual that was created
+  bigip_command:
+    commands:
+      - delete ltm virtual foo
+
+- name: Issue 00658 - Run command that raises warnings, tmsh prefix
+  bigip_command:
+    commands:
+      - tmsh create ltm virtual foo { destination 1.1.1.1:80 }
+  register: result
+
+- name: Issue 00658 - Assert Run command that raises warnings, tmsh prefix
+  assert:
+    that:
+      - result is changed
+      - "'warnings' in result"
+
+- name: Issue 00658 - Remove virtual that was created, tmsh prefix
+  bigip_command:
+    commands:
+      - tmsh delete ltm virtual foo

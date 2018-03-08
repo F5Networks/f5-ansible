@@ -21,7 +21,7 @@ description:
     read from the device. This module includes an argument that will cause
     the module to wait for a specific condition before returning or timing
     out if the condition is not met.
-version_added: "2.4"
+version_added: 2.4
 options:
   commands:
     description:
@@ -78,7 +78,16 @@ options:
         - rest
         - cli
     default: rest
-    version_added: "2.5"
+    version_added: 2.5
+  warn:
+    description:
+      - Whether the module should raise warnings related to command idempotency
+        or not.
+      - Note that the F5 Ansible developers specifically leave this on to make you
+        aware that your usage of this module may be better served by official F5
+        Ansible modules. This module should always be used as a last resort. 
+    default: True
+    type: bool
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -145,20 +154,25 @@ EXAMPLES = r'''
 
 RETURN = r'''
 stdout:
-  description: The set of responses from the commands
+  description: The set of responses from the commands.
   returned: always
   type: list
   sample: ['...', '...']
 stdout_lines:
-  description: The value of stdout split into a list
+  description: The value of stdout split into a list.
   returned: always
   type: list
   sample: [['...', '...'], ['...'], ['...']]
 failed_conditions:
-  description: The list of conditionals that have failed
+  description: The list of conditionals that have failed.
   returned: failed
   type: list
   sample: ['...', '...']
+warn:
+  description: Whether or not to raise warnings about modification commands.
+  returned: changed
+  type: bool
+  sample: True
 '''
 
 import re
@@ -345,9 +359,10 @@ class ModuleManager(object):
 
         changes = {
             'stdout': responses,
-            'stdout_lines': self._to_lines(responses),
-            'warnings': warnings
+            'stdout_lines': self._to_lines(responses)
         }
+        if self.want.warn:
+            changes['warnings'] = warnings
         self.changes = Parameters(params=changes, module=self.module)
         if any(x for x in self.want.user_commands if x.startswith(changed)):
             return True
@@ -368,7 +383,7 @@ class ModuleManager(object):
         commands = transform(commands)
 
         for index, item in enumerate(commands):
-            if not self._is_valid_mode(item['command']) and is_cli(self.module):
+            if not self._is_valid_mode(item['command']):
                 warnings.append(
                     'Using "write" commands is not idempotent. You should use '
                     'a module that is specifically made for that. If such a '
@@ -432,6 +447,10 @@ class ArgumentSpec(object):
                 type='str',
                 default='rest',
                 choices=['cli', 'rest']
+            ),
+            warn=dict(
+                type='bool',
+                default='yes'
             )
         )
         self.argument_spec = {}
