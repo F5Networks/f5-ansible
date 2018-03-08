@@ -826,9 +826,9 @@ class ArgumentSpec(object):
                             'all_traffic'
                         ],
                         required=True
-                    )
+                    ),
+                    path_begins_with_any=dict()
                 ),
-                path_begins_with_any=dict()
             ),
             name=dict(required=True),
             policy=dict(required=True),
