@@ -116,8 +116,6 @@ state:
   sample: disabled
 '''
 
-import re
-
 from ansible.module_utils.six import iteritems
 from distutils.version import LooseVersion
 
