@@ -613,7 +613,6 @@ class ArgumentSpec(object):
             port=dict(type='int'),
             interval=dict(type='int'),
             timeout=dict(type='int'),
-            time_until_up=dict(type='int'),
             probe_interval=dict(type='int'),
             probe_timeout=dict(type='int'),
             probe_attempts=dict(type='int'),
