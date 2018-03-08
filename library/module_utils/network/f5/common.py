@@ -306,6 +306,24 @@ def compare_dictionary(want, have):
         return want
 
 
+def is_ansible_debug(module):
+    if module._debug and module._verbosity >= 4:
+        return True
+    return False
+
+
+def fail_json(module, ex, client=None):
+    if is_ansible_debug(module) and client:
+        module.fail_json(msg=str(ex), __f5debug__=client.api.debug_output)
+    module.fail_json(msg=str(ex))
+
+
+def exit_json(module, results, client=None):
+    if is_ansible_debug(module) and client:
+        results['__f5debug__'] = client.api.debug_output
+    module.exit_json(**results)
+
+
 class Noop(object):
     """Represent no-operation required
 
@@ -323,6 +341,7 @@ class Noop(object):
 class F5BaseClient(object):
     def __init__(self, *args, **kwargs):
         self.params = kwargs
+        self.module = kwargs.get('module', None)
         load_params(self.params)
         self._client = None
 
