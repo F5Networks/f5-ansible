@@ -10,6 +10,14 @@ The code is open source and |f5_ansible_github|. Additionally, some modules have
 .. toctree::
    :maxdepth: 2
    :includehidden:
+   :caption: Support Details
+   :glob:
+
+   /usage/supported-versions
+
+.. toctree::
+   :maxdepth: 2
+   :includehidden:
    :caption: User's Guide
    :glob:
 
