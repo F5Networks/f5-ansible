@@ -27,6 +27,7 @@ except ImportError:
 class F5Client(F5BaseClient):
     @property
     def api(self):
+        ex = None
         if self._client:
             return self._client
         for x in range(0, 3):
@@ -43,9 +44,7 @@ class F5Client(F5BaseClient):
                 return self._client
             except Exception as ex:
                 time.sleep(3)
-        raise F5ModuleError(
-            'Unable to connect to {0} on port {1}. '
-            'The reported error was "{2}".'.format(
-                self.params['server'], self.params['server_port'], str(ex)
-            )
-        )
+        error = 'Unable to connect to {0} on port {1}.'.format(self.params['server'], self.params['server_port'])
+        if ex is not None:
+            error += ' The reported error was "{0}".'.format(str(ex))
+        raise F5ModuleError(error)
