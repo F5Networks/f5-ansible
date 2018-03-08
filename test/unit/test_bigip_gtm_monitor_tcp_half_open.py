@@ -95,7 +95,7 @@ class TestParameters(unittest.TestCase):
             name='foo',
             parent='parent',
             ip='10.10.10.10',
-            port=80,
+            port='80',
             interval='20',
             timeout='30',
             probe_interval='10',
