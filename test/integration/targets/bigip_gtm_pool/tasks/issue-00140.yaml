@@ -1,0 +1,222 @@
+---
+
+- name: Issue 00140 - Include issue variables
+  include_vars:
+    file: issue-00140.yaml
+
+- name: Issue 00140 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+
+- name: Issue 00140 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Issue 00140 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 6.5.7.4
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name1 }}"
+
+- name: Issue 00140 - Create GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ server_name }}"
+    address: "{{ item.address }}"
+    port: 80
+  loop:
+    - name: "{{ virtual_server_name_1 }}"
+      address: "{{ virtual_server_address_1 }}"
+    - name: "{{ virtual_server_name_2 }}"
+      address: "{{ virtual_server_address_2 }}"
+    - name: "{{ virtual_server_name_3 }}"
+      address: "{{ virtual_server_address_3 }}"
+
+- name: Issue 00140 - Create pool, type 'a', with members
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+  register: result
+
+- name: Issue 00140 - Assert Create pool, type 'a', with members
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00140 - Create pool, type 'a', with members - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+  register: result
+
+- name: Issue 00140 - Assert Create pool, type 'a', with members - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00140 - Add a member
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+  register: result
+
+- name: Issue 00140 - Assert Add a member
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00140 - Add a member - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+  register: result
+
+- name: Issue 00140 - Assert Add a member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00140 - Change member order
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+  register: result
+
+- name: Issue 00140 - Assert Change member order
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00140 - Change member order - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+  register: result
+
+- name: Issue 00140 - Assert Change member order - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00140 - Remove member
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+  register: result
+
+- name: Issue 00140 - Assert Remove member
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00140 - Remove member - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_2 }}"
+  register: result
+
+- name: Issue 00140 - Assert Remove member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00140 - Remove all members
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members: ""
+  register: result
+
+- name: Issue 00140 - Assert Remove all members
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00140 - Remove all members - Idempotent check
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    members: ""
+  register: result
+
+- name: Issue 00140 - Assert Remove all members - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00140 - Remove pool
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00140 - Remove GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ server_name }}"
+    state: absent
+  loop:
+    - name: "{{ virtual_server_name_1 }}"
+    - name: "{{ virtual_server_name_2 }}"
+    - name: "{{ virtual_server_name_3 }}"
+
+- name: Issue 00140 - Remove GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    state: absent
+
+- name: Issue 00140 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
+
+- name: Issue 00140 - Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent

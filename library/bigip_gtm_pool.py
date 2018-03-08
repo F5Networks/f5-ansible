@@ -18,7 +18,7 @@ module: bigip_gtm_pool
 short_description: Manages F5 BIG-IP GTM pools
 description:
     - Manages F5 BIG-IP GTM pools.
-version_added: "2.4"
+version_added: 2.4
 options:
   state:
     description:
@@ -122,6 +122,20 @@ options:
       - Device partition to manage resources on.
     default: Common
     version_added: 2.5
+  members:
+    description:
+      - Members to assign to the pool.
+      - The order of the members in this list is the order that they will be listed in the pool.
+    suboptions:
+      server:
+        description:
+          - Name of the server which the pool member is a part of.
+        required: True
+      virtual_server:
+        description:
+          - Name of the virtual server, associated with the server, that the pool member is a part of.
+        required: True
+    version_added: 2.6
 notes:
   - Requires the netaddr Python package on the host. This is as easy as
     pip install netaddr.
@@ -187,7 +201,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -201,7 +215,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -225,19 +239,20 @@ class Parameters(AnsibleF5Parameters):
         'verifyMemberAvailability': 'verify_member_availability',
         'fallbackIpv4': 'fallback_ip',
         'fallbackIpv6': 'fallback_ip',
-        'fallbackIp': 'fallback_ip'
+        'fallbackIp': 'fallback_ip',
+        'membersReference': 'members'
     }
     updatables = [
         'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
-        'fallback_ip', 'state'
+        'fallback_ip', 'state', 'members'
     ]
     returnables = [
         'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
-        'fallback_ip'
+        'fallback_ip', 'members'
     ]
     api_attributes = [
         'loadBalancingMode', 'alternateMode', 'fallbackMode', 'verifyMemberAvailability',
-        'fallbackIpv4', 'fallbackIpv6', 'fallbackIp', 'enabled', 'disabled'
+        'fallbackIpv4', 'fallbackIpv6', 'fallbackIp', 'enabled', 'disabled', 'members'
     ]
 
     def to_return(self):
@@ -317,15 +332,60 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def members(self):
+        result = []
+        if self._values['members'] is None or 'items' not in self._values['members']:
+            return []
+        for item in self._values['members']['items']:
+            result.append(dict(item=item['fullPath'], order=item['memberOrder']))
+        result = [x['item'] for x in sorted(result, key=lambda k: k['order'])]
+        return result
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def members(self):
+        if self._values['members'] is None:
+            return None
+        if len(self._values['members']) == 1 and self._values['members'][0] =='':
+            return []
+        result = []
+        for member in self._values['members']:
+            name = '{0}:{1}'.format(member['server'], member['virtual_server'])
+            name = fq_name(self.partition, name)
+            result.append(name)
+        return result
 
 
 class Changes(Parameters):
     pass
+
+
+class UsableChanges(Changes):
+    @property
+    def members(self):
+        results = []
+        if self._values['members'] is None:
+            return None
+        for idx, member in enumerate(self._values['members']):
+            result = dict(
+                name=member,
+                memberOrder=idx
+            )
+            results.append(result)
+        return results
+
+
+class ReportableChanges(Changes):
+    @property
+    def members(self):
+        results = []
+        if self._values['members'] is None:
+            return None
+        for member in self._values['members']:
+            results.append(member['name'])
+        return results
 
 
 class Difference(object):
@@ -405,7 +465,7 @@ class BaseManager(object):
         self.client = kwargs.get('client', None)
         self.have = None
         self.want = ModuleParameters(params=self.module.params)
-        self.changes = Changes()
+        self.changes = UsableChanges()
 
     def _set_changed_options(self):
         changed = {}
@@ -413,7 +473,7 @@ class BaseManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -429,7 +489,7 @@ class BaseManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -446,10 +506,20 @@ class BaseManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
+        self._announce_deprecations(result)
         return result
+
+    def _announce_deprecations(self, result):
+        warnings = result.pop('__warnings', [])
+        for warning in warnings:
+            self.module.deprecate(
+                msg=warning['msg'],
+                version=warning['version']
+            )
 
     def present(self):
         if self.exists():
@@ -551,7 +621,12 @@ class TypedManager(BaseManager):
         resource = getattr(collection, self.want.type)
         result = resource.load(
             name=self.want.name,
-            partition=self.want.partition
+            partition=self.want.partition,
+            requests_params=dict(
+                params=dict(
+                    expandSubcollections='true'
+                )
+            )
         )
         result = result.attrs
         return ApiParameters(params=result)
@@ -664,6 +739,13 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            members=dict(
+                type='list',
+                options=dict(
+                    server=dict(required=True),
+                    virtual_server=dict(required=True)
+                )
             )
         )
         self.argument_spec = {}

@@ -1,0 +1,11 @@
+---
+
+dc_name1: foo_dc
+server_name: foo_gtm_server
+virtual_server_name_1: foo
+virtual_server_name_2: bar
+virtual_server_name_3: baz
+virtual_server_address_1: 5.6.7.8
+virtual_server_address_2: 11.11.11.11
+virtual_server_address_3: 9.9.9.9
+pool_lb_method: round-robin
