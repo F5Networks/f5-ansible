@@ -1,0 +1,50 @@
+---
+
+- name: Issue 00441 - Include issue variables
+  include_vars:
+    file: issue-00441.yaml
+
+- name: Issue 00441 - Add pool
+  bigip_pool:
+    name: "{{ f5_pool_name_1 }}"
+
+- name: Issue 00441 - Change priority group activation
+  bigip_pool:
+    name: "{{ f5_pool_name_1 }}"
+    priority_group_activation: 100
+  register: result
+
+- name: Issue 00441 - Assert Change priority group activation
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00441 - Change priority group activation - Idempotent check
+  bigip_pool:
+    name: "{{ f5_pool_name_1 }}"
+    priority_group_activation: 100
+  register: result
+
+- name: Issue 00441 - Assert Change priority group activation - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00441 - Add pool, setting priority_group_activation
+  bigip_pool:
+    name: "{{ f5_pool_name_2 }}"
+    priority_group_activation: 10
+  register: result
+
+- name: Issue 00441 - Assert Add pool, setting priority_group_activation
+  assert:
+    that:
+      - result is changed
+
+- name: Remove pools
+  bigip_pool:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ f5_pool_name_1 }}"
+    - "{{ f5_pool_name_2 }}"

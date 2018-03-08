@@ -124,6 +124,25 @@ options:
         that are numbers.
       - Data will be persisted, not ephemeral.
     version_added: 2.5
+  priority_group_activation:
+    description:
+      - Specifies whether the system load balances traffic according to the priority
+        number assigned to the pool member.
+      - When creating a new pool, if this parameter is not specified, the default of
+        C(0) will be used.
+      - To disable this setting, provide the value C(0).
+      - Once you enable this setting, you can specify pool member priority when you
+        create a new pool or on a pool member's properties screen.
+      - The system treats same-priority pool members as a group.
+      - To enable priority group activation, provide a number from C(0) to C(65535)
+        that represents the minimum number of members that must be available in one
+        priority group before the system directs traffic to members in a lower
+        priority group.
+      - When a sufficient number of members become available in the higher priority
+        group, the system again directs traffic to the higher priority group.
+    aliases:
+      - minimum_active_members
+    version_added: 2.6
 notes:
   - Requires BIG-IP software version >= 12.
   - To add members do a pool, use the C(bigip_pool_member) module. Previously, the
@@ -307,6 +326,11 @@ metadata:
   returned: changed
   type: dict
   sample: {'key1': 'foo', 'key2': 'bar'}
+priority_group_activation:
+  description: The new minimum number of members to activate the priorty group.
+  returned: changed
+  type: int
+  sample: 10
 '''
 
 import re
@@ -358,24 +382,26 @@ class Parameters(AnsibleF5Parameters):
         'slowRampTime': 'slow_ramp_time',
         'reselectTries': 'reselect_tries',
         'serviceDownAction': 'service_down_action',
-        'monitor': 'monitors'
+        'monitor': 'monitors',
+        'minActiveMembers': 'priority_group_activation'
     }
 
     api_attributes = [
         'description', 'name', 'loadBalancingMode', 'monitor', 'slowRampTime',
-        'reselectTries', 'serviceDownAction', 'metadata'
+        'reselectTries', 'serviceDownAction', 'metadata', 'minActiveMembers'
     ]
 
     returnables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'slow_ramp_time',
-        'reselect_tries', 'monitor', 'name', 'partition', 'metadata'
+        'reselect_tries', 'monitor', 'name', 'partition', 'metadata',
+        'priority_group_activation'
     ]
 
     updatables = [
         'monitor_type', 'quorum', 'monitors', 'service_down_action',
         'description', 'lb_method', 'slow_ramp_time', 'reselect_tries',
-        'metadata'
+        'metadata', 'priority_group_activation'
     ]
 
     @property
@@ -394,6 +420,16 @@ class Parameters(AnsibleF5Parameters):
             return '/{0}/{1}'.format(self.partition, value)
         return value
 
+    def _verify_quorum_type(self, quorum):
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
+            raise F5ModuleError(
+                "The specified 'quorum' must be an integer."
+            )
+
     @property
     def monitors(self):
         if self._values['monitors'] is None:
@@ -406,15 +442,11 @@ class Parameters(AnsibleF5Parameters):
             result = ' and '.join(monitors).strip()
         return result
 
-    def _verify_quorum_type(self, quorum):
-        try:
-            if quorum is None:
-                return None
-            return int(quorum)
-        except ValueError:
-            raise F5ModuleError(
-                "The specified 'quorum' must be an integer."
-            )
+    @property
+    def priority_group_activation(self):
+        if self._values['priority_group_activation'] is None:
+            return None
+        return int(self._values['priority_group_activation'])
 
 
 class ApiParameters(Parameters):
@@ -794,6 +826,8 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "When using a 'monitor_type' of 'single', only one monitor may be provided"
             )
+        if self.want.priority_group_activation is None:
+            self.want.update({'priority_group_activation': 0})
 
         self._set_changed_options()
         if self.module.check_mode:
@@ -903,6 +937,10 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
+            ),
+            priority_group_activation=dict(
+                type='int',
+                aliases=['minimum_active_members']
             )
         )
         self.argument_spec = {}
