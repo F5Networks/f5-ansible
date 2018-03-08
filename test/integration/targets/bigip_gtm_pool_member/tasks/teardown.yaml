@@ -1,0 +1,33 @@
+---
+
+- name: Remove pool
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Remove GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ server_name }}"
+    state: absent
+  loop:
+    - name: "{{ virtual_server_name_1 }}"
+    - name: "{{ virtual_server_name_2 }}"
+    - name: "{{ virtual_server_name_3 }}"
+
+- name: Remove GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    state: absent
+
+- name: Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
+
+- name: Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
