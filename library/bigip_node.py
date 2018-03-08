@@ -318,7 +318,6 @@ class Parameters(AnsibleF5Parameters):
             result = 'min %s of { %s }' % (self.quorum, monitors)
         else:
             result = ' and '.join(monitors).strip()
-
         return result
 
     @property
