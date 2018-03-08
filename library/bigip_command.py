@@ -88,6 +88,10 @@ options:
         Ansible modules. This module should always be used as a last resort. 
     default: True
     type: bool
+  chdir:
+    description:
+      - Change into this directory before running the command.
+    default: /Common
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -145,6 +149,17 @@ EXAMPLES = r'''
     commands:
       - show sys version
       - tmsh list ltm virtual
+    server: lb.mydomain.com
+    password: secret
+    user: admin
+    validate_certs: no
+  delegate_to: localhost
+
+- name: Delete all LTM nodes in Partition1, assuming no dependencies exist
+  bigip_command:
+    commands:
+      - delete ltm node all
+    chdir: Partition1
     server: lb.mydomain.com
     password: secret
     user: admin
@@ -254,8 +269,14 @@ class Parameters(AnsibleF5Parameters):
             commands.appendleft(
                 'tmsh modify cli preference pager disabled'
             )
-        commands = map(self._ensure_tmsh_prefix, list(commands))
+        commands = map(self._ensure_full_cmd, list(commands))
         return list(commands)
+
+    @property
+    def chdir(self):
+        if self._values['chdir'].startswith('/'):
+            return self._values['chdir']
+        return '/{0}'.format(self._values['chdir'])
 
     @property
     def user_commands(self):
@@ -265,7 +286,20 @@ class Parameters(AnsibleF5Parameters):
     def _ensure_tmsh_prefix(self, cmd):
         cmd = cmd.strip()
         if cmd[0:5] != 'tmsh ':
-            cmd = 'tmsh ' + cmd.strip()
+            cmd = "tmsh {0}".format(cmd.strip())
+        return cmd
+
+    def _ensure_full_cmd(self, cmd):
+        cmd = self._ensure_tmsh_prefix(cmd)
+        cmd = self._ensure_chdir(cmd)
+        return cmd
+
+    def _ensure_chdir(self, cmd):
+        # Add chdir options
+        parts = cmd.split(' ', 1)
+        escape_patterns = r'([$' + "'])"
+        command = re.sub(escape_patterns, r'\\\1', parts[1])
+        cmd = "tmsh -c 'cd {0}; {1}'".format(self.chdir, command)
         return cmd
 
 
@@ -290,8 +324,7 @@ class ModuleManager(object):
             'list', 'show',
             'modify cli preference pager disabled'
         ]
-        if not is_cli(self.module):
-            valid_configs = list(map(self.want._ensure_tmsh_prefix, valid_configs))
+        cmd = cmd.split(';', 1)[1].strip()
         if any(cmd.startswith(x) for x in valid_configs):
             return True
         return False
@@ -404,12 +437,10 @@ class ModuleManager(object):
 
     def execute_on_device(self, commands):
         responses = []
-        escape_patterns = r'([$' + "'])"
         for item in to_list(commands):
-            command = re.sub(escape_patterns, r'\\\1', item['command'])
             output = self.client.api.tm.util.bash.exec_cmd(
                 'run',
-                utilCmdArgs='-c "{0}"'.format(command)
+                utilCmdArgs='-c "{0}"'.format(item['command'])
             )
             try:
                 if hasattr(output, 'commandResult'):
@@ -451,6 +482,9 @@ class ArgumentSpec(object):
             warn=dict(
                 type='bool',
                 default='yes'
+            ),
+            chdir=dict(
+                default='/Common'
             )
         )
         self.argument_spec = {}
