@@ -126,10 +126,6 @@
     that:
       - result is not changed
 
-
-
-
-
 - name: Change probe_timeout - Half Open
   bigip_gtm_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
@@ -151,11 +147,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
 
 - name: Change probe_interval - Half Open
   bigip_gtm_monitor_tcp_half_open:
@@ -179,11 +170,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Change probe_attempts - Half Open
   bigip_gtm_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
@@ -205,14 +191,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
 
 - name: Change transparent - Half Open
   bigip_gtm_monitor_tcp_half_open:
@@ -236,13 +214,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
 - name: Change ignore_down_response - Half Open
   bigip_gtm_monitor_tcp_half_open:
     name: "{{ monitor_name }}"
@@ -264,7 +235,6 @@
   assert:
     that:
       - result is not changed
-
 
 - name: Remove TCP Monitor - Half Open
   bigip_gtm_monitor_tcp_half_open:
