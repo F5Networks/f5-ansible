@@ -9,7 +9,6 @@
 - name: Issue 00658 - Assert Run command that raises warnings
   assert:
     that:
-      - result is changed
       - "'warnings' in result"
 
 - name: Issue 00658 - Run command that does not raise warnings
@@ -21,7 +20,6 @@
 - name: Issue 00658 - Assert Run command that does not raise warnings
   assert:
     that:
-      - result is not changed
       - "'warnings' not in result"
 
 - name: Issue 00658 - Remove virtual that was created
@@ -38,7 +36,6 @@
 - name: Issue 00658 - Assert Run command that raises warnings, tmsh prefix
   assert:
     that:
-      - result is changed
       - "'warnings' in result"
 
 - name: Issue 00658 - Remove virtual that was created, tmsh prefix
