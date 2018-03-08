@@ -64,35 +64,101 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            parent='parent',
+            ip='10.10.10.10',
+            port=80,
+            interval=20,
+            timeout=30,
+            aggregate_dynamic_ratios='average-members',
+            partition='Common'
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.parent == '/Common/parent'
+        assert p.ip == '10.10.10.10'
+        assert p.port == 80
+        assert p.type == 'bigip'
+        assert p.destination == '10.10.10.10:80'
+        assert p.interval == 20
+        assert p.timeout == 30
+        assert p.aggregate_dynamic_ratios == 'average-members'
+
+    def test_module_parameters_ints_as_strings(self):
+        args = dict(
+            name='foo',
+            parent='parent',
+            ip='10.10.10.10',
+            port='80',
+            interval='20',
+            timeout='30',
+            partition='Common'
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.parent == '/Common/parent'
+        assert p.ip == '10.10.10.10'
+        assert p.port == 80
+        assert p.type == 'bigip'
+        assert p.destination == '10.10.10.10:80'
+        assert p.interval == 20
+        assert p.timeout == 30
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = dict(
+            name='foo',
+            defaultsFrom='/Common/parent',
+            destination='10.10.10.10:80',
+            interval=20,
+            timeout=30,
+            ignoreDownResponse='disabled',
+            aggregateDynamicRatios='none',
+        )
+
+        p = ApiParameters(params=args)
+        assert p.name == 'foo'
+        assert p.parent == '/Common/parent'
+        assert p.ip == '10.10.10.10'
+        assert p.port == 80
+        assert p.type == 'bigip'
+        assert p.destination == '10.10.10.10:80'
+        assert p.interval == 20
+        assert p.timeout == 30
+        assert p.aggregate_dynamic_ratios == 'none'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_monitor(self, *args):
+        set_module_args(dict(
+            name='foo',
+            ip='10.10.10.10',
+            port=80,
+            interval=20,
+            timeout=30,
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
