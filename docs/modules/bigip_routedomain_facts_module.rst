@@ -100,18 +100,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> bwc_policy </td>
-        <td> Bandwidth controller for the route domain </td>
+        <td> service_policy </td>
+        <td> Service policy to associate with the route domain </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> /Common/foo </td>
-    </tr>
-            <tr>
-        <td> connection_limit </td>
-        <td> Maximum number of concurrent connections allowed for the route domain </td>
-        <td align=center> changed </td>
-        <td align=center> integer </td>
-        <td align=center> 0 </td>
+        <td align=center> /Common/abc </td>
     </tr>
             <tr>
         <td> description </td>
@@ -121,25 +114,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> The foo route domain </td>
     </tr>
             <tr>
-        <td> evict_policy </td>
-        <td> Eviction policy to use with this route domain </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/default-eviction-policy </td>
-    </tr>
-            <tr>
-        <td> id </td>
-        <td> ID of the route domain </td>
+        <td> connection_limit </td>
+        <td> Maximum number of concurrent connections allowed for the route domain </td>
         <td align=center> changed </td>
         <td align=center> integer </td>
-        <td align=center> 1234 </td>
-    </tr>
-            <tr>
-        <td> service_policy </td>
-        <td> Service policy to associate with the route domain </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/abc </td>
+        <td align=center> 0 </td>
     </tr>
             <tr>
         <td> strict </td>
@@ -156,11 +135,32 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> ['BGP', 'OSPFv2'] </td>
     </tr>
             <tr>
+        <td> bwc_policy </td>
+        <td> Bandwidth controller for the route domain </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/foo </td>
+    </tr>
+            <tr>
+        <td> evict_policy </td>
+        <td> Eviction policy to use with this route domain </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/default-eviction-policy </td>
+    </tr>
+            <tr>
         <td> vlans </td>
         <td> VLANs for the system to use in the route domain </td>
         <td align=center> changed </td>
         <td align=center> list </td>
         <td align=center> ['/Common/abc', '/Common/xyz'] </td>
+    </tr>
+            <tr>
+        <td> id </td>
+        <td> ID of the route domain </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 1234 </td>
     </tr>
         
     </table>

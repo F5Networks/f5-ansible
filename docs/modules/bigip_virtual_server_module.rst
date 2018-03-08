@@ -173,41 +173,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>password<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>True</td>
-                <td><ul><li>yes</li><li>no</li></ul></td>
-                <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
                     <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
         <td>no</td>
         <td></td>
                 <td></td>
                 <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>password<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>True</td>
+                <td><ul><li>yes</li><li>no</li></ul></td>
+                <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -430,34 +430,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> description </td>
-        <td> New description of the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> This is my description </td>
-    </tr>
-            <tr>
-        <td> default_persistence_profile </td>
-        <td> Default persistence profile set on the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/dest_addr </td>
-    </tr>
-            <tr>
-        <td> destination </td>
-        <td> Destination of the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 1.1.1.1 </td>
-    </tr>
-            <tr>
-        <td> disabled </td>
-        <td> Whether the virtual server is disabled, or not. </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
-    </tr>
-            <tr>
         <td> disabled_vlans </td>
         <td> List of VLANs that the virtual is disabled for. </td>
         <td align=center> changed </td>
@@ -465,18 +437,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> ['/Common/vlan1', '/Common/vlan2'] </td>
     </tr>
             <tr>
-        <td> enabled </td>
-        <td> Whether the virtual server is enabled, or not. </td>
+        <td> description </td>
+        <td> New description of the virtual server. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> False </td>
-    </tr>
-            <tr>
-        <td> enabled_vlans </td>
-        <td> List of VLANs that the virtual is enabled for. </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
+        <td align=center> string </td>
+        <td align=center> This is my description </td>
     </tr>
             <tr>
         <td> fallback_persistence_profile </td>
@@ -486,25 +451,25 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> /Common/source_addr </td>
     </tr>
             <tr>
-        <td> irules </td>
-        <td> iRules set on the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
-    </tr>
-            <tr>
-        <td> pool </td>
-        <td> Pool that the virtual server is attached to. </td>
+        <td> default_persistence_profile </td>
+        <td> Default persistence profile set on the virtual server. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> /Common/my-pool </td>
+        <td align=center> /Common/dest_addr </td>
     </tr>
             <tr>
-        <td> policies </td>
-        <td> List of policies attached to the virtual. </td>
+        <td> disabled </td>
+        <td> Whether the virtual server is disabled, or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> enabled_vlans </td>
+        <td> List of VLANs that the virtual is enabled for. </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['/Common/policy1', '/Common/policy2'] </td>
+        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
     </tr>
             <tr>
         <td> port </td>
@@ -514,6 +479,34 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 80 </td>
     </tr>
             <tr>
+        <td> pool </td>
+        <td> Pool that the virtual server is attached to. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/my-pool </td>
+    </tr>
+            <tr>
+        <td> ip_protocol </td>
+        <td> The new value of the IP protocol </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 6 </td>
+    </tr>
+            <tr>
+        <td> destination </td>
+        <td> Destination of the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 1.1.1.1 </td>
+    </tr>
+            <tr>
+        <td> enabled </td>
+        <td> Whether the virtual server is enabled, or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> False </td>
+    </tr>
+            <tr>
         <td> profiles </td>
         <td> List of profiles set on the virtual server. </td>
         <td align=center> changed </td>
@@ -521,11 +514,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}] </td>
     </tr>
             <tr>
-        <td> snat </td>
-        <td> SNAT setting of the virtual server. </td>
+        <td> irules </td>
+        <td> iRules set on the virtual server. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> Automap </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
     </tr>
             <tr>
         <td> source </td>
@@ -535,11 +528,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 1.2.3.4/32 </td>
     </tr>
             <tr>
-        <td> metadata </td>
-        <td> The new value of the virtual. </td>
+        <td> policies </td>
+        <td> List of policies attached to the virtual. </td>
         <td align=center> changed </td>
-        <td align=center> dict </td>
-        <td align=center> {'key1': 'foo', 'key2': 'bar'} </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/policy1', '/Common/policy2'] </td>
     </tr>
             <tr>
         <td> address_translation </td>
@@ -549,6 +542,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> True </td>
     </tr>
             <tr>
+        <td> snat </td>
+        <td> SNAT setting of the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Automap </td>
+    </tr>
+            <tr>
         <td> port_translation </td>
         <td> The new value specifying whether port translation is on or off </td>
         <td align=center> changed </td>
@@ -556,11 +556,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> True </td>
     </tr>
             <tr>
-        <td> ip_protocol </td>
-        <td> The new value of the IP protocol </td>
+        <td> metadata </td>
+        <td> The new value of the virtual. </td>
         <td align=center> changed </td>
-        <td align=center> integer </td>
-        <td align=center> 6 </td>
+        <td align=center> dict </td>
+        <td align=center> {'key2': 'bar', 'key1': 'foo'} </td>
     </tr>
         
     </table>

@@ -87,18 +87,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> param1 </td>
-        <td> The new param1 value of the resource. </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
-    </tr>
-            <tr>
         <td> param2 </td>
         <td> The new param2 value of the resource. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> Foo is bar </td>
+    </tr>
+            <tr>
+        <td> param1 </td>
+        <td> The new param1 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
     </tr>
         
     </table>
