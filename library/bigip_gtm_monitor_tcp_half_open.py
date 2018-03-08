@@ -122,7 +122,7 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    name: my_tcp_monitor
+    name: my_monitor
   delegate_to: localhost
 
 - name: Remove TCP half-open Monitor
@@ -131,7 +131,7 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    name: my_tcp_monitor
+    name: my_monitor
   delegate_to: localhost
 
 - name: Add half-open monitor for all addresses, port 514
@@ -140,7 +140,7 @@ EXAMPLES = r'''
     user: admin
     port: 514
     password: secret
-    name: my_tcp_monitor
+    name: my_monitor
   delegate_to: localhost
 '''
 
@@ -149,7 +149,7 @@ parent:
   description: New parent template of the monitor.
   returned: changed
   type: string
-  sample: tcp
+  sample: tcp_half_open
 ip:
   description: The new IP of IP/port definition.
   returned: changed
