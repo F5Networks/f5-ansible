@@ -64,35 +64,101 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            server_name='server1',
+            address='1.1.1.1',
+            port=22,
+            translation_address='2.2.2.2',
+            translation_port=443,
+            availability_requirements=dict(
+                type='at_least',
+                at_least=2,
+            ),
+            monitors=['http', 'tcp', 'gtp'],
+            virtual_server_dependencies=[
+                dict(
+                    server='server2',
+                    virtual_server='vs2'
+                )
+            ],
+            link='link1',
+            limits=dict(
+                bits_enabled=True,
+                packets_enabled=True,
+                connections_enabled=True,
+                bits_limit=100,
+                packets_limit=200,
+                connections_limit=300
+            ),
+            state='present'
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.server_name == 'server1'
+        assert p.address == '1.1.1.1'
+        assert p.port == 22
+        assert p.translation_address == '2.2.2.2'
+        assert p.translation_port == 443
+        assert p.availability_requirement_type == 'at_least'
+        assert p.at_least == 2
+        assert p.monitors == 'min 2 of { /Common/http /Common/tcp /Common/gtp }'
+        assert len(p.virtual_server_dependencies) == 1
+        assert p.link == '/Common/link1'
+        assert p.bits_enabled == 'enabled'
+        assert p.bits_limit == 100
+        assert p.packets_enabled == 'enabled'
+        assert p.packets_limit == 200
+        assert p.connections_enabled == 'enabled'
+        assert p.connections_limit == 300
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_gtm_server_virtual_2.json')
+
+        p = ApiParameters(params=args)
+        assert p.name == 'vs2'
+        assert p.address == '6.6.6.6'
+        assert p.port == 8080
+        assert p.translation_address == 'none'
+        assert p.translation_port == 0
+        assert p.availability_requirement_type == 'all'
+        assert p.monitors == '/Common/gtp'
+        assert p.bits_enabled == 'enabled'
+        assert p.bits_limit == 100
+        assert p.packets_enabled == 'enabled'
+        assert p.packets_limit == 200
+        assert p.connections_enabled == 'enabled'
+        assert p.connections_limit == 300
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_datacenter(self, *args):
+        set_module_args(dict(
+            server_name='foo',
+            name='vs1',
+            address='1.1.1.1',
+            state='present',
+            password='admin',
+            server='localhost',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+        assert results['changed'] is True

@@ -362,7 +362,7 @@ class ApiParameters(Parameters):
             return parts[1]
         # IPv4
         parts = self._values['destination'].split(':')
-        return parts[1]
+        return int(parts[1])
 
     @property
     def virtual_server_dependencies(self):
