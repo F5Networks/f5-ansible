@@ -33,10 +33,6 @@ options:
   name_servers:
     description:
       - A list of name servers that the system uses to validate DNS lookups
-  forwarders:
-    description:
-      - A list of BIND servers that the system can use to perform DNS lookups
-      - Deprecated in 2.4. Use the GUI or edit named.conf.
   search:
     description:
       - A list of domains that the system searches for local domain lookups,
@@ -199,15 +195,6 @@ class Parameters(AnsibleF5Parameters):
         return True if self._values['dhcp'] in valid else False
 
     @property
-    def forwarders(self):
-        if self._values['forwarders'] is None:
-            return None
-        else:
-            raise F5ModuleError(
-                "The modifying of forwarders is not supported."
-            )
-
-    @property
     def ip_version(self):
         if self._values['ip_version'] in [6, '6', 'options inet6']:
             return "options inet6"
@@ -344,11 +331,6 @@ class ArgumentSpec(object):
                 default=None,
                 type='list'
             ),
-            forwarders=dict(
-                required=False,
-                default=None,
-                type='list'
-            ),
             search=dict(
                 required=False,
                 default=None,
@@ -369,7 +351,7 @@ class ArgumentSpec(object):
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
         self.required_one_of = [
-            ['name_servers', 'search', 'forwarders', 'ip_version', 'cache']
+            ['name_servers', 'search', 'ip_version', 'cache']
         ]
 
 
