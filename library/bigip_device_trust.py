@@ -189,7 +189,7 @@ class Parameters(AnsibleF5Parameters):
     def peer_hostname(self):
         if self._values['peer_hostname'] is None:
             return self.peer_server
-        regex = re.compile('[^a-zA-Z.-_]')
+        regex = re.compile('[^a-zA-Z.\-_]')
         result = regex.sub('_', self._values['peer_hostname'])
         return result
 

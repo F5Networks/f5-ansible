@@ -114,6 +114,14 @@ class TestParameters(unittest.TestCase):
         assert p.peer_password == 'secret'
         assert p.type is False
 
+    def test_hyphenated_peer_hostname(self):
+        args = dict(
+            peer_hostname='hn---hyphen____underscore.hmatsuda.local',
+        )
+
+        p = Parameters(params=args)
+        assert p.peer_hostname == 'hn---hyphen____underscore.hmatsuda.local'
+
 
 class TestManager(unittest.TestCase):
 
