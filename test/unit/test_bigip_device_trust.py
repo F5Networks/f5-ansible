@@ -122,6 +122,14 @@ class TestParameters(unittest.TestCase):
         p = Parameters(params=args)
         assert p.peer_hostname == 'hn---hyphen____underscore.hmatsuda.local'
 
+    def test_numbered_peer_hostname(self):
+        args = dict(
+            peer_hostname='BIG-IP_12x_ans2.example.local',
+        )
+
+        p = Parameters(params=args)
+        assert p.peer_hostname == 'BIG-IP_12x_ans2.example.local'
+
 
 class TestManager(unittest.TestCase):
 
