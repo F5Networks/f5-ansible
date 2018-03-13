@@ -2,6 +2,340 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create a new pool member
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+  register: result
+
+- name: Assert Create a new pool member
+  assert:
+    that:
+      - result is changed
+
+- name: Create a new pool member - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+  register: result
+
+- name: Assert Create a new pool member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+- name: Create another pool member
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_2 }}"
+    type: a
+  register: result
+
+- name: Change ratio
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    ratio: 10
+  register: result
+
+- name: Assert Change ratio
+  assert:
+    that:
+      - result is changed
+
+- name: Change ratio - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    ratio: 10
+  register: result
+
+- name: Assert Change ratio - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change description
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    description: my description
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+
+- name: Change description - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    description: my description
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change limits
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      bits_limit: 100
+      packets_limit: 100
+      connections_limit: 100
+  register: result
+
+- name: Assert Change limits
+  assert:
+    that:
+      - result is changed
+
+- name: Change limits - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    limits:
+      bits_enabled: yes
+      packets_enabled: yes
+      connections_enabled: yes
+      bits_limit: 100
+      packets_limit: 100
+      connections_limit: 100
+  register: result
+
+- name: Assert Change limits - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change member order
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    member_order: 0
+  register: result
+
+- name: Assert Change member order
+  assert:
+    that:
+      - result is changed
+
+- name: Change member order - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    member_order: 0
+  register: result
+
+- name: Assert Change member order - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change monitor
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: tcp
+  register: result
+
+- name: Assert Change monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Change monitor - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: tcp
+  register: result
+
+- name: Assert Change monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove monitor
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: ""
+  register: result
+
+- name: Assert Remove monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Remove monitor - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: ""
+  register: result
+
+- name: Assert Remove monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change monitor again
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: tcp
+  register: result
+
+- name: Set monitor to default
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: default
+  register: result
+
+- name: Assert Set monitor to default
+  assert:
+    that:
+      - result is changed
+
+- name: Set monitor to default - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    monitor: default
+  register: result
+
+- name: Assert Set monitor to default - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Disable pool member
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: disabled
+  register: result
+
+- name: Assert Disable pool member
+  assert:
+    that:
+      - result is changed
+
+- name: Disable pool member - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: disabled
+  register: result
+
+- name: Assert Disable pool member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Enable pool member
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: enabled
+  register: result
+
+- name: Assert Enable pool member
+  assert:
+    that:
+      - result is changed
+
+- name: Enable pool member - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: enabled
+  register: result
+
+- name: Assert Enable pool member - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove pool member
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: absent
+  register: result
+
+- name: Assert Remove pool member
+  assert:
+    that:
+      - result is changed
+
+- name: Remove pool member - Idempotent check
+  bigip_gtm_pool_member:
+    pool: "{{ pool_name }}"
+    server_name: "{{ server_name }}"
+    virtual_server: "{{ virtual_server_name_1 }}"
+    type: a
+    state: absent
+  register: result
+
+- name: Assert Remove pool member - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - import_tasks: teardown.yaml

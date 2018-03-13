@@ -64,35 +64,96 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            pool='pool1',
+            server_name='server1',
+            virtual_server='vs1',
+            type='a',
+            state='enabled',
+            limits=dict(
+                bits_enabled=True,
+                packets_enabled=True,
+                connections_enabled=True,
+                bits_limit=100,
+                packets_limit=200,
+                connections_limit=300
+            ),
+            description='foo description',
+            ratio=10,
+            monitor='tcp',
+            member_order=2
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.pool == 'pool1'
+        assert p.server_name == 'server1'
+        assert p.virtual_server == 'vs1'
+        assert p.type == 'a'
+        assert p.state == 'enabled'
+        assert p.bits_enabled == 'enabled'
+        assert p.packets_enabled == 'enabled'
+        assert p.connections_enabled == 'enabled'
+        assert p.bits_limit == 100
+        assert p.packets_limit == 200
+        assert p.connections_limit == 300
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_gtm_pool_a_member_1.json')
+
+        p = ApiParameters(params=args)
+        assert p.ratio == 1
+        assert p.monitor == 'default'
+        assert p.member_order == 1
+        assert p.packets_enabled == 'disabled'
+        assert p.packets_limit == 0
+        assert p.bits_enabled == 'disabled'
+        assert p.bits_limit == 0
+        assert p.connections_enabled  == 'disabled'
+        assert p.connections_limit == 0
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def test_create_monitor(self, *args):
+        set_module_args(dict(
+            pool='pool1',
+            server_name='server1',
+            virtual_server='vs1',
+            type='a',
+            state='enabled',
+            limits=dict(
+                bits_enabled='yes',
+                packets_enabled='yes',
+                connections_enabled='yes',
+                bits_limit=100,
+                packets_limit=200,
+                connections_limit=300
+            ),
+            description='foo description',
+            ratio=10,
+            monitor='tcp',
+            member_order=2,
+            partition='Common',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
