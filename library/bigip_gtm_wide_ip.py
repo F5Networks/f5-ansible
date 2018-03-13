@@ -87,6 +87,12 @@ options:
           - Ratio for the pool.
           - The system uses this number with the Ratio load balancing method.
     version_added: 2.5
+  irules:
+    version_added: 2.6
+    description:
+      - List of rules to be applied.
+      - If you want to remove all existing iRules, specify a single empty value; C("").
+        See the documentation for an example.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -101,6 +107,39 @@ EXAMPLES = r'''
     lb_method: round-robin
     name: my-wide-ip.example.com
   delegate_to: localhost
+
+- name: Add iRules to the Wide IP
+  bigip_gtm_wide_ip:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    lb_method: round-robin
+    name: my-wide-ip.example.com
+    irules:
+      - irule1
+      - irule2
+  delegate_to: localhost
+
+- name: Remove one iRule from the Virtual Server
+  bigip_gtm_wide_ip:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    lb_method: round-robin
+    name: my-wide-ip.example.com
+    irules:
+      - irule1
+  delegate_to: localhost
+
+- name: Remove all iRules from the Virtual Server
+  bigip_gtm_wide_ip:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    lb_method: round-robin
+    name: my-wide-ip.example.com
+    irules: ""
+  delegate_to: localhost
 '''
 
 RETURN = r'''
@@ -114,6 +153,11 @@ state:
   returned: changed
   type: string
   sample: disabled
+irules:
+  description: iRules set on the Wide IP.
+  returned: changed
+  type: list
+  sample: ['/Common/irule1', '/Common/irule2']
 '''
 
 from ansible.module_utils.six import iteritems
@@ -131,7 +175,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import is_valid_fqdn
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
@@ -146,7 +190,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import is_valid_fqdn
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
@@ -157,11 +201,21 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'poolLbMode': 'pool_lb_method'
+        'poolLbMode': 'pool_lb_method',
+        'rules': 'irules',
     }
-    updatables = ['pool_lb_method', 'state', 'pools']
-    returnables = ['name', 'pool_lb_method', 'state', 'pools']
-    api_attributes = ['poolLbMode', 'enabled', 'disabled', 'pools']
+
+    updatables = [
+        'pool_lb_method', 'state', 'pools', 'irules'
+    ]
+
+    returnables = [
+        'name', 'pool_lb_method', 'state', 'pools', 'irules'
+    ]
+
+    api_attributes = [
+        'poolLbMode', 'enabled', 'disabled', 'pools', 'rules'
+    ]
 
 
 class ApiParameters(Parameters):
@@ -283,9 +337,21 @@ class ModuleParameters(Parameters):
             pool = dict()
             if 'ratio' in item:
                 pool['ratio'] = item['ratio']
-            pool['name'] = fqdn_name(self.partition, item['name'])
+            pool['name'] = fq_name(self.partition, item['name'])
             result.append(pool)
         return result
+
+    @property
+    def irules(self):
+        results = []
+        if self._values['irules'] is None:
+            return None
+        if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
+            return ''
+        for irule in self._values['irules']:
+            result = fq_name(self.partition, irule)
+            results.append(result)
+        return results
 
 
 class Changes(Parameters):
@@ -305,7 +371,13 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def irules(self):
+        if self._values['irules'] is None:
+            return None
+        if self._values['irules'] == '':
+            return []
+        return self._values['irules']
 
 
 class ReportableChanges(Changes):
@@ -369,6 +441,17 @@ class Difference(object):
     def pools(self):
         result = self._diff_complex_items(self.want.pools, self.have.pools)
         return result
+
+    @property
+    def irules(self):
+        if self.want.irules is None:
+            return None
+        if self.want.irules == '' and self.have.irules is None:
+            return None
+        if self.want.irules == '' and len(self.have.irules) > 0:
+            return []
+        if sorted(set(self.want.irules)) != sorted(set(self.have.irules)):
+            return self.want.irules
 
 
 class ModuleManager(object):
@@ -461,16 +544,16 @@ class BaseManager(object):
             )
 
     def present(self):
-        if self.want.lb_method is None:
-            raise F5ModuleError(
-                "The 'lb_method' option is required when state is 'present'"
-            )
         if self.exists():
             return self.update()
         else:
             return self.create()
 
     def create(self):
+        if self.want.lb_method is None:
+            raise F5ModuleError(
+                "The 'lb_method' option is required when state is 'present'"
+            )
         self._set_changed_options()
         if self.module.check_mode:
             return True
@@ -514,7 +597,7 @@ class UntypedManager(BaseManager):
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         result = self.client.api.tm.gtm.wideips.wipeip.load(
             name=self.want.name,
             partition=self.want.partition
@@ -530,7 +613,7 @@ class UntypedManager(BaseManager):
         return ApiParameters(params=result)
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.gtm.wideips.wideip.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -575,7 +658,7 @@ class TypedManager(BaseManager):
         return result
 
     def update_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         wideips = self.client.api.tm.gtm.wideips
         collection = getattr(wideips, self.collection)
         resource = getattr(collection, self.want.type)
@@ -597,7 +680,7 @@ class TypedManager(BaseManager):
         return ApiParameters(params=result)
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         wideips = self.client.api.tm.gtm.wideips
         collection = getattr(wideips, self.collection)
         resource = getattr(collection, self.want.type)
@@ -660,7 +743,10 @@ class ArgumentSpec(object):
             partition=dict(
                 default='Common',
                 fallback=(env_fallback, ['F5_PARTITION'])
-            )
+            ),
+            irules=dict(
+                type='list',
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

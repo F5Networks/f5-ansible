@@ -1,0 +1,158 @@
+---
+
+- name: Issue 00665 - Include issue variables
+  include_vars:
+    file: issue-00665.yaml
+
+- name: Issue 00665 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+  register: result
+
+- name: Issue 00665 - Create iRules for testing
+  bigip_irule:
+    content: "when DNS_REQUEST { }"
+    module: gtm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+
+- name: Issue 00665 - Add wide ip
+  bigip_gtm_wide_ip:
+    lb_method: "{{ valid_lb_method1 }}"
+    state: present
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule1
+      - irule2
+  register: result
+
+- name: Issue 00665 - Assert Add wide ip
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00665 - Add wide ip - Idempotent check
+  bigip_gtm_wide_ip:
+    lb_method: "{{ valid_lb_method1 }}"
+    state: present
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule1
+      - irule2
+  register: result
+
+- name: Issue 00665 - Assert Add wide ip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00665 - Add an iRule
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule1
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00665 - Assert Add and iRule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00665 - Add an iRule - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule1
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00665 - Assert Add an iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00665 - Remove an iRule
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00665 - Assert Remove and iRule
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00665 - Remove an iRule - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules:
+      - irule2
+      - irule3
+  register: result
+
+- name: Issue 00665 - Assert Remove an iRule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00665 - Remove all iRules
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules: ""
+  register: result
+
+- name: Issue 00665 - Assert Remove all iRules
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00665 - Remove all iRules - Idempotent check
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    irules: ""
+  register: result
+
+- name: Issue 00665 - Assert Remove all iRules - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00665 - Remove wide ip
+  bigip_gtm_wide_ip:
+    type: a
+    name: "{{ wide_ip_1 }}"
+    state: absent
+  register: result
+
+- name: Issue 00665 - Remove iRules
+  bigip_irule:
+    state: absent
+    module: gtm
+    name: "{{ item }}"
+  loop:
+    - irule1
+    - irule2
+    - irule3
+    - irule4
+
+- name: Issue 00665 - Deprovision GTM
+  bigip_provision:
+    module: gtm
+    state: absent
