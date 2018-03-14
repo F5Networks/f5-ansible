@@ -37,6 +37,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>irules<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>List of rules to be applied.</div><div>If you want to remove all existing iRules, specify a single empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -198,6 +203,39 @@ Examples
         name: my-wide-ip.example.com
       delegate_to: localhost
 
+    - name: Add iRules to the Wide IP
+      bigip_gtm_wide_ip:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        lb_method: round-robin
+        name: my-wide-ip.example.com
+        irules:
+          - irule1
+          - irule2
+      delegate_to: localhost
+
+    - name: Remove one iRule from the Virtual Server
+      bigip_gtm_wide_ip:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        lb_method: round-robin
+        name: my-wide-ip.example.com
+        irules:
+          - irule1
+      delegate_to: localhost
+
+    - name: Remove all iRules from the Virtual Server
+      bigip_gtm_wide_ip:
+        server: lb.mydomain.com
+        user: admin
+        password: secret
+        lb_method: round-robin
+        name: my-wide-ip.example.com
+        irules: ""
+      delegate_to: localhost
+
 
 Return Values
 -------------
@@ -216,6 +254,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
+        <td> irules </td>
+        <td> iRules set on the Wide IP. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
+    </tr>
+            <tr>
         <td> state </td>
         <td> The new state of the wide IP. </td>
         <td align=center> changed </td>

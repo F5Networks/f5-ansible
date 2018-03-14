@@ -37,6 +37,11 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>chdir<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>/Common</td>
+        <td></td>
+        <td><div>Change into this directory before running the command.</div>        </td></tr>
                 <tr><td>commands<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -153,6 +158,11 @@ Options
         <td></td>
         <td><div>Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward. If the conditional is not true by the configured retries, the task fails. See examples.</div></br>
     <div style="font-size: small;">aliases: waitfor<div>        </td></tr>
+                <tr><td>warn<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>True</td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>Whether the module should raise warnings related to command idempotency or not.</div><div>Note that the F5 Ansible developers specifically leave this on to make you aware that your usage of this module may be better served by official F5 Ansible modules. This module should always be used as a last resort.</div>        </td></tr>
         </table>
     </br>
 
@@ -221,6 +231,17 @@ Examples
         validate_certs: no
       delegate_to: localhost
 
+    - name: Delete all LTM nodes in Partition1, assuming no dependencies exist
+      bigip_command:
+        commands:
+          - delete ltm node all
+        chdir: Partition1
+        server: lb.mydomain.com
+        password: secret
+        user: admin
+        validate_certs: no
+      delegate_to: localhost
+
 
 Return Values
 -------------
@@ -239,22 +260,29 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
+        <td> warn </td>
+        <td> Whether or not to raise warnings about modification commands. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
         <td> stdout_lines </td>
-        <td> The value of stdout split into a list </td>
+        <td> The value of stdout split into a list. </td>
         <td align=center> always </td>
         <td align=center> list </td>
         <td align=center> [['...', '...'], ['...'], ['...']] </td>
     </tr>
             <tr>
         <td> stdout </td>
-        <td> The set of responses from the commands </td>
+        <td> The set of responses from the commands. </td>
         <td align=center> always </td>
         <td align=center> list </td>
         <td align=center> ['...', '...'] </td>
     </tr>
             <tr>
         <td> failed_conditions </td>
-        <td> The list of conditionals that have failed </td>
+        <td> The list of conditionals that have failed. </td>
         <td align=center> failed </td>
         <td align=center> list </td>
         <td align=center> ['...', '...'] </td>

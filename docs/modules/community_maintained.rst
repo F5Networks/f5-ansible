@@ -25,9 +25,10 @@ Modules Maintained by the Ansible Community
   bigip_facts - Collect facts from F5 BIG-IP devices <bigip_facts_module>
   bigip_gtm_datacenter - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
+  bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors <bigip_gtm_monitor_bigip_module>
   bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors <bigip_gtm_monitor_tcp_half_open_module>
   bigip_gtm_pool - Manages F5 BIG-IP GTM pools <bigip_gtm_pool_module>
-  bigip_gtm_pool_member - __SHORT_DESCRIPTION__ <bigip_gtm_pool_member_module>
+  bigip_gtm_pool_member - Manage GTM pool member settings <bigip_gtm_pool_member_module>
   bigip_gtm_server - Manages F5 BIG-IP GTM servers <bigip_gtm_server_module>
   bigip_gtm_virtual_server - Manages F5 BIG-IP GTM virtual servers <bigip_gtm_virtual_server_module>
   bigip_gtm_wide_ip - Manages F5 BIG-IP GTM wide ip <bigip_gtm_wide_ip_module>

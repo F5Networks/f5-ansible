@@ -95,7 +95,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div><div>If this value is an IP address, and the <code>type</code> is <code>tcp</code> (the default), then a <code>port</code> number must be specified.</div>        </td></tr>
+        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -249,7 +249,7 @@ Examples
         server: lb.mydomain.com
         user: admin
         password: secret
-        name: my_tcp_monitor
+        name: my_monitor
       delegate_to: localhost
 
     - name: Remove TCP half-open Monitor
@@ -258,7 +258,7 @@ Examples
         server: lb.mydomain.com
         user: admin
         password: secret
-        name: my_tcp_monitor
+        name: my_monitor
       delegate_to: localhost
 
     - name: Add half-open monitor for all addresses, port 514
@@ -267,7 +267,7 @@ Examples
         user: admin
         port: 514
         password: secret
-        name: my_tcp_monitor
+        name: my_monitor
       delegate_to: localhost
 
 
@@ -306,7 +306,7 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> tcp </td>
+        <td align=center> tcp_half_open </td>
     </tr>
             <tr>
         <td> timeout </td>

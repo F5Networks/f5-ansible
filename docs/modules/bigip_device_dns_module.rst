@@ -42,11 +42,6 @@ Options
     <td>disable</td>
         <td><ul><li>enabled</li><li>disabled</li></ul></td>
         <td><div>Specifies whether the system caches DNS lookups or performs the operation each time a lookup is needed. Please note that this applies only to Access Policy Manager features, such as ACLs, web application rewrites, and authentication.</div>        </td></tr>
-                <tr><td>forwarders<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>A list of BIND servers that the system can use to perform DNS lookups</div><div>Deprecated in 2.4. Use the GUI or edit named.conf.</div>        </td></tr>
                 <tr><td>ip_version<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>

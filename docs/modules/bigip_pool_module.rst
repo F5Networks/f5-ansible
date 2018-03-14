@@ -78,6 +78,12 @@ Options
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
     <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
+                <tr><td>priority_group_activation<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies whether the system load balances traffic according to the priority number assigned to the pool member.</div><div>When creating a new pool, if this parameter is not specified, the default of <code>0</code> will be used.</div><div>To disable this setting, provide the value <code>0</code>.</div><div>Once you enable this setting, you can specify pool member priority when you create a new pool or on a pool member&#x27;s properties screen.</div><div>The system treats same-priority pool members as a group.</div><div>To enable priority group activation, provide a number from <code>0</code> to <code>65535</code> that represents the minimum number of members that must be available in one priority group before the system directs traffic to members in a lower priority group.</div><div>When a sufficient number of members become available in the higher priority group, the system again directs traffic to the higher priority group.</div></br>
+    <div style="font-size: small;">aliases: minimum_active_members<div>        </td></tr>
                 <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td><td></td>
@@ -354,6 +360,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> Pool of web servers </td>
+    </tr>
+            <tr>
+        <td> priority_group_activation </td>
+        <td> The new minimum number of members to activate the priorty group. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10 </td>
     </tr>
             <tr>
         <td> slow_ramp_time </td>

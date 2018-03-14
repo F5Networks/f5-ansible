@@ -1,10 +1,10 @@
-.. _bigip_gtm_pool:
+.. _bigip_gtm_monitor_bigip:
 
 
-bigip_gtm_pool - Manages F5 BIG-IP GTM pools
-++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.6
 
 
 .. contents::
@@ -15,14 +15,13 @@ bigip_gtm_pool - Manages F5 BIG-IP GTM pools
 Synopsis
 --------
 
-* Manages F5 BIG-IP GTM pools.
+* Manages F5 BIG-IP GTM BIG-IP monitors. This monitor is used by GTM to monitor BIG-IPs themselves.
 
 
 Requirements (on host that executes module)
 -------------------------------------------
 
   * f5-sdk >= 3.0.9
-  * netaddr
 
 
 Options
@@ -38,56 +37,37 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>alternate_lb_method<br/><div style="font-size: small;"></div></td>
+                <tr><td>aggregate_dynamic_ratios<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>round-robin</li><li>return-to-dns</li><li>none</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>packet-rate</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries if the <code>preferred_lb_method</code> is unsuccessful in picking a pool.</div>        </td></tr>
-                <tr><td>fallback_ip<br/><div style="font-size: small;"></div></td>
+        <td><ul><li>none</li><li>average-nodes</li><li>sum-nodes</li><li>average-members</li><li>sum-members</li></ul></td>
+        <td><div>Specifies how the system combines the module values to create the proportion (score) for the load balancing operation.</div><div>The score represents the module&#x27;s estimated capacity for handing traffic.</div><div>Averaged values are appropriate for downstream Web Accelerator or Application Security Manager virtual servers.</div><div>When creating a new monitor, if this parameter is not specified, the default of <code>none</code> is used, meaning that the system does not use the scores in the load balancing operation.</div><div>When <code>none</code>, specifies that the monitor ignores the nodes and pool member scores.</div><div>When <code>average-nodes</code>, specifies that the system averages the dynamic ratios on the nodes associated with the monitor&#x27;s target virtual servers and returns that average as the virtual servers&#x27; score.</div><div>When <code>sum-nodes</code>, specifies that the system adds together the scores of the nodes associated with the monitor&#x27;s target virtual servers and uses that value in the load balancing operation.</div><div>When <code>average-members</code>, specifies that the system averages the dynamic ratios on the pool members associated with the monitor&#x27;s target virtual servers and returns that average as the virtual servers&#x27; score.</div><div>When <code>sum-members</code>, specifies that the system adds together the scores of the pool members associated with the monitor&#x27;s target virtual servers and uses that value in the load balancing operation.</div>        </td></tr>
+                <tr><td>ignore_down_response<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>yes</li><li>no</li></ul></td>
+        <td><div>Specifies that the monitor allows more than one probe attempt per interval.</div><div>When <code>yes</code>, specifies that the monitor ignores down responses for the duration of the monitor timeout. Once the monitor timeout is reached without the system receiving an up response, the system marks the object down</div><div>When <code>no</code>, specifies that the monitor immediately marks an object down when it receives a down response.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>no</code>.</div>        </td></tr>
+                <tr><td>interval<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the IPv4, or IPv6 address of the server to which the system directs requests when it cannot use one of its pools to do so. Note that the system uses the fallback IP only if you select the <code>fallback_ip</code> load balancing method.</div>        </td></tr>
-                <tr><td>fallback_lb_method<br/><div style="font-size: small;"></div></td>
+        <td><div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>30</code>. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
+                <tr><td>ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries if both the <code>preferred_lb_method</code> and <code>alternate_lb_method</code>s are unsuccessful in picking a pool.</div>        </td></tr>
-                <tr><td rowspan="2">members<br/><div style="font-size: small;"> (added in 2.6)</div></td>
-    <td>no</td>
-    <td></td><td></td>
-    <td> <div>Members to assign to the pool.</div><div>The order of the members in this list is the order that they will be listed in the pool.</div>    </tr>
-    <tr>
-    <td colspan="5">
-    <table border=1 cellpadding=4>
-    <caption><b>Dictionary object members</b></caption>
-    <tr>
-    <th class="head">parameter</th>
-    <th class="head">required</th>
-    <th class="head">default</th>
-    <th class="head">choices</th>
-    <th class="head">comments</th>
-    </tr>
-                    <tr><td>virtual_server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
         <td></td>
-                <td></td>
-                <td><div>Name of the virtual server, associated with the server, that the pool member is a part of.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>Name of the server which the pool member is a part of.</div>        </td></tr>
-        </table>
-    </td>
-    </tr>
-        </td></tr>
+        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Name of the GTM pool.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"> (added in 2.5)</div></td>
+        <td><div>Monitor name.</div>        </td></tr>
+                <tr><td>parent<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td>/Common/bigip</td>
+        <td></td>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>bigip</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+                <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
         <td></td>
@@ -98,11 +78,11 @@ Options
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
     <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
-                <tr><td>preferred_lb_method<br/><div style="font-size: small;"></div></td>
+                <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>round-robin</li><li>return-to-dns</li><li>ratio</li><li>topology</li><li>static-persistence</li><li>global-availability</li><li>virtual-server-capacity</li><li>least-connections</li><li>lowest-round-trip-time</li><li>fewest-hops</li><li>packet-rate</li><li>cpu</li><li>completion-rate</li><li>quality-of-service</li><li>kilobytes-per-second</li><li>drop-packet</li><li>fallback-ip</li><li>virtual-server-score</li></ul></td>
-        <td><div>The load balancing mode that the system tries first.</div>        </td></tr>
+        <td></td>
+        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
                 <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td><td></td>
@@ -174,14 +154,14 @@ Options
         <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                 <tr><td>state<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
-        <td><ul><li>present</li><li>absent</li><li>enabled</li><li>disabled</li></ul></td>
-        <td><div>Pool state. When <code>present</code>, ensures that the pool is created and enabled. When <code>absent</code>, ensures that the pool is removed from the system. When <code>enabled</code> or <code>disabled</code>, ensures that the pool is enabled or disabled (respectively) on the remote device.</div>        </td></tr>
-                <tr><td>type<br/><div style="font-size: small;"></div></td>
+    <td>present</td>
+        <td><ul><li>present</li><li>absent</li></ul></td>
+        <td><div>When <code>present</code>, ensures that the monitor exists.</div><div>When <code>absent</code>, ensures the monitor is removed.</div>        </td></tr>
+                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>a</li><li>aaaa</li><li>cname</li><li>mx</li><li>naptr</li><li>srv</li></ul></td>
-        <td><div>The type of GTM pool that you want to create. On BIG-IP releases prior to version 12, this parameter is not required. On later versions of BIG-IP, this is a required parameter.</div>        </td></tr>
+        <td></td>
+        <td><div>Specifies the number of seconds the target has in which to respond to the monitor request.</div><div>If the target responds within the set time period, it is considered up.</div><div>If the target does not respond within the set time period, it is considered down.</div><div>When this value is set to 0 (zero), the system uses the interval from the parent monitor.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>90</code>.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -203,21 +183,32 @@ Examples
  ::
 
     
-    - name: Create a GTM pool
-      bigip_gtm_pool:
+    - name: Create BIG-IP Monitor
+      bigip_gtm_monitor_bigip:
+        state: present
+        ip: 10.10.10.10
         server: lb.mydomain.com
         user: admin
         password: secret
-        name: my_pool
+        name: my_monitor
       delegate_to: localhost
 
-    - name: Disable pool
-      bigip_gtm_pool:
+    - name: Remove BIG-IP Monitor
+      bigip_gtm_monitor_bigip:
+        state: absent
         server: lb.mydomain.com
         user: admin
         password: secret
-        state: disabled
-        name: my_pool
+        name: my_monitor
+      delegate_to: localhost
+
+    - name: Add BIG-IP monitor for all addresses, port 514
+      bigip_gtm_monitor_bigip:
+        server: lb.mydomain.com
+        user: admin
+        port: 514
+        password: secret
+        name: my_monitor
       delegate_to: localhost
 
 
@@ -238,32 +229,39 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> alternate_lb_method </td>
-        <td> New alternate load balancing method for the pool. </td>
+        <td> parent </td>
+        <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> drop-packet </td>
+        <td align=center> bigip </td>
     </tr>
             <tr>
-        <td> fallback_lb_method </td>
-        <td> New fallback load balancing method for the pool. </td>
+        <td> ip </td>
+        <td> The new IP of IP/port definition. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> fewest-hops </td>
+        <td align=center> 10.12.13.14 </td>
     </tr>
             <tr>
-        <td> fallback_ip </td>
-        <td> New fallback IP used when load balacing using the C(fallback_ip) method. </td>
+        <td> interval </td>
+        <td> The new interval in which to run the monitor check. </td>
         <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 10.10.10.10 </td>
+        <td align=center> int </td>
+        <td align=center> 2 </td>
     </tr>
             <tr>
-        <td> preferred_lb_method </td>
-        <td> New preferred load balancing method for the pool. </td>
+        <td> timeout </td>
+        <td> The new timeout in which the remote system must respond to the monitor. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 10 </td>
+    </tr>
+            <tr>
+        <td> aggregate_dynamic_ratios </td>
+        <td> The new aggregate of to the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> topology </td>
+        <td align=center> sum-members </td>
     </tr>
         
     </table>
@@ -273,7 +271,7 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
+    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

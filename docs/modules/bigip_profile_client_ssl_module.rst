@@ -15,46 +15,7 @@ bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP
 Synopsis
 --------
 
-* M
-* a
-* n
-* a
-* g
-* e
-* s
-*  
-* c
-* l
-* i
-* e
-* n
-* t
-*  
-* S
-* S
-* L
-*  
-* p
-* r
-* o
-* f
-* i
-* l
-* e
-* s
-*  
-* o
-* n
-*  
-* a
-*  
-* B
-* I
-* G
-* -
-* I
-* P
-* .
+* Manages client SSL profiles on a BIG-IP.
 
 
 Requirements (on host that executes module)
