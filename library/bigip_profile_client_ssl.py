@@ -16,7 +16,8 @@ DOCUMENTATION = r'''
 ---
 module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
-description: Manages client SSL profiles on a BIG-IP.
+description:
+  - Manages client SSL profiles on a BIG-IP.
 version_added: "2.5"
 options:
   name:
