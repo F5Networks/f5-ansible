@@ -1,0 +1,7 @@
+---
+
+server_port: 443
+username: admin
+password: admin
+validate_certs: no
+ansible_python_interpreter: /usr/local/bin/python
