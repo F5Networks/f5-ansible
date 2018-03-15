@@ -19,7 +19,7 @@ short_description: Manage BIG-IP module provisioning
 description:
   - Manage BIG-IP module provisioning. This module will only provision at the
     standard levels of Dedicated, Nominal, and Minimum.
-version_added: "2.4"
+version_added: 2.4
 options:
   module:
     description:
@@ -31,6 +31,7 @@ options:
       - apm
       - asm
       - avr
+      - cgnat
       - fps
       - gtm
       - ilx
@@ -49,6 +50,8 @@ options:
         For example, changing one module to C(dedicated) requires setting all
         others to C(none). Setting the level of a module to C(none) means that
         the module is not activated.
+      - This parameter is not relevant to C(cgnat) and will not be applied to the
+        C(cgnat) module.
     default: nominal
     choices:
       - dedicated
@@ -146,7 +149,7 @@ class Parameters(AnsibleF5Parameters):
 
     returnables = ['level']
 
-    updatables = ['level']
+    updatables = ['level', 'cgnat']
 
     def to_return(self):
         result = {}
@@ -165,24 +168,80 @@ class Parameters(AnsibleF5Parameters):
         return str(self._values['level'])
 
 
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
+
+class Changes(Parameters):
+    pass
+
+
+class UsableChanges(Parameters):
+    pass
+
+
+class ReportableChanges(Parameters):
+    pass
+
+
+class Difference(object):
+    def __init__(self, want, have=None):
+        self.want = want
+        self.have = have
+
+    def compare(self, param):
+        try:
+            result = getattr(self, param)
+            return result
+        except AttributeError:
+            result = self.__default(param)
+            return result
+
+    def __default(self, param):
+        attr1 = getattr(self.want, param)
+        try:
+            attr2 = getattr(self.have, param)
+            if attr1 != attr2:
+                return attr1
+        except AttributeError:
+            return attr1
+
+    @property
+    def cgnat(self):
+        if self.want.module == 'cgnat':
+            if self.want.state == 'absent' and self.have.enabled is True:
+                return True
+            if self.want.state == 'present' and self.have.disabled is True:
+                return True
+
+
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.have = None
-        self.want = Parameters(params=self.module.params)
-        self.changes = Parameters()
+        self.want = ModuleParameters(params=self.module.params)
+        self.changes = UsableChanges()
 
     def _update_changed_options(self):
-        changed = {}
-        for key in Parameters.updatables:
-            if getattr(self.want, key) is not None:
-                attr1 = getattr(self.want, key)
-                attr2 = getattr(self.have, key)
-                if attr1 != attr2:
-                    changed[key] = attr1
+        diff = Difference(self.want, self.have)
+        updatables = Parameters.updatables
+        changed = dict()
+        for k in updatables:
+            change = diff.compare(k)
+            if change is None:
+                continue
+            else:
+                if isinstance(change, dict):
+                    changed.update(change)
+                else:
+                    changed[k] = change
         if changed:
-            self.changes = Parameters(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -208,6 +267,8 @@ class ModuleManager(object):
         return result
 
     def exists(self):
+        if self.want.module == 'cgnat':
+            return True
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, self.want.module)
         resource = resource.load()
@@ -223,7 +284,10 @@ class ModuleManager(object):
         if self.module.check_mode:
             return True
 
-        self.update_on_device()
+        result = self.update_on_device()
+        if self.want.module == 'cgnat':
+            return result
+
         self._wait_for_module_provisioning()
 
         if self.want.module == 'vcmp':
@@ -241,10 +305,21 @@ class ModuleManager(object):
         return False
 
     def update_on_device(self):
-        if self.want.level == 'dedicated':
+        if self.want.module == 'cgnat':
+            if self.changes.cgnat:
+                return self.provision_cgnat_on_device()
+            return False
+        elif self.want.level == 'dedicated':
             self.provision_dedicated_on_device()
         else:
             self.provision_non_dedicated_on_device()
+
+    def provision_cgnat_on_device(self):
+        resource = self.client.api.tm.sys.feature_module.cgnat.load()
+        resource.modify(
+            enabled=True
+        )
+        return True
 
     def provision_dedicated_on_device(self):
         params = self.want.api_params()
@@ -269,11 +344,15 @@ class ModuleManager(object):
         resource.update(**params)
 
     def read_current_from_device(self):
-        provision = self.client.api.tm.sys.provision
-        resource = getattr(provision, str(self.want.module))
-        resource = resource.load()
-        result = resource.attrs
-        return Parameters(params=result)
+        if self.want.module == 'cgnat':
+            resource = self.client.api.tm.sys.feature_module.cgnat.load()
+            result = resource.attrs
+        else:
+            provision = self.client.api.tm.sys.provision
+            resource = getattr(provision, str(self.want.module))
+            resource = resource.load()
+            result = resource.attrs
+        return ApiParameters(params=result)
 
     def absent(self):
         if self.exists():
@@ -283,7 +362,9 @@ class ModuleManager(object):
     def remove(self):
         if self.module.check_mode:
             return True
-        self.remove_from_device()
+        result = self.remove_from_device()
+        if self.want.module == 'cgnat':
+            return result
         self._wait_for_module_provisioning()
 
         # For vCMP, because it has to reboot, we also wait for mcpd to become available
@@ -298,10 +379,22 @@ class ModuleManager(object):
         return True
 
     def remove_from_device(self):
+        if self.want.module == 'cgnat':
+            if self.changes.cgnat:
+                return self.deprovision_cgnat_on_device()
+            return False
+
         provision = self.client.api.tm.sys.provision
         resource = getattr(provision, self.want.module)
         resource = resource.load()
         resource.update(level='none')
+
+    def deprovision_cgnat_on_device(self):
+        resource = self.client.api.tm.sys.feature_module.cgnat.load()
+        resource.modify(
+            disabled=True
+        )
+        return True
 
     def _wait_for_module_provisioning(self):
         # To prevent things from running forever, the hack is to check
@@ -427,7 +520,7 @@ class ArgumentSpec(object):
                 choices=[
                     'afm', 'am', 'sam', 'asm', 'avr', 'fps',
                     'gtm', 'lc', 'ltm', 'pem', 'swg', 'ilx',
-                    'apm', 'vcmp'
+                    'apm', 'vcmp', 'cgnat'
                 ],
                 aliases=['name']
             ),
