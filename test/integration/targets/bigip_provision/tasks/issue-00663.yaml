@@ -1,0 +1,26 @@
+---
+
+- name: Issue 00663 - Provision CGNAT
+  bigip_provision:
+    module: cgnat
+  register: result
+
+- name: Issue 00663 - Assert Provision CGNAT
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00663 - Provision CGNAT - Idempotent check
+  bigip_provision:
+    module: cgnat
+  register: result
+
+- name: Issue 00663 - Assert Provision CGNAT - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00663 - De-provision CGNAT
+  bigip_provision:
+    module: cgnat
+    state: absent
