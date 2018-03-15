@@ -158,10 +158,6 @@
     state: present
   register: result
 
-
-
-
-
 - name: Remove non-existent pool member from pool, do not preserve node
   bigip_pool_member:
     host: "{{ node_host }}"
