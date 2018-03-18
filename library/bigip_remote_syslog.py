@@ -13,6 +13,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'supported_by': 'community'}
 
 DOCUMENTATION = r'''
+---
 module: bigip_remote_syslog
 short_description: Manipulate remote syslog settings on a BIG-IP
 description:
