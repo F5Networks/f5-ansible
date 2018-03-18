@@ -269,13 +269,20 @@ class ModuleManager(object):
     def exists(self):
         if self.want.module == 'cgnat':
             return True
-        provision = self.client.api.tm.sys.provision
-        resource = getattr(provision, self.want.module)
-        resource = resource.load()
-        result = resource.attrs
-        if str(result['level']) == 'none':
-            return False
-        return True
+
+        try:
+            for x in range(0, 5):
+                provision = self.client.api.tm.sys.provision
+                resource = getattr(provision, self.want.module)
+                resource = resource.load()
+                result = resource.attrs
+                if str(result['level']) == 'none':
+                    return False
+                return True
+        except Exception as ex:
+            if 'not registered' in str(ex):
+                return False
+            time.sleep(1)
 
     def update(self):
         self.have = self.read_current_from_device()
@@ -388,6 +395,7 @@ class ModuleManager(object):
         resource = getattr(provision, self.want.module)
         resource = resource.load()
         resource.update(level='none')
+
 
     def deprovision_cgnat_on_device(self):
         resource = self.client.api.tm.sys.feature_module.cgnat.load()
