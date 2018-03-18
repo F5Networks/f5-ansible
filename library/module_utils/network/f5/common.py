@@ -153,8 +153,13 @@ def fq_name(partition, value):
     Returns:
         string: The fully qualified name, given the input parameters.
     """
-    if value is not None and not value.startswith('/'):
-        return '/{0}/{1}'.format(partition, value)
+    if value is not None:
+        try:
+            int(value)
+            return '/{0}/{1}'.format(partition, value)
+        except ValueError:
+            if not value.startswith('/'):
+                return '/{0}/{1}'.format(partition, value)
     return value
 
 
