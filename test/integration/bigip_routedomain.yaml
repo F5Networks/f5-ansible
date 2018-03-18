@@ -61,3 +61,17 @@
 
   roles:
     - bigip_routedomain
+
+- name: Test the bigip_routedomain module with a provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
+  tasks:
+    - name: Include Issue-00662
+      include_role:
+        name: bigip_routedomain
+        tasks_from: issue-00662.yaml
