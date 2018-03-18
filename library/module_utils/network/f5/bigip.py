@@ -27,26 +27,33 @@ except ImportError:
 class F5Client(F5BaseClient):
     @property
     def api(self):
-        ex = None
+        exc = None
         if self._client:
             return self._client
-        for x in range(0, 3):
+        for x in range(0, 60):
             try:
+                server = self.params['provider'].get('server', self.params['server'])
+                user = self.params['provider'].get('user', self.params['user'])
+                password = self.params['provider'].get('password', self.params['password'])
+                server_port = self.params['provider'].get('server_port', self.params['server_port'])
+                validate_certs = self.params['provider'].get('validate_certs', self.params['validate_certs'])
+
                 result = ManagementRoot(
-                    self.params['server'],
-                    self.params['user'],
-                    self.params['password'],
-                    port=self.params['server_port'],
-                    verify=self.params['validate_certs'],
+                    server,
+                    user,
+                    password,
+                    port=server_port,
+                    verify=validate_certs,
                     token='tmos'
                 )
                 self._client = result
                 return self._client
             except Exception as ex:
+                exc = ex
                 time.sleep(1)
         error = 'Unable to connect to {0} on port {1}.'.format(self.params['server'], self.params['server_port'])
-        if ex is not None:
-            error += ' The reported error was "{0}".'.format(str(ex))
+        if exc is not None:
+            error += ' The reported error was "{0}".'.format(str(exc))
         raise F5ModuleError(error)
 
 
@@ -58,12 +65,18 @@ class F5RestClient(F5BaseClient):
             return self._client
         for x in range(0, 10):
             try:
+                server = self.params['provider'].get('server', self.params['server'])
+                user = self.params['provider'].get('user', self.params['user'])
+                password = self.params['provider'].get('password', self.params['password'])
+                server_port = self.params['provider'].get('server_port', self.params['server_port'])
+                validate_certs = self.params['provider'].get('validate_certs', self.params['validate_certs'])
+
                 result = iControlRestSession(
-                    self.params['server'],
-                    self.params['user'],
-                    self.params['password'],
-                    port=self.params['server_port'],
-                    verify=self.params['validate_certs'],
+                    server,
+                    user,
+                    password,
+                    port=server_port,
+                    verify=validate_certs,
                     token='tmos'
                 )
                 self._client = result

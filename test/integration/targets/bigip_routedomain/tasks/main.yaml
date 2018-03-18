@@ -47,7 +47,7 @@
 - name: Disable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: disabled
+    strict: no
   register: result
 
 - name: Assert Disable strict isolation
@@ -58,7 +58,7 @@
 - name: Disable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: disabled
+    strict: no
   register: result
 
 - name: Assert Disable strict isolation - Idempotent check
@@ -69,7 +69,7 @@
 - name: Enable strict isolation
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: enabled
+    strict: yes
   register: result
 
 - name: Assert Enable strict isolation
@@ -80,7 +80,7 @@
 - name: Enable strict isolation - Idempotent check
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    strict: enabled
+    strict: yes
   register: result
 
 - name: Assert Enable strict isolation - Idempotent check
