@@ -69,7 +69,7 @@
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: disabled
+    strict: no
   register: result
 
 - name: Issue 00051 - Assert Disable strict isolation
@@ -81,7 +81,7 @@
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: disabled
+    strict: no
   register: result
 
 - name: Issue 00051 - Assert Disable strict isolation - Idempotent check
@@ -93,7 +93,7 @@
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: enabled
+    strict: yes
   register: result
 
 - name: Issue 00051 - Assert Enable strict isolation
@@ -105,7 +105,7 @@
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     partition: "{{ new_partition }}"
-    strict: enabled
+    strict: yes
   register: result
 
 - name: Issue 00051 - Assert Enable strict isolation - Idempotent check
@@ -384,3 +384,22 @@
   assert:
     that:
       - result is changed
+
+- name: Issue 00051 - Remove parent route domains
+  bigip_routedomain:
+    id: "{{ new_parent }}"
+    partition: "{{ new_partition }}"
+    state: absent
+
+- name: Issue 00051 - Remove VLANs
+  bigip_vlan:
+    name: "{{ item }}"
+    partition: "{{ new_partition }}"
+    state: absent
+  loop: "{{ i51_vlan_valid }}"
+  register: result
+
+- name: Issue 00051 - Remove partition
+  bigip_partition:
+    name: "{{ new_partition }}"
+    state: absent

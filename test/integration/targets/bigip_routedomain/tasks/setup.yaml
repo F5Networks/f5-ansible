@@ -9,4 +9,4 @@
   bigip_command:
     commands:
       - tmsh create net bwc policy {{ valid_bwc_policy }} { max-rate 100mbps }
-      - tmsh create net servce policy {{ valid_service_policy }}
+      - tmsh create net service policy {{ valid_service_policy }}
