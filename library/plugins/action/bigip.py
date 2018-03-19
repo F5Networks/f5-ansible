@@ -43,6 +43,9 @@ except ImportError:
 class ActionModule(_ActionModule):
 
     def run(self, tmp=None, task_vars=None):
+        socket_path = None
+        transport = 'rest'
+
         if self._play_context.connection == 'network_cli':
             provider = self._task.args.get('provider', {})
             if any(provider.values()):
@@ -76,8 +79,8 @@ class ActionModule(_ActionModule):
                                    'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
 
                 task_vars['ansible_socket'] = socket_path
-            else:
-                self._task.args['provider'] = ActionModule.rest_implementation(provider, self._play_context)
+            #else:
+            #    self._task.args['provider'] = ActionModule.rest_implementation(provider, self._play_context)
         else:
             return {'failed': True, 'msg': 'Connection type %s is not valid for this module' % self._play_context.connection}
 
@@ -138,8 +141,7 @@ class ActionModule(_ActionModule):
             provider['server'] = play_context.remote_addr
 
         if provider.get('server_port') is None:
-            default_port = provider['server_port'] if provider['server_port'] else 443
-            provider['server_port'] = int(play_context.port or default_port)
+            provider['server_port'] = play_context.port or None
 
         if provider.get('timeout') is None:
             provider['timeout'] = C.PERSISTENT_COMMAND_TIMEOUT
