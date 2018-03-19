@@ -16,8 +16,6 @@ To work with the F5 Modules for Ansible, you should install ``f5-sdk``, as well 
 
 - ``bigsuds``, the F5 SOAP API that was used for modules prior to Ansible 2.2
 - ``netaddr``, which helps with address manipulation
-- ``deepdiff``, to compare and find the differences between objects
-
 
 For details:
 
@@ -33,11 +31,25 @@ Connecting to BIG-IP
 
 Any BIG-IP user with administrative rights can use the F5 Modules for Ansible.
 
-To secure the user's password so it is not stored in plain text in your playbook or inventory file, you can use `Ansible Vault <https://docs.ansible.com/ansible/2.4/vault.html>`_.
+To secure the user's password so it is not stored in plain text in your playbook or inventory file, you can use `Ansible Vault <https://docs.ansible.com/ansible/latest/vault.html>`_.
 
 You do not need to exchange key pairs between the machine running Ansible and BIG-IP, because the F5 modules use the API, rather than SSH, to connect.
 
-In addition, your playbook must contain ``delegate_to: localhost``, so that the modules run locally on the machine running Ansible. Without this setting, the modules try to run on BIG-IP and fail, because the supporting Python libraries are not on BIG-IP.
+.. note::
+
+   The one exception is the ``bigip_command`` module, which defaults to the REST API, but that you can use with SSH. For details, see :ref:`Run tmsh commands <bigip_command>`.
+
+
+Running playbooks
+`````````````````
+
+The F5 Modules for Ansible must run locally on the machine that's running Ansible. Otherwise the modules might try to run on BIG-IP and they would fail, because the supporting Python libraries are not on BIG-IP.
+
+To ensure the modules run on the local machine, use:
+
+- ``connection: local`` at the top of the playbook, if you want it to apply to all tasks.
+
+- ``delegate_to: localhost`` for each specific task, if you want it to apply on a task-by-task basis.
 
 
 Common parameters
@@ -48,6 +60,9 @@ Every F5 module accepts the following parameters:
 server
    Host name or IP address of BIG-IP.
 
+server_port
+   The port used to access the BIG-IP Configuration utility.
+
 user
    The user who can connect to BIG-IP. This user must have administrative privileges.
 
@@ -56,6 +71,7 @@ password
 
 validate_certs
    Use to validate self-signed SSL certificates on personally-controlled sites.
+
 
 
 Common Tasks
@@ -85,6 +101,7 @@ If you have a BIG-IP license, you can use Ansible to license BIG-IP. This exampl
          - name: License BIG-IP
            bigip_license:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
@@ -104,6 +121,7 @@ Then you can use Ansible to provision BIG-IP modules.
          - name: Provision ASM at "nominal" level
            bigip_provision:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
@@ -126,67 +144,47 @@ For a full walkthrough of this example, `see this doc <http://clouddocs.f5.com/p
          - name: Create a pool
            bigip_pool:
                server: "{{ ansible_host }}"
-                  user: "{{ bigip_username }}"
-               password: "{{ bigip_password }}"
-               validate_certs: "{{ validate_certs }}"
-               lb_method: "ratio-member"
-               name: "web_pool"
-               slow_ramp_time: "120"
-           delegate_to: localhost
-
-         - name: Create node1
-           bigip_node:
-               server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               host: "10.10.10.10"
-               name: "node-1"
+               lb_method: ratio-member
+               name: web_pool
+               slow_ramp_time: 120
            delegate_to: localhost
 
-         - name: Create node2
-           bigip_node:
-               server: "{{ ansible_host }}"
-               user: "{{ bigip_username }}"
-               password: "{{ bigip_password }}"
-               validate_certs: "{{ validate_certs }}"
-               host: "10.10.10.20"
-               name: "node-2"
-           delegate_to: localhost
-
-         - name: Add nodes to pool
+         - name: Create nodes and add them to the pool
            bigip_pool_member:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               description: "webserver-1"
+               description: webserver-1
                host: "{{ item.host }}"
-               name: "{{ item.name }}"
-               pool: "web"
-               port: "80"
+               pool: web_pool
+               port: 80
            delegate_to: localhost
            with_items:
-               - host: "10.10.10.10"
-                 name: "node-1"
-               - host: "10.10.10.20"
-                 name: "node-2"
+               - host: 10.10.10.10
+               - host: 10.10.10.20
 
-         - name: Create a virtual server
+         - name: Create a virtual server and add the pool to it
            bigip_virtual_server:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               description: "virtual server"
-               destination: "10.10.20.20"
-               name: "VS1"
-               pool: "web_pool"
-               port: "80"
-               snat: "Automap"
+               description: virtual server
+               destination: 10.10.20.20
+               name: VS1
+               pool: web_pool
+               port: 80
+               snat: Automap
                all_profiles:
-                   - "http"
-                   - "clientssl"
+                   - http
+                   - clientssl
            delegate_to: localhost
 
 
@@ -200,12 +198,13 @@ To delete an object, set the state to ``absent``.
          - name: Delete virtual server
            bigip_virtual_server:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               name: "VS1"
-               partition: "Common"
-               state: "absent"
+               name: VS1
+               partition: Common
+               state: absent
            delegate_to: localhost
 
 `Details about this module <http://docs.ansible.com/ansible/latest/bigip_virtual_server_module.html>`_.
@@ -220,13 +219,14 @@ You can use Ansible to update existing objects.
          - name: Modify virtual server port
            bigip_virtual_server:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               name: "VS1"
-               partition: "Common"
-               port: "8080"
-               state: "present"
+               name: VS1
+               partition: Common
+               port: 8080
+               state: present
            delegate_to: localhost
 
 `Details about this module <http://docs.ansible.com/ansible/latest/bigip_virtual_server_module.html>`_.
@@ -242,13 +242,14 @@ You can use Ansible to import SSL certificates to BIG-IP.
          - name: Import PEM Certificate from local disk
            bigip_ssl_certificate:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
-               name: "certificate-name"
-               cert_src: "/path/to/cert.crt"
-               key_src: "/path/to/key.key"
-               state: "present"
+               name: certificate-name
+               cert_src: /path/to/cert.crt
+               key_src: /path/to/key.key
+               state: present
            delegate_to: localhost
 
 
@@ -263,22 +264,25 @@ Between tasks, you may want to wait for BIG-IP to be ready to accept the next ch
 `Here <https://github.com/F5Networks/f5-ansible/tree/devel/examples/0003-wait-for-bigip>`_ is an example of how to do this.
 
 
+.. _bigip_command:
+
 Run tmsh commands
 +++++++++++++++++
 
-TMSH is the command-line language you can use to administer BIG-IP. In cases where a module is not available, you might want to run specific TMSH commands.
+The Traffic Management Shell (tmsh) is the command-line language you can use to administer BIG-IP. In cases where a module is not available, you might want to run specific tmsh commands.
 
 .. code-block:: yaml
 
          - name: run multiple commands on remote nodes
            bigip_command:
                server: "{{ ansible_host }}"
+               server_port: "{{ bigip_port }}"
                user: "{{ bigip_username }}"
                password: "{{ bigip_password }}"
                validate_certs: "{{ validate_certs }}"
                commands:
-               - show sys version
-               - list ltm virtual
+                  - show sys version
+                  - list ltm virtual
            delegate_to: localhost
 
 `Details about this module <http://docs.ansible.com/ansible/latest/bigip_command_module.html>`_.
