@@ -1,0 +1,65 @@
+---
+
+# TODO(Remove in version 2.9)
+
+- name: Create route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create route domain
+  assert:
+    that:
+      - result is changed
+
+- name: Create route domain - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Create route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete a route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a route domain
+  assert:
+    that:
+      - result is changed
+
+- name: Delete a route domain - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
+    user: "{{ bigip_username }}"
+    password: "{{ bigip_password }}"
+    validate_certs: "{{ validate_certs }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed

@@ -1,14 +1,5 @@
 ---
 
-- name: Issue 00662 - Set privileged provider values
-  set_fact:
-    privileged_provider:
-      server: "{{ ansible_host }}"
-      user: "{{ bigip_username }}"
-      password: "{{ bigip_password }}"
-      server_port: "{{ bigip_port }}"
-      validate_certs: "{{ validate_certs }}"
-
 - name: Issue 00662 - Set unprivileged provider values
   set_fact:
     unprivileged_provider:
@@ -18,9 +9,6 @@
       server_port: "{{ bigip_port }}"
       validate_certs: "{{ validate_certs }}"
 
-- debug: var=privileged_provider
-- debug: var=unprivileged_provider
-
 - name: Issue 00662 - Create user for use in testing provider
   bigip_user:
     partition_access:
@@ -28,7 +16,7 @@
     username_credential: issue-00662
     password_credential: secret
     update_password: on_create
-    provider: "{{ privileged_provider }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Issue 00662 - Create a route domain with an unprivileged user - Expected failure
@@ -46,7 +34,7 @@
 - name: Issue 00662 - Create a route domain with privileged user
   bigip_routedomain:
     id: "{{ new_routedomain }}"
-    provider: "{{ privileged_provider }}"
+    provider: "{{ provider }}"
   register: result
 
 - name: Issue 00662 - Assert Create a route domain
@@ -58,10 +46,10 @@
   bigip_routedomain:
     id: "{{ new_routedomain }}"
     state: absent
-    provider: "{{ privileged_provider }}"
+    provider: "{{ provider }}"
 
 - name: Issue 00662 - Remove user
   bigip_user:
     username_credential: issue-00662
     state: absent
-    provider: "{{ privileged_provider }}"
+    provider: "{{ provider }}"

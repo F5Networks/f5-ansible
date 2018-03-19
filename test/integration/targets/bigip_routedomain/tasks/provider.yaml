@@ -1,0 +1,50 @@
+---
+
+- name: Create route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Create route domain
+  assert:
+    that:
+      - result is changed
+
+- name: Create route domain - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    provider: "{{ provider }}"
+  register: result
+
+- name: Assert Create route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Delete a route domain
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    provider: "{{ provider }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a route domain
+  assert:
+    that:
+      - result is changed
+
+- name: Delete a route domain - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    provider: "{{ provider }}"
+    state: absent
+  register: result
+
+- name: Assert Delete a route domain - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: issue-00662.yaml
+  tags: issue-00662

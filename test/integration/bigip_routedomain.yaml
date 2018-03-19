@@ -69,9 +69,30 @@
 
   vars:
     limit_to: '*'
+    provider:
+      server: "{{ ansible_host }}"
+      user: "{{ bigip_username }}"
+      password: "{{ bigip_password }}"
+      server_port: "{{ bigip_port }}"
+      validate_certs: "{{ validate_certs }}"
 
   tasks:
-    - name: Include Issue-00662
+    - name: Include Provider tests
       include_role:
         name: bigip_routedomain
-        tasks_from: issue-00662.yaml
+        tasks_from: provider.yaml
+
+# TODO(Remove in Ansible 2.9)
+- name: Test the bigip_routedomain module with a provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
+  tasks:
+    - name: Include Connection Parameter tests
+      include_role:
+        name: bigip_routedomain
+        tasks_from: connection-params.yaml
