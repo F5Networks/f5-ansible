@@ -28,7 +28,6 @@ f5_provider_spec = {
     ),
     'server_port': dict(
         type='int',
-        default=443,
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'user': dict(
@@ -81,7 +80,6 @@ f5_top_spec = {
     'server_port': dict(
         removed_in_version=2.9,
         type='int',
-        default=443,
         fallback=(env_fallback, ['F5_SERVER_PORT'])
     ),
     'transport': dict(
