@@ -114,7 +114,7 @@ class ActionModule(_ActionModule):
         * https://github.com/ansible/ansible/blob/devel/lib/ansible/constants.py
 
         Therefore, if you do not use the provider nor that environment args, this
-        method here will be populate the "provider" dict with with the necessary
+        method here will populate the "provider" dict with the necessary
         F5 connection params, from the following host vars,
 
         * remote_addr=('ansible_ssh_host', 'ansible_host'),
