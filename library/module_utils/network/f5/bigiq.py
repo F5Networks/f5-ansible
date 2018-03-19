@@ -36,11 +36,11 @@ class F5Client(F5BaseClient):
             return self._client
         for x in range(0, 3):
             try:
-                server = self.params['provider'].get('server', self.params['server'])
-                user = self.params['provider'].get('user', self.params['user'])
-                password = self.params['provider'].get('password', self.params['password'])
-                server_port = self.params['provider'].get('server_port', self.params['server_port'])
-                validate_certs = self.params['provider'].get('validate_certs', self.params['validate_certs'])
+                server = self.params['provider']['server'] or self.params['server']
+                user = self.params['provider']['user'] or self.params['user']
+                password = self.params['provider']['password'] or self.params['password']
+                server_port = self.params['provider']['server_port'] or self.params['server_port'] or 443
+                validate_certs = self.params['provider']['validate_certs'] or self.params['validate_certs']
 
                 result = ManagementRoot(
                     server,
@@ -69,11 +69,11 @@ class F5RestClient(F5BaseClient):
             return self._client
         for x in range(0, 10):
             try:
-                server = self.params['provider'].get('server', self.params['server'])
-                user = self.params['provider'].get('user', self.params['user'])
-                password = self.params['provider'].get('password', self.params['password'])
-                server_port = self.params['provider'].get('server_port', self.params['server_port'])
-                validate_certs = self.params['provider'].get('validate_certs', self.params['validate_certs'])
+                server = self.params['provider']['server'] or self.params['server']
+                user = self.params['provider']['user'] or self.params['user']
+                password = self.params['provider']['password'] or self.params['password']
+                server_port = self.params['provider']['server_port'] or self.params['server_port'] or 443
+                validate_certs = self.params['provider']['validate_certs'] or self.params['validate_certs']
 
                 # Should we import from module??
                 # self.module.params['server'],
