@@ -255,6 +255,12 @@ class Parameters(AnsibleF5Parameters):
             return None
         return int(self._values['connection_limit'])
 
+    @property
+    def id(self):
+        if self._values['id'] is None:
+            return None
+        return int(self._values['id'])
+
 
 class ApiParameters(Parameters):
     @property
