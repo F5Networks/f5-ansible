@@ -155,7 +155,7 @@ def fq_name(partition, value):
         try:
             int(value)
             return '/{0}/{1}'.format(partition, value)
-        except ValueError:
+        except (ValueError, TypeError):
             if not value.startswith('/'):
                 return '/{0}/{1}'.format(partition, value)
     return value
