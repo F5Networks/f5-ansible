@@ -30,7 +30,6 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigip_security_port_list import Parameters
         from ansible.modules.network.f5.bigip_security_port_list import ApiParameters
         from ansible.modules.network.f5.bigip_security_port_list import ModuleParameters
         from ansible.modules.network.f5.bigip_security_port_list import ModuleManager
