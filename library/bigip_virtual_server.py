@@ -294,6 +294,20 @@ options:
       - tcp
       - udp
       - udplite
+  firewall_enforced_policy:
+    description:
+      - Applies the specify AFM policy to the virtual in an enforcing way.
+      - When creating a new virtual, if this parameter is not specified, the enforced
+        policy is disabled.
+    version_added: 2.6
+  firewall_staged_policy:
+    description:
+      - Applies the specify AFM policy to the virtual in an enforcing way.
+      - A staged policy shows the results of the policy rules in the log, while not
+        actually applying the rules to traffic.
+      - When creating a new virtual, if this parameter is not specified, the staged
+        policy is disabled.
+    version_added: 2.6
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -538,20 +552,30 @@ metadata:
   type: dict
   sample: {'key1': 'foo', 'key2': 'bar'}
 address_translation:
-  description: The new value specifying whether address translation is on or off
+  description: The new value specifying whether address translation is on or off.
   returned: changed
   type: bool
   sample: True
 port_translation:
-  description: The new value specifying whether port translation is on or off
+  description: The new value specifying whether port translation is on or off.
   returned: changed
   type: bool
   sample: True
 ip_protocol:
-  description: The new value of the IP protocol
+  description: The new value of the IP protocol.
   returned: changed
   type: integer
   sample: 6
+firewall_enforced_policy:
+  description: The new enforcing firewall policy.
+  returned: changed
+  type: string
+  sample: /Common/my-enforced-fw
+firewall_staged_policy:
+  description: The new staging firewall policy.
+  returned: changed
+  type: string
+  sample: /Common/my-staged-fw
 '''
 
 import re
@@ -608,7 +632,9 @@ class Parameters(AnsibleF5Parameters):
         'rules': 'irules',
         'translateAddress': 'address_translation',
         'translatePort': 'port_translation',
-        'ipProtocol': 'ip_protocol'
+        'ipProtocol': 'ip_protocol',
+        'fwEnforcedPolicy': 'firewall_enforced_policy',
+        'fwStagedPolicy': 'firewall_staged_policy'
     }
 
     api_attributes = [
@@ -636,7 +662,9 @@ class Parameters(AnsibleF5Parameters):
         'stateless',
         'reject',
         'dhcpRelay',
-        'internal'
+        'internal',
+        'fwEnforcedPolicy',
+        'fwStagedPolicy',
     ]
 
     updatables = [
@@ -659,6 +687,8 @@ class Parameters(AnsibleF5Parameters):
         'snat',
         'source',
         'type',
+        'firewall_enforced_policy',
+        'firewall_staged_policy',
     ]
 
     returnables = [
@@ -685,6 +715,8 @@ class Parameters(AnsibleF5Parameters):
         'vlans_enabled',
         'vlans_disabled',
         'type',
+        'firewall_enforced_policy',
+        'firewall_staged_policy',
     ]
 
     profiles_mutex = [
@@ -1419,6 +1451,18 @@ class ModuleParameters(Parameters):
         if self._values['port_translation']:
             return 'enabled'
         return 'disabled'
+
+    @property
+    def firewall_enforced_policy(self):
+        if self._values['firewall_enforced_policy'] is None:
+            return None
+        return fq_name(self.partition, self._values['firewall_enforced_policy'])
+
+    @property
+    def firewall_staged_policy(self):
+        if self._values['firewall_staged_policy'] is None:
+            return None
+        return fq_name(self.partition, self._values['firewall_staged_policy'])
 
 
 class Changes(Parameters):
@@ -2559,7 +2603,9 @@ class ArgumentSpec(object):
                     'standard', 'forwarding-ip', 'forwarding-l2', 'internal', 'message-routing',
                     'performance-http', 'performance-l4', 'reject', 'stateless', 'dhcp'
                 ]
-            )
+            ),
+            firewall_staged_policy=dict(),
+            firewall_enforced_policy=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
