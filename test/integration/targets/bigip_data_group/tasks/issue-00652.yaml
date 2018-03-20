@@ -1,0 +1,15 @@
+---
+
+- name: Create a data group with duplicate strings
+  bigip_data_group:
+    name: issue-00652
+    type: string
+    internal: yes
+    records_src: "{{ role_path }}/files/issue-00652.txt"
+  register: result
+  failed_when: result is success
+
+- name: Assert Create a data group with duplicate strings
+  assert:
+    that:
+      - result is success
