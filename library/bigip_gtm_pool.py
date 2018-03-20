@@ -135,6 +135,46 @@ options:
           - Name of the virtual server, associated with the server, that the pool member is a part of.
         required: True
     version_added: 2.6
+  monitors:
+    description:
+      - Specifies the health monitors that the system currently uses to monitor this resource.
+      - When C(availability_requirements.type) is C(require), you may only have a single monitor in the
+        C(monitors) list.
+    version_added: 2.6
+  availability_requirements:
+    description:
+      - Specifies, if you activate more than one health monitor, the number of health
+        monitors that must receive successful responses in order for the link to be
+        considered available.
+    suboptions:
+      type:
+        description:
+          - Monitor rule type when C(monitors) is specified.
+          - When creating a new pool, if this value is not specified, the default of 'all' will be used.
+        choices: ['all', 'at_least', 'require']
+      at_least:
+        description:
+          - Specifies the minimum number of active health monitors that must be successful
+            before the link is considered up.
+          - This parameter is only relevant when a C(type) of C(at_least) is used.
+          - This parameter will be ignored if a type of either C(all) or C(require) is used.
+      number_of_probes:
+        description:
+          - Specifies the minimum number of probes that must succeed for this server to be declared up.
+          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probers)
+            parameter must also be specified.
+          - The value of this parameter should always be B(lower) than, or B(equal to), the value of C(number_of_probers).
+          - This parameter is only relevant when a C(type) of C(require) is used.
+          - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
+      number_of_probers:
+        description:
+          - Specifies the number of probers that should be used when running probes.
+          - When creating a new virtual server, if this parameter is specified, then the C(number_of_probes)
+            parameter must also be specified.
+          - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
+          - This parameter is only relevant when a C(type) of C(require) is used.
+          - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
+    version_added: 2.6
 notes:
   - Requires the netaddr Python package on the host. This is as easy as
     pip install netaddr.
@@ -166,6 +206,11 @@ fallback_ip:
   returned: changed
   type: string
   sample: 10.10.10.10
+monitors:
+  description: The new list of monitors for the resource.
+  returned: changed
+  type: list
+  sample: ['/Common/monitor1', '/Common/monitor2']
 '''
 
 EXAMPLES = r'''
@@ -187,6 +232,9 @@ EXAMPLES = r'''
   delegate_to: localhost
 '''
 
+import copy
+import re
+
 from distutils.version import LooseVersion
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
@@ -204,6 +252,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
     HAS_DEVEL_IMPORTS = True
@@ -218,6 +267,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
 
@@ -226,8 +276,6 @@ try:
     HAS_NETADDR = True
 except ImportError:
     HAS_NETADDR = False
-
-import copy
 
 
 class Parameters(AnsibleF5Parameters):
@@ -239,19 +287,44 @@ class Parameters(AnsibleF5Parameters):
         'fallbackIpv4': 'fallback_ip',
         'fallbackIpv6': 'fallback_ip',
         'fallbackIp': 'fallback_ip',
-        'membersReference': 'members'
+        'membersReference': 'members',
+        'monitor': 'monitors'
     }
+
     updatables = [
-        'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
-        'fallback_ip', 'state', 'members'
+        'alternate_lb_method',
+        'fallback_ip',
+        'fallback_lb_method',
+        'members',
+        'monitors',
+        'preferred_lb_method',
+        'state',
     ]
+
     returnables = [
-        'preferred_lb_method', 'alternate_lb_method', 'fallback_lb_method',
-        'fallback_ip', 'members'
+        'alternate_lb_method',
+        'fallback_ip',
+        'fallback_lb_method',
+        'members',
+        'monitors',
+        'preferred_lb_method',
     ]
+
     api_attributes = [
-        'loadBalancingMode', 'alternateMode', 'fallbackMode', 'verifyMemberAvailability',
-        'fallbackIpv4', 'fallbackIpv6', 'fallbackIp', 'enabled', 'disabled', 'members'
+        'alternateMode',
+        'disabled',
+        'enabled',
+        'fallbackIp',
+        'fallbackIpv4',
+        'fallbackIpv6',
+        'fallbackMode',
+        'loadBalancingMode',
+        'members',
+        'verifyMemberAvailability',
+        # The monitor attribute is not included here, because it can break the
+        # API calls to the device. If this bug is ever fixed, uncomment this code.
+        #
+        # monitor
     ]
 
     def to_return(self):
@@ -341,8 +414,119 @@ class ApiParameters(Parameters):
         result = [x['item'] for x in sorted(result, key=lambda k: k['order'])]
         return result
 
+    @property
+    def availability_requirement_type(self):
+        if self._values['monitors'] is None:
+            return None
+        if 'min ' in self._values['monitors']:
+            return 'at_least'
+        elif 'require ' in self._values['monitors']:
+            return 'require'
+        else:
+            return 'all'
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    @property
+    def number_of_probes(self):
+        """Returns the probes value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probes" value that can be updated in the module.
+
+        Returns:
+             int: The probes value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+(?P<probes>\d+)\s+from'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probes')
+
+    @property
+    def number_of_probers(self):
+        """Returns the probers value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            require 1 from 2 { /Common/tcp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "probers" value that can be updated in the module.
+
+        Returns:
+             int: The probers value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'require\s+\d+\s+from\s+(?P<probers>\d+)\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('probers')
+
+    @property
+    def at_least(self):
+        """Returns the 'at least' value from the monitor string.
+
+        The monitor string for a Require monitor looks like this.
+
+            min 1 of { /Common/gateway_icmp }
+
+        This method parses out the first of the numeric values. This values represents
+        the "at_least" value that can be updated in the module.
+
+        Returns:
+             int: The at_least value if found. None otherwise.
+        """
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<least>\d+)\s+of\s+'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches is None:
+            return None
+        return matches.group('least')
+
 
 class ModuleParameters(Parameters):
+    def _get_availability_value(self, type):
+        if self._values['availability_requirements'] is None:
+            return None
+        if self._values['availability_requirements'][type] is None:
+            return None
+        return int(self._values['availability_requirements'][type])
+
     @property
     def members(self):
         if self._values['members'] is None:
@@ -355,6 +539,59 @@ class ModuleParameters(Parameters):
             name = fq_name(self.partition, name)
             result.append(name)
         return result
+
+    @property
+    def monitors_list(self):
+        if self._values['monitors'] is None:
+            return []
+        try:
+            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result.sort()
+            return result
+        except Exception:
+            return self._values['monitors']
+
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
+        if self.availability_requirement_type == 'at_least':
+            if self.at_least > len(self.monitors_list):
+                raise F5ModuleError(
+                    "The 'at_least' value must not exceed the number of 'monitors'."
+                )
+            monitors = ' '.join(monitors)
+            result = 'min {0} of {{ {1} }}'.format(self.at_least, monitors)
+        elif self.availability_requirement_type == 'require':
+            monitors = ' '.join(monitors)
+            if self.number_of_probes > self.number_of_probers:
+                raise F5ModuleError(
+                    "The 'number_of_probes' must not exceed the 'number_of_probers'."
+                )
+            result = 'require {0} from {1} {{ {2} }}'.format(self.number_of_probes, self.number_of_probers, monitors)
+        else:
+            result = ' and '.join(monitors).strip()
+
+        return result
+
+    @property
+    def availability_requirement_type(self):
+        if self._values['availability_requirements'] is None:
+            return None
+        return self._values['availability_requirements']['type']
+
+    @property
+    def number_of_probes(self):
+        return self._get_availability_value('number_of_probes')
+
+    @property
+    def number_of_probers(self):
+        return self._get_availability_value('number_of_probers')
+
+    @property
+    def at_least(self):
+        return self._get_availability_value('at_least')
 
 
 class Changes(Parameters):
@@ -418,6 +655,13 @@ class Difference(object):
             return dict(
                 enabled=True
             )
+
+    @property
+    def monitors(self):
+        if self.have.monitors is None:
+            return self.want.monitors
+        if self.have.monitors != self.want.monitors:
+            return self.want.monitors
 
 
 class ModuleManager(object):
@@ -551,7 +795,14 @@ class BaseManager(object):
             self.want.update({'disabled': True})
         elif self.want.state in ['present', 'enabled']:
             self.want.update({'enabled': True})
+
         self._set_changed_options()
+
+        if self.want.availability_requirement_type == 'require' and len(self.want.monitors_list) > 1:
+            raise F5ModuleError(
+                "Only one monitor may be specified when using an availability_requirement type of 'require'"
+            )
+
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -566,6 +817,36 @@ class BaseManager(object):
         self.remove_from_device()
         if self.exists():
             raise F5ModuleError("Failed to delete the GTM pool")
+        return True
+
+    def update_monitors_on_device(self):
+        """Updates the monitors string on a virtual server
+
+        There is a long-standing bug in GTM virtual servers where the monitor value
+        is a string that includes braces. These braces cause the REST API to panic and
+        fail to update or create any resources that have an "at_least" or "require"
+        set of availability_requirements.
+
+        This method exists to do a tmsh command to cause the update to take place on
+        the device.
+
+        Preferably, this method can be removed and the bug be fixed. The API should
+        be working, obviously, but the more concerning issue is if tmsh commands change
+        over time, breaking this method.
+        """
+        command = 'tmsh modify gtm pool {0} /{1}/{2} monitor {3}'.format(
+            self.want.type, self.want.partition, self.want.name, self.want.monitors
+        )
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        try:
+            if hasattr(output, 'commandResult'):
+                if len(output.commandResult.strip()) > 0:
+                    raise F5ModuleError(output.commandResult)
+        except (AttributeError, NameError, LazyAttributesRequired):
+            pass
         return True
 
 
@@ -612,7 +893,10 @@ class TypedManager(BaseManager):
             name=self.want.name,
             partition=self.want.partition
         )
-        result.modify(**params)
+        if params:
+            result.modify(**params)
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def read_current_from_device(self):
         pools = self.client.api.tm.gtm.pools
@@ -640,6 +924,8 @@ class TypedManager(BaseManager):
             partition=self.want.partition,
             **params
         )
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def remove_from_device(self):
         pools = self.client.api.tm.gtm.pools
@@ -668,6 +954,8 @@ class UntypedManager(BaseManager):
             partition=self.want.partition
         )
         resource.modify(**params)
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def read_current_from_device(self):
         resource = self.client.api.tm.gtm.pools.pool.load(
@@ -684,6 +972,8 @@ class UntypedManager(BaseManager):
             partition=self.want.partition,
             **params
         )
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def remove_from_device(self):
         resource = self.client.api.tm.gtm.pools.pool.load(
@@ -745,7 +1035,28 @@ class ArgumentSpec(object):
                     server=dict(required=True),
                     virtual_server=dict(required=True)
                 )
-            )
+            ),
+            availability_requirements=dict(
+                type='dict',
+                options=dict(
+                    type=dict(
+                        choices=['all', 'at_least', 'require'],
+                        required=True
+                    ),
+                    at_least=dict(type='int'),
+                    number_of_probes=dict(type='int'),
+                    number_of_probers=dict(type='int')
+                ),
+                mutually_exclusive=[
+                    ['at_least', 'number_of_probes'],
+                    ['at_least', 'number_of_probers'],
+                ],
+                required_if=[
+                    ['type', 'at_least', ['at_least']],
+                    ['type', 'require', ['number_of_probes', 'number_of_probers']]
+                ]
+            ),
+            monitors=dict(type='list'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

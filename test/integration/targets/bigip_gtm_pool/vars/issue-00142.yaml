@@ -1,0 +1,4 @@
+---
+
+pool_name: issue-00142
+pool_lb_method: round-robin

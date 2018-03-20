@@ -1,0 +1,344 @@
+---
+
+- name: Issue 00142 - Include issue variables
+  include_vars:
+    file: issue-00142.yaml
+
+- name: Issue 00142 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+
+- name: Issue 00142 - Create pool, type 'a'
+  bigip_gtm_pool:
+    preferred_lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    type: a
+
+- name: Issue 00142 - Update monitors, all
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - tcp
+      - udp
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Update monitors, all - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - tcp
+      - udp
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, all
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00142 - Assert Remove monitor, all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Remove monitor, all - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00142 - Assert Remove monitor, all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Update monitors, at_least
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - tcp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 2
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, at_least
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Update monitors, at_least - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - tcp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 2
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, at_least
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00142 - Assert Remove monitor, at_least
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Remove monitor, at_least - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00142 - Assert Remove monitor, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Update monitors, require
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, require
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Update monitors, require - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, require - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, require
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - udp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Update monitors, require
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Remove monitor, require - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - udp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Remove monitor, require - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, for create monitor, all
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00142 - Create pool monitor, all
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, all
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Create pool monitor, all - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: all
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, all - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, for create monitor, at_least
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00142 - Create pool monitor, at_least
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, at_least
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Create pool monitor, at_least - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+      - udp
+    availability_requirements:
+      type: at_least
+      at_least: 1
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, at_least - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove monitor, for create monitor, require
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00142 - Create pool monitor, require
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, require
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Create pool monitor, require - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors:
+      - gateway_icmp
+    availability_requirements:
+      type: require
+      number_of_probes: 10
+      number_of_probers: 20
+  register: result
+
+- name: Issue 00142 - Assert Create pool monitor, require - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00142 - Remove pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00142 - Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
