@@ -60,7 +60,7 @@ options:
       type:
         description:
           - Monitor rule type when C(monitors) is specified.
-          - When creating a new pool, if this value is not specified, the default of 'all' will be used.
+          - When creating a new virtual, if this value is not specified, the default of 'all' will be used.
         choices: ['all', 'at_least', 'require']
       at_least:
         description:
@@ -305,7 +305,6 @@ class Parameters(AnsibleF5Parameters):
         # API calls to the device. If this bug is ever fixed, uncomment this code.
         #
         # monitor
-
     ]
 
     returnables = [
