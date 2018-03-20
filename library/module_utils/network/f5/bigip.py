@@ -38,7 +38,6 @@ class F5Client(F5BaseClient):
                 server_port = self.params['provider']['server_port'] or self.params['server_port'] or 443
                 validate_certs = self.params['provider']['validate_certs'] or self.params['validate_certs']
 
-                import q; q.q(server, user, password, server_port, validate_certs)
                 result = ManagementRoot(
                     server,
                     user,
