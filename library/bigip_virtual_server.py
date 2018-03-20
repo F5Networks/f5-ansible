@@ -32,6 +32,58 @@ options:
       - absent
       - enabled
       - disabled
+  type:
+    description:
+      - Specifies the network service provided by this virtual server.
+      - When creating a new virtual server, if this parameter is not provided, the
+        default will be C(standard).
+      - This value cannot be changed after it is set.
+      - When C(standard), specifies a virtual server that directs client traffic to
+        a load balancing pool and is the most basic type of virtual server. When you
+        first create the virtual server, you assign an existing default pool to it.
+        From then on, the virtual server automatically directs traffic to that default pool.
+      - When C(forwarding-l2), specifies a virtual server that shares the same IP address as a
+        node in an associated VLAN.
+      - When C(forwarding-ip), specifies a virtual server like other virtual servers, except
+        that the virtual server has no pool members to load balance. The virtual server simply
+        forwards the packet directly to the destination IP address specified in the client request.
+      - When C(performance-http), specifies a virtual server with which you associate a Fast HTTP
+        profile. Together, the virtual server and profile increase the speed at which the virtual
+        server processes HTTP requests.
+      - When C(performance-l4), specifies a virtual server with which you associate a Fast L4 profile.
+        Together, the virtual server and profile increase the speed at which the virtual server
+        processes layer 4 requests.
+      - When C(stateless), specifies a virtual server that accepts traffic matching the virtual
+        server address and load balances the packet to the pool members without attempting to
+        match the packet to a pre-existing connection in the connection table. New connections
+        are immediately removed from the connection table. This addresses the requirement for
+        one-way UDP traffic that needs to be processed at very high throughput levels, for example,
+        load balancing syslog traffic to a pool of syslog servers. Stateless virtual servers are
+        not suitable for processing traffic that requires stateful tracking, such as TCP traffic.
+        Stateless virtual servers do not support iRules, persistence, connection mirroring,
+        rateshaping, or SNAT automap.
+      - When C(reject), specifies that the BIG-IP system rejects any traffic destined for the
+        virtual server IP address.
+      - When C(dhcp), specifies a virtual server that relays Dynamic Host Control Protocol (DHCP)
+        client requests for an IP address to one or more DHCP servers, and provides DHCP server
+        responses with an available IP address for the client.
+      - When C(internal), specifies a virtual server that supports modification of HTTP requests
+        and responses. Internal virtual servers enable usage of ICAP (Internet Content Adaptation
+        Protocol) servers to modify HTTP requests and responses by creating and applying an ICAP
+        profile and adding Request Adapt or Response Adapt profiles to the virtual server.
+      - When C(message-routing), specifies a virtual server that uses a SIP application protocol
+        and functions in accordance with a SIP session profile and SIP router profile.
+    choices:
+      - standard
+      - forwarding-l2
+      - forwarding-ip
+      - performance-http
+      - performance-l4
+      - stateless
+      - reject
+      - dhcp
+      - internal
+      - message-routing
   name:
     description:
       - Virtual server name.
@@ -42,7 +94,8 @@ options:
     description:
       - Destination IP of the virtual server.
       - Required when C(state) is C(present) and virtual server does not exist.
-    required: True
+      - When C(type) is C(internal), this parameter is ignored. For all other types,
+        it is required.
     aliases:
       - address
       - ip
@@ -64,6 +117,8 @@ options:
         and virtual server does not exist.
       - If you do not want to specify a particular port, use the value C(0).
         The result is that the virtual server will listen on any port.
+      - When C(type) is C(dhcp), this module will force the C(port) parameter to be C(67).
+      - When C(type) is C(internal), this module will force the C(port) parameter to be C(0).
   profiles:
     description:
       - List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides
@@ -79,6 +134,14 @@ options:
       - If you want to add a profile to the list of profiles currently active
         on the virtual, then simply add it to the C(profiles) list. See
         examples for an illustration of this.
+      - B(Profiles matter). There is a good chance that this module will fail to configure
+        a BIG-IP if you mix up your profiles, or, if you attempt to set an IP protocol
+        which your current, or new, profiles do not support. Both this module, and BIG-IP,
+        will tell you when you are wrong, with an error resembling C(lists profiles
+        incompatible with its protocol).
+      - If you are unsure what correct profile combinations are, then have a BIG-IP
+        available to you in which you can make changes and copy what the correct
+        combinations are.
     suboptions:
       name:
         description:
@@ -86,7 +149,6 @@ options:
           - If this is not specified, then it is assumed that the profile item is
             only a name of a profile.
           - This must be specified if a context is specified.
-        required: false
       context:
         description:
           - The side of the connection on which the profile should be applied.
@@ -98,11 +160,15 @@ options:
     aliases:
       - all_profiles
   irules:
-    version_added: "2.2"
+    version_added: 2.2
     description:
       - List of rules to be applied in priority order.
       - If you want to remove existing iRules, specify a single empty value; C("").
         See the documentation for an example.
+      - When C(type) is C(dhcp), this parameter will be ignored.
+      - When C(type) is C(stateless), this parameter will be ignored.
+      - When C(type) is C(reject), this parameter will be ignored.
+      - When C(type) is C(internal), this parameter will be ignored.
     aliases:
       - all_rules
   enabled_vlans:
@@ -124,15 +190,24 @@ options:
       - Default pool for the virtual server.
       - If you want to remove the existing pool, specify an empty value; C("").
         See the documentation for an example.
+      - When creating a new virtual server, and C(type) is C(stateless), this parameter
+        is required.
+      - If C(type) is C(stateless), the C(pool) that is used must not have any members
+        which define a C(rate_limit). 
   policies:
     description:
-      - Specifies the policies for the virtual server
+      - Specifies the policies for the virtual server.
+      - When C(type) is C(dhcp), this parameter will be ignored.
+      - When C(type) is C(reject), this parameter will be ignored.
+      - When C(type) is C(internal), this parameter will be ignored.
     aliases:
       - all_policies
   snat:
     description:
       - Source network address policy.
-    required: false
+      - When C(type) is C(dhcp), this parameter is ignored.
+      - When C(type) is C(reject), this parameter will be ignored.
+      - When C(type) is C(internal), this parameter will be ignored.
     choices:
       - None
       - Automap
@@ -143,6 +218,7 @@ options:
       - Default Profile which manages the session persistence.
       - If you want to remove the existing default persistence profile, specify an
         empty value; C(""). See the documentation for an example.
+      - When C(type) is C(dhcp), this parameter will be ignored.
   description:
     description:
       - Virtual server description.
@@ -152,6 +228,7 @@ options:
         cannot use the specified default persistence profile.
       - If you want to remove the existing fallback persistence profile, specify an
         empty value; C(""). See the documentation for an example.
+      - When C(type) is C(dhcp), this parameter will be ignored.
     version_added: 2.3
   partition:
     description:
@@ -187,6 +264,36 @@ options:
       - When creating a new virtual server, the default is C(enabled).
     type: bool
     version_added: 2.6
+  ip_protocol:
+    description:
+      - Specifies a network protocol name you want the system to use to direct traffic
+        on this virtual server.
+      - When creating a new virtual server, if this parameter is not specified, the default is C(tcp).
+      - The Protocol setting is not available when you select Performance (HTTP) as the Type.
+      - The value of this argument can be specified in either it's numeric value, or,
+        for convenience, in a select number of named values. Refer to C(choices) for examples.
+      - For a list of valid IP protocol numbers, refer to this page
+        https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
+      - When C(type) is C(dhcp), this module will force the C(ip_protocol) parameter to be C(17) (UDP).
+    choices:
+      - ah
+      - bna
+      - esp
+      - etherip
+      - gre
+      - icmp
+      - ipencap
+      - ipv6
+      - ipv6-auth
+      - ipv6-crypt
+      - ipv6-icmp
+      - isp-ip
+      - mux
+      - ospf
+      - sctp
+      - tcp
+      - udp
+      - udplite
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -440,6 +547,11 @@ port_translation:
   returned: changed
   type: bool
   sample: True
+ip_protocol:
+  description: The new value of the IP protocol
+  returned: changed
+  type: integer
+  sample: 6
 '''
 
 import re
@@ -456,7 +568,7 @@ try:
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -470,7 +582,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -495,7 +607,8 @@ class Parameters(AnsibleF5Parameters):
         'policiesReference': 'policies',
         'rules': 'irules',
         'translateAddress': 'address_translation',
-        'translatePort': 'port_translation'
+        'translatePort': 'port_translation',
+        'ipProtocol': 'ip_protocol'
     }
 
     api_attributes = [
@@ -504,6 +617,7 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'enabled',
         'fallbackPersistence',
+        #'ipProtocol',
         'metadata',
         'persist',
         'policies',
@@ -516,7 +630,13 @@ class Parameters(AnsibleF5Parameters):
         'vlansEnabled',
         'vlansDisabled',
         'translateAddress',
-        'translatePort'
+        'translatePort',
+        'l2Forward',
+        'ipForward',
+        'stateless',
+        'reject',
+        'dhcpRelay',
+        'internal'
     ]
 
     updatables = [
@@ -528,6 +648,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
+        #'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -537,6 +658,7 @@ class Parameters(AnsibleF5Parameters):
         'profiles',
         'snat',
         'source',
+        'type',
     ]
 
     returnables = [
@@ -549,6 +671,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
+        #'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -561,6 +684,7 @@ class Parameters(AnsibleF5Parameters):
         'vlans',
         'vlans_enabled',
         'vlans_disabled',
+        'type',
     ]
 
     profiles_mutex = [
@@ -568,20 +692,36 @@ class Parameters(AnsibleF5Parameters):
         'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
     ]
 
+    ip_protocols_map = [
+        ('ah', 51),
+        ('bna', 49),
+        ('esp', 50),
+        ('etherip', 97),
+        ('gre', 47),
+        ('icmp', 1),
+        ('ipencap', 4),
+        ('ipv6', 41),
+        ('ipv6-auth', 51),   # not in the official list
+        ('ipv6-crypt', 50),  # not in the official list
+        ('ipv6-icmp', 58),
+        ('iso-ip', 80),
+        ('mux', 18),
+        ('ospf', 89),
+        ('sctp', 132),
+        ('tcp', 6),
+        ('udp', 17),
+        ('udplite', 136),
+    ]
+
     def to_return(self):
         result = {}
         for returnable in self.returnables:
             try:
                 result[returnable] = getattr(self, returnable)
-            except Exception as ex:
+            except Exception:
                 pass
         result = self._filter_params(result)
         return result
-
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
 
     def is_valid_ip(self, value):
         try:
@@ -605,30 +745,146 @@ class Parameters(AnsibleF5Parameters):
         if port is None:
             if route_domain is None:
                 result = '{0}'.format(
-                    self._fqdn_name(address)
+                    fq_name(self.partition, address)
                 )
             else:
                 result = '{0}%{1}'.format(
-                    self._fqdn_name(address),
+                    fq_name(self.partition, address),
                     route_domain
                 )
         else:
             port = self._format_port_for_destination(address, port)
             if route_domain is None:
                 result = '{0}{1}'.format(
-                    self._fqdn_name(address),
+                    fq_name(self.partition, address),
                     port
                 )
             else:
                 result = '{0}%{1}{2}'.format(
-                    self._fqdn_name(address),
+                    fq_name(self.partition, address),
                     route_domain,
                     port
                 )
         return result
 
+    @property
+    def ip_protocol(self):
+        if self._values['ip_protocol'] is None:
+            return None
+        if self._values['ip_protocol'] == 'any':
+            return 'any'
+        for x in self.ip_protocols_map:
+            if x[0] == self._values['ip_protocol']:
+                return int(x[1])
+        try:
+            return int(self._values['ip_protocol'])
+        except ValueError:
+            raise F5ModuleError(
+                "Specified ip_protocol was neither a number nor in the list of common protocols."
+            )
+
+    @property
+    def has_message_routing_profiles(self):
+        if self.profiles is None:
+            return None
+        current = self._read_current_message_routing_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    @property
+    def has_fastl4_profiles(self):
+        if self.profiles is None:
+            return None
+        current = self._read_current_fastl4_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    @property
+    def has_fasthttp_profiles(self):
+        """Check if ``fasthttp`` profile is in API profiles
+
+        This method is used to determine the server type when doing comparisons
+        in the Difference class.
+
+        Returns:
+             bool: True if server has ``fasthttp`` profiles. False otherwise.
+        """
+        if self.profiles is None:
+            return None
+        current = self._read_current_fasthttp_profiles_from_device()
+        result = [x['name'] for x in self.profiles if x['name'] in current]
+        if len(result) > 0:
+            return True
+        return False
+
+    def _read_current_message_routing_profiles_from_device(self):
+        collection1 = self.client.api.tm.ltm.profile.diameters.get_collection()
+        collection2 = self.client.api.tm.ltm.profile.sips.get_collection()
+        result = [x.name for x in collection1]
+        result += [x.name for x in collection2]
+        return result
+
+    def _read_current_fastl4_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fastl4s.get_collection()
+        result = [x.name for x in collection]
+        return result
+
+    def _read_current_fasthttp_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        result = [x.name for x in collection]
+        return result
+
 
 class ApiParameters(Parameters):
+    @property
+    def type(self):
+        """Attempt to determine the current server type
+
+        This check is very unscientific. It turns out that this information is not
+        exactly available anywhere on a BIG-IP. Instead, we rely on a semi-reliable
+        means for determining what the type of the virtual server is. Hopefully it
+        always works.
+
+        There are a handful of attributes that can be used to determine a specific
+        type. There are some types though that can only be determined by looking at
+        the profiles that are assigned to them. We follow that method for those
+        complicated types; message-routing, fasthttp, and fastl4.
+
+        Because type determination is an expensive operation, we cache the result
+        from the operation.
+
+        Returns:
+            string: The server type.
+        """
+        if self._values['type']:
+            return self._values['type']
+        if self.l2Forward is True:
+            result = 'forwarding-l2'
+        elif self.ipForward is True:
+            result = 'forwarding-ip'
+        elif self.stateless is True:
+            result = 'stateless'
+        elif self.reject is True:
+            result = 'reject'
+        elif self.dhcpRelay is True:
+            result = 'dhcp'
+        elif self.internal is True:
+            result = 'internal'
+        elif self.has_fasthttp_profiles:
+            result = 'performance-http'
+        elif self.has_fastl4_profiles:
+            result = 'performance-l4'
+        elif self.has_message_routing_profiles:
+            result = 'message-routing'
+        else:
+            result = 'standard'
+        self._values['type'] = result
+        return result
+
     @property
     def destination(self):
         if self._values['destination'] is None:
@@ -758,12 +1014,35 @@ class ApiParameters(Parameters):
 
     @property
     def route_domain(self):
+        """Return a route domain number from the destination
+
+        Returns:
+            int: The route domain number
+        """
         destination = self.destination_tuple
         self._values['route_domain'] = destination.route_domain
-        return destination.route_domain
+        return int(destination.route_domain)
 
     @property
     def profiles(self):
+        """Returns a list of profiles from the API
+
+        The profiles are formatted so that they are usable in this module and
+        are able to be compared by the Difference engine.
+
+        Returns:
+             list (:obj:`list` of :obj:`dict`): List of profiles.
+
+             Each dictionary in the list contains the following three (3) keys.
+
+             * name
+             * context
+             * fullPath
+
+        Raises:
+            F5ModuleError: If the specified context is a value other that
+                ``all``, ``serverside``, or ``clientside``.
+        """
         if 'items' not in self._values['profiles']:
             return None
         result = []
@@ -779,6 +1058,10 @@ class ApiParameters(Parameters):
         return result
 
     @property
+    def profile_types(self):
+        return [x['name'] for x in iteritems(self.profiles)]
+
+    @property
     def policies(self):
         if 'items' not in self._values['policies']:
             return None
@@ -791,11 +1074,17 @@ class ApiParameters(Parameters):
 
     @property
     def default_persistence_profile(self):
+        """Get the name of the current default persistence profile
+
+        These persistence profiles are always lists when we get them
+        from the REST API even though there can only be one. We'll
+        make it a list again when we get to the Difference engine.
+
+        Returns:
+             string: The name of the default persistence profile
+        """
         if self._values['default_persistence_profile'] is None:
             return None
-        # These persistence profiles are always lists when we get them
-        # from the REST API even though there can only be one. We'll
-        # make it a list again when we get to the Difference engine.
         return self._values['default_persistence_profile'][0]
 
     @property
@@ -844,6 +1133,19 @@ class ModuleParameters(Parameters):
         if profile['context'] != 'clientside':
             profile['context'] = 'clientside'
 
+    def _check_port(self):
+        try:
+            port = int(self._values['port'])
+        except ValueError:
+            raise F5ModuleError(
+                "The specified port was not a valid integer"
+            )
+        if 0 <= port <= 65535:
+            return port
+        raise F5ModuleError(
+            "Valid ports must be in range 0 - 65535"
+        )
+
     @property
     def destination(self):
         addr = self._values['destination'].split("%")[0]
@@ -886,19 +1188,6 @@ class ModuleParameters(Parameters):
         self._check_port()
         return int(self._values['port'])
 
-    def _check_port(self):
-        try:
-            port = int(self._values['port'])
-        except ValueError:
-            raise F5ModuleError(
-                "The specified port was not a valid integer"
-            )
-        if 0 <= port <= 65535:
-            return port
-        raise F5ModuleError(
-            "Valid ports must be in range 0 - 65535"
-        )
-
     @property
     def irules(self):
         results = []
@@ -907,7 +1196,7 @@ class ModuleParameters(Parameters):
         if len(self._values['irules']) == 1 and self._values['irules'][0] == '':
             return ''
         for irule in self._values['irules']:
-            result = self._fqdn_name(irule)
+            result = fq_name(self.partition, irule)
             results.append(result)
         return results
 
@@ -925,12 +1214,12 @@ class ModuleParameters(Parameters):
                 self._handle_profile_context(tmp)
                 if 'name' not in profile:
                     tmp['name'] = profile
-                tmp['fullPath'] = self._fqdn_name(tmp['name'])
+                tmp['fullPath'] = fq_name(self.partition, tmp['name'])
                 self._handle_clientssl_profile_nuances(tmp)
             else:
                 tmp['name'] = profile
                 tmp['context'] = 'all'
-                tmp['fullPath'] = self._fqdn_name(tmp['name'])
+                tmp['fullPath'] = fq_name(self.partition, tmp['name'])
                 self._handle_clientssl_profile_nuances(tmp)
             result.append(tmp)
         mutually_exclusive = [x['name'] for x in result if x in self.profiles_mutex]
@@ -949,7 +1238,7 @@ class ModuleParameters(Parameters):
         if len(self._values['policies']) == 1 and self._values['policies'][0] == '':
             return ''
         result = []
-        policies = [self._fqdn_name(p) for p in self._values['policies']]
+        policies = [fq_name(self.partition, p) for p in self._values['policies']]
         policies = set(policies)
         for policy in policies:
             parts = policy.split('/')
@@ -970,7 +1259,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['pool'] == '':
             return ''
-        return self._fqdn_name(self._values['pool'])
+        return fq_name(self.partition, self._values['pool'])
 
     @property
     def vlans_enabled(self):
@@ -999,7 +1288,7 @@ class ModuleParameters(Parameters):
         if self._values['enabled_vlans'] is None:
             return None
         elif any(x.lower() for x in self._values['enabled_vlans'] if x.lower() in ['all', '*']):
-            result = [self._fqdn_name('all')]
+            result = [fq_name(self.partition, 'all')]
             if result[0].endswith('/all'):
                 if self._values['__warnings'] is None:
                     self._values['__warnings'] = []
@@ -1010,7 +1299,7 @@ class ModuleParameters(Parameters):
                     )
                 )
             return result
-        results = list(set([self._fqdn_name(x) for x in self._values['enabled_vlans']]))
+        results = list(set([fq_name(self.partition, x) for x in self._values['enabled_vlans']]))
         results.sort()
         return results
 
@@ -1022,7 +1311,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "You cannot disable all VLANs. You must name them individually."
             )
-        results = list(set([self._fqdn_name(x) for x in self._values['disabled_vlans']]))
+        results = list(set([fq_name(self.partition, x) for x in self._values['disabled_vlans']]))
         results.sort()
         return results
 
@@ -1046,7 +1335,7 @@ class ModuleParameters(Parameters):
         lowercase = self._values['snat'].lower()
         if lowercase in ['automap', 'none']:
             return dict(type=lowercase)
-        snat_pool = self._fqdn_name(self._values['snat'])
+        snat_pool = fq_name(self.partition, self._values['snat'])
         return dict(pool=snat_pool, type='snat')
 
     @property
@@ -1055,7 +1344,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['default_persistence_profile'] == '':
             return ''
-        profile = self._fqdn_name(self._values['default_persistence_profile'])
+        profile = fq_name(self.partition, self._values['default_persistence_profile'])
         parts = profile.split('/')
         if len(parts) != 3:
             raise F5ModuleError(
@@ -1073,7 +1362,7 @@ class ModuleParameters(Parameters):
             return None
         if self._values['fallback_persistence_profile'] == '':
             return ''
-        result = self._fqdn_name(self._values['fallback_persistence_profile'])
+        result = fq_name(self.partition, self._values['fallback_persistence_profile'])
         return result
 
     @property
@@ -1138,6 +1427,12 @@ class Changes(Parameters):
 
 class UsableChanges(Changes):
     @property
+    def destination(self):
+        if self._values['type'] == 'internal':
+            return None
+        return self._values['destination']
+
+    @property
     def vlans(self):
         if self._values['vlans'] is None:
             return None
@@ -1146,6 +1441,78 @@ class UsableChanges(Changes):
         elif any(x for x in self._values['vlans'] if x.lower() in ['/common/all', 'all']):
             return []
         return self._values['vlans']
+
+    @property
+    def irules(self):
+        if self._values['irules'] is None:
+            return None
+        if self._values['type'] in ['dhcp', 'stateless', 'reject', 'internal']:
+            return None
+        return self._values['irules']
+
+    @property
+    def policies(self):
+        if self._values['policies'] is None:
+            return None
+        if self._values['type'] in ['dhcp', 'reject', 'internal']:
+            return None
+        return self._values['policies']
+
+    @property
+    def default_persistence_profile(self):
+        if self._values['default_persistence_profile'] is None:
+            return None
+        if self._values['type'] == 'dhcp':
+            return None
+        if not self._values['default_persistence_profile']:
+            return []
+        return [self._values['default_persistence_profile']]
+
+    @property
+    def fallback_persistence_profile(self):
+        if self._values['fallback_persistence_profile'] is None:
+            return None
+        if self._values['type'] == 'dhcp':
+            return None
+        return self._values['fallback_persistence_profile']
+
+    @property
+    def snat(self):
+        if self._values['snat'] is None:
+            return None
+        if self._values['type'] in ['dhcp', 'reject', 'internal']:
+            return None
+        return self._values['snat']
+
+    @property
+    def dhcpRelay(self):
+        if self._values['type'] == 'dhcp':
+            return True
+
+    @property
+    def reject(self):
+        if self._values['type'] == 'reject':
+            return True
+
+    @property
+    def stateless(self):
+        if self._values['type'] == 'stateless':
+            return True
+
+    @property
+    def internal(self):
+        if self._values['type'] == 'internal':
+            return True
+
+    @property
+    def ipForward(self):
+        if self._values['type'] == 'forwarding-ip':
+            return True
+
+    @property
+    def l2Forward(self):
+        if self._values['type'] == 'forwarding-l2':
+            return True
 
 
 class ReportableChanges(Changes):
@@ -1213,6 +1580,464 @@ class ReportableChanges(Changes):
         return False
 
 
+class VirtualServerValidator(object):
+    def __init__(self, module=None, client=None, want=None, have=None):
+        self.have = have if have else ApiParameters()
+        self.want = want if want else ModuleParameters()
+        self.client = client
+        self.module = module
+
+    def check_update(self):
+        # TODO(Remove in Ansible 2.9)
+        self._override_standard_type_from_profiles()
+
+        # Regular checks
+        self._override_port_by_type()
+        self._override_protocol_by_type()
+        self._verify_type_has_correct_profiles()
+        self._verify_default_persistence_profile_for_type()
+        self._verify_fallback_persistence_profile_for_type()
+        self._update_persistence_profile()
+        self._ensure_server_type_supports_vlans()
+        self._verify_type_has_correct_ip_protocol()
+
+        # For different server types
+        self._verify_dhcp_profile()
+        self._verify_fastl4_profile()
+        self._verify_stateless_profile()
+
+    def check_create(self):
+        # TODO(Remove in Ansible 2.9)
+        self._override_standard_type_from_profiles()
+
+        # Regular checks
+        self._set_default_ip_protocol()
+        self._set_default_profiles()
+        self._override_port_by_type()
+        self._override_protocol_by_type()
+        self._verify_type_has_correct_profiles()
+        self._verify_default_persistence_profile_for_type()
+        self._verify_fallback_persistence_profile_for_type()
+        self._update_persistence_profile()
+        self._verify_virtual_has_required_parameters()
+        self._ensure_server_type_supports_vlans()
+        self._override_vlans_if_all_specified()
+        self._check_source_and_destination_match()
+        self._verify_type_has_correct_ip_protocol()
+        self._verify_minimum_profile()
+
+        # For different server types
+        self._verify_dhcp_profile()
+        self._verify_fastl4_profile()
+        self._verify_stateless_profile_on_create()
+
+    def _ensure_server_type_supports_vlans(self):
+        """Verifies the specified server type supports VLANs
+
+        A select number of server types do not support VLANs. This method
+        checks to see if the specified types were provided along with VLANs.
+        If they were, the module will raise an error informing the user that
+        they need to either remove the VLANs, or, change the ``type``.
+
+        Returns:
+            None: Returned if no VLANs are specified.
+        Raises:
+            F5ModuleError: Raised if the server type conflicts with VLANs.
+        """
+        if self.want.enabled_vlans is None:
+            return
+        if self.want.type == 'internal':
+            raise F5ModuleError(
+                "The 'internal' server type does not support VLANs."
+            )
+
+    def _override_vlans_if_all_specified(self):
+        """Overrides any specified VLANs if "all" VLANs are specified
+
+        The special setting "all VLANs" in a BIG-IP requires that no other VLANs
+        be specified. If you specify any number of VLANs, AND include the "all"
+        VLAN, this method will erase all of the other VLANs and only return the
+        "all" VLAN.
+        """
+        all_vlans = ['/common/all', 'all']
+        if self.want.enabled_vlans is not None:
+            if any(x for x in self.want.enabled_vlans if x.lower() in all_vlans):
+                self.want.update(
+                    dict(
+                        enabled_vlans=[],
+                        vlans_disabled=True,
+                        vlans_enabled=False
+                    )
+                )
+
+    def _override_port_by_type(self):
+        if self.want.type == 'dhcp':
+            self.want.update({'port': 67})
+        elif self.want.type == 'internal':
+            self.want.update({'port': 0})
+
+    def _override_protocol_by_type(self):
+        if self.want.type in ['stateless']:
+            self.want.update({'ip_protocol': 17})
+
+    def _override_standard_type_from_profiles(self):
+        """Overrides a standard virtual server type given the specified profiles
+
+        For legacy purposes, this module will do some basic overriding of the default
+        ``type`` parameter to support cases where changing the ``type`` only requires
+        specifying a different set of profiles.
+
+        Ideally, ``type`` would always be specified, but in the past, this module only
+        supported an implicit "standard" type. Module users would specify some different
+        types of profiles and this would change the type...in some circumstances.
+
+        Now that this module supports a ``type`` param, the implicit ``type`` changing
+        that used to happen is technically deprecated (and will be warned on). Users
+        should always specify a ``type`` now, or, accept the default standard type.
+
+        Returns:
+            void
+        """
+        if self.want.type == 'standard':
+            if self.want.has_fastl4_profiles:
+                self.want.update({'type': 'performance-l4'})
+                self.module.deprecate(
+                    msg="Specifying 'performance-l4' profiles on a 'standard' type is deprecated and will be removed.",
+                    version='2.6'
+                )
+            if self.want.has_fasthttp_profiles:
+                self.want.update({'type': 'performance-http'})
+                self.module.deprecate(
+                    msg="Specifying 'performance-http' profiles on a 'standard' type is deprecated and will be removed.",
+                    version='2.6'
+                )
+            if self.want.has_message_routing_profiles:
+                self.want.update({'type': 'message-routing'})
+                self.module.deprecate(
+                    msg="Specifying 'message-routing' profiles on a 'standard' type is deprecated and will be removed.",
+                    version='2.6'
+                )
+
+
+    def _check_source_and_destination_match(self):
+        """Verify that destination and source are of the same IP version
+
+        BIG-IP does not allow for mixing of the IP versions for destination and
+        source addresses. For example, a destination IPv6 address cannot be
+        associated with a source IPv4 address.
+
+        This method checks that you specified the same IP version for these
+        parameters
+
+        Raises:
+            F5ModuleError: Raised when the IP versions of source and destination differ.
+        """
+        if self.want.source and self.want.destination:
+            want = netaddr.IPNetwork(self.want.source)
+            have = netaddr.IPNetwork(self.want.destination_tuple.ip)
+            if want.version != have.version:
+                raise F5ModuleError(
+                    "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
+                )
+
+    def _verify_type_has_correct_ip_protocol(self):
+        if self.want.ip_protocol is None:
+            return
+        if self.want.type == 'standard':
+            # Standard supports
+            #
+            # - tcp
+            # - udp
+            # - sctp
+            # - ipsec-ah
+            # - ipsec esp
+            # - all protocols
+            if self.want.ip_protocol not in [6, 17, 132, 51, 50, 'any']:
+                raise F5ModuleError(
+                    "The 'standard' server type does not support the specified 'ip_protocol'."
+                )
+        elif self.want.type == 'performance-http':
+            # Perf HTTP supports
+            #
+            # - tcp
+            if self.want.ip_protocol not in [6]:
+                raise F5ModuleError(
+                    "The 'performance-http' server type does not support the specified 'ip_protocol'."
+                )
+        elif self.want.type == 'stateless':
+            # Stateless supports
+            #
+            # - udp
+            if self.want.ip_protocol not in [17]:
+                raise F5ModuleError(
+                    "The 'stateless' server type does not support the specified 'ip_protocol'."
+                )
+        elif self.want.type == 'dhcp':
+            # DHCP supports no IP protocols
+            if self.want.ip_protocol is not None:
+                raise F5ModuleError(
+                    "The 'dhcp' server type does not support an 'ip_protocol'."
+                )
+        elif self.want.type == 'internal':
+            # Internal supports
+            #
+            # - tcp
+            # - udp
+            if self.want.ip_protocol not in [6, 17]:
+                raise F5ModuleError(
+                    "The 'internal' server type does not support the specified 'ip_protocol'."
+                )
+        elif self.want.type == 'message-routing':
+            # Message Routing supports
+            #
+            # - tcp
+            # - udp
+            # - sctp
+            # - all protocols
+            if self.want.ip_protocol not in [6, 17, 132, 'all']:
+                raise F5ModuleError(
+                    "The 'message-routing' server type does not support the specified 'ip_protocol'."
+                )
+
+    def _verify_virtual_has_required_parameters(self):
+        """Verify that the virtual has required parameters
+
+        Virtual servers require several parameters that are not necessarily required
+        when updating the virtual. This method will check for the required params
+        upon creation.
+
+        Ansible supports ``default`` variables in an Argument Spec, but those defaults
+        apply to all operations; including create, update, and delete. Since users are not
+        required to always specify these parameters, we cannot use Ansible's facility.
+        If we did, and then users would be required to provide them when, for example,
+        they attempted to delete a virtual (even though they are not required to delete
+        a virtual.
+
+        Raises:
+             F5ModuleError: Raised when the user did not specify required parameters.
+        """
+        required_resources = ['destination', 'port']
+        if self.want.type == 'internal':
+            return
+        if all(getattr(self.want, v) is None for v in required_resources):
+            raise F5ModuleError(
+                "You must specify both of " + ', '.join(required_resources)
+            )
+
+    def _verify_default_persistence_profile_for_type(self):
+        """Verify that the server type supports default persistence profiles
+
+        Verifies that the specified server type supports default persistence profiles.
+        Some virtual servers do not support these types of profiles. This method will
+        check that the type actually supports what you are sending it.
+
+        Types that do not, at this time, support default persistence profiles include,
+
+        * dhcp
+        * message-routing
+        * reject
+        * stateless
+        * forwarding-ip
+        * forwarding-l2
+
+        Raises:
+            F5ModuleError: Raised if server type does not support default persistence profiles.
+        """
+        default_profile_not_allowed = [
+            'dhcp', 'message-routing', 'reject', 'stateless', 'forwarding-ip', 'forwarding-l2'
+        ]
+        if self.want.ip_protocol in default_profile_not_allowed:
+            raise F5ModuleError(
+                "The '{0}' server type does not support a 'default_persistence_profile'".format(self.want.type)
+            )
+
+    def _verify_fallback_persistence_profile_for_type(self):
+        """Verify that the server type supports fallback persistence profiles
+
+        Verifies that the specified server type supports fallback persistence profiles.
+        Some virtual servers do not support these types of profiles. This method will
+        check that the type actually supports what you are sending it.
+
+        Types that do not, at this time, support fallback persistence profiles include,
+
+        * dhcp
+        * message-routing
+        * reject
+        * stateless
+        * forwarding-ip
+        * forwarding-l2
+        * performance-http
+
+        Raises:
+            F5ModuleError: Raised if server type does not support fallback persistence profiles.
+        """
+        default_profile_not_allowed = [
+            'dhcp', 'message-routing', 'reject', 'stateless', 'forwarding-ip', 'forwarding-l2',
+            'performance-http'
+        ]
+        if self.want.ip_protocol in default_profile_not_allowed:
+            raise F5ModuleError(
+                "The '{0}' server type does not support a 'fallback_persistence_profile'".format(self.want.type)
+            )
+
+    def _update_persistence_profile(self):
+        # This must be changed back to a list to make a valid REST API
+        # value. The module manipulates this as a normal dictionary
+        if self.want.default_persistence_profile is not None:
+            self.want.update({'default_persistence_profile': self.want.default_persistence_profile})
+
+    def _verify_type_has_correct_profiles(self):
+        """Verify that specified server type does not include forbidden profiles
+
+        The type of the server determines the ``type``s of profiles that it accepts. This
+        method checks that the server ``type`` that you specified is indeed one that can
+        accept the profiles that you specified.
+
+        The common situations are
+
+        * ``standard`` types that include ``fasthttp``, ``fastl4``, or ``message routing`` profiles
+        * ``fasthttp`` types that are missing a ``fasthttp`` profile
+        * ``fastl4`` types that are missing a ``fastl4`` profile
+        * ``message-routing`` types that are missing ``diameter`` or ``sip`` profiles
+
+        Raises:
+            F5ModuleError: Raised when a validation check fails.
+        """
+        if self.want.type == 'standard':
+            if self.want.has_fasthttp_profiles:
+                raise F5ModuleError("A 'standard' type may not have 'fasthttp' profiles.")
+            if self.want.has_fastl4_profiles:
+                raise F5ModuleError("A 'standard' type may not have 'fastl4' profiles.")
+            if self.want.has_message_routing_profiles:
+                raise F5ModuleError("A 'standard' type may not have 'message-routing' profiles.")
+        elif self.want.type == 'performance-http':
+            if not self.want.has_fasthttp_profiles:
+                raise F5ModuleError("A 'fasthttp' type must have at least one 'fasthttp' profile.")
+        elif self.want.type == 'performance-l4':
+            if not self.want.has_fastl4_profiles:
+                raise F5ModuleError("A 'fastl4' type must have at least one 'fastl4' profile.")
+        elif self.want.type == 'message-routing':
+            if not self.want.has_message_routing_profiles:
+                raise F5ModuleError("A 'message-routing' type must have either a 'sip' or 'diameter' profile.")
+
+    def _set_default_ip_protocol(self):
+        if self.want.type == 'dhcp':
+            return
+        if self.want.ip_protocol is None:
+            self.want.update({'ip_protocol': 6})
+
+    def _set_default_profiles(self):
+        if self.want.type == 'standard':
+            if not self.want.profiles:
+                # Sets a default profiles when creating a new standard virtual.
+                #
+                # It appears that if no profiles are deliberately specified, then under
+                # certain circumstances, the server type will default to ``performance-l4``.
+                #
+                # It's unclear what these circumstances are, but they are met in issue 00093.
+                # If this block of profile setting code is removed, the virtual server's
+                # type will change to performance-l4 for some reason.
+                #
+                if self.want.ip_protocol == 6:
+                    self.want.update({'profiles': ['tcp']})
+                if self.want.ip_protocol == 17:
+                    self.want.update({'profiles': ['udp']})
+                if self.want.ip_protocol == 132:
+                    self.want.update({'profiles': ['sctp']})
+
+    def _verify_minimum_profile(self):
+        if self.want.profiles:
+            return None
+        if self.want.type == 'internal' and self.want.profiles == '':
+            raise F5ModuleError(
+                "An 'internal' server must have at least one profile relevant to its 'ip_protocol'. "
+                "For example, 'tcp', 'udp', or variations of those."
+            )
+
+    def _verify_dhcp_profile(self):
+        if self.want.type != 'dhcp':
+            return
+        if self.want.profiles is None:
+            return
+        have = set(self.read_dhcp_profiles_from_device())
+        want = set([x['fullPath'] for x in self.want.profiles])
+        if have.intersection(want):
+            return True
+        raise F5ModuleError(
+            "A dhcp profile, such as 'dhcpv4', or 'dhcpv6' must be specified when 'type' is 'dhcp'."
+        )
+
+    def _verify_fastl4_profile(self):
+        if self.want.type != 'performance-l4':
+            return
+        if self.want.profiles is None:
+            return
+        have = set(self.read_fastl4_profiles_from_device())
+        want = set([x['fullPath'] for x in self.want.profiles])
+        if have.intersection(want):
+            return True
+        raise F5ModuleError(
+            "A performance-l4 profile, such as 'fastL4', must be specified when 'type' is 'performance-l4'."
+        )
+
+    def _verify_fasthttp_profile(self):
+        if self.want.type != 'performance-http':
+            return
+        if self.want.profiles is None:
+            return
+        have = set(self.read_fasthttp_profiles_from_device())
+        want = set([x['fullPath'] for x in self.want.profiles])
+        if have.intersection(want):
+            return True
+        raise F5ModuleError(
+            "A performance-http profile, such as 'fasthttp', must be specified when 'type' is 'performance-http'."
+        )
+
+    def _verify_stateless_profile_on_create(self):
+        if self.want.type != 'stateless':
+            return
+        result = self._verify_stateless_profile()
+        if result is None:
+            raise F5ModuleError(
+                "A udp profile, must be specified when 'type' is 'stateless'."
+            )
+
+    def _verify_stateless_profile(self):
+        if self.want.type != 'stateless':
+            return
+        if self.want.profiles is None:
+            return
+        have = set(self.read_udp_profiles_from_device())
+        want = set([x['fullPath'] for x in self.want.profiles])
+        if have.intersection(want):
+            return True
+        raise F5ModuleError(
+            "A udp profile, must be specified when 'type' is 'stateless'."
+        )
+
+    def read_dhcp_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.dhcpv4s.get_collection()
+        result = [fq_name(self.want.partition, x.name) for x in collection]
+        collection = self.client.api.tm.ltm.profile.dhcpv6s.get_collection()
+        result += [fq_name(self.want.partition, x.name) for x in collection]
+        return result
+
+    def read_fastl4_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fastl4s.get_collection()
+        result = [fq_name(self.want.partition, x.name) for x in collection]
+        return result
+
+    def read_fasthttp_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.fasthttps.get_collection()
+        result = [fq_name(self.want.partition, x.name) for x in collection]
+        return result
+
+    def read_udp_profiles_from_device(self):
+        collection = self.client.api.tm.ltm.profile.udps.get_collection()
+        result = [fq_name(self.want.partition, x.name) for x in collection]
+        return result
+
+
 class Difference(object):
     def __init__(self, want, have=None):
         self.have = have
@@ -1270,6 +2095,10 @@ class Difference(object):
 
     @property
     def destination(self):
+        # The internal type does not support the 'destination' parameter, so it is ignored.
+        if self.want.type == 'internal':
+            return
+
         addr_tuple = [self.want.destination, self.want.port, self.want.route_domain]
         if all(x for x in addr_tuple if x is None):
             return None
@@ -1287,7 +2116,7 @@ class Difference(object):
 
         want = self.want._format_destination(address, self.want.port, self.want.route_domain)
         if want != self.have.destination:
-            return self.want._fqdn_name(want)
+            return fq_name(self.want.partition, want)
 
     @property
     def source(self):
@@ -1368,6 +2197,7 @@ class Difference(object):
             return None
         want = set([(p['name'], p['context'], p['fullPath']) for p in self.want.profiles])
         have = set([(p['name'], p['context'], p['fullPath']) for p in self.have.profiles])
+
         if len(have) == 0:
             return self.want.profiles
         elif len(have) == 1:
@@ -1375,15 +2205,22 @@ class Difference(object):
                 return self.want.profiles
         else:
             if not any(x[0] == 'tcp' for x in want):
-                have = set([x for x in have if x[0] != 'tcp'])
+                if self.want.type != 'stateless':
+                    have = set([x for x in have if x[0] != 'tcp'])
             if not any(x[0] == 'udp' for x in want):
                 have = set([x for x in have if x[0] != 'udp'])
             if not any(x[0] == 'sctp' for x in want):
-                have = set([x for x in have if x[0] != 'sctp'])
+                if self.want.type != 'stateless':
+                    have = set([x for x in have if x[0] != 'sctp'])
             want = set([(p[2], p[1]) for p in want])
             have = set([(p[2], p[1]) for p in have])
             if want != have:
                 return self.want.profiles
+
+    @property
+    def ip_protocol(self):
+        if self.want.ip_protocol != self.have.ip_protocol:
+            return self.want.ip_protocol
 
     @property
     def fallback_persistence_profile(self):
@@ -1405,13 +2242,17 @@ class Difference(object):
         if self.want.default_persistence_profile == '' and self.have.default_persistence_profile is None:
             return None
         if self.have.default_persistence_profile is None:
-            return [self.want.default_persistence_profile]
+            return dict(
+                default_persistence_profile=self.want.default_persistence_profile
+            )
         w_name = self.want.default_persistence_profile.get('name', None)
         w_partition = self.want.default_persistence_profile.get('partition', None)
         h_name = self.have.default_persistence_profile.get('name', None)
         h_partition = self.have.default_persistence_profile.get('partition', None)
         if w_name != h_name or w_partition != h_partition:
-            return [self.want.default_persistence_profile]
+            return dict(
+                default_persistence_profile=self.want.default_persistence_profile
+            )
 
     @property
     def policies(self):
@@ -1493,12 +2334,19 @@ class Difference(object):
         result = self._diff_complex_items(self.want.metadata, self.have.metadata)
         return result
 
+    @property
+    def type(self):
+        if self.want.type != self.have.type:
+            raise F5ModuleError(
+                "Changing the 'type' parameter is not supported."
+            )
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.have = ApiParameters()
+        self.have = ApiParameters(client=self.client)
         self.want = ModuleParameters(client=self.client, params=self.module.params)
         self.changes = UsableChanges()
 
@@ -1519,16 +2367,7 @@ class ModuleManager(object):
         changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
-        self._announce_deprecations(result)
         return result
-
-    def _announce_deprecations(self, result):
-        warnings = result.pop('__warnings', [])
-        for warning in warnings:
-            self.module.deprecate(
-                msg=warning['msg'],
-                version=warning['version']
-            )
 
     def present(self):
         if self.exists():
@@ -1543,6 +2382,9 @@ class ModuleManager(object):
 
     def update(self):
         self.have = self.read_current_from_device()
+        validator = VirtualServerValidator(module=self.module, client=self.client, have=self.have, want=self.want)
+        validator.check_update()
+
         if not self.should_update():
             return False
         if self.module.check_mode:
@@ -1602,38 +2444,10 @@ class ModuleManager(object):
         return result
 
     def create(self):
-        required_resources = ['destination', 'port']
+        validator = VirtualServerValidator(module=self.module, client=self.client, have=self.have, want=self.want)
+        validator.check_create()
 
         self._set_changed_options()
-        # This must be changed back to a list to make a valid REST API
-        # value. The module manipulates this as a normal dictionary
-        if self.want.default_persistence_profile is not None:
-            self.want.update({'default_persistence_profile': [self.want.default_persistence_profile]})
-
-        if self.want.destination is None:
-            raise F5ModuleError(
-                "'destination' must be specified when creating a virtual server"
-            )
-        if all(getattr(self.want, v) is None for v in required_resources):
-            raise F5ModuleError(
-                "You must specify both of " + ', '.join(required_resources)
-            )
-        if self.want.enabled_vlans is not None:
-            if any(x for x in self.want.enabled_vlans if x.lower() in ['/common/all', 'all']):
-                self.want.update(
-                    dict(
-                        enabled_vlans=[],
-                        vlans_disabled=True,
-                        vlans_enabled=False
-                    )
-                )
-        if self.want.source and self.want.destination:
-            want = netaddr.IPNetwork(self.want.source)
-            have = netaddr.IPNetwork(self.want.destination_tuple.ip)
-            if want.version != have.version:
-                raise F5ModuleError(
-                    "The source and destination addresses for the virtual server must be be the same type (IPv4 or IPv6)."
-                )
         if self.module.check_mode:
             return True
         self.create_on_device()
@@ -1659,11 +2473,11 @@ class ModuleManager(object):
         )
         params = result.attrs
         params.update(dict(kind=result.to_dict().get('kind', None)))
-        result = ApiParameters(params=params)
+        result = ApiParameters(params=params, client=self.client)
         return result
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.ltm.virtuals.virtual.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -1701,7 +2515,7 @@ class ArgumentSpec(object):
                 type='list',
                 aliases=['all_profiles'],
                 options=dict(
-                    name=dict(required=False),
+                    name=dict(),
                     context=dict(default='all', choices=['all', 'server-side', 'client-side'])
                 )
             ),
@@ -1731,7 +2545,21 @@ class ArgumentSpec(object):
                 fallback=(env_fallback, ['F5_PARTITION'])
             ),
             address_translation=dict(type='bool'),
-            port_translation=dict(type='bool')
+            port_translation=dict(type='bool'),
+            ip_protocol=dict(
+                choices=[
+                    'ah', 'bna', 'esp', 'etherip', 'gre', 'icmp', 'ipencap', 'ipv6',
+                    'ipv6-auth', 'ipv6-crypt', 'ipv6-icmp', 'isp-ip', 'mux', 'ospf',
+                    'sctp', 'tcp', 'udp', 'udplite'
+                ]
+            ),
+            type=dict(
+                default='standard',
+                choices=[
+                    'standard', 'forwarding-ip', 'forwarding-l2', 'internal', 'message-routing',
+                    'performance-http', 'performance-l4', 'reject', 'stateless', 'dhcp'
+                ]
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
