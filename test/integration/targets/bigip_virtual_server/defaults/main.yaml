@@ -7,7 +7,7 @@ vs_port2: 8080
 vs_profiles1:
   - http
   - clientssl
-vs_profiles_fasthttp:
+vs_profiles_fastl4:
   - fastL4
 vs_snat1: Automap
 node_host: 10.10.10.10

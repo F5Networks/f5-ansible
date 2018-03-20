@@ -20,7 +20,7 @@
     state: present
   register: result
 
-- name: Issue 00053 - Create virtual server
+- name: Issue 00053 - Assert Create virtual server
   assert:
     that:
       - result is changed
@@ -39,7 +39,7 @@
     state: present
   register: result
 
-- name: Issue 00053 - Create virtual server - Idempotent check
+- name: Issue 00053 - Assert Create virtual server - Idempotent check
   assert:
     that:
       - result is not changed
