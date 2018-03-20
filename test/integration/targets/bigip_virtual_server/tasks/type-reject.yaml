@@ -1,0 +1,55 @@
+---
+
+- name: Add reject virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: reject
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add reject virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add reject virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: reject
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add reject virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove reject virtual server
+  bigip_virtual_server:
+    type: reject
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove reject virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove reject virtual server - Idempotent check
+  bigip_virtual_server:
+    type: reject
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove reject virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

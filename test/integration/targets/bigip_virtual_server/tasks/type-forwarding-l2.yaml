@@ -1,0 +1,55 @@
+---
+
+- name: Add forwarding-l2 virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: forwarding-l2
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add forwarding-l2 virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add forwarding-l2 virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: forwarding-l2
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add forwarding-l2 virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove forwarding-l2 virtual server
+  bigip_virtual_server:
+    type: forwarding-l2
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove forwarding-l2 virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove forwarding-l2 virtual server - Idempotent check
+  bigip_virtual_server:
+    type: forwarding-l2
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove forwarding-l2 virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

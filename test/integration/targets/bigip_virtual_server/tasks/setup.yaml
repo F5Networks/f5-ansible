@@ -21,3 +21,16 @@
 - name: Create VLANs
   bigip_vlan:
     name: "{{ enabled_vlans }}"
+
+- name: Create a pool for testing stateless type
+  bigip_pool:
+    name: stateless-pool
+    lb_method: round-robin
+
+- name: Add a member without rate limit
+  bigip_pool_member:
+    connection_limit: 0
+    host: 10.10.10.10
+    pool: stateless-pool
+    port: 1234
+    rate_limit: 0

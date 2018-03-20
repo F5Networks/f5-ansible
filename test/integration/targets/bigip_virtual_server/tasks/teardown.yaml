@@ -12,3 +12,8 @@
     - policy1
     - policy2
     - policy3
+
+- name: Remove stateless pool
+  bigip_pool:
+    name: stateless-pool
+    state: absent

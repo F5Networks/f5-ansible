@@ -1,0 +1,59 @@
+---
+
+- name: Add performance-http virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: performance-http
+    profiles:
+      - fasthttp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add performance-http virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add performance-http virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: performance-http
+    profiles:
+      - fasthttp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add performance-http virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove performance-http virtual server
+  bigip_virtual_server:
+    type: performance-http
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove performance-http virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove performance-http virtual server - Idempotent check
+  bigip_virtual_server:
+    type: performance-http
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove performance-http virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

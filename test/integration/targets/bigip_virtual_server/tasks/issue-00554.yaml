@@ -223,3 +223,100 @@
   loop:
     - issue-00554-1
     - issue-00554-2
+
+- name: Issue 00554 - Add virtual server, ip_protocol and fasthttp - Expected failure
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    ip_protocol: udp
+    profiles:
+      - fasthttp
+  register: result
+  failed_when: result is success
+
+- name: Issue 00554 - Assert Add virtual server, ip_protocol and fasthttp - Expected failure
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00554 - Add virtual server, ip_protocol no profiles
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    ip_protocol: udp
+  register: result
+
+- name: Issue 00554 - Add virtual server, ip_protocol no profiles
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00554 - Add virtual server, ip_protocol no profiles - Idempotent check
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    ip_protocol: udp
+  register: result
+
+- name: Issue 00554 - Add virtual server, ip_protocol no profiles - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00554 - Change ip_protocol to string
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    ip_protocol: sctp
+    profiles:
+      - sctp
+  register: result
+
+- name: Issue 00554 - Change ip_protocol to string
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00554 - Change ip_protocol to string - Idempotent check
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    ip_protocol: sctp
+    profiles:
+      - sctp
+  register: result
+
+- name: Issue 00554 - Change ip_protocol to string - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00554 - Attempt to add fasthttp to virtual with existing protocol
+  bigip_virtual_server:
+    name: issue-00554-1
+    destination: 1.1.1.1
+    port: 80
+    profiles:
+      - fasthttp
+  register: result
+  failed_when: result is success
+
+- name: Issue 00554 - Attempt to add fasthttp to virtual with existing protocol
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Issue 00554 - Remove ip_protocol related virtuals
+  bigip_virtual_server:
+    name: issue-00554-2
+    state: absent
+  loop:
+    - issue-00554-1
+    - issue-00554-2

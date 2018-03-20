@@ -1,0 +1,91 @@
+---
+
+- name: Add dhcp virtual server without a DHCP profile - Expected failure
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: dhcp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+  failed_when: result is success
+
+- name: Assert Add dhcp virtual server without a DHCP profile - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Add dhcp virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: dhcp
+    name: "{{ vs_name }}"
+    profiles:
+      - dhcpv4
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add dhcp virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add dhcp virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: dhcp
+    name: "{{ vs_name }}"
+    profiles:
+      - dhcpv4
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add dhcp virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add dhcp virtual server, exists, no profiles
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: dhcp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add dhcp virtual server, exists, no profiles
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove dhcp virtual server
+  bigip_virtual_server:
+    type: dhcp
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove dhcp virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove dhcp virtual server - Idempotent check
+  bigip_virtual_server:
+    type: dhcp
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove dhcp virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

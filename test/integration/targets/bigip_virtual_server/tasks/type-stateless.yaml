@@ -1,0 +1,61 @@
+---
+
+- name: Add stateless virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: stateless
+    profiles:
+      - udp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    pool: stateless-pool
+    state: present
+  register: result
+
+- name: Assert Add stateless virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add stateless virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: stateless
+    profiles:
+      - udp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    pool: stateless-pool
+    state: present
+  register: result
+
+- name: Assert Add stateless virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove stateless virtual server
+  bigip_virtual_server:
+    type: stateless
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove stateless virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove stateless virtual server - Idempotent check
+  bigip_virtual_server:
+    type: stateless
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove stateless virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

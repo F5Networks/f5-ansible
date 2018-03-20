@@ -1,0 +1,76 @@
+---
+
+- name: Add performance-l4 virtual server without a fastL4 profile - Expected failure
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: performance-l4
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+  failed_when: result is success
+
+- name: Assert Add performance-l4 virtual server without a fastL4 profile - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Add performance-l4 virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: performance-l4
+    name: "{{ vs_name }}"
+    profiles:
+      - fastL4
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add performance-l4 virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add performance-l4 virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: performance-l4
+    name: "{{ vs_name }}"
+    profiles:
+      - fastL4
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add performance-l4 virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove performance-l4 virtual server
+  bigip_virtual_server:
+    type: performance-l4
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove performance-l4 virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove performance-l4 virtual server - Idempotent check
+  bigip_virtual_server:
+    type: performance-l4
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove performance-l4 virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed

@@ -1,0 +1,78 @@
+---
+
+- name: Add message-routing virtual server, incorrect profiles - Expected failure
+  bigip_virtual_server:
+    profiles: "{{ vs_profiles1 }}"
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: message-routing
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+  failed_when: result is success
+
+- name: Assert Add message-routing virtual server, incorrect profiles - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Add message-routing virtual server
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: message-routing
+    profiles:
+      - diameter
+      - tcp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add message-routing virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Add message-routing virtual server - Idempotent check
+  bigip_virtual_server:
+    description: "{{ vs_description }}"
+    destination: "{{ node_host }}"
+    type: message-routing
+    profiles:
+      - diameter
+      - tcp
+    name: "{{ vs_name }}"
+    port: "{{ vs_port1 }}"
+    state: present
+  register: result
+
+- name: Assert Add message-routing virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove message-routing virtual server
+  bigip_virtual_server:
+    type: message-routing
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove message-routing virtual server
+  assert:
+    that:
+      - result is changed
+
+- name: Remove message-routing virtual server - Idempotent check
+  bigip_virtual_server:
+    type: message-routing
+    name: "{{ vs_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove message-routing virtual server - Idempotent check
+  assert:
+    that:
+      - result is not changed
