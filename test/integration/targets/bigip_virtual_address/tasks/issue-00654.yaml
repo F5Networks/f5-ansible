@@ -1,0 +1,28 @@
+---
+
+- name: Issue 00654 - Add virtual address
+  bigip_virtual_address:
+    name: foo
+    address: 1.1.1.1
+  register: result
+
+- name: Issue 00654 - Assert Add virtual address
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00654 - Add virtual address - Idempotent check
+  bigip_virtual_address:
+    name: foo
+    address: 1.1.1.1
+  register: result
+
+- name: Issue 00654 - Assert Add virtual address - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00654 - Remove virtual address
+  bigip_virtual_address:
+    name: foo
+    state: absent
