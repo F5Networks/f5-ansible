@@ -738,22 +738,6 @@ class Parameters(AnsibleF5Parameters):
         'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
     ]
 
-    services_map = {
-        'ftp': 21,
-        'http': 80,
-        'https': 443,
-        'telnet': 23,
-        'pptp': 1723,
-        'smtp': 25,
-        'snmp': 161,
-        'snmp-trap': 162,
-        'ssh': 22,
-        'tftp': 69,
-        'isakmp': 500,
-        'mqtt': 1883,
-        'mqtt-tls': 8883
-    }
-
     ip_protocols_map = [
         ('ah', 51),
         ('bna', 49),
@@ -1178,6 +1162,22 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
+    services_map = {
+        'ftp': 21,
+        'http': 80,
+        'https': 443,
+        'telnet': 23,
+        'pptp': 1723,
+        'smtp': 25,
+        'snmp': 161,
+        'snmp-trap': 162,
+        'ssh': 22,
+        'tftp': 69,
+        'isakmp': 500,
+        'mqtt': 1883,
+        'mqtt-tls': 8883
+    }
+
     def _handle_profile_context(self, tmp):
         if 'context' not in tmp:
             tmp['context'] = 'all'
