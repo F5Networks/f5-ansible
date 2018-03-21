@@ -119,6 +119,20 @@ options:
         The result is that the virtual server will listen on any port.
       - When C(type) is C(dhcp), this module will force the C(port) parameter to be C(67).
       - When C(type) is C(internal), this module will force the C(port) parameter to be C(0).
+      - In addition to specifying a port number, a select number of service names may also
+        be provided.
+      - The string C(ftp) may be substituted for for port C(21).
+      - The string C(http) may be substituted for for port C(80).
+      - The string C(https) may be substituted for for port C(443).
+      - The string C(telnet) may be substituted for for port C(23).
+      - The string C(smtp) may be substituted for for port C(25).
+      - The string C(snmp) may be substituted for for port C(161).
+      - The string C(snmp-trap) may be substituted for for port C(162).
+      - The string C(ssh) may be substituted for for port C(22).
+      - The string C(tftp) may be substituted for for port C(69).
+      - The string C(isakmp) may be substituted for for port C(500).
+      - The string C(mqtt) may be substituted for for port C(1883).
+      - The string C(mqtt-tls) may be substituted for for port C(8883).
   profiles:
     description:
       - List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides
@@ -724,6 +738,22 @@ class Parameters(AnsibleF5Parameters):
         'diametersession', 'radius', 'ftp', 'tftp', 'dns', 'pptp', 'fix'
     ]
 
+    services_map = {
+        'ftp': 21,
+        'http': 80,
+        'https': 443,
+        'telnet': 23,
+        'pptp': 1723,
+        'smtp': 25,
+        'snmp': 161,
+        'snmp-trap': 162,
+        'ssh': 22,
+        'tftp': 69,
+        'isakmp': 500,
+        'mqtt': 1883,
+        'mqtt-tls': 8883
+    }
+
     ip_protocols_map = [
         ('ah', 51),
         ('bna', 49),
@@ -1217,6 +1247,9 @@ class ModuleParameters(Parameters):
             return None
         if self._values['port'] in ['*', 'any']:
             return 0
+        if self._values['port'] in self.services_map:
+            port = self._values['port']
+            self._values['port'] = self.services_map[port]
         self._check_port()
         return int(self._values['port'])
 
@@ -2552,9 +2585,7 @@ class ArgumentSpec(object):
             destination=dict(
                 aliases=['address', 'ip']
             ),
-            port=dict(
-                type='int'
-            ),
+            port=dict(),
             profiles=dict(
                 type='list',
                 aliases=['all_profiles'],

@@ -1,0 +1,771 @@
+---
+
+- name: Issue 00675 - Add virtual server, ftp
+  bigip_virtual_server:
+    name: issue-00675-ftp
+    destination: 1.1.1.1
+    port: ftp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, ftp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, ftp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-ftp
+    destination: 1.1.1.1
+    port: ftp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, ftp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, http
+  bigip_virtual_server:
+    name: issue-00675-http
+    destination: 1.1.1.2
+    port: http
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, http
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, http - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-http
+    destination: 1.1.1.2
+    port: http
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, http - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, https
+  bigip_virtual_server:
+    name: issue-00675-https
+    destination: 1.1.1.3
+    port: https
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, https
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, https - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-https
+    destination: 1.1.1.3
+    port: https
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, https - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, telnet
+  bigip_virtual_server:
+    name: issue-00675-telnet
+    destination: 1.1.1.4
+    port: telnet
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, telnet
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, telnet - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-telnet
+    destination: 1.1.1.4
+    port: telnet
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, telnet - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, pptp
+  bigip_virtual_server:
+    name: issue-00675-pptp
+    destination: 1.1.1.5
+    port: pptp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, pptp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, pptp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-pptp
+    destination: 1.1.1.5
+    port: pptp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, pptp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, smtp
+  bigip_virtual_server:
+    name: issue-00675-smtp
+    destination: 1.1.1.6
+    port: smtp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, smtp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, smtp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-smtp
+    destination: 1.1.1.6
+    port: smtp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, smtp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, snmp
+  bigip_virtual_server:
+    name: issue-00675-snmp
+    destination: 1.1.1.7
+    port: snmp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, snmp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, snmp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-snmp
+    destination: 1.1.1.7
+    port: snmp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, snmp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, snmp-trap
+  bigip_virtual_server:
+    name: issue-00675-snmp-trap
+    destination: 1.1.1.8
+    port: snmp-trap
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, snmp-trap
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, snmp-trap - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-snmp-trap
+    destination: 1.1.1.8
+    port: snmp-trap
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, snmp-trap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, ssh
+  bigip_virtual_server:
+    name: issue-00675-ssh
+    destination: 1.1.1.8
+    port: ssh
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, ssh
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, ssh - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-ssh
+    destination: 1.1.1.8
+    port: ssh
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, ssh - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, tftp
+  bigip_virtual_server:
+    name: issue-00675-tftp
+    destination: 1.1.1.9
+    port: tftp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, tftp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, tftp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-tftp
+    destination: 1.1.1.9
+    port: tftp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, tftp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, isakmp
+  bigip_virtual_server:
+    name: issue-00675-isakmp
+    destination: 1.1.1.9
+    port: isakmp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, isakmp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, isakmp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-isakmp
+    destination: 1.1.1.9
+    port: isakmp
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, isakmp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, mqtt
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    destination: 1.1.1.10
+    port: mqtt
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, mqtt
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, mqtt - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    destination: 1.1.1.10
+    port: mqtt
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, mqtt - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Add virtual server, mqtt-tls
+  bigip_virtual_server:
+    name: issue-00675-mqtt-tls
+    destination: 1.1.1.11
+    port: mqtt-tls
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, mqtt-tls
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Add virtual server, mqtt-tls - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt-tls
+    destination: 1.1.1.11
+    port: mqtt-tls
+  register: result
+
+- name: Issue 00675 - Assert Add virtual server, mqtt-tls - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, ftp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: ftp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, ftp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, ftp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: ftp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, ftp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, http
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: http
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, http
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, http - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: http
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, http - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, https
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: https
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, https
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, https - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: https
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, https - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, telnet
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: telnet
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, telnet
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, telnet - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: telnet
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, telnet - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, pptp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: pptp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, pptp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, pptp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: pptp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, pptp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, smtp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: smtp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, smtp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, smtp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: smtp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, smtp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, snmp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: snmp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, snmp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, snmp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: snmp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, snmp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, snmp-trap
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: snmp-trap
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, snmp-trap
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, snmp-trap - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: snmp-trap
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, snmp-trap - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, ssh
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: ssh
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, ssh
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, ssh - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: ssh
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, ssh - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, tftp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: tftp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, tftp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, tftp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: tftp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, tftp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, isakmp
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: isakmp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, isakmp
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, isakmp - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: isakmp
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, isakmp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+- name: Issue 00675 - Change virtual server, mqtt
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: mqtt
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, mqtt
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, mqtt - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: mqtt
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, mqtt - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+
+
+- name: Issue 00675 - Change virtual server, mqtt-tls
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: mqtt-tls
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, mqtt-tls
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00675 - Change virtual server, mqtt-tls - Idempotent check
+  bigip_virtual_server:
+    name: issue-00675-mqtt
+    port: mqtt-tls
+  register: result
+
+- name: Issue 00675 - Assert Change virtual server, mqtt-tls - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+
+
+
+- name: Issue 00675 - Remove virtual servers
+  bigip_virtual_server:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - issue-00675-ftp
+    - issue-00675-http
+    - issue-00675-https
+    - issue-00675-telnet
+    - issue-00675-pptp
+    - issue-00675-smtp
+    - issue-00675-snmp
+    - issue-00675-snmp-trap
+    - issue-00675-ssh
+    - issue-00675-tftp
+    - issue-00675-isakmp
+    - issue-00675-mqtt
+    - issue-00675-mqtt-tls
