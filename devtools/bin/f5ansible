@@ -49,7 +49,7 @@ UPSTREAM_MODULE = '{0}/lib/ansible/modules/network/f5/{1}.py'
 DOWNSTREAM_FIXTURE_FILE = '{0}/test/unit/fixtures/{1}'
 DOWNSTREAM_UNIT_TEST = '{0}/test/unit/test_{1}.py'
 DOWNSTREAM_INTEGRATION_TEST = '{0}/test/integration/targets/{1}'
-DOWNSTREAM_MODULE = '{0}/library/{1}.py'
+DOWNSTREAM_MODULE = '{0}/library/modules/{1}.py'
 
 
 class Root(object):
@@ -181,7 +181,7 @@ def _build_container(service, site_override):
 
 
 def module_file_present(module):
-    module_file = '{0}/library/{1}.py'.format(TOP_LEVEL_DIR, module)
+    module_file = '{0}/library/modules/{1}.py'.format(TOP_LEVEL_DIR, module)
     if os.path.exists(module_file):
         logger.debug('Module file "{0}" exists'.format(module_file))
         return True
@@ -307,7 +307,7 @@ def stub_playbook_file(module):
 
 def stub_library_file(module, extension):
     # Create your new module python file
-    library_file = '{0}/library/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
+    library_file = '{0}/library/modules/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
 
     template = JINJA_ENV.get_template('library_module.py')
     content = template.render(module=module)
@@ -358,7 +358,7 @@ def unstub_playbook_file(module):
 
 
 def unstub_library_file(module, extension):
-    library_file = '{0}/library/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
+    library_file = '{0}/library/modules/{1}{2}'.format(TOP_LEVEL_DIR, module, extension)
     if os.path.exists(library_file):
         os.remove(library_file)
 

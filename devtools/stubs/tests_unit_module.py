@@ -21,10 +21,10 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.{{ module }} import ApiParameters
-    from library.{{ module }} import ModuleParameters
-    from library.{{ module }} import ModuleManager
-    from library.{{ module }} import ArgumentSpec
+    from library.modules.{{ module }} import ApiParameters
+    from library.modules.{{ module }} import ModuleParameters
+    from library.modules.{{ module }} import ModuleManager
+    from library.modules.{{ module }} import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
