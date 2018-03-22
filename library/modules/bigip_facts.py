@@ -97,13 +97,10 @@ except ImportError:
     pass  # Handle via f5_utils.bigsuds_found
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.f5_utils import bigip_api, bigsuds_found
 from ansible.module_utils.six.moves import map, zip
 
-try:
-    from library.module_utils.network.f5.common import f5_argument_spec
-except ImportError:
-    from ansible.module_utils.network.f5.common import f5_argument_spec
+from ansible.module_utils.network.f5.legacy import bigip_api, bigsuds_found
+from ansible.module_utils.network.f5.common import f5_argument_spec
 
 
 class F5(object):

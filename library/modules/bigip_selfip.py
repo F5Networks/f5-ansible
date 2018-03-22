@@ -190,27 +190,27 @@ allow_service:
   sample: ['igmp:0','tcp:22','udp:53']
 address:
   description: The address for the Self IP
-  returned: created
+  returned: changed
   type: string
   sample: 192.0.2.10
 name:
   description: The name of the Self IP
-  returned: created, changed and deleted
+  returned: created
   type: string
   sample: self1
 netmask:
   description: The netmask of the Self IP
-  returned: changed and created
+  returned: changed
   type: string
   sample: 255.255.255.0
 traffic_group:
   description: The traffic group that the Self IP is a member of
-  returned: changed and created
+  returned: changed
   type: string
   sample: traffic-group-local-only
 vlan:
   description: The VLAN set on the Self IP
-  returned: changed and created
+  returned: changed
   type: string
   sample: vlan1
 '''
