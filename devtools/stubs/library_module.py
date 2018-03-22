@@ -55,7 +55,6 @@ param2:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-
 from ansible.module_utils.network.f5.bigip import HAS_F5SDK
 from ansible.module_utils.network.f5.bigip import F5Client
 from ansible.module_utils.network.f5.common import F5ModuleError
@@ -63,6 +62,7 @@ from ansible.module_utils.network.f5.common import AnsibleF5Parameters
 from ansible.module_utils.network.f5.common import cleanup_tokens
 from ansible.module_utils.network.f5.common import fq_name
 from ansible.module_utils.network.f5.common import f5_argument_spec
+
 try:
     from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
