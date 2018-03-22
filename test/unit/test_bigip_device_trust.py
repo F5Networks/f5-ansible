@@ -20,11 +20,11 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.bigip_device_trust import Parameters
-    from library.bigip_device_trust import ModuleManager
-    from library.bigip_device_trust import ArgumentSpec
-    from library.bigip_device_trust import HAS_F5SDK
-    from library.bigip_device_trust import HAS_NETADDR
+    from library.modules.bigip_device_trust import Parameters
+    from library.modules.bigip_device_trust import ModuleManager
+    from library.modules.bigip_device_trust import ArgumentSpec
+    from library.modules.bigip_device_trust import HAS_F5SDK
+    from library.modules.bigip_device_trust import HAS_NETADDR
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args

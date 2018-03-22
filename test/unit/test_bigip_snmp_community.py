@@ -21,12 +21,12 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.bigip_snmp_community import ApiParameters
-    from library.bigip_snmp_community import ModuleParameters
-    from library.bigip_snmp_community import ModuleManager
-    from library.bigip_snmp_community import V1Manager
-    from library.bigip_snmp_community import V2Manager
-    from library.bigip_snmp_community import ArgumentSpec
+    from library.modules.bigip_snmp_community import ApiParameters
+    from library.modules.bigip_snmp_community import ModuleParameters
+    from library.modules.bigip_snmp_community import ModuleManager
+    from library.modules.bigip_snmp_community import V1Manager
+    from library.modules.bigip_snmp_community import V2Manager
+    from library.modules.bigip_snmp_community import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args

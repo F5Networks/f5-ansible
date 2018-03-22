@@ -20,9 +20,9 @@ from ansible.compat.tests.mock import Mock
 from ansible.compat.tests.mock import patch
 
 try:
-    from library.bigiq_utility_license_assignment import Parameters
-    from library.bigiq_utility_license_assignment import ModuleManager
-    from library.bigiq_utility_license_assignment import ArgumentSpec
+    from library.modules.bigiq_utility_license_assignment import Parameters
+    from library.modules.bigiq_utility_license_assignment import ModuleManager
+    from library.modules.bigiq_utility_license_assignment import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     from test.unit.modules.utils import set_module_args
