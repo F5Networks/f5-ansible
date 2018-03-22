@@ -169,21 +169,34 @@ server:
 import re
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-from ansible.module_utils.network.f5.bigip import F5Client
-from ansible.module_utils.network.f5.common import F5ModuleError
-from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-from ansible.module_utils.network.f5.common import cleanup_tokens
-from ansible.module_utils.network.f5.common import f5_argument_spec
-from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from ansible.module_utils.six import iteritems
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from distutils.version import LooseVersion
 
 try:
-    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    from f5.utils.responses.handlers import Stats
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.utils.responses.handlers import Stats
+    except ImportError:
+        HAS_F5SDK = False
 except ImportError:
-    HAS_F5SDK = False
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.utils.responses.handlers import Stats
+    except ImportError:
+        HAS_F5SDK = False
 
 try:
     import json

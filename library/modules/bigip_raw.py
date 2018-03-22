@@ -146,19 +146,31 @@ from ansible.module_utils.network.common.parsing import FailedConditionsError
 from ansible.module_utils.network.common.parsing import Conditional
 from ansible.module_utils.network.common.utils import ComplexList
 from ansible.module_utils.network.common.utils import to_list
-from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-from ansible.module_utils.network.f5.bigip import F5Client
-from ansible.module_utils.network.f5.common import F5ModuleError
-from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-from ansible.module_utils.network.f5.common import cleanup_tokens
-from ansible.module_utils.network.f5.common import f5_argument_spec
 from ansible.module_utils.six import string_types
 from collections import deque
 
 try:
-    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 except ImportError:
-    HAS_F5SDK = False
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

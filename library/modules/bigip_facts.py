@@ -92,9 +92,14 @@ import re
 import traceback
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.network.f5.legacy import bigip_api, bigsuds_found
-from ansible.module_utils.network.f5.common import f5_argument_spec
 from ansible.module_utils.six.moves import map, zip
+
+try:
+    from library.module_utils.network.f5.legacy import bigip_api, bigsuds_found
+    from library.module_utils.network.f5.common import f5_argument_spec
+except ImportError:
+    from ansible.module_utils.network.f5.legacy import bigip_api, bigsuds_found
+    from ansible.module_utils.network.f5.common import f5_argument_spec
 
 try:
     from suds import MethodNotFound, WebFault
