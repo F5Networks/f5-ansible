@@ -36,3 +36,4 @@ examples/hosts.ini
 **/.DS_Store
 **/*.secret
 **/*.iso
+**/*.egg-info
