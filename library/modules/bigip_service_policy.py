@@ -36,6 +36,17 @@ options:
       - The port misuse policy to attach to the service policy.
       - Requires that C(afm) be provisioned to use. If C(afm) is not provisioned, this parameter
         will be ignored.
+  state:
+    description:
+      - Whether the resource should exist or not.
+    default: present
+    choices:
+      - present
+      - absent
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -67,16 +78,6 @@ port_misuse_policy:
   returned: changed
   type: string
   sample: /Common/misuse1
-timer_policy_enabled:
-  description: Whether the timer policy of the resource is enabled or not.
-  returned: changed
-  type: bool
-  sample: True
-port_misuse_policy_enabled:
-  description: Whether the port misuse policy of the resource is enabled or not.
-  returned: changed
-  type: bool
-  sample: False
 description:
   description: New description of the resource.
   returned: changed
@@ -87,19 +88,30 @@ description:
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
 
-# Upstream Ansible
-from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-from ansible.module_utils.network.f5.bigip import F5Client
-from ansible.module_utils.network.f5.common import F5ModuleError
-from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-from ansible.module_utils.network.f5.common import cleanup_tokens
-from ansible.module_utils.network.f5.common import fq_name
-from ansible.module_utils.network.f5.common import f5_argument_spec
-
 try:
-    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.common import F5ModuleError
+    from library.module_utils.network.f5.common import AnsibleF5Parameters
+    from library.module_utils.network.f5.common import cleanup_tokens
+    from library.module_utils.network.f5.common import fq_name
+    from library.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 except ImportError:
-    HAS_F5SDK = False
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.common import F5ModuleError
+    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+    from ansible.module_utils.network.f5.common import cleanup_tokens
+    from ansible.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import f5_argument_spec
+    try:
+        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+    except ImportError:
+        HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -219,6 +231,14 @@ class ModuleManager(object):
             return True
         return False
 
+    def module_provisioned(self, module):
+        resource = self.client.api.tm.sys.dbs.db.load(
+            name='provisioned.cpu.{0}'.format(module)
+        )
+        if int(resource.value) == 0:
+            return False
+        return True
+
     def should_update(self):
         result = self._update_changed_options()
         if result:
@@ -270,6 +290,11 @@ class ModuleManager(object):
         self.have = self.read_current_from_device()
         if not self.should_update():
             return False
+        if self.want.port_misuse_policy:
+            if not self.module_provisioned('afm'):
+                raise F5ModuleError(
+                    "To configure a 'port_misuse_policy', you must have AFM provisioned."
+                )
         if self.module.check_mode:
             return True
         self.update_on_device()
@@ -285,6 +310,11 @@ class ModuleManager(object):
 
     def create(self):
         self._set_changed_options()
+        if self.want.port_misuse_policy:
+            if not self.module_provisioned('afm'):
+                raise F5ModuleError(
+                    "To configure a 'port_misuse_policy', you must have AFM provisioned."
+                )
         if self.module.check_mode:
             return True
         self.create_on_device()
