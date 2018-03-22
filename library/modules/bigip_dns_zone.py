@@ -18,7 +18,7 @@ short_description: Manages DNS zones on a BIG-IP
 description:
   - This module manages DNS zones described in the iControl Management
     documentation
-version_added: "2.2"
+version_added: 2.2
 options:
   server:
     description:

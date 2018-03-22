@@ -145,36 +145,18 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
-
-HAS_DEVEL_IMPORTS = False
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import fq_name
+from ansible.module_utils.network.f5.common import f5_argument_spec
 
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 try:
     import netaddr
@@ -224,7 +206,7 @@ class ModuleParameters(Parameters):
     def vlan(self):
         if self._values['vlan'] is None:
             return None
-        return fqdn_name(self.partition, self._values['vlan'])
+        return fq_name(self.partition, self._values['vlan'])
 
     @property
     def gateway_address(self):

@@ -18,7 +18,7 @@ module: bigip_service
 short_description: Manage BIG-IP service states
 description:
   - Manage BIG-IP service states
-version_added: "2.2"
+version_added: 2.2
 options:
   server:
     description:

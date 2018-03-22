@@ -18,7 +18,7 @@ module: iworkflow_iapp_template
 short_description: Manages iApp templates
 description:
   - Manages TCL iApp services on a BIG-IP.
-version_added: "2.4"
+version_added: 2.4
 options:
   name:
     description:

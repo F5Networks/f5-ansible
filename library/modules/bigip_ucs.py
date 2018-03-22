@@ -18,7 +18,7 @@ module: bigip_ucs
 short_description: Manage upload, installation and removal of UCS files
 description:
    - Manage upload, installation and removal of UCS files.
-version_added: "2.4"
+version_added: 2.4
 options:
   include_chassis_level_config:
     description:
@@ -170,38 +170,19 @@ import re
 import time
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import f5_argument_spec
 from ansible.module_utils.six import iteritems
 from distutils.version import LooseVersion
 
-HAS_DEVEL_IMPORTS = False
-
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 try:
     from collections import OrderedDict

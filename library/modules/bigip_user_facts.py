@@ -18,7 +18,7 @@ module: bigip_user_facts
 short_description: Retrieve user account attributes from a BIG-IP
 description:
    - Retrieve user account attributes from a BIG-IP
-version_added: "2.2"
+version_added: 2.2
 options:
   username_credential:
     description:

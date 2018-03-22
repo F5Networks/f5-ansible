@@ -22,7 +22,7 @@ description:
     assume the use of the administrator account, the user of this module
     will need to include the C(tenant) option if they want to use this
     module with the admin account.
-version_added: "2.4"
+version_added: 2.4
 options:
   tenant:
     description:

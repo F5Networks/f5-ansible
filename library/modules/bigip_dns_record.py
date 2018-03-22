@@ -17,7 +17,7 @@ module: bigip_dns_record
 short_description: Manage DNS resource records on a BIG-IP
 description:
   - Manage DNS resource records on a BIG-IP
-version_added: "2.2"
+version_added: 2.2
 options:
   user:
     description:

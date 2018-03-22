@@ -53,7 +53,7 @@ options:
     aliases:
       - ip
       - host
-    version_added: "2.2"
+    version_added: 2.2
   fqdn:
     description:
       - FQDN name of the pool member. This can be any name that is a valid RFC 1123 DNS
@@ -66,7 +66,7 @@ options:
         provided. This parameter cannot be updated after it is set.
     aliases:
       - hostname
-    version_added: "2.5"
+    version_added: 2.5
   port:
     description:
       - Pool member port.
@@ -253,38 +253,19 @@ address:
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-
-HAS_DEVEL_IMPORTS = False
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import fq_name
+from ansible.module_utils.network.f5.common import is_valid_hostname
+from ansible.module_utils.network.f5.common import f5_argument_spec
 
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import is_valid_hostname
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import is_valid_hostname
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 try:
     import netaddr
@@ -351,7 +332,7 @@ class ModuleParameters(Parameters):
 
     @property
     def pool(self):
-        return fqdn_name(self.want.partition, self._values['pool'])
+        return fq_name(self.want.partition, self._values['pool'])
 
     @property
     def port(self):

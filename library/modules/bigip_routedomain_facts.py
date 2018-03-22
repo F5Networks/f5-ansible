@@ -18,7 +18,7 @@ module: bigip_routedomain_facts
 short_description: Retrieve route domain attributes from a BIG-IP
 description:
   - Retrieve route domain attributes from a BIG-IP
-version_added: "2.2"
+version_added: 2.2
 options:
   server:
     description:

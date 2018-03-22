@@ -24,7 +24,7 @@ description:
     configuration to disk. Since the F5 module only manipulate running
     configuration, it is important that you utilize this module to save
     that running config.
-version_added: "2.4"
+version_added: 2.4
 options:
   save:
     description:
@@ -109,23 +109,23 @@ stdout_lines:
 import os
 import tempfile
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible.module_utils.network.f5.bigip import HAS_F5SDK
 from ansible.module_utils.network.f5.bigip import F5Client
 from ansible.module_utils.network.f5.common import F5ModuleError
 from ansible.module_utils.network.f5.common import AnsibleF5Parameters
 from ansible.module_utils.network.f5.common import cleanup_tokens
 from ansible.module_utils.network.f5.common import f5_argument_spec
+
 try:
     from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
     HAS_F5SDK = False
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 class Parameters(AnsibleF5Parameters):

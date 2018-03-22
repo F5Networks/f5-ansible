@@ -130,30 +130,12 @@ param2:
 import re
 
 from ansible.module_utils.basic import AnsibleModule
-
-HAS_DEVEL_IMPORTS = False
-
-try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigiq import F5RestClient
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import exit_json
-    from library.module_utils.network.f5.common import fail_json
-    HAS_DEVEL_IMPORTS = True
-except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigiq import F5RestClient
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    from ansible.module_utils.network.f5.common import exit_json
-    from ansible.module_utils.network.f5.common import fail_json
+from ansible.module_utils.network.f5.bigiq import F5RestClient
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import f5_argument_spec
+from ansible.module_utils.network.f5.common import exit_json
+from ansible.module_utils.network.f5.common import fail_json
 
 try:
     import netaddr

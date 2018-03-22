@@ -21,7 +21,7 @@ description:
     module. Therefore, this module should only be used on BIG-IP systems that
     have the GTM module enabled. The SOAP connection has a number of known
     limitations when it comes to updating Views. It is only possible to
-version_added: "2.2"
+version_added: 2.2
 options:
   user:
     description:

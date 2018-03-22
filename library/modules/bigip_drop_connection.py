@@ -19,7 +19,7 @@ module: bigip_sys_connection
 short_description: "Run commands on F5 devices via api"
 description:
     - "Run commands on F5 devices via api"
-version_added: "2.2"
+version_added: 2.2
 author: 'Michael Perzel'
 notes:
     - "F5 developed module 'f5-sdk' required"

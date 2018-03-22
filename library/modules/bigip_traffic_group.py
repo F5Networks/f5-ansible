@@ -18,7 +18,7 @@ module: bigip_traffic_group
 short_description: Manages traffic groups on BIG-IP
 description:
   - Supports managing traffic groups and their attributes on a BIG-IP.
-version_added: "2.5"
+version_added: 2.5
 options:
   name:
     description:
@@ -28,7 +28,6 @@ options:
     description:
       - Device partition to manage resources on.
     default: Common
-    version_added: 2.5
   state:
     description:
       - When C(present), ensures that the traffic group exists.
@@ -37,7 +36,6 @@ options:
     choices:
       - present
       - absent
-    version_added: 2.5
   mac_address:
     description:
       - Specifies the floating Media Access Control (MAC) address associated with the floating IP addresses
@@ -72,36 +70,17 @@ RETURN = r'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
-
-HAS_DEVEL_IMPORTS = False
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import f5_argument_spec
 
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):

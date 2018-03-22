@@ -18,7 +18,7 @@ module: bigip_profile_client_ssl
 short_description: Manages client SSL profiles on a BIG-IP
 description:
   - Manages client SSL profiles on a BIG-IP.
-version_added: "2.5"
+version_added: 2.5
 options:
   name:
     description:
@@ -130,37 +130,19 @@ import os
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import fq_name
+from ansible.module_utils.network.f5.common import f5_argument_spec
 from ansible.module_utils.six import iteritems
 
-HAS_DEVEL_IMPORTS = False
-
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 
 class Parameters(AnsibleF5Parameters):
@@ -182,11 +164,6 @@ class Parameters(AnsibleF5Parameters):
 
 
 class ModuleParameters(Parameters):
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
-
     def _key_filename(self, name):
         if name.endswith('.key'):
             return name
@@ -203,14 +180,14 @@ class ModuleParameters(Parameters):
         if 'chain' not in item or item['chain'] == 'none':
             result = 'none'
         else:
-            result = self._cert_filename(self._fqdn_name(item['chain']))
+            result = self._cert_filename(fq_name(self.partition, item['chain']))
         return result
 
     @property
     def parent(self):
         if self._values['parent'] is None:
             return None
-        result = self._fqdn_name(self._values['parent'])
+        result = fq_name(self.partition, self._values['parent'])
         return result
 
     @property
@@ -234,8 +211,8 @@ class ModuleParameters(Parameters):
             filename, ex = os.path.splitext(name)
             tmp = {
                 'name': filename,
-                'cert': self._fqdn_name(cert),
-                'key': self._fqdn_name(key),
+                'cert': fq_name(self.partition, cert),
+                'key': fq_name(self.partition, key),
                 'chain': chain
             }
             if 'passphrase' in item:

@@ -19,7 +19,7 @@ module: bigip_facts
 short_description: Collect facts from F5 BIG-IP devices
 description:
   - Collect facts from F5 BIG-IP devices via iControl SOAP API
-version_added: "1.6"
+version_added: 1.6
 author:
   - Matt Hite (@mhite)
   - Tim Rupp (@caphrim007)
@@ -91,16 +91,15 @@ import fnmatch
 import re
 import traceback
 
+from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.network.f5.legacy import bigip_api, bigsuds_found
+from ansible.module_utils.network.f5.common import f5_argument_spec
+from ansible.module_utils.six.moves import map, zip
+
 try:
     from suds import MethodNotFound, WebFault
 except ImportError:
     pass  # Handle via f5_utils.bigsuds_found
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.six.moves import map, zip
-
-from ansible.module_utils.network.f5.legacy import bigip_api, bigsuds_found
-from ansible.module_utils.network.f5.common import f5_argument_spec
 
 
 class F5(object):

@@ -22,7 +22,7 @@ description:
     in the form of L4/L7 services. The Service Template can be configured
     to allow tenants to change certain values of the template such as
     the IP address of a VIP, or the port that a Virtual Server listens on.
-version_added: "2.4"
+version_added: 2.4
 options:
   name:
     description:

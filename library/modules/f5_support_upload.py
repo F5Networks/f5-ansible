@@ -18,7 +18,7 @@ module: f5_support_upload
 short_description: Manage BIG-IP partitions
 description:
   - Manage BIG-IP partitions
-version_added: "2.3"
+version_added: 2.3
 options:
   description:
     description:

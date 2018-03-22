@@ -23,7 +23,7 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the pool.
-    version_added: "2.3"
+    version_added: 2.3
   name:
     description:
       - Pool name
@@ -34,7 +34,7 @@ options:
     description:
       - Load balancing method. When creating a new pool, if this value is not
         specified, the default of C(round-robin) will be used.
-    version_added: "1.3"
+    version_added: 1.3
     choices:
       - dynamic-ratio-member
       - dynamic-ratio-node
@@ -69,32 +69,32 @@ options:
         or already existing on the device.
       - Both C(single) and C(and_list) are functionally identical since BIG-IP
         considers all monitors as "a list".
-    version_added: "1.3"
+    version_added: 1.3
     choices: ['and_list', 'm_of_n', 'single']
   quorum:
     description:
       - Monitor quorum value when C(monitor_type) is C(m_of_n).
       - Quorum must be a value of 1 or greater when C(monitor_type) is C(m_of_n).
-    version_added: "1.3"
+    version_added: 1.3
   monitors:
     description:
       - Monitor template name list. If the partition is not provided as part of
         the monitor name, then the C(partition) option will be used instead.
-    version_added: "1.3"
+    version_added: 1.3
   slow_ramp_time:
     description:
       - Sets the ramp-up time (in seconds) to gradually ramp up the load on
         newly added or freshly detected up pool members.
-    version_added: "1.3"
+    version_added: 1.3
   reselect_tries:
     description:
       - Sets the number of times the system tries to contact a pool member
         after a passive failure.
-    version_added: "2.2"
+    version_added: 2.2
   service_down_action:
     description:
       - Sets the action to take when node goes down in pool.
-    version_added: "1.3"
+    version_added: 1.3
     choices:
       - none
       - reset
@@ -337,37 +337,19 @@ import re
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+from ansible.module_utils.network.f5.bigip import F5Client
+from ansible.module_utils.network.f5.common import F5ModuleError
+from ansible.module_utils.network.f5.common import AnsibleF5Parameters
+from ansible.module_utils.network.f5.common import cleanup_tokens
+from ansible.module_utils.network.f5.common import fq_name
+from ansible.module_utils.network.f5.common import f5_argument_spec
 from ansible.module_utils.six import iteritems
 
-HAS_DEVEL_IMPORTS = False
-
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
-    from library.module_utils.network.f5.common import F5ModuleError
-    from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
-    from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
-    HAS_DEVEL_IMPORTS = True
+    from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
 except ImportError:
-    # Upstream Ansible
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
-    from ansible.module_utils.network.f5.common import F5ModuleError
-    from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
-    from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    HAS_F5SDK = False
 
 try:
     from netaddr import IPAddress, AddrFormatError
@@ -415,11 +397,6 @@ class Parameters(AnsibleF5Parameters):
             raise F5ModuleError('Provided lb_method is unknown')
         return lb_method
 
-    def _fqdn_name(self, value):
-        if value is not None and not value.startswith('/'):
-            return '/{0}/{1}'.format(self.partition, value)
-        return value
-
     def _verify_quorum_type(self, quorum):
         try:
             if quorum is None:
@@ -434,7 +411,7 @@ class Parameters(AnsibleF5Parameters):
     def monitors(self):
         if self._values['monitors'] is None:
             return None
-        monitors = [self._fqdn_name(x) for x in self.monitors_list]
+        monitors = [fq_name(self.partition, x) for x in self.monitors_list]
         if self.monitor_type == 'm_of_n':
             monitors = ' '.join(monitors)
             result = 'min %s of { %s }' % (self.quorum, monitors)
