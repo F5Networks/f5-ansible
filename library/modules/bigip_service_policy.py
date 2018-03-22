@@ -14,25 +14,41 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigiq_regkey_license_assignment
-short_description: __SHORT_DESCRIPTION__
+module: bigip_service_policy
+short_description: Manages service policies on a BIG-IP.
 description:
-  - __LONG DESCRIPTION__.
-version_added: "2.5"
+  - Service policies allow you to configure timers and port misuse rules,
+    if enabled, on a per rule or per context basis.
+version_added: 2.6
 options:
   name:
     description:
-      - Specifies the name of the ... .
+      - Name of the service policy.
     required: True
+  description:
+    description:
+      - Description of the service policy.
+  timer_policy:
+    description:
+      - The timer policy to attach to the service policy.
+  port_misuse_policy:
+    description:
+      - The port misuse policy to attach to the service policy.
+      - Requires that C(afm) be provisioned to use. If C(afm) is not provisioned, this parameter
+        will be ignored.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
-  bigiq_regkey_license_assignment:
+- name: Create a service policy
+  bigip_service_policy:
     name: foo
+    timer_policy: timer1
+    port_misuse_policy: misuse1
+    timer_policy_enabled: yes
+    port_misuse_policy_enabled: yes
     password: secret
     server: lb.mydomain.com
     state: present
@@ -41,30 +57,45 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+timer_policy:
+  description: The new timer policy attached to the resource.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: /Common/timer1
+port_misuse_policy:
+  description: The new port misuse policy attached to the resource.
+  returned: changed
+  type: string
+  sample: /Common/misuse1
+timer_policy_enabled:
+  description: Whether the timer policy of the resource is enabled or not.
+  returned: changed
+  type: bool
+  sample: True
+port_misuse_policy_enabled:
+  description: Whether the port misuse policy of the resource is enabled or not.
+  returned: changed
+  type: bool
+  sample: False
+description:
+  description: New description of the resource.
+  returned: changed
+  type: string
+  sample: My service policy description
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.basic import env_fallback
 
 HAS_DEVEL_IMPORTS = False
 
 try:
-    # Sideband repository used for dev
-    from library.module_utils.network.f5.bigiq import HAS_F5SDK
-    from library.module_utils.network.f5.bigiq import F5Client
+    from library.module_utils.network.f5.bigip import HAS_F5SDK
+    from library.module_utils.network.f5.bigip import F5Client
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fqdn_name
+    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -73,41 +104,61 @@ try:
     HAS_DEVEL_IMPORTS = True
 except ImportError:
     # Upstream Ansible
-    from ansible.module_utils.network.f5.bigiq import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigiq import F5Client
+    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
+    from ansible.module_utils.network.f5.bigip import F5Client
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fqdn_name
+    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
         HAS_F5SDK = False
 
-try:
-    from ansible.module_utils.f5_utils import iControlUnexpectedHTTPError
-except ImportError:
-    HAS_F5SDK = False
-
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'portMisusePolicy': 'port_misuse_policy',
+        'timerPolicy': 'timer_policy'
     }
 
     api_attributes = [
-
+        'description', 'timerPolicy', 'portMisusePolicy'
     ]
 
     returnables = [
-
+        'description', 'timer_policy', 'port_misuse_policy'
     ]
 
     updatables = [
-
+        'description', 'timer_policy', 'port_misuse_policy'
     ]
 
+
+class ApiParameters(Parameters):
+    pass
+
+
+class ModuleParameters(Parameters):
+    @property
+    def timer_policy(self):
+        if self._values['timer_policy'] is None:
+            return None
+        if self._values['timer_policy'] == '':
+            return ''
+        return fq_name(self.partition, self._values['timer_policy'])
+
+    @property
+    def port_misuse_policy(self):
+        if self._values['port_misuse_policy'] is None:
+            return None
+        if self._values['port_misuse_policy'] == '':
+            return ''
+        return fq_name(self.partition, self._values['port_misuse_policy'])
+
+
+class Changes(Parameters):
     def to_return(self):
         result = {}
         try:
@@ -119,7 +170,11 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class Changes(Parameters):
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
     pass
 
 
@@ -159,7 +214,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -175,7 +230,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -198,7 +253,8 @@ class ModuleManager(object):
         except iControlUnexpectedHTTPError as e:
             raise F5ModuleError(str(e))
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -207,7 +263,7 @@ class ModuleManager(object):
     def _announce_deprecations(self, result):
         warnings = result.pop('__warnings', [])
         for warning in warnings:
-            self.module.deprecate(
+            self.client.module.deprecate(
                 msg=warning['msg'],
                 version=warning['version']
             )
@@ -219,7 +275,7 @@ class ModuleManager(object):
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
+        result = self.client.api.tm.net.service_policys.service_policy.exists(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -250,16 +306,16 @@ class ModuleManager(object):
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
+        params = self.changes.api_params()
+        self.client.api.tm.net.service_policys.service_policy.create(
             name=self.want.name,
             partition=self.want.partition,
             **params
         )
 
     def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
+        params = self.changes.api_params()
+        resource = self.client.api.tm.net.service_policys.service_policy.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -271,7 +327,7 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.net.service_policys.service_policy.load(
             name=self.want.name,
             partition=self.want.partition
         )
@@ -279,19 +335,22 @@ class ModuleManager(object):
             resource.delete()
 
     def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
+        resource = self.client.api.tm.net.service_policys.service_policy.load(
             name=self.want.name,
             partition=self.want.partition
         )
         result = resource.attrs
-        return Parameters(params=result)
+        return ApiParameters(params=result)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(),
+            description=dict(),
+            timer_policy=dict(),
+            port_misuse_policy=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -312,9 +371,11 @@ def main():
         client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
+        cleanup_tokens(client)
         module.exit_json(**results)
-    except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+    except F5ModuleError as ex:
+        cleanup_tokens(client)
+        module.fail_json(msg=str(ex))
 
 
 if __name__ == '__main__':
