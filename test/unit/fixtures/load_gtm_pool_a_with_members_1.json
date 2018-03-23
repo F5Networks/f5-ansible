@@ -49,7 +49,7 @@
                 "limitMaxConnectionsStatus": "disabled",
                 "limitMaxPps": 0,
                 "limitMaxPpsStatus": "disabled",
-                "memberOrder": 1,
+                "memberOrder": 0,
                 "monitor": "default",
                 "ratio": 1
             },
@@ -67,7 +67,7 @@
                 "limitMaxConnectionsStatus": "disabled",
                 "limitMaxPps": 0,
                 "limitMaxPpsStatus": "disabled",
-                "memberOrder": 2,
+                "memberOrder": 1,
                 "monitor": "/Common/tcp ",
                 "ratio": 1
             },
@@ -85,7 +85,7 @@
                 "limitMaxConnectionsStatus": "disabled",
                 "limitMaxPps": 0,
                 "limitMaxPpsStatus": "disabled",
-                "memberOrder": 0,
+                "memberOrder": 2,
                 "monitor": "default",
                 "ratio": 1
             }
