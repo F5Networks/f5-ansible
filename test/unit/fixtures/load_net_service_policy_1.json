@@ -5,6 +5,7 @@
     "fullPath": "/Common/baz",
     "generation": 581,
     "selfLink": "https://localhost/mgmt/tm/net/service-policy/~Common~baz?ver=13.1.0.4",
+    "description": "my description",
     "portMisusePolicy": "/Common/bar",
     "portMisusePolicyReference": {
         "link": "https://localhost/mgmt/tm/security/firewall/port-misuse-policy/~Common~bar?ver=13.1.0.4"
