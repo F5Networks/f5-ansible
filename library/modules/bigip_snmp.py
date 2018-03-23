@@ -199,6 +199,7 @@ class ApiParameters(Parameters):
         if self._values['allowed_addresses'] is None:
             return None
         result = list(set(self._values['allowed_addresses']))
+        result.sort()
         return result
 
 
@@ -231,6 +232,7 @@ class ModuleParameters(Parameters):
                     "The provided 'allowed_address' value {0} is not a valid IP or hostname".format(address)
                 )
         result = list(set(result))
+        result.sort()
         return result
 
 
@@ -278,7 +280,9 @@ class Difference(object):
         want = set(self.want.allowed_addresses)
         have = set(self.have.allowed_addresses)
         if want != have:
-            return want
+            result = list(want)
+            result.sort()
+            return result
 
 
 class ModuleManager(object):
