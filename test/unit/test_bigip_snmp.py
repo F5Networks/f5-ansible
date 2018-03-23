@@ -193,7 +193,7 @@ class TestManager(unittest.TestCase):
         assert results['changed'] is True
         assert len(results['allowed_addresses']) == 4
         assert results['allowed_addresses'] == [
-            'foo', '127.0.0.0/8', '10.10.10.10', 'baz.foo.com'
+            '10.10.10.10', '127.0.0.0/8', 'baz.foo.com', 'foo'
         ]
 
     def test_update_allowed_addresses_default(self, *args):
