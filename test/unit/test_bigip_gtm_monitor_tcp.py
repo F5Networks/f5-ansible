@@ -145,3 +145,58 @@ class TestManager(unittest.TestCase):
         results = mm.exec_module()
 
         assert results['changed'] is True
+
+    def test_change_ip(self, *args):
+        set_module_args(dict(
+            name='foo',
+            ip='10.10.10.10',
+            port=80,
+            interval=20,
+            timeout=30,
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = ApiParameters(params=load_fixture('load_gtm_monitor_tcp_1.json'))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[True, True])
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['ip'] == '10.10.10.10'
+
+    def test_change_ignore_down_response(self, *args):
+        set_module_args(dict(
+            name='foo',
+            ignore_down_response=True,
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = ApiParameters(params=load_fixture('load_gtm_monitor_tcp_1.json'))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.exists = Mock(side_effect=[True, True])
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['ignore_down_response'] is True
