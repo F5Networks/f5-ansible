@@ -156,6 +156,8 @@ class Parameters(AnsibleF5Parameters):
     def level(self):
         if self._values['level'] is None:
             return None
+        if self.state == 'absent':
+            return 'none'
         return str(self._values['level'])
 
 
@@ -246,7 +248,7 @@ class ModuleManager(object):
 
         try:
             if state == "present":
-                changed = self.update()
+                changed = self.present()
             elif state == "absent":
                 changed = self.absent()
         except iControlUnexpectedHTTPError as e:
@@ -257,9 +259,18 @@ class ModuleManager(object):
         result.update(dict(changed=changed))
         return result
 
+    def present(self):
+        if self.exists():
+            return False
+        return self.update()
+
     def exists(self):
         if self.want.module == 'cgnat':
-            return True
+            resource = self.client.api.tm.sys.feature_module.cgnat.load()
+            if resource.disabled is True:
+                return False
+            elif resource.enabled is True:
+                return True
 
         try:
             for x in range(0, 5):
@@ -267,9 +278,13 @@ class ModuleManager(object):
                 resource = getattr(provision, self.want.module)
                 resource = resource.load()
                 result = resource.attrs
-                if str(result['level']) == 'none':
+                if str(result['level']) != 'none' and self.want.level == 'none':
+                    return True
+                if str(result['level']) == 'none' and self.want.level == 'none':
                     return False
-                return True
+                if str(result['level']) == self.want.level:
+                    return True
+                return False
         except Exception as ex:
             if 'not registered' in str(ex):
                 return False
@@ -294,7 +309,54 @@ class ModuleManager(object):
 
         if self.want.module == 'asm':
             self._wait_for_asm_ready()
+        if self.want.module == 'afm':
+            self._wait_for_afm_ready()
         return True
+
+    def should_reboot(self):
+        for x in range(0, 24):
+            try:
+                resource = self.client.api.tm.sys.dbs.db.load(name='provision.action')
+                if resource.value == 'reboot':
+                    return True
+                elif resource.value == 'none':
+                    time.sleep(5)
+            except Exception:
+                time.sleep(5)
+        return False
+
+    def reboot_device(self):
+        nops = 0
+        last_reboot = self._get_last_reboot()
+
+        try:
+            output = self.client.api.tm.util.bash.exec_cmd(
+                'run',
+                utilCmdArgs='-c "/sbin/reboot"'
+            )
+            if hasattr(output, 'commandResult'):
+                return str(output.commandResult)
+        except Exception:
+            pass
+
+        # Sleep a little to let rebooting take effect
+        time.sleep(20)
+
+        while nops < 6:
+            try:
+                self.client.reconnect()
+                next_reboot = self._get_last_reboot()
+                if next_reboot is None:
+                    nops = 0
+                if next_reboot == last_reboot:
+                    nops = 0
+                else:
+                    nops += 1
+            except Exception as ex:
+                # This can be caused by restjavad restarting.
+                pass
+            time.sleep(10)
+        return None
 
     def should_update(self):
         result = self._update_changed_options()
@@ -372,9 +434,21 @@ class ModuleManager(object):
             self._wait_for_reboot()
             self._wait_for_module_provisioning()
 
+        if self.should_reboot():
+            self.save_on_device()
+            self.reboot_device()
+            self._wait_for_module_provisioning()
+
         if self.exists():
             raise F5ModuleError("Failed to de-provision the module")
         return True
+
+    def save_on_device(self):
+        command = 'tmsh save sys config'
+        self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
 
     def remove_from_device(self):
         if self.want.module == 'cgnat':
@@ -386,7 +460,6 @@ class ModuleManager(object):
         resource = getattr(provision, self.want.module)
         resource = resource.load()
         resource.update(level='none')
-
 
     def deprovision_cgnat_on_device(self):
         resource = self.client.api.tm.sys.feature_module.cgnat.load()
@@ -460,6 +533,26 @@ class ModuleManager(object):
                 if not restarted_asm:
                     self._restart_asm()
                     restarted_asm = True
+            time.sleep(5)
+
+    def _wait_for_afm_ready(self):
+        """Waits specifically for AFM
+
+        AFM can take longer to actually start up than all the previous checks take.
+        This check here is specifically waiting for the Security API to stop raising
+        errors.
+        :return:
+        """
+        nops = 0
+        while nops < 3:
+            try:
+                security = self.client.api.tm.security.get_collection()
+                if len(security) >= 0:
+                    nops += 1
+                else:
+                    nops = 0
+            except Exception as ex:
+                pass
             time.sleep(5)
 
     def _restart_asm(self):

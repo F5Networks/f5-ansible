@@ -107,6 +107,8 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm.update_on_device = Mock(return_value=True)
         mm.read_current_from_device = Mock(return_value=current)
+        mm.reboot_device = Mock(return_value=True)
+        mm.save_on_device = Mock(return_value=True)
 
         # this forced sleeping can cause these tests to take 15
         # or more seconds to run. This is deliberate.
