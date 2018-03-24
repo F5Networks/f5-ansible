@@ -555,9 +555,6 @@ class ArgumentSpec(object):
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
-        self.mutually_exclusive = [
-            ['parent', 'parent_partition']
-        ]
 
 
 def main():
