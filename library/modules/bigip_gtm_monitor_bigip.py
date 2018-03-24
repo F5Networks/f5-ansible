@@ -172,6 +172,11 @@ aggregate_dynamic_ratios:
   returned: changed
   type: string
   sample: sum-members
+ignore_down_response:
+  description: Whether to ignore the down response or not.
+  returned: changed
+  type: bool
+  sample: True
 '''
 
 import os

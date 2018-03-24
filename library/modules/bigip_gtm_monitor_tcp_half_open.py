@@ -16,7 +16,8 @@ DOCUMENTATION = r'''
 ---
 module: bigip_gtm_monitor_tcp_half_open
 short_description: Manages F5 BIG-IP GTM tcp half-open monitors
-description: Manages F5 BIG-IP GTM tcp half-open monitors.
+description:
+  - Manages F5 BIG-IP GTM tcp half-open monitors.
 version_added: 2.6
 options:
   name:
@@ -162,6 +163,21 @@ interval:
   sample: 2
 timeout:
   description: The new timeout in which the remote system must respond to the monitor.
+  returned: changed
+  type: int
+  sample: 10
+probe_timeout:
+  description: The new timeout in which the system will timeout the monitor probe.
+  returned: changed
+  type: int
+  sample: 10
+probe_interval:
+  description: The new interval in which the system will check the monitor probe.
+  returned: changed
+  type: int
+  sample: 10
+probe_attempts:
+  description: The new number of attempts the system will make in checking the monitor probe.
   returned: changed
   type: int
   sample: 10
