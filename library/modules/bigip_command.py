@@ -21,6 +21,11 @@ description:
     read from the device. This module includes an argument that will cause
     the module to wait for a specific condition before returning or timing
     out if the condition is not met.
+  - This module is B(not) idempotent, nor will it ever be. It is intended as
+    a stop-gap measure to satisfy automation requirements until such a time as
+    a real module has been developed to configure in the way you need.
+  - If you are using this module, you should probably also be filing an issue
+    to have a B(real) module created for your needs.
 version_added: 2.4
 options:
   commands:
@@ -427,11 +432,11 @@ class ModuleManager(object):
     def execute_on_device(self, commands):
         responses = []
         for item in to_list(commands):
-            output = self.client.api.tm.util.bash.exec_cmd(
-                'run',
-                utilCmdArgs='-c "{0}"'.format(item['command'])
-            )
             try:
+                output = self.client.api.tm.util.bash.exec_cmd(
+                    'run',
+                    utilCmdArgs='-c "{0}"'.format(item['command'])
+                )
                 if hasattr(output, 'commandResult'):
                     responses.append(str(output.commandResult))
             except Exception:
