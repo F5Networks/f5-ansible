@@ -1,0 +1,13 @@
+---
+
+- name: Provision AFM
+  bigip_provision:
+    module: afm
+
+- name: Create policies
+  bigip_command:
+    commands:
+      - tmsh create net timer-policy foo1
+      - tmsh create net timer-policy foo2
+      - tmsh create security firewall port-misuse-policy bar1
+      - tmsh create security firewall port-misuse-policy bar2

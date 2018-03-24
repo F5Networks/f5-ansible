@@ -1,0 +1,14 @@
+---
+
+- name: Remove policies
+  bigip_command:
+    commands:
+      - tmsh delete net timer-policy foo1
+      - tmsh delete net timer-policy foo2
+      - tmsh delete security firewall port-misuse-policy bar1
+      - tmsh delete security firewall port-misuse-policy bar2
+
+- name: Deprovision AFM
+  bigip_provision:
+    module: afm
+    state: absent
