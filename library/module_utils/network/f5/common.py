@@ -367,7 +367,7 @@ class F5BaseClient(object):
         :return:
         :raises iControlUnexpectedHTTPError
         """
-        self._client = self.mgmt
+        self._client = None
 
 
 class AnsibleF5Parameters(object):
