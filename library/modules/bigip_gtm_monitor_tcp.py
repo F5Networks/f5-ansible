@@ -610,8 +610,6 @@ class ModuleManager(object):
             self.want.update({'timeout': 16})
         if self.want.interval is None:
             self.want.update({'interval': 5})
-        if self.want.time_until_up is None:
-            self.want.update({'time_until_up': 0})
         if self.want.probe_timeout is None:
             self.want.update({'probe_timeout': 5})
         if self.want.ip is None:
