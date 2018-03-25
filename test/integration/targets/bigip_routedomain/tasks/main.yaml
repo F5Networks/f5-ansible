@@ -224,6 +224,30 @@
     that:
       - result is not changed
 
+- name: Set a routing protocols, none
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: ""
+  register: result
+  ignore_errors: true
+
+- name: Assert Set routing protocols, none
+  assert:
+    that:
+      - result is changed
+
+- name: Set routing protocols, none - Idempotent check
+  bigip_routedomain:
+    id: "{{ new_routedomain }}"
+    routing_protocol: ""
+  register: result
+  ignore_errors: true
+
+- name: Assert Set routing protocols, none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Set connection limit, valid
   bigip_routedomain:
     connection_limit: "{{ valid_connection_limit }}"
