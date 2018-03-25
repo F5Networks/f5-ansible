@@ -1,0 +1,7 @@
+---
+
+monitor_name: my_https_monitor
+send_string1: https string to send
+receive_string1: https string to receive
+send_string2: this is a string to send
+receive_string2: this is a string to receive
