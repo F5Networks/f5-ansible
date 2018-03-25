@@ -24,6 +24,9 @@ All modules
   bigip_gtm_datacenter - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
   bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors <bigip_gtm_monitor_bigip_module>
+  bigip_gtm_monitor_http - Manages F5 BIG-IP GTM http monitors <bigip_gtm_monitor_http_module>
+  bigip_gtm_monitor_https - Manages F5 BIG-IP GTM https monitors <bigip_gtm_monitor_https_module>
+  bigip_gtm_monitor_tcp - Manages F5 BIG-IP GTM tcp monitors <bigip_gtm_monitor_tcp_module>
   bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors <bigip_gtm_monitor_tcp_half_open_module>
   bigip_gtm_pool - Manages F5 BIG-IP GTM pools <bigip_gtm_pool_module>
   bigip_gtm_pool_member - Manage GTM pool member settings <bigip_gtm_pool_member_module>
@@ -62,6 +65,7 @@ All modules
   bigip_security_rule_list - __SHORT_DESCRIPTION__ <bigip_security_rule_list_module>
   bigip_selfip - Manage Self-IPs on a BIG-IP system <bigip_selfip_module>
   bigip_service - Manage BIG-IP service states <bigip_service_module>
+  bigip_service_policy - Manages service policies on a BIG-IP. <bigip_service_policy_module>
   bigip_smtp - Manages SMTP settings on the BIG-IP <bigip_smtp_module>
   bigip_snat_pool - Manage SNAT pools on a BIG-IP <bigip_snat_pool_module>
   bigip_snmp - Manipulate general SNMP settings on a BIG-IP <bigip_snmp_module>

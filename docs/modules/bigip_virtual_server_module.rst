@@ -47,17 +47,17 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Default Profile which manages the session persistence.</div><div>If you want to remove the existing default persistence profile, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>        </td></tr>
+        <td><div>Default Profile which manages the session persistence.</div><div>If you want to remove the existing default persistence profile, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div><div>When <code>type</code> is <code>dhcp</code>, this parameter will be ignored.</div>        </td></tr>
                 <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
         <td><div>Virtual server description.</div>        </td></tr>
                 <tr><td>destination<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
+    <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Destination IP of the virtual server.</div><div>Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div></br>
+        <td><div>Destination IP of the virtual server.</div><div>Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div><div>When <code>type</code> is <code>internal</code>, this parameter is ignored. For all other types, it is required.</div></br>
     <div style="font-size: small;">aliases: address, ip<div>        </td></tr>
                 <tr><td>disabled_vlans<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
@@ -73,17 +73,27 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div><div>If you want to remove the existing fallback persistence profile, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>        </td></tr>
+        <td><div>Specifies the persistence profile you want the system to use if it cannot use the specified default persistence profile.</div><div>If you want to remove the existing fallback persistence profile, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div><div>When <code>type</code> is <code>dhcp</code>, this parameter will be ignored.</div>        </td></tr>
+                <tr><td>firewall_enforced_policy<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Applies the specify AFM policy to the virtual in an enforcing way.</div><div>When creating a new virtual, if this parameter is not specified, the enforced policy is disabled.</div>        </td></tr>
+                <tr><td>firewall_staged_policy<br/><div style="font-size: small;"> (added in 2.6)</div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Applies the specify AFM policy to the virtual in an enforcing way.</div><div>A staged policy shows the results of the policy rules in the log, while not actually applying the rules to traffic.</div><div>When creating a new virtual, if this parameter is not specified, the staged policy is disabled.</div>        </td></tr>
                 <tr><td>ip_protocol<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>0-255</li><li>ah</li><li>bna</li><li>esp</li><li>etherip</li><li>gre</li><li>icmp</li><li>ipencap</li><li>ipv6</li><li>ipv6-auth</li><li>ipv6-crypt</li><li>ipv6-icmp</li><li>isp-ip</li><li>mux</li><li>ospf</li><li>sctp</li><li>tcp</li><li>udp</li><li>udplite</li></ul></td>
+        <td><ul><li>ah</li><li>bna</li><li>esp</li><li>etherip</li><li>gre</li><li>icmp</li><li>ipencap</li><li>ipv6</li><li>ipv6-auth</li><li>ipv6-crypt</li><li>ipv6-icmp</li><li>isp-ip</li><li>mux</li><li>ospf</li><li>sctp</li><li>tcp</li><li>udp</li><li>udplite</li></ul></td>
         <td><div>Specifies a network protocol name you want the system to use to direct traffic on this virtual server.</div><div>When creating a new virtual server, if this parameter is not specified, the default is <code>tcp</code>.</div><div>The Protocol setting is not available when you select Performance (HTTP) as the Type.</div><div>The value of this argument can be specified in either it&#x27;s numeric value, or, for convenience, in a select number of named values. Refer to <code>choices</code> for examples.</div><div>For a list of valid IP protocol numbers, refer to this page https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers</div><div>When <code>type</code> is <code>dhcp</code>, this module will force the <code>ip_protocol</code> parameter to be <code>17</code> (UDP).</div>        </td></tr>
                 <tr><td>irules<br/><div style="font-size: small;"> (added in 2.2)</div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>List of rules to be applied in priority order.</div><div>If you want to remove existing iRules, specify a single empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div></br>
+        <td><div>List of rules to be applied in priority order.</div><div>If you want to remove existing iRules, specify a single empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div><div>When <code>type</code> is <code>dhcp</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>stateless</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>reject</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>internal</code>, this parameter will be ignored.</div></br>
     <div style="font-size: small;">aliases: all_rules<div>        </td></tr>
                 <tr><td>metadata<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
@@ -111,18 +121,18 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the policies for the virtual server</div></br>
+        <td><div>Specifies the policies for the virtual server.</div><div>When <code>type</code> is <code>dhcp</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>reject</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>internal</code>, this parameter will be ignored.</div></br>
     <div style="font-size: small;">aliases: all_policies<div>        </td></tr>
                 <tr><td>pool<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Default pool for the virtual server.</div><div>If you want to remove the existing pool, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div>        </td></tr>
+        <td><div>Default pool for the virtual server.</div><div>If you want to remove the existing pool, specify an empty value; <code>&quot;&quot;</code>. See the documentation for an example.</div><div>When creating a new virtual server, and <code>type</code> is <code>stateless</code>, this parameter is required.</div><div>If <code>type</code> is <code>stateless</code>, the <code>pool</code> that is used must not have any members which define a <code>rate_limit</code>.</div>        </td></tr>
                 <tr><td>port<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div><div>If you do not want to specify a particular port, use the value <code>0</code>. The result is that the virtual server will listen on any port.</div><div>When <code>type</code> is <code>dhcp</code>, this module will force the <code>port</code> parameter to be <code>67</code>.</div><div>When <code>type</code> is <code>internal</code>, this module will force the <code>port</code> parameter to be <code>0</code>.</div>        </td></tr>
+        <td><div>Port of the virtual server. Required when <code>state</code> is <code>present</code> and virtual server does not exist.</div><div>If you do not want to specify a particular port, use the value <code>0</code>. The result is that the virtual server will listen on any port.</div><div>When <code>type</code> is <code>dhcp</code>, this module will force the <code>port</code> parameter to be <code>67</code>.</div><div>When <code>type</code> is <code>internal</code>, this module will force the <code>port</code> parameter to be <code>0</code>.</div><div>In addition to specifying a port number, a select number of service names may also be provided.</div><div>The string <code>ftp</code> may be substituted for for port <code>21</code>.</div><div>The string <code>http</code> may be substituted for for port <code>80</code>.</div><div>The string <code>https</code> may be substituted for for port <code>443</code>.</div><div>The string <code>telnet</code> may be substituted for for port <code>23</code>.</div><div>The string <code>smtp</code> may be substituted for for port <code>25</code>.</div><div>The string <code>snmp</code> may be substituted for for port <code>161</code>.</div><div>The string <code>snmp-trap</code> may be substituted for for port <code>162</code>.</div><div>The string <code>ssh</code> may be substituted for for port <code>22</code>.</div><div>The string <code>tftp</code> may be substituted for for port <code>69</code>.</div><div>The string <code>isakmp</code> may be substituted for for port <code>500</code>.</div><div>The string <code>mqtt</code> may be substituted for for port <code>1883</code>.</div><div>The string <code>mqtt-tls</code> may be substituted for for port <code>8883</code>.</div>        </td></tr>
                 <tr><td>port_translation<br/><div style="font-size: small;"> (added in 2.6)</div></td>
     <td>no</td>
     <td></td>
@@ -131,7 +141,7 @@ Options
                 <tr><td rowspan="2">profiles<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td><td></td>
-    <td> <div>List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides of the connection (client-side and server-side).</div><div>If you only want to apply a particular profile to the client-side of the connection, specify <code>client-side</code> for the profile&#x27;s <code>context</code>.</div><div>If you only want to apply a particular profile to the server-side of the connection, specify <code>server-side</code> for the profile&#x27;s <code>context</code>.</div><div>If <code>context</code> is not provided, it will default to <code>all</code>.</div><div>If you want to remove a profile from the list of profiles currently active on the virtual, then simply remove it from the <code>profiles</code> list. See examples for an illustration of this.</div><div>If you want to add a profile to the list of profiles currently active on the virtual, then simply add it to the <code>profiles</code> list. See examples for an illustration of this.</div><div><b>Profiles matter</b>. There is a good chance that this module will fail to configure a BIG-IP if you mix up your profiles, or, if you attempt to set an IP protocol which you current or new profiles do not support. Either this module, or BIG-IP, will tell you when you are wrong with an error resembling <code>lists profiles incompatible with its protocol</code>.</div><div>If you are unsure what correct profile combinations are, then have a BIG-IP available to you in which you can make changes and copy what the correct combinations are.</div></br>
+    <td> <div>List of profiles (HTTP, ClientSSL, ServerSSL, etc) to apply to both sides of the connection (client-side and server-side).</div><div>If you only want to apply a particular profile to the client-side of the connection, specify <code>client-side</code> for the profile&#x27;s <code>context</code>.</div><div>If you only want to apply a particular profile to the server-side of the connection, specify <code>server-side</code> for the profile&#x27;s <code>context</code>.</div><div>If <code>context</code> is not provided, it will default to <code>all</code>.</div><div>If you want to remove a profile from the list of profiles currently active on the virtual, then simply remove it from the <code>profiles</code> list. See examples for an illustration of this.</div><div>If you want to add a profile to the list of profiles currently active on the virtual, then simply add it to the <code>profiles</code> list. See examples for an illustration of this.</div><div><b>Profiles matter</b>. There is a good chance that this module will fail to configure a BIG-IP if you mix up your profiles, or, if you attempt to set an IP protocol which your current, or new, profiles do not support. Both this module, and BIG-IP, will tell you when you are wrong, with an error resembling <code>lists profiles incompatible with its protocol</code>.</div><div>If you are unsure what correct profile combinations are, then have a BIG-IP available to you in which you can make changes and copy what the correct combinations are.</div></br>
     <div style="font-size: small;">aliases: all_profiles<div>    </tr>
     <tr>
     <td colspan="5">
@@ -173,41 +183,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td></td>
-                <td></td>
-                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                     <tr><td>password<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
                 <td></td>
                 <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                     <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
         <td>no</td>
-        <td>True</td>
+        <td>yes</td>
                 <td><ul><li>yes</li><li>no</li></ul></td>
                 <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -231,7 +241,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>None</li><li>Automap</li><li>Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT with the specific pool</li></ul></td>
-        <td><div>Source network address policy.</div>        </td></tr>
+        <td><div>Source network address policy.</div><div>When <code>type</code> is <code>dhcp</code>, this parameter is ignored.</div><div>When <code>type</code> is <code>reject</code>, this parameter will be ignored.</div><div>When <code>type</code> is <code>internal</code>, this parameter will be ignored.</div>        </td></tr>
                 <tr><td>source<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td>
@@ -246,7 +256,7 @@ Options
     <td>no</td>
     <td></td>
         <td><ul><li>standard</li><li>forwarding-l2</li><li>forwarding-ip</li><li>performance-http</li><li>performance-l4</li><li>stateless</li><li>reject</li><li>dhcp</li><li>internal</li><li>message-routing</li></ul></td>
-        <td><div>Specifies the network service provided by this virtual server.</div><div>When creating a new virtual server, if this parameter is not provided, the default will be <code>standard</code>.</div><div>When <code>standard</code>, specifies a virtual server that directs client traffic to a load balancing pool and is the most basic type of virtual server. When you first create the virtual server, you assign an existing default pool to it. From then on, the virtual server automatically directs traffic to that default pool.</div><div>When <code>forwarding-l2</code>, specifies a virtual server that shares the same IP address as a node in an associated VLAN.</div><div>When <code>forwarding-ip</code>, specifies a virtual server like other virtual servers, except that the virtual server has no pool members to load balance. The virtual server simply forwards the packet directly to the destination IP address specified in the client request.</div><div>When <code>performance-http</code>, specifies a virtual server with which you associate a Fast HTTP profile. Together, the virtual server and profile increase the speed at which the virtual server processes HTTP requests.</div><div>When <code>performance-l4</code>, specifies a virtual server with which you associate a Fast L4 profile. Together, the virtual server and profile increase the speed at which the virtual server processes layer 4 requests.</div><div>When <code>stateless</code>, specifies a virtual server that accepts traffic matching the virtual server address and load balances the packet to the pool members without attempting to match the packet to a pre-existing connection in the connection table. New connections are immediately removed from the connection table. This addresses the requirement for one-way UDP traffic that needs to be processed at very high throughput levels, for example, load balancing syslog traffic to a pool of syslog servers. Stateless virtual servers are not suitable for processing traffic that requires stateful tracking, such as TCP traffic. Stateless virtual servers do not support iRules, persistence, connection mirroring, rateshaping, or SNAT automap.</div><div>When <code>reject</code>, specifies that the BIG-IP system rejects any traffic destined for the virtual server IP address.</div><div>When <code>dhcp</code>, specifies a virtual server that relays Dynamic Host Control Protocol (DHCP) client requests for an IP address to one or more DHCP servers, and provides DHCP server responses with an available IP address for the client.</div><div>When <code>internal</code>, specifies a virtual server that supports modification of HTTP requests and responses. Internal virtual servers enable usage of ICAP (Internet Content Adaptation Protocol) servers to modify HTTP requests and responses by creating and applying an ICAP profile and adding Request Adapt or Response Adapt profiles to the virtual server.</div><div>When <code>message-routing</code>, specifies a virtual server that uses a SIP application protocol and functions in accordance with a SIP session profile and SIP router profile.</div>        </td></tr>
+        <td><div>Specifies the network service provided by this virtual server.</div><div>When creating a new virtual server, if this parameter is not provided, the default will be <code>standard</code>.</div><div>This value cannot be changed after it is set.</div><div>When <code>standard</code>, specifies a virtual server that directs client traffic to a load balancing pool and is the most basic type of virtual server. When you first create the virtual server, you assign an existing default pool to it. From then on, the virtual server automatically directs traffic to that default pool.</div><div>When <code>forwarding-l2</code>, specifies a virtual server that shares the same IP address as a node in an associated VLAN.</div><div>When <code>forwarding-ip</code>, specifies a virtual server like other virtual servers, except that the virtual server has no pool members to load balance. The virtual server simply forwards the packet directly to the destination IP address specified in the client request.</div><div>When <code>performance-http</code>, specifies a virtual server with which you associate a Fast HTTP profile. Together, the virtual server and profile increase the speed at which the virtual server processes HTTP requests.</div><div>When <code>performance-l4</code>, specifies a virtual server with which you associate a Fast L4 profile. Together, the virtual server and profile increase the speed at which the virtual server processes layer 4 requests.</div><div>When <code>stateless</code>, specifies a virtual server that accepts traffic matching the virtual server address and load balances the packet to the pool members without attempting to match the packet to a pre-existing connection in the connection table. New connections are immediately removed from the connection table. This addresses the requirement for one-way UDP traffic that needs to be processed at very high throughput levels, for example, load balancing syslog traffic to a pool of syslog servers. Stateless virtual servers are not suitable for processing traffic that requires stateful tracking, such as TCP traffic. Stateless virtual servers do not support iRules, persistence, connection mirroring, rateshaping, or SNAT automap.</div><div>When <code>reject</code>, specifies that the BIG-IP system rejects any traffic destined for the virtual server IP address.</div><div>When <code>dhcp</code>, specifies a virtual server that relays Dynamic Host Control Protocol (DHCP) client requests for an IP address to one or more DHCP servers, and provides DHCP server responses with an available IP address for the client.</div><div>When <code>internal</code>, specifies a virtual server that supports modification of HTTP requests and responses. Internal virtual servers enable usage of ICAP (Internet Content Adaptation Protocol) servers to modify HTTP requests and responses by creating and applying an ICAP profile and adding Request Adapt or Response Adapt profiles to the virtual server.</div><div>When <code>message-routing</code>, specifies a virtual server that uses a SIP application protocol and functions in accordance with a SIP session profile and SIP router profile.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -254,7 +264,7 @@ Options
         <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>True</td>
+    <td>yes</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
         </table>
@@ -435,25 +445,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> disabled_vlans </td>
-        <td> List of VLANs that the virtual is disabled for. </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['/Common/vlan1', '/Common/vlan2'] </td>
-    </tr>
-            <tr>
         <td> description </td>
         <td> New description of the virtual server. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> This is my description </td>
-    </tr>
-            <tr>
-        <td> fallback_persistence_profile </td>
-        <td> Fallback persistence profile set on the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/source_addr </td>
     </tr>
             <tr>
         <td> default_persistence_profile </td>
@@ -463,6 +459,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> /Common/dest_addr </td>
     </tr>
             <tr>
+        <td> destination </td>
+        <td> Destination of the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 1.1.1.1 </td>
+    </tr>
+            <tr>
         <td> disabled </td>
         <td> Whether the virtual server is disabled, or not. </td>
         <td align=center> changed </td>
@@ -470,39 +473,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> True </td>
     </tr>
             <tr>
-        <td> enabled_vlans </td>
-        <td> List of VLANs that the virtual is enabled for. </td>
+        <td> disabled_vlans </td>
+        <td> List of VLANs that the virtual is disabled for. </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
-    </tr>
-            <tr>
-        <td> port </td>
-        <td> Port that the virtual server is configured to listen on. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 80 </td>
-    </tr>
-            <tr>
-        <td> pool </td>
-        <td> Pool that the virtual server is attached to. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> /Common/my-pool </td>
-    </tr>
-            <tr>
-        <td> ip_protocol </td>
-        <td> The new value of the IP protocol </td>
-        <td align=center> changed </td>
-        <td align=center> integer </td>
-        <td align=center> 6 </td>
-    </tr>
-            <tr>
-        <td> destination </td>
-        <td> Destination of the virtual server. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 1.1.1.1 </td>
+        <td align=center> ['/Common/vlan1', '/Common/vlan2'] </td>
     </tr>
             <tr>
         <td> enabled </td>
@@ -512,11 +487,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> False </td>
     </tr>
             <tr>
-        <td> profiles </td>
-        <td> List of profiles set on the virtual server. </td>
+        <td> enabled_vlans </td>
+        <td> List of VLANs that the virtual is enabled for. </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}] </td>
+        <td align=center> ['/Common/vlan5', '/Common/vlan6'] </td>
+    </tr>
+            <tr>
+        <td> fallback_persistence_profile </td>
+        <td> Fallback persistence profile set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/source_addr </td>
     </tr>
             <tr>
         <td> irules </td>
@@ -526,11 +508,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> ['/Common/irule1', '/Common/irule2'] </td>
     </tr>
             <tr>
-        <td> source </td>
-        <td> Source address, in CIDR form, set on the virtual server. </td>
+        <td> pool </td>
+        <td> Pool that the virtual server is attached to. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> 1.2.3.4/32 </td>
+        <td align=center> /Common/my-pool </td>
     </tr>
             <tr>
         <td> policies </td>
@@ -540,11 +522,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> ['/Common/policy1', '/Common/policy2'] </td>
     </tr>
             <tr>
-        <td> address_translation </td>
-        <td> The new value specifying whether address translation is on or off </td>
+        <td> port </td>
+        <td> Port that the virtual server is configured to listen on. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> int </td>
+        <td align=center> 80 </td>
+    </tr>
+            <tr>
+        <td> profiles </td>
+        <td> List of profiles set on the virtual server. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> [{'name': 'tcp', 'context': 'server-side'}, {'name': 'tcp-legacy', 'context': 'client-side'}] </td>
     </tr>
             <tr>
         <td> snat </td>
@@ -554,18 +543,53 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> Automap </td>
     </tr>
             <tr>
-        <td> port_translation </td>
-        <td> The new value specifying whether port translation is on or off </td>
+        <td> source </td>
+        <td> Source address, in CIDR form, set on the virtual server. </td>
         <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td align=center> string </td>
+        <td align=center> 1.2.3.4/32 </td>
     </tr>
             <tr>
         <td> metadata </td>
         <td> The new value of the virtual. </td>
         <td align=center> changed </td>
         <td align=center> dict </td>
-        <td align=center> {'key2': 'bar', 'key1': 'foo'} </td>
+        <td align=center> {'key1': 'foo', 'key2': 'bar'} </td>
+    </tr>
+            <tr>
+        <td> address_translation </td>
+        <td> The new value specifying whether address translation is on or off. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> port_translation </td>
+        <td> The new value specifying whether port translation is on or off. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> ip_protocol </td>
+        <td> The new value of the IP protocol. </td>
+        <td align=center> changed </td>
+        <td align=center> integer </td>
+        <td align=center> 6 </td>
+    </tr>
+            <tr>
+        <td> firewall_enforced_policy </td>
+        <td> The new enforcing firewall policy. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/my-enforced-fw </td>
+    </tr>
+            <tr>
+        <td> firewall_staged_policy </td>
+        <td> The new staging firewall policy. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> /Common/my-staged-fw </td>
     </tr>
         
     </table>

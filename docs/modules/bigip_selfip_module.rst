@@ -84,41 +84,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td></td>
-                <td></td>
-                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                     <tr><td>password<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
                 <td></td>
                 <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                     <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
         <td>no</td>
-        <td>True</td>
+        <td>yes</td>
                 <td><ul><li>yes</li><li>no</li></ul></td>
                 <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -160,7 +160,7 @@ Options
         <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>True</td>
+    <td>yes</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>vlan<br/><div style="font-size: small;"></div></td>
@@ -295,18 +295,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> debug_api </td>
-        <td> ['A list of API calls (oldest to newest) in cURL format that were made by the module. The API calls include parameters and headers that reproduce the entire call. This list only includes data that is of C(Content-Type), C(application/json) and not API calls of other types such as C(application/octet-stream). Due to limitations in quote handling, the traces may not be perfectly copy/paste-able.'] </td>
+        <td> allow_service </td>
+        <td> Services that allowed via this Self IP </td>
         <td align=center> changed </td>
         <td align=center> list </td>
-        <td align=center> ['curl -sk -X GET https://1.2.3.4:10443/mgmt/tm/sys...'] </td>
+        <td align=center> ['igmp:0', 'tcp:22', 'udp:53'] </td>
     </tr>
             <tr>
-        <td> netmask </td>
-        <td> The netmask of the Self IP </td>
+        <td> address </td>
+        <td> The address for the Self IP </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> 255.255.255.0 </td>
+        <td align=center> 192.0.2.10 </td>
     </tr>
             <tr>
         <td> name </td>
@@ -316,11 +316,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> self1 </td>
     </tr>
             <tr>
-        <td> address </td>
-        <td> The address for the Self IP </td>
+        <td> netmask </td>
+        <td> The netmask of the Self IP </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> 192.0.2.10 </td>
+        <td align=center> 255.255.255.0 </td>
     </tr>
             <tr>
         <td> traffic_group </td>
@@ -335,13 +335,6 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> vlan1 </td>
-    </tr>
-            <tr>
-        <td> allow_service </td>
-        <td> Services that allowed via this Self IP </td>
-        <td align=center> changed </td>
-        <td align=center> list </td>
-        <td align=center> ['igmp:0', 'tcp:22', 'udp:53'] </td>
     </tr>
         
     </table>

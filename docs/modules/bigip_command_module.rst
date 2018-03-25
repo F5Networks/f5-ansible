@@ -16,6 +16,8 @@ Synopsis
 --------
 
 * Sends an arbitrary command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
+* This module is **not** idempotent, nor will it ever be. It is intended as a stop-gap measure to satisfy automation requirements until such a time as a real module has been developed to configure in the way you need.
+* If you are using this module, you should probably also be filing an issue to have a **real** module created for your needs.
 
 
 Requirements (on host that executes module)
@@ -78,41 +80,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td></td>
-                <td></td>
-                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                     <tr><td>password<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
                 <td></td>
                 <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                     <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
         <td>no</td>
-        <td>True</td>
+        <td>yes</td>
                 <td><ul><li>yes</li><li>no</li></ul></td>
                 <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -149,7 +151,7 @@ Options
         <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>True</td>
+    <td>yes</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>wait_for<br/><div style="font-size: small;"></div></td>
@@ -260,11 +262,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> warn </td>
-        <td> Whether or not to raise warnings about modification commands. </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
+        <td> stdout </td>
+        <td> The set of responses from the commands. </td>
+        <td align=center> always </td>
+        <td align=center> list </td>
+        <td align=center> ['...', '...'] </td>
     </tr>
             <tr>
         <td> stdout_lines </td>
@@ -274,18 +276,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> [['...', '...'], ['...'], ['...']] </td>
     </tr>
             <tr>
-        <td> stdout </td>
-        <td> The set of responses from the commands. </td>
-        <td align=center> always </td>
-        <td align=center> list </td>
-        <td align=center> ['...', '...'] </td>
-    </tr>
-            <tr>
         <td> failed_conditions </td>
         <td> The list of conditionals that have failed. </td>
         <td align=center> failed </td>
         <td align=center> list </td>
         <td align=center> ['...', '...'] </td>
+    </tr>
+            <tr>
+        <td> warn </td>
+        <td> Whether or not to raise warnings about modification commands. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
     </tr>
         
     </table>

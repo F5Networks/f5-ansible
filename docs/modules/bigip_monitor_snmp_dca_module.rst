@@ -123,41 +123,41 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td></td>
-                <td></td>
-                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
-                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>10</td>
-                <td></td>
-                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
-                    <tr><td>server<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
-                    <tr><td>user<br/><div style="font-size: small;"></div></td>
-        <td>yes</td>
-        <td></td>
-                <td></td>
-                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
-                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
-        <td>no</td>
-        <td>443</td>
-                <td></td>
-                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
                     <tr><td>password<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td></td>
                 <td></td>
                 <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>        </td></tr>
+                    <tr><td>server<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>        </td></tr>
+                    <tr><td>server_port<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>443</td>
+                <td></td>
+                <td><div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>        </td></tr>
+                    <tr><td>user<br/><div style="font-size: small;"></div></td>
+        <td>yes</td>
+        <td></td>
+                <td></td>
+                <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                     <tr><td>validate_certs<br/><div style="font-size: small;"></div></td>
         <td>no</td>
-        <td>True</td>
+        <td>yes</td>
                 <td><ul><li>yes</li><li>no</li></ul></td>
                 <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
+                    <tr><td>timeout<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td>10</td>
+                <td></td>
+                <td><div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>        </td></tr>
+                    <tr><td>ssh_keyfile<br/><div style="font-size: small;"></div></td>
+        <td>no</td>
+        <td></td>
+                <td></td>
+                <td><div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>        </td></tr>
                     <tr><td>transport<br/><div style="font-size: small;"></div></td>
         <td>yes</td>
         <td>cli</td>
@@ -199,7 +199,7 @@ Options
         <td><div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>        </td></tr>
                 <tr><td>validate_certs<br/><div style="font-size: small;"> (added in 2.0)</div></td>
     <td>no</td>
-    <td>True</td>
+    <td>yes</td>
         <td><ul><li>yes</li><li>no</li></ul></td>
         <td><div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>        </td></tr>
                 <tr><td>version<br/><div style="font-size: small;"></div></td>
@@ -254,32 +254,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> timeout </td>
-        <td> The new timeout in which the remote system must respond to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> disk_threshold </td>
-        <td> The new disk threshold. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 34 </td>
-    </tr>
-            <tr>
         <td> parent </td>
         <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> snmp_dca </td>
-    </tr>
-            <tr>
-        <td> cpu_coefficient </td>
-        <td> The new CPU coefficient. </td>
-        <td align=center> changed </td>
-        <td align=center> float </td>
-        <td align=center> 2.4 </td>
     </tr>
             <tr>
         <td> interval </td>
@@ -289,25 +268,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 2 </td>
     </tr>
             <tr>
-        <td> memory_threshold </td>
-        <td> The new memory threshold. </td>
+        <td> timeout </td>
+        <td> The new timeout in which the remote system must respond to the monitor. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
-        <td align=center> 50 </td>
-    </tr>
-            <tr>
-        <td> community </td>
-        <td> The new community for the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> foobar </td>
-    </tr>
-            <tr>
-        <td> disk_coefficient </td>
-        <td> The new disk coefficient. </td>
-        <td align=center> changed </td>
-        <td align=center> float </td>
-        <td align=center> 10.2 </td>
+        <td align=center> 10 </td>
     </tr>
             <tr>
         <td> time_until_up </td>
@@ -317,18 +282,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 2 </td>
     </tr>
             <tr>
-        <td> agent_type </td>
-        <td> The new agent type to be used by the monitor. </td>
+        <td> community </td>
+        <td> The new community for the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> UCD </td>
-    </tr>
-            <tr>
-        <td> memory_coefficient </td>
-        <td> The new memory coefficient. </td>
-        <td align=center> changed </td>
-        <td align=center> float </td>
-        <td align=center> 6.4 </td>
+        <td align=center> foobar </td>
     </tr>
             <tr>
         <td> version </td>
@@ -338,11 +296,53 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> v2c </td>
     </tr>
             <tr>
+        <td> agent_type </td>
+        <td> The new agent type to be used by the monitor. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> UCD </td>
+    </tr>
+            <tr>
+        <td> cpu_coefficient </td>
+        <td> The new CPU coefficient. </td>
+        <td align=center> changed </td>
+        <td align=center> float </td>
+        <td align=center> 2.4 </td>
+    </tr>
+            <tr>
         <td> cpu_threshold </td>
         <td> The new CPU threshold. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
         <td align=center> 85 </td>
+    </tr>
+            <tr>
+        <td> memory_coefficient </td>
+        <td> The new memory coefficient. </td>
+        <td align=center> changed </td>
+        <td align=center> float </td>
+        <td align=center> 6.4 </td>
+    </tr>
+            <tr>
+        <td> memory_threshold </td>
+        <td> The new memory threshold. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 50 </td>
+    </tr>
+            <tr>
+        <td> disk_coefficient </td>
+        <td> The new disk coefficient. </td>
+        <td align=center> changed </td>
+        <td align=center> float </td>
+        <td align=center> 10.2 </td>
+    </tr>
+            <tr>
+        <td> disk_threshold </td>
+        <td> The new disk threshold. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 34 </td>
     </tr>
         
     </table>
