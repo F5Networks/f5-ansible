@@ -85,6 +85,7 @@ try:
     from library.module_utils.network.f5.common import cleanup_tokens
     from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
+    from library.module_utils.network.f5.common import compare_dictionary
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -97,6 +98,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import cleanup_tokens
     from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
+    from ansible.module_utils.network.f5.common import compare_dictionary
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
     except ImportError:
@@ -109,24 +111,65 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'description'
+        'description',
+        'rules'
     ]
 
     returnables = [
-        'description'
+        'description',
+        'rules'
     ]
 
     updatables = [
-        'description'
+        'description',
+        'rules'
     ]
 
 
 class ApiParameters(Parameters):
-    pass
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        results = []
+        for rule in self._values['rules']:
+            result = dict()
+            result['name'] = rule['name']
+            if 'ipProtocol' in rule:
+                result['protocol'] = str(rule['ipProtocol'])
+            if 'timers' in rule:
+                result['idle_timeout'] = str(rule['timers'][0]['value'])
+            if 'destinationPorts' in rule:
+                ports = list(set([str(x['name']) for x in rule['destinationPorts']]))
+                ports.sort()
+                result['destination_ports'] = ports
+            results.append(result)
+            results = sorted(results, key=lambda k: k['name'])
+        return results
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        if len(self._values['rules']) == 1 and self._values['rules'][0] == '':
+            return ''
+        results = []
+        for rule in self._values['rules']:
+            result = dict()
+            result['name'] = rule['name']
+            if 'protocol' in rule:
+                result['protocol'] = str(rule['protocol'])
+            if 'idle_timeout' in rule:
+                result['idle_timeout'] = str(rule['idle_timeout'])
+            if 'destination_ports' in rule:
+                ports = list(set([str(x) for x in rule['destination_ports']]))
+                ports.sort()
+                result['destination_ports'] = ports
+            results.append(result)
+            results = sorted(results, key=lambda k: k['name'])
+        return results
 
 
 class Changes(Parameters):
@@ -142,7 +185,44 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def rules(self):
+        if self._values['rules'] is None:
+            return None
+        results = []
+        for rule in self._values['rules']:
+            result = dict()
+            result['name'] = rule['name']
+            if 'protocol' in rule:
+                result['ipProtocol'] = rule['protocol']
+
+            if 'destination_ports' in rule:
+                if rule['protocol'] not in ['tcp', 'udp', 'sctp']:
+                    raise F5ModuleError(
+                        "Only the 'tcp', 'udp', and 'sctp' protocols support 'destination_ports'."
+                    )
+                ports = [dict(name=str(x)) for x in rule['destination_ports']]
+                result['destinationPorts'] = ports
+            else:
+                result['destinationPorts'] = []
+
+            if 'idle_timeout' in rule:
+                if rule['idle_timeout'] in ['indefinite', 'immediate', 'unspecified']:
+                    timeout = rule['idle_timeout']
+                else:
+                    try:
+                        int(rule['idle_timeout'])
+                        timeout = rule['idle_timeout']
+                    except ValueError:
+                        raise F5ModuleError(
+                            "idle_timeout must be a number, or, one of 'indefinite', 'immediate', or 'unspecified'."
+                        )
+                result['timers'] = [
+                    dict(name='flow-idle-timeout', value=timeout)
+                ]
+            results.append(result)
+            results = sorted(results, key=lambda k: k['name'])
+        return results
 
 
 class ReportableChanges(Changes):
@@ -169,6 +249,25 @@ class Difference(object):
                 return attr1
         except AttributeError:
             return attr1
+
+    @property
+    def rules(self):
+        if self.want.rules is None:
+            return None
+        if self.have.rules is None and self.want.rules == '':
+            return None
+        if self.have.rules is not None and self.want.rules == '':
+            return []
+        if self.have.rules is None:
+            return self.want.rules
+
+        want = [tuple(x.pop('destination_ports')) for x in self.want.rules if 'destination_ports' in x]
+        have = [tuple(x.pop('destination_ports')) for x in self.have.rules if 'destination_ports' in x]
+        if set(want) != set(have):
+            return self.want.rules
+
+        if compare_dictionary(self.want.rules, self.have.rules):
+            return self.want.rules
 
 
 class ModuleManager(object):
@@ -320,6 +419,18 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             description=dict(),
+            rules=dict(
+                type='list',
+                suboptions=dict(
+                    name=dict(required=True),
+                    protocol=dict(default='all-other'),
+                    description=dict(),
+                    idle_timeout=dict(default='unspecified'),
+                    destination_ports=dict(
+                        type='list'
+                    )
+                )
+            ),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

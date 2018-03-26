@@ -46,6 +46,203 @@
     that:
       - result is not changed
 
+- name: Change the rules
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules
+  assert:
+    that:
+      - result is changed
+
+- name: Change the rules - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change the rules, add rule
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+      - name: rule2
+        protocol: udp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules, add rule
+  assert:
+    that:
+      - result is changed
+
+- name: Change the rules, add rule - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+      - name: rule2
+        protocol: udp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules, add rule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change the rules, remove rule
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules, remove rule
+  assert:
+    that:
+      - result is changed
+
+- name: Change the rules, remove rule - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+  register: result
+
+- name: Assert Change the rules, remove rule - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change the rules, add ports
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+          - 8080
+  register: result
+
+- name: Assert Change the rules, add ports
+  assert:
+    that:
+      - result is changed
+
+- name: Change the rules, add ports - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+          - 8080
+  register: result
+
+- name: Assert Change the rules, add ports - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change the rules, ports not supported on protocol - Expected failure
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: 200
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+          - 8080
+  register: result
+  failed_when: result is success
+
+- name: Assert Change the rules, ports not supported on protocol - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Change the rules, change protocol, number
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: 200
+        idle_timeout: indefinite
+  register: result
+
+- name: Assert Change the rules, change protocol, number
+  assert:
+    that:
+      - result is changed
+
+- name: Change the rules, change protocol, number - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: 200
+        idle_timeout: indefinite
+  register: result
+
+- name: Assert Change the rules, change protocol, number - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Remove the timer policy
   bigip_timer_policy:
     name: timer1
@@ -68,4 +265,60 @@
     that:
       - result is not changed
 
+- name: Create timer policy with rules
+  bigip_timer_policy:
+    name: timer1
+    description: my description
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+      - name: rule2
+        protocol: 200
+      - name: rule3
+        protocol: sctp
+        idle_timeout: 200
+        destination_ports:
+          - 21
+  register: result
+
+- name: Assert Create timer policy with rules
+  assert:
+    that:
+      - result is changed
+
+- name: Create timer policy with rules - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    description: my description
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+      - name: rule2
+        protocol: 200
+      - name: rule3
+        protocol: sctp
+        idle_timeout: 200
+        destination_ports:
+          - 21
+  register: result
+
+- name: Assert Create timer policy with rules - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove timer policy with rules
+  bigip_timer_policy:
+    name: timer1
+    state: absent
+
 - import_tasks: teardown.yaml
+
