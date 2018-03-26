@@ -64,35 +64,78 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            name='foo',
+            interfaces=[
+                '1.3', '1.1'
+            ],
+            link_selection_policy='auto',
+            frame_distribution_hash='destination-mac',
+            lacp_enabled=True,
+            lacp_mode='active',
+            lacp_timeout='long'
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.name == 'foo'
+        assert p.interfaces == ['1.1', '1.3']
+        assert p.link_selection_policy == 'auto'
+        assert p.frame_distribution_hash == 'dst-mac'
+        assert p.lacp_enabled is True
+        assert p.lacp_mode == 'active'
+        assert p.lacp_timeout == 'long'
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_tm_net_trunk_1.json')
+
+        p = ApiParameters(params=args)
+        assert p.name == 'foo'
+        assert p.frame_distribution_hash == 'dst-mac'
+        assert p.lacp_enabled is False
+        assert p.lacp_mode == 'active'
+        assert p.lacp_timeout == 'long'
+        assert p.interfaces == ['1.3']
+        assert p.link_selection_policy == 'maximum-bandwidth'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            name='foo',
+            interfaces=[
+                '1.3', '1.1'
+            ],
+            link_selection_policy='auto',
+            frame_distribution_hash='destination-mac',
+            lacp_enabled=True,
+            lacp_mode='active',
+            lacp_timeout='long',
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods to force specific logic in the module to happen
+        mm = ModuleManager(module=module)
+        mm.create_on_device = Mock(return_value=True)
+        mm.exists = Mock(return_value=False)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['link_selection_policy'] == 'auto'
+        assert results['frame_distribution_hash'] == 'destination-mac'
+        assert results['lacp_enabled'] is True
+        assert results['lacp_mode'] == 'active'
+        assert results['lacp_timeout'] == 'long'
