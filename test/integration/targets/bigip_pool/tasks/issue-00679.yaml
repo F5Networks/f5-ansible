@@ -1,0 +1,57 @@
+---
+
+- name: Issue 00679 - Create a partition
+  bigip_partition:
+    name: PROD-WEB
+
+- name: Issue 00679 - Create a monitor
+  bigip_monitor_http:
+    name: PROD-WEB-TEST-MONITOR
+    receive: foo
+    send: bar
+    partition: PROD-WEB
+
+- name: Issue 00679 - Create a pool
+  bigip_pool:
+    name: issue-00679
+    lb_method: round-robin
+    partition: PROD-WEB
+    monitors:
+      - PROD-WEB-TEST-MONITOR
+  register: result
+
+- name: Issue 00679 - Assert Create a pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00679 - Create a pool - Idempotent check
+  bigip_pool:
+    name: issue-00679
+    lb_method: round-robin
+    partition: PROD-WEB
+    monitors:
+      - PROD-WEB-TEST-MONITOR
+  register: result
+
+- name: Issue 00679 - Assert Create a pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00679 - Remove pool
+  bigip_pool:
+    name: issue-00679
+    partition: PROD-WEB
+    state: absent
+
+- name: Issue 00679 - Remove monitor
+  bigip_monitor_http:
+    name: PROD-WEB-TEST-MONITOR
+    partition: PROD-WEB
+    state: absent
+
+- name: Issue 00679 - Remove partition
+  bigip_partition:
+    name: PROD-WEB
+    state: absent

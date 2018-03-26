@@ -469,7 +469,7 @@ class ApiParameters(Parameters):
         if self._values['monitors'] is None:
             return []
         try:
-            result = re.findall(r'/\w+/[^\s}]+', self._values['monitors'])
+            result = re.findall(r'/[\w-]+/[^\s}]+', self._values['monitors'])
             return result
         except Exception:
             return self._values['monitors']
@@ -556,7 +556,7 @@ class UsableChanges(Changes):
 class ReportableChanges(Changes):
     @property
     def monitors(self):
-        result = sorted(re.findall(r'/\w+/[^\s}]+', self._values['monitors']))
+        result = sorted(re.findall(r'/[\w-]+/[^\s}]+', self._values['monitors']))
         return result
 
     @property
