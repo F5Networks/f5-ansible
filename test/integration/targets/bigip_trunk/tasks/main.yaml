@@ -2,6 +2,468 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
+- name: Fail to create a trunk on VE with LACP - Expected failure
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: yes
+  register: result
+  failed_when: result is success
+  when: system_info.system_information.product_category == "Virtual Edition"
+
+- name: Assert Fail to create a trunk on VE with LACP - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create a trunk on hardware
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+    link_selection_policy: maximum-bandwidth
+    frame_distribution_hash: destination-mac
+    lacp_enabled: yes
+    lacp_mode: passive
+    lacp_timeout: short
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Create a trunk on hardware
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Create a trunk on hardware - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+    link_selection_policy: maximum-bandwidth
+    frame_distribution_hash: destination-mac
+    lacp_enabled: yes
+    lacp_mode: passive
+    lacp_timeout: short
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Create a trunk on hardware - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Create a trunk on VE
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+    link_selection_policy: maximum-bandwidth
+    frame_distribution_hash: destination-mac
+    lacp_mode: passive
+    lacp_timeout: short
+  register: result
+  when: system_info.system_information.product_category == "Virtual Edition"
+
+- name: Assert Create a trunk on VE
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category == "Virtual Edition"
+
+- name: Create a trunk on VE - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+    link_selection_policy: maximum-bandwidth
+    frame_distribution_hash: destination-mac
+    lacp_mode: passive
+    lacp_timeout: short
+  register: result
+  when: system_info.system_information.product_category == "Virtual Edition"
+
+- name: Assert Create a trunk on VE - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category == "Virtual Edition"
+
+- name: Change link selection policy, auto
+  bigip_trunk:
+    name: trunk1
+    link_selection_policy: auto
+  register: result
+
+- name: Assert Change link selection policy, auto
+  assert:
+    that:
+      - result is changed
+
+- name: Change link selection policy, auto - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    link_selection_policy: auto
+  register: result
+
+- name: Assert Change link selection policy, auto - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change link selection policy, max bandwidth
+  bigip_trunk:
+    name: trunk1
+    link_selection_policy: maximum-bandwidth
+  register: result
+
+- name: Assert Change link selection policy, max bandwidth
+  assert:
+    that:
+      - result is changed
+
+- name: Change link selection policy, max bandwidth - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    link_selection_policy: maximum-bandwidth
+  register: result
+
+- name: Assert Change link selection policy, max bandwidth - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change frame distribution hash, source dest ip
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: source-destination-ip
+  register: result
+
+- name: Assert Change frame distribution hash, source dest ip
+  assert:
+    that:
+      - result is changed
+
+- name: Change frame distribution hash, source dest ip - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: source-destination-ip
+  register: result
+
+- name: Assert Change frame distribution hash, source dest ip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change frame distribution hash, source dest mac
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: source-destination-mac
+  register: result
+
+- name: Assert Change frame distribution hash, source dest mac
+  assert:
+    that:
+      - result is changed
+
+- name: Change frame distribution hash, source dest mac - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: source-destination-mac
+  register: result
+
+- name: Assert Change frame distribution hash, source dest mac - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change frame distribution hash, dest mac
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: destination-mac
+  register: result
+
+- name: Assert Change frame distribution hash, dest mac
+  assert:
+    that:
+      - result is changed
+
+- name: Change frame distribution hash, dest mac - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    frame_distribution_hash: destination-mac
+  register: result
+
+- name: Assert Change frame distribution hash, dest mac - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change lacp enabled, no
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: no
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Change lacp enabled, no
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Change lacp enabled, no - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: no
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Change lacp enabled, no - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Change lacp enabled, yes
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: yes
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Change lacp enabled, yes
+  assert:
+    that:
+      - result is changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Change lacp enabled, yes - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: yes
+  register: result
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Assert Change lacp enabled, yes - Idempotent check
+  assert:
+    that:
+      - result is not changed
+  when: system_info.system_information.product_category != "Virtual Edition"
+
+- name: Change lacp mode, active
+  bigip_trunk:
+    name: trunk1
+    lacp_mode: active
+  register: result
+
+- name: Assert Change lacp mode, active
+  assert:
+    that:
+      - result is changed
+
+- name: Change lacp mode, active - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_mode: active
+  register: result
+
+- name: Assert Change lacp mode, active - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change lacp mode, passive
+  bigip_trunk:
+    name: trunk1
+    lacp_mode: passive
+  register: result
+
+- name: Assert Change lacp mode, passive
+  assert:
+    that:
+      - result is changed
+
+- name: Change lacp mode, passive - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_mode: passive
+  register: result
+
+- name: Assert Change lacp mode, passive - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change lacp timeout, long
+  bigip_trunk:
+    name: trunk1
+    lacp_timeout: long
+  register: result
+
+- name: Assert Change lacp timeout, long
+  assert:
+    that:
+      - result is changed
+
+- name: Change lacp timeout, long - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_timeout: long
+  register: result
+
+- name: Assert Change lacp timeout, long - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change lacp timeout, short
+  bigip_trunk:
+    name: trunk1
+    lacp_timeout: short
+  register: result
+
+- name: Assert Change lacp timeout, short
+  assert:
+    that:
+      - result is changed
+
+- name: Change lacp timeout, short - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    lacp_timeout: short
+  register: result
+
+- name: Assert Change lacp timeout, short - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove an interface
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+  register: result
+
+- name: Assert Remove an interface
+  assert:
+    that:
+      - result is changed
+
+- name: Remove an interface - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+  register: result
+
+- name: Assert Remove an interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add an interface
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+  register: result
+
+- name: Assert Add an interface
+  assert:
+    that:
+      - result is changed
+
+- name: Add an interface - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+      - 1.2
+  register: result
+
+- name: Assert Add an interface - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove all interfaces
+  bigip_trunk:
+    name: trunk1
+    interfaces: ""
+  register: result
+
+- name: Assert Remove all interfaces
+  assert:
+    that:
+      - result is changed
+
+- name: Remove all interfaces - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces: ""
+  register: result
+
+- name: Assert Remove all interfaces - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add an interface after removing
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+  register: result
+
+- name: Assert Add an interface after removing
+  assert:
+    that:
+      - result is changed
+
+- name: Add an interface after removing - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    interfaces:
+      - 1.1
+  register: result
+
+- name: Assert Add an interface after removing - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove trunk
+  bigip_trunk:
+    name: trunk1
+    state: absent
+  register: result
+
+- name: Assert Remove trunk
+  assert:
+    that:
+      - result is changed
+
+- name: Remove trunk - Idempotent check
+  bigip_trunk:
+    name: trunk1
+    state: absent
+  register: result
+
+- name: Assert Remove trunk - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - import_tasks: teardown.yaml
