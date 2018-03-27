@@ -51,9 +51,10 @@ options:
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
-        template will run. If this parameter is not provided when creating
-        a new monitor, then the default value will be 5. This value B(must)
-        be less than the C(timeout) value.
+        template will run.
+      - If this parameter is not provided when creating a new monitor, then the
+        default value will be 30.
+      - This value B(must) be less than the C(timeout) value.
   timeout:
     description:
       - The number of seconds in which the node or service must respond to
@@ -61,8 +62,9 @@ options:
         period, it is considered up. If the target does not respond within
         the set time period, it is considered down. You can change this
         number to any number you want, however, it should be 3 times the
-        interval number of seconds plus 1 second. If this parameter is not
-        provided when creating a new monitor, then the default value will be 16.
+        interval number of seconds plus 1 second.
+      - If this parameter is not provided when creating a new monitor, then the
+        default value will be 120.
   partition:
     description:
       - Device partition to manage resources on.
@@ -605,9 +607,9 @@ class ModuleManager(object):
 
     def _set_default_creation_values(self):
         if self.want.timeout is None:
-            self.want.update({'timeout': 16})
+            self.want.update({'timeout': 120})
         if self.want.interval is None:
-            self.want.update({'interval': 5})
+            self.want.update({'interval': 30})
         if self.want.probe_timeout is None:
             self.want.update({'probe_timeout': 5})
         if self.want.ip is None:
