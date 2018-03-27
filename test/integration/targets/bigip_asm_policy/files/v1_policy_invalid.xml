@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy integrity_check="24dade33db23a37c4e07a5ce5b4cf5f0" bigip_version="12.0.0" name="/Common/foo">
+  <policy_version>
+    <timestamp>2017-10-23T21:40:44Z</timestamp>
+    <device_name>
+    <policy_name>/Common/foo</policy_name>
+    <last_change>Policy Building Settings Policy Building Settings [update]: Internal Statistics have been updated { audit: policy = /Common/foo, component = Policy Builder }</last_change>
+  </policy_version
+</policy>
