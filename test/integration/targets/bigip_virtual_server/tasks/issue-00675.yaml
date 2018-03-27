@@ -24,12 +24,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, http
   bigip_virtual_server:
     name: issue-00675-http
@@ -53,10 +47,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, https
   bigip_virtual_server:
@@ -82,12 +72,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, telnet
   bigip_virtual_server:
     name: issue-00675-telnet
@@ -111,13 +95,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, pptp
   bigip_virtual_server:
@@ -143,14 +120,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, smtp
   bigip_virtual_server:
     name: issue-00675-smtp
@@ -174,12 +143,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, snmp
   bigip_virtual_server:
@@ -205,12 +168,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, snmp-trap
   bigip_virtual_server:
     name: issue-00675-snmp-trap
@@ -234,13 +191,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, ssh
   bigip_virtual_server:
@@ -266,14 +216,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, tftp
   bigip_virtual_server:
     name: issue-00675-tftp
@@ -297,15 +239,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, isakmp
   bigip_virtual_server:
@@ -331,12 +264,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
 - name: Issue 00675 - Add virtual server, mqtt
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -360,10 +287,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00675 - Add virtual server, mqtt-tls
   bigip_virtual_server:
@@ -389,23 +312,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Issue 00675 - Change virtual server, ftp
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -427,11 +333,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
 
 - name: Issue 00675 - Change virtual server, http
   bigip_virtual_server:
@@ -455,11 +356,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Issue 00675 - Change virtual server, https
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -481,12 +377,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
 
 - name: Issue 00675 - Change virtual server, telnet
   bigip_virtual_server:
@@ -510,14 +400,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
 - name: Issue 00675 - Change virtual server, pptp
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -539,10 +421,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00675 - Change virtual server, smtp
   bigip_virtual_server:
@@ -566,11 +444,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Issue 00675 - Change virtual server, snmp
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -592,10 +465,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00675 - Change virtual server, snmp-trap
   bigip_virtual_server:
@@ -619,10 +488,6 @@
     that:
       - result is not changed
 
-
-
-
-
 - name: Issue 00675 - Change virtual server, ssh
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -644,10 +509,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
 
 - name: Issue 00675 - Change virtual server, tftp
   bigip_virtual_server:
@@ -671,10 +532,6 @@
     that:
       - result is not changed
 
-
-
-
-
 - name: Issue 00675 - Change virtual server, isakmp
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -696,8 +553,6 @@
   assert:
     that:
       - result is not changed
-
-
 
 - name: Issue 00675 - Change virtual server, mqtt
   bigip_virtual_server:
@@ -721,11 +576,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
 - name: Issue 00675 - Change virtual server, mqtt-tls
   bigip_virtual_server:
     name: issue-00675-mqtt
@@ -747,9 +597,6 @@
   assert:
     that:
       - result is not changed
-
-
-
 
 - name: Issue 00675 - Remove virtual servers
   bigip_virtual_server:
