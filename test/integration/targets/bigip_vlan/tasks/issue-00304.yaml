@@ -1,0 +1,45 @@
+---
+
+- name: Issue 00304 - Create trunk with interfaces
+  bigip_trunk:
+    name: trunk1
+    lacp_enabled: no
+    interfaces:
+      - 1.1
+      - 1.2
+
+- name: Issue 00304 - Create vlan with trunk on tagged_interfaces
+  bigip_vlan:
+    name: issue-00304
+    tag: 1234
+    tagged_interfaces:
+      - trunk1
+  register: result
+
+- name: Issue 00304 - Assert Create vlan with trunk on tagged_interfaces
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00304 - Create vlan with trunk on tagged_interfaces - Idempotent check
+  bigip_vlan:
+    name: issue-00304
+    tag: 1234
+    tagged_interfaces:
+      - trunk1
+  register: result
+
+- name: Issue 00304 - Assert Create vlan with trunk on tagged_interfaces - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00304 - Remove vlan
+  bigip_vlan:
+    name: issue-00304
+    state: absent
+
+- name: Issue 00304 - Remove trunk
+  bigip_trunk:
+    name: trunk1
+    state: absent
