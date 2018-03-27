@@ -242,7 +242,6 @@
     that:
       - result is not changed
 
-
 - name: Remove ASM policy
   bigip_asm_policy:
     name: foo-policy3
