@@ -322,6 +322,12 @@ options:
       - When creating a new virtual, if this parameter is not specified, the staged
         policy is disabled.
     version_added: 2.6
+  security_log_profiles:
+    description:
+      - Specifies the log profile applied to the virtual server.
+      - To make use of this feature, the AFM module must be licensed and provisioned.
+      - The C(Log all requests) and C(Log illegal requests) are mutually exclusive and
+        therefore, this module will raise an error if the two are specified together.
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -590,6 +596,11 @@ firewall_staged_policy:
   returned: changed
   type: string
   sample: /Common/my-staged-fw
+security_log_profiles:
+  description: The new list of security log profiles.
+  returned: changed
+  type: list
+  sample: ['/Common/profile1', '/Common/profile2']
 '''
 
 import re
@@ -645,7 +656,8 @@ class Parameters(AnsibleF5Parameters):
         'translatePort': 'port_translation',
         'ipProtocol': 'ip_protocol',
         'fwEnforcedPolicy': 'firewall_enforced_policy',
-        'fwStagedPolicy': 'firewall_staged_policy'
+        'fwStagedPolicy': 'firewall_staged_policy',
+        'securityLogProfiles': 'security_log_profiles'
     }
 
     api_attributes = [
@@ -676,6 +688,7 @@ class Parameters(AnsibleF5Parameters):
         'internal',
         'fwEnforcedPolicy',
         'fwStagedPolicy',
+        'securityLogProfiles',
     ]
 
     updatables = [
@@ -700,6 +713,7 @@ class Parameters(AnsibleF5Parameters):
         'type',
         'firewall_enforced_policy',
         'firewall_staged_policy',
+        'security_log_profiles',
     ]
 
     returnables = [
@@ -728,6 +742,7 @@ class Parameters(AnsibleF5Parameters):
         'type',
         'firewall_enforced_policy',
         'firewall_staged_policy',
+        'security_log_profiles',
     ]
 
     profiles_mutex = [
@@ -1157,6 +1172,20 @@ class ApiParameters(Parameters):
             result.append(tmp)
         return result
 
+    @property
+    def security_log_profiles(self):
+        if self._values['security_log_profiles'] is None:
+            return None
+        # At the moment, BIG-IP wraps the names of log profiles in double-quotes if
+        # the profile name contains spaces. This is likely due to the REST code being
+        # too close to actual tmsh code and, at the tmsh level, a space in the profile
+        # name would cause tmsh to see the 2nd word (and beyond) as "the next parameter".
+        #
+        # This seems like a bug to me.
+        result = list(set([x.strip('"') for x in self._values['security_log_profiles']]))
+        result.sort()
+        return result
+
 
 class ModuleParameters(Parameters):
     services_map = {
@@ -1495,6 +1524,16 @@ class ModuleParameters(Parameters):
             return None
         return fq_name(self.partition, self._values['firewall_staged_policy'])
 
+    @property
+    def security_log_profiles(self):
+        if self._values['security_log_profiles'] is None:
+            return None
+        if len(self._values['security_log_profiles']) == 1 and self._values['security_log_profiles'][0] == '':
+            return ''
+        result = list(set([fq_name(self.partition, x) for x in self._values['security_log_profiles']]))
+        result.sort()
+        return result
+
 
 class Changes(Parameters):
     pass
@@ -1588,6 +1627,17 @@ class UsableChanges(Changes):
     def l2Forward(self):
         if self._values['type'] == 'forwarding-l2':
             return True
+
+    @property
+    def security_log_profiles(self):
+        if self._values['security_log_profiles'] is None:
+            return None
+        mutex = ('Log all requests','Log illegal requests')
+        if len([x for x in self._values['security_log_profiles'] if x.endswith(mutex)]) >= 2:
+            raise F5ModuleError(
+                "The 'Log all requests' and 'Log illegal requests' are mutually exclusive."
+            )
+        return self._values['security_log_profiles']
 
 
 class ReportableChanges(Changes):
@@ -2416,6 +2466,19 @@ class Difference(object):
                 "Changing the 'type' parameter is not supported."
             )
 
+    @property
+    def security_log_profiles(self):
+        if self.want.security_log_profiles is None:
+            return None
+        if self.have.security_log_profiles is None and self.want.security_log_profiles == '':
+            return None
+        if self.have.security_log_profiles is not None and self.want.security_log_profiles == '':
+            return []
+        if self.have.security_log_profiles is None:
+            return self.want.security_log_profiles
+        if set(self.want.security_log_profiles) != set(self.have.security_log_profiles):
+            return self.want.security_log_profiles
+
 
 class ModuleManager(object):
     def __init__(self, *args, **kwargs):
@@ -2634,7 +2697,8 @@ class ArgumentSpec(object):
                 ]
             ),
             firewall_staged_policy=dict(),
-            firewall_enforced_policy=dict()
+            firewall_enforced_policy=dict(),
+            security_log_profiles=dict(type='list')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

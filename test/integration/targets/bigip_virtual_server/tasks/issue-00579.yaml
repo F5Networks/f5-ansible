@@ -1,0 +1,137 @@
+---
+
+- name: Issue 00579 - Provision AFM
+  bigip_provision:
+    module: afm
+
+- name: Issue 00579 - Add virtual server, valid with mutually exclusive log profiles - Expected failure
+  bigip_virtual_server:
+    name: issue-00579
+    destination: 1.1.1.1
+    port: 80
+    security_log_profiles:
+      - Log all requests
+      - Log illegal requests
+      - local-dos
+  register: result
+  failed_when: result is success
+
+- name: Issue 00579 - Assert Add virtual server, valid with mutually exclusive log profiles - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Issue 00579 - Add virtual server, valid log profiles
+  bigip_virtual_server:
+    name: issue-00579
+    destination: 1.1.1.1
+    port: 80
+    security_log_profiles:
+      - Log all requests
+      - local-dos
+  register: result
+
+- name: Issue 00579 - Add virtual server, valid log profiles
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00579 - Add virtual server, valid log profiles - Idempotent check
+  bigip_virtual_server:
+    name: issue-00579
+    destination: 1.1.1.1
+    port: 80
+    security_log_profiles:
+      - Log all requests
+      - local-dos
+  register: result
+
+- name: Issue 00579 - Add virtual server, valid log profiles - Idepotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00579 - Remove log profile
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - local-dos
+  register: result
+
+- name: Issue 00579 - Remove log profile
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00579 - Remove log profile - Idempotent check
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - local-dos
+  register: result
+
+- name: Issue 00579 - Remove log profile - Idepotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00579 - Add log profile
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - local-dos
+      - Log all requests
+  register: result
+
+- name: Issue 00579 - Add log profile
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00579 - Add log profile - Idempotent check
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - local-dos
+      - Log all requests
+  register: result
+
+- name: Issue 00579 - Add log profile - Idepotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00579 - Remove all log profile
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - ""
+  register: result
+
+- name: Issue 00579 - Remove all log profile
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00579 - Remove all log profile - Idempotent check
+  bigip_virtual_server:
+    name: issue-00579
+    security_log_profiles:
+      - ""
+  register: result
+
+- name: Issue 00579 - Remove all log profile - Idepotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00579 - Remove virtual
+  bigip_virtual_server:
+    name: issue-00579
+    state: absent
+  register: result
+
+- name: De-provision AFM
+  bigip_provision:
+    module: afm
+    state: absent
