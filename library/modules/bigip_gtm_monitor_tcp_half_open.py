@@ -80,7 +80,7 @@ options:
       - Specifies that the monitor allows more than one probe attempt per interval.
       - When C(yes), specifies that the monitor ignores down responses for the duration of
         the monitor timeout. Once the monitor timeout is reached without the system receiving
-        an up response, the system marks the object down
+        an up response, the system marks the object down.
       - When C(no), specifies that the monitor immediately marks an object down when it
         receives a down response.
       - When creating a new monitor, if this parameter is not provided, then the default
