@@ -23,18 +23,37 @@ Inside the ``ansible.cfg`` file, add the following code.
 .. code-block:: yaml
 
    [defaults]
-   library=./library
+   library = ./library/modules
+   module_utils = ./library/module_utils
+   action_plugins = ./library/plugins/action
+   network_group_modules = bigip, bigiq
 
-This code instructs Ansible to look for modules in a directory called ``library`` that is relative to where the ``ansible.cfg`` file exists.
+This code instructs Ansible to look for modules in a directory called ``library/modules/`` that is relative to where the ``ansible.cfg`` file exists.
+Additionally, it instructs Ansible to look for supporting "module utils" in the ``library/module_utils/`` directory. The same redirection is done with Ansible's
+action plugins via the ``action_plugins`` configuration parameter. Finally, we tell Ansible that there the ``bigip`` and ``bigiq`` modules are considered
+"networking" modules. This changes the behavior of Ansible slightly when it invokes action plugins.
 
-You can take the modules in the ``f5-ansible`` repository and put them in that directory.
+Next, it is easiest to download a ZIP file of the contents of the ``f5-ansible`` Github repository. This can be done by navigating to the ``Code`` tab, as shown
+below
+
+.. image:: ../_static/code-tab.png
+   :scale: 50 %
+
+Once on this page, click the green **Clone or download** button. This will present you with the option of downloading the ``f5-ansible`` source code.
+
+.. image:: ../_static/download-zip.png
+   :scale: 50 %
+
+Download this zip file, extract it, and move the ``library`` directory within to the location you specified in the ``ansible.cfg`` above.
 
 .. note::
 
-    Specifying a ``library`` directory does not override the system location where Ansible searches for modules. It only tells Ansible to "look here first" when importing a module.
-    Therefore, if a module in the specified ``library`` directory does not exist, Ansible will fall back to the system location and look for the module there.
+    Specifying a ``library`` directory does not override the system location where Ansible searches for modules. It only tells Ansible to "look here first" when
+    importing a module. Therefore, if a module in the specified ``library`` directory does not exist, Ansible will fall back to the system location and look for
+    the module there.
 
-You can also specify multiple locations by separating them with a colon. For example, if you have two different directories with two different sets of modules in them, you might do something like this:
+You can also specify multiple locations by separating them with a colon. For example, if you have two different directories with two different sets of modules
+in them, you might do something like this:
 
 .. code-block:: yaml
 
@@ -56,7 +75,8 @@ Different systems can put Ansible in different locations. The recommended way to
 
 - ``/usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/``
 
-To install the F5 modules in this repository, you can copy the contents of the ``library/`` directory that F5 provides into the location mentioned previously.
+To install the F5 modules in this repository, you can copy the contents of the ``library/modules/`` directory that F5 provides into the location mentioned
+previously.
 
 On Mac OS X, you can use the following location for the modules:
 
@@ -75,6 +95,13 @@ This command overwrites *all* of the modules with the ones in this repository. I
    cp library/bigip_iapp_service.py /usr/local/lib/PYTHON_VERSION/site-packages/ansible/modules/extras/network/f5/
 
 This example copies only the ``bigip_iapp_service`` module.
+
+Additionally, you will need to copy the module utils files in ``library/module_utils/`` to the appropriate location on disk. This location is similar to the
+modules path specified above, except that it is in the ``ansible/module_utils/network/f5/`` directory instead.
+
+Finally, you will need to update the action plugins that the F5 modules use. These can be found in the ``library/plugins/action/`` directory. In the same
+way that you moved the modules and module utils files, you will also want to move the action plugins. The plugins have a similar location to modules and module
+utils. Their directory is found at ``ansible/plugins/action/``.
 
 Caveats
 -------
