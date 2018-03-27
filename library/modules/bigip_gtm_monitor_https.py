@@ -49,8 +49,7 @@ options:
       - Port address part of the IP/port definition. If this parameter is not
         provided when creating a new monitor, then the default value will be
         '*'. Note that if specifying an IP address, a value between 1 and 65535
-        must be specified
-      - This argument is not supported for TCP Echo types.
+        must be specified.
   interval:
     description:
       - The interval specifying how frequently the monitor instance of this
