@@ -1172,7 +1172,8 @@ class ModuleParameters(Parameters):
         'tftp': 69,
         'isakmp': 500,
         'mqtt': 1883,
-        'mqtt-tls': 8883
+        'mqtt-tls': 8883,
+        'rtsp': 554
     }
 
     def _handle_profile_context(self, tmp):
