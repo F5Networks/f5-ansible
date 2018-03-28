@@ -32,13 +32,13 @@ jobs:
   include:
     - stage: test
       script: make sanity
-      python: 3.5
+      python: 3.6
       env: TOXENV=sanity
       if: branch = devel
 
     - stage: test
       script:
         - make docker-test && make docker-deploy
-      python: 3.5
+      python: 3.6
       env: TOXENV=docks-deploy
       if: branch = devel
