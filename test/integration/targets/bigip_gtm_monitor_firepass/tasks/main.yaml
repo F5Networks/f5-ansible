@@ -1,0 +1,338 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create FirePass Monitor
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create FirePass Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Create FirePass Monitor - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create FirePass Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change max load average
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    max_load_average: 50
+  register: result
+
+- name: Assert Change send string
+  assert:
+    that:
+      - result is changed
+      - result.max_load_average == 50
+
+- name: Change max load average - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    max_load_average: 50
+  register: result
+
+- name: Assert Change max load average - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change concurrency limit
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    concurrency_limit: 50
+  register: result
+
+- name: Assert Change concurrency limit
+  assert:
+    that:
+      - result is changed
+      - result.concurrency_limit == 50
+
+- name: Change concurrency limit - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    concurrency_limit: 50
+  register: result
+
+- name: Assert Change concurrency limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change IP
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP
+  assert:
+    that:
+      - result is changed
+      - result.ip == '10.10.10.10'
+      - result.port == 80
+
+- name: Change IP - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change port
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port
+  assert:
+    that:
+      - result is changed
+      - result.port == 8000
+
+- name: Change port - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, less than timeout
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout
+  assert:
+    that:
+      - result is changed
+      - result.interval == 2
+
+- name: Change interval, less than timeout - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, greater than timeout, expect failure
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    interval: 200
+  register: result
+  ignore_errors: true
+
+- name: Assert Change interval, greater than timeout, expect failure
+  assert:
+    that:
+      - result is not changed
+
+- name: Change timeout
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout
+  assert:
+    that:
+      - result is changed
+      - result.timeout == 80
+
+- name: Change timeout - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change ignore_down_response
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ignore_down_response: yes
+  register: result
+
+- name: Assert Change ignore_down_response
+  assert:
+    that:
+      - result is changed
+      - result.ignore_down_response|bool
+
+- name: Change ignore_down_response - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ignore_down_response: yes
+  register: result
+
+- name: Assert Change ignore_down_response - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change probe_timeout
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    probe_timeout: 10
+  register: result
+
+- name: Assert Change probe_timeout
+  assert:
+    that:
+      - result is changed
+      - result.probe_timeout == 10
+
+- name: Change probe_timeout - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    probe_timeout: 10
+  register: result
+
+- name: Assert Change probe_timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change ignore_down_response, false
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ignore_down_response: no
+  register: result
+
+- name: Assert Change ignore_down_response, false
+  assert:
+    that:
+      - result is changed
+      - not result.ignore_down_response|bool
+
+- name: Change ignore_down_response, false - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    ignore_down_response: no
+  register: result
+
+- name: Assert Change ignore_down_response, false - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change username
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    target_username: user2
+  register: result
+
+- name: Assert Change username
+  assert:
+    that:
+      - result is changed
+
+- name: Change username - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    target_username: user2
+  register: result
+
+- name: Assert Change username - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change password
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    target_password: secret2
+  register: result
+
+- name: Assert Change password
+  assert:
+    that:
+      - result is changed
+
+- name: Change password, on_create
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    target_password: secret2
+    update_password: on_create
+  register: result
+
+- name: Assert Change password, on_create
+  assert:
+    that:
+      - result is not changed
+
+- name: Change cipher list
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    cipher_list: +3DES:+kEDH
+  register: result
+
+- name: Assert Change cipher list
+  assert:
+    that:
+      - result is changed
+
+- name: Change cipher list - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    cipher_list: +3DES:+kEDH
+  register: result
+
+- name: Assert Change cipher list - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove FirePass Monitor
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove FirePass Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Remove FirePass Monitor - Idempotent check
+  bigip_gtm_monitor_firepass:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove FirePass Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+#- import_tasks: teardown.yaml
