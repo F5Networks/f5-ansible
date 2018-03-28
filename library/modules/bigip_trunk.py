@@ -70,7 +70,7 @@ options:
         to your network, we recommend that you enable LACP.
     type: bool
   lacp_mode:
-    destination:
+    description:
       - Specifies the operation mode for link aggregation control protocol (LACP),
         if LACP is enabled for the trunk.
       - When creating a new trunk, if this parameter is not specified, the default
