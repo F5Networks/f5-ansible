@@ -1,0 +1,16 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a rule
+  bigip_timer_policy_rule:
+    name: foo
+    protocol: tcp
+    description: my desc
+    idle_timeout: unspecified
+    destination_ports: [80, 443]
+    timer_policy: timer1
+    state: present
+  register: result
+
+- import_tasks: teardown.yaml

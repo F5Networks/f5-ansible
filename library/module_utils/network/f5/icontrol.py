@@ -8,6 +8,9 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
+import os
+import sys
+
 from ansible.module_utils.urls import open_url
 from ansible.module_utils.parsing.convert_bool import BOOLEANS
 from ansible.module_utils.six import string_types
@@ -35,11 +38,33 @@ The means by which you should use it are,
 
 ```
 mgmt = iControlRestSession(server='192.168.1.1', username='admin', password='secret')
->>> iCRS.get('/mgmt/tm/ltm/nat/~Common~VALIDNAME')
+mgmt.get('/mgmt/tm/ltm/nat/~Common~VALIDNAME')
+```
 
 Available functions:
 
-- iCRS.{get, post, put, delete, patch}: requests.Session.VERB wrappers
+- mgmt.{get, post, put, delete, patch}:
+
+from icontrol import Management
+
+# management creates a session
+# management manages tokens and authentication
+api = Management(
+  debug=True
+  server='1.1.1.1'
+  username='admin'
+  password='secret'
+  validate_certs=False
+)
+Management.post(params)
+    get authentication token
+    create Request object
+    gives Request object to Management Session object
+    returns Response object
+
+resp = api.post('/uri', params=dict('$filter'="(name eq 'foo'")))
+
+
 """
 
 
@@ -100,6 +125,9 @@ class iControlRestSession(object):
         self._username = username
         self._validate_certs = validate_certs
 
+    def send(self, req):
+        pass
+
     @property
     def auth_providers(self):
         """BIG-IQ specific query for auth providers.
@@ -123,10 +151,8 @@ class iControlRestSession(object):
 
     @property
     def auth_provider(self):
-        if self._auth_provider == 'local':
-            return 'local'
-        elif self._auth_provider == 'tmos':
-            return 'tmos'
+        if self._auth_provider in ['local', 'tmos']:
+            return self._auth_provider
         elif self._auth_provider not in ['none', 'default']:
             for provider in self.auth_providers:
                 if self._auth_provider in provider['link'] or self._auth_provider == provider['name']:
@@ -166,10 +192,14 @@ class iControlRestSession(object):
         self._token = resp.get('token', None)
         if self._token.get('token') is not None:
             # BIG-IQ stores tokens in the 'token' key
-            return self._token.get('token', None)
+            result = self._token.get('token', None)
+            self._token = result
+            return result
         else:
             # BIG-IP stores tokens in the token dict, 'name' key
-            return self._token.get('name', None)
+            result = self._token.get('name', None)
+            self._token = result
+            return result
 
     def get_headers(self, *args, **kwargs):
         result = {}
@@ -198,7 +228,7 @@ class iControlRestSession(object):
     def debug_output(self):
         return self._debug_output
 
-    def delete(self, url, data=None, **kwargs):
+    def delete(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP DELETE command to an F5 REST Server.
 
         Use this method to send a DELETE command to an F5 product.
@@ -246,11 +276,14 @@ class iControlRestSession(object):
             response = open_url(
                 url, method='GET', headers=headers, validate_certs=self._validate_certs
             )
-            return Response(response=response)
+            result = Response(response=response)
+            return result
         except Exception as ex:
-            raise F5ModuleError(str(ex))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
 
-    def patch(self, url, data=None, **kwargs):
+    def patch(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP PATCH command to an F5 REST Server.
 
         Use this method to send a PATCH command to an F5 product.
@@ -277,9 +310,11 @@ class iControlRestSession(object):
             )
             return Response(response=response)
         except Exception as ex:
-            raise F5ModuleError(str(ex))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
 
-    def post(self, url, data=None, **kwargs):
+    def post(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP POST command to an F5 REST Server.
 
         Use this method to send a POST command to an F5 product.
@@ -306,9 +341,11 @@ class iControlRestSession(object):
             )
             return Response(response=response)
         except Exception as ex:
-            raise F5ModuleError(str(ex))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
 
-    def put(self, url, data=None, **kwargs):
+    def put(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP PUT command to an F5 REST Server.
 
         Use this method to send a PUT command to an F5 product.
@@ -335,7 +372,9 @@ class iControlRestSession(object):
             )
             return Response(response=response)
         except Exception as ex:
-            raise F5ModuleError(str(ex))
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
 
 
 class Response(object):
@@ -348,8 +387,10 @@ class Response(object):
         ]
 
     def json(self):
-        return json.loads(self._payload)
+        result = json.loads(self._payload)
+        return result
 
+    @property
     def status_code(self):
         return self._status_code
 
