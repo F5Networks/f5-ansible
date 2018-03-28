@@ -59,7 +59,7 @@ options:
       - source-destination-ip-port
       - source-destination-mac
   lacp_enabled:
-    destination:
+    description:
       - When C(yes), specifies that the system supports the link aggregation control
         protocol (LACP), which monitors the trunk by exchanging control packets over
         the member links to determine the health of the links.
