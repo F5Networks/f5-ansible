@@ -1,0 +1,91 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a TCP profile
+  bigip_profile_tcp:
+    name: profile1
+  register: result
+
+- name: Assert Create a TCP profile
+  assert:
+    that:
+      - result is changed
+
+- name: Create a TCP profile - Idempotent check
+  bigip_profile_tcp:
+    name: profile1
+  register: result
+
+- name: Assert Create a TCP profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Update idle timeout
+  bigip_profile_tcp:
+    name: profile1
+    idle_timeout: 500
+  register: result
+
+- name: Assert Update idle timeout
+  assert:
+    that:
+      - result is changed
+
+- name: Update idle timeout - Idempotent check
+  bigip_profile_tcp:
+    name: profile1
+    idle_timeout: 500
+  register: result
+
+- name: Assert Update idle timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Update parent
+  bigip_profile_tcp:
+    name: profile1
+    parent: f5-tcp-progressive
+  register: result
+
+- name: Assert Update parent
+  assert:
+    that:
+      - result is changed
+
+- name: Update parent - Idempotent check
+  bigip_profile_tcp:
+    name: profile1
+    parent: f5-tcp-progressive
+  register: result
+
+- name: Assert Update parent - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove profile
+  bigip_profile_tcp:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile
+  assert:
+    that:
+      - result is changed
+
+- name: Remove profile - Idempotent check
+  bigip_profile_tcp:
+    name: profile1
+    state: absent
+  register: result
+
+- name: Assert Remove profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- import_tasks: teardown.yaml
