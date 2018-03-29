@@ -93,7 +93,7 @@ class TestManager(unittest.TestCase):
             name='foo',
             parent='bar',
             idle_timeout=500,
-            password='passsword',
+            password='password',
             server='localhost',
             user='admin'
         ))
