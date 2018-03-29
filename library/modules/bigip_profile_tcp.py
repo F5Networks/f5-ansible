@@ -20,7 +20,7 @@ description:
   - Manage TCP profiles on a BIG-IP. There are a variety of TCP profiles, each with their
     own adjustments to the standard C(tcp) profile. Users of this module should be aware
     that many of the adjustable knobs have no module default. Instead, the default is
-    assigned by the BIG-IP system itself which, in most cases, is acceptable. 
+    assigned by the BIG-IP system itself which, in most cases, is acceptable.
 version_added: 2.6
 options:
   name:
@@ -171,7 +171,15 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def idle_timeout(self):
+        if self._values['idle_timeout'] is None:
+            return None
+        if 0 <= self._values['idle_timeout'] <= 4294967295:
+            return self._values['idle_timeout']
+        raise F5ModuleError(
+            "Valid 'idle_timeout' must be in range 1 - 4294967295, or 'indefinite'."
+        )
 
 
 class ReportableChanges(Changes):
