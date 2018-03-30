@@ -39,7 +39,6 @@ f5_provider_spec = {
         fallback=(env_fallback, ['F5_PASSWORD', 'ANSIBLE_NET_PASSWORD'])
     ),
     'ssh_keyfile': dict(
-        fallback=(env_fallback, ['ANSIBLE_NET_SSH_KEYFILE']),
         type='path'
     ),
     'validate_certs': dict(
@@ -47,8 +46,8 @@ f5_provider_spec = {
         fallback=(env_fallback, ['F5_VALIDATE_CERTS'])
     ),
     'transport': dict(
-        default='rest',
-        choices=['cli', 'rest']
+        choices=['cli', 'rest'],
+        default='rest'
     ),
     'timeout': dict(type='int'),
 }
@@ -84,7 +83,6 @@ f5_top_spec = {
     ),
     'transport': dict(
         removed_in_version=2.9,
-        default='rest',
         choices=['cli', 'rest']
     )
 }
