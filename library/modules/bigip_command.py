@@ -240,70 +240,93 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings']
+    pre_exec_commands = ['modify cli preference pager disabled']
 
     def to_return(self):
         result = {}
-        for returnable in self.returnables:
-            result[returnable] = getattr(self, returnable)
-        result = self._filter_params(result)
-        return result
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+            return result
+        except Exception:
+            return result
 
-    def _listify(self, item):
-        if isinstance(item, string_types):
-            result = [item]
+    @property
+    def raw_commands(self):
+        if self._values['commands'] is None:
+            return []
+        if isinstance(self._values['commands'], string_types):
+            result = [self._values['commands']]
         else:
-            result = item
+            result = self._values['commands']
         return result
 
     @property
-    def commands(self):
-        commands = self._listify(self._values['commands'])
-        commands = deque(commands)
-        if not is_cli(self.module):
-            commands.appendleft(
-                'tmsh modify cli preference pager disabled'
-            )
-        commands = map(self._ensure_full_cmd, list(commands))
-        return list(commands)
+    def rest_commands(self):
+        commands = map(self.addon_tmsh, self.normalized_commands)
+        if self.chdir:
+            commands = map(self.addon_chdir, commands)
+        commands = list(commands) #list(map(self.addon_rest, commands))
+        return commands
+
+    @property
+    def cli_commands(self):
+        commands = self.normalized_commands
+        if not self.is_tmsh:
+            commands = map(self.addon_tmsh, commands)
+        if self.chdir:
+            commands = map(self.addon_chdir, commands)
+        commands = list(commands)
+        return commands
+
+    @property
+    def normalized_commands(self):
+        if self._values['normalized_commands'] is None:
+            return None
+        return deque(self._values['normalized_commands'])
 
     @property
     def chdir(self):
+        if self._values['chdir'] is None:
+            return None
         if self._values['chdir'].startswith('/'):
             return self._values['chdir']
         return '/{0}'.format(self._values['chdir'])
 
     @property
     def user_commands(self):
-        commands = self._listify(self._values['commands'])
+        commands = self.raw_commands
         return map(self._ensure_tmsh_prefix, commands)
 
-    def _ensure_tmsh_prefix(self, cmd):
-        cmd = cmd.strip()
-        if cmd[0:5] != 'tmsh ':
-            cmd = "tmsh {0}".format(cmd.strip())
-        return cmd
+    @property
+    def wait_for(self):
+        return self._values['wait_for'] or list()
 
-    def _ensure_full_cmd(self, cmd):
-        cmd = self._ensure_tmsh_prefix(cmd)
-        cmd = self._ensure_chdir(cmd)
-        return cmd
+    def addon_tmsh(self, cmd):
+        result = "tmsh {0}".format(cmd)
+        return result
 
-    def _ensure_chdir(self, cmd):
-        # Add chdir options
+    def addon_chdir(self, cmd):
         parts = cmd.split(' ', 1)
         escape_patterns = r'([$' + "'])"
         command = re.sub(escape_patterns, r'\\\1', parts[1])
-        cmd = "tmsh -c 'cd {0}; {1}'".format(self.chdir, command)
+        cmd = "cd {0}; {1}".format(self.chdir, command)
         return cmd
 
 
-class ModuleManager(object):
+class BaseManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.want = Parameters(params=self.module.params)
         self.want.update({'module': self.module})
         self.changes = Parameters(module=self.module)
+        self.valid_configs = [
+            'list', 'show', 'modify cli preference pager disabled'
+        ]
+        self.changed_command_prefixes = ('modify', 'create', 'delete')
+        self.warnings = list()
 
     def _to_lines(self, stdout):
         lines = list()
@@ -312,25 +335,6 @@ class ModuleManager(object):
                 item = str(item).split('\n')
             lines.append(item)
         return lines
-
-    def _is_valid_mode(self, cmd):
-        valid_configs = [
-            'list', 'show',
-            'modify cli preference pager disabled'
-        ]
-        cmd = cmd.split(';', 1)[1].strip()
-        if any(cmd.startswith(x) for x in valid_configs):
-            return True
-        return False
-
-    def is_tmsh(self):
-        try:
-            self._run_commands(self.module, 'tmsh help')
-        except F5ModuleError as ex:
-            if 'Syntax Error:' in str(ex):
-                return True
-            raise
-        return False
 
     def exec_module(self):
         result = dict()
@@ -344,79 +348,35 @@ class ModuleManager(object):
         result.update(dict(changed=changed))
         return result
 
-    def _run_commands(self, module, commands):
-        return run_commands(module, commands)
-
-    def execute(self):
-        warnings = list()
-        changed = ('tmsh modify', 'tmsh create', 'tmsh delete')
-        commands = self.parse_commands(warnings)
-        wait_for = self.want.wait_for or list()
-        retries = self.want.retries
-        conditionals = [Conditional(c) for c in wait_for]
-
-        if self.module.check_mode:
-            return
-
-        while retries > 0:
-            if is_cli(self.module) and HAS_CLI_TRANSPORT:
-                if self.is_tmsh():
-                    for command in commands:
-                        command['command'] = command['command'][4:].strip()
-                responses = self._run_commands(self.module, commands)
-            else:
-                responses = self.execute_on_device(commands)
-
-            for item in list(conditionals):
-                if item(responses):
-                    if self.want.match == 'any':
-                        conditionals = list()
-                        break
-                    conditionals.remove(item)
-
-            if not conditionals:
-                break
-
-            time.sleep(self.want.interval)
-            retries -= 1
-        else:
-            failed_conditions = [item.raw for item in conditionals]
-            errmsg = 'One or more conditional statements have not been satisfied'
-            raise FailedConditionsError(errmsg, failed_conditions)
-
-        changes = {
-            'stdout': responses,
-            'stdout_lines': self._to_lines(responses)
-        }
-        if self.want.warn:
-            changes['warnings'] = warnings
-        self.changes = Parameters(params=changes, module=self.module)
-        if any(x for x in self.want.user_commands if x.startswith(changed)):
-            return True
-        return False
-
-    def parse_commands(self, warnings):
-        results = []
-        commands = list(deque(set(self.want.commands)))
-        spec = dict(
-            command=dict(key=True),
-            output=dict(
-                default='text',
-                choices=['text', 'one-line']
-            ),
-        )
-
-        transform = ComplexList(spec, self.module)
-        commands = transform(commands)
-
+    def notify_non_idempotent_commands(self, commands):
         for index, item in enumerate(commands):
-            if not self._is_valid_mode(item['command']):
-                warnings.append(
+            if all(item.startswith(x) for x in self.valid_configs):
+                return
+            else:
+                self.warnings.append(
                     'Using "write" commands is not idempotent. You should use '
                     'a module that is specifically made for that. If such a '
                     'module does not exist, then please file a bug. The command '
-                    'in question is "%s..."' % item['command'][0:40]
+                    'in question is "{0}..."'.format(item[0:40])
                 )
+
+    def normalize_commands(self, raw_commands):
+        if self.want.normalized_commands:
+            return self.want.normalized_commands
+        if not raw_commands:
+            return None
+        result = []
+        for command in raw_commands:
+            command = command.strip('tmsh').strip()
+            result.append(command)
+        self.want.update({'normalized_commands': result})
+        return result
+
+    def parse_commands(self):
+        results = []
+        commands = self._transform_to_complex_commands(self.commands)
+
+        for index, item in enumerate(commands):
             # This needs to be removed so that the ComplexList used in to_commands
             # will work correctly.
             output = item.pop('output', None)
@@ -429,8 +389,116 @@ class ModuleManager(object):
             results.append(item)
         return results
 
+    def execute(self):
+        result = self.normalize_commands(self.want.raw_commands)
+        if not result:
+            return False
+        self.notify_non_idempotent_commands(self.want.normalized_commands)
+
+        commands = self.parse_commands()
+        retries = self.want.retries
+        conditionals = [Conditional(c) for c in self.want.wait_for]
+
+        if self.module.check_mode:
+            return
+
+        while retries > 0:
+            responses = self._execute(commands)
+            for item in list(conditionals):
+                if item(responses):
+                    if self.want.match == 'any':
+                        conditionals = list()
+                        break
+                    conditionals.remove(item)
+            if not conditionals:
+                break
+
+            time.sleep(self.want.interval)
+            retries -= 1
+        else:
+            failed_conditions = [item.raw for item in conditionals]
+            errmsg = 'One or more conditional statements have not been satisfied'
+            raise FailedConditionsError(errmsg, failed_conditions)
+        changes = {
+            'stdout': responses,
+            'stdout_lines': self._to_lines(responses)
+        }
+        if self.want.warn:
+            changes['warnings'] = self.want.warnings
+        self.changes = Parameters(params=changes, module=self.module)
+        if any(x for x in self.want.normalized_commands if x.startswith(self.changed_command_prefixes)):
+            return True
+        return False
+
+    def _transform_to_complex_commands(self, commands):
+        spec = dict(
+            command=dict(key=True),
+            output=dict(
+                default='text',
+                choices=['text', 'one-line']
+            ),
+        )
+
+        transform = ComplexList(spec, self.module)
+        result = transform(commands)
+        return result
+
+
+class V1Manager(BaseManager):
+    """Supports CLI (SSH) communication with the remote device
+
+    """
+    def _execute(self, commands):
+        if self.want.is_tmsh:
+            command = dict(
+                command="modify cli preference pager disabled"
+            )
+        else:
+            command = dict(
+                command="tmsh modify cli preference pager disabled"
+            )
+        self.execute_on_device(command)
+        return self.execute_on_device(commands)
+
+    @property
+    def commands(self):
+        return self.want.cli_commands
+
+    def is_tmsh(self):
+        try:
+            self.execute_on_device('tmsh help')
+        except Exception as ex:
+            if 'Syntax Error:' in str(ex):
+                return True
+            raise
+        return False
+
+    def execute(self):
+        self.want.update({'is_tmsh': self.is_tmsh()})
+        return super(V1Manager, self).execute()
+
+    def execute_on_device(self, commands):
+        return run_commands(self.module, commands)
+
+
+class V2Manager(BaseManager):
+    """Supports REST communication with the remote device
+
+    """
+    def _execute(self, commands):
+        command = dict(
+            command="tmsh modify cli preference pager disabled"
+        )
+        self.execute_on_device(command)
+        return self.execute_on_device(commands)
+
+    @property
+    def commands(self):
+        return self.want.rest_commands
+
     def execute_on_device(self, commands):
         responses = []
+
         for item in to_list(commands):
             try:
                 output = self.client.api.tm.util.bash.exec_cmd(
@@ -439,9 +507,29 @@ class ModuleManager(object):
                 )
                 if hasattr(output, 'commandResult'):
                     responses.append(str(output.commandResult))
-            except Exception:
+            except Exception as ex:
                 pass
         return responses
+
+
+class ModuleManager(object):
+    def __init__(self, *args, **kwargs):
+        self.kwargs = kwargs
+        self.module = kwargs.get('module', None)
+
+    def exec_module(self):
+        if is_cli(self.module) and HAS_CLI_TRANSPORT:
+            manager = self.get_manager('v1')
+        else:
+            manager = self.get_manager('v2')
+        result = manager.exec_module()
+        return result
+
+    def get_manager(self, type):
+        if type == 'v1':
+            return V1Manager(**self.kwargs)
+        elif type == 'v2':
+            return V2Manager(**self.kwargs)
 
 
 class ArgumentSpec(object):
@@ -477,9 +565,7 @@ class ArgumentSpec(object):
                 type='bool',
                 default='yes'
             ),
-            chdir=dict(
-                default='/Common'
-            )
+            chdir=dict()
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
@@ -494,16 +580,18 @@ def main():
         supports_check_mode=spec.supports_check_mode
     )
     if is_cli(module) and not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required to use the rest api")
+        module.fail_json(msg="The python f5-sdk module is required to use the REST api")
 
     try:
         client = F5Client(**module.params)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        cleanup_tokens(client)
+        if not is_cli(module):
+            cleanup_tokens(client)
         module.exit_json(**results)
     except F5ModuleError as e:
-        cleanup_tokens(client)
+        if not is_cli(module):
+            cleanup_tokens(client)
         module.fail_json(msg=str(e))
 
 
