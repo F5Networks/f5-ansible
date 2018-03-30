@@ -27,7 +27,7 @@ F5 employees are members of this community and typically monitor the channel Mon
 
 .. |slackansible| raw:: html
 
-   <a href="https://f5cloudsolutions.slack.com" target="_blank">the F5 Ansible channel on Slack</a>
+   <a href="https://f5cloudsolutions.herokuapp.com/" target="_blank">the F5 Ansible channel on Slack</a>
 
 Send email
 ----------
