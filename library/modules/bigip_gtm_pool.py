@@ -211,6 +211,19 @@ monitors:
   returned: changed
   type: list
   sample: ['/Common/monitor1', '/Common/monitor2']
+members:
+  description: List of members in the pool.
+  returned: changed
+  type: complex
+  contains:
+    server:
+      description: The name of the server portion of the member.
+      returned: changed
+      type: string
+    virtual_server:
+      description: The name of the virtual server portion of the member.
+      returned: changed
+      type: string
 '''
 
 EXAMPLES = r'''
@@ -533,6 +546,7 @@ class ModuleParameters(Parameters):
             name = '{0}:{1}'.format(member['server'], member['virtual_server'])
             name = fq_name(self.partition, name)
             result.append(name)
+        result = list(set(result))
         return result
 
     @property
@@ -615,7 +629,11 @@ class ReportableChanges(Changes):
         if self._values['members'] is None:
             return None
         for member in self._values['members']:
-            results.append(member['name'])
+            parts = member.split(':')
+            results.append(dict(
+                server=fq_name(self.partition, parts[0]),
+                virtual_server=fq_name(self.partition, parts[1])
+            ))
         return results
 
 
@@ -910,7 +928,7 @@ class TypedManager(BaseManager):
         return ApiParameters(params=result)
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         pools = self.client.api.tm.gtm.pools
         collection = getattr(pools, self.want.collection)
         resource = getattr(collection, self.want.type)
@@ -961,7 +979,7 @@ class UntypedManager(BaseManager):
         return ApiParameters(params=result)
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.gtm.pools.pool.create(
             name=self.want.name,
             partition=self.want.partition,

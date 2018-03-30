@@ -1,0 +1,107 @@
+---
+
+- name: Issue 00690 - Include issue variables
+  include_vars:
+    file: issue-00690.yaml
+
+- name: Issue 00690 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
+
+- name: Issue 00690 - Create datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+
+- name: Issue 00690 - Create GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    devices:
+      - name: foo
+        address: 6.5.7.4
+        translation: 2.2.2.2
+    datacenter: "{{ dc_name1 }}"
+
+- name: Issue 00690 - Create GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item.name }}"
+    server_name: "{{ server_name }}"
+    address: "{{ item.address }}"
+    port: 80
+  loop:
+    - name: "{{ virtual_server_name_1 }}"
+      address: "{{ virtual_server_address_1 }}"
+    - name: "{{ virtual_server_name_2 }}"
+      address: "{{ virtual_server_address_2 }}"
+    - name: "{{ virtual_server_name_3 }}"
+      address: "{{ virtual_server_address_3 }}"
+
+- name: Issue 00690 - Create a GTM pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    preferred_lb_method: topology
+    alternate_lb_method: round-robin
+    fallback_lb_method: least-connections
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+    monitors: gateway_icmp
+  register: result
+
+- name: Issue 00690 - Assert Create a GTM pool
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00690 - Create a GTM pool - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    preferred_lb_method: topology
+    alternate_lb_method: round-robin
+    fallback_lb_method: least-connections
+    members:
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+      - server: "{{ server_name }}"
+        virtual_server: "{{ virtual_server_name_1 }}"
+    monitors: gateway_icmp
+  register: result
+
+- name: Issue 00690 - Assert Create a GTM pool - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00690 - Remove the GTM pool
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    state: absent
+
+- name: Issue 00690 - Remove GTM virtual servers
+  bigip_gtm_virtual_server:
+    name: "{{ item }}"
+    server_name: "{{ server_name }}"
+    state: absent
+  loop:
+    - "{{ virtual_server_name_1 }}"
+    - "{{ virtual_server_name_2 }}"
+    - "{{ virtual_server_name_3 }}"
+
+- name: Issue 00690 - Remove GTM server
+  bigip_gtm_server:
+    name: "{{ server_name }}"
+    state: absent
+
+- name: Issue 00690 - Remove datacenter
+  bigip_gtm_datacenter:
+    name: "{{ dc_name1 }}"
+    state: absent
+
+- name: Issue 00690 - Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
