@@ -316,6 +316,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> list </td>
         <td align=center> ['/Common/monitor1', '/Common/monitor2'] </td>
     </tr>
+            <tr>
+        <td> members </td>
+        <td> List of members in the pool. </td>
+        <td align=center> changed </td>
+        <td align=center> complex </td>
+        <td align=center>  </td>
+    </tr>
         
     </table>
     </br></br>

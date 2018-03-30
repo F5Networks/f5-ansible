@@ -1,8 +1,8 @@
-.. _bigip_gtm_monitor_tcp_half_open:
+.. _bigip_timer_policy:
 
 
-bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_timer_policy - Manage timer policies on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors
 Synopsis
 --------
 
-* Manages F5 BIG-IP GTM tcp half-open monitors.
+* Manage timer policies on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -37,31 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>ignore_down_response<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>Specifies that the monitor allows more than one probe attempt per interval.</div><div>When <code>yes</code>, specifies that the monitor ignores down responses for the duration of the monitor timeout. Once the monitor timeout is reached without the system receiving an up response, the system marks the object down.</div><div>When <code>no</code>, specifies that the monitor immediately marks an object down when it receives a down response.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>no</code>.</div>        </td></tr>
-                <tr><td>interval<br/><div style="font-size: small;"></div></td>
+                <tr><td>description<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>30</code>. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
-                <tr><td>ip<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
+        <td><div>Specifies descriptive text that identifies the timer policy.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Monitor name.</div>        </td></tr>
-                <tr><td>parent<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>/Common/tcp_half_open</td>
-        <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp_half_open</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>Specifies the name of the timer policy.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
@@ -73,26 +58,6 @@ Options
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
     <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
-                <tr><td>port<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
-                <tr><td>probe_attempts<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of times the system attempts to probe the host server, after which the system considers the host server down or unavailable.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>3</code>.</div>        </td></tr>
-                <tr><td>probe_interval<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of seconds the big3d process waits before sending out a subsequent probe attempt when a probe fails and multiple probe attempts have been requested.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>1</code>.</div>        </td></tr>
-                <tr><td>probe_timeout<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of seconds after which the system times out the probe request to the system.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>5</code>.</div>        </td></tr>
                 <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td><td></td>
@@ -166,17 +131,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>When <code>present</code>, ensures that the monitor exists.</div><div>When <code>absent</code>, ensures the monitor is removed.</div>        </td></tr>
-                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of seconds the target has in which to respond to the monitor request.</div><div>If the target responds within the set time period, it is considered up.</div><div>If the target does not respond within the set time period, it is considered down.</div><div>When this value is set to 0 (zero), the system uses the interval from the parent monitor.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>120</code>.</div>        </td></tr>
-                <tr><td>transparent<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies whether the monitor operates in transparent mode.</div><div>A monitor in transparent mode directs traffic through the associated pool members or nodes (usually a router or firewall) to the aliased destination (that is, it probes the <code>ip</code>-<code>port</code> combination specified in the monitor).</div><div>If the monitor cannot successfully reach the aliased destination, the pool member or node through which the monitor traffic was sent is marked down.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>no</code>.</div>        </td></tr>
+        <td><div>When <code>present</code>, ensures that the resource exists.</div><div>When <code>absent</code>, ensures the resource is removed.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -198,32 +153,24 @@ Examples
  ::
 
     
-    - name: Create TCP half-open Monitor
-      bigip_gtm_monitor_tcp_half_open:
+    - name: Create a timer policy
+      bigip_timer_policy:
+        name: timer1
+        description: My timer policy
+        password: secret
+        server: lb.mydomain.com
         state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
         user: admin
-        password: secret
-        name: my_monitor
       delegate_to: localhost
 
-    - name: Remove TCP half-open Monitor
-      bigip_gtm_monitor_tcp_half_open:
+    - name: Remove a timer policy and all its associated rules
+      bigip_timer_policy:
+        name: timer1
+        description: My timer policy
+        password: secret
+        server: lb.mydomain.com
         state: absent
-        server: lb.mydomain.com
         user: admin
-        password: secret
-        name: my_monitor
-      delegate_to: localhost
-
-    - name: Add half-open monitor for all addresses, port 514
-      bigip_gtm_monitor_tcp_half_open:
-        server: lb.mydomain.com
-        user: admin
-        port: 514
-        password: secret
-        name: my_monitor
       delegate_to: localhost
 
 
@@ -244,53 +191,11 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> parent </td>
-        <td> New parent template of the monitor. </td>
+        <td> description </td>
+        <td> The new description of the timer policy. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> tcp_half_open </td>
-    </tr>
-            <tr>
-        <td> ip </td>
-        <td> The new IP of IP/port definition. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 10.12.13.14 </td>
-    </tr>
-            <tr>
-        <td> interval </td>
-        <td> The new interval in which to run the monitor check. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
-    </tr>
-            <tr>
-        <td> timeout </td>
-        <td> The new timeout in which the remote system must respond to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> probe_timeout </td>
-        <td> The new timeout in which the system will timeout the monitor probe. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> probe_interval </td>
-        <td> The new interval in which the system will check the monitor probe. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> probe_attempts </td>
-        <td> The new number of attempts the system will make in checking the monitor probe. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
+        <td align=center> True </td>
     </tr>
         
     </table>
@@ -300,7 +205,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

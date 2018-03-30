@@ -1,8 +1,8 @@
-.. _bigip_gtm_monitor_tcp_half_open:
+.. _bigip_gtm_monitor_firepass:
 
 
-bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_monitor_firepass - Manages F5 BIG-IP GTM FirePass monitors
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_gtm_monitor_tcp_half_open - Manages F5 BIG-IP GTM tcp half-open monitors
 Synopsis
 --------
 
-* Manages F5 BIG-IP GTM tcp half-open monitors.
+* Manages F5 BIG-IP GTM FirePass monitors.
 
 
 Requirements (on host that executes module)
@@ -37,6 +37,16 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
+                <tr><td>cipher_list<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the list of ciphers for this monitor.</div><div>The items in the cipher list are separated with the colon <code>:</code> symbol.</div><div>When creating a new monitor, if this parameter is not specified, the default list is <code>HIGH:!ADH</code>.</div>        </td></tr>
+                <tr><td>concurrency_limit<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the maximum percentage of licensed connections currently in use under which the monitor marks the Secure Access Manager system up.</div><div>As an example, a setting of 95 percent means that the monitor marks the Secure Access Manager system up until 95 percent of licensed connections are in use.</div><div>When the number of in-use licensed connections exceeds 95 percent, the monitor marks the Secure Access Manager system down.</div><div>When creating a new monitor, if this parameter is not specified, the default is <code>95</code>.</div>        </td></tr>
                 <tr><td>ignore_down_response<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -46,12 +56,17 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>30</code>. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
+        <td><div>The interval specifying how frequently the monitor instance of this template will run.</div><div>If this parameter is not provided when creating a new monitor, then the default value will be 30.</div><div>This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
                 <tr><td>ip<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
+        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div><div>If this value is an IP address, then a <code>port</code> number must be specified.</div>        </td></tr>
+                <tr><td>max_load_average<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the number that the monitor uses to mark the Secure Access Manager system up or down.</div><div>The system compares the Max Load Average setting against a one-minute average of the Secure Access Manager system load.</div><div>When the Secure Access Manager system-load average falls within the specified Max Load Average, the monitor marks the Secure Access Manager system up.</div><div>When the average exceeds the setting, the monitor marks the system down.</div><div>When creating a new monitor, if this parameter is not specified, the default is <code>12</code>.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -59,9 +74,9 @@ Options
         <td><div>Monitor name.</div>        </td></tr>
                 <tr><td>parent<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td>/Common/tcp_half_open</td>
+    <td>/Common/firepass_gtm</td>
         <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp_half_open</code> parent on the <code>Common</code> partition.</div>        </td></tr>
+        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>tcp</code> parent on the <code>Common</code> partition.</div>        </td></tr>
                 <tr><td>partition<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td>Common</td>
@@ -77,17 +92,7 @@ Options
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
-                <tr><td>probe_attempts<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of times the system attempts to probe the host server, after which the system considers the host server down or unavailable.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>3</code>.</div>        </td></tr>
-                <tr><td>probe_interval<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of seconds the big3d process waits before sending out a subsequent probe attempt when a probe fails and multiple probe attempts have been requested.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>1</code>.</div>        </td></tr>
+        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified.</div>        </td></tr>
                 <tr><td>probe_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
@@ -167,16 +172,26 @@ Options
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
         <td><div>When <code>present</code>, ensures that the monitor exists.</div><div>When <code>absent</code>, ensures the monitor is removed.</div>        </td></tr>
+                <tr><td>target_password<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the password, if the monitored target requires authentication.</div>        </td></tr>
+                <tr><td>target_username<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the user name, if the monitored target requires authentication.</div>        </td></tr>
                 <tr><td>timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td></td>
-        <td><div>Specifies the number of seconds the target has in which to respond to the monitor request.</div><div>If the target responds within the set time period, it is considered up.</div><div>If the target does not respond within the set time period, it is considered down.</div><div>When this value is set to 0 (zero), the system uses the interval from the parent monitor.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>120</code>.</div>        </td></tr>
-                <tr><td>transparent<br/><div style="font-size: small;"></div></td>
+        <td><div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second.</div><div>If this parameter is not provided when creating a new monitor, then the default value will be 90.</div>        </td></tr>
+                <tr><td>update_password<br/><div style="font-size: small;"></div></td>
     <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies whether the monitor operates in transparent mode.</div><div>A monitor in transparent mode directs traffic through the associated pool members or nodes (usually a router or firewall) to the aliased destination (that is, it probes the <code>ip</code>-<code>port</code> combination specified in the monitor).</div><div>If the monitor cannot successfully reach the aliased destination, the pool member or node through which the monitor traffic was sent is marked down.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>no</code>.</div>        </td></tr>
+    <td>always</td>
+        <td><ul><li>always</li><li>on_create</li></ul></td>
+        <td><div><code>always</code> will update passwords if the <code>target_password</code> is specified.</div><div><code>on_create</code> will only set the password for newly created monitors.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -198,32 +213,33 @@ Examples
  ::
 
     
-    - name: Create TCP half-open Monitor
-      bigip_gtm_monitor_tcp_half_open:
-        state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
-        user: admin
-        password: secret
+    - name: Create a GTM FirePass monitor
+      bigip_gtm_monitor_firepass:
         name: my_monitor
+        ip: 1.1.1.1
+        port: 80
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
       delegate_to: localhost
 
-    - name: Remove TCP half-open Monitor
-      bigip_gtm_monitor_tcp_half_open:
+    - name: Remove FirePass Monitor
+      bigip_gtm_monitor_firepass:
+        name: my_monitor
         state: absent
         server: lb.mydomain.com
         user: admin
         password: secret
-        name: my_monitor
       delegate_to: localhost
 
-    - name: Add half-open monitor for all addresses, port 514
-      bigip_gtm_monitor_tcp_half_open:
+    - name: Add FirePass monitor for all addresses, port 514
+      bigip_gtm_monitor_firepass:
+        name: my_monitor
         server: lb.mydomain.com
         user: admin
         port: 514
         password: secret
-        name: my_monitor
       delegate_to: localhost
 
 
@@ -248,7 +264,7 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td> New parent template of the monitor. </td>
         <td align=center> changed </td>
         <td align=center> string </td>
-        <td align=center> tcp_half_open </td>
+        <td align=center> firepass_gtm </td>
     </tr>
             <tr>
         <td> ip </td>
@@ -256,6 +272,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> 10.12.13.14 </td>
+    </tr>
+            <tr>
+        <td> port </td>
+        <td> The new port the monitor checks the resource on. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> 8080 </td>
     </tr>
             <tr>
         <td> interval </td>
@@ -272,6 +295,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 10 </td>
     </tr>
             <tr>
+        <td> ignore_down_response </td>
+        <td> Whether to ignore the down response or not. </td>
+        <td align=center> changed </td>
+        <td align=center> bool </td>
+        <td align=center> True </td>
+    </tr>
+            <tr>
         <td> probe_timeout </td>
         <td> The new timeout in which the system will timeout the monitor probe. </td>
         <td align=center> changed </td>
@@ -279,18 +309,25 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> 10 </td>
     </tr>
             <tr>
-        <td> probe_interval </td>
-        <td> The new interval in which the system will check the monitor probe. </td>
+        <td> cipher_list </td>
+        <td> The new value for the cipher list. </td>
         <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
+        <td align=center> string </td>
+        <td align=center> +3DES:+kEDH </td>
     </tr>
             <tr>
-        <td> probe_attempts </td>
-        <td> The new number of attempts the system will make in checking the monitor probe. </td>
+        <td> max_load_average </td>
+        <td> The new value for the max load average. </td>
         <td align=center> changed </td>
         <td align=center> int </td>
-        <td align=center> 10 </td>
+        <td align=center> 12 </td>
+    </tr>
+            <tr>
+        <td> concurrency_limit </td>
+        <td> The new value for the concurrency limit. </td>
+        <td align=center> changed </td>
+        <td align=center> int </td>
+        <td align=center> 95 </td>
     </tr>
         
     </table>
@@ -300,7 +337,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 

@@ -227,6 +227,11 @@ Options
     </td>
     </tr>
         </td></tr>
+                <tr><td>security_log_profiles<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>Specifies the log profile applied to the virtual server.</div><div>To make use of this feature, the AFM module must be licensed and provisioned.</div><div>The <code>Log all requests</code> and <code>Log illegal requests</code> are mutually exclusive and therefore, this module will raise an error if the two are specified together.</div>        </td></tr>
                 <tr><td>server<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -590,6 +595,13 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
         <td align=center> changed </td>
         <td align=center> string </td>
         <td align=center> /Common/my-staged-fw </td>
+    </tr>
+            <tr>
+        <td> security_log_profiles </td>
+        <td> The new list of security log profiles. </td>
+        <td align=center> changed </td>
+        <td align=center> list </td>
+        <td align=center> ['/Common/profile1', '/Common/profile2'] </td>
     </tr>
         
     </table>

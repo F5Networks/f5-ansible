@@ -24,6 +24,7 @@ All modules
   bigip_gtm_datacenter - Manage Datacenter configuration in BIG-IP <bigip_gtm_datacenter_module>
   bigip_gtm_facts - Collect facts from F5 BIG-IP GTM devices <bigip_gtm_facts_module>
   bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors <bigip_gtm_monitor_bigip_module>
+  bigip_gtm_monitor_firepass - Manages F5 BIG-IP GTM FirePass monitors <bigip_gtm_monitor_firepass_module>
   bigip_gtm_monitor_http - Manages F5 BIG-IP GTM http monitors <bigip_gtm_monitor_http_module>
   bigip_gtm_monitor_https - Manages F5 BIG-IP GTM https monitors <bigip_gtm_monitor_https_module>
   bigip_gtm_monitor_tcp - Manages F5 BIG-IP GTM tcp monitors <bigip_gtm_monitor_tcp_module>
@@ -53,6 +54,9 @@ All modules
   bigip_pool - Manages F5 BIG-IP LTM pools <bigip_pool_module>
   bigip_pool_member - Manages F5 BIG-IP LTM pool members <bigip_pool_member_module>
   bigip_profile_client_ssl - Manages client SSL profiles on a BIG-IP <bigip_profile_client_ssl_module>
+  bigip_profile_dns - Manage DNS profiles on a BIG-IP <bigip_profile_dns_module>
+  bigip_profile_tcp - Manage TCP profiles on a BIG-IP <bigip_profile_tcp_module>
+  bigip_profile_udp - Manage UDP profiles on a BIG-IP <bigip_profile_udp_module>
   bigip_provision - Manage BIG-IP module provisioning <bigip_provision_module>
   bigip_qkview - Manage qkviews on the device <bigip_qkview_module>
   bigip_raw - Run raw commands on F5 devices <bigip_raw_module>
@@ -79,7 +83,10 @@ All modules
   bigip_static_route - Manipulate static routes on a BIG-IP <bigip_static_route_module>
   bigip_sys_db - Manage BIG-IP system database variables <bigip_sys_db_module>
   bigip_sys_global - Manage BIG-IP global settings <bigip_sys_global_module>
+  bigip_timer_policy - Manage timer policies on a BIG-IP <bigip_timer_policy_module>
+  bigip_timer_policy_rule - __SHORT_DESCRIPTION__ <bigip_timer_policy_rule_module>
   bigip_traffic_group - Manages traffic groups on BIG-IP <bigip_traffic_group_module>
+  bigip_trunk - Manage trunks on a BIG-IP <bigip_trunk_module>
   bigip_ucs - Manage upload, installation and removal of UCS files <bigip_ucs_module>
   bigip_ucs_fetch - Fetches a UCS file from remote nodes <bigip_ucs_fetch_module>
   bigip_user - Manage user accounts and user attributes on a BIG-IP <bigip_user_module>

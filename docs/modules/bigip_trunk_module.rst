@@ -1,8 +1,8 @@
-.. _bigip_gtm_monitor_bigip:
+.. _bigip_trunk:
 
 
-bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_trunk - Manage trunks on a BIG-IP
++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_gtm_monitor_bigip - Manages F5 BIG-IP GTM BIG-IP monitors
 Synopsis
 --------
 
-* Manages F5 BIG-IP GTM BIG-IP monitors. This monitor is used by GTM to monitor BIG-IPs themselves.
+* Manages trunks on a BIG-IP.
 
 
 Requirements (on host that executes module)
@@ -37,52 +37,47 @@ Options
     <th class="head">choices</th>
     <th class="head">comments</th>
     </tr>
-                <tr><td>aggregate_dynamic_ratios<br/><div style="font-size: small;"></div></td>
+                <tr><td>frame_distribution_hash<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td><ul><li>none</li><li>average-nodes</li><li>sum-nodes</li><li>average-members</li><li>sum-members</li></ul></td>
-        <td><div>Specifies how the system combines the module values to create the proportion (score) for the load balancing operation.</div><div>The score represents the module&#x27;s estimated capacity for handing traffic.</div><div>Averaged values are appropriate for downstream Web Accelerator or Application Security Manager virtual servers.</div><div>When creating a new monitor, if this parameter is not specified, the default of <code>none</code> is used, meaning that the system does not use the scores in the load balancing operation.</div><div>When <code>none</code>, specifies that the monitor ignores the nodes and pool member scores.</div><div>When <code>average-nodes</code>, specifies that the system averages the dynamic ratios on the nodes associated with the monitor&#x27;s target virtual servers and returns that average as the virtual servers&#x27; score.</div><div>When <code>sum-nodes</code>, specifies that the system adds together the scores of the nodes associated with the monitor&#x27;s target virtual servers and uses that value in the load balancing operation.</div><div>When <code>average-members</code>, specifies that the system averages the dynamic ratios on the pool members associated with the monitor&#x27;s target virtual servers and returns that average as the virtual servers&#x27; score.</div><div>When <code>sum-members</code>, specifies that the system adds together the scores of the pool members associated with the monitor&#x27;s target virtual servers and uses that value in the load balancing operation.</div>        </td></tr>
-                <tr><td>ignore_down_response<br/><div style="font-size: small;"></div></td>
+        <td><ul><li>destination-mac</li><li>source-destination-ip-port</li><li>source-destination-mac</li></ul></td>
+        <td><div>Specifies the basis for the hash that the system uses as the frame distribution algorithm. The system uses the resulting hash to determine which interface to use for forwarding traffic.</div><div>When creating a new trunk, if this parameter is not specified, the default is <code>source-destination-ip</code>.</div><div>When <code>source-destination-mac</code>, specifies that the system bases the hash on the combined MAC addresses of the source and the destination.</div><div>When <code>destination-mac</code>, specifies that the system bases the hash on the MAC address of the destination.</div><div>When <code>source-destination-ip</code>, specifies that the system bases the hash on the combined IP addresses of the source and the destination.</div>        </td></tr>
+                <tr><td>interfaces<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td></td>
+        <td><div>The interfaces that are part of the trunk.</div><div>To clear the list of interfaces, specify an empty list.</div>        </td></tr>
+                <tr><td>lacp_enabled<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
         <td><ul><li>yes</li><li>no</li></ul></td>
-        <td><div>Specifies that the monitor allows more than one probe attempt per interval.</div><div>When <code>yes</code>, specifies that the monitor ignores down responses for the duration of the monitor timeout. Once the monitor timeout is reached without the system receiving an up response, the system marks the object down.</div><div>When <code>no</code>, specifies that the monitor immediately marks an object down when it receives a down response.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>no</code>.</div>        </td></tr>
-                <tr><td>interval<br/><div style="font-size: small;"></div></td>
+        <td><div>When <code>yes</code>, specifies that the system supports the link aggregation control protocol (LACP), which monitors the trunk by exchanging control packets over the member links to determine the health of the links.</div><div>If LACP detects a failure in a member link, it removes the link from the link aggregation.</div><div>When creating a new trunk, if this parameter is not specified, LACP is <code>no</code>.</div><div>LACP is disabled by default for backward compatibility. If this does not apply to your network, we recommend that you enable LACP.</div>        </td></tr>
+                <tr><td>lacp_mode<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
-        <td><div>Specifies, in seconds, the frequency at which the system issues the monitor check when either the resource is down or the status of the resource is unknown.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>30</code>. This value <b>must</b> be less than the <code>timeout</code> value.</div>        </td></tr>
-                <tr><td>ip<br/><div style="font-size: small;"></div></td>
+        <td><ul><li>active</li><li>passive</li></ul></td>
+        <td><div>Specifies the operation mode for link aggregation control protocol (LACP), if LACP is enabled for the trunk.</div><div>When creating a new trunk, if this parameter is not specified, the default is <code>active</code>.</div><div>When <code>active</code>, specifies that the system periodically sends control packets regardless of whether the partner system has issued a request.</div><div>When <code>passive</code>, specifies that the system sends control packets only when the partner system has issued a request.</div>        </td></tr>
+                <tr><td>lacp_timeout<br/><div style="font-size: small;"></div></td>
     <td>no</td>
     <td></td>
-        <td></td>
-        <td><div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>        </td></tr>
+        <td><ul><li>long</li><li>short</li></ul></td>
+        <td><div>Specifies the rate at which the system sends the LACP control packets.</div><div>When creating a new trunk, if this parameter is not specified, the default is <code>long</code>.</div><div>When <code>long</code>, specifies that the system sends an LACP control packet every 30 seconds.</div><div>When <code>short</code>, specifies that the system sends an LACP control packet every 1 seconds.</div>        </td></tr>
+                <tr><td>link_selection_policy<br/><div style="font-size: small;"></div></td>
+    <td>no</td>
+    <td></td>
+        <td><ul><li>auto</li><li>maximum-bandwidth</li></ul></td>
+        <td><div>Specifies, once the trunk is configured, the policy that the trunk uses to determine which member link (interface) can handle new traffic.</div><div>When creating a new trunk, if this value is not specific, the default is <code>auto</code>.</div><div>When <code>auto</code>, specifies that the system automatically determines which interfaces can handle new traffic. For the <code>auto</code> option, the member links must all be the same media type and speed.</div><div>When <code>maximum-bandwidth</code>, specifies that the system determines which interfaces can handle new traffic based on the members&#x27; maximum bandwidth.</div>        </td></tr>
                 <tr><td>name<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
-        <td><div>Monitor name.</div>        </td></tr>
-                <tr><td>parent<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>/Common/bigip</td>
-        <td></td>
-        <td><div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>bigip</code> parent on the <code>Common</code> partition.</div>        </td></tr>
-                <tr><td>partition<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>Common</td>
-        <td></td>
-        <td><div>Device partition to manage resources on.</div>        </td></tr>
+        <td><div>Specifies the name of the trunk.</div>        </td></tr>
                 <tr><td>password<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
         <td></td>
         <td><div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div></br>
     <div style="font-size: small;">aliases: pass, pwd<div>        </td></tr>
-                <tr><td>port<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified</div>        </td></tr>
                 <tr><td rowspan="2">provider<br/><div style="font-size: small;"> (added in 2.5)</div></td>
     <td>no</td>
     <td></td><td></td>
@@ -156,12 +151,7 @@ Options
     <td>no</td>
     <td>present</td>
         <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>When <code>present</code>, ensures that the monitor exists.</div><div>When <code>absent</code>, ensures the monitor is removed.</div>        </td></tr>
-                <tr><td>timeout<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td></td>
-        <td></td>
-        <td><div>Specifies the number of seconds the target has in which to respond to the monitor request.</div><div>If the target responds within the set time period, it is considered up.</div><div>If the target does not respond within the set time period, it is considered down.</div><div>When this value is set to 0 (zero), the system uses the interval from the parent monitor.</div><div>When creating a new monitor, if this parameter is not provided, then the default value will be <code>90</code>.</div>        </td></tr>
+        <td><div>When <code>present</code>, ensures that the resource exists.</div><div>When <code>absent</code>, ensures the resource is removed.</div>        </td></tr>
                 <tr><td>user<br/><div style="font-size: small;"></div></td>
     <td>yes</td>
     <td></td>
@@ -183,32 +173,13 @@ Examples
  ::
 
     
-    - name: Create BIG-IP Monitor
-      bigip_gtm_monitor_bigip:
+    - name: Create a ...
+      bigip_trunk:
+        name: foo
+        password: secret
+        server: lb.mydomain.com
         state: present
-        ip: 10.10.10.10
-        server: lb.mydomain.com
         user: admin
-        password: secret
-        name: my_monitor
-      delegate_to: localhost
-
-    - name: Remove BIG-IP Monitor
-      bigip_gtm_monitor_bigip:
-        state: absent
-        server: lb.mydomain.com
-        user: admin
-        password: secret
-        name: my_monitor
-      delegate_to: localhost
-
-    - name: Add BIG-IP monitor for all addresses, port 514
-      bigip_gtm_monitor_bigip:
-        server: lb.mydomain.com
-        user: admin
-        port: 514
-        password: secret
-        name: my_monitor
       delegate_to: localhost
 
 
@@ -229,46 +200,18 @@ Common return values are `documented here <http://docs.ansible.com/ansible/lates
     </tr>
 
         <tr>
-        <td> parent </td>
-        <td> New parent template of the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> bigip </td>
-    </tr>
-            <tr>
-        <td> ip </td>
-        <td> The new IP of IP/port definition. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> 10.12.13.14 </td>
-    </tr>
-            <tr>
-        <td> interval </td>
-        <td> The new interval in which to run the monitor check. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 2 </td>
-    </tr>
-            <tr>
-        <td> timeout </td>
-        <td> The new timeout in which the remote system must respond to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> int </td>
-        <td align=center> 10 </td>
-    </tr>
-            <tr>
-        <td> aggregate_dynamic_ratios </td>
-        <td> The new aggregate of to the monitor. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> sum-members </td>
-    </tr>
-            <tr>
-        <td> ignore_down_response </td>
-        <td> Whether to ignore the down response or not. </td>
+        <td> param1 </td>
+        <td> The new param1 value of the resource. </td>
         <td align=center> changed </td>
         <td align=center> bool </td>
         <td align=center> True </td>
+    </tr>
+            <tr>
+        <td> param2 </td>
+        <td> The new param2 value of the resource. </td>
+        <td align=center> changed </td>
+        <td align=center> string </td>
+        <td align=center> Foo is bar </td>
     </tr>
         
     </table>
@@ -278,7 +221,6 @@ Notes
 -----
 
 .. note::
-    - Requires BIG-IP software version >= 12
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as ``pip install f5-sdk``.
 
