@@ -367,7 +367,7 @@ class BaseManager(object):
             return None
         result = []
         for command in raw_commands:
-            command = command.strip('tmsh').strip()
+            command = command.strip().strip('tmsh').strip()
             result.append(command)
         self.want.update({'normalized_commands': result})
         return result

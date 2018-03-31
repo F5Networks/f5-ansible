@@ -22,6 +22,8 @@ from ansible.module_utils.basic import AnsibleModule
 try:
     from library.modules.bigip_command import Parameters
     from library.modules.bigip_command import ModuleManager
+    from library.modules.bigip_command import V1Manager
+    from library.modules.bigip_command import V2Manager
     from library.modules.bigip_command import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -30,6 +32,8 @@ except ImportError:
     try:
         from ansible.modules.network.f5.bigip_command import Parameters
         from ansible.modules.network.f5.bigip_command import ModuleManager
+        from ansible.modules.network.f5.bigip_command import V1Manager
+        from ansible.modules.network.f5.bigip_command import V2Manager
         from ansible.modules.network.f5.bigip_command import ArgumentSpec
         from ansible.module_utils.network.f5.common import F5ModuleError
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
@@ -92,15 +96,18 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode
         )
 
+        m1 = V2Manager(module=module)
+        m1.execute_on_device = Mock(return_value=[True, False])
+
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
-        mm.execute_on_device = Mock(return_value=[])
+        mm.get_manager = Mock(return_value=m1)
 
         results = mm.exec_module()
 
         assert results['changed'] is False
         assert mm._run_commands.call_count == 0
-        assert mm.execute_on_device.call_count == 1
+        assert m1.execute_on_device.call_count == 2
 
     def test_run_single_modification_command(self, *args):
         set_module_args(dict(
@@ -116,15 +123,19 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
         )
+
+        m1 = V2Manager(module=module)
+        m1.execute_on_device = Mock(return_value=[True, False])
+
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
-        mm.execute_on_device = Mock(return_value=[])
+        mm.get_manager = Mock(return_value=m1)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
         assert mm._run_commands.call_count == 0
-        assert mm.execute_on_device.call_count == 1
+        assert m1.execute_on_device.call_count == 2
 
     def test_cli_command(self, *args):
         set_module_args(dict(
@@ -141,9 +152,13 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
         )
+
+        m1 = V1Manager(module=module)
+        m1.execute_on_device = Mock(return_value=[True, False, True])
+
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
-        mm.execute_on_device = Mock(return_value=[])
+        mm.get_manager = Mock(return_value=m1)
 
         results = mm.exec_module()
 
@@ -158,8 +173,7 @@ class TestManager(unittest.TestCase):
         #
         # Can we change this in the future by making the terminal plugin
         # find this out ahead of time?
-        assert mm._run_commands.call_count == 2
-        assert mm.execute_on_device.call_count == 0
+        assert m1.execute_on_device.call_count == 3
 
     def test_command_with_commas(self, *args):
         set_module_args(dict(
@@ -177,12 +191,13 @@ class TestManager(unittest.TestCase):
             argument_spec=self.spec.argument_spec,
             supports_check_mode=self.spec.supports_check_mode
         )
+        m1 = V2Manager(module=module)
+        m1.execute_on_device = Mock(return_value=[True, False])
+
         mm = ModuleManager(module=module)
-        mm._run_commands = Mock(return_value=[])
-        mm.execute_on_device = Mock(return_value=[])
+        mm.get_manager = Mock(return_value=m1)
 
         results = mm.exec_module()
 
         assert results['changed'] is True
-        assert mm._run_commands.call_count == 0
-        assert mm.execute_on_device.call_count == 1
+        assert m1.execute_on_device.call_count == 2
