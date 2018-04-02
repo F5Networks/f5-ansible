@@ -2,6 +2,30 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Create log with missing type - Expected failure
+  bigip_log_destination:
+    name: foo
+  register: result
+  failed_when: result is success
+
+- name: Assert Create log with missing type - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Create log with incorrect type - Expected failure
+  bigip_log_destination:
+    name: foo
+    type: baz
+  register: result
+  failed_when: result is success
+
+- name: Assert Create log with incorrect type - Expected failure
+  assert:
+    that:
+      - result is success
+
+- import_tasks: remote-high-speed-log.yaml
+- import_tasks: remote-syslog.yaml
 
 - import_tasks: teardown.yaml

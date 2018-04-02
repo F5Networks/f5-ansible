@@ -1,0 +1,186 @@
+---
+
+- name: Create a pool
+  bigip_pool:
+    name: pool1
+    lb_method: round-robin
+
+- name: Create a remote high-speed log destination
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      pool: pool1
+  register: result
+
+- name: Assert Create a remote high-speed log destination
+  assert:
+    that:
+      - result is changed
+
+- name: Create a remote high-speed log destination - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      pool: pool1
+  register: result
+
+- name: Assert Create a remote high-speed log destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change protocol, udp
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      protocol: udp
+  register: result
+
+- name: Assert Change protocol, udp
+  assert:
+    that:
+      - result is changed
+
+- name: Change protocol, udp - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      protocol: udp
+  register: result
+
+- name: Assert Change protocol, udp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change protocol, tcp
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      protocol: tcp
+  register: result
+
+- name: Assert Change protocol, tcp
+  assert:
+    that:
+      - result is changed
+
+- name: Change protocol, tcp - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      protocol: tcp
+  register: result
+
+- name: Assert Change protocol, tcp - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change distribution, balanced
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: balanced
+  register: result
+
+- name: Assert Change distribution, balanced
+  assert:
+    that:
+      - result is changed
+
+- name: Change distribution, balanced - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: balanced
+  register: result
+
+- name: Assert Change distribution, balanced - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change distribution, replicated
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: replicated
+  register: result
+
+- name: Assert Change distribution, replicated
+  assert:
+    that:
+      - result is changed
+
+- name: Change distribution, replicated - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: replicated
+  register: result
+
+- name: Assert Change distribution, replicated - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change distribution, adaptive
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: adaptive
+  register: result
+
+- name: Assert Change distribution, adaptive
+  assert:
+    that:
+      - result is changed
+
+- name: Change distribution, adaptive - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      distribution: adaptive
+  register: result
+
+- name: Assert Change distribution, adaptive - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove remote high-speed log destination
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    state: absent
+  register: result
+
+- name: Assert Remove remote high-speed log destination
+  assert:
+    that:
+      - result is changed
+
+- name: Remove remote high-speed log destination - Idempotent check
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    state: absent
+  register: result
+
+- name: Assert Remove remote high-speed log destination - Idempotent check
+  assert:
+    that:
+      - result is not changed

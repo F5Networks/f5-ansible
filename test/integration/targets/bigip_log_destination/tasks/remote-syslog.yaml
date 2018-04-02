@@ -1,0 +1,185 @@
+---
+
+- name: Create a remote high speed logging destination
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    pool_settings:
+      pool: pool1
+  register: result
+
+- name: Create a remote syslog destination
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: syslog
+      forward_to: hsl1
+  register: result
+
+- name: Assert Create a remote syslog destination
+  assert:
+    that:
+      - result is changed
+
+- name: Create a remote syslog destination - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: syslog
+      forward_to: hsl1
+  register: result
+
+- name: Assert Create a remote syslog destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change format, rfc5424 - Alias to syslog, no change
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: rfc5424
+  register: result
+
+- name: Assert Change format, rfc5424 - Alias to syslog, no change
+  assert:
+    that:
+      - result is not changed
+
+- name: Change format, bsd-syslog
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: bsd-syslog
+  register: result
+
+- name: Assert Change format, bsd-syslog
+  assert:
+    that:
+      - result is changed
+
+- name: Change format, bsd-syslog - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: bsd-syslog
+  register: result
+
+- name: Assert Change format, bsd-syslog - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change format, syslog
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: syslog
+  register: result
+
+- name: Assert Change format, syslog
+  assert:
+    that:
+      - result is changed
+
+- name: Change format, syslog - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: syslog
+  register: result
+
+- name: Assert Change format, syslog - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change format, legacy-bigip
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: legacy-bigip
+  register: result
+
+- name: Assert Change format, legacy-bigip
+  assert:
+    that:
+      - result is changed
+
+- name: Change format, legacy-bigip - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: legacy-bigip
+  register: result
+
+- name: Assert Change format, legacy-bigip - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change format, rfc5424
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: rfc5424
+  register: result
+
+- name: Assert Change format, rfc5424
+  assert:
+    that:
+      - result is changed
+
+- name: Change format, rfc5424 - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    syslog_settings:
+      syslog_format: rfc5424
+  register: result
+
+- name: Assert Change format, rfc5424 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove remote syslog destination
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    state: absent
+  register: result
+
+- name: Assert Remove remote syslog destination
+  assert:
+    that:
+      - result is changed
+
+- name: Remove remote syslog destination - Idempotent check
+  bigip_log_destination:
+    name: log1
+    type: remote-syslog
+    state: absent
+  register: result
+
+- name: Assert Remove remote syslog destination - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove remote high speed logging destination
+  bigip_log_destination:
+    name: hsl1
+    type: remote-high-speed-log
+    state: absent
+  register: result
