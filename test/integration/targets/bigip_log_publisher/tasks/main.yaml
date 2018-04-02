@@ -1,0 +1,126 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create a log publisher
+  bigip_log_publisher:
+    name: log1
+    description: my description
+    destinations:
+      - alertd
+      - local-syslog
+  register: result
+
+- name: Assert Create a log publisher
+  assert:
+    that:
+      - result is changed
+
+- name: Create a log publisher - Idempotent check
+  bigip_log_publisher:
+    name: log1
+    description: my description
+    destinations:
+      - alertd
+      - local-syslog
+  register: result
+
+- name: Assert Create a log publisher - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change description
+  bigip_log_publisher:
+    name: log1
+    description: another description
+  register: result
+
+- name: Assert Change description
+  assert:
+    that:
+      - result is changed
+
+- name: Change description - Idempotent check
+  bigip_log_publisher:
+    name: log1
+    description: another description
+  register: result
+
+- name: Assert Change description - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change destinations
+  bigip_log_publisher:
+    name: log1
+    destinations:
+      - alertd
+  register: result
+
+- name: Assert Change destinations
+  assert:
+    that:
+      - result is changed
+
+- name: Change destinations - Idempotent check
+  bigip_log_publisher:
+    name: log1
+    destinations:
+      - alertd
+  register: result
+
+- name: Assert Change destinations - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create a bare log publisher
+  bigip_log_publisher:
+    name: log2
+  register: result
+
+- name: Assert Create a bare log publisher
+  assert:
+    that:
+      - result is changed
+
+- name: Create a bare log publisher - Idempotent check
+  bigip_log_publisher:
+    name: log2
+  register: result
+
+- name: Assert Create a bare log publisher - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove log publisher
+  bigip_log_publisher:
+    name: log2
+    state: absent
+  register: result
+
+- name: Remove log publisher
+  assert:
+    that:
+      - result is changed
+
+- name: Remove log publisher - Idempotent check
+  bigip_log_publisher:
+    name: log2
+    state: absent
+  register: result
+
+- name: Remove log publisher - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove other log publisher
+  bigip_log_publisher:
+    name: log1
+    state: absent
+
+- import_tasks: teardown.yaml
