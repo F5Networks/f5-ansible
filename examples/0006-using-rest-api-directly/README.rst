@@ -1,11 +1,11 @@
-Using the REST API directly
-===========================
+Use the REST API directly
+=========================
 
-This playbook provides an example of how to use native Ansible modules to use the REST API directly.
+This playbook example shows how to use native Ansible modules to use the REST API directly.
 
 There may be reasons you want to interact with the REST API directly, and Ansible caters to your desire to do this. However, the REST API is a work in progress; you may encounter issues with the methods in this playbook, and F5 does not support them.
 
-The REST APIs change between versions of BIG-IP. Keep this in mind if you will be upgrading your BIG-IPs or if you will be using the `uri`_ module directly against a number of BIG-IPs that vary in version. For this situation, F5 recommends you use the ``bigip_facts`` module to at least get the current version so that you can use ``when`` conditionals on your tasks as needed.
+The REST APIs change between versions of BIG-IP. Keep this in mind if you upgrade your BIG-IPs or if you use the `uri`_ module directly against multiple, varied versions of BIG-IP. For this situation, F5 recommends you use the ``bigip_facts`` module to at least get the current version so that you can use ``when`` conditionals on your tasks as needed.
 
 If you find yourself using the method illustrated in this playbook, consider filing an issue and requesting to have a module developed to handle your use case.
 

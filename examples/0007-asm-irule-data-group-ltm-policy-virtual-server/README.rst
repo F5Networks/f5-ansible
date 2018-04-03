@@ -1,21 +1,21 @@
 Multi-config example
 ====================
 
-This playbook provides an example of how to use native Ansible modules to configure a number of common items.
+This playbook shows how to use native Ansible modules to configure a number of common BIG-IP items.
 
-The following use cases are configured
+The playbook does the following:
 
-* Provision ASM
-* Create a data group
-* Create an iRule for the data group to use
-* Create an LTM policy
-* Create an ASM policy
-* Create a rule for the LTM policy which uses the ASM policy
-* Create a pool
-* Create pool members
-* Create a virtual server
-* Assign the pool to the virtual
-* Assign the LTM policy to the virtual
-* Assign the iRule to the virtual
+* Provisions ASM
+* Creates a data group
+* Creates an iRule for the data group to use
+* Creates an LTM policy
+* Creates an ASM policy
+* Creates a rule for the LTM policy that uses the ASM policy
+* Creates a pool
+* Creates pool members
+* Creates a virtual server
+* Assigns the pool to the virtual
+* Assigns the LTM policy to the virtual
+* Assigns the iRule to the virtual
 
-Note: Data sources are contrived to protect the innocent.
+Note: The data sources in the example are fictitious.
