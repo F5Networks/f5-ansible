@@ -27,6 +27,59 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the timer policy.
+  rules:
+    description:
+      - Rules that you want assigned to the timer policy
+    suboptions:
+      name:
+        description:
+          - The name of the rule.
+        required: True
+      protocol:
+        description:
+          - Specifies the IP protocol entry for which the timer policy rule is being
+            configured. This could be a layer-4 protocol (such as C(tcp), C(udp) or
+            C(sctp).
+          - Only flows matching the configured protocol will make use of this rule.
+          - When C(all-other) is specified, if there are no specific ip-protocol rules
+            that match the flow, the flow matches all the other ip-protocol rules.
+          - When specifying rules, if this parameter is not specified, the default of
+            C(all-other) will be used.
+        choices:
+          - all-other
+          - ah
+          - bna
+          - esp
+          - etherip
+          - gre
+          - icmp
+          - ipencap
+          - ipv6
+          - ipv6-auth
+          - ipv6-crypt
+          - ipv6-icmp
+          - isp-ip
+          - mux
+          - ospf
+          - sctp
+          - tcp
+          - udp
+          - udplite
+      destination_ports:
+        description:
+          - The list of destination ports to match the rule on.
+          - Specify a port range by specifying start and end ports separated by a
+            dash (-).
+          - This field is only available if you have selected the C(sctp), C(tcp), or
+            C(udp) protocol.
+      idle_timeout:
+        description:
+          - Specifies an idle timeout, in seconds, for protocol and port pairs that
+            match the timer policy rule.
+          - When C(infinite), specifies that the protocol and port pairs that match
+            the timer policy rule have no idle timeout.
+          - When specifying rules, if this parameter is not specified, the default of
+            C(unspecified) will be used.
   partition:
     description:
       - Device partition to manage resources on.
@@ -49,6 +102,20 @@ EXAMPLES = r'''
   bigip_timer_policy:
     name: timer1
     description: My timer policy
+    rules:
+      - name: rule1
+        protocol: tcp
+        idle_timeout: indefinite
+        destination_ports:
+          - 443
+          - 80
+      - name: rule2
+        protocol: 200
+      - name: rule3
+        protocol: sctp
+        idle_timeout: 200
+        destination_ports:
+          - 21
     password: secret
     server: lb.mydomain.com
     state: present
@@ -161,15 +228,54 @@ class ModuleParameters(Parameters):
             result['name'] = rule['name']
             if 'protocol' in rule:
                 result['protocol'] = str(rule['protocol'])
+            else:
+                result['protocol'] = 'all-other'
+
             if 'idle_timeout' in rule:
                 result['idle_timeout'] = str(rule['idle_timeout'])
+            else:
+                result['idle_timeout'] = 'unspecified'
+
             if 'destination_ports' in rule:
                 ports = list(set([str(x) for x in rule['destination_ports']]))
                 ports.sort()
+                ports = [str(self._validate_port_entries(x)) for x in ports]
                 result['destination_ports'] = ports
             results.append(result)
             results = sorted(results, key=lambda k: k['name'])
         return results
+
+    def _validate_port_entries(self, port):
+        if port == 'all-other':
+            return 0
+        if '-' in port:
+            parts = port.split('-')
+            if len(parts) != 2:
+                raise F5ModuleError(
+                    "The correct format for a port range is X-Y, where X is the start"
+                    "port and Y is the end port."
+                )
+            try:
+                start = int(parts[0])
+                end = int(parts[1])
+            except ValueError:
+                raise F5ModuleError(
+                    "The ports in a range must be numbers."
+                    "You provided '{0}' and '{1}'.".format(parts[0], parts[1])
+                )
+            if start == end:
+                return start
+            if start > end:
+                return '{0}-{1}'.format(end, start)
+            else:
+                return port
+        else:
+            try:
+                return int(port)
+            except ValueError:
+                raise F5ModuleError(
+                    "The specified destination port is not a number."
+                )
 
 
 class Changes(Parameters):
@@ -265,7 +371,6 @@ class Difference(object):
         have = [tuple(x.pop('destination_ports')) for x in self.have.rules if 'destination_ports' in x]
         if set(want) != set(have):
             return self.want.rules
-
         if compare_dictionary(self.want.rules, self.have.rules):
             return self.want.rules
 
@@ -423,7 +528,30 @@ class ArgumentSpec(object):
                 type='list',
                 suboptions=dict(
                     name=dict(required=True),
-                    protocol=dict(default='all-other'),
+                    protocol=dict(
+                        default='all-other',
+                        choices=[
+                            'all-other',
+                            'ah',
+                            'bna',
+                            'esp',
+                            'etherip',
+                            'gre',
+                            'icmp',
+                            'ipencap',
+                            'ipv6',
+                            'ipv6-auth',
+                            'ipv6-crypt',
+                            'ipv6-icmp',
+                            'isp-ip',
+                            'mux',
+                            'ospf',
+                            'sctp',
+                            'tcp',
+                            'udp',
+                            'udplite',
+                        ]
+                    ),
                     description=dict(),
                     idle_timeout=dict(default='unspecified'),
                     destination_ports=dict(
