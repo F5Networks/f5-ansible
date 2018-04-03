@@ -1,0 +1,5 @@
+---
+
+- name: Install AS3 rpm
+  bigip_iapplx_package:
+    package: "{{ role_path }}/files/f5-appsvcs-latest.noarch.rpm"

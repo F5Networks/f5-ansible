@@ -2,6 +2,8 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Deploy an app services configuration
+  bigip_appsvcs_extension:
+
 
 - import_tasks: teardown.yaml
