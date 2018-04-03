@@ -33,13 +33,13 @@ Add the following to your ``playbook.yaml`` to create a pool called ``web``:
     tasks:
        - name: Create a pool
          bigip_pool:
-             lb_method: "ratio-member"
-             name: "web"
-             password: "admin"
-             server: "big-ip01.internal"
-             slow_ramp_time: "120"
-             user: "admin"
-             validate_certs: "no"
+             lb_method: ratio-member
+             name: web
+             password: admin
+             server: big-ip01.internal
+             slow_ramp_time: 120
+             user: admin
+             validate_certs: no
          delegate_to: localhost
 
 Add two nodes
@@ -53,22 +53,22 @@ To add the two nodes, put the following in your ``playbook.yaml`` file:
 
        - name: Create node1
          bigip_node:
-             host: "10.10.10.10"
-             name: "node-1"
-             password: "admin"
-             server: "big-ip01.internal"
-             user: "admin"
-             validate_certs: "no"
+             host: 10.10.10.10
+             name: node-1
+             password: admin
+             server: big-ip01.internal
+             user: admin
+             validate_certs: no
          delegate_to: localhost
 
        - name: Create node2
          bigip_node:
-             host: "10.10.10.20"
-             name: "node-2"
-             password: "admin"
-             server: "big-ip01.internal"
-             user: "admin"
-             validate_certs: "no"
+             host: 10.10.10.20
+             name: node-2
+             password: admin
+             server: big-ip01.internal
+             user: admin
+             validate_certs: no
          delegate_to: localhost
 
 .. note::
@@ -84,21 +84,22 @@ With the pool created and your nodes in place, you now want to add those nodes t
 
        - name: Add nodes to pool
          bigip_pool_member:
-             description: "webserver-1"
+             description: webserver-1
              host: "{{ item.host }}"
              name: "{{ item.name }}"
-             password: "admin"
-             pool: "web"
-             port: "80"
-             server: "big-ip01.internal"
-             user: "admin"
-             validate_certs: "no"
+             password: admin
+             pool: web
+             port: 80
+             server: big-ip01.internal
+             user: admin
+             validate_certs: no
          delegate_to: localhost
          with_items:
-             - host: "10.10.10.10"
-               name: "node-1"
-             - host: "10.10.10.20"
-               name: "node-2"
+             - host: 10.10.10.10
+               name: node-1
+             - host: 10.10.10.20
+               name: node-2
+
 
 Add a virtual server
 --------------------
@@ -113,19 +114,19 @@ To create a virtual server, add the following to your ``playbook.yaml`` file:
 
        - name: Create a VIP
          bigip_virtual_server:
-             description: "foo-vip"
-             destination: "172.16.10.108"
-             password: "admin"
-             name: "vip-1"
-             pool: "web"
-             port: "80"
-             server: "big-ip01.internal"
-             snat: "Automap"
-             user: "admin"
+             description: foo-vip
+             destination: 172.16.10.108
+             password: admin
+             name: vip-1
+             pool: web
+             port: 80
+             server: big-ip01.internal
+             snat: Automap
+             user: admin
              all_profiles:
-                  - "http"
-                  - "clientssl"
-             validate_certs: "no"
+                  - http
+                  - clientssl
+             validate_certs: no
          delegate_to: localhost
 
 More info
