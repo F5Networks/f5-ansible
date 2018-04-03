@@ -31,7 +31,6 @@ In addition to Ansible, you should install a few additional Python modules.
 - f5-sdk
 - bigsuds
 - netaddr
-- deepdiff
 
 At minimum, you should add ``f5-sdk``.
 
