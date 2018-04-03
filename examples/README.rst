@@ -1,20 +1,17 @@
-About
-=====
+About these examples
+====================
 
-This directory contains a number of examples of using the F5 Ansible modules to
-perform various different tasks.
+This directory contains examples of how to use the F5 Modules for Ansible to
+perform various tasks.
 
-Some of these examples are contributed by F5 colleagues as well as customers. In
-the event that that is the case, the example likely serves more as an example of
+Both F5 and customers contributed these examples. If a customer contributed the example, it likely serves more as an example of
 the modules in play than as a drop-in configuration.
 
-YMMV in using any and all of these playbooks.
 
 Support
 =======
 
-The playbooks in this, and other, directories is to serve as an *example* of
-using Ansible to automation configuration of a BIG-IP or other F5 product.
+The playbooks in this and other directories serve as an *example* of
+how to use Ansible to automate configuration of BIG-IP or other F5 products.
 
-As such, the maintainers of this repository, as well as F5, will be unable to
-provide any support for the playbooks herein.
+These examples are meant to familiarize you with possibilities, and are not formally supported by F5.
