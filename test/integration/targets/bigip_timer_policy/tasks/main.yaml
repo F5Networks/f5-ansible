@@ -215,30 +215,92 @@
     that:
       - result is success
 
-- name: Change the rules, change protocol, number
+- name: Set port range, correct
   bigip_timer_policy:
     name: timer1
     rules:
       - name: rule1
-        protocol: 200
-        idle_timeout: indefinite
+        protocol: tcp
+        destination_ports:
+          - 80-443
   register: result
 
-- name: Assert Change the rules, change protocol, number
+- name: Assert Set port range, correct
   assert:
     that:
       - result is changed
 
-- name: Change the rules, change protocol, number - Idempotent check
+- name: Set port range, correct - Idempotent check
   bigip_timer_policy:
     name: timer1
     rules:
       - name: rule1
-        protocol: 200
-        idle_timeout: indefinite
+        protocol: tcp
+        destination_ports:
+          - 80-443
   register: result
 
-- name: Assert Change the rules, change protocol, number - Idempotent check
+- name: Assert Set port range, correct - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set port range, backwards
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        destination_ports:
+          - 8000-1000
+  register: result
+
+- name: Assert Set port range, backwards
+  assert:
+    that:
+      - result is changed
+
+- name: Set port range, backwards - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        destination_ports:
+          - 8000-1000
+  register: result
+
+- name: Assert Set port range, backwards - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Set port range, all-other
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        destination_ports:
+          - all-other
+  register: result
+
+- name: Assert Set port range, all-other
+  assert:
+    that:
+      - result is changed
+
+- name: Set port range, all-other - Idempotent check
+  bigip_timer_policy:
+    name: timer1
+    rules:
+      - name: rule1
+        protocol: tcp
+        destination_ports:
+          - all-other
+  register: result
+
+- name: Assert Set port range, all-other - Idempotent check
   assert:
     that:
       - result is not changed
