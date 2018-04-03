@@ -78,18 +78,13 @@ class TestParameters(unittest.TestCase):
         assert p.description == 'my description'
 
     def test_api_parameters(self):
-        args = dict(
-            name='foo',
-            gateway='1.1.1.1',
-            network='default',
-            description='my description'
-        )
+        args = load_fixture('load_sys_management_route_1.json')
 
         p = ApiParameters(params=args)
-        assert p.name == 'foo'
-        assert p.gateway == '1.1.1.1'
+        assert p.name == 'default'
+        assert p.gateway == '10.0.2.2'
         assert p.network == 'default'
-        assert p.description == 'my description'
+        assert p.description == 'configured-by-dhcp'
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
