@@ -3,7 +3,7 @@ Get help
 
 F5 does not currently support the F5 Modules for Ansible.
 
-However, F5 provides informal support through a number of channels.
+However, the community provides informal support through a number of channels.
 
 File an issue
 -------------

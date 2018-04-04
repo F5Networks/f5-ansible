@@ -1,9 +1,9 @@
 F5 Modules for Ansible
 ======================
 
-This project implements a set of Ansible modules for the BIG-IP platform from F5 Networks.
+Welcome to the F5 Modules for Ansible documentation.
 
-You can use these modules to create, edit, update, and delete configuration objects on BIG-IP.
+Use these modules to create, edit, update, and delete configuration objects on BIG-IP 12.0.0 and later, and BIG-IQ 5.4.0 and later.
 
 The code is open source and |f5_ansible_github|. Additionally, some modules have been promoted to the |ansible_core| and |ansible_extras|.
 
