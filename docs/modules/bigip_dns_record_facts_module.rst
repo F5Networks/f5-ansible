@@ -1,3 +1,5 @@
+:source: modules/bigip_dns_record_facts.py
+
 .. _bigip_dns_record_facts:
 
 
@@ -6,7 +8,6 @@ bigip_dns_record_facts - foo
 
 .. versionadded:: 2.2
 
-
 .. contents::
    :local:
    :depth: 2
@@ -14,50 +15,86 @@ bigip_dns_record_facts - foo
 
 Synopsis
 --------
-
-* foo
-
+- foo
 
 
 
-Options
--------
+
+Parameters
+----------
 
 .. raw:: html
 
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">parameter</th>
-    <th class="head">required</th>
-    <th class="head">default</th>
-    <th class="head">choices</th>
-    <th class="head">comments</th>
-    </tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP password</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP host</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP username</div></br>
-    <div style="font-size: small;">aliases: username<div>        </td></tr>
-        </table>
-    </br>
+    <table  border=0 cellpadding=0 class="documentation-table">
+                <tr>
+            <th class="head"><div class="cell-border">Parameter</div></th>
+            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
+                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+        </tr>
+                    <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>password</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP password</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>server</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP host</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>user</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP username</div>
+                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: username</div>
+                                            </div>
+                </td>
+            </tr>
+                        </table>
+    <br/>
 
 
 
 Examples
 --------
 
- ::
+.. code-block:: yaml
 
     
     - name: Create a ...
@@ -70,55 +107,74 @@ Examples
       delegate_to: localhost
 
 
+
+
 Return Values
 -------------
-
-Common return values are `documented here <http://docs.ansible.com/ansible/latest/common_return_values.html>`_, the following are the fields unique to this module:
+Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
 
 .. raw:: html
 
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">name</th>
-    <th class="head">description</th>
-    <th class="head">returned</th>
-    <th class="head">type</th>
-    <th class="head">sample</th>
-    </tr>
-
+    <table border=0 cellpadding=0 class="documentation-table">
         <tr>
-        <td> param1 </td>
-        <td> The new param1 value of the resource. </td>
-        <td align=center> changed </td>
-        <td align=center> bool </td>
-        <td align=center> True </td>
-    </tr>
-            <tr>
-        <td> param2 </td>
-        <td> The new param2 value of the resource. </td>
-        <td align=center> changed </td>
-        <td align=center> string </td>
-        <td align=center> Foo is bar </td>
-    </tr>
-        
-    </table>
-    </br></br>
-
-
+            <th class="head"><div class="cell-border">Key</div></th>
+            <th class="head"><div class="cell-border">Returned</div></th>
+            <th class="head" width="100%"><div class="cell-border">Description</div></th>
+        </tr>
+                    <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>param1</b>
+                            <br/><div style="font-size: small; color: red">bool</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The new param1 value of the resource.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>param2</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The new param2 value of the resource.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                            </div>
+                </td>
+            </tr>
+                        </table>
+    <br/><br/>
 
 
 Status
-~~~~~~
+------
+
+
 
 This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
-Support
-~~~~~~~
-
-This module is community maintained without core committer oversight.
-
-For more information on what this means please read :doc:`/usage/support`
 
 
-For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.
+Author
+~~~~~~
+
+- Tim Rupp (@caphrim007)
+

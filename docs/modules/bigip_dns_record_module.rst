@@ -1,3 +1,5 @@
+:source: modules/bigip_dns_record.py
+
 .. _bigip_dns_record:
 
 
@@ -6,7 +8,6 @@ bigip_dns_record - Manage DNS resource records on a BIG-IP
 
 .. versionadded:: 2.2
 
-
 .. contents::
    :local:
    :depth: 2
@@ -14,59 +15,121 @@ bigip_dns_record - Manage DNS resource records on a BIG-IP
 
 Synopsis
 --------
-
-* Manage DNS resource records on a BIG-IP
-
-
-Requirements (on host that executes module)
--------------------------------------------
-
-  * bigsuds
-  * distutils
+- Manage DNS resource records on a BIG-IP
 
 
-Options
--------
+
+Requirements
+~~~~~~~~~~~~
+The below requirements are needed on the host that executes this module.
+
+- bigsuds
+- distutils
+
+
+Parameters
+----------
 
 .. raw:: html
 
-    <table border=1 cellpadding=4>
-    <tr>
-    <th class="head">parameter</th>
-    <th class="head">required</th>
-    <th class="head">default</th>
-    <th class="head">choices</th>
-    <th class="head">comments</th>
-    </tr>
-                <tr><td>password<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP password</div>        </td></tr>
-                <tr><td>server<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td>localhost</td>
-        <td></td>
-        <td><div>BIG-IP host</div>        </td></tr>
-                <tr><td>state<br/><div style="font-size: small;"></div></td>
-    <td>no</td>
-    <td>present</td>
-        <td><ul><li>present</li><li>absent</li></ul></td>
-        <td><div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>        </td></tr>
-                <tr><td>user<br/><div style="font-size: small;"></div></td>
-    <td>yes</td>
-    <td></td>
-        <td></td>
-        <td><div>BIG-IP username</div>        </td></tr>
-        </table>
-    </br>
+    <table  border=0 cellpadding=0 class="documentation-table">
+                <tr>
+            <th class="head"><div class="cell-border">Parameter</div></th>
+            <th class="head"><div class="cell-border">Choices/<font color="blue">Defaults</font></div></th>
+                        <th class="head" width="100%"><div class="cell-border">Comments</div></th>
+        </tr>
+                    <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>password</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP password</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>server</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">localhost</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP host</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>state</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>absent</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Whether the record should exist.  When <code>absent</code>, removes the record.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>user</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>BIG-IP username</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                        </table>
+    <br/>
 
+
+Notes
+-----
+
+.. note::
+    - Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
 
 
 Examples
 --------
 
- ::
+.. code-block:: yaml
 
     
     - name: Add an A record to organization.com zone
@@ -98,26 +161,20 @@ Examples
 
 
 
-Notes
------
-
-.. note::
-    - Requires the bigsuds Python package on the remote host. This is as easy as pip install bigsuds
-
 
 
 Status
-~~~~~~
+------
+
+
 
 This module is flagged as **preview** which means that it is not guaranteed to have a backwards compatible interface.
 
 
-Support
-~~~~~~~
-
-This module is community maintained without core committer oversight.
-
-For more information on what this means please read :doc:`/usage/support`
 
 
-For help developing modules, should you be so inclined, please read :doc:`Getting Involved </development/getting-involved>`, :doc:`Writing a Module </development/writing-a-module>` and :doc:`Guidelines </development/guidelines>`.
+Author
+~~~~~~
+
+- Tim Rupp (@caphrim007)
+

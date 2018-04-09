@@ -1,10 +1,10 @@
-:source: modules/bigip_profile_tcp.py
+:source: modules/bigip_appsvcs_extension.py
 
-.. _bigip_profile_tcp:
+.. _bigip_appsvcs_extension:
 
 
-bigip_profile_tcp - Manage TCP profiles on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_appsvcs_extension - Manage application service deployments
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_profile_tcp - Manage TCP profiles on a BIG-IP
 
 Synopsis
 --------
-- Manage TCP profiles on a BIG-IP. There are a variety of TCP profiles, each with their own adjustments to the standard `tcp` profile. Users of this module should be aware that many of the adjustable knobs have no module default. Instead, the default is assigned by the BIG-IP system itself which, in most cases, is acceptable.
+- Manages application service deployments via the App Services Extension functionality in BIG-IP.
 
 
 
@@ -41,28 +41,7 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>idle_timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the length of time that a connection is idle (has no traffic) before the connection is eligible for deletion.</div>
-                                                            <div>When creating a new profile, if this parameter is not specified, the remote device will choose a default value appropriate for the profile, based on its <code>parent</code> profile.</div>
-                                                            <div>When a number is specified, indicates the number of seconds that the TCP connection can remain idle before the system deletes it.</div>
-                                                            <div>When <code>0</code>, or <code>indefinite</code>, specifies that the system does not delete TCP connections regardless of how long they remain idle.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>name</b>
+                            <b>content</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -72,45 +51,11 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the name of the profile.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>parent</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the profile from which this profile inherits settings.</div>
-                                                            <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>tcp</code> profile.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>partition</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
-                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Device partition to manage resources on.</div>
+                                                                                    <div>Declaration of tenants configured on the system.</div>
+                                                            <div>This parameter is most often used along with the <code>file</code> or <code>template</code> lookup plugins. Refer to the examples section for correct usage.</div>
+                                                            <div>For anything advanced or with formatting consider using the <code>template</code> lookup.</div>
+                                                            <div>This can additionally be used for specifying application service configurations directly in YAML, however that is not an encouraged practice and, if used at all, should only be used for the absolute smallest of configurations to prevent your Playbooks from becoming too large.</div>
+                                                            <div>When <code>state</code> is <code>absent</code>, will attempt to delete all tenants configuration in the declaration.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -319,6 +264,29 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>save_config</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Instructs the system to save running configuration to disk.</div>
+                                                            <div>If this parameter is specified, and <code>content</code> or <code>src</code> is specified, overrides any information in the provided app services content.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>server</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -362,16 +330,16 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>present</li>
                                                                                                                                                                                                                         <li>absent</li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>When <code>present</code>, ensures that the profile exists.</div>
-                                                            <div>When <code>absent</code>, ensures the profile is removed.</div>
+                                                                                    <div>When <code>state</code> is <code>present</code>, ensures the configuration exists.</div>
+                                                            <div>When <code>state</code> is <code>absent</code>, ensures that the configuration is removed.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -433,11 +401,10 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a TCP profile
-      bigip_profile_tcp:
+    - name: Deploy an app service configuration
+      bigip_appsvcs_extension:
         name: foo
-        parent: f5-tcp-progressive
-        idle_timeout: 300
+        content: "{{ lookup('file', '/path/to/appsvcs.json') }}"
         password: secret
         server: lb.mydomain.com
         state: present
@@ -446,59 +413,6 @@ Examples
 
 
 
-
-Return Values
--------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th class="head"><div class="cell-border">Key</div></th>
-            <th class="head"><div class="cell-border">Returned</div></th>
-            <th class="head" width="100%"><div class="cell-border">Description</div></th>
-        </tr>
-                    <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>idle_timeout</b>
-                            <br/><div style="font-size: small; color: red">int</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new idle timeout of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">100</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>parent</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new parent of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">f5-tcp-optimized</div>
-                                            </div>
-                </td>
-            </tr>
-                        </table>
-    <br/><br/>
 
 
 Status
