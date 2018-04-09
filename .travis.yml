@@ -40,5 +40,5 @@ jobs:
       script:
         - make docker-test && make docker-deploy
       python: 3.6
-      env: TOXENV=docks-deploy
+      env: TOXENV=docs-deploy
       if: branch = devel
