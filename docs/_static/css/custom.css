@@ -1,0 +1,21 @@
+#parameters table, th, td {
+    border: 1px solid black !important;
+    background-color: white !important;
+}
+
+#parameters th, td {
+    padding: 4px !important;
+    vertical-align: top !important;
+}
+
+#parameters td ul {
+    -webkit-padding-start: 0 !important;
+}
+
+#parameters td ul li {
+    margin-left: 24px !important;
+}
+
+.versionmodified {
+    font-style: italic !important;
+}
