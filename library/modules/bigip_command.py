@@ -267,7 +267,7 @@ class Parameters(AnsibleF5Parameters):
         commands = map(self.addon_tmsh, self.normalized_commands)
         if self.chdir:
             commands = map(self.addon_chdir, commands)
-        commands = list(commands) #list(map(self.addon_rest, commands))
+        commands = list(commands)
         return commands
 
     @property
@@ -366,8 +366,10 @@ class BaseManager(object):
         if not raw_commands:
             return None
         result = []
+        index = 6
         for command in raw_commands:
-            command = command.strip().strip('tmsh').strip()
+            command = command.strip()
+            command = command[0:index].replace('tmsh', '').strip() + command[index:].strip()
             result.append(command)
         self.want.update({'normalized_commands': result})
         return result
