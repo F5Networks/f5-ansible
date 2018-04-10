@@ -198,11 +198,6 @@ except ImportError:
     except ImportError:
         HAS_F5SDK = False
 
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
 
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
@@ -908,7 +903,15 @@ class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = False
         argument_spec = dict(
-            include=dict(type='list', required=True),
+            include=dict(
+                type='list',
+                choices=[
+                    'pool',
+                    'wide_ip',
+                    'server',
+                ],
+                required=True
+            ),
             filter=dict()
         )
         self.argument_spec = {}
