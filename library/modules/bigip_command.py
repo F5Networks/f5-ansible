@@ -421,9 +421,10 @@ class BaseManager(object):
             failed_conditions = [item.raw for item in conditionals]
             errmsg = 'One or more conditional statements have not been satisfied'
             raise FailedConditionsError(errmsg, failed_conditions)
+        stdout_lines = self._to_lines(responses)
         changes = {
             'stdout': responses,
-            'stdout_lines': self._to_lines(responses)
+            'stdout_lines': stdout_lines
         }
         if self.want.warn:
             changes['warnings'] = self.want.warnings
@@ -468,7 +469,7 @@ class V1Manager(BaseManager):
 
     def is_tmsh(self):
         try:
-            self.execute_on_device('tmsh help')
+            self.execute_on_device('tmsh -v')
         except Exception as ex:
             if 'Syntax Error:' in str(ex):
                 return True
@@ -480,7 +481,8 @@ class V1Manager(BaseManager):
         return super(V1Manager, self).execute()
 
     def execute_on_device(self, commands):
-        return run_commands(self.module, commands)
+        result = run_commands(self.module, commands)
+        return result
 
 
 class V2Manager(BaseManager):
