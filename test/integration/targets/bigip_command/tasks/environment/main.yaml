@@ -3,7 +3,7 @@
 - name: Run single command
   bigip_command:
     commands:
-      - tmsh show sys version
+      - show sys failover
   register: result
 
 - name: Assert Run single command
@@ -85,17 +85,6 @@
       - tmsh show sys clock
   register: result
 
-- import_tasks: cli.yaml
-  tags: cli
-  when: bigip_ssh_password is defined
-
-- import_tasks: cli-legacy.yaml
-  tags: cli
-  when: bigip_ssh_password is defined
-
-#- import_tasks: cli-with-ssh-key.yaml
-#  tags: ssh-key
-
 - import_tasks: issue-00381.yaml
   tags: issue-00381
 
@@ -110,3 +99,5 @@
 
 - import_tasks: issue-00658.yaml
   tags: issue-00658
+
+
