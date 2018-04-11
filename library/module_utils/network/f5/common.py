@@ -184,7 +184,8 @@ def run_commands(module, commands, check_rc=True):
         rc, out, err = exec_command(module, cmd)
         if check_rc and rc != 0:
             raise F5ModuleError(to_text(err, errors='surrogate_then_replace'))
-        responses.append(to_text(out, errors='surrogate_then_replace'))
+        result = to_text(out, errors='surrogate_then_replace')
+        responses.append(result)
     return responses
 
 
