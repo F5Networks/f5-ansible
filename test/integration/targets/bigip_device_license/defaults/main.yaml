@@ -1,0 +1,4 @@
+---
+
+license_server: activate.f5.com
+default_hopper: /here/tmp/licenses/bigip-licenses.txt

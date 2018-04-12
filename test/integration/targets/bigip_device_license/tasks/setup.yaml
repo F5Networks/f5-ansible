@@ -1,0 +1,24 @@
+---
+
+- name: Check that the license hopper exists
+  stat:
+    path: "{{ default_hopper }}"
+  register: st
+
+- name: Fail if the file doesn't meet basic requirements
+  fail:
+    msg: License hopper file is missing, or malformed and needs to be corrected
+  when: not st.stat.exists or st.stat.size < 32
+
+- name: Get a license key
+  set_fact:
+    license_key_to_use: "{{ lookup('license_hopper', filename=default_hopper, remove=False) }}"
+
+- name: Add pool to test after licensing
+  bigip_pool:
+    name: license1
+    lb_method: round-robin
+
+- name: Save sys config so that tests will work after mcpd restarts
+  bigip_config:
+    save: yes

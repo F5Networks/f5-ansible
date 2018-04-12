@@ -1,0 +1,88 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Remove license from device
+  bigip_device_license:
+    state: absent
+  register: result
+
+- name: Assert Remove license from device
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Try to remove pool after de-licensing, ensures MCPD is ready
+  bigip_pool:
+    name: license1
+    state: absent
+  register: result
+
+- name: Assert Try to remove pool after de-licensing, ensures MCPD is ready
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove license from device - Idempotent check
+  bigip_device_license:
+    state: absent
+  register: result
+
+- name: Assert Remove license from device - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- name: Try to license without accepting EULA - Expected failure
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to license without accepting EULA - Expected failure
+  assert:
+    that:
+      - result is success
+
+- name: Try to license device
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    accept_eula: yes
+  register: result
+
+- name: Assert Try to license device
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Remove pool after licensing, ensures MCPD is ready
+  bigip_pool:
+    name: license1
+    state: absent
+  register: result
+
+- name: Assert Remove pool after licensing, ensures MCPD is ready
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Try to license device - Idempotent check
+  bigip_device_license:
+    license_key: "{{ license_key_to_use }}"
+    license_server: "{{ license_server }}"
+    accept_eula: yes
+  register: result
+
+- name: Assert Try to license device - Idempotent check
+  assert:
+    that:
+      - result is success
+      - result is not changed
+
+- import_tasks: teardown.yaml
