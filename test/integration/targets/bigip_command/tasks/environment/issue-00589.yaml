@@ -1,11 +1,11 @@
 ---
 
-- name: Create partition
+- name: Issue 00589 - Create partition
   bigip_partition:
     name: mcd
   register: result
 
-- name: Create nodes
+- name: Issue 00589 - Create nodes
   bigip_node:
     host: "{{ item.address }}"
     name: "{{ item.address }}"
@@ -21,45 +21,45 @@
     - address: 4.4.4.4
       partition: mcd
 
-- name: Issue 00658 - List items in first partition
+- name: Issue 00589 - List items in first partition
   bigip_command:
     commands:
       - list ltm node
     chdir: Common
   register: result
 
-- name: Issue 00658 - Assert List items in first partition
+- name: Issue 00589 - Assert List items in first partition
   assert:
     that:
       - "'1.1.1.1' in result.stdout[0]"
       - "'2.2.2.2' in result.stdout[0]"
 
-- name: Issue 00658 - List items in second partition
+- name: Issue 00589 - List items in second partition
   bigip_command:
     commands:
       - list ltm node
     chdir: mcd
   register: result
 
-- name: Issue 00658 - Assert List items in first partition
+- name: Issue 00589 - Assert List items in first partition
   assert:
     that:
       - "'3.3.3.3' in result.stdout[0]"
       - "'4.4.4.4' in result.stdout[0]"
 
-- name: Issue 00658 - Delete nodes in second partition
+- name: Issue 00589 - Delete nodes in second partition
   bigip_command:
     commands:
       - delete ltm node all
     chdir: mcd
   register: result
 
-- name: Issue 00658 - Assert Delete nodes in first partition
+- name: Issue 00589 - Assert Delete nodes in first partition
   assert:
     that:
       - "'warnings' in result"
 
-- name: Remove nodes
+- name: Issue 00589 - Remove nodes
   bigip_node:
     name: "{{ item.address }}"
     partition: "{{ item.partition }}"
@@ -74,7 +74,7 @@
     - address: 4.4.4.4
       partition: mcd
 
-- name: Remove partition
+- name: Issue 00589 - Remove partition
   bigip_partition:
     name: mcd
   register: result

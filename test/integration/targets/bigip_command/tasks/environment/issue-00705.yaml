@@ -1,13 +1,7 @@
 ---
 
-- name: Issue 00705 - Run multiple commands
+- name: Issue 00705 - Run multiple commands - environment
   bigip_command:
-    provider:
-      transport: cli
-      user: "{{ bigip_ssh_username }}"
-      server: "{{ ansible_host }}"
-      server_port: "{{ bigip_ssh_port }}"
-      password: "{{ bigip_ssh_password }}"
     commands:
       - show sys software | grep 'yes'
       - list sys software | grep 'volume'
@@ -15,7 +9,7 @@
       - show ltm pool all detail | grep "Pool Member" -A 4 | grep -c "disabled\\|offline\\|unknown"
   register: result
 
-- name: Issue 00705 - Assert Run multiple commands
+- name: Issue 00705 - Assert Run multiple commands - environment
   assert:
     that:
       - result.stdout|count == 4

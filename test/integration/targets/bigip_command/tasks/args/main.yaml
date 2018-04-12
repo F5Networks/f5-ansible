@@ -1,6 +1,6 @@
 ---
 
-- name: Run single command - cli legacy
+- name: Run single command - args
   bigip_command:
     commands:
       - tmsh show sys version
@@ -11,12 +11,12 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run single command - cli legacy
+- name: Assert Run single command - args
   assert:
     that:
       - result.stdout_lines|length == 1
 
-- name: Run multiple commands - cli legacy
+- name: Run multiple commands - args
   bigip_command:
     commands:
       - tmsh show sys clock
@@ -28,12 +28,12 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run multiple commands - cli legacy
+- name: Assert Run multiple commands - args
   assert:
     that:
       - result.stdout_lines|length == 2
 
-- name: Run command missing tmsh - cli legacy
+- name: Run command missing tmsh - args
   bigip_command:
     commands:
       - show sys clock
@@ -44,12 +44,12 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run command missing tmsh - cli legacy
+- name: Assert Run command missing tmsh - args
   assert:
     that:
       - result.stdout_lines|length == 1
 
-- name: Run multiple commands, one missing tmsh - cli legacy
+- name: Run multiple commands, one missing tmsh - args
   bigip_command:
     commands:
       - tmsh show sys clock
@@ -61,12 +61,12 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run multiple commands, one missing tmsh - cli legacy
+- name: Assert Run multiple commands, one missing tmsh - args
   assert:
     that:
       - result.stdout_lines|length == 2
 
-- name: Wait for something - cli legacy
+- name: Wait for something - args
   bigip_command:
     commands:
       - tmsh show sys clock
@@ -79,13 +79,13 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Wait for something - cli legacy
+- name: Assert Wait for something - args
   assert:
     that:
       - result.stdout_lines|length == 1
       - "'Sys::Clock' in result.stdout_lines[0][1]"
 
-- name: Run modify commands - cli legacy
+- name: Run modify commands - args
   bigip_command:
     commands:
       - tmsh modify sys db setup.run value true
@@ -97,12 +97,12 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run modify commands - cli legacy
+- name: Assert Run modify commands - args
   assert:
     that:
       - result.stdout_lines|length == 2
 
-- name: Run modify commands with a show command - cli legacy
+- name: Run modify commands with a show command - args
   bigip_command:
     commands:
       - tmsh modify sys db setup.run value true
@@ -115,11 +115,10 @@
     password: "{{ bigip_ssh_password }}"
   register: result
 
-- name: Assert Run modify commands with a show command - cli legacy
+- name: Assert Run modify commands with a show command - args
   assert:
     that:
       - result.stdout_lines|length == 3
 
-- import_tasks: ssh-key.yaml
-  tags:
-    - args-ssh-key
+- import_tasks: issue-00705.yaml
+  tags: issue-00705
