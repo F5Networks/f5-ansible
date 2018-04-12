@@ -36,6 +36,7 @@ class F5Client(F5BaseClient):
         exc = None
         if self._client:
             return self._client
+
         for x in range(0, 60):
             try:
                 result = ManagementRoot(
@@ -54,6 +55,7 @@ class F5Client(F5BaseClient):
         error = 'Unable to connect to {0} on port {1}.'.format(
             self.params['server'], self.params['server_port']
         )
+
         if exc is not None:
             error += ' The reported error was "{0}".'.format(str(exc))
         raise F5ModuleError(error)
