@@ -26,6 +26,7 @@ Inside the ``ansible.cfg`` file, add the following code.
    library = ./library/modules
    module_utils = ./library/module_utils
    action_plugins = ./library/plugins/action
+   terminal_plugins = ./library/plugins/terminal
    network_group_modules = bigip, bigiq
 
 This code instructs Ansible to look for modules in a directory called ``library/modules/`` that is relative to where the ``ansible.cfg`` file exists.
