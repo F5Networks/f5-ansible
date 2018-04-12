@@ -391,11 +391,11 @@ class F5BaseClient(object):
         else:
             result['server_port'] = 443
 
-        if provider.get('validate_certs', None):
+        if provider.get('validate_certs', None) is not None:
             result['validate_certs'] = provider.get('validate_certs', None)
-        elif self.params.get('validate_certs', None):
+        elif self.params.get('validate_certs', None) is not None:
             result['validate_certs'] = self.params.get('validate_certs', None)
-        elif os.environ.get('F5_VALIDATE_CERTS', None):
+        elif os.environ.get('F5_VALIDATE_CERTS', None) is not None:
             result['validate_certs'] = os.environ.get('F5_VALIDATE_CERTS', None)
         else:
             result['validate_certs'] = True
