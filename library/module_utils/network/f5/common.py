@@ -6,6 +6,7 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import os
 import re
 
 from ansible.module_utils._text import to_text
@@ -13,6 +14,7 @@ from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import exec_command
 from ansible.module_utils.network.common.utils import to_list, ComplexList
 from ansible.module_utils.six import iteritems
+from ansible.module_utils.parsing.convert_bool import BOOLEANS_TRUE
 from collections import defaultdict
 
 try:
@@ -367,6 +369,72 @@ class F5BaseClient(object):
         :raises iControlUnexpectedHTTPError
         """
         self._client = None
+
+    def merge_provider_params(self):
+        result = dict()
+
+        provider = self.params.get('provider', {})
+
+        if provider.get('server', None):
+            result['server'] = provider.get('server', None)
+        elif self.params.get('server', None):
+            result['server'] = self.params.get('server', None)
+        elif os.environ.get('F5_SERVER', None):
+            result['server'] = os.environ.get('F5_SERVER', None)
+
+        if provider.get('server_port', None):
+            result['server_port'] = provider.get('server_port', None)
+        elif self.params.get('server_port', None):
+            result['server_port'] = self.params.get('server_port', None)
+        elif os.environ.get('F5_SERVER_PORT', None):
+            result['server_port'] = os.environ.get('F5_SERVER_PORT', None)
+        else:
+            result['server_port'] = 443
+
+        if provider.get('validate_certs', None):
+            result['validate_certs'] = provider.get('validate_certs', None)
+        elif self.params.get('validate_certs', None):
+            result['validate_certs'] = self.params.get('validate_certs', None)
+        elif os.environ.get('F5_VALIDATE_CERTS', None):
+            result['validate_certs'] = os.environ.get('F5_VALIDATE_CERTS', None)
+        else:
+            result['validate_certs'] = True
+
+        if provider.get('auth_provider', None):
+            result['auth_provider'] = provider.get('auth_provider', None)
+        elif self.params.get('auth_provider', None):
+            result['auth_provider'] = self.params.get('auth_provider', None)
+        else:
+            result['auth_provider'] = 'tmos'
+
+        if provider.get('user', None):
+            result['user'] = provider.get('user', None)
+        elif self.params.get('user', None):
+            result['user'] = self.params.get('user', None)
+        elif os.environ.get('F5_USER', None):
+            result['user'] = os.environ.get('F5_USER', None)
+        elif os.environ.get('ANSIBLE_NET_USERNAME', None):
+            result['user'] = os.environ.get('ANSIBLE_NET_USERNAME', None)
+        else:
+            result['user'] = True
+
+        if provider.get('password', None):
+            result['password'] = provider.get('password', None)
+        elif self.params.get('user', None):
+            result['password'] = self.params.get('password', None)
+        elif os.environ.get('F5_PASSWORD', None):
+            result['password'] = os.environ.get('F5_PASSWORD', None)
+        elif os.environ.get('ANSIBLE_NET_PASSWORD', None):
+            result['password'] = os.environ.get('ANSIBLE_NET_PASSWORD', None)
+        else:
+            result['password'] = True
+
+        if result['validate_certs'] in BOOLEANS_TRUE:
+            result['validate_certs'] = True
+        else:
+            result['validate_certs'] = False
+
+        return result
 
 
 class AnsibleF5Parameters(object):
