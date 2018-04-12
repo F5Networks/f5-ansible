@@ -201,3 +201,131 @@ class TestManager(unittest.TestCase):
 
         assert results['changed'] is True
         assert m1.execute_on_device.call_count == 2
+
+    def test_normalizing_command_show(self, *args):
+        args = dict(
+            commands=[
+                "show sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'show sys version'
+
+    def test_normalizing_command_delete(self, *args):
+        args = dict(
+            commands=[
+                "delete sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'delete sys version'
+
+    def test_normalizing_command_modify(self, *args):
+        args = dict(
+            commands=[
+                "modify sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'modify sys version'
+
+    def test_normalizing_command_list(self, *args):
+        args = dict(
+            commands=[
+                "list sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'list sys version'
+
+    def test_normalizing_command_tmsh_show(self, *args):
+        args = dict(
+            commands=[
+                "tmsh show sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'show sys version'
+
+    def test_normalizing_command_tmsh_delete(self, *args):
+        args = dict(
+            commands=[
+                "tmsh delete sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'delete sys version'
+
+    def test_normalizing_command_tmsh_modify(self, *args):
+        args = dict(
+            commands=[
+                "tmsh modify sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'modify sys version'
+
+    def test_normalizing_command_tmsh_list(self, *args):
+        args = dict(
+            commands=[
+                "tmsh list sys version"
+            ],
+        )
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        m1 = V2Manager(module=module)
+        result = m1.normalize_commands(args['commands'])
+
+        assert result[0] == 'list sys version'
