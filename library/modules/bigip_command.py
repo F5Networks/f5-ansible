@@ -35,12 +35,9 @@ options:
         is returned. If the I(wait_for) argument is provided, the
         module is not returned until the condition is satisfied or
         the number of retries as expired.
-      - The I(commands) argument also accepts an alternative form
-        that allows for complex values that specify the command
-        to run and the output format to return. This can be done
-        on a command by command basis. The complex argument supports
-        the keywords C(command) and C(output) where C(command) is the
-        command to run and C(output) is 'text' or 'one-line'.
+      - Only C(tmsh) commands are supported. If you are piping or adding additional
+        logic that is outside of C(tmsh) (such as grep'ing, awk'ing or other shell
+        related things that are not C(tmsh), this behavior is not supported. 
     required: True
   wait_for:
     description:
@@ -239,7 +236,7 @@ except ImportError:
 
 
 class Parameters(AnsibleF5Parameters):
-    returnables = ['stdout', 'stdout_lines', 'warnings']
+    returnables = ['stdout', 'stdout_lines', 'warnings', 'executed_commands']
     pre_exec_commands = ['modify cli preference pager disabled']
 
     def to_return(self):
@@ -264,19 +261,36 @@ class Parameters(AnsibleF5Parameters):
 
     @property
     def rest_commands(self):
-        commands = map(self.addon_tmsh, self.normalized_commands)
+        # ['list ltm virtual']
+        commands = self.normalized_commands
+
         if self.chdir:
+            # ['cd /Common; list ltm virtual']
             commands = map(self.addon_chdir, commands)
+
+        # ['tmsh -c "cd /Common; list ltm virtual"']
+        commands = map(self.addon_tmsh, commands)
+
+        commands = map(self.addon_pipes, commands)
+
         commands = list(commands)
         return commands
 
     @property
     def cli_commands(self):
+        # ['list ltm virtual']
         commands = self.normalized_commands
-        if not self.is_tmsh:
-            commands = map(self.addon_tmsh, commands)
+
         if self.chdir:
+            # ['cd /Common; list ltm virtual']
             commands = map(self.addon_chdir, commands)
+
+        if not self.is_tmsh:
+            # ['tmsh -c "cd /Common; list ltm virtual"']
+            commands = map(self.addon_tmsh, commands)
+
+        commands = map(self.addon_pipes, commands)
+
         commands = list(commands)
         return commands
 
@@ -304,16 +318,41 @@ class Parameters(AnsibleF5Parameters):
         return self._values['wait_for'] or list()
 
     def addon_tmsh(self, cmd):
-        result = "tmsh {0}".format(cmd)
+        result = "tmsh -c '{0}'".format(cmd)
         return result
 
-    def addon_chdir(self, cmd):
-        parts = cmd.split(' ', 1)
-        escape_patterns = r'([$' + "'])"
-        command = re.sub(escape_patterns, r'\\\1', parts[1])
+    def addon_chdir(self, command):
         cmd = "cd {0}; {1}".format(self.chdir, command)
         return cmd
 
+    def addon_pipes(self, command):
+        # This is a very simple check for command sequences with pipes.
+        #
+        # This check is NOT meant to handle cases where (for example) the pipe character
+        # is in the description field of a resource or some other valid location.
+        #
+        # This pipe check is ONLY intended for cases where the user might specify the
+        # following in the commands field.
+        #
+        #    list sys software | grep 'volume'
+        #
+        # or
+        #
+        #    show ltm pool all detail | grep "Pool Member" -A 4 | grep -c "disabled|offline|unknown"
+        #
+        # In these cases, this syntax is surely not what this module was originally designed for.
+        # Nor is it a case that is trivial to handle. The code below makes the rough esxception that
+        # if you are piping, then we will need to escape any of the tmsh specific code, and not
+        # escape the "rest" of the code.
+        #
+        # Later in the ``addon_pipes`` method, this module finishes adjusting the command to include
+        # a terminating quote and remote the duplicate quote that is injected automatically.
+        if '|' in command:
+            parts = command.split('|')
+            parts[0] += "'"
+            parts[-1] = parts[-1][0:-1]
+            command = '|'.join(parts)
+        return command
 
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
@@ -346,11 +385,18 @@ class BaseManager(object):
 
         result.update(**self.changes.to_return())
         result.update(dict(changed=changed))
+        self._announce_warnings(result)
         return result
+
+    def _announce_warnings(self, result):
+        warnings = result.pop('warnings', [])
+        for warning in warnings:
+            self.module.warn(warning)
+
 
     def notify_non_idempotent_commands(self, commands):
         for index, item in enumerate(commands):
-            if all(item.startswith(x) for x in self.valid_configs):
+            if any(item.startswith(x) for x in self.valid_configs):
                 return
             else:
                 self.warnings.append(
@@ -366,10 +412,10 @@ class BaseManager(object):
         if not raw_commands:
             return None
         result = []
-        index = 6
         for command in raw_commands:
             command = command.strip()
-            command = command[0:index].replace('tmsh', '').strip() + command[index:].strip()
+            if command[0:5] == 'tmsh ':
+                command = command[4:].strip()
             result.append(command)
         self.want.update({'normalized_commands': result})
         return result
@@ -424,10 +470,11 @@ class BaseManager(object):
         stdout_lines = self._to_lines(responses)
         changes = {
             'stdout': responses,
-            'stdout_lines': stdout_lines
+            'stdout_lines': stdout_lines,
+            'executed_commands': self.commands
         }
         if self.want.warn:
-            changes['warnings'] = self.want.warnings
+            changes['warnings'] = self.warnings
         self.changes = Parameters(params=changes, module=self.module)
         if any(x for x in self.want.normalized_commands if x.startswith(self.changed_command_prefixes)):
             return True
@@ -503,14 +550,16 @@ class V2Manager(BaseManager):
     def execute_on_device(self, commands):
         responses = []
 
+        escape_patterns = r'([$"' + "'])"
         for item in to_list(commands):
             try:
+                command = '-c "{0}"'.format(re.sub(escape_patterns, r'\\\1', item['command']))
                 output = self.client.api.tm.util.bash.exec_cmd(
                     'run',
-                    utilCmdArgs='-c "{0}"'.format(item['command'])
+                    utilCmdArgs=command
                 )
                 if hasattr(output, 'commandResult'):
-                    responses.append(str(output.commandResult))
+                    responses.append(str(output.commandResult).strip())
             except Exception as ex:
                 pass
         return responses
