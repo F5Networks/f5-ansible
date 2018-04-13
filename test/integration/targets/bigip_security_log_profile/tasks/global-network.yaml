@@ -6,7 +6,7 @@
     description: Default logging profile for network events
     network_firewall:
       publisher: local-db-publisher
-      log:
+      filter:
         matches_accept_rule: yes
         matches_drop_rule: yes
         matches_reject_rule: yes
@@ -16,13 +16,13 @@
         translation_fields: yes
       storage_format:
         type: field-list
-        delimiter: ,
+        delimiter: ","
         fields: "{{ field_list_1 }}"
     dns_dos_protection:
       publisher: local-db-publisher
     ip_intelligence:
       publisher: local-db-publisher
-      log:
+      filter:
         translation_fields: yes
 
 - name: Assert Change global-network log profile
@@ -37,7 +37,7 @@
     description: Default logging profile for network events
     network_firewall:
       publisher: local-db-publisher
-      log:
+      filter:
         matches_accept_rule: yes
         matches_drop_rule: yes
         matches_reject_rule: yes
@@ -47,13 +47,13 @@
         translation_fields: yes
       storage_format:
         type: field-list
-        delimiter: ,
+        delimiter: ","
         fields: "{{ field_list_1 }}"
     dns_dos_protection:
       publisher: local-db-publisher
     ip_intelligence:
       publisher: local-db-publisher
-      log:
+      filter:
         translation_fields: yes
 
 - name: Assert Change global-network log profile - Idempotent check
