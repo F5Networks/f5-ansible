@@ -19,7 +19,7 @@
 #    ansible-playbook -i notahost, playbooks/bigip_command.yaml
 #
 
-- name: Metadata of bigip_selfip
+- name: Metadata of bigip_command
   hosts: localhost
   connection: local
 
