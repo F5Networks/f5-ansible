@@ -315,7 +315,7 @@
 
 - name: Issue 00554 - Remove ip_protocol related virtuals
   bigip_virtual_server:
-    name: issue-00554-2
+    name: "{{ item }}"
     state: absent
   loop:
     - issue-00554-1
