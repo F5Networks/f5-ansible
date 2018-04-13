@@ -3,12 +3,6 @@
 - name: Include task to setup the remote device
   import_tasks: environment/setup-main.yaml
 
-- name: Create Self IP
-  bigip_pool:
-    name: "{{ selfip_name }}{{ item }}"
-  with_sequence: start=0 end=3000
-
-- fail: msg="ASDASDASD"
 - name: Assert Create Self IP
   assert:
     that:
