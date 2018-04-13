@@ -1,0 +1,6 @@
+---
+
+- name: De-provision APM
+  bigip_provision:
+    name: apm
+    state: absent
