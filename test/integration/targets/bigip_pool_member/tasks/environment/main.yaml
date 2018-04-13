@@ -186,20 +186,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Add pool member by address
   bigip_pool_member:
     address: 2.2.2.2
@@ -226,16 +212,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
 - name: Add pool member by FQDN
   bigip_pool_member:
     fqdn: foo.baz.bar
@@ -261,16 +237,6 @@
   assert:
     that:
       - result is not changed
-
-
-
-
-
-
-
-
-
-
 
 - name: Add pool member by FQDN, setting the node name
   bigip_pool_member:
@@ -300,13 +266,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
 - name: Add pool member by address, setting the node name
   bigip_pool_member:
     name: foo2-node2
@@ -335,21 +294,6 @@
     that:
       - result is not changed
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 - name: Delete pool
   bigip_pool:
     name: "{{ pool_name }}"
@@ -370,9 +314,6 @@
     - foo.baz.bar
     - foo1-node1
     - foo2-node2
-
-- import_tasks: legacy.yaml
-  tags: legacy
 
 - import_tasks: issue-00573.yaml
   tags: issue-00573
