@@ -1,0 +1,75 @@
+---
+
+- name: Issue 00703 - Add a pool - Provider
+  bigip_pool:
+    pool: pool1
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Issue 00703 - Add node to pool - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    state: present
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 00703 - Assert Add node to pool - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00703 - Add node to pool - Idempotent check - Provider
+  bigip_pool_member:
+    pool: pool1
+    name: node1
+    host: 1.1.1.1
+    port: 8443
+    state: present
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Issue 00703 - Assert Add node to pool - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00703 - Remove pool - Provider
+  bigip_pool:
+    pool: pool1
+    state: absent
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Issue 00703 - Remove node - Provider
+  bigip_node:
+    name: node1
+    state: absent
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
