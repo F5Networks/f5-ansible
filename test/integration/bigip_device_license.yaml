@@ -1,25 +1,25 @@
 ---
 
-# Test the bigip_license module
+# Test the bigip_device_license module
 #
 # Running this playbook assumes that you have a BIG-IP installation at the
 # ready to receive the commands issued in this Playbook.
 #
 # This module will run tests against a BIG-IP host to verify that the
-# bigip_license module behaves as expected.
+# bigip_device_license module behaves as expected.
 #
 # Usage:
 #
-#    ansible-playbook -i notahost, playbooks/bigip_license.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_device_license.yaml
 #
 # Examples:
 #
-#    Run all tests on the bigip_license module
+#    Run all tests on the bigip_device_license module
 #
-#    ansible-playbook -i notahost, playbooks/bigip_license.yaml
+#    ansible-playbook -i notahost, playbooks/bigip_device_license.yaml
 #
 
-- name: Test the bigip_license module
+- name: Test the bigip_device_license module
   hosts: "f5-test[0]"
   connection: local
   any_errors_fatal: true
@@ -48,4 +48,4 @@
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
   roles:
-    - bigip_license
+    - bigip_device_license
