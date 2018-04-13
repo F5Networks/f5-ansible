@@ -194,7 +194,7 @@ EXAMPLES = r'''
   bigip_software:
     server: lb.mydomain.com
     user: admin
-    password: "secret
+    password: secret
     software: /root/BIGIP-11.6.0.0.0.401.iso
     hotfix: /root/Hotfix-BIGIP-11.6.0.3.0.412-HF3.iso
     volume: HD1.1
