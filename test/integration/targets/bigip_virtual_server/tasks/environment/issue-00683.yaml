@@ -1,0 +1,20 @@
+---
+
+- name: Issue 00683 - Include issue variables
+  include_vars:
+    file: issue-00683.yaml
+
+- name: Create partition
+  bigip_partition:
+    name: "{{ issue_partition }}"
+
+- name: Create Virtual
+  bigip_virtual_server:
+     name: route_domain_bug-vs
+     description: Route Domain Bug VS
+     profiles:
+       - http
+     partition: "{{ issue_partition }}"
+     source: 0.0.0.0%101/0
+     destination: 1.1.1.10%101
+  register: result

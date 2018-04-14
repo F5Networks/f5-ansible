@@ -1,0 +1,4 @@
+---
+
+- import_tasks: issue-00702.yaml
+  tags: issue-00702
