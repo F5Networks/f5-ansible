@@ -19,18 +19,29 @@
 #    ansible-playbook -i notahost, playbooks/bigip_virtual_server.yaml
 #
 
-- name: Test the bigip_virtual_server module
-  hosts: "f5-test[0]"
+- name: Metadata of bigip_virtual_server
+  hosts: localhost
   connection: local
-  any_errors_fatal: true
 
   vars:
-    limit_to: '*'
     __metadata__:
-      version: 1.0
-      tested_platforms:
-        - 11.6.0
+      version: 1.1
+      tested_versions:
         - 12.0.0
+        - 12.1.0
+        - 12.1.0-hf1
+        - 12.1.0-hf2
+        - 12.1.1
+        - 12.1.1-hf1
+        - 12.1.1-hf2
+        - 12.1.2
+        - 12.1.2-hf1
+        - 13.0.0
+      tested_platforms:
+        - NA
+      supported_harnesses:
+        - NA
+      coding_standards: v3
       callgraph_exclude:
         - pycallgraph.*
 
@@ -41,6 +52,11 @@
         - ansible.module_utils._text.*
         - ansible.module_utils.six.*
 
+- name: Test the bigip_virtual_server module - Environment
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
   environment:
     F5_SERVER: "{{ ansible_host }}"
     F5_USER: "{{ bigip_username }}"
@@ -48,5 +64,36 @@
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
-  roles:
-    - bigip_virtual_server
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_virtual_server
+        tasks_from: environment.yaml
+      tags:
+        - environment
+
+- name: Test the bigip_virtual_server module - Provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigip_virtual_server
+        tasks_from: provider.yaml
+      tags:
+        - provider
+
+- name: Test the bigip_virtual_server module - Args
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Args
+      import_role:
+        name: bigip_virtual_server
+        tasks_from: args.yaml
+      tags:
+        - args
