@@ -7,6 +7,7 @@
 - name: Issue 00702 - Add virtual server, lab_pool
   bigip_virtual_server:
     server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
     user: "{{ bigip_username }}"
     password: "{{ bigip_password }}"
     partition: "{{ partition }}"
@@ -27,6 +28,7 @@
 - name: Issue 00702 - Add virtual server, lab_pool - Idempotent check
   bigip_virtual_server:
     server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
     user: "{{ bigip_username }}"
     password: "{{ bigip_password }}"
     partition: "{{ partition }}"
@@ -47,6 +49,7 @@
 - name: Issue 00702 - Remove virtual server
   bigip_virtual_server:
     server: "{{ ansible_host }}"
+    server_port: "{{ bigip_port }}"
     user: "{{ bigip_username }}"
     password: "{{ bigip_password }}"
     partition: "{{ partition }}"
