@@ -49,8 +49,8 @@ options:
         become a required parameter.
   parent:
     description:
-      Specifies the route domain the system searches when it cannot
-      find a route in the configured domain.
+      - Specifies the route domain the system searches when it cannot
+        find a route in the configured domain.
   partition:
     description:
       - Partition to create the route domain on. Partitions cannot be updated
@@ -85,7 +85,7 @@ options:
     type: bool
   vlans:
     description:
-      - VLANs for the system to use in the route domain
+      - VLANs for the system to use in the route domain.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
