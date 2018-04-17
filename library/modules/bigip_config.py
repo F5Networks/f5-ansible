@@ -55,6 +55,8 @@ options:
       - Validates the specified configuration to see whether they are
         valid to replace the running configuration.
       - The running configuration will not be changed.
+      - When this parameter is set to C(yes), no change will be reported
+        by the module.
     type: bool
     default: no
 extends_documentation_fragment: f5
