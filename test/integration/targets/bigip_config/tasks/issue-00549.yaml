@@ -1,6 +1,6 @@
 ---
 
-- name: Create nodes
+- name: Issue 00549 - Create nodes
   bigip_node:
     host: "{{ item.host }}"
     name: "{{ item.name }}"
@@ -10,18 +10,18 @@
     - host: 10.200.24.3
       name: node2
 
-- name: Configure nodes
+- name: Issue 00549 - Configure nodes
   bigip_config:
     merge_content: "{{ lookup('file', 'issue-00549.scf') }}"
   register: result
   failed_when: result is success
 
-- name: Assert Configure nodes
+- name: Issue 00549 - Assert Configure nodes
   assert:
     that:
       - result is success
 
-- name: Remove nodes
+- name: Issue 00549 - Remove nodes
   bigip_node:
     name: "{{ item.name }}"
     state: absent
