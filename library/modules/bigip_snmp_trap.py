@@ -53,8 +53,8 @@ options:
       - default
   state:
     description:
-      - When C(present), ensures that the cloud connector exists. When
-        C(absent), ensures that the cloud connector does not exist.
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures that the resource does not exist.
     default: present
     choices:
       - present
