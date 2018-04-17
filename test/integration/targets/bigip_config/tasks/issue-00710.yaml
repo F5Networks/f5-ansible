@@ -1,0 +1,30 @@
+---
+
+- name: Issue 00710 - Get configuration before merging
+  bigip_command:
+    commands:
+      - tmsh list auth ldap
+      - tmsh list auth remote-role
+      - tmsh list auth source
+  register: result
+
+- name: Issue 00710 - Merge configuration - Expected no change due to verify
+  bigip_config:
+    merge_content: "{{ lookup('file', 'issue-00710.scf') }}"
+    verify: yes
+    save: yes
+  register: result
+
+- name: Issue 00710 - Merge configuration - Expected no change due to verify
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00710 - Get configuration after merging
+  bigip_command:
+    commands:
+      - tmsh list auth ldap
+      - tmsh list auth remote-role
+      - tmsh list auth source
+  register: result

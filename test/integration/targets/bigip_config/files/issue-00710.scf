@@ -1,0 +1,21 @@
+auth ldap /Common/system-auth {
+    bind-dn CN=f5,DC=lab
+    bind-pw foobar
+    login-attribute samaccountname
+    search-base-dn DC=lab
+    servers { 1.3.5.7 }
+}
+auth remote-role {
+    role-info {
+        /Common/F5_LDAP_ASM {
+            attribute memberOF=CN=foo,DC=lab
+            line-order 3
+            role webapplicationsecurityadministrator
+            user-partition All
+        }
+    }
+}
+auth source {
+    fallback true
+    type active-directory
+}
