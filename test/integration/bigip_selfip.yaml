@@ -19,13 +19,12 @@
 #    ansible-playbook -i notahost, playbooks/bigip_selfip.yaml
 #
 
-- name: Test the bigip_selfip module
-  hosts: "f5-test[0]"
+- name: Metadata of bigip_selfip
+  hosts: localhost
   connection: local
-  any_errors_fatal: true
+  gather_facts: false
 
   vars:
-    limit_to: '*'
     __metadata__:
       version: 1.1
       tested_versions:
@@ -57,12 +56,45 @@
         - ansible.module_utils._text.*
         - ansible.module_utils.six.*
 
+- name: Test the bigip_selfip module - Environment
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
   environment:
     F5_SERVER: "{{ ansible_host }}"
     F5_USER: "{{ bigip_username }}"
     F5_PASSWORD: "{{ bigip_password }}"
     F5_SERVER_PORT: "{{ bigip_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
+
+  tasks:
+    - name: Include role - Environment
+      include_role:
+        name: bigip_selfip
+        tasks_from: environment/main.yaml
+
+- name: Test the bigip_selfip module - Provider
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
+
+  roles:
+    - bigip_selfip
+
+- name: Test the bigip_selfip module - Args
+  hosts: "f5-test[0]"
+  connection: local
+  any_errors_fatal: true
+
+  vars:
+    limit_to: '*'
 
   roles:
     - bigip_selfip
