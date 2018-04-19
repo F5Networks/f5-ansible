@@ -81,7 +81,7 @@ options:
       name:
         description:
           - The name of the pool to include
-        required: true
+        required: True
       ratio:
         description:
           - Ratio for the pool.
@@ -201,7 +201,7 @@ class Parameters(AnsibleF5Parameters):
     }
 
     updatables = [
-        'pool_lb_method', 'state', 'pools', 'irules'
+        'pool_lb_method', 'state', 'pools', 'irules', 'enabled', 'disabled'
     ]
 
     returnables = [
