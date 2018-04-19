@@ -545,9 +545,9 @@ class BaseManager(object):
             return self.create()
 
     def create(self):
-        if self.want.lb_method is None:
+        if self.want.pool_lb_method is None:
             raise F5ModuleError(
-                "The 'lb_method' option is required when state is 'present'"
+                "The 'pool_lb_method' option is required when state is 'present'"
             )
         self._set_changed_options()
         if self.module.check_mode:
