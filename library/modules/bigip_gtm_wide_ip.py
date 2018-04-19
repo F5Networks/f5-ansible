@@ -80,7 +80,7 @@ options:
     suboptions:
       name:
         description:
-          - The name of the pool to include
+          - The name of the pool to include.
         required: True
       ratio:
         description:
@@ -330,6 +330,10 @@ class ModuleParameters(Parameters):
             return None
         for item in self._values['pools']:
             pool = dict()
+            if 'name' not in item:
+                raise F5ModuleError(
+                    "'name' is a required key for items in the list of pools."
+                )
             if 'ratio' in item:
                 pool['ratio'] = item['ratio']
             pool['name'] = fq_name(self.partition, item['name'])
