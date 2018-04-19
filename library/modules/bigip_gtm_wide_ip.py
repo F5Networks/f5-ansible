@@ -104,7 +104,7 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    lb_method: round-robin
+    pool_lb_method: round-robin
     name: my-wide-ip.example.com
   delegate_to: localhost
 
@@ -113,7 +113,7 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    lb_method: round-robin
+    pool_lb_method: round-robin
     name: my-wide-ip.example.com
     irules:
       - irule1
@@ -125,7 +125,7 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    lb_method: round-robin
+    pool_lb_method: round-robin
     name: my-wide-ip.example.com
     irules:
       - irule1
@@ -136,9 +136,21 @@ EXAMPLES = r'''
     server: lb.mydomain.com
     user: admin
     password: secret
-    lb_method: round-robin
+    pool_lb_method: round-robin
     name: my-wide-ip.example.com
     irules: ""
+  delegate_to: localhost
+
+- name: Assign a pool with ratio to the Wide IP
+  bigip_gtm_wide_ip:
+    server: lb.mydomain.com
+    user: admin
+    password: secret
+    pool_lb_method: round-robin
+    name: my-wide-ip.example.com
+    pools:
+      - name: pool1
+        ratio: 100
   delegate_to: localhost
 '''
 
