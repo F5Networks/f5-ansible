@@ -448,6 +448,8 @@ class ApiParameters(Parameters):
     def monitors(self):
         if self._values['monitors'] is None:
             return None
+        if self._values['monitors'] == 'default':
+            return 'default'
         monitors = [fq_name(self.partition, x) for x in self.monitors_list]
         if self.availability_requirement_type == 'at_least':
             monitors = ' '.join(monitors)
@@ -564,6 +566,8 @@ class ModuleParameters(Parameters):
     def monitors(self):
         if self._values['monitors'] is None:
             return None
+        if len(self._values['monitors']) == 1 and self._values['monitors'][0] == '':
+            return 'default'
         monitors = [fq_name(self.partition, x) for x in self.monitors_list]
         if self.availability_requirement_type == 'at_least':
             if self.at_least > len(self.monitors_list):
@@ -608,6 +612,12 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
+    @property
+    def monitors(self):
+        if self._values['monitors'] is None:
+            return None
+        return self._values['monitors']
+
     @property
     def members(self):
         results = []
@@ -671,6 +681,14 @@ class Difference(object):
 
     @property
     def monitors(self):
+        if self.want.monitors is None:
+            return None
+        if self.want.monitors == 'default' and self.have.monitors == 'default':
+            return None
+        if self.want.monitors == 'default' and self.have.monitors is None:
+            return None
+        if self.want.monitors == 'default' and len(self.have.monitors) > 0:
+            return 'default'
         if self.have.monitors is None:
             return self.want.monitors
         if self.have.monitors != self.want.monitors:

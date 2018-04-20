@@ -332,6 +332,30 @@
     that:
       - result is not changed
 
+- name: Issue 00142 - Remove monitors
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors: ""
+  register: result
+
+- name: Issue 00142 - Assert Remove monitors
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00142 - Remove monitors - Idempotent check
+  bigip_gtm_pool:
+    name: "{{ pool_name }}"
+    type: a
+    monitors: ""
+  register: result
+
+- name: Issue 00142 - Assert Remove monitors - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
 - name: Issue 00142 - Remove pool
   bigip_gtm_pool:
     name: "{{ pool_name }}"
