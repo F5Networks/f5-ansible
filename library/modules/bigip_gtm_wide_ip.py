@@ -266,19 +266,19 @@ class ModuleParameters(Parameters):
             'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
             'connection_rate', 'vs_score'
         ]
-        if self._values['lb_method'] is None:
+        if self._values['pool_lb_method'] is None:
             return None
-        lb_method = str(self._values['lb_method'])
+        lb_method = str(self._values['pool_lb_method'])
         if lb_method in deprecated:
             raise F5ModuleError(
-                "The provided lb_method is not supported"
+                "The provided pool_lb_method is not supported"
             )
         elif lb_method == 'global_availability':
             if self._values['__warnings'] is None:
                 self._values['__warnings'] = []
             self._values['__warnings'].append(
                 dict(
-                    msg='The provided lb_method is deprecated',
+                    msg='The provided pool_lb_method is deprecated',
                     version='2.4'
                 )
             )
@@ -288,7 +288,7 @@ class ModuleParameters(Parameters):
                 self._values['__warnings'] = []
             self._values['__warnings'].append(
                 dict(
-                    msg='The provided lb_method is deprecated',
+                    msg='The provided pool_lb_method is deprecated',
                     version='2.4'
                 )
             )
