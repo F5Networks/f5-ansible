@@ -11,15 +11,18 @@ __metaclass__ = type
 import os
 import sys
 
-from ansible.module_utils.urls import open_url
+from ansible.module_utils.urls import open_url, fetch_url
 from ansible.module_utils.parsing.convert_bool import BOOLEANS
 from ansible.module_utils.six import string_types
-from six import iteritems
+from ansible.module_utils.six import iteritems
+from ansible.module_utils.urls import urllib_error
+from ansible.module_utils._text import to_native
+from ansible.module_utils.six import PY3
 
 try:
-    import json
+    import json as _json
 except ImportError:
-    import simplejson as json
+    import simplejson as _json
 
 try:
     from library.module_utils.network.f5.common import F5ModuleError
@@ -29,43 +32,142 @@ except ImportError:
 
 """An F5 REST API URI handler.
 
-Use this module to make calls to an F5 REST server. It will handle:
+Use this module to make calls to an F5 REST server. It is influenced by the same
+API that the Python ``requests`` tool uses, but the two are not the same, as the
+library here is **much** more simple and targeted specifically to F5's needs.
 
-#. Authentication tokens
-#. Exception generation -- Errors generate :class:`F5ModuleError` exceptions.
+The ``requests`` design was chosen due to familiarity with the tool. Internals though
+use Ansible native libraries. 
 
-The means by which you should use it are,
+The means by which you should use it are similar to ``requests`` basic usage.
+
+Authentication is not handled for you automatically by this library, however it *is*
+handled automatically for you in the supporting F5 module_utils code; specifically the
+different product module_util files (bigip.py, bigiq.py, etc). 
+
+Internal (non-module) usage of this library looks like this.
 
 ```
-mgmt = iControlRestSession(server='192.168.1.1', username='admin', password='secret')
-mgmt.get('/mgmt/tm/ltm/nat/~Common~VALIDNAME')
+# Create a session instance
+mgmt = iControlRestSession()
+mgmt.verify = False
+
+server = '1.1.1.1'
+port = 443
+
+# Payload used for getting an initial authentication token
+payload = {
+  'username': 'admin',
+  'password': 'secret',
+  'loginProviderName': 'tmos'
+}
+
+# Create URL to call, injecting server and port
+url = f"https://{server}:{port}/mgmt/shared/authn/login"
+
+# Call the API
+resp = session.post(url, json=payload)
+
+# View the response
+print(resp.json())
+
+# Update the session with the authentication token
+session.headers['X-F5-Auth-Token'] = resp.json()['token']['token']
+
+# Create another URL to call, injecting server and port
+url = f"https://{server}:{port}/mgmt/tm/ltm/virtual/~Common~virtual1"
+
+# Call the API
+resp = session.get(url)
+
+# View the details of a virtual payload
+print(resp.json())
 ```
-
-Available functions:
-
-- mgmt.{get, post, put, delete, patch}:
-
-from icontrol import Management
-
-# management creates a session
-# management manages tokens and authentication
-api = Management(
-  debug=True
-  server='1.1.1.1'
-  username='admin'
-  password='secret'
-  validate_certs=False
-)
-Management.post(params)
-    get authentication token
-    create Request object
-    gives Request object to Management Session object
-    returns Response object
-
-resp = api.post('/uri', params=dict('$filter'="(name eq 'foo'")))
-
-
 """
+
+
+class Request(object):
+    def __init__(self, method=None, url=None, headers=None, data=None, params=None,
+                 auth=None, json=None):
+        self.method = method
+        self.url = url
+        self.headers = headers or {}
+        self.data = data or []
+        self.json = json
+        self.params = params or {}
+        self.auth = auth
+
+    def prepare(self):
+        p = PreparedRequest()
+        p.prepare(
+            method=self.method,
+            url=self.url,
+            headers=self.headers,
+            data=self.data,
+            json=self.json,
+            params=self.params,
+        )
+        return p
+
+
+class PreparedRequest(object):
+    def __init__(self):
+        self.method = None
+        self.url = None
+        self.headers = None
+        self.body = None
+
+    def prepare(self, method=None, url=None, headers=None, data=None, params=None, json=None):
+        self.prepare_method(method)
+        self.prepare_url(url, params)
+        self.prepare_headers(headers)
+        self.prepare_body(data, json)
+
+    def prepare_url(self, url, params):
+        self.url = url
+
+    def prepare_method(self, method):
+        self.method = method
+        if self.method:
+            self.method = self.method.upper()
+
+    def prepare_headers(self, headers):
+        self.headers = {}
+        if headers:
+            for k, v in iteritems(headers):
+                self.headers[k] = v
+
+    def prepare_body(self, data, json=None):
+        body = None
+        content_type = None
+
+        if not data and json is not None:
+            self.headers['Content-Type'] = 'application/json'
+            body = _json.dumps(json)
+            if not isinstance(body, bytes):
+                body = body.encode('utf-8')
+
+        if data:
+            body = data
+            content_type = None
+
+        if content_type and 'content-type' not in self.headers:
+            self.headers['Content-Type'] = content_type
+
+        self.body = body
+
+
+class Response(object):
+    def __init__(self):
+        self._content = None
+        self.status_code = None
+        self.headers = dict()
+        self.url = None
+        self.reason = None
+        self.request = None
+
+    def json(self):
+        return _json.loads(self._content)
 
 
 class iControlRestSession(object):
@@ -82,180 +184,130 @@ class iControlRestSession(object):
     user has a different authentication handler configured. Otherwise, the system
     defaults for the different products will be used.
     """
-    def __init__(self, server=None, username=None, password=None, server_port=443,
-                 validate_certs=True, auth_provider=None, timeout=10, token=None,
-                 debug=False, **kwargs):
-        """Instantiate REST session.
+    def __init__(self):
+        self.headers = self.default_headers()
+        self.verify = True
+        self.params = {}
+        self.auth = None
+        self.timeout = 30
 
-        Attributes:
-            server (str): The server to connect to.
-            username (str): The user to connect with.
-            password (str): The password of the user.
-            server_port (int): The port on the server running the REST API.
-            validate_certs (bool): Whether to validate SSL server certs using the
-                OpenSSL CA certs pre-configured on your Ansible host or not.
-            auth_provider: String specifying the specific auth provider to
-                authenticate the username/password against. This keyword
-                implies that token based authentication is used.
-                On BIG-IQ systems, the value 'local' can be used to refer to
-                local user authentication.
-            timeout (int): The timeout, in seconds, to wait before closing
-                the session.
-            token (str): String containing the token itself to use.
-                This is particularly useful in situations where you want to
-                mimic the behavior of a browser insofar as storing the token
-                in a cookie and retrieving it for use "later". This is used
-                to prevent token abuse on the F5 device. There is a limit
-                that users may not go beyond when creating tokens and their
-                re-use is an attempt to mitigate this scenario.
-        """
-
-        self._auth_provider = auth_provider
-        self._debug_output = []
-        self._debug = debug
-        self._default_headers = {
-            'Content-Type': 'application/json'
-        }
-        self._parsed = {}
-        self._password = password
-        self._server = server
-        self._server_port = server_port
-        self._timeout = timeout
-        self._token = token
-        self._username = username
-        self._validate_certs = validate_certs
-
-    def send(self, req):
-        pass
-
-    @property
-    def auth_providers(self):
-        """BIG-IQ specific query for auth providers.
-
-        BIG-IP doesn't really need this because BIG-IP's multiple auth providers
-        seem to handle fallthrough just fine. BIG-IQ on the other hand, needs to
-        have its auth provider specified if you're using one of the non-default
-        ones.
-        """
-        url = "https://{0}:{1}/info/system?null".format(self._server, self._server_port)
-        response = open_url(
-            url, method='GET', validate_certs=self._validate_certs,
-            timeout=self._timeout, headers=self._default_headers
-        )
-        if response.code != 200:
-            raise F5ModuleError('{0} Unexpected Error: {1} for uri: {2}\nText: {3}'.format(
-                response.status_code, response.reason, response.url, response.text
-            ))
-        resp = json.loads(response)
-        return resp['providers']
-
-    @property
-    def auth_provider(self):
-        if self._auth_provider in ['local', 'tmos']:
-            return self._auth_provider
-        elif self._auth_provider not in ['none', 'default']:
-            for provider in self.auth_providers:
-                if self._auth_provider in provider['link'] or self._auth_provider == provider['name']:
-                    return provider['name']
-        return None
-
-    @property
-    def token(self):
-        """Get a new token from BIG-IP and store it internally.
-
-        This method will be called automatically if a request is attempted
-        but there is no authentication token, or the authentication token
-        is expired. It is usually not necessary for users to call it, but
-        it can be called if it is known that the authentication token has
-        been invalidated by other means.
-        """
-        if self._token:
-            return self._token
-        login_body = {
-            'username': self._username,
-            'password': self._password,
-        }
-        if self._auth_provider:
-            login_body['loginProviderName'] = self.auth_provider
-
-        url = "https://{0}:{1}/mgmt/shared/authn/login".format(self._server, self._server_port)
-
-        response = open_url(
-            url, method='POST', data=json.dumps(login_body),
-            validate_certs=self._validate_certs
-        )
-        if response.code not in [200]:
-            raise F5ModuleError('{0} Unexpected Error: {1} for uri: {2}\nText: {3}'.format(
-                response.status_code, response.reason, response.url, response.text
-            ))
-        resp = json.loads(response.read())
-        self._token = resp.get('token', None)
-        if self._token.get('token') is not None:
-            # BIG-IQ stores tokens in the 'token' key
-            result = self._token.get('token', None)
-            self._token = result
-            return result
-        else:
-            # BIG-IP stores tokens in the token dict, 'name' key
-            result = self._token.get('name', None)
-            self._token = result
-            return result
-
-    def get_headers(self, *args, **kwargs):
+    def _normalize_headers(self, headers):
         result = {}
-        result.update(self._default_headers)
-        result['X-F5-Auth-Token'] = self.token
-        if 'headers' in kwargs:
-            result.update(kwargs['headers'])
+        result.update(dict((k.lower(), v) for k, v in headers))
+
+        # Don't be lossy, append header values for duplicate headers
+        # In Py2 there is nothing that needs done, py2 does this for us
+        if PY3:
+            temp_headers = {}
+            for name, value in r.headers.items():
+                # The same as above, lower case keys to match py2 behavior, and create more consistent results
+                name = name.lower()
+                if name in temp_headers:
+                    temp_headers[name] = ', '.join((temp_headers[name], value))
+                else:
+                    temp_headers[name] = value
+            result.update(temp_headers)
         return result
 
-    def get_full_url(self, url):
-        if url.startswith('/'):
-            url = url[1:]
-        result = 'https://{0}:{1}/{2}'.format(self._server, self._server_port, url)
-        return result
+    def default_headers(self):
+        return {
+            'connection': 'keep-alive',
+            'accept': '*/*',
+        }
 
-    @property
-    def debug(self):
-        return self._debug
+    def prepare_request(self, request):
+        headers = self.headers.copy()
+        params = self.params.copy()
 
-    @debug.setter
-    def debug(self, value):
-        if value in BOOLEANS:
-            self._debug = value
+        if request.headers is not None:
+            headers.update(request.headers)
+        if request.params is not None:
+            params.update(request.params)
 
-    @property
-    def debug_output(self):
-        return self._debug_output
+        prepared = PreparedRequest()
+        prepared.prepare(
+            method=request.method,
+            url=request.url,
+            data=request.data,
+            json=request.json,
+            headers=headers,
+            params=params,
+        )
+        return prepared
 
-    def delete(self, url, data=None, json=None, **kwargs):
+    def request(self, method, url, params=None, data=None, headers=None, auth=None,
+                timeout=None, verify=None, json=None):
+        request = Request(
+            method=method.upper(),
+            url=url,
+            headers=headers,
+            json=json,
+            data=data or {},
+            params=params or {},
+            auth=auth
+        )
+        kwargs = dict(
+            timeout=timeout,
+            verify=verify
+        )
+        prepared = self.prepare_request(request)
+        return self.send(prepared, **kwargs)
+
+    def send(self, request, **kwargs):
+        response = Response()
+
+        params = dict(
+            method=request.method,
+            data=request.body,
+            #validate_certs=kwargs.get('verify', None) or self.verify,
+            timeout=kwargs.get('timeout', None) or self.timeout,
+            headers=request.headers
+        )
+
+        #foo = debug_prepared_request(request.url, request.method, request.headers)
+        #print(params)
+
+        try:
+            result = open_url(request.url, **params)
+            response._content = result.read()
+            response.status = result.getcode()
+            response.url = result.geturl()
+            response.msg = "OK (%s bytes)" % result.headers.get('Content-Length', 'unknown')
+            response.headers = self._normalize_headers(result.headers.items())
+            response.request = request
+        except urllib_error.HTTPError as e:
+            try:
+                response._content = e.read()
+            except AttributeError:
+                response._content = ''
+
+            response.reason = to_native(e)
+            response.status_code = e.code
+        return response
+
+    def delete(self, url, **kwargs):
         """Sends a HTTP DELETE command to an F5 REST Server.
 
         Use this method to send a DELETE command to an F5 product.
 
         Args:
-            url (string): Path of URL on the server to call.
+            url (string): URL to call.
             data (bytes): An object specifying additional data to send to the server,
                 or ``None`` if no such data is needed. Currently HTTP requests are the
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Dictionary containing other information that may need to be
-                sent to the request. Typically this contains extra headers, or headers that the
-                caller wants to override, such as the Content-Type.
+            \*\*kwargs (dict): Optional arguments to send to the request.
         """
-        headers = self.get_headers(**kwargs)
-        url = self.get_full_url(url)
-        if self.debug:
-            self._debug_output.append(debug_prepared_request(url, 'DELETE', headers, data))
-        try:
-            response = open_url(
-                url, method='DELETE', data=data, headers=headers,
-                validate_certs=self._validate_certs
-            )
-            return Response(response=response)
-        except Exception as ex:
-            raise F5ModuleError(str(ex))
+        return self.request('DELETE', url, **kwargs)
+#        headers = self.get_headers(**kwargs)
+#        url = self.get_full_url(url)
+#        if self.debug:
+#            self._debug_output.append(debug_prepared_request(url, 'DELETE', headers, data))
+#        response = open_url(
+#            url, method='DELETE', data=data, headers=headers,
+#            validate_certs=self._validate_certs
+#        )
 
     def get(self, url, **kwargs):
         """Sends a HTTP GET command to an F5 REST Server.
@@ -263,56 +315,44 @@ class iControlRestSession(object):
         Use this method to send a GET command to an F5 product.
 
         Args:
-            url (string): Path of URL on the server to call.
-            \*\*kwargs (dict): Dictionary containing other information that may need to be
-                sent to the request. Typically this contains extra headers, or headers that the
-                caller wants to override, such as the Content-Type.
+            url (string): URL to call.
+            \*\*kwargs (dict): Optional arguments to send to the request.
         """
-        headers = self.get_headers(**kwargs)
-        url = self.get_full_url(url)
-        if self.debug:
-            self._debug_output.append(debug_prepared_request(url, 'GET', headers))
-        try:
-            response = open_url(
-                url, method='GET', headers=headers, validate_certs=self._validate_certs
-            )
-            result = Response(response=response)
-            return result
-        except Exception as ex:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
+        return self.request('GET', url, **kwargs)
+#        headers = self.get_headers(**kwargs)
+#        url = self.get_full_url(url)
+#        if self.debug:
+#            self._debug_output.append(debug_prepared_request(url, 'GET', headers))
 
-    def patch(self, url, data=None, json=None, **kwargs):
+#        response = open_url(
+#            url, method='GET', headers=headers, validate_certs=self._validate_certs
+#        )
+#        result = Response(response=response)
+#        return result
+
+    def patch(self, url, data=None, **kwargs):
         """Sends a HTTP PATCH command to an F5 REST Server.
 
         Use this method to send a PATCH command to an F5 product.
 
         Args:
-            url (string): Path of URL on the server to call.
+            url (string): URL to call.
             data (bytes): An object specifying additional data to send to the server,
                 or ``None`` if no such data is needed. Currently HTTP requests are the
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Dictionary containing other information that may need to be
-                sent to the request. Typically this contains extra headers, or headers that the
-                caller wants to override, such as the Content-Type.
+            \*\*kwargs (dict): Optional arguments to send to the request.
         """
-        headers = self.get_headers(**kwargs)
-        url = self.get_full_url(url)
-        if self.debug:
-            self._debug_output.append(debug_prepared_request(url, 'PATCH', headers, data))
-        try:
-            response = open_url(
-                url, method='PATCH', data=data, headers=headers,
-                validate_certs=self._validate_certs
-            )
-            return Response(response=response)
-        except Exception as ex:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
+        return self.request('PATCH', url, data=data, **kwargs)
+
+#        if self.debug:
+#            self._debug_output.append(debug_prepared_request(url, 'PATCH', headers, data))
+
+#        response = open_url(
+#            url, method='PATCH', data=data, headers=headers,
+#            validate_certs=self._validate_certs
+#        )
 
     def post(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP POST command to an F5 REST Server.
@@ -320,79 +360,41 @@ class iControlRestSession(object):
         Use this method to send a POST command to an F5 product.
 
         Args:
-            url (string): Path of URL on the server to call.
-            data (bytes): An object specifying additional data to send to the server,
+            url (string): URL to call.
+            data (dict): An object specifying additional data to send to the server,
                 or ``None`` if no such data is needed. Currently HTTP requests are the
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Dictionary containing other information that may need to be
-                sent to the request. Typically this contains extra headers, or headers that the
-                caller wants to override, such as the Content-Type.
+            \*\*kwargs (dict): Optional arguments to the request.
         """
-        headers = self.get_headers(**kwargs)
-        url = self.get_full_url(url)
-        if self.debug:
-            self._debug_output.append(debug_prepared_request(url, 'POST', headers, data))
-        try:
-            response = open_url(
-                url, method='POST', data=data, headers=headers,
-                validate_certs=self._validate_certs
-            )
-            return Response(response=response)
-        except Exception as ex:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
+        return self.request('POST', url, data=data, json=json, **kwargs)
 
-    def put(self, url, data=None, json=None, **kwargs):
+    def put(self, url, data=None, **kwargs):
         """Sends a HTTP PUT command to an F5 REST Server.
 
         Use this method to send a PUT command to an F5 product.
 
         Args:
-            url (string): Path of URL on the server to call.
+            url (string): URL to call.
             data (bytes): An object specifying additional data to send to the server,
                 or ``None`` if no such data is needed. Currently HTTP requests are the
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Dictionary containing other information that may need to be
-                sent to the request. Typically this contains extra headers, or headers that the
-                caller wants to override, such as the Content-Type.
+            \*\*kwargs (dict): Optional arguments to the request.
         """
-        headers = self.get_headers(**kwargs)
-        url = self.get_full_url(url)
-        if self.debug:
-            self._debug_output.append(debug_prepared_request(url, 'PUT', headers, data))
-        try:
-            response = open_url(
-                url, method='PUT', data=data, headers=headers,
-                validate_certs=self._validate_certs
-            )
-            return Response(response=response)
-        except Exception as ex:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            raise F5ModuleError("Exception at line {0}, of file {1}, with error '{2}'".format(exc_tb.tb_lineno, fname, str(ex)))
+        return self.request('PUT', url, data=data, **kwargs)
+#        headers = self.get_headers(**kwargs)
+#        url = self.get_full_url(url)
+#        if self.debug:
+#            self._debug_output.append(debug_prepared_request(url, 'PUT', headers, data))
 
+#        response = open_url(
+#            url, method='PUT', data=data, headers=headers,
+#            validate_certs=self._validate_certs
+#        )
 
-class Response(object):
-    def __init__(self, response):
-        self._response = response
-        self._payload = response.read()
-        self._status_code = int(response.code)
-        self._metadata = [
-            'generation', 'kind', 'selfLink'
-        ]
-
-    def json(self):
-        result = json.loads(self._payload)
-        return result
-
-    @property
-    def status_code(self):
-        return self._status_code
 
 
 def debug_prepared_request(url, method, headers, data=None):
