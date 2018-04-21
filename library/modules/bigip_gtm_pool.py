@@ -545,6 +545,14 @@ class ModuleParameters(Parameters):
             return []
         result = []
         for member in self._values['members']:
+            if 'server' not in member:
+                raise F5ModuleError(
+                    "One of the provided members is missing a 'server' sub-option."
+                )
+            if 'virtual_server' not in member:
+                raise F5ModuleError(
+                    "One of the provided members is missing a 'virtual_server' sub-option."
+                )
             name = '{0}:{1}'.format(member['server'], member['virtual_server'])
             name = fq_name(self.partition, name)
             result.append(name)
