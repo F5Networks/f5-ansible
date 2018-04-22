@@ -316,6 +316,8 @@ class Parameters(AnsibleF5Parameters):
         'members',
         'monitors',
         'preferred_lb_method',
+        'enabled',
+        'disabled'
     ]
 
     api_attributes = [
@@ -555,8 +557,10 @@ class ModuleParameters(Parameters):
                 )
             name = '{0}:{1}'.format(member['server'], member['virtual_server'])
             name = fq_name(self.partition, name)
+            if name in result:
+                continue
             result.append(name)
-        result = list(set(result))
+        result = list(result)
         return result
 
     @property
