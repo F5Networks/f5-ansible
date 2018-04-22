@@ -1,6 +1,13 @@
 ---
 
-- import_tasks: setup.yaml
+- name: Issue 00375 - Collect BIG-IP facts
+  bigip_facts:
+    include: system_info
+  register: result
+
+- name: Issue 00375 - Provision GTM on the device
+  bigip_provision:
+    module: gtm
 
 - name: Issue 00375 - Remove GTM pool
   bigip_gtm_pool:
@@ -37,3 +44,8 @@
     name: "{{ pool_name }}"
     state: absent
     type: a
+
+- name: Issue 00142 - Deprovision GTM on the device
+  bigip_provision:
+    module: gtm
+    state: absent
