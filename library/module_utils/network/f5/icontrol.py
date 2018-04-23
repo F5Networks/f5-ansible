@@ -37,13 +37,13 @@ API that the Python ``requests`` tool uses, but the two are not the same, as the
 library here is **much** more simple and targeted specifically to F5's needs.
 
 The ``requests`` design was chosen due to familiarity with the tool. Internals though
-use Ansible native libraries. 
+use Ansible native libraries.
 
 The means by which you should use it are similar to ``requests`` basic usage.
 
 Authentication is not handled for you automatically by this library, however it *is*
 handled automatically for you in the supporting F5 module_utils code; specifically the
-different product module_util files (bigip.py, bigiq.py, etc). 
+different product module_util files (bigip.py, bigiq.py, etc).
 
 Internal (non-module) usage of this library looks like this.
 
@@ -259,13 +259,9 @@ class iControlRestSession(object):
         params = dict(
             method=request.method,
             data=request.body,
-            #validate_certs=kwargs.get('verify', None) or self.verify,
             timeout=kwargs.get('timeout', None) or self.timeout,
             headers=request.headers
         )
-
-        #foo = debug_prepared_request(request.url, request.method, request.headers)
-        #print(params)
 
         try:
             result = open_url(request.url, **params)
@@ -300,14 +296,6 @@ class iControlRestSession(object):
             \*\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('DELETE', url, **kwargs)
-#        headers = self.get_headers(**kwargs)
-#        url = self.get_full_url(url)
-#        if self.debug:
-#            self._debug_output.append(debug_prepared_request(url, 'DELETE', headers, data))
-#        response = open_url(
-#            url, method='DELETE', data=data, headers=headers,
-#            validate_certs=self._validate_certs
-#        )
 
     def get(self, url, **kwargs):
         """Sends a HTTP GET command to an F5 REST Server.
@@ -319,16 +307,6 @@ class iControlRestSession(object):
             \*\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('GET', url, **kwargs)
-#        headers = self.get_headers(**kwargs)
-#        url = self.get_full_url(url)
-#        if self.debug:
-#            self._debug_output.append(debug_prepared_request(url, 'GET', headers))
-
-#        response = open_url(
-#            url, method='GET', headers=headers, validate_certs=self._validate_certs
-#        )
-#        result = Response(response=response)
-#        return result
 
     def patch(self, url, data=None, **kwargs):
         """Sends a HTTP PATCH command to an F5 REST Server.
@@ -345,14 +323,6 @@ class iControlRestSession(object):
             \*\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('PATCH', url, data=data, **kwargs)
-
-#        if self.debug:
-#            self._debug_output.append(debug_prepared_request(url, 'PATCH', headers, data))
-
-#        response = open_url(
-#            url, method='PATCH', data=data, headers=headers,
-#            validate_certs=self._validate_certs
-#        )
 
     def post(self, url, data=None, json=None, **kwargs):
         """Sends a HTTP POST command to an F5 REST Server.
@@ -385,16 +355,6 @@ class iControlRestSession(object):
             \*\*kwargs (dict): Optional arguments to the request.
         """
         return self.request('PUT', url, data=data, **kwargs)
-#        headers = self.get_headers(**kwargs)
-#        url = self.get_full_url(url)
-#        if self.debug:
-#            self._debug_output.append(debug_prepared_request(url, 'PUT', headers, data))
-
-#        response = open_url(
-#            url, method='PUT', data=data, headers=headers,
-#            validate_certs=self._validate_certs
-#        )
-
 
 
 def debug_prepared_request(url, method, headers, data=None):

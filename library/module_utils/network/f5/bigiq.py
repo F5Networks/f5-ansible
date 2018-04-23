@@ -60,7 +60,6 @@ class F5Client(F5BaseClient):
         raise F5ModuleError(error)
 
 
-
 class F5RestClient(F5BaseClient):
     @property
     def api(self):
