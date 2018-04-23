@@ -442,7 +442,7 @@ class RecordsEncoder(object):
         if len(parts) == 2:
             return '{0} {1} {2}'.format(parts[0], self._separator, parts[1])
         elif len(parts) == 1 and parts[0] != '':
-            return '{0} {1} ""'.format(key, self._separator)
+            return '{0} {1} ""'.format(parts[0], self._separator)
 
 
 class RecordsDecoder(object):

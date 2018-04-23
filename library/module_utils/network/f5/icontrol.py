@@ -199,7 +199,7 @@ class iControlRestSession(object):
         # In Py2 there is nothing that needs done, py2 does this for us
         if PY3:
             temp_headers = {}
-            for name, value in r.headers.items():
+            for name, value in headers:
                 # The same as above, lower case keys to match py2 behavior, and create more consistent results
                 name = name.lower()
                 if name in temp_headers:
@@ -293,7 +293,7 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Optional arguments to send to the request.
+            \\*\\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('DELETE', url, **kwargs)
 
@@ -304,7 +304,7 @@ class iControlRestSession(object):
 
         Args:
             url (string): URL to call.
-            \*\*kwargs (dict): Optional arguments to send to the request.
+            \\*\\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('GET', url, **kwargs)
 
@@ -320,7 +320,7 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Optional arguments to send to the request.
+            \\*\\*kwargs (dict): Optional arguments to send to the request.
         """
         return self.request('PATCH', url, data=data, **kwargs)
 
@@ -336,7 +336,7 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Optional arguments to the request.
+            \\*\\*kwargs (dict): Optional arguments to the request.
         """
         return self.request('POST', url, data=data, json=json, **kwargs)
 
@@ -352,7 +352,7 @@ class iControlRestSession(object):
                 only ones that use data. The supported object types include bytes,
                 file-like objects, and iterables.
                 See https://docs.python.org/3/library/urllib.request.html#urllib.request.Request
-            \*\*kwargs (dict): Optional arguments to the request.
+            \\*\\*kwargs (dict): Optional arguments to the request.
         """
         return self.request('PUT', url, data=data, **kwargs)
 
@@ -363,6 +363,6 @@ def debug_prepared_request(url, method, headers, data=None):
         result = result + " -H '{0}: {1}'".format(k, v)
     if any(v == 'application/json' for k, v in iteritems(headers)):
         if data:
-            kwargs = json.loads(data.decode('utf-8'))
-            result = result + " -d '" + json.dumps(kwargs, sort_keys=True) + "'"
+            kwargs = _json.loads(data.decode('utf-8'))
+            result = result + " -d '" + _json.dumps(kwargs, sort_keys=True) + "'"
     return result
