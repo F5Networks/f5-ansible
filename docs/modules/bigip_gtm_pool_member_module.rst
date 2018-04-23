@@ -80,6 +80,30 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
+                            <b>bits_enabled</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Whether the bits limit it enabled or not.</div>
+                                                            <div>This parameter allows you to switch on or off the effect of the limit.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
                             <b>packets_enabled</b>
                                                                                 </div>
                     </div>
@@ -104,18 +128,22 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>packets_limit</b>
+                            <b>connections_enabled</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the maximum allowable data transfer rate, in packets per second, for the member.</div>
-                                                            <div>If the network traffic volume exceeds this limit, the system marks the member as unavailable.</div>
+                                                                                    <div>Whether the current connections limit it enabled or not.</div>
+                                                            <div>This parameter allows you to switch on or off the effect of the limit.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -144,22 +172,18 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>bits_enabled</b>
+                            <b>packets_limit</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li>yes</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Whether the bits limit it enabled or not.</div>
-                                                            <div>This parameter allows you to switch on or off the effect of the limit.</div>
+                                                                                    <div>Specifies the maximum allowable data transfer rate, in packets per second, for the member.</div>
+                                                            <div>If the network traffic volume exceeds this limit, the system marks the member as unavailable.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -180,30 +204,6 @@ Parameters
                     <div class="cell-border">
                                                                                     <div>Specifies the maximum number of concurrent connections, combined, for all of the member.</div>
                                                             <div>If the connections exceed this limit, the system marks the server as unavailable.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>connections_enabled</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li>yes</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Whether the current connections limit it enabled or not.</div>
-                                                            <div>This parameter allows you to switch on or off the effect of the limit.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -330,8 +330,8 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>ssh_keyfile</b>
-                                                                                </div>
+                            <b>password</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
                                 <td>
@@ -340,28 +340,9 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                             </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -380,25 +361,6 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -427,7 +389,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>password</b>
+                            <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -437,9 +399,8 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
+                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -462,6 +423,45 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>timeout</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>ssh_keyfile</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                                 </div>
                 </td>
             </tr>

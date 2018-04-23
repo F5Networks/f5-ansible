@@ -21,9 +21,11 @@ F5
   * :ref:`bigip_data_group`
   * :ref:`bigip_device_connectivity`
   * :ref:`bigip_device_dns`
+  * :ref:`bigip_device_facts`
   * :ref:`bigip_device_group`
   * :ref:`bigip_device_group_member`
   * :ref:`bigip_device_httpd`
+  * :ref:`bigip_device_license`
   * :ref:`bigip_device_ntp`
   * :ref:`bigip_device_sshd`
   * :ref:`bigip_device_trust`
@@ -50,7 +52,6 @@ F5
   * :ref:`bigip_iapp_template`
   * :ref:`bigip_iapplx_package`
   * :ref:`bigip_irule`
-  * :ref:`bigip_license`
   * :ref:`bigip_log_destination`
   * :ref:`bigip_log_publisher`
   * :ref:`bigip_management_route`
@@ -99,7 +100,6 @@ F5
   * :ref:`bigip_sys_db`
   * :ref:`bigip_sys_global`
   * :ref:`bigip_timer_policy`
-  * :ref:`bigip_timer_policy_rule`
   * :ref:`bigip_traffic_group`
   * :ref:`bigip_trunk`
   * :ref:`bigip_ucs`

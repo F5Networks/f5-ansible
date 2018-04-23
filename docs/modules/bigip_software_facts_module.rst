@@ -71,7 +71,7 @@ Parameters
                                                                                                                                                                                                                         <li>hotfix</li>
                                                                                                                                                                                                                         <li>volume</li>
                                                                                                 </ul>
-                                                                                                    <b>Default:</b><br/><div style="color: blue">[u&#39;all&#39;]</div>
+                                                                                                    <b>Default:</b><br/><div style="color: blue">[&#39;all&#39;]</div>
                                             </div>
                 </td>
                                                                 <td>
@@ -122,8 +122,8 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>ssh_keyfile</b>
-                                                                                </div>
+                            <b>password</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
                                 <td>
@@ -132,28 +132,9 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                             </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -172,25 +153,6 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -219,7 +181,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>password</b>
+                            <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -229,9 +191,8 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
+                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -254,6 +215,45 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>timeout</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>ssh_keyfile</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -415,7 +415,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                                                     <div>List of hotfix ISOs that are present on the unit.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;hotfixes&#x27;: [{&#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;, &#x27;name&#x27;: &#x27;12.1.1-hf2.iso&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;build&#x27;: &#x27;2.0.204&#x27;}]}</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;hotfixes&#x27;: [{&#x27;build&#x27;: &#x27;2.0.204&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;name&#x27;: &#x27;12.1.1-hf2.iso&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
                                             </div>
                 </td>
             </tr>
@@ -434,7 +434,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                                                     <div>List of base image ISOs that are present on the unit.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;images&#x27;: [{&#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;, &#x27;name&#x27;: &#x27;BIGIP-12.1.1.0.0.184.iso&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;build&#x27;: &#x27;0.0.184&#x27;}]}</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;images&#x27;: [{&#x27;build&#x27;: &#x27;0.0.184&#x27;, &#x27;fileSize&#x27;: &#x27;1997 MB&#x27;, &#x27;lastModified&#x27;: &#x27;Sun Oct  2 20:50:04 2016&#x27;, &#x27;name&#x27;: &#x27;BIGIP-12.1.1.0.0.184.iso&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
                                             </div>
                 </td>
             </tr>
@@ -453,7 +453,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                                                     <div>List the volumes present on device.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;volumes&#x27;: [{&#x27;status&#x27;: &#x27;complete&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;, &#x27;name&#x27;: &#x27;HD1.2&#x27;, &#x27;basebuild&#x27;: &#x27;0.0.184&#x27;, &#x27;build&#x27;: &#x27;0.0.184&#x27;}]}</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;volumes&#x27;: [{&#x27;basebuild&#x27;: &#x27;0.0.184&#x27;, &#x27;build&#x27;: &#x27;0.0.184&#x27;, &#x27;name&#x27;: &#x27;HD1.2&#x27;, &#x27;product&#x27;: &#x27;BIG-IP&#x27;, &#x27;status&#x27;: &#x27;complete&#x27;, &#x27;version&#x27;: &#x27;12.1.1&#x27;}]}</div>
                                             </div>
                 </td>
             </tr>

@@ -91,26 +91,6 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>asm_policy</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>ASM policy to enable.</div>
-                                                            <div>This parameter is only valid with the <code>enable</code> type.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
                             <b>pool</b>
                                                                                 </div>
                     </div>
@@ -123,6 +103,26 @@ Parameters
                     <div class="cell-border">
                                                                                     <div>Pool that you want to forward traffic to.</div>
                                                             <div>This parameter is only valid with the <code>forward</code> type.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>asm_policy</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>ASM policy to enable.</div>
+                                                            <div>This parameter is only valid with the <code>enable</code> type.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -154,26 +154,6 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>path_begins_with_any</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>A list of strings of characters that the HTTP URI should start with.</div>
-                                                            <div>This parameter is only valid with the <code>http_uri</code> type.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
                             <b>type</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -191,6 +171,26 @@ Parameters
                                                                                     <div>The condition type. This value controls what below options are required.</div>
                                                             <div>When <code>type</code> is <code>http_uri</code>, will associate a given <code>path_begins_with_any</code> list of strings with which the HTTP URI should begin with. Any item in the list will provide a match.</div>
                                                             <div>When <code>type</code> is <code>all_traffic</code>, will remove all existing conditions from this rule.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>path_begins_with_any</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>A list of strings of characters that the HTTP URI should start with.</div>
+                                                            <div>This parameter is only valid with the <code>http_uri</code> type.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -310,8 +310,8 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>ssh_keyfile</b>
-                                                                                </div>
+                            <b>password</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
                                 <td>
@@ -320,28 +320,9 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
+                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                             </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -360,25 +341,6 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The BIG-IP host. You can omit this option if the environment variable <code>F5_SERVER</code> is set.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
-                            <b>user</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -407,7 +369,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>password</b>
+                            <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -417,9 +379,8 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
-                                            </div>
+                                                                                    <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
+                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -442,6 +403,45 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>timeout</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>ssh_keyfile</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the SSH keyfile to use to authenticate the connection to the remote device.  This argument is only used for <em>cli</em> transports. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -736,26 +736,6 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                     <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>path_begins_with_any</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>List of strings that the URI begins with.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;foo&#x27;, &#x27;bar&#x27;]</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                    <div class="elbow-placeholder">&nbsp;</div>
-                                                <div class="elbow-key">
                             <b>type</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
@@ -768,6 +748,26 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http_uri</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>path_begins_with_any</b>
+                            <br/><div style="font-size: small; color: red">list</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>List of strings that the URI begins with.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;foo&#x27;, &#x27;bar&#x27;]</div>
                                             </div>
                 </td>
             </tr>
