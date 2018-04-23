@@ -177,6 +177,9 @@ class ModuleManager(object):
                 version=warning['version']
             )
 
+    def _get_client_connection(self):
+        return F5Client(**self.module.params)
+
     def execute(self):
         signal.signal(
             signal.SIGALRM,
@@ -195,7 +198,7 @@ class ModuleManager(object):
             try:
                 # The first test verifies that the REST API is available; this is done
                 # by repeatedly trying to login to it.
-                self.client = F5Client(**self.module.params)
+                self.client = self._get_client_connection()
                 if not self.client:
                     continue
 
