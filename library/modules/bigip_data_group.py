@@ -39,6 +39,7 @@ options:
       - ip
       - string
       - str
+      - integer
       - int
     default: string
   internal:
