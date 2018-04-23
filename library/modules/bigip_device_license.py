@@ -26,7 +26,7 @@ options:
       - This parameter is required if the C(state) is equal to C(present).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
-  license_key:
+  license_server:
     description:
       - The F5 license server to use when getting a license and validating a dossier.
       - This parameter is required if the C(state) is equal to C(present).
