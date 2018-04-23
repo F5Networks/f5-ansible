@@ -116,6 +116,7 @@ class TestManager(unittest.TestCase):
         mm._connect_to_device = Mock(return_value=True)
         mm._device_is_rebooting = Mock(return_value=False)
         mm._is_mprov_running_on_device = Mock(return_value=False)
+        mm._get_client_connection = Mock(return_value=True)
 
         results = mm.exec_module()
 
