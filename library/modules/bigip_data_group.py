@@ -35,8 +35,11 @@ options:
       - This value cannot be changed once the data group is created.
     choices:
       - address
+      - addr
+      - ip
       - string
-      - integer
+      - str
+      - int
     default: string
   internal:
     description:
@@ -108,6 +111,7 @@ options:
       - This value cannot be changed once it is set.
       - This parameter is only relevant when C(internal) is C(no). It will be ignored
         otherwise.
+    default: ":="
   delete_data_group_file:
     description:
       - When C(yes), will ensure that the remote data group file is deleted.
@@ -125,6 +129,7 @@ options:
     choices:
       - present
       - absent
+    default: present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
