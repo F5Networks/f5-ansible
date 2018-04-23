@@ -25,6 +25,7 @@ options:
       - Name of the virtual address.
       - If this parameter is not provided, then the value of C(address) will
         be used.
+    version_added: 2.6
   address:
     description:
       - Virtual address. This value cannot be modified after it is set.
