@@ -59,7 +59,6 @@ options:
       - This parameter should be provided when C(state) is C(absent), so that the correct community
         is removed. To remove the C(public) SNMP community that comes with a BIG-IP, this parameter
         should be set to C(default).
-    default: all
   port:
     description:
       - Specifies the port for the trap destination.
