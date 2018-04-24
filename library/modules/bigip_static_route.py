@@ -134,7 +134,7 @@ pool:
   type: string
   sample: true
 partition:
-  description: The partition that the VLAN was created on.
+  description: The partition that the static route was created on.
   returned: changed
   type: string
   sample: Common
