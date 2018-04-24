@@ -56,7 +56,7 @@ options:
         combined IP addresses of the source and the destination.
     choices:
       - destination-mac
-      - source-destination-ip-port
+      - source-destination-ip
       - source-destination-mac
   lacp_enabled:
     description:
@@ -275,7 +275,7 @@ class ReportableChanges(Changes):
     def lacp_enabled(self):
         if self._values['lacp_enabled'] is None:
             return None
-        if self._values['lacp_enabled'] =='enabled':
+        if self._values['lacp_enabled'] == 'enabled':
             return True
         return False
 
