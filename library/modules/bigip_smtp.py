@@ -63,6 +63,7 @@ options:
         and C(smtp_server_password) parameters active or not.
       - When C(yes), the authentication parameters will be active.
       - When C(no), the authentication parameters will be inactive.
+    type: bool
   smtp_server_username:
     description:
       - User name that the SMTP server requires when validating a user.
@@ -87,7 +88,7 @@ options:
       - When C(always), will always update the password.
       - When C(on_create), will only set the password for newly created SMTP server
         configurations.
-    default: on_create
+    default: always
     choices:
       - always
       - on_create
@@ -235,7 +236,9 @@ class ModuleParameters(Parameters):
             if is_valid_hostname(self._values['local_host_name']):
                 return str(self._values['local_host_name'])
             raise F5ModuleError(
-                "The provided 'local_host_name' value {0} is not a valid IP or hostname".format(address)
+                "The provided 'local_host_name' value {0} is not a valid IP or hostname".format(
+                    str(self._values['local_host_name'])
+                )
             )
 
     @property
