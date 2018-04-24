@@ -42,7 +42,7 @@ options:
   local_host_name:
     description:
       - Host name used in SMTP headers in the format of a fully qualified
-        domain name. This setting does not refer to the BIG-IP system’s hostname.
+        domain name. This setting does not refer to the BIG-IP system's hostname.
   from_address:
     description:
       - Email address that the email is being sent from. This is the "Reply-to"
