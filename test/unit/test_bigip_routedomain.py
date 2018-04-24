@@ -70,7 +70,7 @@ class TestParameters(unittest.TestCase):
             description='my description',
             strict=True,
             parent='parent1',
-            vlans=['vlan1','vlan2'],
+            vlans=['vlan1', 'vlan2'],
             routing_protocol=['BFD', 'BGP'],
             bwc_policy='bwc1',
             connection_limit=200,
