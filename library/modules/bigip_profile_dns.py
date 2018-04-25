@@ -27,6 +27,11 @@ options:
     description:
       - Specifies the name of the DNS profile.
     required: True
+  parent:
+    description:
+      - Specifies the profile from which this profile inherits settings.
+      - When creating a new profile, if this parameter is not specified, the default
+        is the system-supplied C(dns) profile.
   enable_dns_express:
     description:
       - Specifies whether the DNS Express engine is enabled.
