@@ -49,6 +49,7 @@ options:
     description:
       - Specifies, when C(yes), that the system load balances UDP traffic
         packet-by-packet.
+    type: bool
   partition:
     description:
       - Device partition to manage resources on.
