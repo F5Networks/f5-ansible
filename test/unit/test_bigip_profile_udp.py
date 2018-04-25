@@ -75,7 +75,7 @@ class TestParameters(unittest.TestCase):
         assert p.name == 'foo'
         assert p.parent == '/Common/bar'
         assert p.idle_timeout == 500
-        assert p.datagram_load_balancing == False
+        assert p.datagram_load_balancing is False
 
     def test_api_parameters(self):
         args = load_fixture('load_ltm_profile_udp_1.json')
