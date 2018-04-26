@@ -1,0 +1,66 @@
+---
+
+- name: Issue 00721 - Create LTM Pool
+  bigip_pool:
+    name: issue-00721
+
+- name: Issue 00721 - Add pool member, IPv4
+  bigip_pool_member:
+    pool: issue-00721
+    host: 1.2.3.4
+    port: 0
+  register: result
+
+- name: Issue 00721 - Add pool member, IPv4
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00721 - Add pool member, IPv4 - Idempotent check
+  bigip_pool_member:
+    pool: issue-00721
+    host: 1.2.3.4
+    port: 0
+  register: result
+
+- name: Issue 00721 - Add pool member, IPv4 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00721 - Add pool member, IPv6
+  bigip_pool_member:
+    pool: issue-00721
+    host: "2013::253"
+    port: 0
+  register: result
+
+- name: Issue 00721 - Add pool member, IPv6
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00721 - Add pool member, IPv6 - Idempotent check
+  bigip_pool_member:
+    pool: issue-00721
+    host: "2013::253"
+    port: 0
+  register: result
+
+- name: Issue 00721 - Add pool member, IPv6 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00721 - Remove LTM Pool
+  bigip_pool:
+    name: issue-00721
+    state: absent
+
+- name: Issue 00721 - Delete nodes
+  bigip_node:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - "2013::253"
+    - 1.2.3.4
