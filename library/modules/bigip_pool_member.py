@@ -26,6 +26,7 @@ options:
       - Name of the node to create, or re-use, when creating a new pool member.
       - This parameter is optional and, if not specified, a node name will be
         created automatically from either the specified C(address) or C(fqdn).
+    version_added: 2.6
   state:
     description:
       - Pool member state.
@@ -66,7 +67,7 @@ options:
         provided. This parameter cannot be updated after it is set.
     aliases:
       - hostname
-    version_added: 2.5
+    version_added: 2.6
   port:
     description:
       - Pool member port.
@@ -120,7 +121,32 @@ options:
         with the single IP address associated with the FQDN.
       - When creating a new pool member, the default for this parameter is C(yes).
       - This parameter is ignored when C(reuse_nodes) is C(yes).
+    type: bool
     version_added: 2.6
+  reuse_nodes:
+    description:
+      - Reuses node definitions if requested.
+    default: yes
+    type: bool
+    version_added: 2.6
+  session_state:
+    description:
+      - Set new session availability status for pool member.
+      - This parameter is deprecated and will be removed in Ansible 2.7. Use C(state)
+        C(enabled) or C(disabled).
+    version_added: 2.0
+    choices:
+      - enabled
+      - disabled
+  monitor_state:
+    description:
+      - Set monitor availability status for pool member.
+      - This parameter is deprecated and will be removed in Ansible 2.7. Use C(state)
+        C(enabled) or C(disabled).
+    version_added: 2.0
+    choices:
+      - enabled
+      - disabled
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -205,19 +231,19 @@ EXAMPLES = '''
       priority_group: 2
     - host: 4.4.4.4
       name: web4
-      priority_group: 1      
+      priority_group: 1
 '''
 
 RETURN = '''
 rate_limit:
   description: The new rate limit, in connections per second, of the pool member.
   returned: changed
-  type: integer
+  type: int
   sample: 100
 connection_limit:
   description: The new connection limit of the pool member
   returned: changed
-  type: integer
+  type: int
   sample: 1000
 description:
   description: The new description of pool member.
@@ -227,12 +253,12 @@ description:
 ratio:
   description: The new pool member ratio weight.
   returned: changed
-  type: integer
+  type: int
   sample: 50
 priority_group:
   description: The new priority group.
   returned: changed
-  type: integer
+  type: int
   sample: 3
 fqdn_auto_populate:
   description: Whether FQDN auto population was set on the member or not.
