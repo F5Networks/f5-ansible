@@ -959,3 +959,6 @@
       - result is not changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00718.yaml
+  tags: issue-00718

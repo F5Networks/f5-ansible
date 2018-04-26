@@ -587,7 +587,7 @@ class ModuleParameters(Parameters):
     def translation_port(self):
         if self._values['translation_port'] is None:
             return None
-        if self._values['translation_port'] == '*':
+        if self._values['translation_port'] in ['*', ""]:
             return 0
         return int(self._values['translation_port'])
 
@@ -871,11 +871,11 @@ class ModuleManager(object):
         return True
 
     def create(self):
-        if self.want.port is None:
+        if self.want.port in [None, ""]:
             self.want.update({'port': '*'})
-        if self.want.translation_port is None:
+        if self.want.translation_port in [None, ""]:
             self.want.update({'translation_port': '*'})
-        if self.want.translation_address is None:
+        if self.want.translation_address in [None, ""]:
             self.want.update({'translation_address': '::'})
 
         self._set_changed_options()
@@ -986,7 +986,7 @@ class ArgumentSpec(object):
             address=dict(),
             port=dict(type='int'),
             translation_address=dict(),
-            translation_port=dict(type='int'),
+            translation_port=dict(),
             availability_requirements=dict(
                 type='dict',
                 options=dict(
