@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FF5Networks%2Ff5-ansible.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FF5Networks%2Ff5-ansible?ref=badge_shield)
+
 .. raw:: html
 
    <!--
@@ -120,3 +122,6 @@ Individuals or business entities who contribute to this project must complete an
    <a href="http://clouddocs.f5.com/products/orchestration/ansible/devel/usage/support.html" target="_blank">Get Help</a>
 
 
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FF5Networks%2Ff5-ansible.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FF5Networks%2Ff5-ansible?ref=badge_large)
