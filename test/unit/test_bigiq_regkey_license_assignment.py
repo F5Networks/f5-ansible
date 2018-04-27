@@ -103,7 +103,7 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         self.spec = ArgumentSpec()
 
-    def test_create_selfip(self, *args):
+    def test_create(self, *args):
         set_module_args(dict(
             pool='foo-pool',
             key='XXXX-XXXX-XXXX-XXXX-XXXX',
@@ -127,6 +127,7 @@ class TestManager(unittest.TestCase):
         # Override methods to force specific logic in the module to happen
         mm.exists = Mock(side_effect=[False, True])
         mm.create_on_device = Mock(return_value=True)
+        mm.wait_for_device_to_be_licensed = Mock(return_value=True)
 
         results = mm.exec_module()
 
