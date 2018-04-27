@@ -1,0 +1,64 @@
+---
+
+- name: Set server and port var, teardown
+  set_fact:
+    server: "{{ ansible_host }}:{{ f5_port }}"
+
+- name: Get an authentication token from BIG-IQ, teardown
+  uri:
+    method: POST
+    url: "https://{{ server }}/mgmt/shared/authn/login"
+    body_format: json
+    body:
+      username: "{{ f5_username }}"
+      password: "{{ f5_password }}"
+      loginProviderName: local
+    validate_certs: no
+  register: resp
+  failed_when: resp.status not in [200]
+
+- name: Set server and port var, teardown
+  set_fact:
+    token: "{{ resp['json']['token']['token'] }}"
+
+- name: Get machine ID of trusted device
+  uri:
+    url: "https://{{ server }}/mgmt/cm/system/machineid-resolver?$filter=('address'+eq+'{{ hostvars['bigip1']['ansible_host'] }}')"
+    method: GET
+    body_format: json
+    validate_certs: no
+    headers:
+      X-F5-Auth-Token: "{{ token }}"
+  register: machines
+  failed_when: machines.status not in [200, 202]
+
+- name: Initiate device untrust task
+  uri:
+    url: "https://{{ server }}/mgmt/cm/global/tasks/device-remove-trust"
+    method: POST
+    body_format: json
+    body:
+      deviceReference:
+        link: "https://localhost/mgmt/cm/system/machineid-resolver/{{ machines['json']['items'][0]['machineId'] }}"
+        name: "device-remove-trust_{{ hostvars['bigip1']['ansible_host'] }}"
+    validate_certs: no
+    headers:
+      X-F5-Auth-Token: "{{ token }}"
+  register: resp
+  failed_when: resp.status not in [200, 202]
+  when: machines['json']['items']|count == 1
+
+- name: Wait for device to be untrusted
+  uri:
+    url: "https://{{ server }}/mgmt/cm/global/tasks/device-remove-trust/{{ resp['json']['id'] }}"
+    method: GET
+    body_format: json
+    validate_certs: no
+    headers:
+      X-F5-Auth-Token: "{{ token }}"
+  register: resp
+  ignore_errors: true
+  delay: 3
+  retries: 100
+  until: resp['json']['status'] == "FINISHED" or resp['json']['currentStep']|default(None) == "DONE"
+  when: machines['json']['items']|count == 1

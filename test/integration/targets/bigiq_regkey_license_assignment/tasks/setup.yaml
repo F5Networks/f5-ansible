@@ -1,5 +1,17 @@
 ---
 
+- name: Get a license key to re-use for tests
+  set_fact:
+    regkey_license_1: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-regkey-licenses.txt') }}"
+
 - name: Create regkey pool
   bigiq_regkey_pool:
     name: foo-pool
+
+- name: Add a license to the license pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: "{{ regkey_license_1 }}"
+    accept_eula: yes
+    description: my license
+  register: result

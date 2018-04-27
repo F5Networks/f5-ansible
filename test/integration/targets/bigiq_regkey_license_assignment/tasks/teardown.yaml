@@ -1,5 +1,11 @@
 ---
 
+- name: Remove a license to the license pool
+  bigiq_regkey_license:
+    regkey_pool: foo-pool
+    license_key: "{{ regkey_license_1 }}"
+    state: absent
+
 - name: Remove regkey pool
   bigiq_regkey_pool:
     name: foo-pool
