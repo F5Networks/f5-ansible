@@ -92,6 +92,18 @@ options:
             single log server, or a remote high-speed log destination, which will be used to forward the
             logs to a pool of remote log servers.
           - When creating a new log destination (and C(type) is C(remote-syslog)), this parameter is required.
+  partition:
+    description:
+      - Device partition to manage resources on.
+    default: Common
+  state:
+    description:
+      - When C(present), ensures that the resource exists.
+      - When C(absent), ensures the resource is removed.
+    default: present
+    choices:
+      - present
+      - absent
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -472,7 +484,7 @@ class V1Manager(BaseManager):
     """
     def _validate_creation_parameters(self):
         if self.want.syslog_format is None:
-            self.want.update({'syslog_format': bsd-syslog})
+            self.want.update({'syslog_format': 'bsd-syslog'})
         if self.want.forward_to is None:
             raise F5ModuleError(
                 "'forward_to' is required when creating a new remote-syslog destination."
@@ -649,7 +661,13 @@ class ArgumentSpec(object):
         self.supports_check_mode = True
         argument_spec = dict(
             name=dict(required=True),
-            type=dict(required=True),
+            type=dict(
+                required=True,
+                choices=[
+                    'remote-high-speed-log',
+                    'remote-syslog'
+                ]
+            ),
             description=dict(),
             pool_settings=dict(
                 type='dict',
