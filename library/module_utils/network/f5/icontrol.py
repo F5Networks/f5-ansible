@@ -159,7 +159,7 @@ class PreparedRequest(object):
 class Response(object):
     def __init__(self):
         self._content = None
-        self.status_code = None
+        self.status = None
         self.headers = dict()
         self.url = None
         self.reason = None
@@ -187,8 +187,13 @@ class iControlRestSession(object):
         self.headers = self.default_headers()
         self.verify = True
         self.params = {}
-        self.auth = None
         self.timeout = 30
+
+        self.server = None
+        self.user = None
+        self.password = None
+        self.server_port = None
+        self.auth_provider = None
 
     def _normalize_headers(self, headers):
         result = {}
@@ -281,8 +286,8 @@ class iControlRestSession(object):
             response.status_code = e.code
         return response
 
-    def delete(self, url, **kwargs):
-        return self.request('DELETE', url, **kwargs)
+    def delete(self, url, json=None, **kwargs):
+        return self.request('DELETE', url, json=json, **kwargs)
 
     def get(self, url, **kwargs):
         return self.request('GET', url, **kwargs)
