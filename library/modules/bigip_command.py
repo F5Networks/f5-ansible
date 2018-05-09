@@ -237,7 +237,6 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     returnables = ['stdout', 'stdout_lines', 'warnings', 'executed_commands']
-    pre_exec_commands = ['modify cli preference pager disabled']
 
     def to_return(self):
         result = {}
@@ -259,40 +258,85 @@ class Parameters(AnsibleF5Parameters):
             result = self._values['commands']
         return result
 
+    def convert_commands(self, commands):
+        result = []
+        for command in commands:
+            tmp = dict(
+                command='',
+                pipeline=''
+            )
+
+            command = command.replace("'", "\\'")
+            pipeline = command.split('|', 1)
+            tmp['command'] = pipeline[0]
+            try:
+                tmp['pipeline'] = pipeline[1]
+            except IndexError:
+                pass
+            result.append(tmp)
+        return result
+
+    def convert_commands_cli(self, commands):
+        result = []
+        for command in commands:
+            tmp = dict(
+                command='',
+                pipeline=''
+            )
+
+            pipeline = command.split('|', 1)
+            tmp['command'] = pipeline[0]
+            try:
+                tmp['pipeline'] = pipeline[1]
+            except IndexError:
+                pass
+            result.append(tmp)
+        return result
+
+    def merge_command_dict(self, command):
+        if command['pipeline'] != '':
+            escape_patterns = r'([$"])'
+            command['pipeline'] = re.sub(escape_patterns, r'\\\1', command['pipeline'])
+            command['command'] = '{0} | {1}'.format(command['command'], command['pipeline']).strip()
+
+    def merge_command_dict_cli(self, command):
+        if command['pipeline'] != '':
+            command['command'] = '{0} | {1}'.format(command['command'], command['pipeline']).strip()
+
     @property
     def rest_commands(self):
         # ['list ltm virtual']
         commands = self.normalized_commands
-
+        commands = self.convert_commands(commands)
         if self.chdir:
             # ['cd /Common; list ltm virtual']
-            commands = map(self.addon_chdir, commands)
-
+            for command in commands:
+                self.addon_chdir(command)
         # ['tmsh -c "cd /Common; list ltm virtual"']
-        commands = map(self.addon_tmsh, commands)
-
-        commands = map(self.addon_pipes, commands)
-
-        commands = list(commands)
-        return commands
+        for command in commands:
+            self.addon_tmsh(command)
+        for command in commands:
+            self.merge_command_dict(command)
+        result = [x['command'] for x in commands]
+        return result
 
     @property
     def cli_commands(self):
         # ['list ltm virtual']
         commands = self.normalized_commands
-
+        commands = self.convert_commands_cli(commands)
         if self.chdir:
             # ['cd /Common; list ltm virtual']
-            commands = map(self.addon_chdir, commands)
-
+            for command in commands:
+                self.addon_chdir(command)
         if not self.is_tmsh:
             # ['tmsh -c "cd /Common; list ltm virtual"']
-            commands = map(self.addon_tmsh, commands)
-
-        commands = map(self.addon_pipes, commands)
-
-        commands = list(commands)
-        return commands
+            for command in commands:
+                self.addon_tmsh_cli(command)
+        for command in commands:
+            self.merge_command_dict_cli(command)
+        result = [x['command'] for x in commands]
+        return result
 
     @property
     def normalized_commands(self):
@@ -317,42 +361,21 @@ class Parameters(AnsibleF5Parameters):
     def wait_for(self):
         return self._values['wait_for'] or list()
 
-    def addon_tmsh(self, cmd):
-        result = "tmsh -c '{0}'".format(cmd)
-        return result
+    def addon_tmsh(self, command):
+        escape_patterns = r'([$"])'
+        if command['command'].count('"') % 2 != 0:
+            raise Exception('Double quotes are unbalanced')
+        command['command'] = re.sub(escape_patterns, r'\\\\\\\1', command['command'])
+        command['command'] = 'tmsh -c \\\"{0}\\\"'.format(command['command'])
+
+    def addon_tmsh_cli(self, command):
+        if command['command'].count('"') % 2 != 0:
+            raise Exception('Double quotes are unbalanced')
+        command['command'] = 'tmsh -c "{0}"'.format(command['command'])
 
     def addon_chdir(self, command):
-        cmd = "cd {0}; {1}".format(self.chdir, command)
-        return cmd
+        command['command'] = "cd {0}; {1}".format(self.chdir, command['command'])
 
-    def addon_pipes(self, command):
-        # This is a very simple check for command sequences with pipes.
-        #
-        # This check is NOT meant to handle cases where (for example) the pipe character
-        # is in the description field of a resource or some other valid location.
-        #
-        # This pipe check is ONLY intended for cases where the user might specify the
-        # following in the commands field.
-        #
-        #    list sys software | grep 'volume'
-        #
-        # or
-        #
-        #    show ltm pool all detail | grep "Pool Member" -A 4 | grep -c "disabled|offline|unknown"
-        #
-        # In these cases, this syntax is surely not what this module was originally designed for.
-        # Nor is it a case that is trivial to handle. The code below makes the rough esxception that
-        # if you are piping, then we will need to escape any of the tmsh specific code, and not
-        # escape the "rest" of the code.
-        #
-        # Later in the ``addon_pipes`` method, this module finishes adjusting the command to include
-        # a terminating quote and remote the duplicate quote that is injected automatically.
-        if '|' in command:
-            parts = command.split('|')
-            parts[0] += "'"
-            parts[-1] = parts[-1][0:-1]
-            command = '|'.join(parts)
-        return command
 
 class BaseManager(object):
     def __init__(self, *args, **kwargs):
@@ -452,6 +475,7 @@ class BaseManager(object):
 
         while retries > 0:
             responses = self._execute(commands)
+            self._check_known_errors(responses)
             for item in list(conditionals):
                 if item(responses):
                     if self.want.match == 'any':
@@ -465,7 +489,7 @@ class BaseManager(object):
             retries -= 1
         else:
             failed_conditions = [item.raw for item in conditionals]
-            errmsg = 'One or more conditional statements have not been satisfied'
+            errmsg = 'One or more conditional statements have not been satisfied.'
             raise FailedConditionsError(errmsg, failed_conditions)
         stdout_lines = self._to_lines(responses)
         changes = {
@@ -480,6 +504,19 @@ class BaseManager(object):
             return True
         return False
 
+    def _check_known_errors(self, responses):
+        # A regex to match the error IDs used in the F5 v2 logging framework.
+        pattern = r'^[0-9A-Fa-f]+:?\d+?:'
+
+        for resp in responses:
+          if 'usage: tmsh' in resp:
+              raise F5ModuleError(
+                  "tmsh command printed its 'help' message instead of running your command. "
+                  "This usually indicates unbalanced quotes."
+              )
+          if re.match(pattern, resp):
+              raise F5ModuleError(str(resp))
+
     def _transform_to_complex_commands(self, commands):
         spec = dict(
             command=dict(key=True),
@@ -488,7 +525,6 @@ class BaseManager(object):
                 choices=['text', 'one-line']
             ),
         )
-
         transform = ComplexList(spec, self.module)
         result = transform(commands)
         return result
@@ -549,11 +585,9 @@ class V2Manager(BaseManager):
 
     def execute_on_device(self, commands):
         responses = []
-
-        escape_patterns = r'([$"' + "'])"
         for item in to_list(commands):
             try:
-                command = '-c "{0}"'.format(re.sub(escape_patterns, r'\\\1', item['command']))
+                command = '-c "{0}"'.format(item['command'])
                 output = self.client.api.tm.util.bash.exec_cmd(
                     'run',
                     utilCmdArgs=command

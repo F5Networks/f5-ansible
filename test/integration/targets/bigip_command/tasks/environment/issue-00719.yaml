@@ -1,0 +1,91 @@
+---
+
+- name: Issue 00719 - Provision AFM
+  bigip_provision:
+    name: afm
+
+- name: Issue 00719 - Create address lists
+  bigip_security_address_list:
+    name: "{{ item.name }}"
+    addresses: "{{ item.addresses }}"
+  loop:
+    - name: DRA
+      addresses: ['1.1.1.1']
+    - name: ePDG-SWm-V6
+      addresses: ['2.2.2.2']
+
+- name: Issue 00719 - Create port lists
+  bigip_security_port_list:
+    name: "{{ item.name }}"
+    ports: "{{ item.ports }}"
+  loop:
+    - name: DIAMETER
+      ports: [80, 8080]
+
+- name: Issue 00719 - Run a long command
+  bigip_command:
+    commands:
+      - create security firewall rule-list ePDG-INIT-DIAM-RL { description 'Rule List for ePDG Initiated Diameter Flows' rules replace-all-with {  ALLOW-ePDG-DIAM-TCP { action accept  description 'Allow ePDG Diameter to Originate TCP' ip-protocol sctp log yes destination { address-lists replace-all-with { DRA } port-lists replace-all-with { DIAMETER } } source { address-lists replace-all-with { ePDG-SWm-V6 } } } DEFAULT-DROP { action drop  description 'Drop Policy with Logging' log yes } } }
+  register: result
+
+- name: Issue 00719 - Assert Run a long command
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00719 - Remove rule list
+  bigip_command:
+    commands:
+      - delete security firewall rule-list ePDG-INIT-DIAM-RL
+  register: result
+
+- name: Issue 00719 - Assert Remove a rule list
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00719 - Run a long command with double quotes
+  bigip_command:
+    commands:
+      - create security firewall rule-list ePDG-INIT-DIAM-RL { description "Rule List for ePDG Initiated Diameter Flows" rules replace-all-with {  ALLOW-ePDG-DIAM-TCP { action accept  description "Allow ePDG Diameter to Originate TCP" ip-protocol sctp log yes destination { address-lists replace-all-with { DRA } port-lists replace-all-with { DIAMETER } } source { address-lists replace-all-with { ePDG-SWm-V6 } } } DEFAULT-DROP { action drop  description "Drop Policy with Logging" log yes } } }
+  register: result
+
+- name: Issue 00719 - Assert Run a long command with double quotes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00719 - Remove rule list with double quotes
+  bigip_command:
+    commands:
+      - delete security firewall rule-list ePDG-INIT-DIAM-RL
+  register: result
+
+- name: Issue 00719 - Assert Remove a rule list with double quotes
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00719 - Remove address lists
+  bigip_security_address_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - DRA
+    - ePDG-SWm-V6
+
+- name: Issue 00719 - Remove port lists
+  bigip_security_port_list:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    - DIAMETER
+
+- name: Issue 00719 - De-provision AFM
+  bigip_provision:
+    name: afm
+    state: absent
