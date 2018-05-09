@@ -1,0 +1,9 @@
+---
+
+pool_name: issue-00705
+node_host: 10.10.10.10
+node_port: 80
+node_description: web server
+connection_limit: 100
+rate_limit: 50
+ratio: 2
