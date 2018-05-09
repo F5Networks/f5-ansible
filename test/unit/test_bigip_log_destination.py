@@ -104,6 +104,9 @@ class TestV1Manager(unittest.TestCase):
         set_module_args(dict(
             name="foo",
             type='remote-syslog',
+            syslog_settings=dict(
+                forward_to='pool1',
+            ),
             state='present',
             password='password',
             server='localhost',
