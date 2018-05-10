@@ -412,12 +412,16 @@ class Difference(object):
             devices = self.have.devices
         else:
             devices = self.want.devices
+        if self.have.devices is None:
+            have_devices = []
+        else:
+            have_devices = self.have.devices
         if len(devices) == 0:
             raise F5ModuleError(
                 "A GTM server must have at least one device associated with it."
             )
         want = [OrderedDict(sorted(d.items())) for d in devices]
-        have = [OrderedDict(sorted(d.items())) for d in self.have.devices]
+        have = [OrderedDict(sorted(d.items())) for d in have_devices]
         if want != have:
             return True
         return False
@@ -637,7 +641,9 @@ class BaseManager(object):
             self.want.update({'disabled': True})
         elif self.want.state in ['present', 'enabled']:
             self.want.update({'enabled': True})
-        self._set_changed_options()
+
+        self.adjust_server_type_by_version()
+        self.should_update()
 
         if self.want.devices is None:
             raise F5ModuleError(
@@ -654,7 +660,7 @@ class BaseManager(object):
             raise F5ModuleError("Failed to create the server")
 
     def create_on_device(self):
-        params = self.want.api_params()
+        params = self.changes.api_params()
         self.client.api.tm.gtm.servers.server.create(
             name=self.want.name,
             partition=self.want.partition,
@@ -732,16 +738,17 @@ class V1Manager(BaseManager):
                 self.want.update({'server_type': 'single-bigip'})
             else:
                 self.want.update({'server_type': 'redundant-bigip'})
-        else:
-            if len(self.want.devices) == 1:
-                self.want.update({'server_type': 'single-bigip'})
-            else:
-                self.want.update({'server_type': 'redundant-bigip'})
         if self.want.link_discovery is None:
             self.want.update({'link_discovery': 'disabled'})
         if self.want.virtual_server_discovery is None:
             self.want.update({'virtual_server_discovery': 'disabled'})
         self._check_link_discovery_requirements()
+
+    def adjust_server_type_by_version(self):
+        if len(self.want.devices) == 1 and self.want.server_type == 'bigip':
+            self.want.update({'server_type': 'single-bigip'})
+        if len(self.want.devices) > 1 and self.want.server_type == 'bigip':
+            self.want.update({'server_type': 'redundant-bigip'})
 
 
 class V2Manager(BaseManager):
@@ -753,6 +760,9 @@ class V2Manager(BaseManager):
         if self.want.virtual_server_discovery is None:
             self.want.update({'virtual_server_discovery': 'disabled'})
         self._check_link_discovery_requirements()
+
+    def adjust_server_type_by_version(self):
+        pass
 
 
 class ArgumentSpec(object):

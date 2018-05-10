@@ -1,0 +1,82 @@
+---
+
+- name: Create server with multiple addresses - windows-nt-4.0
+  bigip_gtm_server:
+    name: "{{ server_name }}-windows-nt-4.0"
+    server_type: windows-nt-4.0
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Gather facts to verify change
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Create server with multiple addresses - windows-nt-4.0
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'windows-nt-4.0'
+
+- name: Create server with multiple addresses - windows-nt-4.0 - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-windows-nt-4.0"
+    server_type: windows-nt-4.0
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Assert Create server with multiple addresses - windows-nt-4.0 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change server type - windows-nt-4.0
+  bigip_gtm_server:
+    name: "{{ server_name }}-windows-nt-4.0"
+    server_type: generic-host
+  register: result
+
+- name: Gather facts to verify update - windows-nt-4.0
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Change server type - windows-nt-4.0
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'generic-host'
+
+- name: Change server type - windows-nt-4.0 - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-windows-nt-4.0"
+    server_type: generic-host
+  register: result
+
+- name: Assert Change server type - windows-nt-4.0 - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove GTM server with multiple addresses - windows-nt-4.0
+  bigip_gtm_server:
+    name: "{{ server_name }}-windows-nt-4.0"
+    state: absent

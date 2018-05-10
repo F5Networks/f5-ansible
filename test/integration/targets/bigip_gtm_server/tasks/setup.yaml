@@ -4,10 +4,9 @@
   bigip_provision:
     name: gtm
 
-- name: Create datacenter
+- name: Create datacenters
   bigip_gtm_datacenter:
-    name: "{{ dc_name1 }}"
-
-- name: Create second datacenter
-  bigip_gtm_datacenter:
-    name: "{{ dc_name2 }}"
+    name: "{{ item }}"
+  loop:
+    - "{{ dc_name1 }}"
+    - "{{ dc_name2 }}"

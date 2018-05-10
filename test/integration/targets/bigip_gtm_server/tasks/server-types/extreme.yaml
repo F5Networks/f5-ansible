@@ -1,0 +1,82 @@
+---
+
+- name: Create server with multiple addresses - extreme
+  bigip_gtm_server:
+    name: "{{ server_name }}-extreme"
+    server_type: extreme
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Gather facts to verify change
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Create server with multiple addresses - extreme
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'extreme'
+
+- name: Create server with multiple addresses - extreme - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-extreme"
+    server_type: extreme
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Assert Create server with multiple addresses - extreme - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change server type - extreme
+  bigip_gtm_server:
+    name: "{{ server_name }}-extreme"
+    server_type: generic-host
+  register: result
+
+- name: Gather facts to verify update - extreme
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Change server type - extreme
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'generic-host'
+
+- name: Change server type - extreme - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-extreme"
+    server_type: generic-host
+  register: result
+
+- name: Assert Change server type - extreme - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove GTM server with multiple addresses - extreme
+  bigip_gtm_server:
+    name: "{{ server_name }}-extreme"
+    state: absent

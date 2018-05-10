@@ -1,0 +1,82 @@
+---
+
+- name: Create server with multiple addresses - foundry-server-iron
+  bigip_gtm_server:
+    name: "{{ server_name }}-foundry-server-iron"
+    server_type: foundry-server-iron
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Gather facts to verify change
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Create server with multiple addresses - foundry-server-iron
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'foundry-server-iron'
+
+- name: Create server with multiple addresses - foundry-server-iron - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-foundry-server-iron"
+    server_type: foundry-server-iron
+    devices:
+      - name: foo
+        addresses:
+          - address: 2.3.4.5
+            translation: 5.4.3.2
+          - address: 6.7.8.9
+            translation: 9.8.7.6
+    datacenter: "{{ dc_name1 }}"
+    state: present
+  register: result
+
+- name: Assert Create server with multiple addresses - foundry-server-iron - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change server type - foundry-server-iron
+  bigip_gtm_server:
+    name: "{{ server_name }}-foundry-server-iron"
+    server_type: generic-host
+  register: result
+
+- name: Gather facts to verify update - foundry-server-iron
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Assert Change server type - foundry-server-iron
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'generic-host'
+
+- name: Change server type - foundry-server-iron - Idempotent check
+  bigip_gtm_server:
+    name: "{{ server_name }}-foundry-server-iron"
+    server_type: generic-host
+  register: result
+
+- name: Assert Change server type - foundry-server-iron - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove GTM server with multiple addresses - foundry-server-iron
+  bigip_gtm_server:
+    name: "{{ server_name }}-foundry-server-iron"
+    state: absent

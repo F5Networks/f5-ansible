@@ -1,0 +1,66 @@
+---
+
+- name: Issue 00728 - Provision GTM
+  bigip_provision:
+    name: gtm
+
+- name: Issue 00728 - Create datacenters
+  bigip_gtm_datacenter:
+    name: issue-00728-dc
+
+- name: Issue 00728 - Create a GTM server
+  bigip_gtm_server:
+     name: issue-00728
+     datacenter: issue-00728-dc
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+  register: result
+
+- name: Gather facts to verify change
+  bigip_gtm_facts:
+    include:
+      - server
+  register: f
+
+- name: Issue 00728 - Assert Create a GTM server
+  assert:
+    that:
+      - result is changed
+      - f['server'][0]['product'] == 'generic-host'
+
+- name: Issue 00728 - Create a GTM server - Idempotent check
+  bigip_gtm_server:
+     name: issue-00728
+     datacenter: issue-00728-dc
+     server_type: generic-host
+     link_discovery: disabled
+     virtual_server_discovery: disabled
+     devices:
+       - name: server_1
+         address: 1.1.1.1
+  register: result
+
+- name: Issue 00728 - Assert Create a GTM server - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00728 - Remove a GTM server
+  bigip_gtm_server:
+     name: issue-00728
+     state: absent
+  register: result
+
+- name: Issue 00728 - Remove datacenters
+  bigip_gtm_datacenter:
+    name: issue-00728-dc
+    state: absent
+
+- name: Issue 00728 - De-provision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
