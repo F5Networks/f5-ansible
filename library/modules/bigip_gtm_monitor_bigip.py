@@ -45,7 +45,7 @@ options:
   interval:
     description:
       - Specifies, in seconds, the frequency at which the system issues the monitor
-        check when either the resource is down or the status of the resource is unknown. 
+        check when either the resource is down or the status of the resource is unknown.
       - When creating a new monitor, if this parameter is not provided, then the
         default value will be C(30). This value B(must) be less than the C(timeout) value.
   timeout:
@@ -54,7 +54,7 @@ options:
         monitor request.
       - If the target responds within the set time period, it is considered up.
       - If the target does not respond within the set time period, it is considered down.
-      - When this value is set to 0 (zero), the system uses the interval from the parent monitor. 
+      - When this value is set to 0 (zero), the system uses the interval from the parent monitor.
       - When creating a new monitor, if this parameter is not provided, then
         the default value will be C(90).
   ignore_down_response:

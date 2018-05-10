@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigip_gtm_pool_member
-short_description: Manage GTM pool member settings 
+short_description: Manage GTM pool member settings
 description:
   - Manages a variety of settings on GTM pool members. The settings that can be
     adjusted with this module are much more broad that what can be done in the
@@ -133,6 +133,7 @@ options:
       - Remember that the order of the members will be affected if you add or remove them
         using this method. To some extent, this can be controlled using the C(member_order)
         parameter.
+    default: present
     choices:
       - present
       - absent

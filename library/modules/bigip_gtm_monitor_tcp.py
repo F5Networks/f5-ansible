@@ -104,6 +104,7 @@ options:
         or node through which the monitor traffic was sent is marked down.
       - When creating a new monitor, if this parameter is not provided, then the default
         value will be C(no).
+    type: bool
   reverse:
     description:
       - Instructs the system to mark the target resource down when the test is successful.

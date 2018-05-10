@@ -691,8 +691,6 @@ class ArgumentSpec(object):
         argument_spec = dict(
             name=dict(required=True),
             parent=dict(default='/Common/firepass_gtm'),
-            send=dict(),
-            receive=dict(),
             ip=dict(),
             port=dict(type='int'),
             interval=dict(type='int'),

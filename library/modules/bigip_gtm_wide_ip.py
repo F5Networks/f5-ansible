@@ -24,6 +24,8 @@ options:
       - Specifies the load balancing method used to select a pool in this wide
         IP. This setting is relevant only when multiple pools are configured
         for a wide IP.
+      - The C(round_robin) value is deprecated and will be removed in Ansible 2.9.
+      - The C(global_availability) value is deprecated and will be removed in Ansible 2.9.
     required: True
     aliases: ['lb_method']
     choices:
@@ -31,6 +33,8 @@ options:
       - ratio
       - topology
       - global-availability
+      - global_availability
+      - round_robin
     version_added: 2.5
   name:
     description:
@@ -260,20 +264,10 @@ class ApiParameters(Parameters):
 class ModuleParameters(Parameters):
     @property
     def pool_lb_method(self):
-        deprecated = [
-            'return_to_dns', 'null', 'static_persist', 'vs_capacity',
-            'least_conn', 'lowest_rtt', 'lowest_hops', 'packet_rate', 'cpu',
-            'hit_ratio', 'qos', 'bps', 'drop_packet', 'explicit_ip',
-            'connection_rate', 'vs_score'
-        ]
         if self._values['pool_lb_method'] is None:
             return None
         lb_method = str(self._values['pool_lb_method'])
-        if lb_method in deprecated:
-            raise F5ModuleError(
-                "The provided pool_lb_method is not supported"
-            )
-        elif lb_method == 'global_availability':
+        if lb_method == 'global_availability':
             if self._values['__warnings'] is None:
                 self._values['__warnings'] = []
             self._values['__warnings'].append(
@@ -715,16 +709,12 @@ class TypedManager(BaseManager):
 
 class ArgumentSpec(object):
     def __init__(self):
-        deprecated = [
-            'return_to_dns', 'null', 'round_robin', 'static_persist',
-            'global_availability', 'vs_capacity', 'least_conn', 'lowest_rtt',
-            'lowest_hops', 'packet_rate', 'cpu', 'hit_ratio', 'qos', 'bps',
-            'drop_packet', 'explicit_ip', 'connection_rate', 'vs_score'
+        lb_method_choices = [
+            'round-robin', 'topology', 'ratio', 'global-availability',
+
+            # TODO(Remove in Ansible 2.9)
+            'round_robin', 'global_availability'
         ]
-        supported = [
-            'round-robin', 'topology', 'ratio', 'global-availability'
-        ]
-        lb_method_choices = deprecated + supported
         self.supports_check_mode = True
         argument_spec = dict(
             pool_lb_method=dict(
