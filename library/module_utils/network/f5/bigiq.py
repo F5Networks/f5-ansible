@@ -82,7 +82,6 @@ class F5RestClient(F5BaseClient):
                 }
                 session = iControlRestSession()
                 session.verify = self.provider['validate_certs']
-                import q; q.q(url, payload)
                 response = session.post(url, json=payload)
 
                 if response.status not in [200]:
