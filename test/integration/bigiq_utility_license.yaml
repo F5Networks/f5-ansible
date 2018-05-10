@@ -21,6 +21,7 @@
 - name: Test the bigiq_utility_license module
   hosts: "f5-bigiq[0]"
   connection: local
+  any_errors_fatal: true
 
   vars:
     limit_to: '*'

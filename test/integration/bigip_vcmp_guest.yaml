@@ -22,6 +22,7 @@
 - name: Test the bigip_vcmp_guest module
   hosts: "f5-metal[0]"
   connection: local
+  any_errors_fatal: true
 
   vars:
     limit_to: '*'

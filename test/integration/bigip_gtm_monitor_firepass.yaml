@@ -21,6 +21,7 @@
 - name: Test the bigip_gtm_monitor_firepass module
   hosts: "f5-test[0]"
   connection: local
+  any_errors_fatal: true
 
   vars:
     limit_to: '*'

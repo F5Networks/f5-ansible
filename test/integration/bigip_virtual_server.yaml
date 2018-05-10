@@ -20,8 +20,9 @@
 #
 
 - name: Metadata of bigip_virtual_server
-  hosts: localhost
+  hosts: "f5-test[0]"
   connection: local
+  any_errors_fatal: true
 
   vars:
     __metadata__:

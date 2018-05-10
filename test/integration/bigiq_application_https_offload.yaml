@@ -19,8 +19,9 @@
 #
 
 - name: Test the bigiq_application_https_offload module
-  hosts: "f5-test[0]"
+  hosts: "f5-bigiq[0]"
   connection: local
+  any_errors_fatal: true
 
   vars:
     limit_to: '*'

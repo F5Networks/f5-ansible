@@ -22,7 +22,7 @@
 - name: Metadata of bigip_selfip
   hosts: localhost
   connection: local
-  gather_facts: false
+  any_errors_fatal: true
 
   vars:
     __metadata__:
