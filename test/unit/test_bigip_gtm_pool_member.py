@@ -108,7 +108,7 @@ class TestParameters(unittest.TestCase):
         assert p.packets_limit == 0
         assert p.bits_enabled == 'disabled'
         assert p.bits_limit == 0
-        assert p.connections_enabled  == 'disabled'
+        assert p.connections_enabled == 'disabled'
         assert p.connections_limit == 0
 
 
