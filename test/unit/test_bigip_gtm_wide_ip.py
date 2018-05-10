@@ -70,7 +70,7 @@ class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
         args = dict(
             name='foo.baz.bar',
-            lb_method='round-robin',
+            pool_lb_method='round-robin',
         )
         p = ModuleParameters(params=args)
         assert p.name == 'foo.baz.bar'
