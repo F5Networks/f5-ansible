@@ -37,7 +37,7 @@ options:
         the number of retries as expired.
       - Only C(tmsh) commands are supported. If you are piping or adding additional
         logic that is outside of C(tmsh) (such as grep'ing, awk'ing or other shell
-        related things that are not C(tmsh), this behavior is not supported. 
+        related things that are not C(tmsh), this behavior is not supported.
     required: True
   wait_for:
     description:
@@ -87,13 +87,14 @@ options:
         or not.
       - Note that the F5 Ansible developers specifically leave this on to make you
         aware that your usage of this module may be better served by official F5
-        Ansible modules. This module should always be used as a last resort. 
+        Ansible modules. This module should always be used as a last resort.
     default: True
     type: bool
+    version_added: 2.6
   chdir:
     description:
       - Change into this directory before running the command.
-    default: /Common
+    version_added: 2.6
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -416,7 +417,6 @@ class BaseManager(object):
         for warning in warnings:
             self.module.warn(warning)
 
-
     def notify_non_idempotent_commands(self, commands):
         for index, item in enumerate(commands):
             if any(item.startswith(x) for x in self.valid_configs):
@@ -509,13 +509,13 @@ class BaseManager(object):
         pattern = r'^[0-9A-Fa-f]+:?\d+?:'
 
         for resp in responses:
-          if 'usage: tmsh' in resp:
-              raise F5ModuleError(
-                  "tmsh command printed its 'help' message instead of running your command. "
-                  "This usually indicates unbalanced quotes."
-              )
-          if re.match(pattern, resp):
-              raise F5ModuleError(str(resp))
+            if 'usage: tmsh' in resp:
+                raise F5ModuleError(
+                    "tmsh command printed its 'help' message instead of running your command. "
+                    "This usually indicates unbalanced quotes."
+                )
+            if re.match(pattern, resp):
+                raise F5ModuleError(str(resp))
 
     def _transform_to_complex_commands(self, commands):
         spec = dict(

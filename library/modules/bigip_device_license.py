@@ -32,6 +32,7 @@ options:
       - This parameter is required if the C(state) is equal to C(present).
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
+    default: activate.f5.com
   state:
     description:
       - The state of the license on the system.
@@ -41,7 +42,6 @@ options:
     default: present
     choices:
       - absent
-      - latest
       - present
   accept_eula:
     description:
@@ -52,6 +52,7 @@ options:
       - The EULA can be found here; https://support.f5.com/csp/article/K12902.
       - This parameter is not required when C(state) is C(absent) and will be
         ignored if it is provided.
+    type: bool
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -73,6 +74,10 @@ EXAMPLES = '''
     password: "secret"
     state: "absent"
   delegate_to: localhost
+'''
+
+RETURN = r'''
+# only common fields returned
 '''
 
 from ansible.module_utils.basic import AnsibleModule
