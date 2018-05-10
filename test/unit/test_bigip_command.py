@@ -97,7 +97,7 @@ class TestManager(unittest.TestCase):
         )
 
         m1 = V2Manager(module=module)
-        m1.execute_on_device = Mock(return_value=[True, False])
+        m1.execute_on_device = Mock(return_value=['resp1', 'resp2'])
 
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
@@ -125,7 +125,7 @@ class TestManager(unittest.TestCase):
         )
 
         m1 = V2Manager(module=module)
-        m1.execute_on_device = Mock(return_value=[True, False])
+        m1.execute_on_device = Mock(return_value=['resp1', 'resp2'])
 
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
@@ -154,7 +154,7 @@ class TestManager(unittest.TestCase):
         )
 
         m1 = V1Manager(module=module)
-        m1.execute_on_device = Mock(return_value=[True, False, True])
+        m1.execute_on_device = Mock(return_value=['resp1', 'resp2', 'resp3'])
 
         mm = ModuleManager(module=module)
         mm._run_commands = Mock(return_value=[])
@@ -181,7 +181,7 @@ class TestManager(unittest.TestCase):
               tmsh create /auth ldap system-auth {bind-dn uid=binduser,
               cn=users,dc=domain,dc=com bind-pw $ENCRYPTEDPW check-roles-group
               enabled search-base-dn cn=users,dc=domain,dc=com servers add {
-              ldap.server.com } }"
+              ldap.server.com } }
             """,
             server='localhost',
             user='admin',
@@ -192,7 +192,7 @@ class TestManager(unittest.TestCase):
             supports_check_mode=self.spec.supports_check_mode
         )
         m1 = V2Manager(module=module)
-        m1.execute_on_device = Mock(return_value=[True, False])
+        m1.execute_on_device = Mock(return_value=['resp1', 'resp2'])
 
         mm = ModuleManager(module=module)
         mm.get_manager = Mock(return_value=m1)
