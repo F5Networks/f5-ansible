@@ -544,7 +544,11 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">

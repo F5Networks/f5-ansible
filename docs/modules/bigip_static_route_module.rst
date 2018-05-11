@@ -153,6 +153,25 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>partition</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Device partition to manage resources on.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>password</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -646,6 +665,25 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.255</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>partition</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The partition that the static route was created on.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Common</div>
                                             </div>
                 </td>
             </tr>

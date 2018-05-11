@@ -572,8 +572,8 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>present</li>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                                         <li>absent</li>
                                                                                                                                                                                                                         <li>enabled</li>
                                                                                                                                                                                                                         <li>disabled</li>

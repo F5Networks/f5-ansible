@@ -49,7 +49,7 @@ Parameters
                     <div class="cell-border">
                                                                                                                                                     <ul><b>Choices:</b>
                                                                                                                                                                                     <li>destination-mac</li>
-                                                                                                                                                                                                                        <li>source-destination-ip-port</li>
+                                                                                                                                                                                                                        <li>source-destination-ip</li>
                                                                                                                                                                                                                         <li>source-destination-mac</li>
                                                                                                 </ul>
                                                                                             </div>

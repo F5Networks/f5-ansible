@@ -548,8 +548,7 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">all</div>
-                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">

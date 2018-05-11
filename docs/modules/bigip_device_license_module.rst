@@ -47,7 +47,11 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -87,7 +91,8 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">activate.f5.com</div>
+                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -347,7 +352,6 @@ Parameters
                     <div class="cell-border">
                                                                                                                                                                                                         <ul><b>Choices:</b>
                                                                                                                                                                                     <li>absent</li>
-                                                                                                                                                                                                                        <li>latest</li>
                                                                                                                                                                                                                         <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                 </ul>
                                                                                             </div>

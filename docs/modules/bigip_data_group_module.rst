@@ -442,7 +442,8 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">:=</div>
+                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -500,8 +501,8 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>present</li>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                                         <li>absent</li>
                                                                                                 </ul>
                                                                                             </div>
@@ -525,8 +526,12 @@ Parameters
                     <div class="cell-border">
                                                                                                                                                                                                         <ul><b>Choices:</b>
                                                                                                                                                                                     <li>address</li>
+                                                                                                                                                                                                                        <li>addr</li>
+                                                                                                                                                                                                                        <li>ip</li>
                                                                                                                                                                                                                         <li><div style="color: blue"><b>string</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>str</li>
                                                                                                                                                                                                                         <li>integer</li>
+                                                                                                                                                                                                                        <li>int</li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>

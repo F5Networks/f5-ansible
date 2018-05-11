@@ -97,7 +97,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>fqdn</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                        </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -124,7 +124,11 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -140,8 +144,31 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>monitor_state</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>enabled</li>
+                                                                                                                                                                                                                        <li>disabled</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Set monitor availability status for pool member.</div>
+                                                            <div>This parameter is deprecated and will be removed in Ansible 2.7. Use <code>state</code> <code>enabled</code> or <code>disabled</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>name</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -497,6 +524,28 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>reuse_nodes</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Reuses node definitions if requested.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>server</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -527,6 +576,29 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>session_state</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.0)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>enabled</li>
+                                                                                                                                                                                                                        <li>disabled</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Set new session availability status for pool member.</div>
+                                                            <div>This parameter is deprecated and will be removed in Ansible 2.7. Use <code>state</code> <code>enabled</code> or <code>disabled</code>.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -691,7 +763,7 @@ Examples
           priority_group: 2
         - host: 4.4.4.4
           name: web4
-          priority_group: 1      
+          priority_group: 1
 
 
 
@@ -732,7 +804,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>connection_limit</b>
-                            <br/><div style="font-size: small; color: red">integer</div>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>
@@ -808,7 +880,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>priority_group</b>
-                            <br/><div style="font-size: small; color: red">integer</div>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>
@@ -827,7 +899,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>rate_limit</b>
-                            <br/><div style="font-size: small; color: red">integer</div>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>
@@ -846,7 +918,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>ratio</b>
-                            <br/><div style="font-size: small; color: red">integer</div>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>

@@ -744,7 +744,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The condition type</div>
+                                                    <div>The condition type.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
                                                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">http_uri</div>

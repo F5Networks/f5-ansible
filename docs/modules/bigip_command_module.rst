@@ -44,13 +44,12 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>chdir</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">/Common</div>
-                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -458,7 +457,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>warn</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>

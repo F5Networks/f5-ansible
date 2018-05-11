@@ -170,7 +170,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>name</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>

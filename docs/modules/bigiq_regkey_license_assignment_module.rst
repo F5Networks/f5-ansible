@@ -52,7 +52,7 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>When <code>managed</code> is <code>no</code>, specifies the address, or hostname, where the BIG-IQ can reach the remote device to register.</div>
-                                                            <div>When (Cmanaged) is <code>yes</code>, specifies the managed device, or device UUID, that you want to register.</div>
+                                                            <div>When <code>managed</code> is <code>yes</code>, specifies the managed device, or device UUID, that you want to register.</div>
                                                             <div>If <code>managed</code> is <code>yes</code>, it is very important that you do not have more than one device with the same name. BIG-IQ internally recognizes devices by their ID, and therefore, this module&#x27;s cannot guarantee that the correct device will be registered. The device returned is the device that will be used.</div>
                                                                                                 </div>
                 </td>

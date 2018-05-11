@@ -48,7 +48,11 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -113,7 +117,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Host name used in SMTP headers in the format of a fully qualified domain name. This setting does not refer to the BIG-IP system’s hostname.</div>
+                                                                                    <div>Host name used in SMTP headers in the format of a fully qualified domain name. This setting does not refer to the BIG-IP system&#x27;s hostname.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -500,8 +504,8 @@ Parameters
                                 <td>
                     <div class="cell-border">
                                                                                                                                                                                                         <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>always</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>on_create</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                    <li><div style="color: blue"><b>always</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>on_create</li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>

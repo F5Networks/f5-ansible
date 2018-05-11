@@ -65,9 +65,9 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                                                                                                <li>yes</li>
-                                                                                                                                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>

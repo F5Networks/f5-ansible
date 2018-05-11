@@ -178,6 +178,25 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>parent</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the profile from which this profile inherits settings.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default is the system-supplied <code>dns</code> profile.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>partition</b>
                                                                                 </div>
                     </div>

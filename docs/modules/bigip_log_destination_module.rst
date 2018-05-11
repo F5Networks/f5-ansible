@@ -77,6 +77,25 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>partition</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Device partition to manage resources on.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>password</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -399,6 +418,29 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The BIG-IP server port. You can omit this option if the environment variable <code>F5_SERVER_PORT</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>state</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>absent</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>When <code>present</code>, ensures that the resource exists.</div>
+                                                            <div>When <code>absent</code>, ensures the resource is removed.</div>
                                                                                                 </div>
                 </td>
             </tr>

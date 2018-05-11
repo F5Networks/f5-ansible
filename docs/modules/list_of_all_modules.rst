@@ -104,6 +104,8 @@ All modules
   * :ref:`bigip_virtual_server`
   * :ref:`bigip_vlan`
   * :ref:`bigip_wait`
+  * :ref:`bigiq_application_http`
+  * :ref:`bigiq_application_https_offload`
   * :ref:`bigiq_regkey_license`
   * :ref:`bigiq_regkey_license_assignment`
   * :ref:`bigiq_regkey_pool`

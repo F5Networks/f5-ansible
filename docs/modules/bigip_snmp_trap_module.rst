@@ -111,7 +111,7 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>Specifies the name of the trap network. This option is not supported in versions of BIG-IP &lt; 12.1.0. If used on versions &lt; 12.1.0, it will simply be ignored.</div>
-                                                            <div>The value <code>default</code> was removed in BIG-IP version 13.1.0. Specifying this value when configuring a BIG-IP will cause the module to stop and report an error. The usual rememdy is to choose one of the other options, such as <code>management</code>.</div>
+                                                            <div>The value <code>default</code> was removed in BIG-IP version 13.1.0. Specifying this value when configuring a BIG-IP will cause the module to stop and report an error. The usual remedy is to choose one of the other options, such as <code>management</code>.</div>
                                                                                                 </div>
                 </td>
             </tr>
