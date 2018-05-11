@@ -666,7 +666,7 @@ class Parameters(AnsibleF5Parameters):
         'disabled',
         'enabled',
         'fallbackPersistence',
-        #'ipProtocol',
+        # 'ipProtocol',
         'metadata',
         'persist',
         'policies',
@@ -700,7 +700,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
-        #'ip_protocol',
+        # 'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -726,7 +726,7 @@ class Parameters(AnsibleF5Parameters):
         'enabled',
         'enabled_vlans',
         'fallback_persistence_profile',
-        #'ip_protocol',
+        # 'ip_protocol',
         'irules',
         'metadata',
         'pool',
@@ -1632,7 +1632,7 @@ class UsableChanges(Changes):
     def security_log_profiles(self):
         if self._values['security_log_profiles'] is None:
             return None
-        mutex = ('Log all requests','Log illegal requests')
+        mutex = ('Log all requests', 'Log illegal requests')
         if len([x for x in self._values['security_log_profiles'] if x.endswith(mutex)]) >= 2:
             raise F5ModuleError(
                 "The 'Log all requests' and 'Log illegal requests' are mutually exclusive."
@@ -1870,7 +1870,6 @@ class VirtualServerValidator(object):
             return
         if self.want.type == 'standard':
             # Standard supports
-            #
             # - tcp
             # - udp
             # - sctp
