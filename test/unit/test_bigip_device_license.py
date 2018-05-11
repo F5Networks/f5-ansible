@@ -79,6 +79,11 @@ class TestModuleManager(unittest.TestCase):
 
     def setUp(self):
         self.spec = ArgumentSpec()
+        self.patcher1 = patch('time.sleep')
+        self.patcher1.start()
+
+    def tearDown(self):
+        self.patcher1.stop()
 
     def test_create(self, *args):
         set_module_args(
@@ -105,6 +110,7 @@ class TestModuleManager(unittest.TestCase):
         mm.upload_license_to_device = Mock(return_value=True)
         mm.upload_eula_to_device = Mock(return_value=True)
         mm.reload_license = Mock(return_value=True)
+        mm._is_mcpd_ready_on_device = Mock(return_value=True)
 
         results = mm.exec_module()
         assert results['changed'] is True
