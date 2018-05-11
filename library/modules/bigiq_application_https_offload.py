@@ -15,9 +15,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_application_https_offload
-short_description: __SHORT_DESCRIPTION__
+short_description: Manages BIG-IQ HTTPS offload applications
 description:
-  - __LONG DESCRIPTION__.
+  - Manages BIG-IQ applications used for load balancing an HTTPS application on
+    port 443 with SSL offloading on BIG-IP.
 version_added: 2.6
 options:
   name:
@@ -27,6 +28,17 @@ options:
   description:
     description:
       - Description of the application.
+  servers:
+    description:
+      - A list of servers that the application is hosted on.
+      - If you are familiar with other BIG-IP setting, you might also refer to this
+        list as the list of pool members.
+      - When creating a new application, at least one server is required.
+    suboptions:
+      address:
+        - The IP address of the server.
+      port:
+        - The port of the server.
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
@@ -36,34 +48,116 @@ options:
     suboptions:
       destination:
         description:
-          - The destination address to which the virtual server sends traffic. 
+          - Specifies destination IP address information to which the virtual server
+            sends traffic. 
           - This parameter is required when creating a new application.
-    netmask: required
-    port: 443
+      netmask:
+        description:
+          - Specifies the netmask to associate with the given C(destination).
+          - This parameter is required when creating a new application. 
+      port:
+        description:
+          - The port that the virtual listens for connections on.
+          - When creating a new application, if this parameter is not specified, the
+            default value of C(443) will be used.
   redirect_virtual:
-    destination: required
-    netmask: required
-    port: 80
+    description:
+      - Settings to configure the virtual which will receive the connection to be
+        redirected.
+      - This virtual will be used to host the HTTP endpoint of the application.
+      - Traffic destined to this parameter will be offloaded to the
+        C(inbound_virtual) parameter to ensure that proper redirection from insecure,
+        to secure, occurs.
+    suboptions:
+      destination:
+        description:
+          - Specifies destination IP address information to which the virtual server
+            sends traffic. 
+          - This parameter is required when creating a new application.
+      netmask:
+        description:
+          - Specifies the netmask to associate with the given C(destination).
+          - This parameter is required when creating a new application.
+      port:
+        description:
+          - The port that the virtual listens for connections on.
+          - When creating a new application, if this parameter is not specified, the
+            default value of C(80) will be used.
   client_ssl_profile:
-    name: client-ssl
-    cert_key_chain:
-      - cert: bigip_ssl_cert1
-        key: bigip_ssl_key1
-        chain: bigip_ssl_cert1
-  http_profile: profile_http
+    description:
+      - Specifies the SSL profile for managing client-side SSL traffic.
+    suboptions:
+      name:
+        description:
+          - The name of the client SSL profile to created and used.
+          - When creating a new application, if this value is not specified, the
+            default value of C(clientssl) will be used.
+      cert_key_chain:
+        description:
+          - One or more certificates and keys to associate with the SSL profile.
+          - This option is always a list. The keys in the list dictate the details
+            of the client/key/chain/passphrase combination.
+          - Note that BIG-IPs can only have one of each type of each certificate/key
+            type. This means that you can only have one RSA, one DSA, and one ECDSA
+            per profile.
+          - If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo,
+            the device will reject this.
+          - This list is a complex list that specifies a number of keys. There are
+            several supported keys.
+          - When creating a new profile, if this parameter is not specified, the
+            default value of C(inherit) will be used.
+        suboptions:
+          cert:
+            description:
+              - Specifies a cert name for use.
+            required: True
+          key:
+            description:
+              - Specifies a key name.
+            required: True
+          chain:
+            description:
+              - Specifies a certificate chain that is relevant to the certificate and
+                key mentioned earlier.
+              - This key is optional.
+          passphrase:
+            description:
+              - Contains the passphrase of the key file, should it require one.
+              - Passphrases are encrypted on the remote BIG-IP device.
+  service_environment:
+    description:
+      - Specifies the name of service environment that the application will be
+        deployed to.
+      - When creating a new application, this parameter is required.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Load balance an HTTPS application on port 443 with SSL offloading on BIG-IP
   bigiq_application_https_offload:
-    name: foo
-    password: secret
-    server: lb.mydomain.com
+    name: my-app
+    description: Redirect HTTP to HTTPS
+    service_environment: my-ssg
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      destination: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 443
+    redirect_virtual:
+      destination: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      password: secret
+      server: lb.mydomain.com
+      user: admin
     state: present
-    user: admin
   delegate_to: localhost
 '''
 
