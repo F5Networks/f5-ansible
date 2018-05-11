@@ -132,7 +132,7 @@ Python interpreter would be specified.
 Install modules
 ---------------
 
-Refer to the documentation on `installing the modules here <installing-modules.html>`_.
+Refer to the documentation on :ref:`installing the modules here <installunstable>`_.
 
 This is useful if you want to run the latest/development version of the F5 modules for Ansible.
 

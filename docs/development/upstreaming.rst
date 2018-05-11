@@ -25,7 +25,7 @@ Qualifications for upstreaming
 
 A module is in a mature state after it has met all of the established standards.
 
-- http://docs.ansible.com/ansible/dev_guide/testing.html
+- http://docs.ansible.com/ansible/latest/dev_guide/index.html
 - :doc:`code-conventions`
 
 When the module meets these requirements, F5 will request Ansible to include the module.

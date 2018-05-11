@@ -114,4 +114,4 @@ You can see an example of the kind of `table that is created here`_. This is the
 documentation-related blob that will be added to the module. Up next, we will cover the
 ``import`` block.
 
-.. _table that is created here: https://docs.ansible.com/ansible/latest/bigip_pool_module.html#return-values
+.. _table that is created here: http://docs.ansible.com/ansible/latest/modules/bigip_pool_module.html#return-values

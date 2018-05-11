@@ -86,11 +86,45 @@ It is **your** job to choose a passphrase (not just pass**word**) that is suffic
 Create a passphrase
 ```````````````````
 
-A practice referred to as `Diceware` allows you to choose a passphrase that is sufficiently difficult to computationally discover.
+A practice referred to as ``Diceware`` allows you to choose a passphrase that is sufficiently difficult to computationally discover.
 
-You can read about Diceware in detail here:
+From the Diceware website, it is described as...
 
-- http://world.std.com/~reinhold/diceware.html
+.. quote::
+
+   ...a method for picking passphrases that uses dice to select words at random from a special list called the Diceware Word List.
+   Each word in the list is preceded by a five digit number. All the digits are between one and six, allowing you to use the outcomes
+   of five dice rolls to select a word from the list.
+
+   Here is a short excerpt from the Diceware word list:
+
+     16655 clause
+     16656 claw
+     16661 clay
+     16662 clean
+     16663 clear
+     16664 cleat
+     16665 cleft
+     16666 clerk
+     21111 cliche
+     21112 click
+     21113 cliff
+     21114 climb
+     21115 clime
+     21116 cling
+     21121 clink
+     21122 clint
+     21123 clio
+     21124 clip
+     21125 clive
+     21126 cloak
+     21131 clock
+
+   The complete list contains 7776 short words, abbreviations and easy-to-remember character strings. The average length of each word
+   is about 4.2 characters. The biggest words are six characters long. The English list is based on a longer word list posted to the
+   Internet news group sci.crypt by Peter Kwangjun Suk. An alternative list, edited by Alan Beale, contains fewer Americanisms and
+   obscure words. And there are lists for several other languages. You can also download the Diceware word list in PDF format or in
+   PostScript format.
 
 The idea is that you toss a dice and record the number. The numbers correspond to words in a list of words.
 
