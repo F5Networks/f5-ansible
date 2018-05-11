@@ -543,7 +543,7 @@ class ModuleParameters(Parameters):
     def members(self):
         if self._values['members'] is None:
             return None
-        if len(self._values['members']) == 1 and self._values['members'][0] =='':
+        if len(self._values['members']) == 1 and self._values['members'][0] == '':
             return []
         result = []
         for member in self._values['members']:

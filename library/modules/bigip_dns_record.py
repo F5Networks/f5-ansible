@@ -84,7 +84,7 @@ from distutils.version import StrictVersion
 import re
 
 
-VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+VERSION_PATTERN = r'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 RECORDS = [
     'A', 'AAAA', 'CNAME', 'DNAME', 'DS',
     'HINFO', 'MX', 'NAPTR', 'NS', 'PTR',

@@ -77,7 +77,7 @@ EXAMPLES = r'''
 from distutils.version import StrictVersion
 import re
 
-VERSION_PATTERN = 'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
+VERSION_PATTERN = r'BIG-IP_v(?P<version>\d+\.\d+\.\d+)'
 
 
 class ViewZoneException(Exception):

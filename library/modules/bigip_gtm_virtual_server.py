@@ -83,7 +83,7 @@ options:
             parameter must also be specified.
           - The value of this parameter should always be B(higher) than, or B(equal to), the value of C(number_of_probers).
           - This parameter is only relevant when a C(type) of C(require) is used.
-          - This parameter will be ignored if a type of either C(all) or C(at_least) is used. 
+          - This parameter will be ignored if a type of either C(all) or C(at_least) is used.
   monitors:
     description:
       - Specifies the health monitors that the system currently uses to monitor this resource.
@@ -213,7 +213,7 @@ virtual_server_dependencies:
   description: The new list of virtual server dependencies for the resource
   returned: changed
   type: list
-  sample: ['/Common/vs1', '/Common/vs2'] 
+  sample: ['/Common/vs1', '/Common/vs2']
 link:
   description: The new link value for the resource.
   returned: changed
