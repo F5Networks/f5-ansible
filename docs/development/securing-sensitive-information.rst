@@ -90,7 +90,7 @@ A practice referred to as ``Diceware`` allows you to choose a passphrase that is
 
 From the Diceware website, it is described as...
 
-.. quote::
+.. code::
 
    ...a method for picking passphrases that uses dice to select words at random from a special list called the Diceware Word List.
    Each word in the list is preceded by a five digit number. All the digits are between one and six, allowing you to use the outcomes
