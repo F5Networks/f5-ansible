@@ -429,9 +429,8 @@ class BaseManager(object):
                     'in question is "{0}..."'.format(item[0:40])
                 )
 
-    def normalize_commands(self, raw_commands):
-        if self.want.normalized_commands:
-            return self.want.normalized_commands
+    @staticmethod
+    def normalize_commands(raw_commands):
         if not raw_commands:
             return None
         result = []
@@ -440,7 +439,6 @@ class BaseManager(object):
             if command[0:5] == 'tmsh ':
                 command = command[4:].strip()
             result.append(command)
-        self.want.update({'normalized_commands': result})
         return result
 
     def parse_commands(self):
@@ -461,7 +459,11 @@ class BaseManager(object):
         return results
 
     def execute(self):
-        result = self.normalize_commands(self.want.raw_commands)
+        if self.want.normalized_commands:
+            result = self.want.normalized_commands
+        else:
+            result = self.normalize_commands(self.want.raw_commands)
+            self.want.update({'normalized_commands': result})
         if not result:
             return False
         self.notify_non_idempotent_commands(self.want.normalized_commands)
