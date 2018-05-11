@@ -74,8 +74,8 @@ class ActionModule(_ActionModule):
                 display.vvvv('socket_path: %s' % socket_path, pc.remote_addr)
                 if not socket_path:
                     return {'failed': True,
-                            'msg': 'Unable to open shell. Please see: ' +
-                                   'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
+                            'msg': 'Unable to open shell. Please see: '
+                                   + 'https://docs.ansible.com/ansible/network_debug_troubleshooting.html#unable-to-open-shell'}
 
                 task_vars['ansible_socket'] = socket_path
         else:

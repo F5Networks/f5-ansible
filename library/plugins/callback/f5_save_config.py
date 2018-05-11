@@ -97,6 +97,7 @@ except ImportError:
     except ImportError:
         HAS_F5SDK = False
 
+
 class CallbackModule(CallbackBase):
     """Callback plugin which commits BIG-IP config on change
     """
@@ -142,7 +143,6 @@ class CallbackModule(CallbackBase):
     def v2_playbook_on_play_start(self, play):
         self.play = play
 
-
     def _all_vars(self, host=None, task=None):
         # host and task need to be specified in case 'magic variables' (host vars, group vars, etc) need to be loaded as well
         return self.play.get_variable_manager().get_vars(
@@ -152,12 +152,12 @@ class CallbackModule(CallbackBase):
         )
 
     def v2_runner_on_ok(self, result):
-        templar = Templar(loader=self.playbook.get_loader(),
-                  shared_loader_obj=SharedPluginLoaderObj(),
-                  variables=self._all_vars(host=result._host, task=result._task))
+        templar = Templar(
+            loader=self.playbook.get_loader(),
+            shared_loader_obj=SharedPluginLoaderObj(),
+            variables=self._all_vars(host=result._host, task=result._task)
+        )
 
-        import q
         result._task.squash()
         foo = templar.template(result._task._attributes['environment'])
         q.q(foo)
-
