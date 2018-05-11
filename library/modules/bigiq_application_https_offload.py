@@ -36,9 +36,11 @@ options:
       - When creating a new application, at least one server is required.
     suboptions:
       address:
-        - The IP address of the server.
+        description:
+          - The IP address of the server.
       port:
-        - The port of the server.
+        description:
+          - The port of the server.
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
