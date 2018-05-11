@@ -100,5 +100,14 @@ run-py3.5:
 run-py3.6:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
 
+bare-py2.7:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py2.7-bare
+
+bare-py3.5:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.5-bare
+
+bare-py3.6:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6-bare
+
 ip-alias:
 	sudo ifconfig lo0 alias 1.2.3.4
