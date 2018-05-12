@@ -1,5 +1,28 @@
 ---
 
+- name: Collect all facts
+  bigip_facts:
+    include:
+      - address_class
+      - certificate
+      - client_ssl_profile
+      - device
+      - device_group
+      - interface
+      - key
+      - node
+      - pool
+      - provision
+      - rule
+      - self_ip
+      - software
+      - system_info
+      - traffic_group
+      - trunk
+      - virtual_address
+      - virtual_server
+      - vlan
+
 - name: Collect BIG-IP facts
   bigip_facts:
     include: "{{ item }}"
@@ -20,3 +43,6 @@
 
 - import_tasks: issue-00410.yaml
   tags: issue-00410
+
+- import_tasks: issue-00706.yaml
+  tags: issue-00706

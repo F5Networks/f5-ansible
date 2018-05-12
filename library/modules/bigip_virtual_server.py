@@ -84,6 +84,8 @@ options:
       - dhcp
       - internal
       - message-routing
+    default: standard
+    version_added: 2.6
   name:
     description:
       - Virtual server name.
@@ -207,7 +209,7 @@ options:
       - When creating a new virtual server, and C(type) is C(stateless), this parameter
         is required.
       - If C(type) is C(stateless), the C(pool) that is used must not have any members
-        which define a C(rate_limit). 
+        which define a C(rate_limit).
   policies:
     description:
       - Specifies the policies for the virtual server.
@@ -222,11 +224,10 @@ options:
       - When C(type) is C(dhcp), this parameter is ignored.
       - When C(type) is C(reject), this parameter will be ignored.
       - When C(type) is C(internal), this parameter will be ignored.
-    choices:
-      - None
-      - Automap
-      - Name of a SNAT pool (eg "/Common/snat_pool_name") to enable SNAT
-        with the specific pool
+      - The name of a SNAT pool (eg "/Common/snat_pool_name") can be specified to enable SNAT
+        with the specific pool.
+      - To remove SNAT, specify the word C(none).
+      - To specify automap, use the word C(automap).
   default_persistence_profile:
     description:
       - Default Profile which manages the session persistence.
@@ -308,6 +309,7 @@ options:
       - tcp
       - udp
       - udplite
+    version_added: 2.6
   firewall_enforced_policy:
     description:
       - Applies the specify AFM policy to the virtual in an enforcing way.
@@ -328,6 +330,7 @@ options:
       - To make use of this feature, the AFM module must be licensed and provisioned.
       - The C(Log all requests) and C(Log illegal requests) are mutually exclusive and
         therefore, this module will raise an error if the two are specified together.
+    version_added: 2.6
 notes:
   - Requires BIG-IP software version >= 11
   - Requires the netaddr Python package on the host. This is as easy as pip
@@ -584,7 +587,7 @@ port_translation:
 ip_protocol:
   description: The new value of the IP protocol.
   returned: changed
-  type: integer
+  type: int
   sample: 6
 firewall_enforced_policy:
   description: The new enforcing firewall policy.
@@ -1842,7 +1845,6 @@ class VirtualServerValidator(object):
                     msg="Specifying 'message-routing' profiles on a 'standard' type is deprecated and will be removed.",
                     version='2.6'
                 )
-
 
     def _check_source_and_destination_match(self):
         """Verify that destination and source are of the same IP version

@@ -1,7 +1,7 @@
 ---
 
 - name: Collect all facts
-  bigip_facts2:
+  bigip_facts:
     include:
       - vlan
   register: result
