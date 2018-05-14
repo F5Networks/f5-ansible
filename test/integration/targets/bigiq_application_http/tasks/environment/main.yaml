@@ -129,17 +129,6 @@
       - result is success
       - "'must be specified when creating a new application.' in result['msg']"
 
-
-
-
-
-
-
-
-
-
-
-
 - name: Load balance an HTTP application on port 80 on BIG-IP - default device
   bigiq_application_http:
     name: "{{ app_name }}"
@@ -189,8 +178,5 @@
     name: "{{ app_name }}"
     state: absent
   register: result
-
-
-
 
 - import_tasks: teardown.yaml

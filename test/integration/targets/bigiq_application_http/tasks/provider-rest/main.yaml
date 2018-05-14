@@ -1,0 +1,242 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Load balance an HTTP application on port 80 on BIG-IP
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance an HTTP application on port 80 on BIG-IP - Idempotent check
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove HTTP application
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    state: absent
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove HTTP application
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove HTTP application - Idempotent check
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    state: absent
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Remove HTTP application - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Try to create without service_environment - HTTP
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without service_environment - HTTP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Try to create without servers - HTTP
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - HTTP
+  assert:
+    that:
+      - result is success
+      - "'item is needed when creating a new application.' in result['msg']"
+
+- name: Try to create without inbound_virtual - HTTP
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - HTTP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove HTTP application - default device
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    state: absent
+    provider:
+      user: "{{ f5_username }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ f5_port }}"
+      password: "{{ f5_password }}"
+      validate_certs: "{{ validate_certs }}"
+  register: result
+
+- import_tasks: teardown.yaml
