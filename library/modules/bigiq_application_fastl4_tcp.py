@@ -163,12 +163,12 @@ try:
     from library.module_utils.network.f5.common import exit_json
     from library.module_utils.network.f5.common import fail_json
 except ImportError:
-    from library.module_utils.network.f5.bigiq import F5RestClient
+    from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    from library.module_utils.network.f5.common import exit_json
-    from library.module_utils.network.f5.common import fail_json
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 try:
     import netaddr
