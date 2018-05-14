@@ -1,0 +1,5 @@
+---
+
+default_device_name: bigiptier1.foo.com
+ssg_name: tim-ssg
+app_name: my-app1
