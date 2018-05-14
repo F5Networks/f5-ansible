@@ -2,11 +2,11 @@
 
 - import_tasks: setup.yaml
 
-- name: Load balance an HTTP application on port 80 on BIG-IP
-  bigiq_application_http:
+- name: Load balance a TCP-based application with a FastL4 profile
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
-    description: Load balance HTTP
-    service_environment: "{{ ssg_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
     servers:
       - address: 1.2.3.4
         port: 8080
@@ -18,17 +18,17 @@
       port: 80
   register: result
 
-- name: Assert Load balance an HTTP application on port 80 on BIG-IP
+- name: Assert Load balance a TCP-based application with a FastL4 profile
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Load balance an HTTP application on port 80 on BIG-IP - Idempotent check
-  bigiq_application_http:
+- name: Load balance a TCP-based application with a FastL4 profile - Idempotent check
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
-    description: Load balance HTTP
-    service_environment: "{{ ssg_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
     servers:
       - address: 1.2.3.4
         port: 8080
@@ -40,40 +40,40 @@
       port: 80
   register: result
 
-- name: Assert Load balance an HTTP application on port 80 on BIG-IP - Idempotent check
+- name: Assert Load balance a TCP-based application with a FastL4 profile - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Remove HTTP application
-  bigiq_application_http:
+- name: Remove FastL4 TCP application
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
     state: absent
   register: result
 
-- name: Assert Remove HTTP application
+- name: Assert Remove FastL4 TCP application
   assert:
     that:
       - result is changed
       - result is success
 
-- name: Remove HTTP application - Idempotent check
-  bigiq_application_http:
+- name: Remove FastL4 TCP application - Idempotent check
+  bigiq_application_fastl4_tcp:
     name: my-app
     state: absent
   register: result
 
-- name: Assert Remove HTTP application - Idempotent check
+- name: Assert Remove FastL4 TCP application - Idempotent check
   assert:
     that:
       - result is not changed
       - result is success
 
-- name: Try to create without service_environment
-  bigiq_application_http:
+- name: Try to create without service_environment - FastL4
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
-    description: Load balance HTTP
+    description: My application
     servers:
       - address: 1.2.3.4
         port: 8080
@@ -86,17 +86,17 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without service_environment
+- name: Assert Try to create without service_environment - FastL4
   assert:
     that:
       - result is success
       - "'must be specified when creating a new application.' in result['msg']"
 
-- name: Try to create without servers
-  bigiq_application_http:
+- name: Try to create without servers - FastL4
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
-    description: Load balance HTTP
-    service_environment: "{{ ssg_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
     inbound_virtual:
       address: 2.2.2.2
       netmask: 255.255.255.255
@@ -104,17 +104,17 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without servers
+- name: Assert Try to create without servers - FastL4
   assert:
     that:
       - result is success
       - "'item is needed when creating a new application.' in result['msg']"
 
-- name: Try to create without inbound_virtual
-  bigiq_application_http:
+- name: Try to create without inbound_virtual - FastL4
+  bigiq_application_fastl4_tcp:
     name: "{{ app_name }}"
-    description: Load balance HTTP
-    service_environment: "{{ ssg_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
     servers:
       - address: 1.2.3.4
         port: 8080
@@ -123,7 +123,7 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without servers
+- name: Assert Try to create without servers - FastL4
   assert:
     that:
       - result is success

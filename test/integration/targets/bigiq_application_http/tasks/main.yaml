@@ -70,7 +70,7 @@
       - result is not changed
       - result is success
 
-- name: Try to create without service_environment
+- name: Try to create without service_environment - HTTP
   bigiq_application_http:
     name: "{{ app_name }}"
     description: Load balance HTTP
@@ -86,13 +86,13 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without service_environment
+- name: Assert Try to create without service_environment - HTTP
   assert:
     that:
       - result is success
       - "'must be specified when creating a new application.' in result['msg']"
 
-- name: Try to create without servers
+- name: Try to create without servers - HTTP
   bigiq_application_http:
     name: "{{ app_name }}"
     description: Load balance HTTP
@@ -104,13 +104,13 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without servers
+- name: Assert Try to create without servers - HTTP
   assert:
     that:
       - result is success
       - "'item is needed when creating a new application.' in result['msg']"
 
-- name: Try to create without inbound_virtual
+- name: Try to create without inbound_virtual - HTTP
   bigiq_application_http:
     name: "{{ app_name }}"
     description: Load balance HTTP
@@ -123,10 +123,74 @@
   register: result
   failed_when: result is success
 
-- name: Assert Try to create without servers
+- name: Assert Try to create without servers - HTTP
   assert:
     that:
       - result is success
       - "'must be specified when creating a new application.' in result['msg']"
+
+
+
+
+
+
+
+
+
+
+
+
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance an HTTP application on port 80 on BIG-IP - default device - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove HTTP application - default device
+  bigiq_application_http:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
+
+
+
 
 - import_tasks: teardown.yaml

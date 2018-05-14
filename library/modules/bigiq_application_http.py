@@ -250,6 +250,38 @@ class ModuleParameters(Parameters):
         return result
 
     @property
+    def default_device_reference(self):
+        try:
+            # An IP address was specified
+            netaddr.IPAddress(self.service_environment)
+            filter = "address+eq+'{0}'".format(self.service_environment)
+        except netaddr.core.AddrFormatError:
+            # Assume a hostname was specified
+            filter = "hostname+eq+'{0}'".format(self.service_environment)
+
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/?$filter={2}&$top=1&$select=selfLink".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            return None
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        result = dict(
+            link=response['items'][0]['selfLink']
+        )
+        return result
+
+    @property
     def ssg_reference(self):
 
         filter = "name+eq+'{0}'".format(self.service_environment)
@@ -264,9 +296,7 @@ class ModuleParameters(Parameters):
         except ValueError as ex:
             raise F5ModuleError(str(ex))
         if resp.status == 200 and response['totalItems'] == 0:
-            raise F5ModuleError(
-                "The specified Service Scaling Group '{0}' was found.".format(self.service_environment)
-            )
+            return None
         elif 'code' in response and response['code'] == 400:
             if 'message' in response:
                 raise F5ModuleError(response['message'])
@@ -304,7 +334,7 @@ class UsableChanges(Changes):
     @property
     def virtual(self):
         result = dict()
-        result['ltm:virtual:b487671f29ba'] = [
+        result['ltm:virtual::b487671f29ba'] = [
             dict(
                 parameters=dict(
                     name='virtual',
@@ -546,6 +576,12 @@ class ModuleManager(object):
                 "An 'inbound_virtual' must be specified when creating a new application."
             )
         self._set_changed_options()
+
+        if self.changes.default_device_reference is None and self.changes.ssg_reference is None:
+            raise F5ModuleError(
+                "The specified 'service_environment' ({0}) was not found.".format(self.want.service_environment)
+            )
+
         if self.module.check_mode:
             return True
         self_link = self.create_on_device()
