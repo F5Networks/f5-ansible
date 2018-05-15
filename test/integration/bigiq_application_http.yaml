@@ -64,20 +64,6 @@
       tags:
         - environment
 
-- name: Test the bigiq_application_http module - Provider-cli
-  hosts: "f5-bigiq[0]"
-  connection: local
-  any_errors_fatal: true
-
-  tasks:
-    - name: Include role - Provider-cli
-      import_role:
-        name: bigiq_application_http
-        tasks_from: provider-cli.yaml
-      tags:
-        - provider
-        - provider-cli
-
 - name: Test the bigiq_application_http module - Provider-rest
   hosts: "f5-bigiq[0]"
   connection: local
@@ -91,20 +77,6 @@
       tags:
         - provider
         - provider-rest
-
-- name: Test the bigiq_application_http module - Args-cli
-  hosts: "f5-bigiq[0]"
-  connection: local
-  any_errors_fatal: true
-
-  tasks:
-    - name: Include role - Args-cli
-      import_role:
-        name: bigiq_application_http
-        tasks_from: args-cli.yaml
-      tags:
-        - args
-        - args-cli
 
 - name: Test the bigiq_application_http module - Args-rest
   hosts: "f5-bigiq[0]"
