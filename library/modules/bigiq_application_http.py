@@ -75,7 +75,7 @@ options:
       - The service environment type will be discovered by this module automatically.
         Therefore, it is crucial that you maintain unique names for items in the
         different service environment types (at this time, SSGs and BIGIPs).
-  collect_http_stats:
+  add_analytics:
     description:
       - Collects statistics of the BIG-IP that the application is deployed to.
       - This parameter is only relevant when specifying a C(service_environment) which
@@ -193,7 +193,7 @@ class Parameters(AnsibleF5Parameters):
         'ssgReference': 'ssg_reference',
         'configSetName': 'config_set_name',
         'defaultDeviceReference': 'default_device_reference',
-        'addAnalytics': 'collect_http_stats'
+        'addAnalytics': 'add_analytics'
     }
 
     api_attributes = [
@@ -204,12 +204,12 @@ class Parameters(AnsibleF5Parameters):
     returnables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
         'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual',
-        'collect_http_stats'
+        'add_analytics'
     ]
 
     updatables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'ssg_reference', 'default_device_reference', 'servers', 'collect_http_stats'
+        'ssg_reference', 'default_device_reference', 'servers', 'add_analytics'
     ]
 
 
@@ -699,7 +699,7 @@ class ArgumentSpec(object):
                 )
             ),
             service_environment=dict(),
-            collect_http_stats=dict(type='bool', default='no'),
+            add_analytics=dict(type='bool', default='no'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

@@ -74,7 +74,14 @@ options:
       - The service environment type will be discovered by this module automatically.
         Therefore, it is crucial that you maintain unique names for items in the
         different service environment types.
-      - SSGs are not supported for this type of application. 
+      - SSGs are not supported for this type of application.
+  add_analytics:
+    description:
+      - Collects statistics of the BIG-IP that the application is deployed to.
+      - This parameter is only relevant when specifying a C(service_environment) which
+        is a BIG-IP; not an SSG.
+    type: bool
+    default: no 
 extends_documentation_fragment: f5
 notes:
   - This module does not support updating of your application (whether deployed or not).
@@ -185,22 +192,23 @@ class Parameters(AnsibleF5Parameters):
         'templateReference': 'template_reference',
         'subPath': 'sub_path',
         'configSetName': 'config_set_name',
-        'defaultDeviceReference': 'default_device_reference'
+        'defaultDeviceReference': 'default_device_reference',
+        'addAnalytics': 'add_analytics'
     }
 
     api_attributes = [
         'resources', 'description', 'configSetName', 'subPath', 'templateReference',
-        'defaultDeviceReference'
+        'defaultDeviceReference', 'addAnalytics'
     ]
 
     returnables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'default_device_reference', 'servers', 'inbound_virtual'
+        'default_device_reference', 'servers', 'inbound_virtual', 'add_analytics'
     ]
 
     updatables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'default_device_reference', 'servers'
+        'default_device_reference', 'servers', 'add_analytics'
     ]
 
 
@@ -637,6 +645,7 @@ class ArgumentSpec(object):
                 )
             ),
             service_environment=dict(),
+            add_analytics=dict(type='bool', default='no'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']

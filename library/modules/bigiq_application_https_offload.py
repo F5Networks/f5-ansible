@@ -134,6 +134,13 @@ options:
       - Specifies the name of service environment that the application will be
         deployed to.
       - When creating a new application, this parameter is required.
+  add_analytics:
+    description:
+      - Collects statistics of the BIG-IP that the application is deployed to.
+      - This parameter is only relevant when specifying a C(service_environment) which
+        is a BIG-IP; not an SSG.
+    type: bool
+    default: no
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -243,23 +250,24 @@ class Parameters(AnsibleF5Parameters):
         'subPath': 'sub_path',
         'ssgReference': 'ssg_reference',
         'configSetName': 'config_set_name',
-        'defaultDeviceReference': 'default_device_reference'
+        'defaultDeviceReference': 'default_device_reference',
+        'addAnalytics': 'add_analytics'
     }
 
     api_attributes = [
         'resources', 'description', 'configSetName', 'subPath', 'templateReference',
-        'ssgReference', 'defaultDeviceReference'
+        'ssgReference', 'defaultDeviceReference', 'addAnalytics'
     ]
 
     returnables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
         'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual',
-        'redirect_virtual', 'client_ssl_profile'
+        'redirect_virtual', 'client_ssl_profile', 'add_analytics'
     ]
 
     updatables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'ssg_reference', 'default_device_reference', 'servers'
+        'ssg_reference', 'default_device_reference', 'servers', 'add_analytics'
     ]
 
 
@@ -924,7 +932,8 @@ class ArgumentSpec(object):
                         passphrase=dict()
                     )
                 )
-            )
+            ),
+            add_analytics=dict(type='bool', default='no'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
