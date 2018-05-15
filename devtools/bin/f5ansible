@@ -403,46 +403,6 @@ def cli(ctx, verbose):
     ctx.obj = Root(verbose)
 
 
-@cli.group()
-def start():
-    pass
-
-
-@cli.group()
-def stop():
-    pass
-
-
-@cli.group()
-def fetch():
-    pass
-
-
-@cli.group()
-def build():
-    pass
-
-
-@cli.group()
-def stub():
-    pass
-
-
-@cli.group()
-def unstub():
-    pass
-
-
-@cli.group()
-def build():
-    pass
-
-
-@cli.group()
-def test():
-    pass
-
-
 @cli.command(name='module-upstream')
 @click.argument('module', required=True)
 def module_upstream(module):
@@ -462,7 +422,7 @@ def module_upstream(module):
         sys.exit()
 
 
-@stub.command(name='module')
+@cli.command(name='module-stub')
 @click.argument('module', required=True)
 def stub_module(module):
     """Create module stubs
@@ -483,7 +443,7 @@ def stub_module(module):
     stub_unit_test_file(module, extension)
 
 
-@stub.command(name='issue')
+@cli.command(name='issue-stub')
 @click.argument('module', required=True)
 @click.argument('issue', required=True)
 def stub_issue(module, issue):
@@ -492,7 +452,7 @@ def stub_issue(module, issue):
         sys.exit(1)
 
 
-@unstub.command(name='module')
+@cli.command(name='module-unstub')
 @click.argument('module', required=True)
 def unstub_module(module):
     module, extension = os.path.splitext(module)
@@ -504,14 +464,14 @@ def unstub_module(module):
     unstub_unit_test_file(module, extension)
 
 
-@unstub.command(name='issue')
+@cli.command(name='issue-unstub')
 @click.argument('module', required=True)
 @click.argument('issue', required=True)
 def unstub_issue(module, issue):
     pass
 
 
-@build.command(name='container')
+@cli.command(name='container-build')
 @click.argument('service', nargs=-1)
 @click.option('--site-override',
               default=None,
@@ -528,7 +488,7 @@ def build_container(service, site_override):
     _build_container(service, site_override)
 
 
-@start.command(name='container')
+@cli.command(name='container-start')
 @click.argument('service', required=True)
 @click.option('--alias-host', default='1.2.3.4')
 @click.option('--site-override',
@@ -564,19 +524,19 @@ def start_container(cli, service, alias_host, site_override):
     _start_container(service, site_override)
 
 
-@start.command(name='harness')
+@cli.command(name='harness-start')
 @click.argument('harness', required=True)
 def start_harness(harness):
     pass
 
 
-@stop.command(name='harness')
+@cli.command(name='harness-stop')
 @click.argument('harness', required=True)
 def stop_harness(harness):
     pass
 
 
-@fetch.command(name='containers')
+@cli.command(name='containers-fetch')
 @click.option('--site-override',
               default=None,
               help='Full path to a local docker-compose.site.yaml override. If this is specified, the default override file will not be used.')
@@ -608,7 +568,7 @@ def fetch_containers(site_override):
         click.echo(stderr.decode('utf-8'), err=True)
         sys.exit(1)
 
-@fetch.command(name='ansible')
+@cli.command(name='ansible-fetch')
 def fetch_ansible():
     """Downloads a remote copy of Ansible and configures it for you
 
@@ -621,7 +581,7 @@ docker-compose -f "${DIR}/devtools/docker-compose.yaml" run --rm py2.7
 """
 
 
-@test.command(name='sanity')
+@cli.command(name='sanity-test')
 @click.option('--test', default=None)
 @click.option('--module', default=None)
 @click.option('--python', default=None,
@@ -701,7 +661,7 @@ def test_sanity(test, module, python, ansible, site_override):
                 sys.exit(1)
 
 
-@test.command(name='units')
+@cli.command(name='units-test')
 @click.argument('module', required=True, default=None)
 @click.option('--python', default=None,
               help='The python version that you want to test against. This parameter is ignored if you are in a container.')
