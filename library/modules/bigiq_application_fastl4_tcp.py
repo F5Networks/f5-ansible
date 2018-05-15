@@ -64,7 +64,7 @@ options:
         description:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
-            default value of C(80) will be used.
+            default value of C(8080) will be used.
         default: 8080
   service_environment:
     description:
@@ -279,7 +279,7 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(str(ex))
         if resp.status == 200 and response['totalItems'] == 0:
             raise F5ModuleError(
-                "The specified Service Scaling Group '{0}' was found.".format(self.service_environment)
+                "The specified service_environment '{0}' was found.".format(self.service_environment)
             )
         elif 'code' in response and response['code'] == 400:
             if 'message' in response:
@@ -377,7 +377,7 @@ class UsableChanges(Changes):
         result['ltm:monitor:tcp:f864a2efffea'] = [
             dict(
                 parameters=dict(
-                    name='monitor-http'
+                    name='monitor-tcp'
                 )
             )
         ]
@@ -633,7 +633,7 @@ class ArgumentSpec(object):
                 type='list',
                 options=dict(
                     address=dict(required=True),
-                    port=dict(default=80)
+                    port=dict(default=8000)
                 )
             ),
             inbound_virtual=dict(
@@ -641,7 +641,7 @@ class ArgumentSpec(object):
                 options=dict(
                     address=dict(required=True),
                     netmask=dict(required=True),
-                    port=dict(default=80)
+                    port=dict(default=8080)
                 )
             ),
             service_environment=dict(),
