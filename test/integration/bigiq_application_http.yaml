@@ -18,8 +18,8 @@
 #    ansible-playbook -i notahost, test/integration/bigiq_application_http.yaml
 #
 
-- name: Test the bigiq_application_http module
-  hosts: "f5-bigiq[0]"
+- name: Metadata of bigip_command
+  hosts: localhost
   connection: local
   any_errors_fatal: true
 
@@ -44,6 +44,11 @@
         - ansible.module_utils._text.*
         - ansible.module_utils.six.*
 
+- name: Test the bigiq_application_http module - Environment
+  hosts: "f5-bigiq[0]"
+  connection: local
+  any_errors_fatal: true
+
   environment:
     F5_SERVER: "{{ ansible_host }}"
     F5_USER: "{{ f5_username }}"
@@ -51,5 +56,66 @@
     F5_SERVER_PORT: "{{ f5_port }}"
     F5_VALIDATE_CERTS: "{{ validate_certs }}"
 
-  roles:
-    - bigiq_application_http
+  tasks:
+    - name: Include role - Environment
+      import_role:
+        name: bigiq_application_http
+        tasks_from: environment.yaml
+      tags:
+        - environment
+
+- name: Test the bigiq_application_http module - Provider-cli
+  hosts: "f5-bigiq[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Provider-cli
+      import_role:
+        name: bigiq_application_http
+        tasks_from: provider-cli.yaml
+      tags:
+        - provider
+        - provider-cli
+
+- name: Test the bigiq_application_http module - Provider-rest
+  hosts: "f5-bigiq[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Provider-rest
+      import_role:
+        name: bigiq_application_http
+        tasks_from: provider-rest.yaml
+      tags:
+        - provider
+        - provider-rest
+
+- name: Test the bigiq_application_http module - Args-cli
+  hosts: "f5-bigiq[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Args-cli
+      import_role:
+        name: bigiq_application_http
+        tasks_from: args-cli.yaml
+      tags:
+        - args
+        - args-cli
+
+- name: Test the bigiq_application_http module - Args-rest
+  hosts: "f5-bigiq[0]"
+  connection: local
+  any_errors_fatal: true
+
+  tasks:
+    - name: Include role - Args-rest
+      import_role:
+        name: bigiq_application_http
+        tasks_from: args-rest.yaml
+      tags:
+        - args
+        - args-rest

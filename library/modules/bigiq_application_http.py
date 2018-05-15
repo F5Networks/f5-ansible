@@ -74,7 +74,14 @@ options:
       - When creating a new application, this parameter is required.
       - The service environment type will be discovered by this module automatically.
         Therefore, it is crucial that you maintain unique names for items in the
-        different service environment types (at this time, SSGs and BIGIPs). 
+        different service environment types (at this time, SSGs and BIGIPs).
+  collect_http_stats:
+    description:
+      - Collects statistics of the BIG-IP that the application is deployed to.
+      - This parameter is only relevant when specifying a C(service_environment) which
+        is a BIG-IP; not an SSG.
+    type: bool
+    default: no
 extends_documentation_fragment: f5
 notes:
   - This module does not support updating of your application (whether deployed or not).
@@ -185,22 +192,24 @@ class Parameters(AnsibleF5Parameters):
         'subPath': 'sub_path',
         'ssgReference': 'ssg_reference',
         'configSetName': 'config_set_name',
-        'defaultDeviceReference': 'default_device_reference'
+        'defaultDeviceReference': 'default_device_reference',
+        'addAnalytics': 'collect_http_stats'
     }
 
     api_attributes = [
         'resources', 'description', 'configSetName', 'subPath', 'templateReference',
-        'ssgReference', 'defaultDeviceReference'
+        'ssgReference', 'defaultDeviceReference', 'addAnalytics'
     ]
 
     returnables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual'
+        'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual',
+        'collect_http_stats'
     ]
 
     updatables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'ssg_reference', 'default_device_reference', 'servers'
+        'ssg_reference', 'default_device_reference', 'servers', 'collect_http_stats'
     ]
 
 
@@ -283,7 +292,6 @@ class ModuleParameters(Parameters):
 
     @property
     def ssg_reference(self):
-
         filter = "name+eq+'{0}'".format(self.service_environment)
         uri = "https://{0}:{1}/mgmt/cm/cloud/service-scaling-groups/?$filter={2}&$top=1&$select=selfLink".format(
             self.client.provider['server'],
@@ -562,6 +570,12 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to delete the resource.")
         return True
 
+    def has_no_service_environment(self):
+        if self.want.default_device_reference is None and self.want.ssg_reference is None:
+            return True
+        return False
+
+
     def create(self):
         if self.want.service_environment is None:
             raise F5ModuleError(
@@ -577,7 +591,7 @@ class ModuleManager(object):
             )
         self._set_changed_options()
 
-        if self.changes.default_device_reference is None and self.changes.ssg_reference is None:
+        if self.has_no_service_environment():
             raise F5ModuleError(
                 "The specified 'service_environment' ({0}) was not found.".format(self.want.service_environment)
             )
@@ -685,6 +699,7 @@ class ArgumentSpec(object):
                 )
             ),
             service_environment=dict(),
+            collect_http_stats=dict(type='bool', default='no'),
             state=dict(
                 default='present',
                 choices=['present', 'absent']
