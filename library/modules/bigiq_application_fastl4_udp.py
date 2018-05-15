@@ -15,9 +15,10 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_application_fastl4_udp
-short_description: __SHORT_DESCRIPTION__
+short_description: Manages BIG-IQ FastL4 UDP applications
 description:
-  - __LONG DESCRIPTION__.
+  - Manages BIG-IQ applications used for load balancing a UDP-based application
+    with a FastL4 profile.
 version_added: 2.6
 options:
   name:
