@@ -1,12 +1,12 @@
-:source: modules/bigip_command.py
+:source: modules/bigiq_application_fasthttp.py
 
-.. _bigip_command:
+.. _bigiq_application_fasthttp:
 
 
-bigip_command - Run arbitrary command on F5 devices
-+++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_application_fasthttp - Manages BIG-IQ FastHTTP applications
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.4
+.. versionadded:: 2.6
 
 .. contents::
    :local:
@@ -15,9 +15,7 @@ bigip_command - Run arbitrary command on F5 devices
 
 Synopsis
 --------
-- Sends an arbitrary command to an BIG-IP node and returns the results read from the device. This module includes an argument that will cause the module to wait for a specific condition before returning or timing out if the condition is not met.
-- This module is **not** idempotent, nor will it ever be. It is intended as a stop-gap measure to satisfy automation requirements until such a time as a real module has been developed to configure in the way you need.
-- If you are using this module, you should probably also be filing an issue to have a **real** module created for your needs.
+- Manages BIG-IQ applications used for load balancing an HTTP-based application, speeding up connections and reducing the number of connections to the back-end server.
 
 
 
@@ -43,8 +41,31 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>chdir</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                            <b>add_analytics</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Collects statistics of the BIG-IP that the application is deployed to.</div>
+                                                            <div>This parameter is only relevant when specifying a <code>service_environment</code> which is a BIG-IP; not an SSG.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>description</b>
+                                                                                </div>
                     </div>
                 </td>
                                 <td>
@@ -53,7 +74,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Change into this directory before running the command.</div>
+                                                                                    <div>Description of the application.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -61,7 +82,27 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>commands</b>
+                            <b>inbound_virtual</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Settings to configure the virtual which will receive the inbound connection.</div>
+                                                            <div>This virtual will be used to host the HTTP endpoint of the application.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>address</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -71,49 +112,68 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The commands to send to the remote BIG-IP device over the configured provider. The resulting output from the command is returned. If the <em>wait_for</em> argument is provided, the module is not returned until the condition is satisfied or the number of retries as expired.</div>
-                                                            <div>Only <code>tmsh</code> commands are supported. If you are piping or adding additional logic that is outside of <code>tmsh</code> (such as grep&#x27;ing, awk&#x27;ing or other shell related things that are not <code>tmsh</code>, this behavior is not supported.</div>
+                                                                                    <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>interval</b>
+                            <b>netmask</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the netmask to associate with the given <code>destination</code>.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">yes</div>
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">80</div>
                                             </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Configures the interval in seconds to wait between retries of the command. If the command does not pass the specified conditional, the interval indicates how to long to wait before trying the command again.</div>
+                                                                                    <div>The port that the virtual listens for connections on.</div>
+                                                            <div>When creating a new application, if this parameter is not specified, the default value of <code>80</code> will be used.</div>
                                                                                                 </div>
                 </td>
             </tr>
-                                <tr class="return-value-column">
+                    
+                                                <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>match</b>
-                                                                                </div>
+                            <b>name</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>any</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>all</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The <em>match</em> argument is used in conjunction with the <em>wait_for</em> argument to specify the match policy. Valid values are <code>all</code> or <code>any</code>. If the value is set to <code>all</code> then all conditionals in the <em>wait_for</em> must be satisfied. If the value is set to <code>any</code> then only one of the values must be satisfied.</div>
+                                                                                    <div>Name of the new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -322,25 +382,6 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>retries</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">10</div>
-                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the number of retries a command should by tried before it is considered failed. The command is run on the target device every retry and evaluated against the <em>wait_for</em> conditionals.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
                             <b>server</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -378,21 +419,80 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>transport</b>
-                            <br/><div style="font-size: small; color: red">required</div>                            <br/><div style="font-size: small; color: darkgreen">(added in 2.5)</div>                        </div>
+                            <b>servers</b>
+                                                                                </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>rest</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>cli</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Configures the transport connection to use when connecting to the remote device. The transport argument supports connectivity to the device over cli (ssh) or rest.</div>
+                                                                                    <div>A list of servers that the application is hosted on.</div>
+                                                            <div>If you are familiar with other BIG-IP setting, you might also refer to this list as the list of pool members.</div>
+                                                            <div>When creating a new application, at least one server is required.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>address</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The IP address of the server.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">80</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The port of the server.</div>
+                                                            <div>When creating a new application and specifying a server, if this parameter is not provided, the default of <code>80</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                    
+                                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>service_environment</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the name of service environment that the application will be deployed to.</div>
+                                                            <div>When creating a new application, this parameter is required.</div>
+                                                            <div>The service environment type will be discovered by this module automatically. Therefore, it is crucial that you maintain unique names for items in the different service environment types (at this time, SSGs and BIGIPs).</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -436,48 +536,6 @@ Parameters
                                                                                                 </div>
                 </td>
             </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>wait_for</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies what to evaluate from the output of the command and what conditionals to apply.  This argument will cause the task to wait for a particular conditional to be true before moving forward. If the conditional is not true by the configured retries, the task fails. See examples.</div>
-                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: waitfor</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>warn</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Whether the module should raise warnings related to command idempotency or not.</div>
-                                                            <div>Note that the F5 Ansible developers specifically leave this on to make you aware that your usage of this module may be better served by official F5 Ansible modules. This module should always be used as a last resort.</div>
-                                                                                                </div>
-                </td>
-            </tr>
                         </table>
     <br/>
 
@@ -486,6 +544,8 @@ Notes
 -----
 
 .. note::
+    - This module does not support updating of your application (whether deployed or not). If you need to update the application, the recommended practice is to remove and re-create.
+    - Requires BIG-IQ version 6.0 or greater.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
 
@@ -496,72 +556,26 @@ Examples
 .. code-block:: yaml
 
     
-    - name: run show version on remote devices
-      bigip_command:
-        commands: show sys version
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
-      delegate_to: localhost
-
-    - name: run show version and check to see if output contains BIG-IP
-      bigip_command:
-        commands: show sys version
-        wait_for: result[0] contains BIG-IP
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
-      register: result
-      delegate_to: localhost
-
-    - name: run multiple commands on remote nodes
-      bigip_command:
-        commands:
-          - show sys version
-          - list ltm virtual
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
-      delegate_to: localhost
-
-    - name: run multiple commands and evaluate the output
-      bigip_command:
-        commands:
-          - show sys version
-          - list ltm virtual
-        wait_for:
-          - result[0] contains BIG-IP
-          - result[1] contains my-vs
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
-      register: result
-      delegate_to: localhost
-
-    - name: tmsh prefixes will automatically be handled
-      bigip_command:
-        commands:
-          - show sys version
-          - tmsh list ltm virtual
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
-      delegate_to: localhost
-
-    - name: Delete all LTM nodes in Partition1, assuming no dependencies exist
-      bigip_command:
-        commands:
-          - delete ltm node all
-        chdir: Partition1
-        server: lb.mydomain.com
-        password: secret
-        user: admin
-        validate_certs: no
+    - name: Load balance an HTTP application on port 80 on BIG-IP
+      bigiq_application_fasthttp:
+        name: my-app
+        description: Fast HTTP
+        service_environment: my-ssg
+        servers:
+          - address: 1.2.3.4
+            port: 8080
+          - address: 5.6.7.8
+            port: 8080
+        inbound_virtual:
+          name: foo
+          destination: 2.2.2.2
+          netmask: 255.255.255.255
+          port: 80
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+        state: present
       delegate_to: localhost
 
 
@@ -583,75 +597,154 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>failed_conditions</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">failed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The list of conditionals that have failed.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>stdout</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">always</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The set of responses from the commands.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>stdout_lines</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">always</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The value of stdout split into a list.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[[&#x27;...&#x27;, &#x27;...&#x27;], [&#x27;...&#x27;], [&#x27;...&#x27;]]</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>warn</b>
-                            <br/><div style="font-size: small; color: red">bool</div>
+                            <b>description</b>
+                            <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
                 </td>
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Whether or not to raise warnings about modification commands.</div>
+                                                    <div>The new description of the application of the resource.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My application</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>inbound_virtual_destination</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The destination of the virtual that was created.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6.7.8.9</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>inbound_virtual_netmask</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The network mask of the provided inbound destination.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.0</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>inbound_virtual_port</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The port the inbound virtual address listens on.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>servers</b>
+                            <br/><div style="font-size: small; color: red">complex</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border"></div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>List of servers, and their ports, that make up the application.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                            </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>address</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The IP address of the server.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The port that the server listens on.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
+                                            </div>
+                </td>
+            </tr>
+                    
+                                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>service_environment</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The environment which the service was deployed to.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my-ssg1</div>
                                             </div>
                 </td>
             </tr>

@@ -42,7 +42,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>address</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -61,7 +61,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>availability_requirements</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -172,7 +172,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>limits</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -326,7 +326,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>link</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -344,7 +344,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>monitors</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -363,7 +363,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>name</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -381,7 +381,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>partition</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -639,7 +639,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>server_name</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -701,7 +701,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>translation_address</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -721,7 +721,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>translation_port</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -781,7 +781,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>virtual_server_dependencies</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>

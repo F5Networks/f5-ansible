@@ -112,6 +112,9 @@ F5
   * :ref:`bigip_virtual_server`
   * :ref:`bigip_vlan`
   * :ref:`bigip_wait`
+  * :ref:`bigiq_application_fasthttp`
+  * :ref:`bigiq_application_fastl4_tcp`
+  * :ref:`bigiq_application_fastl4_udp`
   * :ref:`bigiq_application_http`
   * :ref:`bigiq_application_https_offload`
   * :ref:`bigiq_regkey_license`

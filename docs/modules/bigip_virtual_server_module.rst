@@ -224,7 +224,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>ip_protocol</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -724,7 +724,7 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>security_log_profiles</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
@@ -786,12 +786,7 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>None</li>
-                                                                                                                                                                                                                        <li>Automap</li>
-                                                                                                                                                                                                                        <li>Name of a SNAT pool (eg &#34;/Common/snat_pool_name&#34;) to enable SNAT with the specific pool</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -799,6 +794,9 @@ Parameters
                                                             <div>When <code>type</code> is <code>dhcp</code>, this parameter is ignored.</div>
                                                             <div>When <code>type</code> is <code>reject</code>, this parameter will be ignored.</div>
                                                             <div>When <code>type</code> is <code>internal</code>, this parameter will be ignored.</div>
+                                                            <div>The name of a SNAT pool (eg &quot;/Common/snat_pool_name&quot;) can be specified to enable SNAT with the specific pool.</div>
+                                                            <div>To remove SNAT, specify the word <code>none</code>.</div>
+                                                            <div>To specify automap, use the word <code>automap</code>.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -853,13 +851,13 @@ Parameters
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>type</b>
-                                                                                </div>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>standard</li>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>standard</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                                         <li>forwarding-l2</li>
                                                                                                                                                                                                                         <li>forwarding-ip</li>
                                                                                                                                                                                                                         <li>performance-http</li>
@@ -1326,7 +1324,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
                             <b>ip_protocol</b>
-                            <br/><div style="font-size: small; color: red">integer</div>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>

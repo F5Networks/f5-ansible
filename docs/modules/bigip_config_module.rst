@@ -291,14 +291,16 @@ Parameters
                                 <td>
                     <div class="cell-border">
                                                                                                                                                                                                                                                                                                                         <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The <code>save</code> argument instructs the module to save the running-config to startup-config. This operation is performed after any changes are made to the current running config. If no changes are made, the configuration is still saved to the startup config. This option will always cause the module to return changed.</div>
+                                                                                    <div>The <code>save</code> argument instructs the module to save the running-config to startup-config.</div>
+                                                            <div>This operation is performed after any changes are made to the current running config. If no changes are made, the configuration is still saved to the startup config.</div>
+                                                            <div>This option will always cause the module to return changed.</div>
                                                                                                 </div>
                 </td>
             </tr>

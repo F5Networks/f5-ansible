@@ -1,12 +1,12 @@
-:source: modules/bigip_static_route.py
+:source: modules/bigiq_application_https_offload.py
 
-.. _bigip_static_route:
+.. _bigiq_application_https_offload:
 
 
-bigip_static_route - Manipulate static routes on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigiq_application_https_offload - Manages BIG-IQ HTTPS offload applications
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.6
 
 .. contents::
    :local:
@@ -15,7 +15,7 @@ bigip_static_route - Manipulate static routes on a BIG-IP
 
 Synopsis
 --------
-- Manipulate static routes on a BIG-IP.
+- Manages BIG-IQ applications used for load balancing an HTTPS application on port 443 with SSL offloading on BIG-IP.
 
 
 
@@ -24,7 +24,6 @@ Requirements
 The below requirements are needed on the host that executes this module.
 
 - f5-sdk >= 3.0.9
-- netaddr
 
 
 Parameters
@@ -42,6 +41,175 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>add_analytics</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Collects statistics of the BIG-IP that the application is deployed to.</div>
+                                                            <div>This parameter is only relevant when specifying a <code>service_environment</code> which is a BIG-IP; not an SSG.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>client_ssl_profile</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the SSL profile for managing client-side SSL traffic.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>name</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The name of the client SSL profile to created and used.</div>
+                                                            <div>When creating a new application, if this value is not specified, the default value of <code>clientssl</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>cert_key_chain</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>One or more certificates and keys to associate with the SSL profile.</div>
+                                                            <div>This option is always a list. The keys in the list dictate the details of the client/key/chain/passphrase combination.</div>
+                                                            <div>Note that BIG-IPs can only have one of each type of each certificate/key type. This means that you can only have one RSA, one DSA, and one ECDSA per profile.</div>
+                                                            <div>If you attempt to assign two RSA, DSA, or ECDSA certificate/key combo, the device will reject this.</div>
+                                                            <div>This list is a complex list that specifies a number of keys. There are several supported keys.</div>
+                                                            <div>When creating a new profile, if this parameter is not specified, the default value of <code>inherit</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>cert</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies a cert name for use.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>key</b>
+                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies a key name.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>chain</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies a certificate chain that is relevant to the certificate and key mentioned earlier.</div>
+                                                            <div>This key is optional.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>passphrase</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Contains the passphrase of the key file, should it require one.</div>
+                                                            <div>Passphrases are encrypted on the remote BIG-IP device.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                    
+                                    
+                                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>description</b>
                                                                                 </div>
                     </div>
@@ -52,13 +220,34 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Descriptive text that identifies the route.</div>
+                                                                                    <div>Description of the application.</div>
                                                                                                 </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>inbound_virtual</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Settings to configure the virtual which will receive the inbound connection.</div>
+                                                            <div>This virtual will be used to host the HTTPS endpoint of the application.</div>
+                                                            <div>Traffic destined to the <code>redirect_virtual</code> will be offloaded to this parameter to ensure that proper redirection from insecure, to secure, occurs.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
                             <b>destination</b>
                                                                                 </div>
@@ -70,16 +259,17 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies an IP address for the static entry in the routing table. When creating a new static route, this value is required.</div>
-                                                            <div>This value cannot be changed once it is set.</div>
+                                                                                    <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>gateway_address</b>
+                            <b>netmask</b>
                                                                                 </div>
                     </div>
                 </td>
@@ -89,29 +279,34 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the router for the system to use when forwarding packets to the destination host or network. Also known as the next-hop router address. This can be either an IPv4 or IPv6 address. When it is an IPv6 address that starts with <code>FE80:</code>, the address will be treated as a link-local address. This requires that the <code>vlan</code> parameter also be supplied.</div>
+                                                                                    <div>Specifies the netmask to associate with the given <code>destination</code>.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
                                                 <div class="elbow-key">
-                            <b>mtu</b>
+                            <b>port</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">443</div>
+                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies a specific maximum transmission unit (MTU).</div>
+                                                                                    <div>The port that the virtual listens for connections on.</div>
+                                                            <div>When creating a new application, if this parameter is not specified, the default value of <code>443</code> will be used.</div>
                                                                                                 </div>
                 </td>
             </tr>
-                                <tr class="return-value-column">
+                    
+                                                <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
@@ -125,46 +320,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Name of the static route.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>netmask</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>The netmask for the static route. When creating a new static route, this value is required.</div>
-                                                            <div>This value can be in either IP or CIDR format.</div>
-                                                            <div>This value cannot be changed once it is set.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>partition</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
-                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Device partition to manage resources on.</div>
+                                                                                    <div>Name of the new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -185,24 +341,6 @@ Parameters
                                                                                     <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
                                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                             </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>pool</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the pool through which the system forwards packets to the destination.</div>
-                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -391,29 +529,7 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>reject</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li>yes</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies that the system drops packets sent to the destination.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>route_domain</b>
+                            <b>redirect_virtual</b>
                                                                                 </div>
                     </div>
                 </td>
@@ -423,12 +539,75 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The route domain id of the system. When creating a new static route, if this value is not specified, a default value of <code>0</code> will be used.</div>
-                                                            <div>This value cannot be changed once it is set.</div>
+                                                                                    <div>Settings to configure the virtual which will receive the connection to be redirected.</div>
+                                                            <div>This virtual will be used to host the HTTP endpoint of the application.</div>
+                                                            <div>Traffic destined to this parameter will be offloaded to the <code>inbound_virtual</code> parameter to ensure that proper redirection from insecure, to secure, occurs.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>destination</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies destination IP address information to which the virtual server sends traffic.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
                                                                                                 </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>netmask</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the netmask to associate with the given <code>destination</code>.</div>
+                                                            <div>This parameter is required when creating a new application.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">80</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The port that the virtual listens for connections on.</div>
+                                                            <div>When creating a new application, if this parameter is not specified, the default value of <code>80</code> will be used.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                    
+                                                <tr class="return-value-column">
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
@@ -469,22 +648,78 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>state</b>
+                            <b>servers</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>absent</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>When <code>present</code>, ensures that the static route exists.</div>
-                                                            <div>When <code>absent</code>, ensures that the static does not exist.</div>
+                                                                                    <div>A list of servers that the application is hosted on.</div>
+                                                            <div>If you are familiar with other BIG-IP setting, you might also refer to this list as the list of pool members.</div>
+                                                            <div>When creating a new application, at least one server is required.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>address</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The IP address of the server.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">80</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The port of the server.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                    
+                                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>service_environment</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the name of service environment that the application will be deployed to.</div>
+                                                            <div>When creating a new application, this parameter is required.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -528,24 +763,6 @@ Parameters
                                                                                                 </div>
                 </td>
             </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>vlan</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the VLAN or Tunnel through which the system forwards packets to the destination. When <code>gateway_address</code> is a link-local IPv6 address, this value is required</div>
-                                                                                                </div>
-                </td>
-            </tr>
                         </table>
     <br/>
 
@@ -554,7 +771,6 @@ Notes
 -----
 
 .. note::
-    - Requires the netaddr Python package on the host. This is as easy as pip install netaddr.
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
 
@@ -565,16 +781,29 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create static route with gateway address
-      bigip_static_route:
-        destination: 10.10.10.10
-        netmask: 255.255.255.255
-        gateway_address: 10.2.2.3
-        name: test-route
-        password: secret
-        server: lb.mydomain.come
-        user: admin
-        validate_certs: no
+    - name: Load balance an HTTPS application on port 443 with SSL offloading on BIG-IP
+      bigiq_application_https_offload:
+        name: my-app
+        description: Redirect HTTP to HTTPS
+        service_environment: my-ssg
+        servers:
+          - address: 1.2.3.4
+            port: 8080
+          - address: 5.6.7.8
+            port: 8080
+        inbound_virtual:
+          destination: 2.2.2.2
+          netmask: 255.255.255.255
+          port: 443
+        redirect_virtual:
+          destination: 2.2.2.2
+          netmask: 255.255.255.255
+          port: 80
+        provider:
+          password: secret
+          server: lb.mydomain.com
+          user: admin
+        state: present
       delegate_to: localhost
 
 
@@ -604,10 +833,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
+                                                    <div>The new description of the application of the resource.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">My application</div>
                                             </div>
                 </td>
             </tr>
@@ -615,7 +844,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>destination</b>
+                            <b>inbound_virtual_destination</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -623,10 +852,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
+                                                    <div>The destination of the virtual that was created.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">6.7.8.9</div>
                                             </div>
                 </td>
             </tr>
@@ -634,7 +863,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>gateway_address</b>
+                            <b>inbound_virtual_netmask</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -642,10 +871,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
+                                                    <div>The network mask of the provided inbound destination.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.0</div>
                                             </div>
                 </td>
             </tr>
@@ -653,83 +882,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>netmask</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>Netmask of the destination.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">255.255.255.255</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>partition</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The partition that the static route was created on.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Common</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>pool</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>reject</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>route_domain</b>
+                            <b>inbound_virtual_port</b>
                             <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
@@ -737,10 +890,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Route domain of the static route.</div>
+                                                    <div>The port the inbound virtual address listens on.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">1</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">80</div>
                                             </div>
                 </td>
             </tr>
@@ -748,7 +901,27 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>vlan</b>
+                            <b>servers</b>
+                            <br/><div style="font-size: small; color: red">complex</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border"></div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>List of servers, and their ports, that make up the application.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">hash/dictionary of values</div>
+                                            </div>
+                </td>
+            </tr>
+                                                            <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>address</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -756,10 +929,50 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>Whether the banner is enabled or not.</div>
+                                                    <div>The IP address of the server.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2.3.4.5</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>port</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The port that the server listens on.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">8080</div>
+                                            </div>
+                </td>
+            </tr>
+                    
+                                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>service_environment</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The environment which the service was deployed to.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my-ssg1</div>
                                             </div>
                 </td>
             </tr>

@@ -228,6 +228,7 @@ Parameters
                                                                                                                                                                                                                         <li>drop-packet</li>
                                                                                                                                                                                                                         <li>fallback-ip</li>
                                                                                                                                                                                                                         <li>virtual-server-score</li>
+                                                                                                                                                                                                                        <li>none</li>
                                                                                                 </ul>
                                                                                             </div>
                 </td>
@@ -637,8 +638,8 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>present</li>
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
                                                                                                                                                                                                                         <li>absent</li>
                                                                                                                                                                                                                         <li>enabled</li>
                                                                                                                                                                                                                         <li>disabled</li>

@@ -85,12 +85,12 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Value of C(address)</div>
-                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The self IP to create.</div>
+                                                            <div>If this parameter is not specified, then it will default to the value supplied in the <code>address</code> parameter.</div>
                                                                                                 </div>
                 </td>
             </tr>

@@ -47,12 +47,13 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                    <ul><b>Choices:</b>
                                                                                                                                                                                     <li>enabled</li>
                                                                                                                                                                                                                         <li>disabled</li>
+                                                                                                                                                                                                                        <li>enable</li>
+                                                                                                                                                                                                                        <li>disable</li>
                                                                                                 </ul>
-                                                                                                    <b>Default:</b><br/><div style="color: blue">disable</div>
-                                            </div>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">

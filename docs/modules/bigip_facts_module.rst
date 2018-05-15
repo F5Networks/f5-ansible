@@ -48,8 +48,7 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">None</div>
-                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -67,7 +66,7 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                    <ul><b>Choices:</b>
                                                                                                                                                                                     <li>address_class</li>
                                                                                                                                                                                                                         <li>certificate</li>
                                                                                                                                                                                                                         <li>client_ssl_profile</li>
@@ -88,8 +87,7 @@ Parameters
                                                                                                                                                                                                                         <li>virtual_server</li>
                                                                                                                                                                                                                         <li>vlan</li>
                                                                                                 </ul>
-                                                                                                    <b>Default:</b><br/><div style="color: blue">None</div>
-                                            </div>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
@@ -345,8 +343,11 @@ Parameters
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">yes</div>
-                                            </div>
+                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
