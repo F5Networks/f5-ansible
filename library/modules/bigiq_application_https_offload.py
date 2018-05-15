@@ -41,6 +41,7 @@ options:
       port:
         description:
           - The port of the server.
+        default: 80
   inbound_virtual:
     description:
       - Settings to configure the virtual which will receive the inbound connection.
@@ -62,6 +63,7 @@ options:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
             default value of C(443) will be used.
+        default: 443
   redirect_virtual:
     description:
       - Settings to configure the virtual which will receive the connection to be
@@ -85,6 +87,7 @@ options:
           - The port that the virtual listens for connections on.
           - When creating a new application, if this parameter is not specified, the
             default value of C(80) will be used.
+        default: 80
   client_ssl_profile:
     description:
       - Specifies the SSL profile for managing client-side SSL traffic.
@@ -164,62 +167,99 @@ EXAMPLES = r'''
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
+description:
+  description: The new description of the application of the resource.
   returned: changed
   type: string
-  sample: Foo is bar
+  sample: My application
+service_environment:
+  description: The environment which the service was deployed to.
+  returned: changed
+  type: string
+  sample: my-ssg1
+inbound_virtual_destination:
+  description: The destination of the virtual that was created.
+  returned: changed
+  type: string
+  sample: 6.7.8.9
+inbound_virtual_netmask:
+  description: The network mask of the provided inbound destination.
+  returned: changed
+  type: string
+  sample: 255.255.255.0
+inbound_virtual_port:
+  description: The port the inbound virtual address listens on.
+  returned: changed
+  type: int
+  sample: 80
+servers:
+  description: List of servers, and their ports, that make up the application.
+  type: complex
+  contains:
+    address:
+      description: The IP address of the server.
+      returned: changed
+      type: string
+      sample: 2.3.4.5
+    port:
+      description: The port that the server listens on.
+      returned: changed
+      type: int
+      sample: 8080
+  sample: hash/dictionary of values
 '''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.basic import env_fallback
+from ansible.module_utils.six import string_types
 
 try:
-    from library.module_utils.network.f5.bigip import HAS_F5SDK
-    from library.module_utils.network.f5.bigip import F5Client
+    from library.module_utils.network.f5.bigiq import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
-    from library.module_utils.network.f5.common import cleanup_tokens
-    from library.module_utils.network.f5.common import fq_name
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import fq_name
 except ImportError:
-    from ansible.module_utils.network.f5.bigip import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigip import F5Client
+    from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
-    from ansible.module_utils.network.f5.common import cleanup_tokens
-    from ansible.module_utils.network.f5.common import fq_name
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
+    from library.module_utils.network.f5.common import fq_name
+
+try:
+    import netaddr
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'templateReference': 'template_reference',
+        'subPath': 'sub_path',
+        'ssgReference': 'ssg_reference',
+        'configSetName': 'config_set_name',
+        'defaultDeviceReference': 'default_device_reference'
     }
 
     api_attributes = [
-
+        'resources', 'description', 'configSetName', 'subPath', 'templateReference',
+        'ssgReference', 'defaultDeviceReference'
     ]
 
     returnables = [
-
+        'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
+        'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual',
+        'redirect_virtual', 'client_ssl_profile'
     ]
 
     updatables = [
-
+        'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
+        'ssg_reference', 'default_device_reference', 'servers'
     ]
 
 
@@ -228,7 +268,102 @@ class ApiParameters(Parameters):
 
 
 class ModuleParameters(Parameters):
-    pass
+    @property
+    def http_profile(self):
+        return "profile_http"
+
+    @property
+    def config_set_name(self):
+        return self.name
+
+    @property
+    def sub_path(self):
+        return self.name
+
+    @property
+    def template_reference(self):
+        filter = "name+eq+'Default-f5-HTTPS-offload-lb-template'"
+        uri = "https://{0}:{1}/mgmt/cm/global/templates/?$filter={2}&$top=1&$select=selfLink".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            raise F5ModuleError(
+                "No default HTTP LB template was found."
+            )
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+
+        result = dict(
+            link=response['items'][0]['selfLink']
+        )
+        return result
+
+    @property
+    def default_device_reference(self):
+        try:
+            # An IP address was specified
+            netaddr.IPAddress(self.service_environment)
+            filter = "address+eq+'{0}'".format(self.service_environment)
+        except netaddr.core.AddrFormatError:
+            # Assume a hostname was specified
+            filter = "hostname+eq+'{0}'".format(self.service_environment)
+
+        uri = "https://{0}:{1}/mgmt/shared/resolver/device-groups/cm-adccore-allbigipDevices/devices/?$filter={2}&$top=1&$select=selfLink".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            return None
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        result = dict(
+            link=response['items'][0]['selfLink']
+        )
+        return result
+
+    @property
+    def ssg_reference(self):
+        filter = "name+eq+'{0}'".format(self.service_environment)
+        uri = "https://{0}:{1}/mgmt/cm/cloud/service-scaling-groups/?$filter={2}&$top=1&$select=selfLink".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            filter
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and response['totalItems'] == 0:
+            return None
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        result = dict(
+            link=response['items'][0]['selfLink']
+        )
+        return result
 
 
 class Changes(Parameters):
@@ -244,7 +379,275 @@ class Changes(Parameters):
 
 
 class UsableChanges(Changes):
-    pass
+    @property
+    def resources(self):
+        result = dict()
+        result.update(self.http_profile)
+        result.update(self.http_monitor)
+        result.update(self.inbound_virtual_server)
+        result.update(self.redirect_virtual_server)
+        result.update(self.pool)
+        result.update(self.nodes)
+        result.update(self.ssl_profile)
+        return result
+
+    @property
+    def inbound_virtual_server(self):
+        result = dict()
+        result['ltm:virtual:7a5f7da91996'] = [
+            dict(
+                parameters=dict(
+                    name='default_vs',
+                    destinationAddress=self.inbound_virtual['address'],
+                    mask=self.inbound_virtual['netmask'],
+                    destinationPort=self.inbound_virtual['port']
+                ),
+                subcollectionResources=self.inbound_profiles
+            )
+        ]
+        return result
+
+    @property
+    def inbound_profiles(self):
+        result = {
+            'profiles:14c995c33411': [
+                dict(
+                    parameters=dict()
+                )
+            ],
+            'profiles:8ba4bb101701': [
+                dict(
+                    parameters=dict()
+                )
+            ],
+            'profiles:9448fe71611e': [
+                dict(
+                    parameters=dict()
+                )
+            ]
+        }
+        return result
+
+    @property
+    def redirect_virtual_server(self):
+        result = dict()
+        result['ltm:virtual:40e8c4a6f542'] = [
+            dict(
+                parameters=dict(
+                    name='default_redirect_vs',
+                    destinationAddress=self.redirect_virtual['address'],
+                    mask=self.redirect_virtual['netmask'],
+                    destinationPort=self.redirect_virtual['port']
+                ),
+                subcollectionResources=self.redirect_profiles
+            )
+        ]
+        return result
+
+    @property
+    def redirect_profiles(self):
+        result = {
+            'profiles:8ba4bb101701': [
+                dict(
+                    parameters=dict()
+                )
+            ],
+            'profiles:9448fe71611e': [
+                dict(
+                    parameters=dict()
+                )
+            ]
+        }
+        return result
+
+    @property
+    def pool(self):
+        result = dict()
+        result['ltm:pool:be70d46c6d73'] = [
+            dict(
+                parameters=dict(
+                    name='pool_0'
+                ),
+                subcollectionResources=self.pool_members
+            )
+        ]
+        return result
+
+    @property
+    def pool_members(self):
+        result = dict()
+        result['members:dec6d24dc625'] = []
+        for x in self.servers:
+            member = dict(
+                parameters=dict(
+                    port=x['port'],
+                    nodeReference=dict(
+                        link='#/resources/ltm:node:45391b57b104/{0}'.format(x['address']),
+                        fullPath='# {0}'.format(x['address'])
+                    )
+                )
+            )
+            result['members:dec6d24dc625'].append(member)
+        return result
+
+    @property
+    def http_profile(self):
+        result = dict()
+        result['ltm:profile:http:8ba4bb101701'] = [
+            dict(
+                parameters=dict(
+                    name='profile_http'
+                )
+            )
+        ]
+        return result
+
+    @property
+    def http_monitor(self):
+        result = dict()
+        result['ltm:monitor:http:fd07629373b0'] = [
+            dict(
+                parameters=dict(
+                    name='monitor-http'
+                )
+            )
+        ]
+        return result
+
+    @property
+    def nodes(self):
+        result = dict()
+        result['ltm:node:45391b57b104'] = []
+        for x in self.servers:
+            tmp = dict(
+                parameters=dict(
+                    name=x['address'],
+                    address=x['address']
+                )
+            )
+            result['ltm:node:45391b57b104'].append(tmp)
+        return result
+
+    @property
+    def node_addresses(self):
+        result = [x['address'] for x in self.servers]
+        return result
+
+    @property
+    def ssl_profile(self):
+        result = dict()
+        result['ltm:profile:client-ssl:14c995c33411'] = [
+            dict(
+                parameters=dict(
+                    name='clientssl',
+                    certKeyChain=self.cert_key_chains
+                )
+            )
+        ]
+        return result
+
+    def _get_cert_references(self):
+        result = dict()
+        uri = "https://{0}:{1}/mgmt/cm/adc-core/working-config/sys/file/ssl-cert/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        for cert in response['items']:
+            key = fq_name(cert['partition'], cert['name'])
+            result[key] = cert['selfLink']
+        return result
+
+    def _get_key_references(self):
+        result = dict()
+        uri = "https://{0}:{1}/mgmt/cm/adc-core/working-config/sys/file/ssl-key/".format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        for cert in response['items']:
+            key = fq_name(cert['partition'], cert['name'])
+            result[key] = cert['selfLink']
+        return result
+
+    @property
+    def cert_key_chains(self):
+        result = []
+        if 'cert_key_chain' not in self.client_ssl_profile:
+            return None
+
+        kc = self.client_ssl_profile['cert_key_chain']
+        if isinstance(kc, string_types) and kc != 'inherit':
+            raise F5ModuleError(
+                "Only the 'inherit' setting is available when 'cert_key_chain' is a string."
+            )
+
+        if not isinstance(kc, list):
+            raise F5ModuleError(
+                "The value of 'cert_key_chain' is not one of the supported types."
+            )
+
+        cert_references = self._get_cert_references()
+        key_references = self._get_key_references()
+
+        for idx, x in enumerate(kc):
+            tmp = dict(
+                name='clientssl{0}'.format(idx)
+            )
+            if 'cert' not in x:
+                raise F5ModuleError(
+                    "A 'cert' option is required when specifying the 'cert_key_chain' parameter.."
+                )
+            elif x['cert'] not in cert_references:
+                raise F5ModuleError(
+                    "The specified 'cert' was not found. Did you specify its full path?"
+                )
+            else:
+                key = x['cert']
+                tmp['certReference'] = dict(
+                    link=cert_references[key],
+                    fullPath=key
+                )
+
+            if 'key' not in x:
+                raise F5ModuleError(
+                    "A 'key' option is required when specifying the 'cert_key_chain' parameter.."
+                )
+            elif x['key'] not in key_references:
+                raise F5ModuleError(
+                    "The specified 'key' was not found. Did you specify its full path?"
+                )
+            else:
+                key = x['key']
+                tmp['keyReference'] = dict(
+                    link=key_references[key],
+                    fullPath=key
+                )
+
+            if 'chain' in x and x['chain'] not in cert_references:
+                raise F5ModuleError(
+                    "The specified 'key' was not found. Did you specify its full path?"
+                )
+            else:
+                key = x['chain']
+                tmp['chainReference'] = dict(
+                    link=cert_references[key],
+                    fullPath=key
+                )
+
+            if 'passphrase' in x:
+                tmp['passphrase'] = x['passphrase']
+            result.append(tmp)
+        return result
 
 
 class ReportableChanges(Changes):
@@ -278,6 +681,7 @@ class ModuleManager(object):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
         self.want = ModuleParameters(params=self.module.params)
+        self.want.client = self.client
         self.have = ApiParameters()
         self.changes = UsableChanges()
 
@@ -288,6 +692,7 @@ class ModuleManager(object):
                 changed[key] = getattr(self.want, key)
         if changed:
             self.changes = UsableChanges(params=changed)
+            self.changes.client = self.client
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -304,6 +709,7 @@ class ModuleManager(object):
                     changed[k] = change
         if changed:
             self.changes = UsableChanges(params=changed)
+            self.changes.client = self.client
             return True
         return False
 
@@ -318,13 +724,10 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
         reportable = ReportableChanges(params=self.changes.to_return())
         changes = reportable.to_return()
@@ -343,56 +746,88 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/ap/query/v1/tenants/default/reports/AllApplicationsList?$filter=name+eq+'{2}'".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.name
         )
-        return result
-
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+        if resp.status == 200 and \
+            'result' in response and \
+            'totalItems' in response['result'] and \
+            response['result']['totalItems'] == 0:
             return False
-        if self.module.check_mode:
-            return True
-        self.update_on_device()
         return True
 
     def remove(self):
         if self.module.check_mode:
             return True
-        self.remove_from_device()
+        self_link = self.remove_from_device()
+        self.wait_for_apply_template_task(self_link)
         if self.exists():
             raise F5ModuleError("Failed to delete the resource.")
         return True
 
     def create(self):
+        if self.want.service_environment is None:
+            raise F5ModuleError(
+                "A 'service_environment' must be specified when creating a new application."
+            )
+        if self.want.servers is None:
+            raise F5ModuleError(
+                "At least one 'servers' item is needed when creating a new application."
+            )
+        if self.want.inbound_virtual is None:
+            raise F5ModuleError(
+                "An 'inbound_virtual' must be specified when creating a new application."
+            )
         self._set_changed_options()
+
+        if self.changes.default_device_reference is None and self.changes.ssg_reference is None:
+            raise F5ModuleError(
+                "The specified 'service_environment' ({0}) was not found.".format(self.want.service_environment)
+            )
+
         if self.module.check_mode:
             return True
-        self.create_on_device()
+        self_link = self.create_on_device()
+        self.wait_for_apply_template_task(self_link)
+        if not self.exists():
+            raise F5ModuleError(
+                "Failed to deploy application."
+            )
         return True
 
     def create_on_device(self):
         params = self.changes.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params['mode'] = 'CREATE'
+
+        uri = 'https://{0}:{1}/mgmt/cm/global/tasks/apply-template'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
 
-    def update_on_device(self):
-        params = self.changes.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        resource.modify(**params)
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        return response['selfLink']
 
     def absent(self):
         if self.exists():
@@ -400,31 +835,103 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        params = dict(
+            configSetName=self.want.name,
+            mode='DELETE'
         )
-        if resource:
-            resource.delete()
+        uri = 'https://{0}:{1}/mgmt/cm/global/tasks/apply-template'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
+        )
 
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+        return response['selfLink']
+
+    def wait_for_apply_template_task(self, self_link):
+        host = 'https://{0}:{1}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port']
         )
-        result = resource.attrs
-        return ApiParameters(params=result)
+        uri = self_link.replace('https://localhost', host)
+
+        while True:
+            resp = self.client.api.get(uri)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if response['status'] == 'FINISHED' and response.get('currentStep', None) =='DONE':
+                return True
+            elif 'errorMessage' in response:
+                raise F5ModuleError(response['errorMessage'])
+            time.sleep(5)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            name=dict(required=True),
+            description=dict(),
+            servers=dict(
+                type='list',
+                options=dict(
+                    address=dict(required=True),
+                    port=dict(default=80)
+                )
+            ),
+            inbound_virtual=dict(
+                type='dict',
+                options=dict(
+                    address=dict(required=True),
+                    netmask=dict(required=True),
+                    port=dict(default=443)
+                )
+            ),
+            redirect_virtual=dict(
+                type='dict',
+                options=dict(
+                    address=dict(required=True),
+                    netmask=dict(required=True),
+                    port=dict(default=80)
+                )
+            ),
+            service_environment=dict(),
+            state=dict(
+                default='present',
+                choices=['present', 'absent']
+            ),
+            client_ssl_profile=dict(
+                type='dict',
+                name=dict(default='clientssl'),
+                cert_key_chain=dict(
+                    type='raw',
+                    options=dict(
+                        cert=dict(),
+                        key=dict(),
+                        chain=dict(),
+                        passphrase=dict()
+                    )
+                )
+            )
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.mutually_exclusive = [
+            ['inherit_cert_key_chain', 'cert_key_chain']
+        ]
 
 
 def main():
@@ -434,18 +941,16 @@ def main():
         argument_spec=spec.argument_spec,
         supports_check_mode=spec.supports_check_mode
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
+    if not HAS_NETADDR:
+        module.fail_json(msg="The python netaddr module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(module=module)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        cleanup_tokens(client)
-        module.exit_json(**results)
+        exit_json(module, results, client)
     except F5ModuleError as ex:
-        cleanup_tokens(client)
-        module.fail_json(msg=str(ex))
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
