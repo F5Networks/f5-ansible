@@ -53,14 +53,14 @@ options:
       address:
         description:
           - Specifies destination IP address information to which the virtual server
-            sends traffic. 
+            sends traffic.
           - This parameter is required when creating a new application.
         required: True
       netmask:
         description:
           - Specifies the netmask to associate with the given C(destination).
           - This parameter is required when creating a new application.
-        required: True 
+        required: True
       port:
         description:
           - The port that the virtual listens for connections on.
@@ -554,10 +554,7 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if resp.status == 200 and \
-            'result' in response and \
-            'totalItems' in response['result'] and \
-            response['result']['totalItems'] == 0:
+        if resp.status == 200 and 'result' in response and 'totalItems' in response['result'] and response['result']['totalItems'] == 0:
             return False
         return True
 
@@ -574,7 +571,6 @@ class ModuleManager(object):
         if self.want.default_device_reference is None and self.want.ssg_reference is None:
             return True
         return False
-
 
     def create(self):
         if self.want.service_environment is None:
@@ -670,7 +666,7 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if response['status'] == 'FINISHED' and response.get('currentStep', None) =='DONE':
+            if response['status'] == 'FINISHED' and response.get('currentStep', None) == 'DONE':
                 return True
             elif 'errorMessage' in response:
                 raise F5ModuleError(response['errorMessage'])

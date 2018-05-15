@@ -52,12 +52,12 @@ options:
       destination:
         description:
           - Specifies destination IP address information to which the virtual server
-            sends traffic. 
+            sends traffic.
           - This parameter is required when creating a new application.
       netmask:
         description:
           - Specifies the netmask to associate with the given C(destination).
-          - This parameter is required when creating a new application. 
+          - This parameter is required when creating a new application.
       port:
         description:
           - The port that the virtual listens for connections on.
@@ -76,7 +76,7 @@ options:
       destination:
         description:
           - Specifies destination IP address information to which the virtual server
-            sends traffic. 
+            sends traffic.
           - This parameter is required when creating a new application.
       netmask:
         description:
@@ -769,10 +769,7 @@ class ModuleManager(object):
             response = resp.json()
         except ValueError as ex:
             raise F5ModuleError(str(ex))
-        if resp.status == 200 and \
-            'result' in response and \
-            'totalItems' in response['result'] and \
-            response['result']['totalItems'] == 0:
+        if resp.status == 200 and 'result' in response and 'totalItems' in response['result'] and response['result']['totalItems'] == 0:
             return False
         return True
 
@@ -879,7 +876,7 @@ class ModuleManager(object):
             except ValueError as ex:
                 raise F5ModuleError(str(ex))
 
-            if response['status'] == 'FINISHED' and response.get('currentStep', None) =='DONE':
+            if response['status'] == 'FINISHED' and response.get('currentStep', None) == 'DONE':
                 return True
             elif 'errorMessage' in response:
                 raise F5ModuleError(response['errorMessage'])
