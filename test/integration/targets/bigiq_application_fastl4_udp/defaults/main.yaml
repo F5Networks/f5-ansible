@@ -1,0 +1,4 @@
+---
+
+default_device_name: bigiptier1.foo.com
+app_name: my-app1

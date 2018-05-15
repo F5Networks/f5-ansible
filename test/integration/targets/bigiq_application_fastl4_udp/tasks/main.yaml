@@ -2,6 +2,131 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Load balance a UDP-based application with a FastL4 profile
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance a UDP-based application with a FastL4 profile
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance a UDP-based application with a FastL4 profile - Idempotent check
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance a UDP-based application with a FastL4 profile - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove FastL4 UDP application
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove FastL4 UDP application
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove FastL4 UDP application - Idempotent check
+  bigiq_application_fastl4_udp:
+    name: my-app
+    state: absent
+  register: result
+
+- name: Assert Remove FastL4 UDP application - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Try to create without service_environment - FastL4 UDP
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    description: My application
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without service_environment - FastL4 UDP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Try to create without servers - FastL4 UDP
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - FastL4 UDP
+  assert:
+    that:
+      - result is success
+      - "'item is needed when creating a new application.' in result['msg']"
+
+- name: Try to create without inbound_virtual - FastL4 UDP
+  bigiq_application_fastl4_udp:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - FastL4 UDP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
 
 - import_tasks: teardown.yaml
