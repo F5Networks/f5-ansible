@@ -179,10 +179,6 @@
     state: absent
   register: result
 
-
-
-
-
 - name: Load balance an HTTP application on port 80 on BIG-IP - with stats
   bigiq_application_http:
     name: "{{ app_name }}"
@@ -197,7 +193,7 @@
       address: 2.2.2.2
       netmask: 255.255.255.255
       port: 80
-    collect_http_stats: yes
+    add_analytics: yes
   register: result
 
 - name: Assert Load balance an HTTP application on port 80 on BIG-IP - with stats
