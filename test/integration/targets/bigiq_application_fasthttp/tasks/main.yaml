@@ -2,6 +2,234 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Load balance a FastHTTP application on port 80 on BIG-IP
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  tags:
+    - ssg
+
+- name: Assert Load balance a FastHTTP application on port 80 on BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+  tags:
+    - ssg
+
+- name: Load balance a FastHTTP application on port 80 on BIG-IP - Idempotent check
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  tags:
+    - ssg
+
+- name: Assert Load balance a FastHTTP application on port 80 on BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  tags:
+    - ssg
+
+- name: Remove FastHTTP application
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
+  tags:
+    - ssg
+
+- name: Assert Remove FastHTTP application
+  assert:
+    that:
+      - result is changed
+      - result is success
+  tags:
+    - ssg
+
+- name: Remove FastHTTP application - Idempotent check
+  bigiq_application_fasthttp:
+    name: my-app
+    state: absent
+  register: result
+  tags:
+    - ssg
+
+- name: Assert Remove FastHTTP application - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+  tags:
+    - ssg
+
+- name: Try to create without service_environment - FastHTTP
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without service_environment - FastHTTP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Try to create without servers - FastHTTP
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+  failed_when: result is success
+  tags:
+    - ssg
+
+- name: Assert Try to create without servers - FastHTTP
+  assert:
+    that:
+      - result is success
+      - "'item is needed when creating a new application.' in result['msg']"
+  tags:
+    - ssg
+
+- name: Try to create without inbound_virtual - FastHTTP
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ ssg_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+  register: result
+  failed_when: result is success
+  tags:
+    - ssg
+
+- name: Assert Try to create without servers - FastHTTP
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+  tags:
+    - ssg
+
+- name: Load balance a FastHTTP application on port 80 on BIG-IP - default device
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance a FastHTTP application on port 80 on BIG-IP - default device
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance a FastHTTP application on port 80 on BIG-IP - default device - Idempotent check
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+  register: result
+
+- name: Assert Load balance a FastHTTP application on port 80 on BIG-IP - default device - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove FastHTTP application - default device
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
+
+- name: Load balance a FastHTTP application on port 80 on BIG-IP - with stats
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    description: Load balance HTTP
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    add_analytics: yes
+  register: result
+
+- name: Assert Load balance a FastHTTP application on port 80 on BIG-IP - with stats
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove FastHTTP application - with stats
+  bigiq_application_fasthttp:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
 
 - import_tasks: teardown.yaml
