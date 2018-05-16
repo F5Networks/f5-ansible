@@ -247,7 +247,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     from ansible.module_utils.network.f5.common import exit_json
     from ansible.module_utils.network.f5.common import fail_json
-    from library.module_utils.network.f5.common import fq_name
+    from ansible.module_utils.network.f5.common import fq_name
 
 try:
     import netaddr
@@ -389,12 +389,9 @@ class ModuleParameters(Parameters):
 class Changes(Parameters):
     def to_return(self):
         result = {}
-        try:
-            for returnable in self.returnables:
-                result[returnable] = getattr(self, returnable)
-            result = self._filter_params(result)
-        except Exception:
-            pass
+        for returnable in self.returnables:
+            result[returnable] = getattr(self, returnable)
+        result = self._filter_params(result)
         return result
 
 
@@ -602,6 +599,8 @@ class UsableChanges(Changes):
     @property
     def cert_key_chains(self):
         result = []
+        if self.client_ssl_profile is None:
+            return None
         if 'cert_key_chain' not in self.client_ssl_profile:
             return None
 
@@ -794,6 +793,11 @@ class ModuleManager(object):
             raise F5ModuleError("Failed to delete the resource.")
         return True
 
+    def has_no_service_environment(self):
+        if self.want.default_device_reference is None and self.want.ssg_reference is None:
+            return True
+        return False
+
     def create(self):
         if self.want.service_environment is None:
             raise F5ModuleError(
@@ -809,7 +813,7 @@ class ModuleManager(object):
             )
         self._set_changed_options()
 
-        if self.changes.default_device_reference is None and self.changes.ssg_reference is None:
+        if self.has_no_service_environment():
             raise F5ModuleError(
                 "The specified 'service_environment' ({0}) was not found.".format(self.want.service_environment)
             )
