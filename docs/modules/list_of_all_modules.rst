@@ -109,6 +109,7 @@ All modules
   * :ref:`bigiq_application_fastl4_udp`
   * :ref:`bigiq_application_http`
   * :ref:`bigiq_application_https_offload`
+  * :ref:`bigiq_application_https_waf`
   * :ref:`bigiq_regkey_license`
   * :ref:`bigiq_regkey_license_assignment`
   * :ref:`bigiq_regkey_pool`
