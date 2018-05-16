@@ -14,11 +14,11 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = r'''
 ---
-module: bigiq_application_https_offload
-short_description: Manages BIG-IQ HTTPS offload applications
+module: bigiq_application_https_waf
+short_description: Manages BIG-IQ HTTPS WAF applications
 description:
-  - Manages BIG-IQ applications used for load balancing an HTTPS application on
-    port 443 with SSL offloading on BIG-IP.
+  - Manages BIG-IQ applications used for load balancing an HTTPS application on port 443
+    with a Web Application Firewall (WAF) using an ASM Rapid Deployment policy.
 version_added: 2.6
 options:
   name:
@@ -141,16 +141,21 @@ options:
         is a BIG-IP; not an SSG.
     type: bool
     default: no
+  domain_names:
+    description:
+      - Specifies host names that are used to access the web application that this
+        security policy protects.
+      - When creating a new application, this parameter is required.
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Load balance an HTTPS application on port 443 with SSL offloading on BIG-IP
-  bigiq_application_https_offload:
+- name: Load balance an HTTPS application on port 443 with a WAF using ASM
+  bigiq_application_https_waf:
     name: my-app
-    description: Redirect HTTP to HTTPS
+    description: Redirect HTTP to HTTPS via WAF
     service_environment: my-ssg
     servers:
       - address: 1.2.3.4
@@ -253,23 +258,24 @@ class Parameters(AnsibleF5Parameters):
         'ssgReference': 'ssg_reference',
         'configSetName': 'config_set_name',
         'defaultDeviceReference': 'default_device_reference',
-        'addAnalytics': 'add_analytics'
+        'addAnalytics': 'add_analytics',
+        'domains': 'domain_names'
     }
 
     api_attributes = [
         'resources', 'description', 'configSetName', 'subPath', 'templateReference',
-        'ssgReference', 'defaultDeviceReference', 'addAnalytics'
+        'ssgReference', 'defaultDeviceReference', 'addAnalytics', 'domains'
     ]
 
     returnables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
         'ssg_reference', 'default_device_reference', 'servers', 'inbound_virtual',
-        'redirect_virtual', 'client_ssl_profile', 'add_analytics'
+        'redirect_virtual', 'client_ssl_profile', 'add_analytics', 'domain_names'
     ]
 
     updatables = [
         'resources', 'description', 'config_set_name', 'sub_path', 'template_reference',
-        'ssg_reference', 'default_device_reference', 'servers', 'add_analytics'
+        'ssg_reference', 'default_device_reference', 'servers', 'add_analytics', 'domain_names'
     ]
 
 
@@ -292,7 +298,7 @@ class ModuleParameters(Parameters):
 
     @property
     def template_reference(self):
-        filter = "name+eq+'Default-f5-HTTPS-offload-lb-template'"
+        filter = "name+eq+'Default-f5-HTTPS-WAF-lb-template'"
         uri = "https://{0}:{1}/mgmt/cm/global/templates/?$filter={2}&$top=1&$select=selfLink".format(
             self.client.provider['server'],
             self.client.provider['server_port'],
@@ -375,6 +381,19 @@ class ModuleParameters(Parameters):
         )
         return result
 
+    @property
+    def domain_names(self):
+        if self._values['domain_names'] is None:
+            return None
+        result = []
+        for domain in self._values['domain_names']:
+            result.append(
+                dict(
+                    domainName=domain
+                )
+            )
+        return result
+
 
 class Changes(Parameters):
     def to_return(self):
@@ -404,7 +423,7 @@ class UsableChanges(Changes):
     @property
     def inbound_virtual_server(self):
         result = dict()
-        result['ltm:virtual:7a5f7da91996'] = [
+        result['ltm:virtual:90735960bf4b'] = [
             dict(
                 parameters=dict(
                     name='default_vs',
@@ -420,12 +439,12 @@ class UsableChanges(Changes):
     @property
     def inbound_profiles(self):
         result = {
-            'profiles:14c995c33411': [
+            'profiles:78b1bcfdafad': [
                 dict(
                     parameters=dict()
                 )
             ],
-            'profiles:8ba4bb101701': [
+            'profiles:2f52acac9fde': [
                 dict(
                     parameters=dict()
                 )
@@ -441,7 +460,7 @@ class UsableChanges(Changes):
     @property
     def redirect_virtual_server(self):
         result = dict()
-        result['ltm:virtual:40e8c4a6f542'] = [
+        result['ltm:virtual:3341f412b980'] = [
             dict(
                 parameters=dict(
                     name='default_redirect_vs',
@@ -457,7 +476,7 @@ class UsableChanges(Changes):
     @property
     def redirect_profiles(self):
         result = {
-            'profiles:8ba4bb101701': [
+            'profiles:2f52acac9fde': [
                 dict(
                     parameters=dict()
                 )
@@ -473,7 +492,7 @@ class UsableChanges(Changes):
     @property
     def pool(self):
         result = dict()
-        result['ltm:pool:be70d46c6d73'] = [
+        result['ltm:pool:8bc5b256f9d1'] = [
             dict(
                 parameters=dict(
                     name='pool_0'
@@ -492,7 +511,7 @@ class UsableChanges(Changes):
                 parameters=dict(
                     port=x['port'],
                     nodeReference=dict(
-                        link='#/resources/ltm:node:45391b57b104/{0}'.format(x['address']),
+                        link='#/resources/ltm:node:c072248f8e6a/{0}'.format(x['address']),
                         fullPath='# {0}'.format(x['address'])
                     )
                 )
@@ -503,7 +522,7 @@ class UsableChanges(Changes):
     @property
     def http_profile(self):
         result = dict()
-        result['ltm:profile:http:8ba4bb101701'] = [
+        result['ltm:profile:http:2f52acac9fde'] = [
             dict(
                 parameters=dict(
                     name='profile_http'
@@ -515,7 +534,7 @@ class UsableChanges(Changes):
     @property
     def http_monitor(self):
         result = dict()
-        result['ltm:monitor:http:fd07629373b0'] = [
+        result['ltm:monitor:http:18765a198150'] = [
             dict(
                 parameters=dict(
                     name='monitor-http'
@@ -527,7 +546,7 @@ class UsableChanges(Changes):
     @property
     def nodes(self):
         result = dict()
-        result['ltm:node:45391b57b104'] = []
+        result['ltm:node:c072248f8e6a'] = []
         for x in self.servers:
             tmp = dict(
                 parameters=dict(
@@ -535,7 +554,7 @@ class UsableChanges(Changes):
                     address=x['address']
                 )
             )
-            result['ltm:node:45391b57b104'].append(tmp)
+            result['ltm:node:c072248f8e6a'].append(tmp)
         return result
 
     @property
@@ -546,7 +565,7 @@ class UsableChanges(Changes):
     @property
     def ssl_profile(self):
         result = dict()
-        result['ltm:profile:client-ssl:14c995c33411'] = [
+        result['ltm:profile:client-ssl:78b1bcfdafad'] = [
             dict(
                 parameters=dict(
                     name='clientssl',
@@ -797,6 +816,10 @@ class ModuleManager(object):
             raise F5ModuleError(
                 "An 'inbound_virtual' must be specified when creating a new application."
             )
+        if self.want.domain_names is None:
+            raise F5ModuleError(
+                "You must provide at least one value in the 'domain_names' parameter."
+            )
         self._set_changed_options()
 
         if self.changes.default_device_reference is None and self.changes.ssg_reference is None:
@@ -933,6 +956,7 @@ class ArgumentSpec(object):
                 )
             ),
             add_analytics=dict(type='bool', default='no'),
+            domain_names=dict(type='list')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
