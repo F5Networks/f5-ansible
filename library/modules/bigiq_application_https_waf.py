@@ -146,6 +146,15 @@ options:
       - Specifies host names that are used to access the web application that this
         security policy protects.
       - When creating a new application, this parameter is required.
+  state:
+    description:
+      - The state of the resource on the system.
+      - When C(present), guarantees that the resource exists with the provided attributes.
+      - When C(absent), removes the resource from the system.
+    default: present
+    choices:
+      - absent
+      - present
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
@@ -207,6 +216,7 @@ inbound_virtual_port:
 servers:
   description: List of servers, and their ports, that make up the application.
   type: complex
+  returned: changed
   contains:
     address:
       description: The IP address of the server.

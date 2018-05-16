@@ -82,6 +82,15 @@ options:
         is a BIG-IP; not an SSG.
     type: bool
     default: no
+  state:
+    description:
+      - The state of the resource on the system.
+      - When C(present), guarantees that the resource exists with the provided attributes.
+      - When C(absent), removes the resource from the system.
+    default: present
+    choices:
+      - absent
+      - present
 extends_documentation_fragment: f5
 notes:
   - This module does not support updating of your application (whether deployed or not).
@@ -145,6 +154,7 @@ inbound_virtual_port:
 servers:
   description: List of servers, and their ports, that make up the application.
   type: complex
+  returned: changed
   contains:
     address:
       description: The IP address of the server.
