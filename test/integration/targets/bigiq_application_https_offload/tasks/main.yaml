@@ -35,7 +35,7 @@
       - result is success
 
 - name: Load balance an HTTPS application on port 443 with SSL offloading on BIG-IP - Idempotent check
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: "{{ app_name }}"
     description: My application
     service_environment: "{{ default_device_name }}"
@@ -67,7 +67,7 @@
       - result is success
 
 - name: Remove HTTPS Offload application
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: "{{ app_name }}"
     state: absent
   register: result
@@ -79,7 +79,7 @@
       - result is success
 
 - name: Remove HTTPS Offload application - Idempotent check
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: my-app
     state: absent
   register: result
@@ -91,7 +91,7 @@
       - result is success
 
 - name: Try to create without service_environment - HTTPS offload
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: "{{ app_name }}"
     description: My application
     servers:
@@ -123,7 +123,7 @@
       - "'must be specified when creating a new application.' in result['msg']"
 
 - name: Try to create without servers - HTTPS offload
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: "{{ app_name }}"
     description: My application
     service_environment: "{{ default_device_name }}"
@@ -151,7 +151,7 @@
       - "'item is needed when creating a new application.' in result['msg']"
 
 - name: Try to create without inbound_virtual - HTTPS offload
-  bigiq_application_fastl4_tcp:
+  bigiq_application_https_offload:
     name: "{{ app_name }}"
     description: My application
     service_environment: "{{ default_device_name }}"
