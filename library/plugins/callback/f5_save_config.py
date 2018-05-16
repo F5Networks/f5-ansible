@@ -160,4 +160,3 @@ class CallbackModule(CallbackBase):
 
         result._task.squash()
         foo = templar.template(result._task._attributes['environment'])
-        q.q(foo)
