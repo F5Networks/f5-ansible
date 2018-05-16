@@ -2,6 +2,229 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Load balance an HTTPS application on port 443 with WAF on BIG-IP
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 8443
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+    domain_names:
+      - foo.baz.com
+      - bar.baz.com
+  register: result
+
+- name: Assert Load balance an HTTPS application on port 443 with WAF on BIG-IP
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Load balance an HTTPS application on port 443 with WAF on BIG-IP - Idempotent check
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+    domain_names:
+      - foo.baz.com
+      - bar.baz.com
+  register: result
+
+- name: Assert Load balance an HTTPS application on port 443 with WAF on BIG-IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Remove HTTPS WAF application
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove HTTPS WAF application
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Remove HTTPS WAF application - Idempotent check
+  bigiq_application_https_waf:
+    name: my-app
+    state: absent
+  register: result
+
+- name: Assert Remove HTTPS WAF application - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Try to create without service_environment - HTTPS WAF
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+    domain_names:
+      - foo.baz.com
+      - bar.baz.com
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without service_environment - HTTPS WAF
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Try to create without servers - HTTPS WAF
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+    domain_names:
+      - foo.baz.com
+      - bar.baz.com
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - HTTPS WAF
+  assert:
+    that:
+      - result is success
+      - "'item is needed when creating a new application.' in result['msg']"
+
+- name: Try to create without inbound_virtual - HTTPS WAF
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+    domain_names:
+      - foo.baz.com
+      - bar.baz.com
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without servers - HTTPS WAF
+  assert:
+    that:
+      - result is success
+      - "'must be specified when creating a new application.' in result['msg']"
+
+- name: Try to create without domain_names - HTTPS WAF
+  bigiq_application_https_waf:
+    name: "{{ app_name }}"
+    description: My application
+    service_environment: "{{ default_device_name }}"
+    servers:
+      - address: 1.2.3.4
+        port: 8080
+      - address: 5.6.7.8
+        port: 8080
+    inbound_virtual:
+      address: 2.2.2.2
+      netmask: 255.255.255.255
+      port: 80
+    redirect_virtual:
+      address: 3.3.3.3
+      netmask: 255.255.255.255
+      port: 8080
+    client_ssl_profile:
+      name: foo
+      cert_key_chain:
+        - key: /Common/default.key
+          cert: /Common/default.crt
+          chain: /Common/default.crt
+  register: result
+  failed_when: result is success
+
+- name: Assert Try to create without domain_names - HTTPS WAF
+  assert:
+    that:
+      - result is success
+      - "'You must provide at least one value in the' in result['msg']"
 
 - import_tasks: teardown.yaml
