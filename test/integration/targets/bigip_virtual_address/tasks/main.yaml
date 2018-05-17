@@ -433,3 +433,6 @@
 
 - import_tasks: issue-00654.yaml
   tags: issue-00654
+
+- import_tasks: issue-00725.yaml
+  tags: issue-00725

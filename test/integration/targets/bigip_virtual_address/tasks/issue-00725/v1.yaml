@@ -1,0 +1,106 @@
+---
+
+- name: Issue 00725 - Add virtual address for changing
+  bigip_virtual_address:
+    name: foo7
+    address: 1.1.1.7
+  register: result
+
+- name: Issue 00725 - Change virtual address - enabled
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: enabled
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - enabled
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00725 - Change virtual address - enabled - Idempotent check
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: enabled
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - enabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00725 - Change virtual address - disabled
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: disabled
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - disabled
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00725 - Change virtual address - disabled - Idempotent check
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: disabled
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - disabled - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00725 - Change virtual address - always
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: always
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - always
+  assert:
+    that:
+      - result is changed
+
+- name: Issue 00725 - Change virtual address - always - Idempotent check
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: always
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - always - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00725 - Change virtual address - selective
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: selective
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - selective
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00725 - Change virtual address - any
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: any
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - any
+  assert:
+    that:
+      - result is not changed
+
+- name: Issue 00725 - Change virtual address - all
+  bigip_virtual_address:
+    name: foo7
+    route_advertisement: all
+  register: result
+
+- name: Issue 00725 - Assert Change virtual address - all
+  assert:
+    that:
+      - result is not changed
