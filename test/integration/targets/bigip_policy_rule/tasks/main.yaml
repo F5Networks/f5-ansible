@@ -370,3 +370,6 @@
       - result is not changed
 
 - import_tasks: teardown.yaml
+
+- import_tasks: issue-00727.yaml
+  tags: issue-00727
