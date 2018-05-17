@@ -127,8 +127,8 @@ options:
         address, regardless of the availability status.
       - When C(selective), you can also selectively enable ICMP echo responses, which
         causes the BIG-IP system to internally enable or disable responses based on
-        virtual server state: any virtual server, all virtual servers, or always,
-        regardless of the state of any virtual server.
+        virtual server state. Either C(any) virtual server, C(all) virtual servers, or
+        C(always), regardless of the state of any virtual server.
       - When C(any), the BIG-IP system will advertise the route for the virtual address
         when any virtual server is available.
       - When C(all), the BIG-IP system will advertise the route for the virtual address
