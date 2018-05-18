@@ -372,6 +372,39 @@ class Parameters(AnsibleF5Parameters):
                 "Traffic groups can only exist in /Common"
             )
 
+    @property
+    def route_advertisement_type(self):
+        if self.use_route_advertisement:
+            return self.use_route_advertisement
+        elif self.route_advertisement:
+            return self.route_advertisement
+        else:
+            return self._values['route_advertisement_type']
+
+    @property
+    def use_route_advertisement(self):
+        if self._values['use_route_advertisement'] is None:
+            return None
+        if self._values['use_route_advertisement'] in BOOLEANS_TRUE:
+            return 'enabled'
+        elif self._values['use_route_advertisement'] == 'enabled':
+            return 'enabled'
+        else:
+            return 'disabled'
+
+    @property
+    def route_advertisement(self):
+        if self._values['route_advertisement'] is None:
+            return None
+        version = self.client.api.tmos_version
+        if LooseVersion(version) <= LooseVersion('13.0.0'):
+            if self._values['route_advertisement'] == 'disabled':
+                return 'disabled'
+            else:
+                return 'enabled'
+        else:
+            return self._values['route_advertisement']
+
     def to_return(self):
         result = {}
         for returnable in self.returnables:
@@ -430,27 +463,6 @@ class ModuleParameters(Parameters):
         else:
             result = self._values['name']
         return result
-
-    @property
-    def route_advertisement_type(self):
-        if self._values['use_route_advertisement'] is not None:
-            if self._values['use_route_advertisement'] in BOOLEANS_TRUE:
-                return 'enabled'
-            elif self._values['use_route_advertisement'] == 'enabled':
-                return 'enabled'
-            else:
-                return 'disabled'
-        elif self._values['route_advertisement'] is not None:
-            version = self.client.api.tmos_version
-            if LooseVersion(version) <= LooseVersion('13.0.0'):
-                if self._values['route_advertisement'] == 'disabled':
-                    return 'disabled'
-                else:
-                    return 'enabled'
-            else:
-                return self._values['route_advertisement']
-        else:
-            return self._values['route_advertisement_type']
 
 
 class Changes(Parameters):
