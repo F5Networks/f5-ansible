@@ -19,8 +19,6 @@
   bigip_device_trust:
     peer_server: "{{ hostvars[groups['f5-test'][1]].ansible_host }}"
     peer_hostname: "{{ hostvars[groups['f5-test'][1]].inventory_hostname }}"
-    peer_user: admin
-    peer_password: admin
   register: result
   when: play_hosts[0] == inventory_hostname
 
@@ -34,8 +32,6 @@
   bigip_device_trust:
     peer_server: "{{ hostvars[groups['f5-test'][1]].ansible_host }}"
     peer_hostname: "{{ hostvars[groups['f5-test'][1]].inventory_hostname }}"
-    peer_user: admin
-    peer_password: admin
   register: result
   when: play_hosts[0] == inventory_hostname
 
@@ -49,8 +45,6 @@
   bigip_device_trust:
     peer_server: "{{ hostvars[item].ansible_host }}"
     peer_hostname: "{{ hostvars[item].inventory_hostname }}"
-    peer_user: admin
-    peer_password: admin
     state: absent
   register: result
   loop: "{{ groups['f5-test'] }}"
@@ -65,8 +59,6 @@
   bigip_device_trust:
     peer_server: "{{ hostvars[item].ansible_host }}"
     peer_hostname: "{{ hostvars[item].inventory_hostname }}"
-    peer_user: admin
-    peer_password: admin
     state: absent
   register: result
   loop: "{{ groups['f5-test'] }}"
@@ -76,6 +68,3 @@
   assert:
     that:
       - result is not changed
-
-- import_tasks: issue-00704.yaml
-  tags: issue-00704
