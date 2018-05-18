@@ -5,3 +5,6 @@
 - import_tasks: node-monitors.yaml
 - import_tasks: statuses.yaml
   tags: status
+
+- import_tasks: issue-00732.yaml
+  tags: issue-00732
