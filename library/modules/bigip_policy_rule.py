@@ -401,7 +401,6 @@ class ModuleParameters(Parameters):
             raise F5ModuleError(
                 "A 'pool' or 'virtual' must be specified when the 'forward' type is used."
             )
-        import q; q.q(item)
         if item.get('pool', None):
             action['pool'] = fq_name(self.partition, item['pool'])
         elif item.get('virtual', None):
@@ -757,7 +756,6 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        import q; q.q(params)
         policy = self.client.api.tm.ltm.policys.policy.load(
             name=self.want.policy,
             partition=self.want.partition,
