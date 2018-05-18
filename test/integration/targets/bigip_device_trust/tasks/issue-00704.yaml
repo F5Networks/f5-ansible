@@ -1,17 +1,17 @@
 ---
 
-- name: Get facts
+- name: Issue 00704 - Get facts
   bigip_facts:
     include:
       - self_ip
   register: f
 
-- name: Change the hostname
+- name: Issue 00704 - Change the hostname
   bigip_hostname:
     hostname: "{{ inventory_hostname }}"
   register: result
 
-- name: Configure device connectivity for standard HA pair
+- name: Issue 00704 - Configure device connectivity for standard HA pair
   bigip_device_connectivity:
     config_sync_ip: "{{ f['self_ip']['/Common/net1']['address'] }}"
 
