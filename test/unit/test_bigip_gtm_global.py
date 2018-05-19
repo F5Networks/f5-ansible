@@ -64,35 +64,57 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = ModuleParameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            synchronization=True,
+            synchronization_group_name='foo',
+            synchronize_zone_files=True
+        )
+
+        p = ModuleParameters(params=args)
+        assert p.synchronization is True
+        assert p.synchronization_group_name == 'foo'
+        assert p.synchronize_zone_files is True
 
     def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = ApiParameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        args = load_fixture('load_gtm_global_settings_general_1.json')
+
+        p = ApiParameters(params=args)
+        assert p.synchronization is False
+        assert p.synchronization_group_name == 'default'
+        assert p.synchronize_zone_files is False
 
 
 @patch('ansible.module_utils.f5_utils.AnsibleF5Client._get_mgmt_root',
        return_value=True)
 class TestManager(unittest.TestCase):
-    def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+
+    def update(self, *args):
+        set_module_args(dict(
+            synchronization="yes",
+            synchronization_group_name='foo',
+            synchronize_zone_files="yes",
+            server='localhost',
+            password='password',
+            user='admin'
+        ))
+
+        current = ApiParameters(params=load_fixture('load_gtm_global_settings_general_1.json'))
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+
+        # Override methods in the specific type of manager
+        mm = ModuleManager(module=module)
+        mm.update_on_device = Mock(return_value=True)
+        mm.read_current_from_device = Mock(return_value=current)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
+        assert results['synchronization'] == 'yes'
+        assert results['synchronization_group_name'] == 'foo'
+        assert results['synchronize_zone_files'] == 'yes'
