@@ -1,0 +1,5 @@
+---
+
+- name: Provision GTM
+  bigip_provision:
+    name: gtm

@@ -1,0 +1,137 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Enable synchronization
+  bigip_gtm_global:
+    synchronization: yes
+  register: result
+
+- name: Assert Enable synchronization
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Enable synchronization - Idempotent check
+  bigip_gtm_global:
+    synchronization: yes
+  register: result
+
+- name: Assert Enable synchronization - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Disable synchronization
+  bigip_gtm_global:
+    synchronization: no
+  register: result
+
+- name: Assert Disable synchronization
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Disable synchronization - Idempotent check
+  bigip_gtm_global:
+    synchronization: no
+  register: result
+
+- name: Assert Disable synchronization - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Enable synchronize zone files
+  bigip_gtm_global:
+    synchronize_zone_files: yes
+  register: result
+
+- name: Assert Enable synchronize zone files
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Enable synchronize zone files - Idempotent check
+  bigip_gtm_global:
+    synchronize_zone_files: yes
+  register: result
+
+- name: Assert Enable synchronize zone files - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Disable synchronize zone files
+  bigip_gtm_global:
+    synchronize_zone_files: no
+  register: result
+
+- name: Assert Disable synchronize zone files
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Disable synchronize zone files - Idempotent check
+  bigip_gtm_global:
+    synchronize_zone_files: no
+  register: result
+
+- name: Assert Disable synchronize zone files - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change sync group name
+  bigip_gtm_global:
+    synchronization_group_name: foo
+  register: result
+
+- name: Assert Change sync group name
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change sync group name - Idempotent check
+  bigip_gtm_global:
+    synchronization_group_name: foo
+  register: result
+
+- name: Assert Change sync group name - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Change sync group name to none
+  bigip_gtm_global:
+    synchronization_group_name: ""
+  register: result
+
+- name: Assert Change sync group name to none
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Change sync group name to none - Idempotent check
+  bigip_gtm_global:
+    synchronization_group_name: ""
+  register: result
+
+- name: Assert Change sync group name to none - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- import_tasks: teardown.yaml

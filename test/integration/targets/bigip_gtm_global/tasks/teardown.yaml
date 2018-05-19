@@ -1,0 +1,6 @@
+---
+
+- name: De-rovision GTM
+  bigip_provision:
+    name: gtm
+    state: absent
