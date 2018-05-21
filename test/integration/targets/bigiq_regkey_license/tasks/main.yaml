@@ -28,26 +28,26 @@
     that:
       - result is not changed
 
-- name: Remove a license to the license pool
+- name: Remove a license from the license pool
   bigiq_regkey_license:
     regkey_pool: regkey-pool-1
     license_key: "{{ license_key }}"
     state: absent
   register: result
 
-- name: Assert Remove a license to the license pool
+- name: Assert Remove a license from the license pool
   assert:
     that:
       - result is changed
 
-- name: Remove a license to the license pool - Idempotent check
+- name: Remove a license from the license pool - Idempotent check
   bigiq_regkey_license:
     regkey_pool: regkey-pool-1
     license_key: "{{ license_key }}"
     state: absent
   register: result
 
-- name: Assert Remove a license to the license pool - Idempotent check
+- name: Assert Remove a license from the license pool - Idempotent check
   assert:
     that:
       - result is not changed
