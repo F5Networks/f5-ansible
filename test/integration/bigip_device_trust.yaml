@@ -20,7 +20,7 @@
 #
 
 - name: Test the bigip_device_trust module
-  hosts: "f5-test[0]"
+  hosts: "f5-test"
   connection: local
   any_errors_fatal: true
 
