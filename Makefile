@@ -91,13 +91,13 @@ find-ignores:
 pyclean:
 	find . | grep -E "(__pycache__|\.pyc|\.pyo$$)" | xargs rm -rf
 
-run-py2.7:
+py2.7-run:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py2.7
 
-run-py3.5:
+py3.5-run:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.5
 
-run-py3.6:
+py3.6-run:
 	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml run py3.6
 
 bare-py2.7:
@@ -111,3 +111,6 @@ bare-py3.6:
 
 ip-alias:
 	sudo ifconfig lo0 alias 1.2.3.4
+
+container-update:
+	docker-compose -f devtools/docker-compose.yaml -f devtools/docker-compose.site.yaml pull
