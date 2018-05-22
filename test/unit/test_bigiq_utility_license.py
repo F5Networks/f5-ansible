@@ -21,7 +21,7 @@ from ansible.compat.tests.mock import patch
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.modules.bigiq_utility_license import Parameters
+    from library.modules.bigiq_utility_license import ModuleParameters
     from library.modules.bigiq_utility_license import ModuleManager
     from library.modules.bigiq_utility_license import ArgumentSpec
     from library.module_utils.network.f5.common import F5ModuleError
@@ -29,7 +29,7 @@ try:
     from test.unit.modules.utils import set_module_args
 except ImportError:
     try:
-        from ansible.modules.network.f5.bigiq_utility_license import Parameters
+        from ansible.modules.network.f5.bigiq_utility_license import ModuleParameters
         from ansible.modules.network.f5.bigiq_utility_license import ModuleManager
         from ansible.modules.network.f5.bigiq_utility_license import ArgumentSpec
         from ansible.module_utils.network.f5.common import F5ModuleError
@@ -62,33 +62,47 @@ def load_fixture(name):
 
 class TestParameters(unittest.TestCase):
     def test_module_parameters(self):
-        raise SkipTest('You must write your own module param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='m_of_n',
-        #     host='192.168.1.1',
-        #     port=8080
-        # )
-        #
-        # p = Parameters(params=args)
-        # assert p.monitor == 'min 1 of'
-        # assert p.host == '192.168.1.1'
-        # assert p.port == 8080
+        args = dict(
+            license_key='XXXX-XXXX-XXXX-XXXX-XXXX',
+            accept_eula=True,
+        )
 
-    def test_api_parameters(self):
-        raise SkipTest('You must write your own API param test. See examples, then remove this exception')
-        # args = dict(
-        #     monitor_type='and_list',
-        #     slowRampTime=200,
-        #     reselectTries=5,
-        #     serviceDownAction='drop'
-        # )
-        #
-        # p = Parameters(params=args)
-        # assert p.slow_ramp_time == 200
-        # assert p.reselect_tries == 5
-        # assert p.service_down_action == 'drop'
+        p = ModuleParameters(params=args)
+        assert p.license_key == 'XXXX-XXXX-XXXX-XXXX-XXXX'
+        assert p.accept_eula is True
 
 
 class TestManager(unittest.TestCase):
+
+    def setUp(self):
+        self.spec = ArgumentSpec()
+        self.patcher1 = patch('time.sleep')
+        self.patcher1.start()
+
+    def tearDown(self):
+        self.patcher1.stop()
+
     def test_create(self, *args):
-        raise SkipTest('You must write a creation test')
+        set_module_args(dict(
+            license_key='XXXX-XXXX-XXXX-XXXX-XXXX',
+            accept_eula=True,
+            password='passsword',
+            server='localhost',
+            user='admin'
+        ))
+
+        module = AnsibleModule(
+            argument_spec=self.spec.argument_spec,
+            supports_check_mode=self.spec.supports_check_mode
+        )
+        mm = ModuleManager(module=module)
+
+        # Override methods to force specific logic in the module to happen
+        mm.exists = Mock(side_effect=[False, True])
+        mm.create_on_device = Mock(return_value=True)
+        mm.wait_for_initial_license_activation = Mock(return_value=True)
+        mm.wait_for_utility_license_activation = Mock(return_value=True)
+
+        results = mm.exec_module()
+
+        assert results['changed'] is True
