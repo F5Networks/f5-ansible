@@ -15,83 +15,100 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 DOCUMENTATION = r'''
 ---
 module: bigiq_utility_license
-short_description: __SHORT_DESCRIPTION__
+short_description: Manage utility licenses on a BIG-IQ
 description:
-  - __LONG DESCRIPTION__.
-version_added: 2.5
+  - Manages utility licenses on a BIG-IQ. Utility licenses are one form of licenses
+    that BIG-IQ can distribute. These licenses, unlike regkey licenses, do not require
+    a pool to be created before creation. Additionally, when assigning them, you assign
+    by offering instead of key.
+version_added: 2.6
 options:
-  name:
+  license_key:
     description:
-      - Specifies the name of the ... .
+      - The license key to install and activate.
     required: True
+  accept_eula:
+    description:
+      - A key that signifies that you accept the F5 EULA for this license.
+      - A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902
+      - This is required when C(state) is C(present).
+    type: bool
+  state:
+    description:
+      - The state of the utility license on the system.
+      - When C(present), guarantees that the license exists.
+      - When C(absent), removes the license from the system.
+    default: present
+    choices:
+      - absent
+      - present
+requirements:
+  - BIG-IQ >= 5.3.0
 extends_documentation_fragment: f5
 author:
   - Tim Rupp (@caphrim007)
 '''
 
 EXAMPLES = r'''
-- name: Create a ...
+- name: Add a utility license to the system
   bigiq_utility_license:
-    name: foo
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    accept_eula: yes
     password: secret
     server: lb.mydomain.com
     state: present
     user: admin
   delegate_to: localhost
+
+- name: Remove a utility license from the system
+  bigiq_utility_license:
+    license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+    password: secret
+    server: lb.mydomain.com
+    state: absent
+    user: admin
+  delegate_to: localhost
 '''
 
 RETURN = r'''
-param1:
-  description: The new param1 value of the resource.
-  returned: changed
-  type: bool
-  sample: true
-param2:
-  description: The new param2 value of the resource.
-  returned: changed
-  type: string
-  sample: Foo is bar
+# only common fields returned
 '''
+
+import time
 
 from ansible.module_utils.basic import AnsibleModule
 
 try:
-    from library.module_utils.network.f5.bigiq import HAS_F5SDK
-    from library.module_utils.network.f5.bigiq import F5Client
+    from library.module_utils.network.f5.bigiq import F5RestClient
     from library.module_utils.network.f5.common import F5ModuleError
     from library.module_utils.network.f5.common import AnsibleF5Parameters
     from library.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from library.module_utils.network.f5.common import exit_json
+    from library.module_utils.network.f5.common import fail_json
 except ImportError:
-    from ansible.module_utils.network.f5.bigiq import HAS_F5SDK
-    from ansible.module_utils.network.f5.bigiq import F5Client
+    from ansible.module_utils.network.f5.bigiq import F5RestClient
     from ansible.module_utils.network.f5.common import F5ModuleError
     from ansible.module_utils.network.f5.common import AnsibleF5Parameters
     from ansible.module_utils.network.f5.common import f5_argument_spec
-    try:
-        from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
-    except ImportError:
-        HAS_F5SDK = False
+    from ansible.module_utils.network.f5.common import exit_json
+    from ansible.module_utils.network.f5.common import fail_json
 
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-
+        'regKey': 'license_key'
     }
 
     api_attributes = [
-
+        'regKey'
     ]
 
     returnables = [
-
+        'license_key'
     ]
 
     updatables = [
-
+        'license_key'
     ]
 
     def to_return(self):
@@ -105,8 +122,34 @@ class Parameters(AnsibleF5Parameters):
         return result
 
 
-class Changes(Parameters):
+class ApiParameters(Parameters):
     pass
+
+
+class ModuleParameters(Parameters):
+    pass
+
+
+class Changes(Parameters):
+    def to_return(self):
+        result = {}
+        try:
+            for returnable in self.returnables:
+                result[returnable] = getattr(self, returnable)
+            result = self._filter_params(result)
+        except Exception:
+            pass
+        return result
+
+
+class UsableChanges(Changes):
+    pass
+
+
+class ReportableChanges(Changes):
+    @property
+    def license_key(self):
+        return None
 
 
 class Difference(object):
@@ -135,7 +178,7 @@ class ModuleManager(object):
     def __init__(self, *args, **kwargs):
         self.module = kwargs.get('module', None)
         self.client = kwargs.get('client', None)
-        self.want = ModuleParameters(params=self.module.params)
+        self.want = ModuleParameters(client=self.client, params=self.module.params)
         self.have = ApiParameters()
         self.changes = UsableChanges()
 
@@ -145,7 +188,7 @@ class ModuleManager(object):
             if getattr(self.want, key) is not None:
                 changed[key] = getattr(self.want, key)
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
 
     def _update_changed_options(self):
         diff = Difference(self.want, self.have)
@@ -161,7 +204,7 @@ class ModuleManager(object):
                 else:
                     changed[k] = change
         if changed:
-            self.changes = Changes(params=changed)
+            self.changes = UsableChanges(params=changed)
             return True
         return False
 
@@ -176,15 +219,13 @@ class ModuleManager(object):
         result = dict()
         state = self.want.state
 
-        try:
-            if state == "present":
-                changed = self.present()
-            elif state == "absent":
-                changed = self.absent()
-        except iControlUnexpectedHTTPError as e:
-            raise F5ModuleError(str(e))
+        if state == "present":
+            changed = self.present()
+        elif state == "absent":
+            changed = self.absent()
 
-        changes = self.changes.to_return()
+        reportable = ReportableChanges(params=self.changes.to_return())
+        changes = reportable.to_return()
         result.update(**changes)
         result.update(dict(changed=changed))
         self._announce_deprecations(result)
@@ -200,30 +241,36 @@ class ModuleManager(object):
 
     def present(self):
         if self.exists():
-            return self.update()
+            return False
         else:
             return self.create()
 
     def exists(self):
-        result = self.client.api.__API_ENDPOINT__.exists(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = "https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/?$filter=regKey+eq+'{2}'".format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.license_key
         )
-        return result
+        resp = self.client.api.get(uri)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
 
-    def update(self):
-        self.have = self.read_current_from_device()
-        if not self.should_update():
+        if resp.status == 200 and response['totalItems'] == 0:
             return False
-        if self.module.check_mode:
-            return True
-        self.update_on_device()
+        elif 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
         return True
 
     def remove(self):
         if self.module.check_mode:
             return True
         self.remove_from_device()
+        self.wait_for_removal()
         if self.exists():
             raise F5ModuleError("Failed to delete the resource.")
         return True
@@ -232,24 +279,120 @@ class ModuleManager(object):
         self._set_changed_options()
         if self.module.check_mode:
             return True
+        if self.want.accept_eula is False:
+            raise F5ModuleError(
+                "To add a license, you must accept its EULA. Please see the module documentation for a link to this."
+            )
         self.create_on_device()
+        self.wait_for_initial_license_activation()
+        self.wait_for_utility_license_activation()
+        if not self.exists():
+            raise F5ModuleError(
+                "Failed to activate the license."
+            )
         return True
 
     def create_on_device(self):
-        params = self.want.api_params()
-        self.client.api.__API_ENDPOINT__.create(
-            name=self.want.name,
-            partition=self.want.partition,
-            **params
+        params = self.changes.api_params()
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/initial-activation'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
         )
 
-    def update_on_device(self):
-        params = self.want.api_params()
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        params['name'] = self.want.license_key
+        params['status'] = 'ACTIVATING_AUTOMATIC'
+
+        resp = self.client.api.post(uri, json=params)
+        try:
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
+
+    def wait_for_removal(self):
+        count = 0
+
+        while count < 3:
+            if not self.exists():
+                count += 1
+            else:
+                count = 0
+            time.sleep(1)
+
+    def wait_for_initial_license_activation(self):
+        count = 0
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/initial-activation/{2}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.license_key
         )
-        resource.modify(**params)
+
+        while count < 3:
+            resp = self.client.api.get(uri)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] == 400:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp._content)
+
+            if response['status'] == 'READY':
+                count += 1
+            elif response['status'] == 'ACTIVATING_AUTOMATIC_NEED_EULA_ACCEPT':
+                uri = response['selfLink'].replace(
+                    'https://localhost',
+                    'https://{0}:{1}'.format(
+                        self.client.provider['server'],
+                        self.client.provider['server_port']
+                    )
+                )
+                self.client.api.patch(uri, json=dict(
+                    status='ACTIVATING_AUTOMATIC_EULA_ACCEPTED',
+                    eulaText=response['eulaText']
+                ))
+            elif response['status'] == 'ACTIVATION_FAILED':
+                raise F5ModuleError(str(response['message']))
+            else:
+                count = 0
+            time.sleep(1)
+
+    def wait_for_utility_license_activation(self):
+        count = 0
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.license_key
+        )
+
+        while count < 3:
+            resp = self.client.api.get(uri)
+            try:
+                response = resp.json()
+            except ValueError as ex:
+                raise F5ModuleError(str(ex))
+
+            if 'code' in response and response['code'] in [400, 401]:
+                if 'message' in response:
+                    raise F5ModuleError(response['message'])
+                else:
+                    raise F5ModuleError(resp._content)
+
+            if response['status'] == 'READY':
+                count += 1
+            elif response['status'] == 'ACTIVATION_FAILED':
+                raise F5ModuleError(str(response['message']))
+            else:
+                count = 0
+            time.sleep(1)
 
     def absent(self):
         if self.exists():
@@ -257,31 +400,43 @@ class ModuleManager(object):
         return False
 
     def remove_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
+        uri = 'https://{0}:{1}/mgmt/cm/device/licensing/pool/utility/licenses/{2}'.format(
+            self.client.provider['server'],
+            self.client.provider['server_port'],
+            self.want.license_key
         )
-        if resource:
-            resource.delete()
 
-    def read_current_from_device(self):
-        resource = self.client.api.__API_ENDPOINT__.load(
-            name=self.want.name,
-            partition=self.want.partition
-        )
-        result = resource.attrs
-        return Parameters(params=result)
+        resp = self.client.api.delete(uri)
+        try:
+
+            response = resp.json()
+        except ValueError as ex:
+            raise F5ModuleError(str(ex))
+
+        if 'code' in response and response['code'] == 400:
+            if 'message' in response:
+                raise F5ModuleError(response['message'])
+            else:
+                raise F5ModuleError(resp._content)
 
 
 class ArgumentSpec(object):
     def __init__(self):
         self.supports_check_mode = True
         argument_spec = dict(
-            __ARGUMENT_SPEC__="__ARGUMENT_SPEC_VALUE__"
+            license_key=dict(required=True, no_log=True),
+            accept_eula=dict(type='bool'),
+            state=dict(
+                default='present',
+                choices=['present', 'absent']
+            ),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
         self.argument_spec.update(argument_spec)
+        self.required_if = [
+            ['state', 'present', ['accept_eula']]
+        ]
 
 
 def main():
@@ -289,18 +444,17 @@ def main():
 
     module = AnsibleModule(
         argument_spec=spec.argument_spec,
-        supports_check_mode=spec.supports_check_mode
+        supports_check_mode=spec.supports_check_mode,
+        required_if=spec.required_if
     )
-    if not HAS_F5SDK:
-        module.fail_json(msg="The python f5-sdk module is required")
 
     try:
-        client = F5Client(**module.params)
+        client = F5RestClient(module=module)
         mm = ModuleManager(module=module, client=client)
         results = mm.exec_module()
-        module.exit_json(**results)
-    except F5ModuleError as e:
-        module.fail_json(msg=str(e))
+        exit_json(module, results, client)
+    except F5ModuleError as ex:
+        fail_json(module, ex, client)
 
 
 if __name__ == '__main__':
