@@ -27,7 +27,8 @@
   vars:
     limit_to: '*'
     __metadata__:
-      version: 1.0
+      upstream: yes
+      version: 1.2
       tested_platforms:
         - NA
       callgraph_exclude:
