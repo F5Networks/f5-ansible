@@ -6,9 +6,9 @@ Playbook metadata
 Our integration tests are made possible through the use of Ansible playbooks.
 These playbooks can be found here:
 
-* `test/integration/`
+* ``test/integration/``
 
-Each playbook has a `vars` section that includes a `__metadata__` key. This key is used by other tools and processes in this
+Each playbook has a ``vars`` section that includes a ``__metadata__`` key. This key is used by other tools and processes in this
 repository to provide the developers with information relevant to the module.
 
 Different versions of metadata are valid in different Ansible versions.
@@ -20,6 +20,17 @@ The version history below outlines the changes that have been made to the
 metadata over time. The current version is at the top of this list. The original
 version is at the bottom.
 
+1.2
+~~~
+
+Release date: June 2018
+Ansible version 2.6
+
+New keys:
+
+* ``upstream``. Used to determine (in our scripts) which modules to publish upstream in bulk. Values can be boolean-like values.
+  ex. yes, no, True, False, 1, 0.
+
 1.1
 ~~~
 
@@ -28,10 +39,10 @@ Ansible version 2.5
 
 New keys:
 
-* `tested_versions`
-* `supported_harnesses`
-* `coding_standards`
-* Original `tested_platforms` values have been moved to `tested_versions`
+* ``tested_versions``
+* ``supported_harnesses``
+* ``coding_standards``
+* Original ``tested_platforms`` values have been moved to ``tested_versions``
 
 **Example**
 
@@ -78,10 +89,10 @@ Ansible version 2.4
 
 Initial version of the playbook metadata keys include:
 
-* `version`
-* `tested_platforms`
-* `callgraph_exclude`
-* Valid values for `tested_platforms` are N/A
+* ``version``
+* ``tested_platforms``
+* ``callgraph_exclude``
+* Valid values for ``tested_platforms`` are N/A
 
 **Example**
 
