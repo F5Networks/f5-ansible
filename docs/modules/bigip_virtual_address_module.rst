@@ -61,29 +61,6 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>advertise_route</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>always</li>
-                                                                                                                                                                                                                        <li>when_all_available</li>
-                                                                                                                                                                                                                        <li>when_any_available</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies what routes of the virtual address the system advertises. When <code>when_any_available</code>, advertises the route when any virtual server is available. When <code>when_all_available</code>, advertises the route when all virtual servers are available. When (always), always advertises the route regardless of the virtual servers available.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
                             <b>arp_state</b>
                                                                                 </div>
                     </div>
@@ -122,6 +99,30 @@ Parameters
                     <div class="cell-border">
                                                                                     <div>Specifies whether the system automatically deletes the virtual address with the deletion of the last associated virtual server. When <code>disabled</code>, specifies that the system leaves the virtual address even when all associated virtual servers have been deleted. When creating the virtual address, the default value is <code>enabled</code>.</div>
                                                                                                 </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>availability_calculation</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>always</li>
+                                                                                                                                                                                                                        <li>when_all_available</li>
+                                                                                                                                                                                                                        <li>when_any_available</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies what routes of the virtual address the system advertises. When <code>when_any_available</code>, advertises the route when any virtual server is available. When <code>when_all_available</code>, advertises the route when all virtual servers are available. When (always), always advertises the route regardless of the virtual servers available.</div>
+                                                                                                        <div style="font-size: small; color: darkgreen"><br/>aliases: advertise_route</div>
+                                            </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -427,6 +428,59 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>route_advertisement</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>disabled</li>
+                                                                                                                                                                                                                        <li>enabled</li>
+                                                                                                                                                                                                                        <li>always</li>
+                                                                                                                                                                                                                        <li>selective</li>
+                                                                                                                                                                                                                        <li>any</li>
+                                                                                                                                                                                                                        <li>all</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies whether the system uses route advertisement for this virtual address.</div>
+                                                            <div>When disabled, the system does not advertise routes for this virtual address.</div>
+                                                            <div>The majority of these options are only supported on versions 13.0.0-HF1 or higher. On versions less than this, all choices expect <code>disabled</code> will translate to <code>enabled</code>.</div>
+                                                            <div>When <code>always</code>, the BIG-IP system will always advertise the route for the virtual address, regardless of availability status. This requires an <code>enabled</code> virtual address.</div>
+                                                            <div>When <code>enabled</code>, the BIG-IP system will advertise the route for the available virtual address, based on the calculation method in the availability calculation.</div>
+                                                            <div>When <code>disabled</code>, the BIG-IP system will not advertise the route for the virtual address, regardless of the availability status.</div>
+                                                            <div>When <code>selective</code>, you can also selectively enable ICMP echo responses, which causes the BIG-IP system to internally enable or disable responses based on virtual server state. Either <code>any</code> virtual server, <code>all</code> virtual servers, or <code>always</code>, regardless of the state of any virtual server.</div>
+                                                            <div>When <code>any</code>, the BIG-IP system will advertise the route for the virtual address when any virtual server is available.</div>
+                                                            <div>When <code>all</code>, the BIG-IP system will advertise the route for the virtual address when all virtual servers are available.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>route_domain</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The route domain of the <code>address</code> that you want to use.</div>
+                                                            <div>This value cannot be modified after it is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>server</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -520,7 +574,9 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies whether the system uses route advertisement for this virtual address. When disabled, the system does not advertise routes for this virtual address.</div>
+                                                                                    <div>Specifies whether the system uses route advertisement for this virtual address.</div>
+                                                            <div>When disabled, the system does not advertise routes for this virtual address.</div>
+                                                            <div>Deprecated. Use the <code>route_advertisement</code> parameter instead.</div>
                                                                                                 </div>
                 </td>
             </tr>

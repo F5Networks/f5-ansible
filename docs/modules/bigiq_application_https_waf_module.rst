@@ -746,6 +746,30 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>state</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>absent</li>
+                                                                                                                                                                                                                        <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The state of the resource on the system.</div>
+                                                            <div>When <code>present</code>, guarantees that the resource exists with the provided attributes.</div>
+                                                            <div>When <code>absent</code>, removes the resource from the system.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -779,6 +803,28 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>If <code>no</code>, SSL certificates will not be validated. Use this only on personally controlled sites using self-signed certificates. You can omit this option if the environment variable <code>F5_VALIDATE_CERTS</code> is set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>wait</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li><div style="color: blue"><b>yes</b>&nbsp;&larr;</div></li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>If the module should wait for the application to be created, deleted or updated.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -925,7 +971,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                         </div>
                     </div>
                 </td>
-                <td><div class="cell-border"></div></td>
+                <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
                                                     <div>List of servers, and their ports, that make up the application.</div>

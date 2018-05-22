@@ -1,12 +1,12 @@
-:source: modules/bigip_user_facts.py
+:source: modules/bigip_gtm_global.py
 
-.. _bigip_user_facts:
+.. _bigip_gtm_global:
 
 
-bigip_user_facts - Retrieve user account attributes from a BIG-IP
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+bigip_gtm_global - Manages global GTM settings
+++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.2
+.. versionadded:: 2.6
 
 .. contents::
    :local:
@@ -15,7 +15,7 @@ bigip_user_facts - Retrieve user account attributes from a BIG-IP
 
 Synopsis
 --------
-- Retrieve user account attributes from a BIG-IP
+- Manages global GTM settings. These settings include general, load balancing, and metrics related settings.
 
 
 
@@ -279,6 +279,70 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>synchronization</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies whether this system is a member of a synchronization group.</div>
+                                                            <div>When you enable synchronization, the system periodically queries other systems in the synchronization group to obtain and distribute configuration and metrics collection updates.</div>
+                                                            <div>The synchronization group may contain systems configured as Global Traffic Manager and Link Controller systems.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>synchronization_group_name</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the name of the synchronization group to which the system belongs.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>synchronize_zone_files</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies that the system synchronizes Domain Name System (DNS) zone files among the synchronization group members.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -290,24 +354,6 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The username to connect to the BIG-IP with. This user must have administrative privileges on the device. You can omit this option if the environment variable <code>F5_USER</code> is set.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>username_credential</b>
-                            <br/><div style="font-size: small; color: red">required</div>                                                    </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Name of the user to retrieve facts for</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -341,7 +387,6 @@ Notes
 -----
 
 .. note::
-    - Facts are placed in the `bigip` variable
     - For more information on using Ansible to manage F5 Networks devices see https://www.ansible.com/integrations/networks/f5.
     - Requires the f5-sdk Python package on the host. This is as easy as `pip install f5-sdk`.
 
@@ -352,18 +397,16 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Gather facts about user 'johnd'
-      bigip_user_facts:
-        name: johnd
+    - name: Configure synchronization settings
+      bigip_gtm_global:
+        synchronization: yes
+        synchronization_group_name: my-group
+        synchronize_zone_files: yes
         password: secret
         server: lb.mydomain.com
+        state: present
         user: admin
-        validate_certs: no
       delegate_to: localhost
-
-    - name: Display the user facts
-      debug:
-        var: bigip
 
 
 
@@ -384,18 +427,18 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>description</b>
-                            <br/><div style="font-size: small; color: red">string</div>
+                            <b>synchronization</b>
+                            <br/><div style="font-size: small; color: red">bool</div>
                         </div>
                     </div>
                 </td>
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The description of the user</div>
+                                                    <div>The synchronization setting on the system.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">John Doe</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
                                             </div>
                 </td>
             </tr>
@@ -403,7 +446,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>encrypted_password</b>
+                            <b>synchronization_group_name</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -411,10 +454,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The encrypted value of the password</div>
+                                                    <div>The synchronization group name.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">$6$/cgtFz0....yzv465uAJ/</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my-group</div>
                                             </div>
                 </td>
             </tr>
@@ -422,26 +465,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>partition_access</b>
-                            <br/><div style="font-size: small; color: red">list</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>Access permissions for the account</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[{&#x27;name&#x27;: &#x27;all-partitions&#x27;, &#x27;role&#x27;: &#x27;admin&#x27;}]</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>username_credential</b>
+                            <b>synchronize_zone_files</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -449,10 +473,10 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The username beign searched for</div>
+                                                    <div>Whether or not the system will sync zone files.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">jdoe</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">my-group</div>
                                             </div>
                 </td>
             </tr>

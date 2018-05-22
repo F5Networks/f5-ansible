@@ -101,6 +101,96 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>fqdn_address_type</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                    <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>ipv4</li>
+                                                                                                                                                                                                                        <li>ipv6</li>
+                                                                                                                                                                                                                        <li>all</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies whether the FQDN of the node resolves to an IPv4 or IPv6 address.</div>
+                                                            <div>When creating a new node, if this parameter is not specified and <code>fqdn</code> is specified, this parameter will default to <code>ipv4</code>.</div>
+                                                            <div>This parameter cannot be changed after it has been set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>fqdn_auto_populate</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies whether the system automatically creates ephemeral nodes using the IP addresses returned by the resolution of a DNS query for a node defined by an FQDN.</div>
+                                                            <div>When <code>yes</code>, the system generates an ephemeral node for each IP address returned in response to a DNS query for the FQDN of the node. Additionally, when a DNS response indicates the IP address of an ephemeral node no longer exists, the system deletes the ephemeral node.</div>
+                                                            <div>When <code>no</code>, the system resolves a DNS query for the FQDN of the node with the single IP address associated with the FQDN.</div>
+                                                            <div>When creating a new node, if this parameter is not specified and <code>fqdn</code> is specified, this parameter will default to <code>yes</code>.</div>
+                                                            <div>This parameter cannot be changed after it has been set.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>fqdn_down_interval</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the interval in which a query occurs, when the DNS server is down. The associated monitor continues polling as long as the DNS server is down.</div>
+                                                            <div>When creating a new node, if this parameter is not specified and <code>fqdn</code> is specified, this parameter will default to <code>5</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>fqdn_up_interval</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.6)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies the interval in which a query occurs, when the DNS server is up. The associated monitor attempts to probe three times, and marks the server down if it there is no response within the span of three times the interval value, in seconds.</div>
+                                                            <div>This parameter accepts a value of <code>ttl</code> to query based off of the TTL of the FQDN. The default TTL interval is akin to specifying <code>3600</code>.</div>
+                                                            <div>When creating a new node, if this parameter is not specified and <code>fqdn</code> is specified, this parameter will default to <code>3600</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>monitor_type</b>
                                                         <br/><div style="font-size: small; color: darkgreen">(added in 1.3)</div>                        </div>
                     </div>

@@ -28,6 +28,7 @@ All modules
   * :ref:`bigip_facts`
   * :ref:`bigip_gtm_datacenter`
   * :ref:`bigip_gtm_facts`
+  * :ref:`bigip_gtm_global`
   * :ref:`bigip_gtm_monitor_bigip`
   * :ref:`bigip_gtm_monitor_firepass`
   * :ref:`bigip_gtm_monitor_http`
@@ -76,7 +77,6 @@ All modules
   * :ref:`bigip_security_port_list`
   * :ref:`bigip_security_rule_list`
   * :ref:`bigip_selfip`
-  * :ref:`bigip_service`
   * :ref:`bigip_service_policy`
   * :ref:`bigip_smtp`
   * :ref:`bigip_snat_pool`
@@ -97,7 +97,6 @@ All modules
   * :ref:`bigip_ucs`
   * :ref:`bigip_ucs_fetch`
   * :ref:`bigip_user`
-  * :ref:`bigip_user_facts`
   * :ref:`bigip_vcmp_guest`
   * :ref:`bigip_view`
   * :ref:`bigip_virtual_address`

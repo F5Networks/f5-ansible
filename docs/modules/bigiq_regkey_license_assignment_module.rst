@@ -535,59 +535,6 @@ Examples
 
 
 
-Return Values
--------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th class="head"><div class="cell-border">Key</div></th>
-            <th class="head"><div class="cell-border">Returned</div></th>
-            <th class="head" width="100%"><div class="cell-border">Description</div></th>
-        </tr>
-                    <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>param1</b>
-                            <br/><div style="font-size: small; color: red">bool</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new param1 value of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>param2</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new param2 value of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
-                                            </div>
-                </td>
-            </tr>
-                        </table>
-    <br/><br/>
-
 
 Status
 ------

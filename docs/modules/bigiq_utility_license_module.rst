@@ -3,10 +3,10 @@
 .. _bigiq_utility_license:
 
 
-bigiq_utility_license - __SHORT_DESCRIPTION__
-+++++++++++++++++++++++++++++++++++++++++++++
+bigiq_utility_license - Manage utility licenses on a BIG-IQ
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. versionadded:: 2.5
+.. versionadded:: 2.6
 
 .. contents::
    :local:
@@ -15,7 +15,7 @@ bigiq_utility_license - __SHORT_DESCRIPTION__
 
 Synopsis
 --------
-- __LONG DESCRIPTION__.
+- Manages utility licenses on a BIG-IQ. Utility licenses are one form of licenses that BIG-IQ can distribute. These licenses, unlike regkey licenses, do not require a pool to be created before creation. Additionally, when assigning them, you assign by offering instead of key.
 
 
 
@@ -23,6 +23,7 @@ Requirements
 ~~~~~~~~~~~~
 The below requirements are needed on the host that executes this module.
 
+- BIG-IQ >= 5.3.0
 - f5-sdk >= 3.0.9
 
 
@@ -41,7 +42,31 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>name</b>
+                            <b>accept_eula</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>no</li>
+                                                                                                                                                                                                                        <li>yes</li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>A key that signifies that you accept the F5 EULA for this license.</div>
+                                                            <div>A copy of the EULA can be found here https://askf5.f5.com/csp/article/K12902</div>
+                                                            <div>This is required when <code>state</code> is <code>present</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>license_key</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
                 </td>
@@ -51,7 +76,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the name of the ... .</div>
+                                                                                    <div>The license key to install and activate.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -297,6 +322,30 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>state</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                        <ul><b>Choices:</b>
+                                                                                                                                                                                    <li>absent</li>
+                                                                                                                                                                                                                        <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
+                                                                                                </ul>
+                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The state of the utility license on the system.</div>
+                                                            <div>When <code>present</code>, guarantees that the license exists.</div>
+                                                            <div>When <code>absent</code>, removes the license from the system.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -351,70 +400,27 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
+    - name: Add a utility license to the system
       bigiq_utility_license:
-        name: foo
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        accept_eula: yes
         password: secret
         server: lb.mydomain.com
         state: present
         user: admin
       delegate_to: localhost
 
+    - name: Remove a utility license from the system
+      bigiq_utility_license:
+        license_key: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
+        password: secret
+        server: lb.mydomain.com
+        state: absent
+        user: admin
+      delegate_to: localhost
 
 
 
-Return Values
--------------
-Common return values are documented :ref:`here <common_return_values>`, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th class="head"><div class="cell-border">Key</div></th>
-            <th class="head"><div class="cell-border">Returned</div></th>
-            <th class="head" width="100%"><div class="cell-border">Description</div></th>
-        </tr>
-                    <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>param1</b>
-                            <br/><div style="font-size: small; color: red">bool</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new param1 value of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
-                                            </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>param2</b>
-                            <br/><div style="font-size: small; color: red">string</div>
-                        </div>
-                    </div>
-                </td>
-                <td><div class="cell-border">changed</div></td>
-                <td>
-                    <div class="cell-border">
-                                                    <div>The new param2 value of the resource.</div>
-                                                <br/>
-                                                    <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
-                                            </div>
-                </td>
-            </tr>
-                        </table>
-    <br/><br/>
 
 
 Status

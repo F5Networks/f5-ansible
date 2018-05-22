@@ -55,7 +55,6 @@ Parameters
                                                                                     <div>The actions that you want the policy rule to perform.</div>
                                                             <div>The available attributes vary by the action, however, each action requires that a <code>type</code> be specified.</div>
                                                             <div>These conditions can be specified in any order. Despite them being a list, the BIG-IP does not treat their order as anything special.</div>
-                                                            <div>Available <code>type</code> values are <code>forward</code>.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -80,7 +79,7 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>The action type. This value controls what below options are required.</div>
-                                                            <div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code> with this rule.</div>
+                                                            <div>When <code>type</code> is <code>forward</code>, will associate a given <code>pool</code>, or <code>virtual</code> with this rule.</div>
                                                             <div>When <code>type</code> is <code>enable</code>, will associate a given <code>asm_policy</code> with this rule.</div>
                                                             <div>When <code>type</code> is <code>ignore</code>, will remove all existing actions from this rule.</div>
                                                                                                 </div>
@@ -102,6 +101,26 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>Pool that you want to forward traffic to.</div>
+                                                            <div>This parameter is only valid with the <code>forward</code> type.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                    <div class="elbow-placeholder">&nbsp;</div>
+                                                <div class="elbow-key">
+                            <b>virtual</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Virtual Server that you want to forward traffic to.</div>
                                                             <div>This parameter is only valid with the <code>forward</code> type.</div>
                                                                                                 </div>
                 </td>

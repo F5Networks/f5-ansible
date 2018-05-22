@@ -71,7 +71,8 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The hostname that you want to associate with the device. This value will be used to easily distinguish this device in BIG-IP configuration. If not specified, the value of <code>peer_server</code> will be used as a default.</div>
+                                                                                    <div>The hostname that you want to associate with the device. This value will be used to easily distinguish this device in BIG-IP configuration.</div>
+                                                            <div>When trusting a new device, if this parameter is not specified, the value of <code>peer_server</code> will be used as a default.</div>
                                                                                                 </div>
                 </td>
             </tr>
