@@ -1,0 +1,330 @@
+---
+
+- import_tasks: setup.yaml
+
+- name: Create External Monitor
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create External Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Create External Monitor - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    state: present
+  register: result
+
+- name: Assert Create External Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change IP
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP
+  assert:
+    that:
+      - result is changed
+      - result.ip == '10.10.10.10'
+      - result.port == 80
+
+- name: Change IP - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    ip: 10.10.10.10
+    port: 80
+  register: result
+
+- name: Assert Change IP - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change port
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port
+  assert:
+    that:
+      - result is changed
+      - result.port == 8000
+
+- name: Change port - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    port: 8000
+  register: result
+
+- name: Assert Change port - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, less than timeout
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout
+  assert:
+    that:
+      - result is changed
+      - result.interval == 2
+
+- name: Change interval, less than timeout - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    interval: 2
+  register: result
+
+- name: Assert Change interval, less than timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change interval, greater than timeout, expect failure
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    interval: 200
+  register: result
+  ignore_errors: true
+
+- name: Assert Change interval, greater than timeout, expect failure
+  assert:
+    that:
+      - result is not changed
+
+- name: Change timeout
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout
+  assert:
+    that:
+      - result is changed
+      - result.timeout == 80
+
+- name: Change timeout - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    timeout: 80
+  register: result
+
+- name: Assert Change timeout - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change executable
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    external_program: sample_monitor
+  register: result
+
+- name: Assert Change executable
+  assert:
+    that:
+      - result is changed
+      - result.external_program == "/Common/sample_monitor"
+
+- name: Change executable - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    external_program: sample_monitor
+  register: result
+
+- name: Assert Change executable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change arguments
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    arguments: arg1 arg2 arg3
+  register: result
+
+- name: Assert Change arguments
+  assert:
+    that:
+      - result is changed
+      - result.arguments == "arg1 arg2 arg3"
+
+- name: Change arguments - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    arguments: arg1 arg2 arg3
+  register: result
+
+- name: Assert Change arguments - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove External Monitor
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove External Monitor
+  assert:
+    that:
+      - result is changed
+
+- name: Remove External Monitor - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}"
+    state: absent
+  register: result
+
+- name: Assert Remove External Monitor - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Create External Monitor with variables
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Create External Monitor with variables
+  assert:
+    that:
+      - result is changed
+
+- name: Create External Monitor with variables - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Create External Monitor with variables - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Add variable
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+      cat: dog
+    state: present
+  register: result
+
+- name: Assert Add variable
+  assert:
+    that:
+      - result is changed
+
+- name: Add variable - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+      cat: dog
+    state: present
+  register: result
+
+- name: Assert Add variable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove variable
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Remove variable
+  assert:
+    that:
+      - result is changed
+
+- name: Remove variable - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: my variable
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Remove variable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Change variable
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: another
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Change variable
+  assert:
+    that:
+      - result is changed
+
+- name: Change variable - Idempotent check
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    variables:
+      foo: 123
+      bar: another
+      baz: it's punctuation!
+    state: present
+  register: result
+
+- name: Assert Change variable - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove variable Monitor
+  bigip_gtm_monitor_external:
+    name: "{{ monitor_name }}1"
+    state: absent
+  register: result
+
+- import_tasks: teardown.yaml

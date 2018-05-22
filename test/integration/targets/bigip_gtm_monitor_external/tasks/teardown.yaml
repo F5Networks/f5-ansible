@@ -1,0 +1,6 @@
+---
+
+#- name: De-provision GTM
+#  bigip_provision:
+#    name: gtm
+#    state: absent
