@@ -1,0 +1,5 @@
+---
+
+- name: Get a license
+  set_fact:
+    license_key: "{{ lookup('license_hopper', filename='/here/tmp/licenses/bigiq-utility-licenses.txt', remove=True) }}"

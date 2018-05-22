@@ -2,6 +2,48 @@
 
 - import_tasks: setup.yaml
 
-# tests go here
+- name: Add a license
+  bigiq_utility_license:
+    license_key: "{{ license_key }}"
+    accept_eula: yes
+  register: result
+
+- name: Assert Add a license
+  assert:
+    that:
+      - result is changed
+
+- name: Add a license - Idempotent check
+  bigiq_utility_license:
+    license_key: "{{ license_key }}"
+    accept_eula: yes
+  register: result
+
+- name: Assert Add a license - Idempotent check
+  assert:
+    that:
+      - result is not changed
+
+- name: Remove a license
+  bigiq_utility_license:
+    license_key: "{{ license_key }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a license
+  assert:
+    that:
+      - result is changed
+
+- name: Remove a license - Idempotent check
+  bigiq_utility_license:
+    license_key: "{{ license_key }}"
+    state: absent
+  register: result
+
+- name: Assert Remove a license - Idempotent check
+  assert:
+    that:
+      - result is not changed
 
 - import_tasks: teardown.yaml
