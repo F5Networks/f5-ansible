@@ -1,0 +1,22 @@
+---
+
+- name: Remove test VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag }}"
+    state: absent
+
+- name: Remove test pool
+  bigip_pool:
+    name: "{{ pool_name }}"
+    state: absent
+
+- name: Remove test trunk
+  bigip_trunk:
+    name: trunk1
+    state: absent
+
+- name: Remove test virtual
+  bigip_virtual_server:
+    name: virtual1
+    state: absent

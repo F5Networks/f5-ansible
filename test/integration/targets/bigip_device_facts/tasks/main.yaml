@@ -1,0 +1,127 @@
+---
+
+- import_tasks: setup.yaml
+
+#- name: Collect BIG-IP facts
+#  bigip_device_facts:
+#    include:
+#      - "{{ item }}"
+#  register: result
+#  loop: "{{ valid_includes }}"
+
+- name: Select trunk facts
+  bigip_device_facts:
+    include:
+      - trunks
+  register: result
+
+- name: Assert Select trunk facts
+  assert:
+    that:
+      - result is success
+      - result.trunks | selectattr("name", "match", "trunk1") | map(attribute='description') | first == "my trunk"
+      - result.trunks | json_query("[?name=='trunk1'].description") | first == "my trunk"
+
+
+
+
+
+- meta: end_play
+
+
+
+- name: Select selfip facts
+  bigip_device_facts:
+    include:
+      - self-ips
+  register: result
+
+- name: Assert Select selfip facts
+  assert:
+    that:
+      - result is success
+      - result.self_ips | selectattr("name", "match", "net1") | map(attribute='floating') | first == "no"
+      - result.self_ips | json_query("[?name=='net1'].floating") | first == "no"
+
+- name: Select irule facts
+  bigip_device_facts:
+    include:
+      - irules
+  register: result
+
+- name: Assert Select irule facts
+  assert:
+    that:
+      - result is success
+      - result.irules | selectattr("name", "match", "_sys_https_redirect") | map(attribute='ignore_verification') | first == "no"
+      - result.irules | json_query("[?name=='_sys_https_redirect'].ignore_verification") | first == "no"
+
+- name: Select ltm-pool facts
+  bigip_device_facts:
+    include:
+      - ltm-pools
+  register: result
+
+- name: Assert Select ltm-pool facts
+  assert:
+    that:
+      - result is success
+      - result.ltm_pools | selectattr("name", "match", "pool1") | map(attribute='lb_method') | first == "round-robin"
+      - result.ltm_pools | json_query("[?name=='pool1'].lb_method") | first == "round-robin"
+
+- name: Select software-volume facts
+  bigip_device_facts:
+    include:
+      - software-volumes
+  register: result
+
+- name: Assert Select software-volume facts
+  assert:
+    that:
+      - result is success
+      - result.software_volumes | selectattr("name", "match", "HD1.1") | map(attribute='active') | first == "yes"
+      - result.software_volumes | json_query("[?name=='HD1.1'].active") | first == "yes"
+      - "'HD1.1' not in result.software_volumes | json_query(\"[?active!='yes'].name\")"
+
+- name: Select vlans facts
+  bigip_device_facts:
+    include:
+      - vlans
+  register: result
+
+- name: Assert Select vlans facts
+  assert:
+    that:
+      - result is success
+      - result.vlans | selectattr("name", "match", "alice") | map(attribute='mtu') | first == 1500
+      - result.vlans | json_query("[?name=='alice'].mtu") | first == 1500
+      - "'alice' not in result.vlans | json_query(\"[?vlan_id!=`3605`].name\")"
+
+- name: Select provision-info facts
+  bigip_device_facts:
+    include:
+      - provision-info
+  register: result
+
+- name: Assert Select provision-info facts
+  assert:
+    that:
+      - result is success
+      - result.provision_info | selectattr("name", "match", "ltm") | map(attribute='level') | first == "nominal"
+      - result.provision_info | json_query("[?name=='ltm'].level") | first == "nominal"
+      - "'ltm' not in result.provision_info | json_query(\"[?level=='none'].name\")"
+
+- name: Try an invalid provision-info include choice
+  bigip_device_facts:
+    include:
+      - provision
+  register: result
+  failed_when: result is success
+
+- name: Assert Try an invalid provision-info include choice
+  assert:
+    that:
+      - "'options are invalid: provision' in result.msg"
+      - result is success
+
+- import_tasks: teardown.yaml

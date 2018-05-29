@@ -1,0 +1,35 @@
+---
+
+- name: Create test VLAN
+  bigip_vlan:
+    name: "{{ vlan_name }}"
+    tag: "{{ vlan_tag }}"
+
+- name: Create test pool
+  bigip_pool:
+    description: "{{ pool_description }}"
+    lb_method: "{{ pool_lb_method }}"
+    name: "{{ pool_name }}"
+    monitor_type: and_list
+    monitors:
+      - http
+      - tcp
+    metadata:
+      foo1: bar
+      foo2: baz
+    priority_group_activation: 1
+
+- name: Create test trunk
+  bigip_trunk:
+    name: trunk1
+    description: my trunk
+
+- name: Create test virtual
+  bigip_virtual_server:
+    profiles:
+      - tcp
+    description: my virtual1
+    destination: 2.3.4.5
+    name: virtual1
+    port: 80
+    snat: Automap
