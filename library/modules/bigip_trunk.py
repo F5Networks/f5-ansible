@@ -28,6 +28,10 @@ options:
     description:
       - The interfaces that are part of the trunk.
       - To clear the list of interfaces, specify an empty list.
+  description:
+    description:
+      - Description of the trunk.
+    version_added: 2.7
   link_selection_policy:
     description:
       - Specifies, once the trunk is configured, the policy that the trunk uses to determine
@@ -174,6 +178,7 @@ class Parameters(AnsibleF5Parameters):
         'linkSelectPolicy',
         'distributionHash',
         'interfaces',
+        'description'
     ]
 
     returnables = [
@@ -182,7 +187,8 @@ class Parameters(AnsibleF5Parameters):
         'link_selection_policy',
         'frame_distribution_hash',
         'lacp_enabled',
-        'interfaces'
+        'interfaces',
+        'description'
     ]
 
     updatables = [
@@ -191,7 +197,8 @@ class Parameters(AnsibleF5Parameters):
         'link_selection_policy',
         'frame_distribution_hash',
         'lacp_enabled',
-        'interfaces'
+        'interfaces',
+        'description'
     ]
 
 
@@ -478,6 +485,7 @@ class ArgumentSpec(object):
             lacp_enabled=dict(type='bool'),
             lacp_mode=dict(choices=['active', 'passive']),
             lacp_timeout=dict(choices=['short', 'long']),
+            description=dict(),
             state=dict(
                 default='present',
                 choices=['absent', 'present']
