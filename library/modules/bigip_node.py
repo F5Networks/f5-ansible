@@ -135,6 +135,20 @@ options:
   description:
     description:
       - Specifies descriptive text that identifies the node.
+  connection_limit:
+    description:
+      - Node connection limit. Setting this to 0 disables the limit.
+    version_added: 2.7
+  rate_limit:
+    description:
+      - Node rate limit (connections-per-second). Setting this to 0 disables the limit.
+    version_added: 2.7
+  ratio:
+    description:
+      - Node ratio weight. Valid values range from 1 through 100.
+      - When creating a new node, if this parameter is not specified, the default of
+        C(1) will be used.
+    version_added: 2.7
   partition:
     description:
       - Device partition to manage resources on.
@@ -299,11 +313,19 @@ except ImportError:
 
 class Parameters(AnsibleF5Parameters):
     api_map = {
-        'monitor': 'monitors'
+        'monitor': 'monitors',
+        'connectionLimit': 'connection_limit',
+        'rateLimit': 'rate_limit'
     }
 
     api_attributes = [
-        'monitor', 'description', 'address', 'fqdn',
+        'monitor',
+        'description',
+        'address',
+        'fqdn',
+        'ratio',
+        'connectionLimit',
+        'rateLimit',
 
         # Used for changing state
         #
@@ -318,15 +340,37 @@ class Parameters(AnsibleF5Parameters):
     ]
 
     returnables = [
-        'monitor_type', 'quorum', 'monitors', 'description', 'fqdn', 'session', 'state',
-        'fqdn_auto_populate', 'fqdn_address_type', 'fqdn_up_interval',
-        'fqdn_down_interval', 'fqdn_name'
+        'monitor_type',
+        'quorum',
+        'monitors',
+        'description',
+        'fqdn',
+        'session',
+        'state',
+        'fqdn_auto_populate',
+        'fqdn_address_type',
+        'fqdn_up_interval',
+        'fqdn_down_interval',
+        'fqdn_name',
+        'connection_limit',
+        'ratio',
+        'rate_limit'
     ]
 
     updatables = [
-        'monitor_type', 'quorum', 'monitors', 'description', 'state',
-        'fqdn_up_interval', 'fqdn_down_interval', 'tmName', 'fqdn_auto_populate',
-        'fqdn_address_type'
+        'monitor_type',
+        'quorum',
+        'monitors',
+        'description',
+        'state',
+        'fqdn_up_interval',
+        'fqdn_down_interval',
+        'tmName',
+        'fqdn_auto_populate',
+        'fqdn_address_type',
+        'connection_limit',
+        'ratio',
+        'rate_limit'
     ]
 
     def to_return(self):
@@ -398,6 +442,14 @@ class Parameters(AnsibleF5Parameters):
             if self._values['monitor_type'] is None:
                 return None
             return self._values['monitor_type']
+
+    @property
+    def rate_limit(self):
+        if self._values['rate_limit'] is None:
+            return None
+        if self._values['rate_limit'] == 'disabled':
+            return 0
+        return int(self._values['rate_limit'])
 
 
 class Changes(Parameters):
@@ -736,6 +788,8 @@ class ModuleManager(object):
             self.want.update({'fqdn_up_interval': 3600})
         if self.want.fqdn_down_interval is None:
             self.want.update({'fqdn_down_interval': 5})
+        if self.want.ratio is None:
+            self.want.update({'ratio': 1})
 
         self._set_changed_options()
         if self.module.check_mode:
@@ -873,7 +927,10 @@ class ArgumentSpec(object):
             ),
             fqdn_auto_populate=dict(type='bool'),
             fqdn_up_interval=dict(),
-            fqdn_down_interval=dict(type='int')
+            fqdn_down_interval=dict(type='int'),
+            connection_limit=dict(type='int'),
+            rate_limit=dict(type='int'),
+            ratio=dict(type='int'),
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)

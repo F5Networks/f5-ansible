@@ -1,0 +1,115 @@
+---
+
+- name: Issue-00740 - Create node
+  bigip_node:
+    name: issue-00740
+    host: "{{ node_host_ipv4 }}"
+    connection_limit: 100
+    ratio: 2
+    rate_limit: 200
+  register: result
+
+- name: Issue-00740 - Assert Create node
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue-00740 - Create node - Idempotent check
+  bigip_node:
+    name: issue-00740
+    host: "{{ node_host_ipv4 }}"
+    connection_limit: 100
+    ratio: 2
+    rate_limit: 200
+  register: result
+
+- name: Issue-00740 - Assert Create node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue-00740 - Change connection limit
+  bigip_node:
+    name: issue-00740
+    connection_limit: 200
+  register: result
+
+- name: Issue-00740 - Assert Change connection limit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue-00740 - Change connection limit - Idempotent check
+  bigip_node:
+    name: issue-00740
+    connection_limit: 200
+  register: result
+
+- name: Issue-00740 - Assert Change connection limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue-00740 - Change ratio
+  bigip_node:
+    name: issue-00740
+    ratio: 10
+  register: result
+
+- name: Issue-00740 - Assert Change ratio
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue-00740 - Change ratio - Idempotent check
+  bigip_node:
+    name: issue-00740
+    ratio: 10
+  register: result
+
+- name: Issue-00740 - Assert Change ratio - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue-00740 - Change rate limit
+  bigip_node:
+    name: issue-00740
+    rate_limit: 100
+  register: result
+
+- name: Issue-00740 - Assert Change rate limit
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue-00740 - Change rate limit - Idempotent check
+  bigip_node:
+    name: issue-00740
+    rate_limit: 100
+  register: result
+
+- name: Issue-00740 - Assert Change rate limit - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue-00740 - Remove node
+  bigip_node:
+    name: issue-00740
+    state: absent
+  register: result
+
+- name: Issue-00740 - Assert Remove node
+  assert:
+    that:
+      - result is changed
+      - result is success
