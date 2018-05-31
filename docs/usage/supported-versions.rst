@@ -1,31 +1,34 @@
-BIG-IP versions
----------------
+Releases and Versioning
+-----------------------
+
+This documentation set applies to the F5 Modules for Ansible. 
+
+F5 Modules for Ansible Compatibility
+------------------------------------
+
+The tables below show the versions used in development testing. The F5 Modules for Ansible may work with versions not shown here; F5 has not verified functionality in those versions.
+
+.. table:: BIG-IP and BIG-IQ Controller/Platform compatibility
+
+  +--------------------------+-----------------------+--------------------------+
+  | Ansible Version          | BIG-IP version(s)     | BIG-IQ version(s)        |
+  +==========================+=======================+==========================+
+  | v2.5                     | v12.x, v13.x          | v5.4.x                   |
+  +--------------------------+-----------------------+--------------------------+
+   
+.. important::
+
+   F5 Networks does not back-port changes to earlier versions of Ansible.
 
 F5 does not currently support the F5 Modules for Ansible. However, the community provides informal support through a number of channels. For details, see :doc:`support`.
 
-Use the F5 modules with BIG-IP version 12.0.0 and later, and BIG-IQ 5.4.0 and later.
+Experimental Module Support
+---------------------------
 
-F5 develops the Ansible modules in tandem with the REST API, and newer versions of BIG-IP provide better support for the REST API.
+.. important::
 
-F5 does not back-port changes to earlier versions of Ansible.
+   F5 Networks will only accept support cases for F5 modules shipped with supported versions of Ansible as noted above.
 
+The F5 modules for Ansible are included when you install Ansible. The F5 modules for Ansible located in this project's |github_repo| are considered to be experimental and not production-ready. 
 
-Experimental vs. production modules
------------------------------------
-
-F5 modules are included when you install Ansible.
-
-F5 modules are also in the |github_repo|. You should consider these modules to be experimental and not production-ready.
-
-However, if an experimental module's DOCUMENTATION block has a completed ``Tested platforms`` section, then the module is likely complete and ready for use. You can file issues against modules that are complete.
-
-.. code-block:: python
-
-   # Tested platforms:
-   #
-   #    - 12.0.0
-   #
-
-.. |github_repo| raw:: html
-
-   <a href="https://github.com/F5Networks/f5-ansible/issues" target="_blank">F5 GitHub repository</a>
+If an experimental module's DOCUMENTATION block has a completed ``Tested platforms`` section, then the module is likely complete and ready for testing. Issues against these modules can be created via `GitHub <https://github.com/F5Networks/f5-ansible/issues>`_.
