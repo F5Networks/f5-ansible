@@ -6,19 +6,19 @@ bigip_port: 443
 validate_certs: no
 
 # You likely do not need this. It is used for this repository's purposes only
-ansible_python_interpreter: /usr/local/bin/python
+# ansible_python_interpreter: /usr/local/bin/python
 
 # Common HA configuration across hosts
 vlans:
-  - name: Internal
+  - name: net1
     tag: 10
     interfaces:
       - 1.1
-  - name: External
+  - name: net2
     tag: 20
     interfaces:
       - 1.2
-  - name: HA
+  - name: net3
     tag: 30
     interfaces:
       - 1.3
