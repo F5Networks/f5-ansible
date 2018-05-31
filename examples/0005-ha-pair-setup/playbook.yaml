@@ -13,11 +13,13 @@
       validate_certs: "{{ validate_certs }}"
 
   tasks:
+    - include_tasks: validate.yaml
+
     - name: Add VLANs
       bigip_vlan:
         name: "{{ item.name }}"
         tag: "{{ item.tag }}"
-        tagged_interfaces: "{{ item.interfaces }}"
+        untagged_interfaces: "{{ item.interfaces }}"
         provider: "{{ provider }}"
       loop: "{{ vlans }}"
 
@@ -28,6 +30,8 @@
        netmask: "{{ item.netmask }}"
        vlan: "{{ item.vlan }}"
        provider: "{{ provider }}"
+       allow_service:
+         - all
       loop: "{{ self_ips }}"
 
     - name: Configure hostname
