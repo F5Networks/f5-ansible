@@ -35,7 +35,11 @@ If you want to download the stable modules, they are shipped with Ansible
 automatically. In-between major releases of Ansible, new |ansible_stablemodules|.
 
 The F5 Modules for Ansible are freely provided to the open source community for automating
-BIG-IP device configurations. Support for the modules is provided on a best effort basis by the F5 community.
+BIG-IP device configurations. 
+
+Support
+-------
+F5 Ansible modules delivered in |ansible_distro| are F5-Supported. Please refer to the |support_policy| for details.
 
 Bugs, Issues
 ------------
@@ -63,10 +67,6 @@ Copyright
 
 Copyright 2017-2018 F5 Networks Inc.
 
-Support
--------
-
-See |ansiblegethelp|.
 
 License
 -------
@@ -93,6 +93,18 @@ Individuals or business entities who contribute to this project must complete an
 
 
 .. _License: https://github.com/F5Networks/f5-ansible/blob/devel/COPYING
+
+
+
+.. |ansible_distro| raw:: html
+
+   <a href="https://pypi.org/project/ansible/" target="_blank">Red Hat Ansible distributions</a>
+
+
+.. |support_policy| raw:: html
+
+   <a href="https://f5.com/support/support-policies" target="_blank">F5 Ansible Support Policy</a>
+
 
 
 .. |ansible_stablemodules| raw:: html
