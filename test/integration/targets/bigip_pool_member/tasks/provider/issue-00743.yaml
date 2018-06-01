@@ -1,0 +1,64 @@
+---
+
+- name: Issue 00743 - Add a pool - Provider
+  bigip_pool:
+    pool: abc_log
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+
+- name: Issue 00743 - Create pool member - Provider
+  bigip_pool_member:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    pool: abc_log
+    state: present
+    host: 10.0.0.100
+    port: 50002
+    partition: Common
+  register: result
+
+- name: Issue 00743 - Assert Create pool member - Provider
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00743 - Create pool member - Idempotent check - Provider
+  bigip_pool_member:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    pool: abc_log
+    state: present
+    host: 10.0.0.100
+    port: 50002
+    partition: Common
+  register: result
+
+- name: Issue 00743 - Assert Create pool member - Idempotent check - Provider
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00743 - Remove pool - Provider
+  bigip_pool:
+    pool: abc_log
+    state: absent
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
