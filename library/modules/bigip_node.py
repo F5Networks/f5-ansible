@@ -295,6 +295,7 @@ try:
     from library.module_utils.network.f5.common import f5_argument_spec
     try:
         from library.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
 except ImportError:
@@ -307,6 +308,7 @@ except ImportError:
     from ansible.module_utils.network.f5.common import f5_argument_spec
     try:
         from ansible.module_utils.network.f5.common import iControlUnexpectedHTTPError
+        from f5.sdk_exception import LazyAttributesRequired
     except ImportError:
         HAS_F5SDK = False
 
@@ -325,7 +327,7 @@ class Parameters(AnsibleF5Parameters):
     }
 
     api_attributes = [
-        'monitor',
+        #'monitor',
         'description',
         'address',
         'fqdn',
@@ -412,44 +414,6 @@ class Parameters(AnsibleF5Parameters):
         return result
 
     @property
-    def quorum(self):
-        if self.kind == 'tm:ltm:pool:poolstate':
-            if self._values['monitors'] is None:
-                return None
-            pattern = r'min\s+(?P<quorum>\d+)\s+of'
-            matches = re.search(pattern, self._values['monitors'])
-            if matches:
-                quorum = matches.group('quorum')
-            else:
-                quorum = None
-        else:
-            quorum = self._values['quorum']
-        try:
-            if quorum is None:
-                return None
-            return int(quorum)
-        except ValueError:
-            raise F5ModuleError(
-                "The specified 'quorum' must be an integer."
-            )
-
-    @property
-    def monitor_type(self):
-        if self.kind == 'tm:ltm:node:nodestate':
-            if self._values['monitors'] is None:
-                return None
-            pattern = r'min\s+\d+\s+of'
-            matches = re.search(pattern, self._values['monitors'])
-            if matches:
-                return 'm_of_n'
-            else:
-                return 'and_list'
-        else:
-            if self._values['monitor_type'] is None:
-                return None
-            return self._values['monitor_type']
-
-    @property
     def rate_limit(self):
         if self._values['rate_limit'] is None:
             return None
@@ -474,6 +438,8 @@ class UsableChanges(Changes):
             result['autopopulate'] = self._values['fqdn_auto_populate']
         if self._values['fqdn_name'] is not None:
             result['tmName'] = self._values['fqdn_name']
+        if not result:
+            return None
         return result
 
 
@@ -482,6 +448,26 @@ class ReportableChanges(Changes):
 
 
 class ModuleParameters(Parameters):
+    @property
+    def quorum(self):
+        if self._values['quorum'] is None:
+            return None
+        quorum = self._values['quorum']
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
+            raise F5ModuleError(
+                "The specified 'quorum' must be an integer."
+            )
+
+    @property
+    def monitor_type(self):
+        if self._values['monitor_type'] is None:
+            return None
+        return self._values['monitor_type']
+
     @property
     def fqdn_up_interval(self):
         if self._values['fqdn_up_interval'] is None:
@@ -526,6 +512,36 @@ class ModuleParameters(Parameters):
 
 
 class ApiParameters(Parameters):
+    @property
+    def quorum(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+(?P<quorum>\d+)\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            quorum = matches.group('quorum')
+        else:
+            quorum = None
+        try:
+            if quorum is None:
+                return None
+            return int(quorum)
+        except ValueError:
+            raise F5ModuleError(
+                "The specified 'quorum' must be an integer."
+            )
+
+    @property
+    def monitor_type(self):
+        if self._values['monitors'] is None:
+            return None
+        pattern = r'min\s+\d+\s+of'
+        matches = re.search(pattern, self._values['monitors'])
+        if matches:
+            return 'm_of_n'
+        else:
+            return 'and_list'
+
     @property
     def fqdn_up_interval(self):
         if self._values['fqdn'] is None:
@@ -580,9 +596,13 @@ class Difference(object):
     def monitor_type(self):
         if self.want.monitor_type is None:
             self.want.update(dict(monitor_type=self.have.monitor_type))
+
         if self.want.quorum is None:
             self.want.update(dict(quorum=self.have.quorum))
+
         if self.want.monitor_type == 'm_of_n' and self.want.quorum is None:
+            if self.want.quorum is None and self.have.quorum is None:
+                return None
             raise F5ModuleError(
                 "Quorum value must be specified with monitor_type 'm_of_n'."
             )
@@ -871,11 +891,14 @@ class ModuleManager(object):
 
     def update_on_device(self):
         params = self.changes.api_params()
-        result = self.client.api.tm.ltm.nodes.node.load(
+        resource = self.client.api.tm.ltm.nodes.node.load(
             name=self.want.name,
             partition=self.want.partition
         )
-        result.modify(**params)
+        if params:
+            resource.modify(**params)
+        if self.want.monitors:
+            self.update_monitors_on_device()
 
     def create_on_device(self):
         params = self.want.api_params()
@@ -884,6 +907,8 @@ class ModuleManager(object):
             partition=self.want.partition,
             **params
         )
+        if self.want.monitors:
+            self.update_monitors_on_device()
         self._wait_for_fqdn_checks(resource)
 
     def _wait_for_fqdn_checks(self, resource):
@@ -901,6 +926,36 @@ class ModuleManager(object):
         )
         if result:
             result.delete()
+
+    def update_monitors_on_device(self):
+        """Updates the monitors string
+
+        There is a long-standing bug in where the monitor value
+        is a string that includes braces. These braces cause the REST API to panic and
+        fail to update or create any resources that have an "at_least" or "require"
+        set of availability_requirements.
+
+        This method exists to do a tmsh command to cause the update to take place on
+        the device.
+
+        Preferably, this method can be removed and the bug be fixed. The API should
+        be working, obviously, but the more concerning issue is if tmsh commands change
+        over time, breaking this method.
+        """
+        command = 'tmsh modify ltm node /{0}/{1} monitor {2}'.format(
+            self.want.partition, self.want.name, self.want.monitors
+        )
+        output = self.client.api.tm.util.bash.exec_cmd(
+            'run',
+            utilCmdArgs='-c "{0}"'.format(command)
+        )
+        try:
+            if hasattr(output, 'commandResult'):
+                if len(output.commandResult.strip()) > 0:
+                    raise F5ModuleError(output.commandResult)
+        except (AttributeError, NameError, LazyAttributesRequired):
+            pass
+        return True
 
 
 class ArgumentSpec(object):

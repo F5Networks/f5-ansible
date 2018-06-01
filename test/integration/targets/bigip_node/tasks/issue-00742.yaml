@@ -1,0 +1,98 @@
+---
+
+- name: Issue 00742 - Create a node
+  bigip_node:
+    name: swch01a.foo.com
+    address: 2.3.4.5
+    connection_limit: 0
+    description: swch01a.foo.com
+    dynamic_ratio: 1
+    monitors:
+      - icmp
+    quorum: 1
+    monitor_type: m_of_n
+    rate_limit: 0
+    ratio: 1
+    state: enabled
+  register: result
+
+- name: Issue 00742 - Assert Create a node
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00742 - Create a node - Idempotent check
+  bigip_node:
+    name: swch01a.foo.com
+    address: 2.3.4.5
+    connection_limit: 0
+    description: swch01a.foo.com
+    dynamic_ratio: 1
+    monitors:
+      - icmp
+    quorum: 1
+    monitor_type: m_of_n
+    rate_limit: 0
+    ratio: 1
+    state: enabled
+  register: result
+
+- name: Issue 00742 - Assert Create a node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00742 - Disable node
+  bigip_node:
+    state: disabled
+    name: swch01a.foo.com
+  register: result
+
+- name: Issue 00742 - Assert Disable node
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00742 - Disable node - Idempotent check
+  bigip_node:
+    state: disabled
+    name: swch01a.foo.com
+  register: result
+
+- name: Issue 00742 - Assert Disable node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00742 - Enable node
+  bigip_node:
+    state: enabled
+    name: swch01a.foo.com
+  register: result
+
+- name: Issue 00742 - Assert Enable node
+  assert:
+    that:
+      - result is changed
+      - result is success
+
+- name: Issue 00742 - Enable node - Idempotent check
+  bigip_node:
+    state: enabled
+    name: swch01a.foo.com
+  register: result
+
+- name: Issue 00742 - Assert Enable node - Idempotent check
+  assert:
+    that:
+      - result is not changed
+      - result is success
+
+- name: Issue 00742 - Remove node
+  bigip_node:
+    state: absent
+    name: swch01a.foo.com

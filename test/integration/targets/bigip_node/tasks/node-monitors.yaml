@@ -1,6 +1,6 @@
 ---
 
-- name: Include variables
+- name: Include node monitor variables
   include_vars:
     file: node-monitors.yaml
 
