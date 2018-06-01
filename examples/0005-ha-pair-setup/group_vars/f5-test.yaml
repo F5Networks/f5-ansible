@@ -10,15 +10,15 @@ validate_certs: no
 
 # Common HA configuration across hosts
 vlans:
-  - name: net1
+  - name: Internal
     tag: 10
     interfaces:
       - 1.1
-  - name: net2
+  - name: External
     tag: 20
     interfaces:
       - 1.2
-  - name: net3
+  - name: HA
     tag: 30
     interfaces:
       - 1.3

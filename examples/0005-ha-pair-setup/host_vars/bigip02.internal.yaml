@@ -3,18 +3,18 @@
 ansible_host: IP_B0
 
 self_ips:
-  - name: net1
+  - name: Self-Internal
     address: IP_B1
     netmask: 255.255.255.0
-    vlan: net1
-  - name: net2
+    vlan: Internal
+  - name: Self-External
     address: IP_B2
     netmask: 255.255.255.0
-    vlan: net2
-  - name: net3
+    vlan: External
+  - name: Self-HA
     address: IP_B3
     netmask: 255.255.255.0
-    vlan: net3
+    vlan: HA
 
 config_sync_ip: IP_B3
 mirror_primary_address: IP_B3

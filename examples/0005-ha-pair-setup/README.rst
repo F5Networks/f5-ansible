@@ -22,3 +22,40 @@ This example includes modules that are newly released and, therefore, may includ
 that the F5 development team is not yet aware of.
 
 As always, if you encounter bugs, refer to the Issues page to report them.
+
+Usage
+=====
+
+Begin by opening the ``group_vars/f5-test.yaml`` file. Inside this file, you will
+find and change (as needed) the following variables.
+
+* ``bigip_username``
+* ``bigip_password``
+* ``bigip_port``
+* ``validate_certs``
+* ``ansible_python_interpreter``
+* ``vlans``
+
+Observe the documentation in each file to determine what needs to be changed
+
+Next, open the ``host_vars/bigip01.internal.yaml`` file. Inside this file, you will
+find and change the following variables.
+
+* ``ansible_host``
+* ``self_ips``
+* ``config_sync_ip``
+* ``mirror_primary_address``
+* ``unicast_failover``
+
+The Self IPs in this file are organized in the following way
+
+* IP_A1 - This is the IP address that you want to assign (or have already assigned) to
+  the first interface on your device. ie, Interface 1.1. The VLAN argument should match
+  the name of the VLAN named in the ``vlans`` parameter of ``group_vars/f5-test.yaml``.
+* IP_A2 - This is the IP address that you want to assign (or have already assigned) to
+  the first interface on your device. ie, Interface 1.2. The VLAN argument should match
+  the name of the VLAN named in the ``vlans`` parameter of ``group_vars/f5-test.yaml``.
+* IP_A3 - This is the IP address that you want to assign (or have already assigned) to
+  the first interface on your device. ie, Interface 1.3. The VLAN argument should match
+  the name of the VLAN named in the ``vlans`` parameter of ``group_vars/f5-test.yaml``.
+  This address will also be the address used for HA communication.
