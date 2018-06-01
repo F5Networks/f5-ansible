@@ -149,6 +149,12 @@ options:
       - When creating a new node, if this parameter is not specified, the default of
         C(1) will be used.
     version_added: 2.7
+  dynamic_ratio:
+    description:
+      - The dynamic ratio number for the node. Used for dynamic ratio load balancing.
+      - When creating a new node, if this parameter is not specified, the default of
+        C(1) will be used.
+    version_added: 2.7
   partition:
     description:
       - Device partition to manage resources on.
@@ -790,6 +796,8 @@ class ModuleManager(object):
             self.want.update({'fqdn_down_interval': 5})
         if self.want.ratio is None:
             self.want.update({'ratio': 1})
+        if self.want.dynamic_ratio is None:
+            self.want.update({'dynamic_ratio': 1})
 
         self._set_changed_options()
         if self.module.check_mode:
@@ -931,6 +939,7 @@ class ArgumentSpec(object):
             connection_limit=dict(type='int'),
             rate_limit=dict(type='int'),
             ratio=dict(type='int'),
+            dynamic_ratio=dict(type='int')
         )
         self.argument_spec = {}
         self.argument_spec.update(f5_argument_spec)
