@@ -11,8 +11,6 @@
       validate_certs: "{{ validate_certs }}"
   loop:
     - abc_log
-    - f
-    - g
 
 - name: Issue 00743 - Create pool member - Provider
   bigip_pool_member:
@@ -60,6 +58,9 @@
   set_fact:
     pools:
       - name: f
+        monitor_type: single
+        monitors:
+          - HIPPO_Health
         members:
           - host: 3.3.3.3
             port: 80
@@ -75,6 +76,45 @@
             port: 8080
           - host: 8.8.8.8
             port: 443
+    monitor_http:
+      - name: HIPPO_Health
+        interval: 10
+        timeout: 31
+        receive: UP
+        send: GET /rest/server/ping\\r\\n
+
+- name: Issue 00743 - Create HTTP monitors
+  bigip_monitor_http:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    name: "{{ item.name }}"
+    state: "{{ item.state | default(omit) }}"
+    interval: "{{ item.interval }}"
+    timeout: "{{ item.timeout }}"
+    receive: "{{ item.receive }}"
+    receive_disable: "{{ item.receive_disable | default(omit) }}"
+    send: "{{ item.send }}"
+  loop: "{{ monitor_http }}"
+
+- name: Issue 00743 - Create Pool
+  bigip_pool:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    name: "{{ item.name }}"
+    state: "{{ item.state | default(omit) }}"
+    lb_method: "{{ item.lb_method | default(omit)}}"
+    monitor_type: "{{ item.monitor_type | default(omit) }}"
+    monitors: "{{ item.monitors | default(omit) }}"
+    service_down_action: "{{ item.service_down_action | default(omit) }}"
+  loop: "{{ pools }}"
 
 - name: Issue 00743 - Create Pool members with_subelements
   bigip_pool_member:
@@ -107,3 +147,15 @@
     - abc_log
     - f
     - g
+
+- name: Issue 00743 - Remove HTTP monitors
+  bigip_monitor_http:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    name: "{{ item.name }}"
+    state: absent
+  loop: "{{ monitor_http }}"
