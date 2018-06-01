@@ -1,14 +1,18 @@
 ---
 
-- name: Issue 00743 - Add a pool - Provider
+- name: Issue 00743 - Add some pools - Provider
   bigip_pool:
-    pool: abc_log
+    pool: "{{ item }}"
     provider:
       password: "{{ bigip_password }}"
       server: "{{ ansible_host }}"
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
+  loop:
+    - abc_log
+    - f
+    - g
 
 - name: Issue 00743 - Create pool member - Provider
   bigip_pool_member:
@@ -52,9 +56,46 @@
       - result is not changed
       - result is success
 
-- name: Issue 00743 - Remove pool - Provider
+- name: Issue 00743 - Set fact for testing
+  set_fact:
+    pools:
+      - name: f
+        members:
+          - host: 3.3.3.3
+            port: 80
+          - host: 4.4.4.4
+            port: 8080
+          - host: 5.5.5.5
+            port: 443
+      - name: g
+        members:
+          - host: 6.6.6.6
+            port: 80
+          - host: 7.7.7.7
+            port: 8080
+          - host: 8.8.8.8
+            port: 443
+
+- name: Issue 00743 - Create Pool members with_subelements
+  bigip_pool_member:
+    provider:
+      password: "{{ bigip_password }}"
+      server: "{{ ansible_host }}"
+      server_port: "{{ bigip_port }}"
+      user: "{{ bigip_username }}"
+      validate_certs: "{{ validate_certs }}"
+    pool: "{{ item.0.name }}"
+    state: "{{ item.1.state | default(omit) }}"
+    host: "{{ item.1.host }}"
+    port: "{{ item.1.port }}"
+    partition: "{{ item.1.partition | default(omit) }}"
+  with_subelements:
+    - "{{ pools }}"
+    - members
+
+- name: Issue 00743 - Remove pools - Provider
   bigip_pool:
-    pool: abc_log
+    pool: "{{ item }}"
     state: absent
     provider:
       password: "{{ bigip_password }}"
@@ -62,3 +103,7 @@
       server_port: "{{ bigip_port }}"
       user: "{{ bigip_username }}"
       validate_certs: "{{ validate_certs }}"
+  loop:
+    - abc_log
+    - f
+    - g
