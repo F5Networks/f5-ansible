@@ -1,0 +1,35 @@
+---
+
+- name: Issue 00739 - Create a parent SSL profile
+  bigip_profile_client_ssl:
+    name: parent
+  register: result
+
+- name: Issue 00739 - Assert Create a parent SSL profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Issue 00739 - Create a child SSL profile
+  bigip_profile_client_ssl:
+    name: test
+    parent: /Common/parent
+  register: result
+
+- name: Issue 00739 - Assert Create a child SSL profile
+  assert:
+    that:
+      - result is success
+      - result is changed
+
+- name: Get facts about profiles
+  bigip_device_facts:
+    include:
+      - client-ssl-profiles
+  register: f
+
+- name: Assert Get facts about profiles
+  assert:
+    that:
+      - f.client_ssl_profiles | json_query("[?name=='test'].parent") | first == '/Common/parent'
