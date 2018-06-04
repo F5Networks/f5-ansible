@@ -5,7 +5,7 @@
 # the software product on devcentral.f5.com.
 
 cli script f5.iapp.1.5.0.cli {
- 
+
 #  Initialization proc for all templates.
 #  Parameters "start" and "stop" or "end".
 proc iapp_template { action } {
@@ -4200,7 +4200,7 @@ define choice lb_method_lcm_default default "least-connections-member" display "
 }
 
 section intro {
-    
+
     message hello "Use this template to configure availability, optimizations, encryption, and remote access for the client access server role in Exchange Server 2016. This template will configure the BIG-IP Local Traffic Manager (LTM) module for all HTTP-based Mailbox services, as well as IMAP4/IMAP4S and POP3/POP3S."
     message hello2 "You may decrypt secure HTTPS, POP3S, and IMAP4S on this BIG-IP system and optionally re-encrypt that traffic before sending it to the Mailbox Servers."
     message hello3 "When used with the BIG-IP Access Policy Manager (APM) module features, including Edge Gateway, this template supports proxy authentication and secure remote access for all HTTP-based client access protocols without requiring a VPN client. This template supports running APM on the same BIG-IP system as LTM, or using a BIG-IP APM to forward traffic to BIG-IP LTM on a different system."
@@ -4803,7 +4803,7 @@ optional ( deployment_scenario.scenario == "LTM will load balance and optimize C
                         message owa_login_timeout_help "Type the number of minutes you want to pass before idle Outlook Web App sessions timeout."
                     }
                 }
-                
+
             }
             optional ( deployment_scenario.scenario ==
                        "LTM will load balance and optimize CAS traffic" ) {
@@ -5033,7 +5033,7 @@ optional ( deployment_scenario.scenario == "LTM will load balance and optimize C
 
         optional ( deploying_oa != "No" ) {
             optional ( intro.help == "max" ) {
-                message deploying_ews_warning1 "This option creates a destination virtual server and associated objects for Exchange Web Services traffic only; if you are deploying Outlook and EWS, select ‘Yes, deploying Microsoft Outlook with EWS and OAB’ above."
+                message deploying_ews_warning1 "This option creates a destination virtual server and associated objects for Exchange Web Services traffic only; if you are deploying Outlook and EWS, select 'Yes, deploying Microsoft Outlook with EWS and OAB' above."
                 message deploying_ews_warning2 "Outlook Address Book traffic will be forwarded to the Exchange Web Services pool."
             }
             optional ( deployment_scenario.scenario ==
@@ -5675,7 +5675,7 @@ section postreq {
 }
 text {
     intro "Welcome to the Microsoft Exchange Server 2016 template"
-    
+
     intro.hello "Introduction"
     intro.hello2 ""
     intro.hello3 ""
