@@ -1,10 +1,10 @@
-:source: modules/bigip_trunk.py
+:source: modules/bigip_software_image.py
 
-.. _bigip_trunk:
+.. _bigip_software_image:
 
 
-bigip_trunk - Manage trunks on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++
+bigip_software_image - __SHORT_DESCRIPTION__
+++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_trunk - Manage trunks on a BIG-IP
 
 Synopsis
 --------
-- Manages trunks on a BIG-IP.
+- __LONG DESCRIPTION__.
 
 
 
@@ -41,170 +41,6 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>description</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Description of the trunk.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>frame_distribution_hash</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>destination-mac</li>
-                                                                                                                                                                                                                        <li>source-destination-ip</li>
-                                                                                                                                                                                                                        <li>source-destination-mac</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the basis for the hash that the system uses as the frame distribution algorithm. The system uses the resulting hash to determine which interface to use for forwarding traffic.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>source-destination-ip</code>.</div>
-                                                            <div>When <code>source-destination-mac</code>, specifies that the system bases the hash on the combined MAC addresses of the source and the destination.</div>
-                                                            <div>When <code>destination-mac</code>, specifies that the system bases the hash on the MAC address of the destination.</div>
-                                                            <div>When <code>source-destination-ip</code>, specifies that the system bases the hash on the combined IP addresses of the source and the destination.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>interfaces</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>The interfaces that are part of the trunk.</div>
-                                                            <div>To clear the list of interfaces, specify an empty list.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>lacp_enabled</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li>yes</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>When <code>yes</code>, specifies that the system supports the link aggregation control protocol (LACP), which monitors the trunk by exchanging control packets over the member links to determine the health of the links.</div>
-                                                            <div>If LACP detects a failure in a member link, it removes the link from the link aggregation.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, LACP is <code>no</code>.</div>
-                                                            <div>LACP is disabled by default for backward compatibility. If this does not apply to your network, we recommend that you enable LACP.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>lacp_mode</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>active</li>
-                                                                                                                                                                                                                        <li>passive</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the operation mode for link aggregation control protocol (LACP), if LACP is enabled for the trunk.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>active</code>.</div>
-                                                            <div>When <code>active</code>, specifies that the system periodically sends control packets regardless of whether the partner system has issued a request.</div>
-                                                            <div>When <code>passive</code>, specifies that the system sends control packets only when the partner system has issued a request.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>lacp_timeout</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>long</li>
-                                                                                                                                                                                                                        <li>short</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the rate at which the system sends the LACP control packets.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>long</code>.</div>
-                                                            <div>When <code>long</code>, specifies that the system sends an LACP control packet every 30 seconds.</div>
-                                                            <div>When <code>short</code>, specifies that the system sends an LACP control packet every 1 seconds.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>link_selection_policy</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>auto</li>
-                                                                                                                                                                                                                        <li>maximum-bandwidth</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies, once the trunk is configured, the policy that the trunk uses to determine which member link (interface) can handle new traffic.</div>
-                                                            <div>When creating a new trunk, if this value is not specific, the default is <code>auto</code>.</div>
-                                                            <div>When <code>auto</code>, specifies that the system automatically determines which interfaces can handle new traffic. For the <code>auto</code> option, the member links must all be the same media type and speed.</div>
-                                                            <div>When <code>maximum-bandwidth</code>, specifies that the system determines which interfaces can handle new traffic based on the members&#x27; maximum bandwidth.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
                             <b>name</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -215,7 +51,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the name of the trunk.</div>
+                                                                                    <div>Specifies the name of the ... .</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -461,29 +297,6 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>state</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li><div style="color: blue"><b>present</b>&nbsp;&larr;</div></li>
-                                                                                                                                                                                                                        <li>absent</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>When <code>present</code>, ensures that the resource exists.</div>
-                                                            <div>When <code>absent</code>, ensures the resource is removed.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
                             <b>user</b>
                             <br/><div style="font-size: small; color: red">required</div>                                                    </div>
                     </div>
@@ -539,7 +352,7 @@ Examples
 
     
     - name: Create a ...
-      bigip_trunk:
+      bigip_software_image:
         name: foo
         password: secret
         server: lb.mydomain.com

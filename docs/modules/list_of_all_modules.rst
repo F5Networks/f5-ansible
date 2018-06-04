@@ -30,6 +30,7 @@ All modules
   * :ref:`bigip_gtm_facts`
   * :ref:`bigip_gtm_global`
   * :ref:`bigip_gtm_monitor_bigip`
+  * :ref:`bigip_gtm_monitor_external`
   * :ref:`bigip_gtm_monitor_firepass`
   * :ref:`bigip_gtm_monitor_http`
   * :ref:`bigip_gtm_monitor_https`
@@ -48,6 +49,7 @@ All modules
   * :ref:`bigip_log_destination`
   * :ref:`bigip_log_publisher`
   * :ref:`bigip_management_route`
+  * :ref:`bigip_monitor_external`
   * :ref:`bigip_monitor_http`
   * :ref:`bigip_monitor_https`
   * :ref:`bigip_monitor_snmp_dca`
@@ -63,6 +65,7 @@ All modules
   * :ref:`bigip_pool_member`
   * :ref:`bigip_profile_client_ssl`
   * :ref:`bigip_profile_dns`
+  * :ref:`bigip_profile_oneconnect`
   * :ref:`bigip_profile_tcp`
   * :ref:`bigip_profile_udp`
   * :ref:`bigip_provision`
@@ -85,6 +88,8 @@ All modules
   * :ref:`bigip_snmp_trap`
   * :ref:`bigip_software`
   * :ref:`bigip_software_facts`
+  * :ref:`bigip_software_image`
+  * :ref:`bigip_software_install`
   * :ref:`bigip_software_update`
   * :ref:`bigip_ssl_certificate`
   * :ref:`bigip_ssl_key`

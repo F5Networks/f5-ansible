@@ -1,10 +1,10 @@
-:source: modules/bigip_trunk.py
+:source: modules/bigip_monitor_external.py
 
-.. _bigip_trunk:
+.. _bigip_monitor_external:
 
 
-bigip_trunk - Manage trunks on a BIG-IP
-+++++++++++++++++++++++++++++++++++++++
+bigip_monitor_external - Manages external LTM monitors on a BIG-IP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. versionadded:: 2.6
 
@@ -15,7 +15,7 @@ bigip_trunk - Manage trunks on a BIG-IP
 
 Synopsis
 --------
-- Manages trunks on a BIG-IP.
+- Manages external LTM monitors on a BIG-IP.
 
 
 
@@ -41,52 +41,7 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>description</b>
-                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Description of the trunk.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>frame_distribution_hash</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>destination-mac</li>
-                                                                                                                                                                                                                        <li>source-destination-ip</li>
-                                                                                                                                                                                                                        <li>source-destination-mac</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies the basis for the hash that the system uses as the frame distribution algorithm. The system uses the resulting hash to determine which interface to use for forwarding traffic.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>source-destination-ip</code>.</div>
-                                                            <div>When <code>source-destination-mac</code>, specifies that the system bases the hash on the combined MAC addresses of the source and the destination.</div>
-                                                            <div>When <code>destination-mac</code>, specifies that the system bases the hash on the MAC address of the destination.</div>
-                                                            <div>When <code>source-destination-ip</code>, specifies that the system bases the hash on the combined IP addresses of the source and the destination.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>interfaces</b>
+                            <b>arguments</b>
                                                                                 </div>
                     </div>
                 </td>
@@ -96,8 +51,7 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>The interfaces that are part of the trunk.</div>
-                                                            <div>To clear the list of interfaces, specify an empty list.</div>
+                                                                                    <div>Specifies any command-line arguments that the script requires.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -105,24 +59,17 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>lacp_enabled</b>
+                            <b>external_program</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                                                                        <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>no</li>
-                                                                                                                                                                                                                        <li>yes</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>When <code>yes</code>, specifies that the system supports the link aggregation control protocol (LACP), which monitors the trunk by exchanging control packets over the member links to determine the health of the links.</div>
-                                                            <div>If LACP detects a failure in a member link, it removes the link from the link aggregation.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, LACP is <code>no</code>.</div>
-                                                            <div>LACP is disabled by default for backward compatibility. If this does not apply to your network, we recommend that you enable LACP.</div>
+                                                                                    <div>Specifies the name of the file for the monitor to use. In order to reference a file, you must first import it using options on the System &gt; File Management &gt; External Monitor Program File List &gt; Import screen. The BIG-IP system automatically places the file in the proper location on the file system.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -130,24 +77,17 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>lacp_mode</b>
+                            <b>interval</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>active</li>
-                                                                                                                                                                                                                        <li>passive</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the operation mode for link aggregation control protocol (LACP), if LACP is enabled for the trunk.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>active</code>.</div>
-                                                            <div>When <code>active</code>, specifies that the system periodically sends control packets regardless of whether the partner system has issued a request.</div>
-                                                            <div>When <code>passive</code>, specifies that the system sends control packets only when the partner system has issued a request.</div>
+                                                                                    <div>The interval specifying how frequently the monitor instance of this template will run. If this parameter is not provided when creating a new monitor, then the default value will be 5. This value <b>must</b> be less than the <code>timeout</code> value.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -155,49 +95,17 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>lacp_timeout</b>
+                            <b>ip</b>
                                                                                 </div>
                     </div>
                 </td>
                                 <td>
                     <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>long</li>
-                                                                                                                                                                                                                        <li>short</li>
-                                                                                                </ul>
-                                                                                            </div>
+                                                                                                                                                                                            </div>
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the rate at which the system sends the LACP control packets.</div>
-                                                            <div>When creating a new trunk, if this parameter is not specified, the default is <code>long</code>.</div>
-                                                            <div>When <code>long</code>, specifies that the system sends an LACP control packet every 30 seconds.</div>
-                                                            <div>When <code>short</code>, specifies that the system sends an LACP control packet every 1 seconds.</div>
-                                                                                                </div>
-                </td>
-            </tr>
-                                <tr class="return-value-column">
-                                <td>
-                    <div class="outer-elbow-container">
-                                                <div class="elbow-key">
-                            <b>link_selection_policy</b>
-                                                                                </div>
-                    </div>
-                </td>
-                                <td>
-                    <div class="cell-border">
-                                                                                                                                                    <ul><b>Choices:</b>
-                                                                                                                                                                                    <li>auto</li>
-                                                                                                                                                                                                                        <li>maximum-bandwidth</li>
-                                                                                                </ul>
-                                                                                            </div>
-                </td>
-                                                                <td>
-                    <div class="cell-border">
-                                                                                    <div>Specifies, once the trunk is configured, the policy that the trunk uses to determine which member link (interface) can handle new traffic.</div>
-                                                            <div>When creating a new trunk, if this value is not specific, the default is <code>auto</code>.</div>
-                                                            <div>When <code>auto</code>, specifies that the system automatically determines which interfaces can handle new traffic. For the <code>auto</code> option, the member links must all be the same media type and speed.</div>
-                                                            <div>When <code>maximum-bandwidth</code>, specifies that the system determines which interfaces can handle new traffic based on the members&#x27; maximum bandwidth.</div>
+                                                                                    <div>IP address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -215,7 +123,45 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>Specifies the name of the trunk.</div>
+                                                                                    <div>Specifies the name of the monitor.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>parent</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">/Common/external</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The parent template of this monitor template. Once this value has been set, it cannot be changed. By default, this value is the <code>http</code> parent on the <code>Common</code> partition.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>partition</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                                                                                        <b>Default:</b><br/><div style="color: blue">Common</div>
+                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Device partition to manage resources on.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -236,6 +182,24 @@ Parameters
                                                                                     <div>The password for the user account used to connect to the BIG-IP. You can omit this option if the environment variable <code>F5_PASSWORD</code> is set.</div>
                                                                                                         <div style="font-size: small; color: darkgreen"><br/>aliases: pass, pwd</div>
                                             </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>port</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Port address part of the IP/port definition. If this parameter is not provided when creating a new monitor, then the default value will be &#x27;*&#x27;. Note that if specifying an IP address, a value between 1 and 65535 must be specified.</div>
+                                                                                                </div>
                 </td>
             </tr>
                                 <tr class="return-value-column">
@@ -475,8 +439,26 @@ Parameters
                 </td>
                                                                 <td>
                     <div class="cell-border">
-                                                                                    <div>When <code>present</code>, ensures that the resource exists.</div>
-                                                            <div>When <code>absent</code>, ensures the resource is removed.</div>
+                                                                                    <div>When <code>present</code>, ensures that the monitor exists.</div>
+                                                            <div>When <code>absent</code>, ensures the monitor is removed.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>timeout</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The number of seconds in which the node or service must respond to the monitor request. If the target responds within the set time period, it is considered up. If the target does not respond within the set time period, it is considered down. You can change this number to any number you want, however, it should be 3 times the interval number of seconds plus 1 second. If this parameter is not provided when creating a new monitor, then the default value will be 16.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -520,6 +502,25 @@ Parameters
                                                                                                 </div>
                 </td>
             </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>variables</b>
+                                                                                </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Specifies any variables that the script requires.</div>
+                                                            <div>Note that double quotes in values will be suppressed.</div>
+                                                                                                </div>
+                </td>
+            </tr>
                         </table>
     <br/>
 
@@ -538,9 +539,36 @@ Examples
 .. code-block:: yaml
 
     
-    - name: Create a ...
-      bigip_trunk:
+    - name: Create an external monitor
+      bigip_monitor_external:
         name: foo
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
+
+    - name: Create an external monitor with variables
+      bigip_monitor_external:
+        name: foo
+        timeout: 10
+        variables:
+          var1: foo
+          var2: bar
+        password: secret
+        server: lb.mydomain.com
+        state: present
+        user: admin
+      delegate_to: localhost
+
+    - name: Add a variable to an existing set
+      bigip_monitor_external:
+        name: foo
+        timeout: 10
+        variables:
+          var1: foo
+          var2: bar
+          cat: dog
         password: secret
         server: lb.mydomain.com
         state: present
@@ -566,18 +594,18 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>param1</b>
-                            <br/><div style="font-size: small; color: red">bool</div>
+                            <b>interval</b>
+                            <br/><div style="font-size: small; color: red">int</div>
                         </div>
                     </div>
                 </td>
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The new param1 value of the resource.</div>
+                                                    <div>The new interval in which to run the monitor check.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">True</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">2</div>
                                             </div>
                 </td>
             </tr>
@@ -585,7 +613,7 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
-                            <b>param2</b>
+                            <b>ip</b>
                             <br/><div style="font-size: small; color: red">string</div>
                         </div>
                     </div>
@@ -593,10 +621,48 @@ Common return values are documented :ref:`here <common_return_values>`, the foll
                 <td><div class="cell-border">changed</div></td>
                 <td>
                     <div class="cell-border">
-                                                    <div>The new param2 value of the resource.</div>
+                                                    <div>The new IP of IP/port definition.</div>
                                                 <br/>
                                                     <div style="font-size: smaller"><b>Sample:</b></div>
-                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">Foo is bar</div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10.12.13.14</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>parent</b>
+                            <br/><div style="font-size: small; color: red">string</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>New parent template of the monitor.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">external</div>
+                                            </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>timeout</b>
+                            <br/><div style="font-size: small; color: red">int</div>
+                        </div>
+                    </div>
+                </td>
+                <td><div class="cell-border">changed</div></td>
+                <td>
+                    <div class="cell-border">
+                                                    <div>The new timeout in which the remote system must respond to the monitor.</div>
+                                                <br/>
+                                                    <div style="font-size: smaller"><b>Sample:</b></div>
+                                                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">10</div>
                                             </div>
                 </td>
             </tr>
