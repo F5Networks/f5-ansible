@@ -61,6 +61,24 @@ Parameters
                                 <td>
                     <div class="outer-elbow-container">
                                                 <div class="elbow-key">
+                            <b>connection_limit</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Node connection limit. Setting this to 0 disables the limit.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
                             <b>description</b>
                                                                                 </div>
                     </div>
@@ -72,6 +90,25 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>Specifies descriptive text that identifies the node.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>dynamic_ratio</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>The dynamic ratio number for the node. Used for dynamic ratio load balancing.</div>
+                                                            <div>When creating a new node, if this parameter is not specified, the default of <code>1</code> will be used.</div>
                                                                                                 </div>
                 </td>
             </tr>
@@ -482,6 +519,43 @@ Parameters
                                                                 <td>
                     <div class="cell-border">
                                                                                     <div>Monitor quorum value when <code>monitor_type</code> is <code>m_of_n</code>.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>rate_limit</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Node rate limit (connections-per-second). Setting this to 0 disables the limit.</div>
+                                                                                                </div>
+                </td>
+            </tr>
+                                <tr class="return-value-column">
+                                <td>
+                    <div class="outer-elbow-container">
+                                                <div class="elbow-key">
+                            <b>ratio</b>
+                                                        <br/><div style="font-size: small; color: darkgreen">(added in 2.7)</div>                        </div>
+                    </div>
+                </td>
+                                <td>
+                    <div class="cell-border">
+                                                                                                                                                                                            </div>
+                </td>
+                                                                <td>
+                    <div class="cell-border">
+                                                                                    <div>Node ratio weight. Valid values range from 1 through 100.</div>
+                                                            <div>When creating a new node, if this parameter is not specified, the default of <code>1</code> will be used.</div>
                                                                                                 </div>
                 </td>
             </tr>
